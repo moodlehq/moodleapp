@@ -28,6 +28,7 @@ import { ADDON_MOD_CHOICE_COMPONENT_LEGACY, AddonModChoiceShowResults } from '..
 import { CoreCacheUpdateFrequency } from '@/core/constants';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreSite } from '@classes/sites/site';
+import { CoreTextFormat } from '@singletons/text';
 
 /**
  * Service that provides some features for choices.
@@ -523,7 +524,7 @@ export type AddonModChoiceChoice = {
     course: number; // Course id.
     name: string; // Choice name.
     intro: string; // The choice intro.
-    introformat: number; // Intro format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
+    introformat: CoreTextFormat; // Intro format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
     introfiles?: CoreWSExternalFile[];
     publish?: boolean; // If choice is published.
     showresults?: AddonModChoiceShowResults; // 0 never, 1 after answer, 2 after close, 3 always.

@@ -21,7 +21,7 @@ import { CoreCourseLogHelper } from '@features/course/services/log-helper';
 import { CoreFile } from '@services/file';
 import { CorePlatform } from '@services/platform';
 import { CoreSites, CoreSitesCommonWSOptions } from '@services/sites';
-import { CoreText } from '@singletons/text';
+import { CoreText, CoreTextFormat } from '@singletons/text';
 import { CoreUrl } from '@singletons/url';
 import { CoreOpener } from '@singletons/opener';
 import { CoreWSExternalFile, CoreWSExternalWarning } from '@services/ws';
@@ -324,7 +324,7 @@ export type AddonModLtiLti = {
     course: number; // Course id.
     name: string; // LTI name.
     intro?: string; // The LTI intro.
-    introformat?: number; // Intro format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
+    introformat?: CoreTextFormat; // Intro format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
     introfiles?: CoreWSExternalFile[];
     timecreated?: number; // Time of creation.
     timemodified?: number; // Time of last modification.

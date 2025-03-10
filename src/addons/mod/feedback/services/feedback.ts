@@ -39,6 +39,7 @@ import {
 import { CoreCacheUpdateFrequency } from '@/core/constants';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreWSError } from '@classes/errors/wserror';
+import { CoreTextFormat } from '@singletons/text';
 
 /**
  * Service that provides some features for feedbacks.
@@ -1465,7 +1466,7 @@ export type AddonModFeedbackWSFeedback = {
     course: number; // Course id this feedback is part of.
     name: string; // Feedback name.
     intro: string; // Feedback introduction text.
-    introformat?: number; // Intro format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
+    introformat?: CoreTextFormat; // Intro format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
     anonymous: number; // Whether the feedback is anonymous.
     // eslint-disable-next-line @typescript-eslint/naming-convention
     email_notification?: boolean; // Whether email notifications will be sent to teachers.
@@ -1477,7 +1478,7 @@ export type AddonModFeedbackWSFeedback = {
     // eslint-disable-next-line @typescript-eslint/naming-convention
     page_after_submit?: string; // Text to display after submission.
     // eslint-disable-next-line @typescript-eslint/naming-convention
-    page_after_submitformat?: number; // Page_after_submit format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
+    page_after_submitformat?: CoreTextFormat; // Page_after_submit format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
     // eslint-disable-next-line @typescript-eslint/naming-convention
     publish_stats: boolean; // Whether stats should be published.
     timeopen?: number; // Allow answers from this time.

@@ -37,6 +37,7 @@ import {
 import { CoreCacheUpdateFrequency } from '@/core/constants';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreWSError } from '@classes/errors/wserror';
+import { CoreTextFormat } from '@singletons/text';
 
 declare module '@singletons/events' {
 
@@ -1181,7 +1182,7 @@ export type AddonModDataData = {
     course: number; // Course id.
     name: string; // Database name.
     intro: string; // The Database intro.
-    introformat?: number; // Intro format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
+    introformat?: CoreTextFormat; // Intro format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
     comments: boolean; // Comments enabled.
     timeavailablefrom: number; // Timeavailablefrom field.
     timeavailableto: number; // Timeavailableto field.

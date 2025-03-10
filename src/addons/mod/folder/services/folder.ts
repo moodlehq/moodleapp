@@ -23,6 +23,7 @@ import { CoreWSExternalFile, CoreWSExternalWarning } from '@services/ws';
 import { makeSingleton, Translate } from '@singletons';
 import { ADDON_MOD_FOLDER_COMPONENT_LEGACY } from '../constants';
 import { CoreCacheUpdateFrequency } from '@/core/constants';
+import { CoreTextFormat } from '@singletons/text';
 
 /**
  * Service that provides some features for folder.
@@ -155,7 +156,7 @@ export type AddonModFolderFolder = {
     course: number; // Course id.
     name: string; // Page name.
     intro: string; // Summary.
-    introformat?: number; // Intro format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
+    introformat?: CoreTextFormat; // Intro format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
     introfiles: CoreWSExternalFile[];
     revision: number; // Incremented when after each file changes, to avoid cache.
     timemodified: number; // Last time the folder was modified.

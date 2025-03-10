@@ -16,7 +16,7 @@ import { Injectable } from '@angular/core';
 
 import { CoreSites, CoreSitesCommonWSOptions } from '@services/sites';
 import { CoreWSExternalWarning } from '@services/ws';
-import { CoreText } from '@singletons/text';
+import { CoreText, CoreTextFormat } from '@singletons/text';
 import { CoreTime } from '@singletons/time';
 import { CoreUser, USER_NOREPLY_USER } from '@features/user/services/user';
 import { CoreLogger } from '@singletons/logger';
@@ -482,7 +482,7 @@ export type AddonNotificationsNotificationMessage = {
     subject: string; // The message subject.
     text: string; // The message text formated.
     fullmessage: string | null; // The message.
-    fullmessageformat: number | null; // Fullmessage format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
+    fullmessageformat: CoreTextFormat | null; // Fullmessage format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
     fullmessagehtml: string | null; // The message in html.
     smallmessage: string | null; // The shorten message.
     notification: number; // Is a notification?.

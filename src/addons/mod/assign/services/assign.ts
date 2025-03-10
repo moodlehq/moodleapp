@@ -45,6 +45,7 @@ import {
     AddonModAssignGradingStates,
     AddonModAssignSubmissionStatusValues,
 } from '../constants';
+import { CoreTextFormat } from '@singletons/text';
 
 declare module '@singletons/events' {
 
@@ -1475,10 +1476,10 @@ export type AddonModAssignAssign = {
     requiresubmissionstatement: number; // Student must accept submission statement.
     preventsubmissionnotingroup?: number; // Prevent submission not in group.
     submissionstatement?: string; // Submission statement formatted.
-    submissionstatementformat?: number; // Submissionstatement format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
+    submissionstatementformat?: CoreTextFormat; // Submissionstatement format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
     configs: AddonModAssignConfig[]; // Configuration settings.
     intro?: string; // Assignment intro, not allways returned because it deppends on the activity configuration.
-    introformat?: number; // Intro format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
+    introformat?: CoreTextFormat; // Intro format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
     introfiles?: CoreWSExternalFile[];
     introattachments?: CoreWSExternalFile[];
     activity?: string; // @since 4.0. Description of activity.
@@ -1547,7 +1548,7 @@ export type AddonModAssignPlugin = {
         name: string; // Field name.
         description: string; // Field description.
         text: string; // Field value.
-        format: number; // Text format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
+        format: CoreTextFormat; // Text format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
     }[];
 };
 
@@ -1649,7 +1650,7 @@ export type AddonModAssignParticipant = {
     lastaccess?: number; // Last access to the site (0 if never).
     suspended?: boolean; // Suspend user account, either false to enable user login or true to disable it.
     description?: string; // User profile description.
-    descriptionformat?: number; // Int format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
+    descriptionformat?: CoreTextFormat; // Int format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
     city?: string; // Home city of the user.
     url?: string; // URL of the user.
     country?: string; // Home country code of the user, such as AU or CZ.

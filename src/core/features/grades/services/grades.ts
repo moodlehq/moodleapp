@@ -22,6 +22,7 @@ import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
 import { CoreError } from '@classes/errors/error';
 import { SafeNumber } from '@/core/utils/types';
 import { CoreGradeType } from '../constants';
+import { CoreTextFormat } from '@singletons/text';
 
 /**
  * Service to provide grade functionalities.
@@ -525,7 +526,7 @@ export type CoreGradesGradeItem = {
     numusers?: number; // Num users in course.
     averageformatted?: string; // Grade average.
     feedback?: string; // Grade feedback.
-    feedbackformat?: number; // Feedback format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
+    feedbackformat?: CoreTextFormat; // Feedback format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
 };
 
 /**

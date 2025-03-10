@@ -53,6 +53,7 @@ import { CoreCacheUpdateFrequency } from '@/core/constants';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreWSError } from '@classes/errors/wserror';
 import { CoreObject } from '@singletons/object';
+import { CoreTextFormat } from '@singletons/text';
 
 declare module '@singletons/events' {
 
@@ -1395,7 +1396,7 @@ export type AddonModForumData = {
     type: AddonModForumType; // The forum type.
     name: string; // Forum name.
     intro: string; // The forum intro.
-    introformat: number; // Intro format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
+    introformat: CoreTextFormat; // Intro format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
     introfiles?: CoreWSExternalFile[];
     duedate?: number; // Duedate for the user.
     cutoffdate?: number; // Cutoffdate for the user.
@@ -1453,7 +1454,7 @@ export type AddonModForumDiscussion = {
     mailed: number; // Mailed?.
     subject: string; // The post subject.
     message: string; // The post message.
-    messageformat: number; // Message format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
+    messageformat: CoreTextFormat; // Message format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
     messagetrust: number; // Can we trust?.
     messageinlinefiles?: CoreWSExternalFile[];
     attachment: string; // Has attachments?.
@@ -1541,7 +1542,7 @@ export type AddonModForumLegacyPost = {
     mailed: number; // Mailed?.
     subject: string; // The post subject.
     message: string; // The post message.
-    messageformat: number; // Message format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
+    messageformat: CoreTextFormat; // Message format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
     messagetrust: number; // Can we trust?.
     messageinlinefiles?: CoreWSExternalFile[];
     attachment: string; // Has attachments?.
@@ -1653,7 +1654,7 @@ export type AddonModForumWSPost = {
     subject: string; // Subject.
     replysubject: string; // Replysubject.
     message: string; // Message.
-    messageformat: number; // Message format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
+    messageformat: CoreTextFormat; // Message format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
     author: {
         id?: number; // Id.
         fullname?: string; // Fullname.
@@ -1870,7 +1871,7 @@ export type AddonModForumAddDiscussionPostWSParams = {
     subject: string; // New post subject.
     message: string; // New post message (html assumed if messageformat is not provided).
     options?: AddonModForumAddDiscussionPostWSOptionsArray;
-    messageformat?: number; // Message format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
+    messageformat?: CoreTextFormat; // Message format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
 };
 
 /**
@@ -2124,7 +2125,7 @@ export type AddonModForumUpdateDiscussionPostWSParams = {
     postid: number; // Post to be updated. It can be a discussion topic post.
     subject?: string; // Updated post subject.
     message?: string; // Updated post message (HTML assumed if messageformat is not provided).
-    messageformat?: number; // Message format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
+    messageformat?: CoreTextFormat; // Message format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
     options?: AddonModForumUpdateDiscussionPostWSOptionsArray; // Configuration options for the post.
 };
 

@@ -33,6 +33,7 @@ import {
 } from '../constants';
 import { CoreCacheUpdateFrequency } from '@/core/constants';
 import { CorePromiseUtils } from '@singletons/promise-utils';
+import { CoreTextFormat } from '@singletons/text';
 
 /**
  * Service that provides some features for wikis.
@@ -1002,7 +1003,7 @@ export type AddonModWikiPageContents = {
     userid: number; // Page's user ID.
     title: string; // Page title.
     cachedcontent: string; // Page contents.
-    contentformat?: number; // Cachedcontent format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
+    contentformat?: CoreTextFormat; // Cachedcontent format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
     caneditpage: boolean; // True if user can edit the page.
     version?: number; // Latest version of the page.
     tags?: CoreTagItem[]; // Tags.
@@ -1089,7 +1090,7 @@ export type AddonModWikiSubwikiPage = {
     caneditpage: boolean; // True if user can edit the page.
     firstpage: boolean; // True if it's the first page.
     cachedcontent?: string; // Page contents.
-    contentformat?: number; // Cachedcontent format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
+    contentformat?: CoreTextFormat; // Cachedcontent format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
     contentsize?: number; // Size of page contents in bytes (doesn't include size of attached files).
     tags?: CoreTagItem[]; // Tags.
 };
@@ -1151,7 +1152,7 @@ export type AddonModWikiWiki = {
     course: number; // Course ID.
     name: string; // Wiki name.
     intro?: string; // Wiki intro.
-    introformat?: number; // Wiki intro format. format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
+    introformat?: CoreTextFormat; // Wiki intro format. format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
     introfiles?: CoreWSExternalFile[];
     timecreated?: number; // Time of creation.
     timemodified?: number; // Time of last modification.

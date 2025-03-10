@@ -21,6 +21,7 @@ import { CoreWSExternalWarning } from '@services/ws';
 import { CoreCourses } from '@features/courses/services/courses';
 import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
 import { CoreCacheUpdateFrequency } from '../constants';
+import { CoreTextFormat } from '@singletons/text';
 
 const ROOT_CACHE_KEY = 'mmGroups:';
 
@@ -445,7 +446,7 @@ export type CoreGroup = {
     id: number; // Group ID.
     name: string; // Multilang compatible name, course unique'.
     description?: string; // Group description text.
-    descriptionformat?: number; // Description format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
+    descriptionformat?: CoreTextFormat; // Description format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
     idnumber?: string; // Id number.
     courseid?: number; // Coure Id.
 };
@@ -529,7 +530,7 @@ export type CoreGroupGetCourseUserGroupsWSResponse = {
         id: number; // Group record id.
         name: string; // Multilang compatible name, course unique.
         description: string; // Group description text.
-        descriptionformat: number; // Description format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
+        descriptionformat: CoreTextFormat; // Description format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
         idnumber: string; // Id number.
         courseid?: number; // Course id.
     }[];

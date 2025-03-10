@@ -40,6 +40,7 @@ import {
 import { CoreCacheUpdateFrequency } from '@/core/constants';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreWSError } from '@classes/errors/wserror';
+import { CoreTextFormat } from '@singletons/text';
 
 /**
  * Service that provides some features for glossaries.
@@ -1198,7 +1199,7 @@ export type AddonModGlossaryGlossary = {
     course: number; // Course id.
     name: string; // Glossary name.
     intro: string; // The Glossary intro.
-    introformat: number; // Intro format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
+    introformat: CoreTextFormat; // Intro format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
     introfiles?: CoreWSExternalFile[];
     allowduplicatedentries: number; // If enabled, multiple entries can have the same concept name.
     displayformat: string; // Display format type.
@@ -1314,7 +1315,7 @@ export type AddonModGlossaryEntry = {
     userpictureurl: string; // Author picture.
     concept: string; // The concept.
     definition: string; // The definition.
-    definitionformat: number; // Definition format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
+    definitionformat: CoreTextFormat; // Definition format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
     definitiontrust: boolean; // The definition trust flag.
     definitioninlinefiles?: CoreWSExternalFile[];
     attachment: boolean; // Whether or not the entry has attachments.
@@ -1400,7 +1401,7 @@ export type AddonModGlossaryAddEntryWSParams = {
     glossaryid: number; // Glossary id.
     concept: string; // Glossary concept.
     definition: string; // Glossary concept definition.
-    definitionformat: number; // Definition format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
+    definitionformat: CoreTextFormat; // Definition format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
     options?: { // Optional settings.
         name: string; // The allowed keys (value format) are:
         // inlineattachmentsid (int); the draft file area id for inline attachments
@@ -1429,7 +1430,7 @@ export type AddonModGlossaryUpdateEntryWSParams = {
     entryid: number; // Glossary entry id to update.
     concept: string; // Glossary concept.
     definition: string; // Glossary concept definition.
-    definitionformat: number; // Definition format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
+    definitionformat: CoreTextFormat; // Definition format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
     options?: { // Optional settings.
         name: string; // The allowed keys (value format) are:
         // inlineattachmentsid (int); the draft file area id for inline attachments

@@ -28,6 +28,7 @@ import { makeSingleton } from '@singletons';
 import { AddonBlogOffline, AddonBlogOfflineEntry } from './blog-offline';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreWSError } from '@classes/errors/wserror';
+import { CoreTextFormat } from '@singletons/text';
 
 const ROOT_CACHE_KEY = 'addonBlog:';
 
@@ -453,7 +454,7 @@ export interface AddonBlogPost {
     coursemoduleid: number; // Course module id where the post was created.
     subject: string; // Post subject.
     summary: string; // Post summary.
-    summaryformat?: number; // Summary format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
+    summaryformat?: CoreTextFormat; // Summary format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
     content: string; // Post content.
     uniquehash: string; // Post unique hash.
     rating: number; // Post rating.

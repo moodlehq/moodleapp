@@ -24,6 +24,7 @@ import { CoreCourseLogHelper } from '@features/course/services/log-helper';
 import { CoreError } from '@classes/errors/error';
 import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
 import { ADDON_MOD_URL_COMPONENT_LEGACY } from '../constants';
+import { CoreTextFormat } from '@singletons/text';
 
 /**
  * Service that provides some features for urls.
@@ -252,7 +253,7 @@ export type AddonModUrlUrl = {
     course: number; // Course id.
     name: string; // URL name.
     intro: string; // Summary.
-    introformat: number; // Intro format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
+    introformat: CoreTextFormat; // Intro format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
     introfiles: CoreWSExternalFile[];
     externalurl: string; // External URL.
     display: number; // How to display the url.

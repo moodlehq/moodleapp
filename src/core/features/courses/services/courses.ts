@@ -36,6 +36,7 @@ import {
     CORE_COURSES_STATE_FAVOURITE,
     CORE_COURSES_STATE_HIDDEN,
 } from '../constants';
+import { CoreTextFormat } from '@singletons/text';
 
 declare module '@singletons/events' {
 
@@ -1385,7 +1386,7 @@ export type CoreCourseBasicData = {
     displayname?: string; // Course display name.
     shortname: string; // Course short name.
     summary: string; // Summary.
-    summaryformat: number; // Summary format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
+    summaryformat: CoreTextFormat; // Summary format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
     categoryid?: number; // Course category id.
 };
 
@@ -1679,7 +1680,7 @@ export type CoreCategoryData = {
     name: string; // Category name.
     idnumber?: string; // Category id number.
     description: string; // Category description.
-    descriptionformat: number; // Description format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
+    descriptionformat: CoreTextFormat; // Description format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
     parent: number; // Parent category id.
     sortorder: number; // Category sorting order.
     coursecount: number; // Number of courses in this category.
