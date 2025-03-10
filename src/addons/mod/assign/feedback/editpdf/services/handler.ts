@@ -36,8 +36,8 @@ export class AddonModAssignFeedbackEditPdfHandlerService implements AddonModAssi
     /**
      * @inheritdoc
      */
-    canEditOffline(): boolean {
-        return true;
+    async canContainFiltersWhenEditing(): Promise<boolean> {
+        return false;
     }
 
     /**

@@ -189,11 +189,10 @@ export default class AddonModAssignEditPage implements OnInit, OnDestroy, CanLea
                 this.userSubmission =
                     AddonModAssign.getSubmissionObjectFromAttempt(this.assign, submissionStatus.lastattempt);
 
-                // Check if the user can edit it in offline.
-                const canEditOffline =
-                    await AddonModAssignHelper.canEditSubmissionOffline(this.assign, this.userSubmission);
-                if (!canEditOffline) {
-                    // Submission cannot be edited in offline, reject.
+                const shouldFetchUnfiltered =
+                    await AddonModAssignHelper.shouldFetchUnfilteredSubmissionToEdit(this.assign, this.userSubmission);
+                if (shouldFetchUnfiltered) {
+                    // Cannot fetch unfiltered data in offline, throw the error.
                     this.allowOffline = false;
                     throw error;
                 }

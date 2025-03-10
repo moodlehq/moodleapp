@@ -15,10 +15,8 @@
 import { Injectable } from '@angular/core';
 import { CoreWSFile } from '@services/ws';
 import { Translate } from '@singletons';
-import { AddonModAssignAssign, AddonModAssignPlugin, AddonModAssignSavePluginData, AddonModAssignSubmission } from '../assign';
+import { AddonModAssignPlugin } from '../assign';
 import { AddonModAssignSubmissionHandler } from '../submission-delegate';
-import { CoreFormFields } from '@singletons/form';
-import { AddonModAssignSubmissionsDBRecordFormatted } from '../assign-offline';
 
 /**
  * Default handler used when a submission plugin doesn't have a specific implementation.
@@ -32,82 +30,49 @@ export class AddonModAssignDefaultSubmissionHandler implements AddonModAssignSub
     /**
      * @inheritdoc
      */
-    canEditOffline(
-        assign: AddonModAssignAssign, // eslint-disable-line @typescript-eslint/no-unused-vars
-        submission: AddonModAssignSubmission, // eslint-disable-line @typescript-eslint/no-unused-vars
-        plugin: AddonModAssignPlugin, // eslint-disable-line @typescript-eslint/no-unused-vars
-    ): boolean | Promise<boolean> {
-        return false;
-    }
-
-    /**
-     * @inheritdoc
-     */
-    isEmpty(
-        assign: AddonModAssignAssign, // eslint-disable-line @typescript-eslint/no-unused-vars
-        plugin: AddonModAssignPlugin, // eslint-disable-line @typescript-eslint/no-unused-vars
-    ): boolean {
+    async canContainFiltersWhenEditing(): Promise<boolean> {
         return true;
     }
 
     /**
      * @inheritdoc
      */
-   isEmptyForEdit(
-       assign: AddonModAssignAssign, // eslint-disable-line @typescript-eslint/no-unused-vars
-       plugin: AddonModAssignPlugin, // eslint-disable-line @typescript-eslint/no-unused-vars
-       inputData: CoreFormFields, // eslint-disable-line @typescript-eslint/no-unused-vars
-    ): boolean {
+    isEmpty(): boolean {
         return true;
     }
 
     /**
      * @inheritdoc
      */
-    clearTmpData(
-        assign: AddonModAssignAssign, // eslint-disable-line @typescript-eslint/no-unused-vars
-        submission: AddonModAssignSubmission, // eslint-disable-line @typescript-eslint/no-unused-vars
-        plugin: AddonModAssignPlugin, // eslint-disable-line @typescript-eslint/no-unused-vars
-        inputData: CoreFormFields, // eslint-disable-line @typescript-eslint/no-unused-vars
-    ): void {
+   isEmptyForEdit(): boolean {
+        return true;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    clearTmpData(): void {
         // Nothing to do.
     }
 
     /**
      * @inheritdoc
      */
-    copySubmissionData(
-        assign: AddonModAssignAssign, // eslint-disable-line @typescript-eslint/no-unused-vars
-        plugin: AddonModAssignPlugin, // eslint-disable-line @typescript-eslint/no-unused-vars
-        pluginData: AddonModAssignSavePluginData, // eslint-disable-line @typescript-eslint/no-unused-vars
-        userId?: number, // eslint-disable-line @typescript-eslint/no-unused-vars
-        siteId?: string, // eslint-disable-line @typescript-eslint/no-unused-vars
-    ): void | Promise<void> {
+    copySubmissionData(): void | Promise<void> {
         // Nothing to do.
     }
 
     /**
      * @inheritdoc
      */
-    deleteOfflineData(
-        assign: AddonModAssignAssign, // eslint-disable-line @typescript-eslint/no-unused-vars
-        submission: AddonModAssignSubmission, // eslint-disable-line @typescript-eslint/no-unused-vars
-        plugin: AddonModAssignPlugin, // eslint-disable-line @typescript-eslint/no-unused-vars
-        offlineData: AddonModAssignSubmissionsDBRecordFormatted, // eslint-disable-line @typescript-eslint/no-unused-vars
-        siteId?: string, // eslint-disable-line @typescript-eslint/no-unused-vars
-    ): void | Promise<void> {
+    deleteOfflineData(): void | Promise<void> {
         // Nothing to do.
     }
 
     /**
      * @inheritdoc
      */
-    getPluginFiles(
-        assign: AddonModAssignAssign, // eslint-disable-line @typescript-eslint/no-unused-vars
-        submission: AddonModAssignSubmission, // eslint-disable-line @typescript-eslint/no-unused-vars
-        plugin: AddonModAssignPlugin, // eslint-disable-line @typescript-eslint/no-unused-vars
-        siteId?: string, // eslint-disable-line @typescript-eslint/no-unused-vars
-        ): CoreWSFile[] | Promise<CoreWSFile[]> {
+    getPluginFiles(): CoreWSFile[] | Promise<CoreWSFile[]> {
         return [];
     }
 
@@ -135,34 +100,21 @@ export class AddonModAssignDefaultSubmissionHandler implements AddonModAssignSub
     /**
      * @inheritdoc
      */
-    getSizeForCopy(
-        assign: AddonModAssignAssign, // eslint-disable-line @typescript-eslint/no-unused-vars
-        plugin: AddonModAssignPlugin, // eslint-disable-line @typescript-eslint/no-unused-vars
-    ): number | Promise<number> {
+    getSizeForCopy(): number | Promise<number> {
         return 0;
     }
 
     /**
      * @inheritdoc
      */
-    getSizeForEdit(
-        assign: AddonModAssignAssign, // eslint-disable-line @typescript-eslint/no-unused-vars
-        submission: AddonModAssignSubmission, // eslint-disable-line @typescript-eslint/no-unused-vars
-        plugin: AddonModAssignPlugin, // eslint-disable-line @typescript-eslint/no-unused-vars
-        inputData: CoreFormFields, // eslint-disable-line @typescript-eslint/no-unused-vars
-    ): number | Promise<number> {
+    getSizeForEdit(): number | Promise<number> {
         return 0;
     }
 
     /**
      * @inheritdoc
      */
-    async hasDataChanged(
-        assign: AddonModAssignAssign, // eslint-disable-line @typescript-eslint/no-unused-vars
-        submission: AddonModAssignSubmission, // eslint-disable-line @typescript-eslint/no-unused-vars
-        plugin: AddonModAssignPlugin, // eslint-disable-line @typescript-eslint/no-unused-vars
-        inputData: CoreFormFields, // eslint-disable-line @typescript-eslint/no-unused-vars
-    ): Promise<boolean> {
+    async hasDataChanged(): Promise<boolean> {
         return false;
     }
 
@@ -183,42 +135,21 @@ export class AddonModAssignDefaultSubmissionHandler implements AddonModAssignSub
     /**
      * @inheritdoc
      */
-    async prefetch(
-        assign: AddonModAssignAssign, // eslint-disable-line @typescript-eslint/no-unused-vars
-        submission: AddonModAssignSubmission, // eslint-disable-line @typescript-eslint/no-unused-vars
-        plugin: AddonModAssignPlugin, // eslint-disable-line @typescript-eslint/no-unused-vars
-        siteId?: string, // eslint-disable-line @typescript-eslint/no-unused-vars
-    ): Promise<void> {
+    async prefetch(): Promise<void> {
         return;
     }
 
     /**
      * @inheritdoc
      */
-    prepareSubmissionData(
-        assign: AddonModAssignAssign, // eslint-disable-line @typescript-eslint/no-unused-vars
-        submission: AddonModAssignSubmission, // eslint-disable-line @typescript-eslint/no-unused-vars
-        plugin: AddonModAssignPlugin, // eslint-disable-line @typescript-eslint/no-unused-vars
-        inputData: CoreFormFields, // eslint-disable-line @typescript-eslint/no-unused-vars
-        pluginData: AddonModAssignSavePluginData, // eslint-disable-line @typescript-eslint/no-unused-vars
-        offline?: boolean, // eslint-disable-line @typescript-eslint/no-unused-vars
-        userId?: number, // eslint-disable-line @typescript-eslint/no-unused-vars
-        siteId?: string, // eslint-disable-line @typescript-eslint/no-unused-vars
-    ): void | Promise<void> {
+    prepareSubmissionData(): void | Promise<void> {
         // Nothing to do.
     }
 
     /**
      * @inheritdoc
      */
-    prepareSyncData(
-        assign: AddonModAssignAssign, // eslint-disable-line @typescript-eslint/no-unused-vars
-        submission: AddonModAssignSubmission, // eslint-disable-line @typescript-eslint/no-unused-vars
-        plugin: AddonModAssignPlugin, // eslint-disable-line @typescript-eslint/no-unused-vars
-        offlineData: AddonModAssignSubmissionsDBRecordFormatted, // eslint-disable-line @typescript-eslint/no-unused-vars
-        pluginData: AddonModAssignSavePluginData, // eslint-disable-line @typescript-eslint/no-unused-vars
-        siteId?: string, // eslint-disable-line @typescript-eslint/no-unused-vars
-    ): void | Promise<void> {
+    prepareSyncData(): void | Promise<void> {
         // Nothing to do.
     }
 

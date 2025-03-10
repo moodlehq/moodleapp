@@ -41,9 +41,8 @@ export class AddonModAssignFeedbackCommentsHandlerService implements AddonModAss
     /**
      * @inheritdoc
      */
-    canEditOffline(): boolean {
-        // This plugin can use Moodle filters, it cannot be edited in offline.
-        return false;
+    async canContainFiltersWhenEditing(): Promise<boolean> {
+        return true;
     }
 
     /**
