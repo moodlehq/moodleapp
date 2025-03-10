@@ -27,6 +27,7 @@ import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
 import { ADDON_MOD_SURVEY_COMPONENT_LEGACY } from '../constants';
 import { CoreCacheUpdateFrequency } from '@/core/constants';
 import { CorePromiseUtils } from '@singletons/promise-utils';
+import { CoreTextFormat } from '@singletons/text';
 
 /**
  * Service that provides some features for surveys.
@@ -318,7 +319,7 @@ export type AddonModSurveySurvey = {
     course: number; // Course id.
     name: string; // Survey name.
     intro?: string; // The Survey intro.
-    introformat?: number; // Intro format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
+    introformat?: CoreTextFormat; // Intro format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
     introfiles?: CoreWSExternalFile[];
     template?: number; // Survey type.
     days?: number; // Days.

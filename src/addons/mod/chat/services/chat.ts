@@ -23,6 +23,7 @@ import { CoreWSExternalFile, CoreWSExternalWarning } from '@services/ws';
 import { makeSingleton, Translate } from '@singletons';
 import { ADDON_MOD_CHAT_COMPONENT_LEGACY } from '../constants';
 import { CoreCacheUpdateFrequency } from '@/core/constants';
+import { CoreTextFormat } from '@singletons/text';
 
 /**
  * Service that provides some features for chats.
@@ -466,7 +467,7 @@ export type AddonModChatChat = {
     course: number; // Course id.
     name: string; // Chat name.
     intro: string; // The Chat intro.
-    introformat: number; // Intro format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
+    introformat: CoreTextFormat; // Intro format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
     introfiles?: CoreWSExternalFile[];
     chatmethod?: string; // Chat method (sockets, ajax, header_js).
     keepdays?: number; // Keep days.

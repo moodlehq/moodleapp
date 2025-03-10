@@ -25,6 +25,7 @@ import { CoreCommentsOffline } from './comments-offline';
 import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
 import { ContextLevel, CoreCacheUpdateFrequency } from '@/core/constants';
 import { CorePromiseUtils } from '@singletons/promise-utils';
+import { CoreTextFormat } from '@singletons/text';
 
 const ROOT_CACHE_KEY = 'mmComments:';
 
@@ -601,7 +602,7 @@ export type CoreCommentsCommentBasicData = {
 export type CoreCommentsData = {
     id: number; // Comment ID.
     content: string; // The content text formatted.
-    format: number; // Content format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
+    format: CoreTextFormat; // Content format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
     timecreated: number; // Time created (timestamp).
     strftimeformat: string; // Time format.
     profileurl: string; // URL profile.

@@ -16,6 +16,7 @@ import { Injectable } from '@angular/core';
 import { CoreSites } from '@services/sites';
 import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
 import { makeSingleton } from '@singletons';
+import { CoreTextFormat } from '@singletons/text';
 
 const ROOT_CACHE_KEY = 'AddonBlockStarredCourses:';
 
@@ -82,7 +83,7 @@ export type AddonBlockStarredCourse = {
     shortname: string; // Shortname.
     idnumber: string; // Idnumber.
     summary: string; // Summary.
-    summaryformat: number; // Summary format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
+    summaryformat: CoreTextFormat; // Summary format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
     startdate: number; // Startdate.
     enddate: number; // Enddate.
     visible: boolean; // Visible.

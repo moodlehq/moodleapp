@@ -30,6 +30,7 @@ import { CoreUrl } from '@singletons/url';
 import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
 import { CoreCacheUpdateFrequency, CoreConstants } from '@/core/constants';
 import { CorePromiseUtils } from '@singletons/promise-utils';
+import { CoreTextFormat } from '@singletons/text';
 
 const ROOT_CACHE_KEY = 'mmUser:';
 
@@ -909,7 +910,7 @@ export type CoreUserGroup = {
     id: number; // Group id.
     name: string; // Group name.
     description: string; // Group description.
-    descriptionformat: number; // Description format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
+    descriptionformat: CoreTextFormat; // Description format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
 };
 
 /**
@@ -962,10 +963,10 @@ export type CoreUserData = {
     calendartype?: string; // Calendar type such as "gregorian", must exist on server.
     theme?: string; // Theme name such as "standard", must exist on server.
     timezone?: string; // Timezone code such as Australia/Perth, or 99 for default.
-    mailformat?: number; // Mail format code is 0 for plain text, 1 for HTML etc.
+    mailformat?: CoreTextFormat; // Mail format code is 0 for plain text, 1 for HTML etc.
     trackforums?: number; // @since 4.4. Whether the user is tracking forums.
     description?: string; // User profile description.
-    descriptionformat?: number; // Int format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
+    descriptionformat?: CoreTextFormat; // Int format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
     city?: string; // Home city of the user.
     url?: string; // URL of the user.
     country?: string; // Home country code of the user, such as AU or CZ.
@@ -1017,7 +1018,7 @@ export type CoreUserParticipant = CoreUserBasicData & {
     lastaccess?: number; // Last access to the site (0 if never).
     lastcourseaccess?: number | null; // @since 3.7. Last access to the course (0 if never).
     description?: string; // User profile description.
-    descriptionformat?: number; // Description format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
+    descriptionformat?: CoreTextFormat; // Description format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
     city?: string; // Home city of the user.
     url?: string; // URL of the user.
     country?: string; // Home country code of the user, such as AU or CZ.

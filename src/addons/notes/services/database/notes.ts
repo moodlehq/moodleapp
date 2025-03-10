@@ -14,6 +14,7 @@
 
 import { CoreSiteSchema } from '@services/sites';
 import { AddonNotesPublishState } from '../notes';
+import { CoreTextFormat } from '@singletons/text';
 
 /**
  * Database variables for AddonNotesOfflineProvider.
@@ -85,7 +86,7 @@ export type AddonNotesDBRecord = {
     created: number; // Primary key.
     courseid: number;
     publishstate: AddonNotesPublishState;
-    format: number;
+    format: CoreTextFormat;
     lastmodified: number;
 };
 

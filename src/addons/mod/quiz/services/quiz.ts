@@ -56,6 +56,7 @@ import { CoreIonicColorNames } from '@singletons/colors';
 import { CoreCacheUpdateFrequency } from '@/core/constants';
 import { CoreObject } from '@singletons/object';
 import { CoreArray } from '@singletons/array';
+import { CoreTextFormat } from '@singletons/text';
 
 declare module '@singletons/events' {
 
@@ -2236,7 +2237,7 @@ export type AddonModQuizGetQuizFeedbackForGradeWSParams = {
  */
 export type AddonModQuizGetQuizFeedbackForGradeWSResponse = {
     feedbacktext: string; // The comment that corresponds to this grade (empty for none).
-    feedbacktextformat?: number; // Feedbacktext format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
+    feedbacktextformat?: CoreTextFormat; // Feedbacktext format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
     feedbackinlinefiles?: CoreWSExternalFile[];
     warnings?: CoreWSExternalWarning[];
 };
@@ -2265,7 +2266,7 @@ export type AddonModQuizQuizWSData = {
     coursemodule: number; // Course module id.
     name: string; // Quiz name.
     intro?: string; // Quiz introduction text.
-    introformat?: number; // Intro format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
+    introformat?: CoreTextFormat; // Intro format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
     introfiles?: CoreWSExternalFile[];
     timeopen?: number; // The time when this quiz opens. (0 = no restriction.).
     timeclose?: number; // The time when this quiz closes. (0 = no restriction.).

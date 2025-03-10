@@ -16,7 +16,7 @@ import { Injectable } from '@angular/core';
 import { CoreSites, CoreSitesWSOptionsWithFilter } from '@services/sites';
 import { CoreSite } from '@classes/sites/site';
 import { CoreNetwork } from '@services/network';
-import { CoreText } from '@singletons/text';
+import { CoreText, CoreTextFormat } from '@singletons/text';
 import { CoreTime } from '@singletons/time';
 import { CoreUrl } from '@singletons/url';
 import { CoreObject } from '@singletons/object';
@@ -1632,7 +1632,7 @@ export type AddonCalendarEventBase = {
     id: number; // Id.
     name: string; // Name.
     description?: string; // Description.
-    descriptionformat?: number; // Description format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
+    descriptionformat?: CoreTextFormat; // Description format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
     location?: string; // @since 3.6. Location.
     categoryid?: number; // Categoryid.
     groupid?: number; // Groupid.
@@ -1677,7 +1677,7 @@ export type AddonCalendarEventBase = {
         shortname: string; // Shortname.
         idnumber: string; // Idnumber.
         summary: string; // Summary.
-        summaryformat: number; // Summary format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
+        summaryformat: CoreTextFormat; // Summary format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
         startdate: number; // Startdate.
         enddate: number; // Enddate.
         visible: boolean; // @since 3.8. Visible.
@@ -1950,7 +1950,7 @@ export type AddonCalendarGetEventsEvent = {
     id: number; // Event id.
     name: string; // Event name.
     description?: string; // Description.
-    format: number; // Description format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
+    format: CoreTextFormat; // Description format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
     courseid: number; // Course id.
     categoryid?: number; // Category id (only for category events).
     groupid: number; // Group id.
@@ -2026,7 +2026,7 @@ export type AddonCalendarSubmitCreateUpdateFormDataWSParams = Omit<AddonCalendar
     id?: number;
     description?: {
         text: string;
-        format: number;
+        format: CoreTextFormat;
         itemid: number; // File area ID.
     };
     visible?: number;
@@ -2065,7 +2065,7 @@ export type AddonCalendarEventToDisplay = Partial<AddonCalendarCalendarEvent> & 
     moduleIcon?: string; // Calculated in the app. Module icon.
     formattedType: string; // Calculated in the app. Formatted type.
     duration?: number; // Calculated in the app. Duration of offline event.
-    format?: number; // Calculated in the app. Format of offline event.
+    format?: CoreTextFormat; // Calculated in the app. Format of offline event.
     timedurationuntil?: number; // Calculated in the app. Time duration until of offline event.
     timedurationminutes?: number; // Calculated in the app. Time duration in minutes of offline event.
     ispast?: boolean; // Calculated in the app. Whether the event is in the past.
