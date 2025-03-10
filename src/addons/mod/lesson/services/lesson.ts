@@ -18,7 +18,7 @@ import { CoreCourseCommonModWSOptions } from '@features/course/services/course';
 import { CoreCourseLogHelper } from '@features/course/services/log-helper';
 import { CoreSites, CoreSitesCommonWSOptions, CoreSitesReadingStrategy } from '@services/sites';
 import { convertTextToHTMLElement } from '@/core/utils/create-html-element';
-import { CoreText, CoreTextFormat } from '@singletons/text';
+import { CoreText, CoreTextFormat, DEFAULT_TEXT_FORMAT } from '@singletons/text';
 import { CoreUtils } from '@singletons/utils';
 import { CoreWSExternalFile, CoreWSExternalWarning } from '@services/ws';
 import { makeSingleton, Translate } from '@singletons';
@@ -427,11 +427,11 @@ export class AddonModLessonProvider {
             graded: 0,
             score: 0,
             answer: studentAnswer,
-            answerformat: 1,
+            answerformat: DEFAULT_TEXT_FORMAT,
             response: '',
-            responseformat: 1,
+            responseformat: DEFAULT_TEXT_FORMAT,
         };
-        result.studentanswerformat = 1;
+        result.studentanswerformat = DEFAULT_TEXT_FORMAT;
         result.studentanswer = studentAnswer;
     }
 
@@ -471,7 +471,7 @@ export class AddonModLessonProvider {
         let hits = 0;
 
         result.studentanswer = '';
-        result.studentanswerformat = 1;
+        result.studentanswerformat = DEFAULT_TEXT_FORMAT;
 
         for (const id in response) {
             let value = response[id];
@@ -561,7 +561,7 @@ export class AddonModLessonProvider {
 
             // Store student's answers for displaying on feedback page.
             result.studentanswer = '';
-            result.studentanswerformat = 1;
+            result.studentanswerformat = DEFAULT_TEXT_FORMAT;
             answers.forEach((answer) => {
                 for (const i in studentAnswers) {
                     const answerId = studentAnswers[i];

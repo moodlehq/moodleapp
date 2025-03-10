@@ -55,6 +55,7 @@ import { REMINDERS_DISABLED, CoreRemindersUnits } from '@features/reminders/cons
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreAlerts } from '@services/overlays/alerts';
 import { CoreSharedModule } from '@/core/shared.module';
+import { DEFAULT_TEXT_FORMAT } from '@singletons/text';
 
 /**
  * Page that displays a form to create/edit an event.
@@ -505,7 +506,7 @@ export default class AddonCalendarEditEventPage implements OnInit, OnDestroy, Ca
             timestart: timeStartDate,
             description: {
                 text: formData.description || '',
-                format: 1,
+                format: DEFAULT_TEXT_FORMAT,
                 itemid: 0, // Files not supported yet.
             },
             location: formData.location,

@@ -25,7 +25,7 @@ import { AddonModAssignSubmissionHandler } from '@addons/mod/assign/services/sub
 import { Injectable, Type } from '@angular/core';
 import { CoreError } from '@classes/errors/error';
 import { CoreFileHelper } from '@services/file-helper';
-import { CoreText, CoreTextFormat } from '@singletons/text';
+import { CoreText, CoreTextFormat, DEFAULT_TEXT_FORMAT } from '@singletons/text';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreWSFile } from '@services/ws';
 import { makeSingleton, Translate } from '@singletons';
@@ -102,7 +102,7 @@ export class AddonModAssignSubmissionOnlineTextHandlerService implements AddonMo
 
         pluginData.onlinetext_editor = {
             text: text,
-            format: 1,
+            format: DEFAULT_TEXT_FORMAT,
             itemid: itemId,
         };
     }
@@ -237,7 +237,7 @@ export class AddonModAssignSubmissionOnlineTextHandlerService implements AddonMo
 
         pluginData.onlinetext_editor = {
             text: text,
-            format: 1,
+            format: DEFAULT_TEXT_FORMAT,
             itemid: 0, // Can't add new files yet, so we use a fake itemid.
         };
     }

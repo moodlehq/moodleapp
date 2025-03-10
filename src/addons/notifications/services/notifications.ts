@@ -16,7 +16,7 @@ import { Injectable } from '@angular/core';
 
 import { CoreSites, CoreSitesCommonWSOptions } from '@services/sites';
 import { CoreWSExternalWarning } from '@services/ws';
-import { CoreText, CoreTextFormat } from '@singletons/text';
+import { CoreText, CoreTextFormat, DEFAULT_TEXT_FORMAT } from '@singletons/text';
 import { CoreTime } from '@singletons/time';
 import { CoreUser, USER_NOREPLY_USER } from '@features/user/services/user';
 import { CoreLogger } from '@singletons/logger';
@@ -83,7 +83,7 @@ export class AddonNotificationsProvider {
             subject: notification.title ?? '',
             text: message,
             fullmessage: message,
-            fullmessageformat: 1,
+            fullmessageformat: DEFAULT_TEXT_FORMAT,
             fullmessagehtml: message,
             smallmessage: message,
             notification: Number(notification.notif ?? 1),

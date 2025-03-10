@@ -52,7 +52,7 @@ import {
     AddonMessagesUpdateConversationAction,
 } from '../constants';
 import { CorePromiseUtils } from '@singletons/promise-utils';
-import { CoreTextFormat } from '@singletons/text';
+import { CoreTextFormat, DEFAULT_TEXT_FORMAT } from '@singletons/text';
 
 declare module '@singletons/events' {
 
@@ -2550,7 +2550,7 @@ export class AddonMessagesProvider {
             {
                 touserid: toUserId,
                 text: message,
-                textformat: 1,
+                textformat: DEFAULT_TEXT_FORMAT,
             },
         ];
 
@@ -2685,7 +2685,7 @@ export class AddonMessagesProvider {
         const messages = [
             {
                 text: message,
-                textformat: 1,
+                textformat: DEFAULT_TEXT_FORMAT,
             },
         ];
 
@@ -2720,7 +2720,7 @@ export class AddonMessagesProvider {
             conversationid: conversationId,
             messages: messages.map((message) => ({
                 text: message.text,
-                textformat: message.textformat !== undefined ? message.textformat : 1,
+                textformat: message.textformat !== undefined ? message.textformat : DEFAULT_TEXT_FORMAT,
             })),
         };
 

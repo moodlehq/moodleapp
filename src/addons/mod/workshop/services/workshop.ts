@@ -19,7 +19,7 @@ import { CoreCourseLogHelper } from '@features/course/services/log-helper';
 import { CoreGradesMenuItem } from '@features/grades/services/grades-helper';
 import { CoreNetwork } from '@services/network';
 import { CoreSites, CoreSitesCommonWSOptions, CoreSitesReadingStrategy } from '@services/sites';
-import { CoreTextFormat, defaultTextFormat } from '@singletons/text';
+import { CoreTextFormat, DEFAULT_TEXT_FORMAT } from '@singletons/text';
 import { CoreArray } from '@singletons/array';
 import { CoreStatusWithWarningsWSResponse, CoreWS, CoreWSExternalFile, CoreWSExternalWarning } from '@services/ws';
 import { makeSingleton, Translate } from '@singletons';
@@ -1282,7 +1282,7 @@ export class AddonModWorkshopProvider {
         const params: AddonModWorkshopEvaluateSubmissionWSParams = {
             submissionid: submissionId,
             feedbacktext: feedbackText || '',
-            feedbackformat: defaultTextFormat,
+            feedbackformat: DEFAULT_TEXT_FORMAT,
             published: published,
             gradeover: gradeOver,
         };
@@ -1370,7 +1370,7 @@ export class AddonModWorkshopProvider {
         const params: AddonModWorkshopEvaluateAssessmentWSParams = {
             assessmentid: assessmentId,
             feedbacktext: feedbackText || '',
-            feedbackformat: defaultTextFormat,
+            feedbackformat: DEFAULT_TEXT_FORMAT,
             weight: weight,
             gradinggradeover: gradingGradeOver,
         };
