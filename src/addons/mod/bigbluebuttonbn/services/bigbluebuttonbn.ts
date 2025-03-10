@@ -183,6 +183,11 @@ export class AddonModBBBService {
         return {
             ...meetingInfo,
             features: meetingInfo.features ? CoreObject.toKeyValueMap(meetingInfo.features, 'name', 'isenabled') : undefined,
+            presentations: (meetingInfo.presentations ?? []).map((presentation) => ({
+                fileurl: presentation.url,
+                filename: presentation.name,
+            })),
+            showpresentations: meetingInfo.showpresentations ?? true, // For sites that don't support the setting, show the file.
         };
     }
 
@@ -452,13 +457,16 @@ export type AddonModBBBMeetingInfoWSResponse = {
         name: string;
         isenabled: boolean;
     }[];
+    showpresentations?: boolean; // @since 4.5. Whether to show presentation files.
 };
 
 /**
  * Meeting info with some calculated data.
  */
-export type AddonModBBBMeetingInfo = Omit<AddonModBBBMeetingInfoWSResponse, 'features'> & {
+export type AddonModBBBMeetingInfo = Omit<AddonModBBBMeetingInfoWSResponse, 'features'|'presentations'|'showpresentations'> & {
     features?: Record<string, boolean>;
+    presentations: CoreWSExternalFile[];
+    showpresentations: boolean;
 };
 
 /**
