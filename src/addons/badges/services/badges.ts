@@ -19,13 +19,13 @@ import { makeSingleton } from '@singletons';
 import { CoreError } from '@classes/errors/error';
 import { CoreCacheUpdateFrequency } from '@/core/constants';
 
-const ROOT_CACHE_KEY = 'mmaBadges:';
-
 /**
  * Service to handle badges.
  */
 @Injectable({ providedIn: 'root' })
 export class AddonBadgesProvider {
+
+    protected static readonly ROOT_CACHE_KEY = 'mmaBadges:';
 
     /**
      * Returns whether or not the badge plugin is enabled for a certain site.
@@ -50,7 +50,7 @@ export class AddonBadgesProvider {
      * @returns Cache key.
      */
     protected getBadgesCacheKey(courseId: number, userId: number): string {
-        return `${ROOT_CACHE_KEY}badges:${courseId}:${userId}`;
+        return `${AddonBadgesProvider.ROOT_CACHE_KEY}badges:${courseId}:${userId}`;
     }
 
     /**
@@ -116,7 +116,7 @@ export class AddonBadgesProvider {
      * @returns Cache key.
      */
     protected getUserBadgeByHashCacheKey(hash: string): string {
-        return `${ROOT_CACHE_KEY}badge:${hash}`;
+        return `${AddonBadgesProvider.ROOT_CACHE_KEY}badge:${hash}`;
     }
 
     /**
@@ -172,7 +172,7 @@ export class AddonBadgesProvider {
      * @returns Cache key.
      */
     protected getBadgeClassCacheKey(id: number): string {
-        return `${ROOT_CACHE_KEY}badgeclass:${id}`;
+        return `${AddonBadgesProvider.ROOT_CACHE_KEY}badgeclass:${id}`;
     }
 
     /**

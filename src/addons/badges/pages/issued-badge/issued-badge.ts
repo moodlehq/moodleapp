@@ -80,7 +80,7 @@ export default class AddonBadgesIssuedBadgePage implements OnInit, OnDestroy {
     }
 
     /**
-     * View loaded.
+     * @inheritdoc
      */
     ngOnInit(): void {
         this.fetchIssuedBadge().finally(() => {
