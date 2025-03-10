@@ -67,7 +67,7 @@ export class AddonModAssignPrefetchHandlerService extends CoreCourseActivityPref
             }
 
             // Check if the user can view their own submission.
-            await AddonModAssign.getSubmissionStatus(assign.id, { cmId: module.id });
+            await AddonModAssign.getSubmissionStatus(assign, { cmId: module.id });
 
             return true;
         } catch {
