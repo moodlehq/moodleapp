@@ -1483,7 +1483,7 @@ export type AddonModAssignAssign = {
     introfiles?: CoreWSExternalFile[];
     introattachments?: CoreWSExternalFile[];
     activity?: string; // @since 4.0. Description of activity.
-    activityformat?: number; // @since 4.0. Format of activity.
+    activityformat?: CoreTextFormat; // @since 4.0. Format of activity.
     activityattachments?: CoreWSExternalFile[]; // @since 4.0. Files from activity field.
     timelimit?: number; // @since 4.0. Time limit to complete assigment.
     submissionattachments?: number; // @since 4.0. Flag to only show files during submission.
@@ -1749,7 +1749,7 @@ export type AddonModAssignGetSubmissionStatusWSResponse = {
             activity?: CoreWSExternalFile[]; // Activity attachments files.
         };
         activity?: string; // Text of activity.
-        activityformat?: number; // Format of activity.
+        activityformat?: CoreTextFormat; // Format of activity.
     };
     warnings?: CoreWSExternalWarning[];
 };

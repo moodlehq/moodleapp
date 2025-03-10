@@ -85,7 +85,7 @@ export class AddonModLessonProvider {
     protected addAnswerAndResponseToFeedback(
         feedback: string,
         answer: string,
-        answerFormat: number,
+        answerFormat: CoreTextFormat,
         response: string,
         className: string,
     ): string {
@@ -3408,7 +3408,7 @@ export type AddonModLessonCheckAnswerResult = {
     feedback?: string;
     nodefaultresponse?: boolean;
     inmediatejump?: boolean;
-    studentanswerformat?: number;
+    studentanswerformat?: CoreTextFormat;
     useranswer?: unknown;
 };
 

@@ -458,7 +458,7 @@ export interface AddonBlogPost {
     content: string; // Post content.
     uniquehash: string; // Post unique hash.
     rating: number; // Post rating.
-    format: number; // Post content format.
+    format: CoreTextFormat; // Post content format.
     attachment: string; // Post atachment.
     publishstate: AddonBlogPublishState; // Post publish state.
     lastmodified: number; // When it was last modified.
@@ -504,7 +504,7 @@ export type AddonBlogFilter = {
 export type AddonBlogAddEntryWSParams = {
     subject: string;
     summary: string;
-    summaryformat: number;
+    summaryformat: CoreTextFormat;
     options: AddonBlogAddEntryOption[];
 };
 

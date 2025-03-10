@@ -2021,7 +2021,7 @@ type AddonModWorkshopAddSubmissionWSParams = {
     workshopid: number; // Workshop id.
     title: string; // Submission title.
     content?: string; // Submission text content.
-    contentformat?: number; // The format used for the content.
+    contentformat?: CoreTextFormat; // The format used for the content.
     inlineattachmentsid?: number; // The draft file area id for inline attachments in the content.
     attachmentsid?: number; // The draft file area id for attachments.
 };
@@ -2042,7 +2042,7 @@ type AddonModWorkshopUpdateSubmissionWSParams = {
     submissionid: number; // Submission id.
     title: string; // Submission title.
     content?: string; // Submission text content.
-    contentformat?: number; // The format used for the content.
+    contentformat?: CoreTextFormat; // The format used for the content.
     inlineattachmentsid?: number; // The draft file area id for inline attachments in the content.
     attachmentsid?: number; // The draft file area id for attachments.
 };

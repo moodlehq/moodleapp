@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 import { CoreSiteSchema } from '@services/sites';
+import { CoreTextFormat } from '@singletons/text';
 
 /**
  * Database variables for AddonBlogOfflineService.
@@ -86,7 +87,7 @@ export type AddonBlogOfflineEntryDBRecord = {
     userid: number;
     subject: string;
     summary: string;
-    summaryformat: number;
+    summaryformat: CoreTextFormat;
     created: number;
     lastmodified: number;
     options: string;

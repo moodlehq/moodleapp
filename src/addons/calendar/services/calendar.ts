@@ -2026,7 +2026,7 @@ export type AddonCalendarSubmitCreateUpdateFormDataWSParams = Omit<AddonCalendar
     id?: number;
     description?: {
         text: string;
-        format: number;
+        format: CoreTextFormat;
         itemid: number; // File area ID.
     };
     visible?: number;
@@ -2065,7 +2065,7 @@ export type AddonCalendarEventToDisplay = Partial<AddonCalendarCalendarEvent> & 
     moduleIcon?: string; // Calculated in the app. Module icon.
     formattedType: string; // Calculated in the app. Formatted type.
     duration?: number; // Calculated in the app. Duration of offline event.
-    format?: number; // Calculated in the app. Format of offline event.
+    format?: CoreTextFormat; // Calculated in the app. Format of offline event.
     timedurationuntil?: number; // Calculated in the app. Time duration until of offline event.
     timedurationminutes?: number; // Calculated in the app. Time duration in minutes of offline event.
     ispast?: boolean; // Calculated in the app. Whether the event is in the past.
