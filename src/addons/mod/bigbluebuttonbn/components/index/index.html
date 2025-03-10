@@ -87,6 +87,18 @@
                 <ion-label>{{ meetingInfo.statusmessage }}</ion-label>
             </ion-item>
         </ion-card>
+
+        @if (meetingInfo.showpresentations && meetingInfo.presentations.length) {
+            <ion-item class="ion-text-wrap">
+                <ion-label>
+                    <h2>{{ 'addon.mod_bigbluebuttonbn.view_section_title_presentation' | translate }}</h2>
+                    <div>
+                        <core-files [files]="meetingInfo.presentations" [component]="component" [componentId]="module.id"
+                            [alwaysDownload]="true" />
+                    </div>
+                </ion-label>
+            </ion-item>
+        }
     </ng-container>
 
     <ng-container *ngIf="showRecordings && recordings">

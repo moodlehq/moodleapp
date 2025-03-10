@@ -17,5 +17,6 @@
     "view_message_viewer": "Viewer",
     "view_message_viewers": "Viewers",
     "view_nojoin": "You do not have a role that is allowed to join this session.",
+    "view_section_title_presentation": "Presentation file",
     "view_section_title_recordings": "Recordings"
 }
