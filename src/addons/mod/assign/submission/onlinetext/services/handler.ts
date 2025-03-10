@@ -42,9 +42,8 @@ export class AddonModAssignSubmissionOnlineTextHandlerService implements AddonMo
     /**
      * @inheritdoc
      */
-    canEditOffline(): boolean {
-        // This plugin uses Moodle filters, it cannot be edited in offline.
-        return false;
+    async canContainFiltersWhenEditing(): Promise<boolean> {
+        return true;
     }
 
     /**

@@ -33,9 +33,9 @@ export class AddonModAssignSubmissionCommentsHandlerService implements AddonModA
     /**
      * @inheritdoc
      */
-    canEditOffline(): boolean {
-        // This plugin is read only, but return true to prevent blocking the edition.
-        return true;
+    async canContainFiltersWhenEditing(): Promise<boolean> {
+        // This plugin cannot be edited.
+        return false;
     }
 
     /**
