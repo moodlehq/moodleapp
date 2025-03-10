@@ -188,11 +188,11 @@ export class AddonModAssignEditFeedbackModalComponent implements OnDestroy, OnIn
         );
 
         if (!submissionGrade && this.feedback) {
-            // No offline data and there is online feedback. Check if editing offline is allowed.
-            const canEditOffline = await AddonModAssignHelper.canEditFeedbackOffline(this.assign, this.submitId, this.feedback);
+            // No offline data, use the online feedback.
+            const shouldFetchUnfiltered =
+                await AddonModAssignHelper.shouldFetchUnfilteredFeedbackToEdit(this.assign, this.submitId, this.feedback);
 
-            if (!canEditOffline) {
-                // Cannot edit offline, this usually means the feedback uses filters. Try to load the unfiltered data.
+            if (shouldFetchUnfiltered) {
                 const submissionStatus = await AddonModAssign.getSubmissionStatus(this.assign.id, {
                     userId: this.submitId,
                     isBlind: !!this.blindId,
