@@ -24,6 +24,7 @@ import { CoreError } from '@classes/errors/error';
 import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
 import { ADDON_MOD_PAGE_COMPONENT_LEGACY } from '../constants';
 import { CoreCacheUpdateFrequency } from '@/core/constants';
+import { CoreTextFormat } from '@singletons/text';
 
 /**
  * Service that provides some features for page.
@@ -74,7 +75,7 @@ export class AddonModPageProvider {
 
         const response = await site.read<AddonModPageGetPagesByCoursesWSResponse>('mod_page_get_pages_by_courses', params, preSets);
 
-        const currentPage = response.pages.find((page) => page[key] == value);
+        const currentPage = response.pages.find((page) => page[key] === value);
         if (currentPage) {
             return currentPage;
         }
@@ -89,7 +90,7 @@ export class AddonModPageProvider {
      * @returns Cache key.
      */
     protected getPageCacheKey(courseId: number): string {
-        return AddonModPageProvider.ROOT_CACHE_KEY + 'page:' + courseId;
+        return `${AddonModPageProvider.ROOT_CACHE_KEY}page:${courseId}`;
     }
 
     /**
@@ -171,10 +172,10 @@ export type AddonModPagePage = {
     course: number; // Course id.
     name: string; // Page name.
     intro: string; // Summary.
-    introformat: number; // Intro format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
+    introformat: CoreTextFormat; // Intro format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
     introfiles: CoreWSExternalFile[];
     content: string; // Page content.
-    contentformat: number; // Content format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
+    contentformat: CoreTextFormat; // Content format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
     contentfiles: CoreWSExternalFile[];
     legacyfiles: number; // Legacy files flag.
     legacyfileslast: number; // Legacy files last control flag.

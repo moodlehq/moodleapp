@@ -18,7 +18,7 @@ import { CoreCourseCommonModWSOptions } from '@features/course/services/course';
 import { CoreCourseLogHelper } from '@features/course/services/log-helper';
 import { CoreSites, CoreSitesCommonWSOptions, CoreSitesReadingStrategy } from '@services/sites';
 import { convertTextToHTMLElement } from '@/core/utils/create-html-element';
-import { CoreText } from '@singletons/text';
+import { CoreText, CoreTextFormat } from '@singletons/text';
 import { CoreUtils } from '@singletons/utils';
 import { CoreWSExternalFile, CoreWSExternalWarning } from '@services/ws';
 import { makeSingleton, Translate } from '@singletons';
@@ -85,7 +85,7 @@ export class AddonModLessonProvider {
     protected addAnswerAndResponseToFeedback(
         feedback: string,
         answer: string,
-        answerFormat: number,
+        answerFormat: CoreTextFormat,
         response: string,
         className: string,
     ): string {
@@ -3408,7 +3408,7 @@ export type AddonModLessonCheckAnswerResult = {
     feedback?: string;
     nodefaultresponse?: boolean;
     inmediatejump?: boolean;
-    studentanswerformat?: number;
+    studentanswerformat?: CoreTextFormat;
     useranswer?: unknown;
 };
 
@@ -3685,7 +3685,7 @@ export type AddonModLessonLessonWSData = {
     coursemodule: number; // Course module id.
     name: string; // Lesson name.
     intro?: string; // Lesson introduction text.
-    introformat?: number; // Intro format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
+    introformat?: CoreTextFormat; // Intro format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
     practice?: boolean; // Practice lesson?.
     modattempts?: boolean; // Allow student review?.
     usepassword?: boolean; // Password protected lesson?.
@@ -3804,7 +3804,7 @@ export type AddonModLessonPageWSData = {
     timemodified: number; // Timestamp for when the page was last modified.
     title?: string; // The title of this page.
     contents?: string; // The contents of this page.
-    contentsformat?: number; // Contents format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
+    contentsformat?: CoreTextFormat; // Contents format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
     displayinmenublock: boolean; // Toggles display in the left menu block.
     type: AddonModLessonPageType; // The type of the page [question | structure].
     typeid: number; // The unique identifier for the page type.
@@ -3825,9 +3825,9 @@ export type AddonModLessonPageAnswerWSData = {
     timecreated?: number; // A timestamp of when the answer was created.
     timemodified?: number; // A timestamp of when the answer was modified.
     answer?: string; // Possible answer text.
-    answerformat?: number; // Answer format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
+    answerformat?: CoreTextFormat; // Answer format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
     response?: string; // Response text for the answer.
-    responseformat?: number; // Response format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
+    responseformat?: CoreTextFormat; // Response format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
 };
 
 /**
@@ -4058,7 +4058,7 @@ export type AddonModLessonUserAttemptAnswerPageWSData = {
 export type AddonModLessonUserAttemptAnswerData = {
     score: string; // The score (text version).
     response: string; // The response text.
-    responseformat: number; // Response. format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
+    responseformat: CoreTextFormat; // Response. format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
     answers?: string[][]; // User answers.
 };
 

@@ -35,6 +35,7 @@ import { CoreCacheUpdateFrequency } from '@/core/constants';
 import { CoreFileHelper } from '@services/file-helper';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreH5PMissingDependencyDBRecord } from '@features/h5p/services/database/h5p';
+import { CoreTextFormat } from '@singletons/text';
 
 /**
  * Service that provides some features for H5P activity.
@@ -889,7 +890,7 @@ export type AddonModH5PActivityWSData = {
     timecreated?: number; // Timestamp of when the instance was added to the course.
     timemodified?: number; // Timestamp of when the instance was last modified.
     intro: string; // H5P activity description.
-    introformat: number; // Intro format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
+    introformat: CoreTextFormat; // Intro format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
     grade?: number; // The maximum grade for submission.
     displayoptions: number; // H5P Button display options.
     enabletracking: number; // Enable xAPI tracking.

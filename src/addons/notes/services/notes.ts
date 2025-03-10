@@ -23,6 +23,7 @@ import { AddonNotesOffline } from './notes-offline';
 import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
 import { CoreCacheUpdateFrequency } from '@/core/constants';
 import { CorePromiseUtils } from '@singletons/promise-utils';
+import { CoreTextFormat } from '@singletons/text';
 
 const ROOT_CACHE_KEY = 'mmaNotes:';
 
@@ -444,7 +445,7 @@ export type AddonNotesNote = {
     courseid: number; // Id of the course.
     userid: number; // User id.
     content: string; // The content text formated.
-    format: number; // Content format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
+    format: CoreTextFormat; // Content format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
     created: number; // Time created (timestamp).
     lastmodified: number; // Time of last modification (timestamp).
     usermodified: number; // User id of the creator of this note.
@@ -488,7 +489,7 @@ export type AddonNotesCreateNoteData = {
     courseid: number; // Course id of the note (in Moodle a note can only be created into a course,
     // even for site and personal notes).
     text: string; // The text of the message - text or HTML.
-    format?: number; // Text format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
+    format?: CoreTextFormat; // Text format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
     clientnoteid?: string; // Your own client id for the note. If this id is provided, the fail message id will be returned to you.
 };
 

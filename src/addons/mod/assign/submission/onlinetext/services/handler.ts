@@ -25,7 +25,7 @@ import { AddonModAssignSubmissionHandler } from '@addons/mod/assign/services/sub
 import { Injectable, Type } from '@angular/core';
 import { CoreError } from '@classes/errors/error';
 import { CoreFileHelper } from '@services/file-helper';
-import { CoreText } from '@singletons/text';
+import { CoreText, CoreTextFormat } from '@singletons/text';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreWSFile } from '@services/ws';
 import { makeSingleton, Translate } from '@singletons';
@@ -273,7 +273,7 @@ export type AddonModAssignSubmissionOnlineTextPluginData = {
     // Editor structure.
     onlinetext_editor: { // eslint-disable-line @typescript-eslint/naming-convention
         text: string; // The text for this submission.
-        format: number; // The format for this submission.
+        format: CoreTextFormat; // The format for this submission.
         itemid: number; // The draft area id for files attached to the submission.
     };
 };

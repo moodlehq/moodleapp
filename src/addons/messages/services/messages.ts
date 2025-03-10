@@ -52,6 +52,7 @@ import {
     AddonMessagesUpdateConversationAction,
 } from '../constants';
 import { CorePromiseUtils } from '@singletons/promise-utils';
+import { CoreTextFormat } from '@singletons/text';
 
 declare module '@singletons/events' {
 
@@ -3307,7 +3308,7 @@ export type AddonMessagesGetMessagesMessage = {
     subject: string; // The message subject.
     text: string; // The message text formated.
     fullmessage: string; // The message.
-    fullmessageformat: number; // Fullmessage format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
+    fullmessageformat: CoreTextFormat; // Fullmessage format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
     fullmessagehtml: string; // The message in html.
     smallmessage: string; // The shorten message.
     notification: number; // Is a notification?.
@@ -3397,7 +3398,7 @@ export type AddonMessagesSendInstantMessagesMessage = {
 
 export type CoreMessageSendMessagesToConversationMessageData ={
     text: string; // The text of the message.
-    textformat?: number; // Text format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
+    textformat?: CoreTextFormat; // Text format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
 };
 
 /**
@@ -3660,7 +3661,7 @@ type AddonMessagesDeleteContactsWSParams = {
 export type AddonMessagesMessageData = {
     touserid: number; // Id of the user to send the private message.
     text: string; // The text of the message.
-    textformat?: number; // Text format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
+    textformat?: CoreTextFormat; // Text format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
     clientmsgid?: string; // Your own client id for the message. If this id is provided, the fail message id will be returned.
 };
 
