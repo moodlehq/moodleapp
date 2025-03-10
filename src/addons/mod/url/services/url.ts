@@ -16,7 +16,7 @@ import { Injectable } from '@angular/core';
 import { CoreSites, CoreSitesCommonWSOptions } from '@services/sites';
 import { CoreWSExternalWarning, CoreWSExternalFile } from '@services/ws';
 import { makeSingleton, Translate } from '@singletons';
-import { CoreCacheUpdateFrequency, CoreConstants } from '@/core/constants';
+import { CoreCacheUpdateFrequency } from '@/core/constants';
 import { CoreMimetypeUtils } from '@services/utils/mimetype';
 import { CoreCourse } from '@features/course/services/course';
 import { CorePromiseUtils } from '@singletons/promise-utils';
@@ -25,6 +25,7 @@ import { CoreError } from '@classes/errors/error';
 import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
 import { ADDON_MOD_URL_COMPONENT_LEGACY } from '../constants';
 import { CoreTextFormat } from '@singletons/text';
+import { ModResourceDisplay } from '@addons/mod/constants';
 
 /**
  * Service that provides some features for urls.
@@ -40,7 +41,7 @@ export class AddonModUrlProvider {
      * @param url URL data.
      * @returns Final display type.
      */
-    getFinalDisplayType(url?: AddonModUrlUrl): number {
+    getFinalDisplayType(url?: AddonModUrlUrl): ModResourceDisplay {
         if (!url) {
             return -1;
         }
@@ -48,11 +49,11 @@ export class AddonModUrlProvider {
         const extension = CoreMimetypeUtils.guessExtensionFromUrl(url.externalurl);
 
         // PDFs can be embedded in web, but not in the Mobile app.
-        if (url.display == CoreConstants.RESOURCELIB_DISPLAY_EMBED && extension == 'pdf') {
-            return CoreConstants.RESOURCELIB_DISPLAY_DOWNLOAD;
+        if (url.display === ModResourceDisplay.EMBED && extension === 'pdf') {
+            return ModResourceDisplay.DOWNLOAD;
         }
 
-        if (url.display != CoreConstants.RESOURCELIB_DISPLAY_AUTO) {
+        if (url.display !== ModResourceDisplay.AUTO) {
             return url.display;
         }
 
@@ -61,7 +62,7 @@ export class AddonModUrlProvider {
         if (currentSite && currentSite.containsUrl(url.externalurl)) {
             if (url.externalurl.indexOf('file.php') == -1 && url.externalurl.indexOf('.php') != -1) {
                 // Most probably our moodle page with navigation.
-                return CoreConstants.RESOURCELIB_DISPLAY_OPEN;
+                return ModResourceDisplay.OPEN;
             }
         }
 
@@ -75,15 +76,15 @@ export class AddonModUrlProvider {
         }
 
         if (mimetype && download.indexOf(mimetype) != -1) {
-            return CoreConstants.RESOURCELIB_DISPLAY_DOWNLOAD;
+            return ModResourceDisplay.DOWNLOAD;
         }
 
         if (extension && CoreMimetypeUtils.canBeEmbedded(extension)) {
-            return CoreConstants.RESOURCELIB_DISPLAY_EMBED;
+            return ModResourceDisplay.EMBED;
         }
 
         // Let the browser deal with it somehow.
-        return CoreConstants.RESOURCELIB_DISPLAY_OPEN;
+        return ModResourceDisplay.OPEN;
     }
 
     /**
@@ -256,7 +257,7 @@ export type AddonModUrlUrl = {
     introformat: CoreTextFormat; // Intro format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
     introfiles: CoreWSExternalFile[];
     externalurl: string; // External URL.
-    display: number; // How to display the url.
+    display: ModResourceDisplay; // How to display the url.
     displayoptions: string; // Display options (width, height).
     parameters: string; // Parameters to append to the URL.
     timemodified: number; // Last time the url was modified.

@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { CoreConstants } from '@/core/constants';
 import { Component, OnInit, Optional } from '@angular/core';
 import { CoreError } from '@classes/errors/error';
 import { CoreCourseModuleMainResourceComponent } from '@features/course/classes/main-resource-component';
@@ -27,6 +26,7 @@ import { CoreSites } from '@services/sites';
 import { CoreCourseModuleNavigationComponent } from '@features/course/components/module-navigation/module-navigation';
 import { CoreCourseModuleInfoComponent } from '@features/course/components/module-info/module-info';
 import { CoreSharedModule } from '@/core/shared.module';
+import { ModResourceDisplay } from '@addons/mod/constants';
 
 /**
  * Component that displays a url.
@@ -145,8 +145,8 @@ export class AddonModUrlIndexComponent extends CoreCourseModuleMainResourceCompo
     protected async calculateDisplayOptions(url: AddonModUrlUrl): Promise<void> {
         const displayType = AddonModUrl.getFinalDisplayType(url);
 
-        this.shouldEmbed = displayType == CoreConstants.RESOURCELIB_DISPLAY_EMBED;
-        this.shouldIframe = displayType == CoreConstants.RESOURCELIB_DISPLAY_FRAME;
+        this.shouldEmbed = displayType === ModResourceDisplay.EMBED;
+        this.shouldIframe = displayType === ModResourceDisplay.FRAME;
 
         if (!this.shouldEmbed) {
             return;

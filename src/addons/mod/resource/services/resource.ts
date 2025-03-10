@@ -25,6 +25,7 @@ import { makeSingleton, Translate } from '@singletons';
 import { ADDON_MOD_RESOURCE_COMPONENT_LEGACY } from '../constants';
 import { CoreCacheUpdateFrequency } from '@/core/constants';
 import { CoreTextFormat } from '@singletons/text';
+import { ModResourceDisplay } from '@addons/mod/constants';
 
 /**
  * Service that provides some features for resources.
@@ -189,7 +190,7 @@ export type AddonModResourceResource = {
     tobemigrated: number; // Whether this resource was migrated.
     legacyfiles: number; // Legacy files flag.
     legacyfileslast: number; // Legacy files last control flag.
-    display: number; // How to display the resource.
+    display: ModResourceDisplay; // How to display the resource.
     displayoptions: string; // Display options (width, height).
     filterfiles: number; // If filters should be applied to the resource content.
     revision: number; // Incremented when after each file changes, to avoid cache.

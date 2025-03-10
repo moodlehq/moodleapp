@@ -21,7 +21,7 @@ import { CoreLogger } from '@singletons/logger';
 import { CoreSitesCommonWSOptions, CoreSites, CoreSitesReadingStrategy, CoreSitesWSOptionsWithFilter } from '@services/sites';
 import { CoreTime } from '@singletons/time';
 import { CoreSite } from '@classes/sites/site';
-import { CoreCacheUpdateFrequency, CoreConstants, DownloadStatus } from '@/core/constants';
+import { CoreCacheUpdateFrequency, DownloadStatus } from '@/core/constants';
 import { makeSingleton, Translate } from '@singletons';
 import { CoreStatusWithWarningsWSResponse, CoreWSExternalFile, CoreWSExternalWarning } from '@services/ws';
 
@@ -76,6 +76,7 @@ import {
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreObject } from '@singletons/object';
 import { CoreAlerts } from '@services/overlays/alerts';
+import { ModFeature } from '@addons/mod/constants';
 
 export type CoreCourseProgressUpdated = { progress: number; courseId: number };
 
@@ -1383,7 +1384,7 @@ export class CoreCourseProvider {
         if ('modname' in module) {
             // noviewlink was introduced in 3.8.5, use supports feature as a fallback.
             if (module.noviewlink ||
-                CoreCourseModuleDelegate.supportsFeature(module.modname, CoreConstants.FEATURE_NO_VIEW_LINK, false)) {
+                CoreCourseModuleDelegate.supportsFeature(module.modname, ModFeature.NO_VIEW_LINK, false)) {
                 return false;
             }
         }
