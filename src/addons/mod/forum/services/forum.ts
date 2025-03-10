@@ -893,7 +893,6 @@ export class AddonModForumProvider {
      *
      * @param forumId Forum ID.
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateCanAddDiscussion(forumId: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -952,7 +951,6 @@ export class AddonModForumProvider {
      *
      * @param forumId Forum ID.
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateAccessInformation(forumId: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -966,7 +964,6 @@ export class AddonModForumProvider {
      * @param discussionId Discussion ID.
      * @param forumId Forum ID. If not set, we can't invalidate individual post information.
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateDiscussionPosts(discussionId: number, forumId?: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -984,7 +981,6 @@ export class AddonModForumProvider {
      *
      * @param forumId Forum ID.
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateDiscussionsList(forumId: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -996,7 +992,6 @@ export class AddonModForumProvider {
      * Invalidates forum data.
      *
      * @param courseId Course ID.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateForumData(courseId: number): Promise<void> {
         const site = CoreSites.getCurrentSite();

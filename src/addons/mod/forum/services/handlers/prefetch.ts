@@ -172,10 +172,9 @@ export class AddonModForumPrefetchHandlerService extends CoreCourseActivityPrefe
      *
      * @param moduleId The module ID.
      * @param courseId The course ID the module belongs to.
-     * @returns Promise resolved when the data is invalidated.
      */
-    invalidateContent(moduleId: number, courseId: number): Promise<void> {
-        return AddonModForum.invalidateContent(moduleId, courseId);
+    async invalidateContent(moduleId: number, courseId: number): Promise<void> {
+        await AddonModForum.invalidateContent(moduleId, courseId);
     }
 
     /**

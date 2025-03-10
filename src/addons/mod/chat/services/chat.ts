@@ -321,7 +321,6 @@ export class AddonModChatProvider {
      *
      * @param courseId Course ID.
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateChats(courseId: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -336,7 +335,6 @@ export class AddonModChatProvider {
      * @param groupId Group ID, 0 means that the function will determine the user group.
      * @param showAll Whether to include incomplete sessions or not.
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateSessions(chatId: number, groupId: number = 0, showAll: boolean = false, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -349,7 +347,6 @@ export class AddonModChatProvider {
      *
      * @param chatId Chat ID.
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateAllSessions(chatId: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -364,7 +361,6 @@ export class AddonModChatProvider {
      * @param sessionStart Session start time.
      * @param groupId Group ID, 0 means that the function will determine the user group.
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateSessionMessages(chatId: number, sessionStart: number, groupId: number = 0, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -377,7 +373,6 @@ export class AddonModChatProvider {
      *
      * @param chatId Chat ID.
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateAllSessionMessages(chatId: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);

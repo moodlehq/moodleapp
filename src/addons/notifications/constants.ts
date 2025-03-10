@@ -12,26 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-export const ADDON_COMPETENCY_LEARNING_PLANS_PAGE = 'learning-plans';
-export const ADDON_COMPETENCY_COMPETENCIES_PAGE = 'competencies';
-export const ADDON_COMPETENCY_SUMMARY_PAGE = 'summary';
+export const ADDONS_NOTIFICATIONS_READ_CHANGED_EVENT = 'addon_notifications_read_changed_event';
+export const ADDONS_NOTIFICATIONS_READ_CRON_EVENT = 'addon_notifications_read_cron_event';
 
-/**
- * Learning plan status.
- */
-export enum AddonCompetencyLearningPlanStatus {
-    DRAFT = 0,
-    ACTIVE = 1,
-    COMPLETE = 2,
-    WAITING_FOR_REVIEW = 3,
-    IN_REVIEW = 4,
-}
+export const ADDONS_NOTIFICATIONS_PUSH_SIMULATION_COMPONENT = 'AddonNotificationsPushSimulation';
 
-/**
- * Competency status.
- */
-export enum AddonCompetencyReviewStatus {
-    IDLE = 0,
-    WAITING_FOR_REVIEW = 1,
-    IN_REVIEW = 2,
-}
+export const ADDONS_NOTIFICATIONS_LIST_LIMIT = 20;

@@ -724,7 +724,6 @@ export class AddonModH5PActivityProvider {
      *
      * @param id H5P activity ID.
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateAccessInformation(id: number, siteId?: string): Promise<void> {
 
@@ -738,7 +737,6 @@ export class AddonModH5PActivityProvider {
      *
      * @param courseId Course ID.
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateActivityData(courseId: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -751,7 +749,6 @@ export class AddonModH5PActivityProvider {
      *
      * @param id Activity ID.
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateAllResults(id: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -765,7 +762,6 @@ export class AddonModH5PActivityProvider {
      * @param id Activity ID.
      * @param attemptId Attempt ID.
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateAttemptResults(id: number, attemptId: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -778,7 +774,6 @@ export class AddonModH5PActivityProvider {
      *
      * @param id Activity ID.
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateAllUsersAttempts(id: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -792,7 +787,6 @@ export class AddonModH5PActivityProvider {
      * @param id Activity ID.
      * @param userId User ID. If not defined, current user in the site.
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateUserAttempts(id: number, userId?: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);

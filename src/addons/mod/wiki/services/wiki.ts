@@ -514,7 +514,6 @@ export class AddonModWikiProvider {
      *
      * @param pageId Wiki Page ID.
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidatePage(pageId: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -527,7 +526,6 @@ export class AddonModWikiProvider {
      *
      * @param wikiId Wiki ID.
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateSubwikiFiles(wikiId: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -540,7 +538,6 @@ export class AddonModWikiProvider {
      *
      * @param wikiId Wiki ID.
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateSubwikiPages(wikiId: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -553,7 +550,6 @@ export class AddonModWikiProvider {
      *
      * @param wikiId Wiki ID.
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateSubwikis(wikiId: number, siteId?: string): Promise<void> {
         this.clearSubwikiList(wikiId);
@@ -568,7 +564,6 @@ export class AddonModWikiProvider {
      *
      * @param courseId Course ID.
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateWikiData(courseId: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
