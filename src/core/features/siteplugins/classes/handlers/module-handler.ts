@@ -14,7 +14,6 @@
 
 import { Type } from '@angular/core';
 
-import { CoreConstants } from '@/core/constants';
 import { CoreCourse } from '@features/course/services/course';
 import { CoreCourseHelper, CoreCourseModuleData } from '@features/course/services/course-helper';
 import { CoreCourseModuleHandler, CoreCourseModuleHandlerData } from '@features/course/services/module-delegate';
@@ -30,14 +29,15 @@ import { CoreSitePluginsBaseHandler } from './base-handler';
 import { CoreEvents } from '@singletons/events';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CORE_SITE_PLUGINS_UPDATE_COURSE_CONTENT } from '@features/siteplugins/constants';
+import { ModFeature } from '@addons/mod/constants';
 
 /**
  * Handler to support a module using a site plugin.
  */
 export class CoreSitePluginsModuleHandler extends CoreSitePluginsBaseHandler implements CoreCourseModuleHandler {
 
-    supportedFeatures?: Record<string, unknown>;
-    supportsFeature?: (feature: string) => unknown;
+    supportedFeatures?: Record<ModFeature, unknown>;
+    supportsFeature?: (feature: ModFeature) => unknown;
 
     protected logger: CoreLogger;
 
@@ -154,8 +154,8 @@ export class CoreSitePluginsModuleHandler extends CoreSitePluginsBaseHandler imp
      */
     supportsNoViewLink(): boolean | undefined {
         return <boolean | undefined> (this.supportsFeature ?
-            this.supportsFeature(CoreConstants.FEATURE_NO_VIEW_LINK) :
-            this.supportedFeatures?.[CoreConstants.FEATURE_NO_VIEW_LINK]);
+            this.supportsFeature(ModFeature.NO_VIEW_LINK) :
+            this.supportedFeatures?.[ModFeature.NO_VIEW_LINK]);
     }
 
     /**

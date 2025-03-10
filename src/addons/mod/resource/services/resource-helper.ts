@@ -32,6 +32,7 @@ import { ADDON_MOD_RESOURCE_COMPONENT_LEGACY } from '../constants';
 import { CoreLoadings } from '@services/overlays/loadings';
 import { CoreOpenerOpenFileOptions } from '@singletons/opener';
 import { CoreAlerts } from '@services/overlays/alerts';
+import { ModResourceDisplay } from '@addons/mod/constants';
 
 /**
  * Service that provides helper functions for resources.
@@ -82,14 +83,14 @@ export class AddonModResourceHelperProvider {
 
             // This URL is going to be injected in an iframe, we need trustAsResourceUrl to make it work in a browser.
             return CorePath.concatenatePaths(dirPath, mainFilePath);
-        } catch (e) {
+        } catch (error) {
             // Error getting directory, there was an error downloading or we're in browser. Return online URL.
             if (CoreNetwork.isOnline() && mainFile.fileurl) {
                 // This URL is going to be injected in an iframe, we need this to make it work.
                 return CoreSites.getRequiredCurrentSite().checkAndFixPluginfileURL(mainFile.fileurl);
             }
 
-            throw e;
+            throw error;
         }
     }
 
@@ -100,7 +101,7 @@ export class AddonModResourceHelperProvider {
      * @param display The display mode (if available).
      * @returns Whether the resource should be displayed embeded.
      */
-    isDisplayedEmbedded(module: CoreCourseModuleData, display: number): boolean {
+    isDisplayedEmbedded(module: CoreCourseModuleData, display: ModResourceDisplay): boolean {
         const currentSite = CoreSites.getCurrentSite();
 
         if (currentSite && !currentSite.isVersionGreaterEqualThan('3.7') && this.isNextcloudFile(module)) {
@@ -116,7 +117,7 @@ export class AddonModResourceHelperProvider {
             return false;
         }
 
-        return (display == CoreConstants.RESOURCELIB_DISPLAY_EMBED || display == CoreConstants.RESOURCELIB_DISPLAY_AUTO) &&
+        return (display === ModResourceDisplay.EMBED || display === ModResourceDisplay.AUTO) &&
             CoreMimetypeUtils.canBeEmbedded(ext);
     }
 
@@ -138,7 +139,7 @@ export class AddonModResourceHelperProvider {
             return false;
         }
 
-        return mimetype == 'text/html' || mimetype == 'application/xhtml+xml';
+        return mimetype === 'text/html' || mimetype === 'application/xhtml+xml';
     }
 
     /**

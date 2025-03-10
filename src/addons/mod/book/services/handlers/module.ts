@@ -14,11 +14,11 @@
 
 import { Injectable, Type } from '@angular/core';
 import { AddonModBook } from '../book';
-import { CoreConstants, ModPurpose } from '@/core/constants';
 import { CoreCourseModuleHandler } from '@features/course/services/module-delegate';
 import { makeSingleton } from '@singletons';
 import { CoreModuleHandlerBase } from '@features/course/classes/module-base-handler';
 import { ADDON_MOD_BOOK_COMPONENT, ADDON_MOD_BOOK_MODNAME, ADDON_MOD_BOOK_PAGE_NAME } from '../../constants';
+import { ModFeature, ModArchetype, ModPurpose } from '@addons/mod/constants';
 
 /**
  * Handler to support book modules.
@@ -31,16 +31,16 @@ export class AddonModBookModuleHandlerService extends CoreModuleHandlerBase impl
     protected pageName = ADDON_MOD_BOOK_PAGE_NAME;
 
     supportedFeatures = {
-        [CoreConstants.FEATURE_MOD_ARCHETYPE]: CoreConstants.MOD_ARCHETYPE_RESOURCE,
-        [CoreConstants.FEATURE_GROUPS]: false,
-        [CoreConstants.FEATURE_GROUPINGS]: false,
-        [CoreConstants.FEATURE_MOD_INTRO]: true,
-        [CoreConstants.FEATURE_COMPLETION_TRACKS_VIEWS]: true,
-        [CoreConstants.FEATURE_GRADE_HAS_GRADE]: false,
-        [CoreConstants.FEATURE_GRADE_OUTCOMES]: false,
-        [CoreConstants.FEATURE_BACKUP_MOODLE2]: true,
-        [CoreConstants.FEATURE_SHOW_DESCRIPTION]: true,
-        [CoreConstants.FEATURE_MOD_PURPOSE]: ModPurpose.MOD_PURPOSE_CONTENT,
+        [ModFeature.MOD_ARCHETYPE]: ModArchetype.RESOURCE,
+        [ModFeature.GROUPS]: false,
+        [ModFeature.GROUPINGS]: false,
+        [ModFeature.MOD_INTRO]: true,
+        [ModFeature.COMPLETION_TRACKS_VIEWS]: true,
+        [ModFeature.GRADE_HAS_GRADE]: false,
+        [ModFeature.GRADE_OUTCOMES]: false,
+        [ModFeature.BACKUP_MOODLE2]: true,
+        [ModFeature.SHOW_DESCRIPTION]: true,
+        [ModFeature.MOD_PURPOSE]: ModPurpose.CONTENT,
     };
 
     /**
