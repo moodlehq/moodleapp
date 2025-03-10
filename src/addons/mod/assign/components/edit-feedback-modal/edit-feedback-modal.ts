@@ -193,12 +193,13 @@ export class AddonModAssignEditFeedbackModalComponent implements OnDestroy, OnIn
                 await AddonModAssignHelper.shouldFetchUnfilteredFeedbackToEdit(this.assign, this.submitId, this.feedback);
 
             if (shouldFetchUnfiltered) {
-                const submissionStatus = await AddonModAssign.getSubmissionStatus(this.assign.id, {
+                const submissionStatus = await AddonModAssign.getSubmissionStatus(this.assign, {
                     userId: this.submitId,
                     isBlind: !!this.blindId,
                     cmId: this.assign.cmid,
                     filter: false,
                     readingStrategy: CoreSitesReadingStrategy.ONLY_NETWORK,
+                    checkFetchOriginal: false,
                 });
 
                 this.feedback = submissionStatus.feedback;
