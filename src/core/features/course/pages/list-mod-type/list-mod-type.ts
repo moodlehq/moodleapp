@@ -18,7 +18,6 @@ import { CoreCourse, CoreCourseWSSection, sectionContentIsModule } from '@featur
 import { CoreCourseModuleDelegate } from '@features/course/services/module-delegate';
 import { CoreCourseHelper, CoreCourseSection } from '@features/course/services/course-helper';
 import { CoreNavigator } from '@services/navigator';
-import { CoreConstants } from '@/core/constants';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreTime } from '@singletons/time';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';

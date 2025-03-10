@@ -136,7 +136,7 @@ export default class AddonModWorkshopEditSubmissionPage implements OnInit, OnDes
 
         if (!this.isDestroyed) {
             // Block the workshop.
-            CoreSync.blockOperation(this.component, this.workshopId);
+            CoreSync.blockOperation(ADDON_MOD_WORKSHOP_COMPONENT, this.workshopId);
         }
 
         this.fetchSubmissionData();
@@ -522,7 +522,7 @@ export default class AddonModWorkshopEditSubmissionPage implements OnInit, OnDes
      */
     ngOnDestroy(): void {
         this.isDestroyed = true;
-        CoreSync.unblockOperation(this.component, this.workshopId);
+        CoreSync.unblockOperation(ADDON_MOD_WORKSHOP_COMPONENT, this.workshopId);
     }
 
 }

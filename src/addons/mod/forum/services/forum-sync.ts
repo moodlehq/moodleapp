@@ -35,6 +35,7 @@ import { AddonModForumOffline, AddonModForumOfflineDiscussion, AddonModForumOffl
 import {
     ADDON_MOD_FORUM_ALL_GROUPS,
     ADDON_MOD_FORUM_AUTO_SYNCED,
+    ADDON_MOD_FORUM_COMPONENT,
     ADDON_MOD_FORUM_COMPONENT_LEGACY,
     ADDON_MOD_FORUM_MANUAL_SYNCED,
 } from '../constants';
@@ -211,7 +212,7 @@ export class AddonModForumSyncProvider extends CoreCourseActivitySyncBaseProvide
         }
 
         // Verify that forum isn't blocked.
-        if (CoreSync.isBlocked(ADDON_MOD_FORUM_COMPONENT_LEGACY, syncId, siteId)) {
+        if (CoreSync.isBlocked(ADDON_MOD_FORUM_COMPONENT, syncId, siteId)) {
             this.logger.debug('Cannot sync forum ' + forumId + ' because it is blocked.');
 
             throw new Error(Translate.instant('core.errorsyncblocked', { $a: this.componentTranslate }));
@@ -443,7 +444,7 @@ export class AddonModForumSyncProvider extends CoreCourseActivitySyncBaseProvide
         }
 
         // Verify that forum isn't blocked.
-        if (CoreSync.isBlocked(ADDON_MOD_FORUM_COMPONENT_LEGACY, syncId, siteId)) {
+        if (CoreSync.isBlocked(ADDON_MOD_FORUM_COMPONENT, syncId, siteId)) {
             this.logger.debug('Cannot sync forum discussion ' + discussionId + ' because it is blocked.');
 
             throw new Error(Translate.instant('core.errorsyncblocked', { $a: this.componentTranslate }));
