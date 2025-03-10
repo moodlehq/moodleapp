@@ -34,6 +34,7 @@ import { CoreAlerts } from '@services/overlays/alerts';
 @Component({
     selector: 'page-addon-badges-issued-badge',
     templateUrl: 'issued-badge.html',
+    styleUrl: 'issued-badge.scss',
     standalone: true,
     imports: [
         CoreSharedModule,
