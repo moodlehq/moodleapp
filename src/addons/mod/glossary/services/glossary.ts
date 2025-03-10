@@ -40,7 +40,7 @@ import {
 import { CoreCacheUpdateFrequency } from '@/core/constants';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreWSError } from '@classes/errors/wserror';
-import { CoreTextFormat } from '@singletons/text';
+import { CoreTextFormat, DEFAULT_TEXT_FORMAT } from '@singletons/text';
 
 /**
  * Service that provides some features for glossaries.
@@ -918,7 +918,7 @@ export class AddonModGlossaryProvider {
             glossaryid: glossaryId,
             concept: concept,
             definition: definition,
-            definitionformat: 1,
+            definitionformat: DEFAULT_TEXT_FORMAT,
             options: CoreObject.toArrayOfObjects(options || {}, 'name', 'value'),
         };
 
@@ -962,7 +962,7 @@ export class AddonModGlossaryProvider {
             entryid: entryId,
             concept: concept,
             definition: definition,
-            definitionformat: 1,
+            definitionformat: DEFAULT_TEXT_FORMAT,
             options: CoreObject.toArrayOfObjects(options || {}, 'name', 'value'),
         };
 

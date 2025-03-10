@@ -19,7 +19,7 @@ import { FileEntry } from '@awesome-cordova-plugins/file/ngx';
 import { CoreFile } from '@services/file';
 import { CoreFileEntry, CoreFileHelper } from '@services/file-helper';
 import { CoreSites } from '@services/sites';
-import { CoreText, CoreTextFormat } from '@singletons/text';
+import { CoreText, DEFAULT_TEXT_FORMAT } from '@singletons/text';
 import { CoreUtils } from '@singletons/utils';
 import { makeSingleton, Translate } from '@singletons';
 import { CoreFormFields } from '@singletons/form';
@@ -572,7 +572,7 @@ export class AddonModWorkshopHelperProvider {
             (await AddonWorkshopAssessmentStrategyDelegate.prepareAssessmentData(workshop.strategy ?? '', selectedValues, form)) ||
             {};
         data.feedbackauthor = feedbackText;
-        data.feedbackauthorformat = CoreTextFormat.FORMAT_HTML;
+        data.feedbackauthorformat = DEFAULT_TEXT_FORMAT;
         data.feedbackauthorattachmentsid = attachmentsId;
         data.nodims = form.dimenssionscount;
 
