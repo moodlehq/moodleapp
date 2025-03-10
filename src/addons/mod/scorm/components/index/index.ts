@@ -47,6 +47,7 @@ import {
     ADDON_MOD_SCORM_DATA_SENT_EVENT,
     ADDON_MOD_SCORM_DATA_AUTO_SYNCED,
     ADDON_MOD_SCORM_PAGE_NAME,
+    ADDON_MOD_SCORM_COMPONENT,
 } from '../../constants';
 import { CoreWait } from '@singletons/wait';
 import { CorePromiseUtils } from '@singletons/promise-utils';
@@ -652,7 +653,7 @@ export class AddonModScormIndexComponent extends CoreCourseModuleMainActivityCom
             throw new CoreError('Cannot sync without a scorm.');
         }
 
-        if (CoreSync.isBlocked(ADDON_MOD_SCORM_COMPONENT_LEGACY, this.scorm.id) && retries < 5) {
+        if (CoreSync.isBlocked(ADDON_MOD_SCORM_COMPONENT, this.scorm.id) && retries < 5) {
             // Sync is currently blocked, this can happen when SCORM player is left. Retry in a bit.
             await CoreWait.wait(400);
 

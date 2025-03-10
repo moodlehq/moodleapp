@@ -47,6 +47,7 @@ import {
     ADDON_MOD_FORUM_ALL_GROUPS,
     ADDON_MOD_FORUM_ALL_PARTICIPANTS,
     ADDON_MOD_FORUM_AUTO_SYNCED,
+    ADDON_MOD_FORUM_COMPONENT,
     ADDON_MOD_FORUM_COMPONENT_LEGACY,
     ADDON_MOD_FORUM_NEW_DISCUSSION_EVENT,
 } from '../../constants';
@@ -284,7 +285,7 @@ export default class AddonModForumNewDiscussionPage implements OnInit, OnDestroy
                 await AddonModForumSync.waitForSync(this.syncId).then(() => {
                     // Do not block if the scope is already destroyed.
                     if (!this.isDestroyed) {
-                        CoreSync.blockOperation(ADDON_MOD_FORUM_COMPONENT_LEGACY, this.syncId);
+                        CoreSync.blockOperation(ADDON_MOD_FORUM_COMPONENT, this.syncId);
                     }
 
                     return AddonModForumOffline.instance
@@ -705,7 +706,7 @@ export default class AddonModForumNewDiscussionPage implements OnInit, OnDestroy
      */
     ngOnDestroy(): void {
         if (this.syncId) {
-            CoreSync.unblockOperation(ADDON_MOD_FORUM_COMPONENT_LEGACY, this.syncId);
+            CoreSync.unblockOperation(ADDON_MOD_FORUM_COMPONENT, this.syncId);
         }
         this.isDestroyed = true;
         this.discussions?.destroy();

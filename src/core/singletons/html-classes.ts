@@ -42,7 +42,7 @@ export class CoreHTMLClasses {
         CoreHTMLClasses.toggleModeClass('development', CoreConstants.BUILD.isDevelopment);
         CoreHTMLClasses.addVersionClass(
             CoreHTMLClasses.MOODLEAPP_VERSION_PREFIX,
-            CoreConstants.CONFIG.versionname.replace('-dev', ''),
+            CoreConstants.CONFIG.versionname,
         );
 
         // eslint-disable-next-line @typescript-eslint/no-explicit-any

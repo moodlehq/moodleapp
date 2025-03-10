@@ -50,7 +50,12 @@ import { CoreTime } from '@singletons/time';
 import { CoreDirectivesRegistry } from '@singletons/directives-registry';
 import { CoreWSError } from '@classes/errors/wserror';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
-import { ADDON_MOD_QUIZ_ATTEMPT_FINISHED_EVENT, AddonModQuizAttemptStates, ADDON_MOD_QUIZ_COMPONENT_LEGACY } from '../../constants';
+import {
+    ADDON_MOD_QUIZ_ATTEMPT_FINISHED_EVENT,
+    AddonModQuizAttemptStates,
+    ADDON_MOD_QUIZ_COMPONENT_LEGACY,
+    ADDON_MOD_QUIZ_COMPONENT,
+} from '../../constants';
 import { CoreWait } from '@singletons/wait';
 import { CoreModals } from '@services/overlays/modals';
 import { CoreLoadings } from '@services/overlays/loadings';
@@ -161,7 +166,7 @@ export default class AddonModQuizPlayerPage implements OnInit, OnDestroy, CanLea
 
         if (this.quiz) {
             // Unblock the quiz so it can be synced.
-            CoreSync.unblockOperation(ADDON_MOD_QUIZ_COMPONENT_LEGACY, this.quiz.id);
+            CoreSync.unblockOperation(ADDON_MOD_QUIZ_COMPONENT, this.quiz.id);
         }
     }
 
@@ -354,7 +359,7 @@ export default class AddonModQuizPlayerPage implements OnInit, OnDestroy, CanLea
         this.quiz = await AddonModQuiz.getQuiz(this.courseId, this.cmId);
 
         // Block the quiz so it cannot be synced.
-        CoreSync.blockOperation(ADDON_MOD_QUIZ_COMPONENT_LEGACY, this.quiz.id);
+        CoreSync.blockOperation(ADDON_MOD_QUIZ_COMPONENT, this.quiz.id);
 
         // Wait for any ongoing sync to finish. We won't sync a quiz while it's being played.
         await AddonModQuizSync.waitForSync(this.quiz.id);

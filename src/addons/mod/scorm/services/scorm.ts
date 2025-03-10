@@ -41,6 +41,7 @@ import {
     ADDON_MOD_SCORM_LAUNCH_NEXT_SCO_EVENT,
     ADDON_MOD_SCORM_LAUNCH_PREV_SCO_EVENT,
     ADDON_MOD_SCORM_UPDATE_TOC_EVENT,
+    ADDON_MOD_SCORM_COMPONENT,
 } from '../constants';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 
@@ -1538,14 +1539,14 @@ export class AddonModScormProvider {
             tracks: tracks,
         };
 
-        CoreSync.blockOperation(ADDON_MOD_SCORM_COMPONENT_LEGACY, scormId, 'saveTracksOnline', site.id);
+        CoreSync.blockOperation(ADDON_MOD_SCORM_COMPONENT, scormId, 'saveTracksOnline', site.id);
 
         try {
             const response = await site.write<AddonModScormInsertScormTracksWSResponse>('mod_scorm_insert_scorm_tracks', params);
 
             return response.trackids;
         } finally {
-            CoreSync.unblockOperation(ADDON_MOD_SCORM_COMPONENT_LEGACY, scormId, 'saveTracksOnline', site.id);
+            CoreSync.unblockOperation(ADDON_MOD_SCORM_COMPONENT, scormId, 'saveTracksOnline', site.id);
         }
     }
 

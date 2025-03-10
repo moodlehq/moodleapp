@@ -590,7 +590,11 @@ export class AddonModH5PActivityProvider {
         const fileUrl = CoreFileHelper.getFileUrl(deployedFile);
 
         const missingDependencies =
-            await CoreH5P.h5pFramework.getMissingDependenciesForComponent(ADDON_MOD_H5PACTIVITY_COMPONENT_LEGACY, componentId, siteId);
+            await CoreH5P.h5pFramework.getMissingDependenciesForComponent(
+                ADDON_MOD_H5PACTIVITY_COMPONENT_LEGACY,
+                componentId,
+                siteId,
+            );
         if (!missingDependencies.length) {
             return [];
         }
