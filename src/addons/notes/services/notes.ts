@@ -23,7 +23,7 @@ import { AddonNotesOffline } from './notes-offline';
 import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
 import { CoreCacheUpdateFrequency } from '@/core/constants';
 import { CorePromiseUtils } from '@singletons/promise-utils';
-import { CoreTextFormat } from '@singletons/text';
+import { CoreTextFormat, DEFAULT_TEXT_FORMAT } from '@singletons/text';
 
 const ROOT_CACHE_KEY = 'mmaNotes:';
 
@@ -99,7 +99,7 @@ export class AddonNotesProvider {
         const notes: AddonNotesCreateNoteData[] = [
             {
                 courseid: courseId,
-                format: 1,
+                format: DEFAULT_TEXT_FORMAT,
                 publishstate: publishState,
                 text: noteText,
                 userid: userId,
@@ -237,7 +237,7 @@ export class AddonNotesProvider {
                     publishstate: 'personal',
                     courseid: courseId,
                     text: '',
-                    format: 1,
+                    format: DEFAULT_TEXT_FORMAT,
                 },
             ],
         };
