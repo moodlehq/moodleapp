@@ -303,7 +303,6 @@ export class AddonModBBBService {
      *
      * @param courseId Course ID.
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateBBBs(courseId: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -317,7 +316,6 @@ export class AddonModBBBService {
      * @param id BBB ID.
      * @param groupId Group ID, 0 means that the function will determine the user group.
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateMeetingInfo(id: number, groupId: number = 0, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -330,7 +328,6 @@ export class AddonModBBBService {
      *
      * @param id BBB ID.
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateAllGroupsMeetingInfo(id: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -344,7 +341,6 @@ export class AddonModBBBService {
      * @param id BBB ID.
      * @param groupId Group ID, 0 means that the function will determine the user group.
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateRecordings(id: number, groupId: number = 0, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -357,7 +353,6 @@ export class AddonModBBBService {
      *
      * @param id BBB ID.
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateAllGroupsRecordings(id: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);

@@ -1186,7 +1186,6 @@ export class AddonModQuizProvider {
      * @param attemptId Attempt ID to invalidate some WS calls.
      * @param siteId Site ID. If not defined, current site.
      * @param userId User ID. If not defined use site's current user.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateAllQuizData(
         quizId: number,
@@ -1225,7 +1224,6 @@ export class AddonModQuizProvider {
      *
      * @param quizId Quiz ID.
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateAttemptAccessInformation(quizId: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -1239,7 +1237,6 @@ export class AddonModQuizProvider {
      * @param quizId Quiz ID.
      * @param attemptId Attempt ID.
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateAttemptAccessInformationForAttempt(quizId: number, attemptId: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -1252,7 +1249,6 @@ export class AddonModQuizProvider {
      *
      * @param attemptId Attempt ID.
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateAttemptData(attemptId: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -1266,7 +1262,6 @@ export class AddonModQuizProvider {
      * @param attemptId Attempt ID.
      * @param page Page.
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateAttemptDataForPage(attemptId: number, page: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -1279,7 +1274,6 @@ export class AddonModQuizProvider {
      *
      * @param attemptId Attempt ID.
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateAttemptReview(attemptId: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -1293,7 +1287,6 @@ export class AddonModQuizProvider {
      * @param attemptId Attempt ID.
      * @param page Page.
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateAttemptReviewForPage(attemptId: number, page: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -1306,7 +1299,6 @@ export class AddonModQuizProvider {
      *
      * @param attemptId Attempt ID.
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateAttemptSummary(attemptId: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -1319,7 +1311,6 @@ export class AddonModQuizProvider {
      *
      * @param quizId Quiz ID.
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateCombinedReviewOptions(quizId: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -1333,12 +1324,11 @@ export class AddonModQuizProvider {
      * @param quizId Quiz ID.
      * @param siteId Site ID. If not defined, current site.
      * @param userId User ID. If not defined use site's current user.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateCombinedReviewOptionsForUser(quizId: number, siteId?: string, userId?: number): Promise<void> {
         const site = await CoreSites.getSite(siteId);
 
-        return site.invalidateWsCacheForKey(this.getCombinedReviewOptionsCacheKey(quizId, userId || site.getUserId()));
+        await site.invalidateWsCacheForKey(this.getCombinedReviewOptionsCacheKey(quizId, userId || site.getUserId()));
     }
 
     /**
@@ -1347,7 +1337,6 @@ export class AddonModQuizProvider {
      * @param moduleId The module ID.
      * @param courseId Course ID.
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateContent(moduleId: number, courseId: number, siteId?: string): Promise<void> {
         siteId = siteId || CoreSites.getCurrentSiteId();
@@ -1371,7 +1360,6 @@ export class AddonModQuizProvider {
      *
      * @param quizId Quiz ID.
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateFeedback(quizId: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -1385,7 +1373,6 @@ export class AddonModQuizProvider {
      * @param quizId Quiz ID.
      * @param grade Grade.
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateFeedbackForGrade(quizId: number, grade: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -1399,7 +1386,6 @@ export class AddonModQuizProvider {
      * @param courseId Course ID.
      * @param siteId Site ID. If not defined, current site.
      * @param userId User ID. If not defined use site's current user.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateGradeFromGradebook(courseId: number, siteId?: string, userId?: number): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -1412,7 +1398,6 @@ export class AddonModQuizProvider {
      *
      * @param quizId Quiz ID.
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateQuizAccessInformation(quizId: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -1425,7 +1410,6 @@ export class AddonModQuizProvider {
      *
      * @param quizId Quiz ID.
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateQuizRequiredQtypes(quizId: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -1438,7 +1422,6 @@ export class AddonModQuizProvider {
      *
      * @param quizId Quiz ID.
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateUserAttempts(quizId: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -1452,7 +1435,6 @@ export class AddonModQuizProvider {
      * @param quizId Quiz ID.
      * @param siteId Site ID. If not defined, current site.
      * @param userId User ID. If not defined use site's current user.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateUserAttemptsForUser(quizId: number, siteId?: string, userId?: number): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -1465,7 +1447,6 @@ export class AddonModQuizProvider {
      *
      * @param quizId Quiz ID.
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateUserBestGrade(quizId: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -1479,7 +1460,6 @@ export class AddonModQuizProvider {
      * @param quizId Quiz ID.
      * @param siteId Site ID. If not defined, current site.
      * @param userId User ID. If not defined use site's current user.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateUserBestGradeForUser(quizId: number, siteId?: string, userId?: number): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -1492,7 +1472,6 @@ export class AddonModQuizProvider {
      *
      * @param courseId Course ID.
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateQuizData(courseId: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);

@@ -25,13 +25,13 @@ import { CoreCacheUpdateFrequency } from '@/core/constants';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreTextFormat, DEFAULT_TEXT_FORMAT } from '@singletons/text';
 
-const ROOT_CACHE_KEY = 'mmaNotes:';
-
 /**
  * Service to handle notes.
  */
 @Injectable( { providedIn: 'root' } )
 export class AddonNotesProvider {
+
+    protected static readonly ROOT_CACHE_KEY = 'mmaNotes:';
 
     /**
      * Add a note.
@@ -268,7 +268,7 @@ export class AddonNotesProvider {
      * @returns Cache key.
      */
     getNotesPrefixCacheKey(courseId: number): string {
-        return ROOT_CACHE_KEY + 'notes:' + courseId + ':';
+        return `${AddonNotesProvider.ROOT_CACHE_KEY}notes:${courseId}:`;
     }
 
     /**

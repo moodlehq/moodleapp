@@ -30,13 +30,13 @@ import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreWSError } from '@classes/errors/wserror';
 import { CoreTextFormat } from '@singletons/text';
 
-const ROOT_CACHE_KEY = 'addonBlog:';
-
 /**
  * Service to handle blog entries.
  */
 @Injectable({ providedIn: 'root' })
 export class AddonBlogProvider {
+
+    protected static readonly ROOT_CACHE_KEY = 'addonBlog:';
 
     static readonly ENTRIES_PER_PAGE = 10;
     static readonly COMPONENT = 'blog';
@@ -64,7 +64,7 @@ export class AddonBlogProvider {
      * @returns Cache key.
      */
     getEntriesCacheKey(filter: AddonBlogFilter = {}): string {
-        return ROOT_CACHE_KEY + CoreObject.sortAndStringify(filter);
+        return AddonBlogProvider.ROOT_CACHE_KEY + CoreObject.sortAndStringify(filter);
     }
 
     /**

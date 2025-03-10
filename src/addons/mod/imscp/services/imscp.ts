@@ -236,7 +236,6 @@ export class AddonModImscpProvider {
      *
      * @param courseId Course ID.
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateImscpData(courseId: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);

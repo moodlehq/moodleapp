@@ -231,7 +231,6 @@ export class AddonBlockTimelineProvider {
      * Invalidates get calendar action events for a given list of courses WS call.
      *
      * @param siteId Site ID to invalidate. If not defined, use current site.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateActionEventsByCourses(siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -243,7 +242,6 @@ export class AddonBlockTimelineProvider {
      * Invalidates get calendar action events based on the timesort value WS call.
      *
      * @param siteId Site ID to invalidate. If not defined, use current site.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateActionEventsByTimesort(siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);

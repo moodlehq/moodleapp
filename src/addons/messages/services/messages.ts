@@ -468,7 +468,7 @@ export class AddonMessagesProvider {
      * @returns Cache key.
      */
     protected getCacheKeyForBlockedContacts(userId: number): string {
-        return AddonMessagesProvider.ROOT_CACHE_KEY + 'blockedContacts:' + userId;
+        return `${AddonMessagesProvider.ROOT_CACHE_KEY}blockedContacts:${userId}`;
     }
 
     /**
@@ -477,7 +477,7 @@ export class AddonMessagesProvider {
      * @returns Cache key.
      */
     protected getCacheKeyForContacts(): string {
-        return AddonMessagesProvider.ROOT_CACHE_KEY + 'contacts';
+        return `${AddonMessagesProvider.ROOT_CACHE_KEY}contacts`;
     }
 
     /**
@@ -486,7 +486,7 @@ export class AddonMessagesProvider {
      * @returns Cache key.
      */
     protected getCacheKeyForUserContacts(): string {
-        return AddonMessagesProvider.ROOT_CACHE_KEY + 'userContacts';
+        return `${AddonMessagesProvider.ROOT_CACHE_KEY}userContacts`;
     }
 
     /**
@@ -495,7 +495,7 @@ export class AddonMessagesProvider {
      * @returns Cache key.
      */
     protected getCacheKeyForContactRequests(): string {
-        return AddonMessagesProvider.ROOT_CACHE_KEY + 'contactRequests';
+        return `${AddonMessagesProvider.ROOT_CACHE_KEY}contactRequests`;
     }
 
     /**
@@ -504,7 +504,7 @@ export class AddonMessagesProvider {
      * @returns Cache key.
      */
     protected getCacheKeyForContactRequestsCount(): string {
-        return AddonMessagesProvider.ROOT_CACHE_KEY + 'contactRequestsCount';
+        return `${AddonMessagesProvider.ROOT_CACHE_KEY}contactRequestsCount`;
     }
 
     /**
@@ -514,7 +514,7 @@ export class AddonMessagesProvider {
      * @returns Cache key.
      */
     getCacheKeyForDiscussion(userId: number): string {
-        return AddonMessagesProvider.ROOT_CACHE_KEY + 'discussion:' + userId;
+        return `${AddonMessagesProvider.ROOT_CACHE_KEY}discussion:${userId}`;
     }
 
     /**
@@ -524,7 +524,7 @@ export class AddonMessagesProvider {
      * @returns Cache key.
      */
     protected getCacheKeyForMessageCount(userId: number): string {
-        return AddonMessagesProvider.ROOT_CACHE_KEY + 'count:' + userId;
+        return `${AddonMessagesProvider.ROOT_CACHE_KEY}count:${userId}`;
     }
 
     /**
@@ -533,7 +533,7 @@ export class AddonMessagesProvider {
      * @returns Cache key.
      */
     protected getCacheKeyForUnreadConversationCounts(): string {
-        return AddonMessagesProvider.ROOT_CACHE_KEY + 'unreadConversationCounts';
+        return `${AddonMessagesProvider.ROOT_CACHE_KEY}unreadConversationCounts`;
     }
 
     /**
@@ -542,7 +542,7 @@ export class AddonMessagesProvider {
      * @returns Cache key.
      */
     protected getCacheKeyForDiscussions(): string {
-        return AddonMessagesProvider.ROOT_CACHE_KEY + 'discussions';
+        return `${AddonMessagesProvider.ROOT_CACHE_KEY}discussions`;
     }
 
     /**
@@ -553,7 +553,7 @@ export class AddonMessagesProvider {
      * @returns Cache key.
      */
     protected getCacheKeyForConversation(userId: number, conversationId: number): string {
-        return AddonMessagesProvider.ROOT_CACHE_KEY + 'conversation:' + userId + ':' + conversationId;
+        return `${AddonMessagesProvider.ROOT_CACHE_KEY}conversation:${userId}:${conversationId}`;
     }
 
     /**
@@ -564,7 +564,7 @@ export class AddonMessagesProvider {
      * @returns Cache key.
      */
     protected getCacheKeyForConversationBetweenUsers(userId: number, otherUserId: number): string {
-        return AddonMessagesProvider.ROOT_CACHE_KEY + 'conversationBetweenUsers:' + userId + ':' + otherUserId;
+        return `${AddonMessagesProvider.ROOT_CACHE_KEY}conversationBetweenUsers:${userId}:${otherUserId}`;
     }
 
     /**
@@ -575,7 +575,7 @@ export class AddonMessagesProvider {
      * @returns Cache key.
      */
     protected getCacheKeyForConversationMembers(userId: number, conversationId: number): string {
-        return AddonMessagesProvider.ROOT_CACHE_KEY + 'conversationMembers:' + userId + ':' + conversationId;
+        return `${AddonMessagesProvider.ROOT_CACHE_KEY}conversationMembers:${userId}:${conversationId}`;
     }
 
     /**
@@ -586,7 +586,7 @@ export class AddonMessagesProvider {
      * @returns Cache key.
      */
     protected getCacheKeyForConversationMessages(userId: number, conversationId: number): string {
-        return AddonMessagesProvider.ROOT_CACHE_KEY + 'conversationMessages:' + userId + ':' + conversationId;
+        return `${AddonMessagesProvider.ROOT_CACHE_KEY}conversationMessages:${userId}:${conversationId}`;
     }
 
     /**
@@ -607,7 +607,7 @@ export class AddonMessagesProvider {
      * @returns Cache key.
      */
     protected getCacheKeyForConversationCounts(): string {
-        return AddonMessagesProvider.ROOT_CACHE_KEY + 'conversationCounts';
+        return `${AddonMessagesProvider.ROOT_CACHE_KEY}conversationCounts`;
     }
 
     /**
@@ -618,7 +618,7 @@ export class AddonMessagesProvider {
      * @returns Cache key.
      */
     protected getCacheKeyForMemberInfo(userId: number, otherUserId: number): string {
-        return AddonMessagesProvider.ROOT_CACHE_KEY + 'memberInfo:' + userId + ':' + otherUserId;
+        return `${AddonMessagesProvider.ROOT_CACHE_KEY}memberInfo:${userId}:${otherUserId}`;
     }
 
     /**
@@ -628,7 +628,7 @@ export class AddonMessagesProvider {
      * @returns Cache key.
      */
     protected getCacheKeyForSelfConversation(userId: number): string {
-        return AddonMessagesProvider.ROOT_CACHE_KEY + 'selfconversation:' + userId;
+        return `${AddonMessagesProvider.ROOT_CACHE_KEY}selfconversation:${userId}`;
     }
 
     /**

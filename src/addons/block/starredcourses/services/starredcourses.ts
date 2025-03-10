@@ -18,13 +18,13 @@ import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
 import { makeSingleton } from '@singletons';
 import { CoreTextFormat } from '@singletons/text';
 
-const ROOT_CACHE_KEY = 'AddonBlockStarredCourses:';
-
 /**
  * Service that provides some features regarding starred courses.
  */
 @Injectable( { providedIn: 'root' })
 export class AddonBlockStarredCoursesProvider {
+
+    protected static readonly ROOT_CACHE_KEY = 'AddonBlockStarredCourses:';
 
     /**
      * Get cache key for get starred courrses value WS call.
@@ -32,7 +32,7 @@ export class AddonBlockStarredCoursesProvider {
      * @returns Cache key.
      */
     protected getStarredCoursesCacheKey(): string {
-        return ROOT_CACHE_KEY + ':starredcourses';
+        return `${AddonBlockStarredCoursesProvider.ROOT_CACHE_KEY}:starredcourses`;
     }
 
     /**
@@ -55,7 +55,6 @@ export class AddonBlockStarredCoursesProvider {
      * Invalidates get starred courrses WS call.
      *
      * @param siteId Site ID to invalidate. If not defined, use current site.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateStarredCourses(siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);

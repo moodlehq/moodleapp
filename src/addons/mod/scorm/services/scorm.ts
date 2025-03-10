@@ -1224,7 +1224,6 @@ export class AddonModScormProvider {
      *
      * @param scormId SCORM ID.
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateAccessInformation(scormId: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -1238,7 +1237,6 @@ export class AddonModScormProvider {
      * @param scormId SCORM ID.
      * @param siteId Site ID. If not defined, current site.
      * @param userId User ID. If not defined use site's current user.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateAllScormData(scormId: number, siteId?: string, userId?: number): Promise<void> {
         await Promise.all([
@@ -1255,7 +1253,6 @@ export class AddonModScormProvider {
      * @param scormId SCORM ID.
      * @param siteId Site ID. If not defined, current site.
      * @param userId User ID. If not defined use site's current user.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateAttemptCount(scormId: number, siteId?: string, userId?: number): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -1271,7 +1268,6 @@ export class AddonModScormProvider {
      * @param courseId Course ID of the module.
      * @param siteId Site ID. If not defined, current site.
      * @param userId User ID. If not defined use site's current user.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateContent(moduleId: number, courseId: number, siteId?: string, userId?: number): Promise<void> {
         siteId = siteId || CoreSites.getCurrentSiteId();
@@ -1289,7 +1285,6 @@ export class AddonModScormProvider {
      *
      * @param courseId Course ID.
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateScormData(courseId: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -1302,7 +1297,6 @@ export class AddonModScormProvider {
      *
      * @param scormId SCORM ID.
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateScormUserData(scormId: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -1315,7 +1309,6 @@ export class AddonModScormProvider {
      *
      * @param scormId SCORM ID.
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateScos(scormId: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);

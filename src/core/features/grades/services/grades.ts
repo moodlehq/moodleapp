@@ -251,7 +251,6 @@ export class CoreGradesProvider {
      *
      * @param courseId ID of the course to get the grades from.
      * @param siteId Site ID (empty for current site).
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateAllCourseGradesData(courseId: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -265,7 +264,6 @@ export class CoreGradesProvider {
      * @param courseId Course ID.
      * @param userId User ID.
      * @param siteId Site id (empty for current site).
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateCourseGradesData(courseId: number, userId?: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -278,7 +276,6 @@ export class CoreGradesProvider {
      * Invalidates courses grade data WS calls.
      *
      * @param siteId Site id (empty for current site).
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateCoursesGradesData(siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -293,7 +290,6 @@ export class CoreGradesProvider {
      * @param userId ID of the user to get the grades from.
      * @param groupId ID of the group to get the grades from. Default: 0.
      * @param siteId Site id (empty for current site).
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateCourseGradesItemsData(courseId: number, userId: number, groupId?: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);

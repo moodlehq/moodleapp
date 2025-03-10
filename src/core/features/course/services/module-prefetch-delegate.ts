@@ -37,13 +37,13 @@ import { CoreCourseHelper, CoreCourseModuleData } from './course-helper';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CORE_COURSE_MODULE_FEATURE_PREFIX } from '../constants';
 
-const ROOT_CACHE_KEY = 'mmCourse:';
-
 /**
  * Delegate to register module prefetch handlers.
  */
 @Injectable({ providedIn: 'root' })
 export class CoreCourseModulePrefetchDelegateService extends CoreDelegate<CoreCourseModulePrefetchHandler> {
+
+    protected static readonly ROOT_CACHE_KEY = 'mmCourse:';
 
     protected statusCache = new CoreCache();
     protected featurePrefix = CORE_COURSE_MODULE_FEATURE_PREFIX;
@@ -334,7 +334,7 @@ export class CoreCourseModulePrefetchDelegateService extends CoreDelegate<CoreCo
      * @returns Cache key.
      */
     protected getCourseUpdatesCacheKey(courseId: number): string {
-        return ROOT_CACHE_KEY + 'courseUpdates:' + courseId;
+        return `${CoreCourseModulePrefetchDelegateService.ROOT_CACHE_KEY}courseUpdates:${courseId}`;
     }
 
     /**
@@ -1471,7 +1471,6 @@ export interface CoreCourseModulePrefetchHandler extends CoreDelegateHandler {
      *
      * @param moduleId The module ID.
      * @param courseId Course ID the module belongs to.
-     * @returns Promise resolved when the data is invalidated.
      */
     invalidateContent(moduleId: number, courseId: number): Promise<void>;
 

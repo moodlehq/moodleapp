@@ -144,10 +144,9 @@ export class AddonModQuizPrefetchHandlerService extends CoreCourseActivityPrefet
      *
      * @param moduleId The module ID.
      * @param courseId The course ID the module belongs to.
-     * @returns Promise resolved when the data is invalidated.
      */
-    invalidateContent(moduleId: number, courseId: number): Promise<void> {
-        return AddonModQuiz.invalidateContent(moduleId, courseId);
+    async invalidateContent(moduleId: number, courseId: number): Promise<void> {
+        await AddonModQuiz.invalidateContent(moduleId, courseId);
     }
 
     /**

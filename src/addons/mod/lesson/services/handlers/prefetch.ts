@@ -93,7 +93,6 @@ export class AddonModLessonPrefetchHandlerService extends CoreCourseActivityPref
      *
      * @param moduleId The module ID.
      * @param courseId The course ID the module belongs to.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateContent(moduleId: number, courseId: number): Promise<void> {
         // Only invalidate the data that doesn't ignore cache when prefetching.

@@ -189,7 +189,6 @@ export class CoreH5PProvider {
      * Invalidates all trusted H5P file WS calls.
      *
      * @param siteId Site ID (empty for current site).
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateAllGetTrustedH5PFile(siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -202,7 +201,6 @@ export class CoreH5PProvider {
      *
      * @param url The URL of the file.
      * @param siteId Site ID (empty for current site).
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateGetTrustedH5PFile(url: string, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);

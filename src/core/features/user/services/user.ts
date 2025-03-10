@@ -32,8 +32,6 @@ import { CoreCacheUpdateFrequency, CoreConstants } from '@/core/constants';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreTextFormat } from '@singletons/text';
 
-const ROOT_CACHE_KEY = 'mmUser:';
-
 declare module '@singletons/events' {
 
     /**
@@ -73,6 +71,8 @@ export const USER_NOREPLY_USER = -10;
  */
 @Injectable({ providedIn: 'root' })
 export class CoreUserProvider {
+
+    protected static readonly ROOT_CACHE_KEY = 'mmUser:';
 
     static readonly PARTICIPANTS_LIST_LIMIT = 50; // Max of participants to retrieve in each WS call.
 
@@ -248,7 +248,7 @@ export class CoreUserProvider {
      * @returns Cache key.
      */
     protected getParticipantsListCacheKey(courseId: number): string {
-        return ROOT_CACHE_KEY + 'list:' + courseId;
+        return `${CoreUserProvider.ROOT_CACHE_KEY}list:${courseId}`;
     }
 
     /**
@@ -312,7 +312,7 @@ export class CoreUserProvider {
      * @returns Cache key.
      */
     protected getUserCacheKey(userId: number): string {
-        return ROOT_CACHE_KEY + 'data:' + userId;
+        return `${CoreUserProvider.ROOT_CACHE_KEY}data:${userId}`;
     }
 
     /**
@@ -447,7 +447,7 @@ export class CoreUserProvider {
      * @returns Cache key.
      */
     protected getUserPreferenceCacheKey(name: string): string {
-        return ROOT_CACHE_KEY + 'preference:' + name;
+        return `${CoreUserProvider.ROOT_CACHE_KEY}preference:${name}`;
     }
 
     /**
@@ -478,7 +478,6 @@ export class CoreUserProvider {
      *
      * @param userId User ID.
      * @param siteId Site Id. If not defined, use current site.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateUserCache(userId: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -504,7 +503,6 @@ export class CoreUserProvider {
      *
      * @param name Name of the preference.
      * @param siteId Site Id. If not defined, use current site.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateUserPreference(name: string, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);

@@ -804,7 +804,6 @@ export class AddonModDataProvider {
      * @param moduleId The module ID.
      * @param courseId Course ID of the module.
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateContent(moduleId: number, courseId: number, siteId?: string): Promise<void> {
         siteId = siteId || CoreSites.getCurrentSiteId();
@@ -834,7 +833,6 @@ export class AddonModDataProvider {
      *
      * @param dataId Data ID.
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateDatabaseAccessInformationData(dataId: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -847,7 +845,6 @@ export class AddonModDataProvider {
      *
      * @param dataId Data ID.
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateEntriesData(dataId: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -860,7 +857,6 @@ export class AddonModDataProvider {
      *
      * @param dataId Data ID.
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateFieldsData(dataId: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -884,7 +880,6 @@ export class AddonModDataProvider {
      *
      * @param courseId Course ID.
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateDatabaseData(courseId: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -897,7 +892,6 @@ export class AddonModDataProvider {
      *
      * @param databaseId Data ID.
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateDatabaseWSData(databaseId: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -911,7 +905,6 @@ export class AddonModDataProvider {
      * @param dataId Data ID for caching purposes.
      * @param entryId Entry ID.
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateEntryData(dataId: number, entryId: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);

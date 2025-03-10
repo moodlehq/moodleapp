@@ -160,7 +160,6 @@ export class AddonModLtiProvider {
      *
      * @param courseId Course ID.
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateLti(courseId: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -173,7 +172,6 @@ export class AddonModLtiProvider {
      *
      * @param id LTI id.
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateLtiLaunchData(id: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);

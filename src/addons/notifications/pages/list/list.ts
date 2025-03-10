@@ -17,7 +17,7 @@ import { Subscription } from 'rxjs';
 import { CoreUtils } from '@singletons/utils';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import {
-    AddonNotifications, AddonNotificationsNotificationMessageFormatted, AddonNotificationsProvider,
+    AddonNotifications, AddonNotificationsNotificationMessageFormatted,
 } from '../../services/notifications';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSplitViewComponent } from '@components/split-view/split-view';
@@ -36,6 +36,7 @@ import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreAlerts } from '@services/overlays/alerts';
 import { CoreSharedModule } from '@/core/shared.module';
 import { CoreMainMenuUserButtonComponent } from '@features/mainmenu/components/user-menu-button/user-menu-button';
+import { ADDONS_NOTIFICATIONS_READ_CHANGED_EVENT, ADDONS_NOTIFICATIONS_READ_CRON_EVENT } from '@addons/notifications/constants';
 
 /**
  * Page that displays the list of notifications.
@@ -98,7 +99,7 @@ export default class AddonNotificationsListPage implements AfterViewInit, OnDest
 
         this.notifications.start(this.splitView);
 
-        this.cronObserver = CoreEvents.on(AddonNotificationsProvider.READ_CRON_EVENT, () => {
+        this.cronObserver = CoreEvents.on(ADDONS_NOTIFICATIONS_READ_CRON_EVENT, () => {
             if (!this.isCurrentView) {
                 return;
             }
@@ -121,7 +122,7 @@ export default class AddonNotificationsListPage implements AfterViewInit, OnDest
             this.refreshNotifications();
         });
 
-        this.readObserver = CoreEvents.on(AddonNotificationsProvider.READ_CHANGED_EVENT, (data) => {
+        this.readObserver = CoreEvents.on(ADDONS_NOTIFICATIONS_READ_CHANGED_EVENT, (data) => {
             if (!data.id) {
                 return;
             }
@@ -201,7 +202,7 @@ export default class AddonNotificationsListPage implements AfterViewInit, OnDest
 
         await CorePromiseUtils.ignoreErrors(AddonNotifications.markAllNotificationsAsRead());
 
-        CoreEvents.trigger(AddonNotificationsProvider.READ_CHANGED_EVENT, {
+        CoreEvents.trigger(ADDONS_NOTIFICATIONS_READ_CHANGED_EVENT, {
             time: CoreTime.timestamp(),
         }, CoreSites.getCurrentSiteId());
 

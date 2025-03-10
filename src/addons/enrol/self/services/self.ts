@@ -66,7 +66,6 @@ export class AddonEnrolSelfService {
      *
      * @param instanceId Self instance ID.
      * @param siteId Site Id. If not defined, use current site.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateSelfEnrolmentInfo(instanceId: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
