@@ -25,6 +25,12 @@ import { CoreCourseModuleDelegate } from '@features/course/services/module-deleg
 import { AddonNotificationsPushNotification } from './handlers/push-click';
 import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
 import { CoreCacheUpdateFrequency } from '@/core/constants';
+import {
+    ADDONS_NOTIFICATIONS_READ_CHANGED_EVENT,
+    ADDONS_NOTIFICATIONS_READ_CRON_EVENT,
+    ADDONS_NOTIFICATIONS_PUSH_SIMULATION_COMPONENT,
+    ADDONS_NOTIFICATIONS_LIST_LIMIT,
+} from '../constants';
 
 declare module '@singletons/events' {
 
@@ -34,12 +40,10 @@ declare module '@singletons/events' {
      * @see https://www.typescriptlang.org/docs/handbook/declaration-merging.html#module-augmentation
      */
     export interface CoreEventsData {
-        [AddonNotificationsProvider.READ_CHANGED_EVENT]: AddonNotificationsReadChangedEvent;
+        [ADDONS_NOTIFICATIONS_READ_CHANGED_EVENT]: AddonNotificationsReadChangedEvent;
     }
 
 }
-
-const ROOT_CACHE_KEY = 'mmaNotifications:';
 
 /**
  * Service to handle notifications.
@@ -47,16 +51,27 @@ const ROOT_CACHE_KEY = 'mmaNotifications:';
 @Injectable({ providedIn: 'root' })
 export class AddonNotificationsProvider {
 
-    static readonly READ_CHANGED_EVENT = 'addon_notifications_read_changed_event';
-    static readonly READ_CRON_EVENT = 'addon_notifications_read_cron_event';
-    static readonly PUSH_SIMULATION_COMPONENT = 'AddonNotificationsPushSimulation';
-    static readonly LIST_LIMIT = 20;
+    protected static readonly ROOT_CACHE_KEY = 'mmaNotifications:';
 
-    protected logger: CoreLogger;
+    /**
+     * @deprecated since 5.0. Use ADDONS_NOTIFICATIONS_READ_CHANGED_EVENT instead.
+     */
+    static readonly READ_CHANGED_EVENT = ADDONS_NOTIFICATIONS_READ_CHANGED_EVENT;
+    /**
+     * @deprecated since 5.0. Use ADDONS_NOTIFICATIONS_READ_CRON_EVENT instead.
+     */
+    static readonly READ_CRON_EVENT = ADDONS_NOTIFICATIONS_READ_CRON_EVENT;
+    /**
+     * @deprecated since 5.0. Use ADDONS_NOTIFICATIONS_PUSH_SIMULATION_COMPONENT instead.
+     */
+    static readonly PUSH_SIMULATION_COMPONENT = ADDONS_NOTIFICATIONS_PUSH_SIMULATION_COMPONENT;
 
-    constructor() {
-        this.logger = CoreLogger.getInstance('AddonNotificationsProvider');
-    }
+    /**
+     * @deprecated since 5.0. Use ADDONS_NOTIFICATIONS_LIST_LIMIT instead.
+     */
+    static readonly LIST_LIMIT = ADDONS_NOTIFICATIONS_LIST_LIMIT;
+
+    protected logger = CoreLogger.getInstance('AddonNotificationsProvider');
 
     /**
      * Convert a push notification data to use the same format as the get_messages WS.
@@ -172,7 +187,7 @@ export class AddonNotificationsProvider {
      * @returns Cache key.
      */
     protected getNotificationPreferencesCacheKey(): string {
-        return ROOT_CACHE_KEY + 'notificationPreferences';
+        return `${AddonNotificationsProvider.ROOT_CACHE_KEY}notificationPreferences`;
     }
 
     /**
@@ -206,7 +221,7 @@ export class AddonNotificationsProvider {
      * @returns Cache key.
      */
     protected getNotificationsCacheKey(): string {
-        return ROOT_CACHE_KEY + 'list';
+        return `${AddonNotificationsProvider.ROOT_CACHE_KEY}list`;
     }
 
     /**
@@ -221,7 +236,7 @@ export class AddonNotificationsProvider {
         options: AddonNotificationsGetNotificationsOptions = {},
     ): Promise<AddonNotificationsNotificationMessageFormatted[]> {
         options.offset = options.offset || 0;
-        options.limit = options.limit || AddonNotificationsProvider.LIST_LIMIT;
+        options.limit = options.limit || ADDONS_NOTIFICATIONS_LIST_LIMIT;
 
         const typeText = read === AddonNotificationsGetReadType.READ ?
             'read' :
@@ -293,13 +308,13 @@ export class AddonNotificationsProvider {
         // Fallback call
         try {
             const unread = await this.getNotificationsWithStatus(AddonNotificationsGetReadType.UNREAD, {
-                limit: AddonNotificationsProvider.LIST_LIMIT + 1,
+                limit: ADDONS_NOTIFICATIONS_LIST_LIMIT + 1,
                 siteId,
             });
 
             return {
-                count: Math.min(unread.length, AddonNotificationsProvider.LIST_LIMIT),
-                hasMore: unread.length > AddonNotificationsProvider.LIST_LIMIT,
+                count: Math.min(unread.length, ADDONS_NOTIFICATIONS_LIST_LIMIT),
+                hasMore: unread.length > ADDONS_NOTIFICATIONS_LIST_LIMIT,
             };
         } catch {
             // Return no notifications if the call fails.
@@ -317,7 +332,7 @@ export class AddonNotificationsProvider {
      * @returns Cache key.
      */
     protected getUnreadNotificationsCountCacheKey(userId: number): string {
-        return `${ROOT_CACHE_KEY}count:${userId}`;
+        return `${AddonNotificationsProvider.ROOT_CACHE_KEY}count:${userId}`;
     }
 
     /**
@@ -361,7 +376,6 @@ export class AddonNotificationsProvider {
      * Invalidate get notification preferences.
      *
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved when data is invalidated.
      */
     async invalidateNotificationPreferences(siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -373,7 +387,6 @@ export class AddonNotificationsProvider {
      * Invalidates notifications list WS calls.
      *
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved when the list is invalidated.
      */
     async invalidateNotificationsList(siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);

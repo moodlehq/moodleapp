@@ -32,7 +32,7 @@ import { ContextLevel, CoreCacheUpdateFrequency } from '@/core/constants';
 @Injectable({ providedIn: 'root' })
 export class CoreFilterProvider {
 
-    protected readonly ROOT_CACHE_KEY = 'mmFilter:';
+    protected static readonly ROOT_CACHE_KEY = 'mmFilter:';
 
     protected logger: CoreLogger;
 
@@ -277,7 +277,7 @@ export class CoreFilterProvider {
      * @returns Cache key.
      */
     protected getAllStatesCacheKey(): string {
-        return this.ROOT_CACHE_KEY + 'allStates';
+        return `${CoreFilterProvider.ROOT_CACHE_KEY}allStates`;
     }
 
     /**
@@ -334,7 +334,7 @@ export class CoreFilterProvider {
      * @returns Cache key.
      */
     protected getAvailableInContextsPrefixCacheKey(): string {
-        return this.ROOT_CACHE_KEY + 'availableInContexts:';
+        return `${CoreFilterProvider.ROOT_CACHE_KEY}availableInContexts:`;
     }
 
     /**
@@ -490,7 +490,6 @@ export class CoreFilterProvider {
      * Invalidates all available in context WS calls.
      *
      * @param siteId Site ID (empty for current site).
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateAllAvailableInContext(siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -502,7 +501,6 @@ export class CoreFilterProvider {
      * Invalidates get all states WS call.
      *
      * @param siteId Site ID (empty for current site).
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateAllStates(siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -515,7 +513,6 @@ export class CoreFilterProvider {
      *
      * @param contexts The contexts to check.
      * @param siteId Site ID (empty for current site).
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateAvailableInContexts(
         contexts: CoreFiltersGetAvailableInContextWSParamContext[],
@@ -532,7 +529,6 @@ export class CoreFilterProvider {
      * @param contextLevel The context level to check.
      * @param instanceId The instance ID.
      * @param siteId Site ID (empty for current site).
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateAvailableInContext(contextLevel: ContextLevel, instanceId: number, siteId?: string): Promise<void> {
         await this.invalidateAvailableInContexts([{ contextlevel: contextLevel, instanceid: instanceId }], siteId);

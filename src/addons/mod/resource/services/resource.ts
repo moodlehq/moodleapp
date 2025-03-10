@@ -105,7 +105,6 @@ export class AddonModResourceProvider {
      * @param moduleId The module ID.
      * @param courseId Course ID of the module.
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateContent(moduleId: number, courseId: number, siteId?: string): Promise<void> {
         siteId = siteId || CoreSites.getCurrentSiteId();
@@ -124,7 +123,6 @@ export class AddonModResourceProvider {
      *
      * @param courseId Course ID.
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateResourceData(courseId: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);

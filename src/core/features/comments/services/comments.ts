@@ -27,8 +27,6 @@ import { ContextLevel, CoreCacheUpdateFrequency } from '@/core/constants';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreTextFormat } from '@singletons/text';
 
-const ROOT_CACHE_KEY = 'mmComments:';
-
 declare module '@singletons/events' {
 
     /**
@@ -48,6 +46,8 @@ declare module '@singletons/events' {
  */
 @Injectable( { providedIn: 'root' })
 export class CoreCommentsProvider {
+
+    protected static readonly ROOT_CACHE_KEY = 'mmComments:';
 
     static readonly REFRESH_COMMENTS_EVENT = 'core_comments_refresh_comments';
     static readonly COMMENTS_COUNT_CHANGED_EVENT = 'core_comments_count_changed';
@@ -385,7 +385,7 @@ export class CoreCommentsProvider {
      * @returns Cache key.
      */
     protected getCommentsPrefixCacheKey(contextLevel: ContextLevel, instanceId: number): string {
-        return ROOT_CACHE_KEY + 'comments:' + contextLevel + ':' + instanceId;
+        return `${CoreCommentsProvider.ROOT_CACHE_KEY}comments:${contextLevel}:${instanceId}`;
     }
 
     /**
@@ -512,7 +512,6 @@ export class CoreCommentsProvider {
      * @param itemId Associated id.
      * @param area String comment area. Default empty.
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateCommentsData(
         contextLevel: ContextLevel,
@@ -544,7 +543,6 @@ export class CoreCommentsProvider {
      * @param contextLevel Contextlevel system, course, user...
      * @param instanceId The Instance id of item associated with the context level.
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateCommentsByInstance(contextLevel: ContextLevel, instanceId: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);

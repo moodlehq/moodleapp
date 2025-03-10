@@ -181,9 +181,8 @@ export class AddonModUrlProvider {
      * @param moduleId The module ID.
      * @param courseId Course ID of the module.
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved when the data is invalidated.
      */
-    invalidateContent(moduleId: number, courseId: number, siteId?: string): Promise<void> {
+    async invalidateContent(moduleId: number, courseId: number, siteId?: string): Promise<void> {
         siteId = siteId || CoreSites.getCurrentSiteId();
 
         const promises: Promise<void>[] = [];
@@ -191,7 +190,7 @@ export class AddonModUrlProvider {
         promises.push(this.invalidateUrlData(courseId, siteId));
         promises.push(CoreCourse.invalidateModule(moduleId, siteId, 'url'));
 
-        return CorePromiseUtils.allPromises(promises);
+        await CorePromiseUtils.allPromises(promises);
     }
 
     /**
@@ -199,7 +198,6 @@ export class AddonModUrlProvider {
      *
      * @param courseId Course ID.
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateUrlData(courseId: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);

@@ -2398,7 +2398,6 @@ export class AddonModLessonProvider {
      *
      * @param lessonId Lesson ID.
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateAccessInformation(lessonId: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -2411,7 +2410,6 @@ export class AddonModLessonProvider {
      *
      * @param lessonId Lesson ID.
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateContentPagesViewed(lessonId: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -2425,7 +2423,6 @@ export class AddonModLessonProvider {
      * @param lessonId Lesson ID.
      * @param retake Retake number.
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateContentPagesViewedForRetake(lessonId: number, retake: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -2438,7 +2435,6 @@ export class AddonModLessonProvider {
      *
      * @param courseId Course ID.
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateLessonData(courseId: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -2451,7 +2447,6 @@ export class AddonModLessonProvider {
      *
      * @param lessonId Lesson ID.
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateLessonWithPassword(lessonId: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -2464,7 +2459,6 @@ export class AddonModLessonProvider {
      *
      * @param lessonId Lesson ID.
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidatePageData(lessonId: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -2478,7 +2472,6 @@ export class AddonModLessonProvider {
      * @param lessonId Lesson ID.
      * @param pageId Page ID.
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidatePageDataForPage(lessonId: number, pageId: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -2491,7 +2484,6 @@ export class AddonModLessonProvider {
      *
      * @param lessonId Lesson ID.
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidatePages(lessonId: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -2504,7 +2496,6 @@ export class AddonModLessonProvider {
      *
      * @param lessonId Lesson ID.
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidatePagesPossibleJumps(lessonId: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -2517,7 +2508,6 @@ export class AddonModLessonProvider {
      *
      * @param lessonId Lesson ID.
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateQuestionsAttempts(lessonId: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -2532,7 +2522,6 @@ export class AddonModLessonProvider {
      * @param retake Retake number.
      * @param siteId Site ID. If not defined, current site..
      * @param userId User ID. If not defined, site's user.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateQuestionsAttemptsForRetake(lessonId: number, retake: number, siteId?: string, userId?: number): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -2545,7 +2534,6 @@ export class AddonModLessonProvider {
      *
      * @param lessonId Lesson ID.
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateRetakesOverview(lessonId: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -2559,7 +2547,6 @@ export class AddonModLessonProvider {
      * @param lessonId Lesson ID.
      * @param groupId Group ID.
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateRetakesOverviewForGroup(lessonId: number, groupId: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -2572,7 +2559,6 @@ export class AddonModLessonProvider {
      *
      * @param lessonId Lesson ID.
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateTimers(lessonId: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -2586,7 +2572,6 @@ export class AddonModLessonProvider {
      * @param lessonId Lesson ID.
      * @param siteId Site ID. If not defined, current site.
      * @param userId User ID. If not defined, site's current user.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateTimersForUser(lessonId: number, siteId?: string, userId?: number): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -2601,7 +2586,6 @@ export class AddonModLessonProvider {
      * @param retake Retake number.
      * @param userId User ID. Undefined for current user.
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateUserRetake(lessonId: number, retake: number, userId?: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -2614,7 +2598,6 @@ export class AddonModLessonProvider {
      *
      * @param lessonId Lesson ID.
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateUserRetakesForLesson(lessonId: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -2628,7 +2611,6 @@ export class AddonModLessonProvider {
      * @param lessonId Lesson ID.
      * @param userId User ID. Undefined for current user.
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateUserRetakesForUser(lessonId: number, userId?: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);

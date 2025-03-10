@@ -68,7 +68,6 @@ export class AddonModBookPrefetchHandlerService extends CoreCourseResourcePrefet
      *
      * @param moduleId The module ID.
      * @param courseId Course ID the module belongs to.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateContent(moduleId: number, courseId: number): Promise<void> {
         await AddonModBook.invalidateContent(moduleId, courseId);

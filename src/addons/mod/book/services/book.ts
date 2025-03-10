@@ -94,7 +94,7 @@ export class AddonModBookProvider {
      * @returns Cache key.
      */
     protected getBookDataCacheKey(courseId: number): string {
-        return AddonModBookProvider.ROOT_CACHE_KEY + 'book:' + courseId;
+        return `${AddonModBookProvider.ROOT_CACHE_KEY}book:${courseId}`;
     }
 
     /**
@@ -280,7 +280,6 @@ export class AddonModBookProvider {
      *
      * @param courseId Course ID.
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateBookData(courseId: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -294,9 +293,8 @@ export class AddonModBookProvider {
      * @param moduleId The module ID.
      * @param courseId Course ID of the module.
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved when the data is invalidated.
      */
-    invalidateContent(moduleId: number, courseId: number, siteId?: string): Promise<void> {
+    async invalidateContent(moduleId: number, courseId: number, siteId?: string): Promise<void> {
         siteId = siteId || CoreSites.getCurrentSiteId();
 
         const promises: Promise<void>[] = [];
@@ -305,7 +303,7 @@ export class AddonModBookProvider {
         promises.push(CoreFilepool.invalidateFilesByComponent(siteId, ADDON_MOD_BOOK_COMPONENT, moduleId));
         promises.push(CoreCourse.invalidateModule(moduleId, siteId));
 
-        return CorePromiseUtils.allPromises(promises);
+        await CorePromiseUtils.allPromises(promises);
     }
 
     /**

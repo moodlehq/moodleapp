@@ -945,7 +945,6 @@ export class AddonModFeedbackProvider {
      *
      * @param feedbackId Feedback ID.
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateAllFeedbackData(feedbackId: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -958,12 +957,11 @@ export class AddonModFeedbackProvider {
      *
      * @param feedbackId Feedback ID.
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateAnalysisData(feedbackId: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
 
-        return site.invalidateWsCacheForKeyStartingWith(this.getAnalysisDataPrefixCacheKey(feedbackId));
+        await site.invalidateWsCacheForKeyStartingWith(this.getAnalysisDataPrefixCacheKey(feedbackId));
     }
 
     /**
@@ -973,7 +971,6 @@ export class AddonModFeedbackProvider {
      * @param moduleId The module ID.
      * @param courseId Course ID of the module.
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateContent(moduleId: number, courseId: number, siteId?: string): Promise<void> {
         siteId = siteId || CoreSites.getCurrentSiteId();
@@ -991,12 +988,11 @@ export class AddonModFeedbackProvider {
      *
      * @param feedbackId Feedback ID.
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateCurrentValuesData(feedbackId: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
 
-        return site.invalidateWsCacheForKey(this.getCurrentValuesDataCacheKey(feedbackId));
+        await site.invalidateWsCacheForKey(this.getCurrentValuesDataCacheKey(feedbackId));
     }
 
     /**
@@ -1004,12 +1000,11 @@ export class AddonModFeedbackProvider {
      *
      * @param feedbackId Feedback ID.
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateFeedbackAccessInformationData(feedbackId: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
 
-        return site.invalidateWsCacheForKey(this.getFeedbackAccessInformationDataCacheKey(feedbackId));
+        await site.invalidateWsCacheForKey(this.getFeedbackAccessInformationDataCacheKey(feedbackId));
     }
 
     /**
@@ -1017,12 +1012,11 @@ export class AddonModFeedbackProvider {
      *
      * @param courseId Course ID.
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateFeedbackData(courseId: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
 
-        return site.invalidateWsCacheForKey(this.getFeedbackCacheKey(courseId));
+        await site.invalidateWsCacheForKey(this.getFeedbackCacheKey(courseId));
     }
 
     /**
@@ -1030,10 +1024,9 @@ export class AddonModFeedbackProvider {
      *
      * @param moduleId The module ID.
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved when the files are invalidated.
      */
     async invalidateFiles(moduleId: number, siteId?: string): Promise<void> {
-        return CoreFilepool.invalidateFilesByComponent(siteId, ADDON_MOD_FEEDBACK_COMPONENT_LEGACY, moduleId);
+        await CoreFilepool.invalidateFilesByComponent(siteId, ADDON_MOD_FEEDBACK_COMPONENT_LEGACY, moduleId);
     }
 
     /**
@@ -1041,7 +1034,6 @@ export class AddonModFeedbackProvider {
      *
      * @param feedbackId Feedback ID.
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateNonRespondentsData(feedbackId: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -1054,7 +1046,6 @@ export class AddonModFeedbackProvider {
      *
      * @param feedbackId Feedback ID.
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateResponsesAnalysisData(feedbackId: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -1067,7 +1058,6 @@ export class AddonModFeedbackProvider {
      *
      * @param feedbackId Feedback ID.
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateResumePageData(feedbackId: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);

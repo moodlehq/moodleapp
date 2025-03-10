@@ -1124,7 +1124,6 @@ export class CoreCourseProvider {
      *
      * @param courseId Course ID.
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateCourseBlocks(courseId: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -1138,7 +1137,6 @@ export class CoreCourseProvider {
      * @param moduleId Module ID.
      * @param siteId Site ID. If not defined, current site.
      * @param modName Module name. E.g. 'label', 'url', ...
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateModule(moduleId: number, siteId?: string, modName?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -1157,7 +1155,6 @@ export class CoreCourseProvider {
      * @param id Instance ID.
      * @param module Name of the module. E.g. 'glossary'.
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateModuleByInstance(id: number, module: string, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -1171,7 +1168,6 @@ export class CoreCourseProvider {
      * @param courseId Course ID.
      * @param siteId Site ID. If not defined, current site.
      * @param userId User ID. If not defined, current user.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateSections(courseId: number, siteId?: string, userId?: number): Promise<void> {
         const site = await CoreSites.getSite(siteId);

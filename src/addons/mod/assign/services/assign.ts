@@ -686,7 +686,6 @@ export class AddonModAssignProvider {
      *
      * @param assignId Assignment instance id.
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateAllSubmissionData(assignId: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -699,7 +698,6 @@ export class AddonModAssignProvider {
      *
      * @param courseId Course ID.
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateAssignmentData(courseId: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -712,7 +710,6 @@ export class AddonModAssignProvider {
      *
      * @param assignId Assignment ID.
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateAssignmentUserMappingsData(assignId: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -725,7 +722,6 @@ export class AddonModAssignProvider {
      *
      * @param assignId Assignment ID.
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateAssignmentGradesData(assignId: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -739,7 +735,6 @@ export class AddonModAssignProvider {
      * @param moduleId The module ID.
      * @param courseId Course ID.
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateContent(moduleId: number, courseId: number, siteId?: string): Promise<void> {
         siteId = siteId || CoreSites.getCurrentSiteId();
@@ -763,7 +758,6 @@ export class AddonModAssignProvider {
      *
      * @param assignId Assignment instance id.
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateSubmissionData(assignId: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -779,7 +773,6 @@ export class AddonModAssignProvider {
      * @param groupId Group Id (empty for all participants).
      * @param isBlind Whether blind marking is enabled or not.
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateSubmissionStatusData(
         assignId: number,
@@ -804,7 +797,6 @@ export class AddonModAssignProvider {
      *
      * @param assignId Assignment instance id.
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateListParticipantsData(assignId: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);

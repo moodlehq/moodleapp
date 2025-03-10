@@ -352,7 +352,6 @@ export class AddonModChoiceProvider {
      *
      * @param courseId Course ID.
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateChoiceData(courseId: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -386,7 +385,6 @@ export class AddonModChoiceProvider {
      *
      * @param choiceId Choice ID.
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateOptions(choiceId: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -399,7 +397,6 @@ export class AddonModChoiceProvider {
      *
      * @param choiceId Choice ID.
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateResults(choiceId: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);

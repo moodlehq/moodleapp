@@ -1123,7 +1123,6 @@ export class AddonCalendarProvider {
      *
      * @param courseId Course ID. If not defined, site calendar.
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateAccessInformation(courseId?: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -1136,7 +1135,6 @@ export class AddonCalendarProvider {
      *
      * @param courseId Course ID. If not defined, site calendar.
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateAllowedEventTypes(courseId?: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -1148,7 +1146,6 @@ export class AddonCalendarProvider {
      * Invalidates day events for all days.
      *
      * @param siteId Site Id. If not defined, use current site.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateAllDayEvents(siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -1162,7 +1159,6 @@ export class AddonCalendarProvider {
      * @param year Year.
      * @param month Month.
      * @param day Day.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateDayEvents(year: number, month: number, day: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -1205,7 +1201,6 @@ export class AddonCalendarProvider {
      * Invalidates monthly events for all months.
      *
      * @param siteId Site Id. If not defined, use current site.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateAllMonthlyEvents(siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -1218,7 +1213,6 @@ export class AddonCalendarProvider {
      *
      * @param year Year.
      * @param month Month.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateMonthlyEvents(year: number, month: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -1230,7 +1224,6 @@ export class AddonCalendarProvider {
      * Invalidates upcoming events for all courses and categories.
      *
      * @param siteId Site Id. If not defined, use current site.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateAllUpcomingEvents(siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -1244,7 +1237,6 @@ export class AddonCalendarProvider {
      * @param courseId Course ID.
      * @param categoryId Category ID.
      * @param siteId Site Id. If not defined, use current site.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateUpcomingEvents(courseId?: number, categoryId?: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -1256,7 +1248,6 @@ export class AddonCalendarProvider {
      * Invalidates look ahead setting.
      *
      * @param siteId Site Id. If not defined, use current site.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateLookAhead(siteId?: string): Promise<void> {
         await CoreUser.invalidateUserPreference('calendar_lookahead', siteId);
@@ -1266,10 +1257,9 @@ export class AddonCalendarProvider {
      * Invalidates time format setting.
      *
      * @param siteId Site Id. If not defined, use current site.
-     * @returns Promise resolved when the data is invalidated.
      */
-    invalidateTimeFormat(siteId?: string): Promise<void> {
-        return CoreUser.invalidateUserPreference('calendar_timeformat', siteId);
+    async invalidateTimeFormat(siteId?: string): Promise<void> {
+        await CoreUser.invalidateUserPreference('calendar_timeformat', siteId);
     }
 
     /**

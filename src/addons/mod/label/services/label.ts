@@ -110,7 +110,6 @@ export class AddonModLabelProvider {
      *
      * @param courseId Course ID.
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateLabelData(courseId: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
