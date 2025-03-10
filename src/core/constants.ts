@@ -249,7 +249,6 @@ export class CoreConstants {
         // @todo [4.0] This is not the proper way to check for development tools, we should rely only on the BUILD variable.
         return this.BUILD.isDevelopment
             || this.BUILD.isTesting
-            || this.CONFIG.versionname.includes('-dev')
             || CoreBrowser.hasDevelopmentSetting('DevTools');
     }
 

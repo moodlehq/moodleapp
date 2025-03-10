@@ -31,7 +31,7 @@ import { AddonModQuizAttemptDBRecord } from './database/quiz';
 import { type AddonModQuizPrefetchHandlerService } from './handlers/prefetch';
 import { AddonModQuiz, AddonModQuizAttemptWSData, AddonModQuizQuizWSData } from './quiz';
 import { AddonModQuizOffline, AddonModQuizQuestionsWithAnswers } from './quiz-offline';
-import { ADDON_MOD_QUIZ_AUTO_SYNCED, ADDON_MOD_QUIZ_COMPONENT_LEGACY } from '../constants';
+import { ADDON_MOD_QUIZ_AUTO_SYNCED, ADDON_MOD_QUIZ_COMPONENT, ADDON_MOD_QUIZ_COMPONENT_LEGACY } from '../constants';
 import { AddonModQuizHelper } from './quiz-helper';
 
 /**
@@ -207,7 +207,7 @@ export class AddonModQuizSyncProvider extends CoreCourseActivitySyncBaseProvider
             }
             quizIds[attempt.quizid] = true;
 
-            if (CoreSync.isBlocked(ADDON_MOD_QUIZ_COMPONENT_LEGACY, attempt.quizid, siteId)) {
+            if (CoreSync.isBlocked(ADDON_MOD_QUIZ_COMPONENT, attempt.quizid, siteId)) {
                 return;
             }
 
@@ -271,7 +271,7 @@ export class AddonModQuizSyncProvider extends CoreCourseActivitySyncBaseProvider
         }
 
         // Verify that quiz isn't blocked.
-        if (CoreSync.isBlocked(ADDON_MOD_QUIZ_COMPONENT_LEGACY, quiz.id, siteId)) {
+        if (CoreSync.isBlocked(ADDON_MOD_QUIZ_COMPONENT, quiz.id, siteId)) {
             this.logger.debug('Cannot sync quiz ' + quiz.id + ' because it is blocked.');
 
             throw new CoreError(Translate.instant('core.errorsyncblocked', { $a: this.componentTranslate }));

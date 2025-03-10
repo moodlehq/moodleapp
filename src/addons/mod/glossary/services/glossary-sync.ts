@@ -30,7 +30,7 @@ import { AddonModGlossaryHelper } from './glossary-helper';
 import { AddonModGlossaryOffline, AddonModGlossaryOfflineEntry } from './glossary-offline';
 import { CoreFileUploader } from '@features/fileuploader/services/fileuploader';
 import { CoreFileEntry } from '@services/file-helper';
-import { ADDON_MOD_GLOSSARY_COMPONENT_LEGACY, GLOSSARY_AUTO_SYNCED } from '../constants';
+import { ADDON_MOD_GLOSSARY_COMPONENT, ADDON_MOD_GLOSSARY_COMPONENT_LEGACY, GLOSSARY_AUTO_SYNCED } from '../constants';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 
 /**
@@ -148,7 +148,7 @@ export class AddonModGlossarySyncProvider extends CoreCourseActivitySyncBaseProv
         }
 
         // Verify that glossary isn't blocked.
-        if (CoreSync.isBlocked(ADDON_MOD_GLOSSARY_COMPONENT_LEGACY, syncId, siteId)) {
+        if (CoreSync.isBlocked(ADDON_MOD_GLOSSARY_COMPONENT, syncId, siteId)) {
             this.logger.debug('Cannot sync glossary ' + glossaryId + ' because it is blocked.');
 
             throw new CoreSyncBlockedError(Translate.instant('core.errorsyncblocked', { $a: this.componentTranslate }));
