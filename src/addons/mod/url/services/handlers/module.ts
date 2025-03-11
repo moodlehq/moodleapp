@@ -29,6 +29,7 @@ import { CoreUrl } from '@singletons/url';
 import { CoreMimetypeUtils } from '@services/utils/mimetype';
 import { ADDON_MOD_URL_COMPONENT, ADDON_MOD_URL_MODNAME, ADDON_MOD_URL_PAGE_NAME } from '../../constants';
 import { ModFeature, ModArchetype, ModPurpose, ModResourceDisplay } from '@addons/mod/constants';
+import { CoreCourseModuleHelper } from '@features/course/services/course-module-helper';
 
 /**
  * Handler to support url modules.
@@ -66,7 +67,7 @@ export class AddonModUrlModuleHandlerService extends CoreModuleHandlerBase imple
         const openUrl = async (module: CoreCourseModuleData, courseId: number): Promise<void> => {
             await this.logView(module);
 
-            CoreCourse.storeModuleViewed(courseId, module.id);
+            CoreCourseModuleHelper.storeModuleViewed(courseId, module.id);
 
             const mainFile = await this.getModuleMainFile(module);
             if (!mainFile) {
@@ -77,7 +78,7 @@ export class AddonModUrlModuleHandlerService extends CoreModuleHandlerBase imple
         };
 
         const handlerData: CoreCourseModuleHandlerData = {
-            icon: CoreCourse.getModuleIconSrc(module.modname, module.modicon),
+            icon: CoreCourseModuleHelper.getModuleIconSrc(module.modname, module.modicon),
             title: module.name,
             class: 'addon-mod_url-handler',
             showDownloadButton: false,
@@ -145,7 +146,7 @@ export class AddonModUrlModuleHandlerService extends CoreModuleHandlerBase imple
         }
 
         // Calculate the icon to use.
-        return CoreCourse.getModuleIconSrc(module.modname, module.modicon, icon);
+        return CoreCourseModuleHelper.getModuleIconSrc(module.modname, module.modicon, icon);
     }
 
     /**

@@ -15,7 +15,7 @@
 import { Injectable } from '@angular/core';
 import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
-import { CoreCourse } from '@features/course/services/course';
+import { CoreCourseModuleHelper } from '@features/course/services/course-module-helper';
 import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
 import { makeSingleton } from '@singletons';
 import { CoreCourseModuleDelegate } from '@features/course/services/module-delegate';
@@ -77,7 +77,7 @@ export class AddonBlockRecentlyAccessedItemsProvider {
         }));
 
         // Check if the viewed module should be updated for each activity.
-        const lastViewedMap = await CoreCourse.getCertainModulesViewed(cmIds, site.getId());
+        const lastViewedMap = await CoreCourseModuleHelper.getCertainModulesViewed(cmIds, site.getId());
 
         itemsToDisplay.forEach((recentItem) => {
             const timeAccess = recentItem.timeaccess * 1000;
@@ -88,7 +88,7 @@ export class AddonBlockRecentlyAccessedItemsProvider {
             }
 
             // Update access.
-            CoreCourse.storeModuleViewed(recentItem.courseid, recentItem.cmid, {
+            CoreCourseModuleHelper.storeModuleViewed(recentItem.courseid, recentItem.cmid, {
                 timeaccess: recentItem.timeaccess * 1000,
                 sectionId: lastViewed && lastViewed.sectionId,
                 siteId: site.getId(),

@@ -48,6 +48,7 @@ import { convertTextToHTMLElement } from '@/core/utils/create-html-element';
 import { CoreCourseAccessDataType } from '@features/course/constants';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreArray } from '@singletons/array';
+import { CoreCourseModuleHelper } from '@features/course/services/course-module-helper';
 
 export const GRADES_PAGE_NAME = 'grades';
 export const GRADES_PARTICIPANTS_PAGE_NAME = 'participant-grades';
@@ -590,7 +591,7 @@ export class CoreGradesHelperProvider {
 
                 row.itemtype = 'mod';
                 row.itemmodule = modname;
-                row.iconAlt = CoreCourse.translateModuleName(row.itemmodule) || '';
+                row.iconAlt = CoreCourseModuleHelper.translateModuleName(row.itemmodule) || '';
                 row.image = await CoreCourseModuleDelegate.getModuleIconSrc(modname, modicon);
             }
         } else {

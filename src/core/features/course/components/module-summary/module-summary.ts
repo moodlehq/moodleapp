@@ -37,6 +37,7 @@ import { toBoolean } from '@/core/transforms/boolean';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreAlerts } from '@services/overlays/alerts';
 import { ModFeature } from '@addons/mod/constants';
+import { CoreCourseModuleHelper } from '@features/course/services/course-module-helper';
 
 /**
  * Component to display a module summary modal.
@@ -179,7 +180,7 @@ export class CoreCourseModuleSummaryComponent implements OnInit, OnDestroy {
         this.componentId = this.module.id;
         this.externalUrl = this.module.url;
         this.courseId = this.courseId || this.module.course;
-        this.moduleNameTranslated = CoreCourse.translateModuleName(this.module.modname, this.module.modplural);
+        this.moduleNameTranslated = CoreCourseModuleHelper.translateModuleName(this.module.modname, this.module.modplural);
 
         this.blog = !CoreSites.getCurrentSite()?.isFeatureDisabled('CoreCourseOptionsDelegate_AddonBlog') &&
             await AddonBlog.isPluginEnabled();

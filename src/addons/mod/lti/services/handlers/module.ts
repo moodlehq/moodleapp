@@ -19,7 +19,7 @@ import { CoreCourseModuleData } from '@features/course/services/course-helper';
 import { makeSingleton } from '@singletons';
 import { AddonModLtiHelper } from '../lti-helper';
 import { CoreModuleHandlerBase } from '@features/course/classes/module-base-handler';
-import { CoreCourse } from '@features/course/services/course';
+import { CoreCourseModuleHelper } from '@features/course/services/course-module-helper';
 import { ADDON_MOD_LTI_PAGE_NAME } from '../../constants';
 import { ModFeature, ModPurpose } from '@addons/mod/constants';
 
@@ -63,7 +63,7 @@ export class AddonModLtiModuleHandlerService extends CoreModuleHandlerBase imple
                 // Launch the LTI.
                 AddonModLtiHelper.getDataAndLaunch(courseId, module);
 
-                CoreCourse.storeModuleViewed(courseId, module.id);
+                CoreCourseModuleHelper.storeModuleViewed(courseId, module.id);
             },
         };
 
@@ -83,7 +83,7 @@ export class AddonModLtiModuleHandlerService extends CoreModuleHandlerBase imple
      * @inheritdoc
      */
     getIconSrc(module?: CoreCourseModuleData | undefined, modicon?: string | undefined): string | undefined {
-        return module?.modicon ?? modicon ?? CoreCourse.getModuleIconSrc(this.modName);
+        return module?.modicon ?? modicon ?? CoreCourseModuleHelper.getModuleIconSrc(this.modName);
     }
 
 }
