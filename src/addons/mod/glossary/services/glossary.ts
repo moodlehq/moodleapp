@@ -509,7 +509,7 @@ export class AddonModGlossaryProvider {
      * @param options Other options.
      * @returns Promise resolved with the entry.
      */
-    async getEntry(entryId: number, options: CoreCourseCommonModWSOptions = {}): Promise<AddonModGlossaryGetEntryByIdResponse> {
+    async getEntry(entryId: number, options: AddonModGlossaryGetEntryOptions = {}): Promise<AddonModGlossaryGetEntryByIdResponse> {
         const site = await CoreSites.getSite(options.siteId);
 
         const params: AddonModGlossaryGetEntryByIdWSParams = {
@@ -521,11 +521,18 @@ export class AddonModGlossaryProvider {
             component: ADDON_MOD_GLOSSARY_COMPONENT,
             componentId: options.cmId,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
+            filter: options.filter !== false,
+            rewriteurls: options.filter !== false,
         };
 
         try {
             return await site.read<AddonModGlossaryGetEntryByIdWSResponse>('mod_glossary_get_entry_by_id', params, preSets);
         } catch (error) {
+            if (!preSets.getFromCache) {
+                // Cache disabled, throw the error instead of returning the cached data from the list of entries.
+                throw error;
+            }
+
             // Entry not found. Search it in the list of entries.
             try {
                 const data = await this.getStoredDataForEntry(entryId, site.getId());
@@ -1524,3 +1531,10 @@ export type AddonModGlossaryIsConceptUsedOptions = {
  * Possible values for entry options.
  */
 export type AddonModGlossaryEntryOption = string | number;
+
+/**
+ * Options for getEntry.
+ */
+export type AddonModGlossaryGetEntryOptions = CoreCourseCommonModWSOptions & {
+    filter?: boolean; // Defaults to true. If false, text won't be filtered and URLs won't be rewritten.
+};

@@ -28,7 +28,7 @@ import { AddonCalendarHelper } from './calendar-helper';
 import { makeSingleton, Translate } from '@singletons';
 import { CoreSync, CoreSyncResult } from '@services/sync';
 import { CoreNetworkError } from '@classes/errors/network-error';
-import moment from 'moment-timezone';
+import { Dayjs } from 'dayjs';
 import {
     ADDON_CALENDAR_AUTO_SYNCED,
     ADDON_CALENDAR_COMPONENT,
@@ -309,7 +309,7 @@ export type AddonCalendarSyncEvents = CoreSyncResult & {
     deleted: number[];
     toinvalidate: AddonCalendarSyncInvalidateEvent[];
     source?: string; // Added on pages.
-    moment?: moment.Moment; // Added on day page.
+    dayJS?: Dayjs; // Added on day page.
 };
 
 export type AddonCalendarSyncInvalidateEvent = {

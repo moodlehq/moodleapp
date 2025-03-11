@@ -41,7 +41,7 @@ import { CoreSync } from '@services/sync';
 import { CoreWSError } from '@classes/errors/wserror';
 import { CoreEvents } from '@singletons/events';
 import { CoreForms } from '@singletons/form';
-import { CoreFileEntry } from '@services/file-helper';
+import { CoreFileEntry, CoreFileHelper } from '@services/file-helper';
 import { CoreTime } from '@singletons/time';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreAlerts } from '@services/overlays/alerts';
@@ -169,8 +169,10 @@ export default class AddonBlogEditEntryPage implements CanLeave, OnInit, OnDestr
             await AddonBlogSync.waitForSync(ADDON_BLOG_SYNC_ID);
 
             if (!this.isOfflineEntry) {
-                const offlineContent = await this.getFormattedBlogOfflineEntry({ id: entryIdParsed });
-                this.entry = offlineContent ?? await this.getEntry({ filters, lastModified, entryId: entryIdParsed });
+                const onlineEntryParams = { filters, lastModified, entryId: entryIdParsed };
+
+                const offlineContent = await this.getFormattedBlogOfflineEntry({ id: entryIdParsed }, onlineEntryParams);
+                this.entry = offlineContent ?? await this.getEntry(onlineEntryParams, false);
             } else {
                 this.entry = await this.getFormattedBlogOfflineEntry({ created: Number(entryId?.slice(4)) });
 
@@ -182,11 +184,9 @@ export default class AddonBlogEditEntryPage implements CanLeave, OnInit, OnDestr
             this.files = [...(this.entry.attachmentfiles ?? [])];
             this.initialFiles = [...this.files];
 
-            if (this.entry) {
-                CoreSync.blockOperation(AddonBlogProvider.COMPONENT, this.entry.id ?? this.entry.created);
-                this.courseId = this.courseId || this.entry.courseid;
-                this.modId = CoreNavigator.getRouteNumberParam('cmId') || this.entry.coursemoduleid;
-            }
+            CoreSync.blockOperation(AddonBlogProvider.COMPONENT, this.entry.id ?? this.entry.created);
+            this.courseId = this.courseId || this.entry.courseid;
+            this.modId = CoreNavigator.getRouteNumberParam('cmId') || this.entry.coursemoduleid;
 
             if (this.courseId) {
                 this.form.controls.associateWithCourse.setValue(true);
@@ -207,9 +207,12 @@ export default class AddonBlogEditEntryPage implements CanLeave, OnInit, OnDestr
         }
 
         this.form.setValue({
-            subject: this.entry?.subject ?? '',
-            summary: this.entry?.summary ?? '',
-            publishState: this.entry?.publishstate ?? AddonBlogPublishState.site,
+            subject: this.entry.subject,
+            summary: CoreFileHelper.replacePluginfileUrls(
+                this.entry.summary,
+                this.entry.summaryfiles,
+            ),
+            publishState: this.entry.publishstate ?? AddonBlogPublishState.site,
             associateWithCourse: this.form.controls.associateWithCourse.value,
             associateWithModule: this.form.controls.associateWithModule.value,
         });
@@ -232,13 +235,18 @@ export default class AddonBlogEditEntryPage implements CanLeave, OnInit, OnDestr
     /**
      * Retrieves blog entry.
      *
+     * @param params Params to get the entry.
+     * @param filter Whether to obtain the data filtered or not. If filter=true it will always return cached data.
      * @returns Blog entry.
      */
-    protected async getEntry(params: AddonBlogEditEntryGetEntryParams): Promise<AddonBlogPost> {
+    protected async getEntry(params: AddonBlogEditEntryGetEntryParams, filter = false): Promise<AddonBlogPost> {
         try {
             const { entries } = await AddonBlog.getEntries(
                 { entryid: params.entryId },
-                { readingStrategy: CoreSitesReadingStrategy.PREFER_NETWORK },
+                {
+                    readingStrategy: filter ? CoreSitesReadingStrategy.ONLY_CACHE : CoreSitesReadingStrategy.ONLY_NETWORK,
+                    filter,
+                },
             );
 
             const selectedEntry = entries.find(entry => entry.id === params.entryId);
@@ -258,7 +266,10 @@ export default class AddonBlogEditEntryPage implements CanLeave, OnInit, OnDestr
                 throw error;
             }
 
-            const updatedEntries = await AddonBlog.getEntries(params.filters);
+            const updatedEntries = await AddonBlog.getEntries(params.filters, {
+                readingStrategy: filter ? CoreSitesReadingStrategy.ONLY_CACHE : CoreSitesReadingStrategy.ONLY_NETWORK,
+                filter,
+            });
             const entry = updatedEntries.entries.find(entry => entry.id === params.entryId);
 
             if (!entry) {
@@ -319,7 +330,7 @@ export default class AddonBlogEditEntryPage implements CanLeave, OnInit, OnDestr
                 const filters: AddonBlogFilter | undefined = CoreNavigator.getRouteParam('filters');
                 const entry = this.entry && 'attachment' in this.entry
                     ? this.entry
-                    : await CorePromiseUtils.ignoreErrors(this.getEntry({ filters, lastModified, entryId: this.entry.id }));
+                    : await CorePromiseUtils.ignoreErrors(this.getEntry({ filters, lastModified, entryId: this.entry.id }, true));
 
                 const removedFiles = CoreFileUploader.getFilesToDelete(entry?.attachmentfiles ?? [], this.files);
 
@@ -441,7 +452,7 @@ export default class AddonBlogEditEntryPage implements CanLeave, OnInit, OnDestr
         if (!this.entry?.id) {
             await AddonBlog.addEntry({
                 subject,
-                summary,
+                summary: CoreFileHelper.restorePluginfileUrls(summary, this.entry?.summaryfiles ?? []),
                 summaryformat: 1,
                 options,
                 created: params.created ?? CoreTime.timestamp(),
@@ -450,7 +461,7 @@ export default class AddonBlogEditEntryPage implements CanLeave, OnInit, OnDestr
         } else {
             await AddonBlog.updateEntry({
                 subject,
-                summary,
+                summary: CoreFileHelper.restorePluginfileUrls(summary, this.entry?.summaryfiles ?? []),
                 summaryformat: 1,
                 options,
                 forceOffline: params.forceOffline,
@@ -470,14 +481,23 @@ export default class AddonBlogEditEntryPage implements CanLeave, OnInit, OnDestr
      * Retrieves a formatted blog offline entry.
      *
      * @param params Entry creation date or entry ID.
+     * @param onlineEntryParams When editing an online entry, the params to obtain it.
      * @returns Formatted entry.
      */
     async getFormattedBlogOfflineEntry(
         params: AddonBlogEditGetFormattedBlogOfflineEntryParams,
+        onlineEntryParams?: AddonBlogEditEntryGetEntryParams,
     ): Promise<AddonBlogEditEntryFormattedOfflinePost | undefined> {
         const entryRecord = await AddonBlogOffline.getOfflineEntry(params);
+        if (!entryRecord) {
+            return;
+        }
 
-        return entryRecord ? await AddonBlog.formatOfflineEntry(entryRecord) : undefined;
+        const onlineEntry = onlineEntryParams ?
+            await CorePromiseUtils.ignoreErrors(this.getEntry(onlineEntryParams, true)) :
+            undefined;
+
+        return await AddonBlog.formatOfflineEntry(entryRecord, onlineEntry);
     }
 
 }

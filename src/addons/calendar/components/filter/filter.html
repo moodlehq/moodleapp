@@ -9,21 +9,29 @@
 </ion-header>
 <ion-content [fullscreen]="true">
     <ion-list>
-        <ion-item *ngFor="let type of types" class="addon-calendar-event" [ngClass]="['addon-calendar-eventtype-'+type]">
-            <ion-icon [name]="typeIcons[type]" slot="start" aria-hidden="true" />
-            <ion-toggle [(ngModel)]="filter[type]" (ionChange)="onChange()">
-                {{ 'addon.calendar.' + type + 'events' | translate}}
-            </ion-toggle>
-        </ion-item>
-        <core-spacer *ngIf="filter.course || filter.category || filter.group" />
-        <ng-container *ngIf="filter.course || filter.category || filter.group">
+        @for (type of types; track type) {
+            <ion-item class="addon-calendar-event" [ngClass]="['addon-calendar-eventtype-'+type]">
+                <ion-icon [name]="typeIcons[type]" slot="start" aria-hidden="true" />
+                <ion-toggle [(ngModel)]="filter[type]" (ionChange)="onChange()">
+                    {{ 'addon.calendar.' + type + 'events' | translate}}
+                </ion-toggle>
+            </ion-item>
+        }
+        @if (filter.course || filter.category || filter.group) {
+            <core-spacer />
             <ion-radio-group [(ngModel)]="courseId" (ionChange)="onChange()">
-                <ion-item class="ion-text-wrap" *ngFor="let course of sortedCourses">
-                    <ion-radio [value]="course.id">
-                        <core-format-text [text]="course.shortname" />
-                    </ion-radio>
-                </ion-item>
+                @for (course of sortedCourses; track course.id) {
+                    <ion-item class="ion-text-wrap">
+                        <ion-radio [value]="course.id">
+                            @if (showFullName) {
+                                <core-format-text [text]="course.fullname" [filter]="false" />
+                            } @else {
+                                <core-format-text [text]="course.shortname" [filter]="false" />
+                            }
+                        </ion-radio>
+                    </ion-item>
+                }
             </ion-radio-group>
-        </ng-container>
+        }
     </ion-list>
 </ion-content>

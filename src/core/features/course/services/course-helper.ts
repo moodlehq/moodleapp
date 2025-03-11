@@ -14,7 +14,7 @@
 
 import { Injectable } from '@angular/core';
 import { Params } from '@angular/router';
-import moment from 'moment-timezone';
+import dayjs from 'dayjs';
 
 import { CoreSites, CoreSitesReadingStrategy } from '@services/sites';
 import {
@@ -56,7 +56,6 @@ import { CoreFileSizeSum } from '@services/plugin-file-delegate';
 import { CoreFileHelper } from '@services/file-helper';
 import { CoreNetwork } from '@services/network';
 import { CoreSite } from '@classes/sites/site';
-import { CoreFile } from '@services/file';
 import { CoreUrl } from '@singletons/url';
 import { CoreText } from '@singletons/text';
 import { CoreTime } from '@singletons/time';
@@ -690,11 +689,9 @@ export class CoreCourseHelperProvider {
 
         try {
             await CoreOpener.openOnlineFile(result.path);
-        } catch (error) {
+        } catch {
             // Error opening the file, some apps don't allow opening online files.
-            if (!CoreFile.isAvailable()) {
-                throw error;
-            } else if (result.status === DownloadStatus.DOWNLOADING) {
+            if (result.status === DownloadStatus.DOWNLOADING) {
                 throw new CoreError(Translate.instant('core.erroropenfiledownloading'));
             }
 
@@ -759,11 +756,9 @@ export class CoreCourseHelperProvider {
 
         CoreOpener.openInBrowser(fixedUrl);
 
-        if (CoreFile.isAvailable()) {
-            // Download the file if needed (file outdated or not downloaded).
-            // Download will be in background, don't return the promise.
-            this.downloadModule(module, courseId, component, componentId, files, site.getId());
-        }
+        // Download the file if needed (file outdated or not downloaded).
+        // Download will be in background, don't return the promise.
+        this.downloadModule(module, courseId, component, componentId, files, site.getId());
     }
 
     /**
@@ -800,13 +795,6 @@ export class CoreCourseHelperProvider {
         const site = await CoreSites.getSite(siteId);
 
         const fixedUrl = await site.checkAndFixPluginfileURL(mainFile.fileurl);
-
-        if (!CoreFile.isAvailable()) {
-            return {
-                path: fixedUrl, // Use the online URL.
-                fixedUrl,
-            };
-        }
 
         // The file system is available.
         const status = await CoreFilepool.getPackageStatus(siteId, component, componentId);
@@ -1379,9 +1367,9 @@ export class CoreCourseHelperProvider {
         const downloadTime = packageData.downloadTime;
         let downloadTimeReadable = '';
         if (now - downloadTime < 7 * 86400) {
-            downloadTimeReadable = moment(downloadTime * 1000).fromNow();
+            downloadTimeReadable = dayjs.tz(downloadTime * 1000).fromNow();
         } else {
-            downloadTimeReadable = moment(downloadTime * 1000).calendar();
+            downloadTimeReadable = dayjs.tz(downloadTime * 1000).calendar();
         }
 
         return {

@@ -14,9 +14,8 @@
 
 import { CoreReminders } from '@features/reminders/services/reminders';
 import { Component, Input, OnInit } from '@angular/core';
-import { CoreTimeUtils } from '@services/utils/time';
-import { Translate } from '@singletons';
 import { CoreTime } from '@singletons/time';
+import { Translate } from '@singletons';
 import { CoreSharedModule } from '@/core/shared.module';
 import { CoreRemindersSetButtonComponent } from '../set-button/set-button';
 
@@ -84,7 +83,7 @@ export class CoreRemindersDateComponent implements OnInit {
      */
     protected getReadableTime(timestamp: number, relativeTo = 0): string {
         if (!relativeTo) {
-            return CoreTimeUtils.userDate(timestamp * 1000, 'core.strftimedatetime', true);
+            return CoreTime.userDate(timestamp * 1000, 'core.strftimedatetime', true);
         }
 
         return Translate.instant(

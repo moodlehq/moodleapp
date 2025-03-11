@@ -636,6 +636,24 @@ export class CoreAuthenticatedSite extends CoreUnauthenticatedSite {
         try {
             const response = await this.callOrEnqueueWS<T>(method, data, preSets, wsPreSets);
 
+            if (preSets.fetchOriginalToo && preSets.filter !== false && preSets.saveToCache) {
+                // Also fetch the content unfiltered. Do it in background.
+                CorePromiseUtils.ignoreErrors(this.getFromWS(
+                    method,
+                    {
+                        ...data,
+                        moodlewssettingfilter: 'false',
+                        moodlewssettingfileurl: 'false',
+                    },
+                    {
+                        ...preSets,
+                        filter: false,
+                        rewriteurls: false,
+                    },
+                    wsPreSets,
+                ));
+            }
+
             if (preSets.saveToCache) {
                 this.saveToCache(method, data, response, preSets);
             }
@@ -1777,6 +1795,12 @@ export type CoreSiteWSPreSets = {
      * Only enabled if CoreConstants.CONFIG.disableCallWSInBackground isn't true.
      */
     updateInBackground?: boolean;
+
+    /**
+     * Whether to also fetch in background the  original content (unfiltered and without rewriting URLs).
+     * Ignored if filter=false or data is not saved to cache.
+     */
+    fetchOriginalToo?: boolean;
 };
 
 /**

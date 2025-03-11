@@ -120,7 +120,7 @@ export class CoreFileProvider {
             this.basePath = File.externalApplicationStorageDirectory || this.basePath;
         } else if (CorePlatform.isIOS()) {
             this.basePath = File.documentsDirectory || this.basePath;
-        } else if (!this.isAvailable() || this.basePath === '') {
+        } else if (this.basePath === '') {
             this.logger.error('Error getting device OS.');
 
             return Promise.reject(new CoreError('Error getting device OS to initialize file system.'));
@@ -134,6 +134,7 @@ export class CoreFileProvider {
      * Check if the plugin is available.
      *
      * @returns Whether the plugin is available.
+     * @deprecated since 5.0. Not necessary anymore.
      */
     isAvailable(): boolean {
         return window.resolveLocalFileSystemURL !== undefined;

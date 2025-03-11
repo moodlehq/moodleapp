@@ -31,6 +31,13 @@ export class AddonModAssignDefaultFeedbackHandler implements AddonModAssignFeedb
     /**
      * @inheritdoc
      */
+    canEditOffline(): boolean {
+        return false;
+    }
+
+    /**
+     * @inheritdoc
+     */
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     discardDraft(assignId: number, userId: number, siteId?: string): void | Promise<void> {
         // Nothing to do.

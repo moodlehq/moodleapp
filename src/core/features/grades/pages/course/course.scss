@@ -79,6 +79,11 @@ table.core-table.core-grades-table {
     }
 
     .core-grades-table-grade {
+        * {
+            line-height: var(--mdl-typography-label-lineHeight-sm);
+            vertical-align: middle;
+        }
+
         ion-icon {
             @include padding(null, 4px, null, null);
         }

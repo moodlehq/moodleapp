@@ -18,7 +18,6 @@ import { CoreError } from '@classes/errors/error';
 import { CoreCourse, CoreCourseAnyModuleData } from '@features/course/services/course';
 import { CoreCourseHelper, CoreCourseModuleData } from '@features/course/services/course-helper';
 import { CoreNetwork } from '@services/network';
-import { CoreFile } from '@services/file';
 import { CoreFileHelper } from '@services/file-helper';
 import { CoreFilepool } from '@services/filepool';
 import { CoreSites } from '@services/sites';
@@ -28,7 +27,7 @@ import { CorePath } from '@singletons/path';
 import { AddonModResource, AddonModResourceCustomData } from './resource';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 import { CoreText } from '@singletons/text';
-import { CoreTimeUtils } from '@services/utils/time';
+import { CoreTime } from '@singletons/time';
 import { ADDON_MOD_RESOURCE_COMPONENT } from '../constants';
 import { CoreLoadings } from '@services/overlays/loadings';
 import { CoreOpenerOpenFileOptions } from '@singletons/opener';
@@ -104,8 +103,7 @@ export class AddonModResourceHelperProvider {
     isDisplayedEmbedded(module: CoreCourseModuleData, display: number): boolean {
         const currentSite = CoreSites.getCurrentSite();
 
-        if (!CoreFile.isAvailable() ||
-                (currentSite && !currentSite.isVersionGreaterEqualThan('3.7') && this.isNextcloudFile(module))) {
+        if (currentSite && !currentSite.isVersionGreaterEqualThan('3.7') && this.isNextcloudFile(module)) {
             return false;
         }
 
@@ -129,10 +127,6 @@ export class AddonModResourceHelperProvider {
      * @returns Whether the resource should be displayed in an iframe.
      */
     isDisplayedInIframe(module: CoreCourseModuleData): boolean {
-        if (!CoreFile.isAvailable()) {
-            return false;
-        }
-
         let mimetype: string | undefined;
 
         if (module.contentsinfo) {
@@ -324,12 +318,12 @@ export class AddonModResourceHelperProvider {
             if (details.modifieddate) {
                 extra.push(Translate.instant(
                     'addon.mod_resource.modifieddate',
-                    { $a: CoreTimeUtils.userDate(details.modifieddate * 1000, 'core.strftimedatetimeshort') },
+                    { $a: CoreTime.userDate(details.modifieddate * 1000, 'core.strftimedatetimeshort') },
                 ));
             } else if (details.uploadeddate) {
                 extra.push(Translate.instant(
                     'addon.mod_resource.uploadeddate',
-                    { $a: CoreTimeUtils.userDate(details.uploadeddate * 1000, 'core.strftimedatetimeshort') },
+                    { $a: CoreTime.userDate(details.uploadeddate * 1000, 'core.strftimedatetimeshort') },
                 ));
             }
         }

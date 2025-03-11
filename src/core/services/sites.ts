@@ -2012,6 +2012,19 @@ export class CoreSitesProvider {
     }
 
     /**
+     * Get preSets to filter the text and rewrite URLs.
+     *
+     * @param filter If false, text won't be filtered and URLs won't be rewritten. Any other value means text will be filtered.
+     * @returns PreSets.
+     */
+    getFilterPresets(filter?: boolean): CoreSiteWSPreSets {
+        return {
+            filter: filter !== false,
+            rewriteurls: filter !== false,
+        };
+    }
+
+    /**
      * Returns presets for a given reading strategy.
      *
      * @param strategy Reading strategy.
@@ -2479,6 +2492,13 @@ export const enum CoreSitesReadingStrategy {
 export type CoreSitesCommonWSOptions = {
     readingStrategy?: CoreSitesReadingStrategy; // Reading strategy.
     siteId?: string; // Site ID. If not defined, current site.
+};
+
+/**
+ * Common options used when calling a WS through CoreSite, including an option to determine if text should be filtered.
+ */
+export type CoreSitesWSOptionsWithFilter = CoreSitesCommonWSOptions & {
+    filter?: boolean; // Defaults to true. If false, text won't be filtered and URLs won't be rewritten.
 };
 
 /**

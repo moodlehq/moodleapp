@@ -28,7 +28,6 @@ import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreWSFile } from '@services/ws';
 import { makeSingleton } from '@singletons';
 import { CoreFileHelper } from '@services/file-helper';
-import { CoreFormFields } from '@singletons/form';
 
 /**
  * Handler for comments feedback plugin.
@@ -38,6 +37,14 @@ export class AddonModAssignFeedbackCommentsHandlerService implements AddonModAss
 
     name = 'AddonModAssignFeedbackCommentsHandler';
     type = 'comments';
+
+    /**
+     * @inheritdoc
+     */
+    canEditOffline(): boolean {
+        // This plugin can use Moodle filters, it cannot be edited in offline.
+        return false;
+    }
 
     /**
      * Get the text to submit.
@@ -128,14 +135,15 @@ export class AddonModAssignFeedbackCommentsHandlerService implements AddonModAss
         userId: number,
         plugin: AddonModAssignPlugin,
         pluginData: AddonModAssignSavePluginData,
-        inputData: CoreFormFields,
+        inputData: AddonModAssignFeedbackCommentsTextData,
     ): void {
-        if (!inputData['assignfeedbackcomments_editor']) {
+        const text = AddonModAssignFeedbackCommentsHandler.getTextFromInputData(plugin, inputData);
+        if (!text) {
             return;
         }
 
         const data: AddonModAssignFeedbackCommentsInputData = {
-            text: CoreText.formatHtmlLines(inputData['assignfeedbackcomments_editor'] as string),
+            text: CoreText.formatHtmlLines(text),
             format: CoreTextFormat.FORMAT_HTML,
         };
         pluginData.assignfeedbackcomments_editor = data;

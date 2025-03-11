@@ -25,7 +25,7 @@ import { CoreGroupInfo, CoreGroups } from '@services/groups';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
-import { CoreTimeUtils } from '@services/utils/time';
+import { CoreTime } from '@singletons/time';
 import { CoreArray } from '@singletons/array';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import {
@@ -41,7 +41,6 @@ import { AddonModDataAutoSyncData, AddonModDataSyncResult } from '../../services
 import { AddonModDataPrefetchHandler } from '../../services/handlers/prefetch-lazy';
 
 import { CoreUrl } from '@singletons/url';
-import { CoreTime } from '@singletons/time';
 import {
     ADDON_MOD_DATA_AUTO_SYNCED,
     ADDON_MOD_DATA_COMPONENT,
@@ -264,13 +263,13 @@ export class AddonModDataIndexComponent extends CoreCourseModuleMainActivityComp
                 ? this.database.timeavailablefrom * 1000
                 : undefined;
             this.timeAvailableFromReadable = this.timeAvailableFrom
-                ? CoreTimeUtils.userDate(this.timeAvailableFrom)
+                ? CoreTime.userDate(this.timeAvailableFrom)
                 : undefined;
             this.timeAvailableTo = this.database.timeavailableto && time > this.database.timeavailableto
                 ? this.database.timeavailableto * 1000
                 : undefined;
             this.timeAvailableToReadable = this.timeAvailableTo
-                ? CoreTimeUtils.userDate(this.timeAvailableTo)
+                ? CoreTime.userDate(this.timeAvailableTo)
                 : undefined;
 
             this.isEmpty = true;
