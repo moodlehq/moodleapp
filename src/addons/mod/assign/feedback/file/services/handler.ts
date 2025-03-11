@@ -36,8 +36,8 @@ export class AddonModAssignFeedbackFileHandlerService implements AddonModAssignF
     /**
      * @inheritdoc
      */
-    canEditOffline(): boolean {
-        return true;
+    async canContainFiltersWhenEditing(): Promise<boolean> {
+        return false;
     }
 
     /**

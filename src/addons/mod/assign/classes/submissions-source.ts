@@ -180,7 +180,7 @@ export class AddonModAssignSubmissionsSource extends CoreRoutedItemsManagerSourc
         if (this.SELECTED_STATUS == AddonModAssignListFilterName.NEED_GRADING) {
             const promises: Promise<void>[] = submissions.map(async (submission: AddonModAssignSubmissionForList) => {
                 // Only show the submissions that need to be graded.
-                submission.needsGrading = await AddonModAssign.needsSubmissionToBeGraded(submission, assign.id);
+                submission.needsGrading = await AddonModAssign.needsSubmissionToBeGraded(submission, assign);
             });
 
             await Promise.all(promises);

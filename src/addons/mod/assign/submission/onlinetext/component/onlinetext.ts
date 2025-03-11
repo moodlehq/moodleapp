@@ -26,6 +26,7 @@ import { ADDON_MOD_ASSIGN_COMPONENT_LEGACY } from '@addons/mod/assign/constants'
 import { CoreViewer } from '@features/viewer/services/viewer';
 import { CoreEditorRichTextEditorComponent } from '@features/editor/components/rich-text-editor/rich-text-editor';
 import { CoreSharedModule } from '@/core/shared.module';
+import { CoreFileHelper } from '@services/file-helper';
 
 /**
  * Component to render an onlinetext submission plugin.
@@ -77,7 +78,10 @@ export class AddonModAssignSubmissionOnlineTextComponent extends AddonModAssignS
             if (offlineData && offlineData.plugindata) {
                 // Offline submission, get text if submission is not removed.
                 if (offlineData.plugindata.onlinetext_editor) {
-                    this.text = (<AddonModAssignSubmissionOnlineTextPluginData>offlineData.plugindata).onlinetext_editor.text;
+                    this.text = CoreFileHelper.replacePluginfileUrls(
+                        (<AddonModAssignSubmissionOnlineTextPluginData> offlineData.plugindata).onlinetext_editor.text,
+                        this.plugin.fileareas?.[0]?.files ?? [],
+                    );
                     this.isSent = false;
                 }
             } else {
