@@ -227,15 +227,20 @@ export class CoreCourseProvider {
      * @param courseId Course ID.
      * @param completion Completion status of the module.
      */
-    checkModuleCompletion(courseId: number, completion?: CoreCourseModuleCompletionData): void {
-        if (completion && this.isIncompleteAutomaticCompletion(completion)) {
-            this.invalidateSections(courseId).finally(() => {
-                CoreEvents.trigger(CoreEvents.COMPLETION_MODULE_VIEWED, {
-                    courseId: courseId,
-                    cmId: completion.cmid,
-                });
-            });
+    async checkModuleCompletion(courseId: number, completion?: CoreCourseModuleCompletionData): Promise<void> {
+        if (!completion || !this.isIncompleteAutomaticCompletion(completion)) {
+            return;
         }
+
+        if (completion.valueused !== false) {
+            await CorePromiseUtils.ignoreErrors(this.invalidateSections(courseId));
+        }
+
+        CoreEvents.trigger(CoreEvents.COMPLETION_MODULE_VIEWED, {
+            courseId: courseId,
+            cmId: completion.cmid,
+            valueUsed: completion.valueused ?? true,
+        });
     }
 
     /**

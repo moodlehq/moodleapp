@@ -420,11 +420,14 @@ export class CoreCourseModuleMainResourceComponent implements OnInit, OnDestroy,
 
         // @todo: Temporary fix to update course page completion. This should be refactored in MOBILE-4326.
         if (previousCompletion && module.completiondata && previousCompletion.state !== module.completiondata.state) {
-            await CorePromiseUtils.ignoreErrors(CoreCourse.invalidateSections(this.courseId));
+            if (module.completiondata.valueused !== false) {
+                await CorePromiseUtils.ignoreErrors(CoreCourse.invalidateSections(this.courseId));
+            }
 
             CoreEvents.trigger(CoreEvents.COMPLETION_MODULE_VIEWED, {
                 courseId: this.courseId,
                 cmId: module.completiondata.cmid,
+                valueUsed: module.completiondata.valueused ?? true,
             });
         }
     }

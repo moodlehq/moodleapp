@@ -58,7 +58,7 @@ export class CoreCourseModuleNavigationComponent implements OnInit, OnDestroy {
         this.element = element.nativeElement;
 
         this.completionObserver = CoreEvents.on(CoreEvents.COMPLETION_MODULE_VIEWED, async (data) => {
-            if (data && data.courseId == this.courseId) {
+            if (data && data.courseId === this.courseId && data.valueUsed) {
                 // Check if now there's a next module.
                 await this.setNextAndPreviousModules(
                     CoreSitesReadingStrategy.PREFER_NETWORK,

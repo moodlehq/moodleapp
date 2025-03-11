@@ -405,6 +405,7 @@ export type CoreEventSelectCourseTabData = {
 export type CoreEventCompletionModuleViewedData = {
     courseId: number;
     cmId?: number;
+    valueUsed: boolean; // Whether the completion status affects the availability of other content.
 };
 
 /**

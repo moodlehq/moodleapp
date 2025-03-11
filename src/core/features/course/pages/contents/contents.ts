@@ -156,7 +156,7 @@ export default class CoreCourseContentsPage implements OnInit, OnDestroy, CoreRe
         this.completionObserver = CoreEvents.on(
             CoreEvents.COMPLETION_MODULE_VIEWED,
             (data) => {
-                if (data && data.courseId == this.course.id) {
+                if (data && data.courseId === this.course.id && data.valueUsed) {
                     this.showLoadingAndRefresh(true, false);
                 }
             },
