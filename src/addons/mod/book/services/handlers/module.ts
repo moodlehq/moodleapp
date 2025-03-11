@@ -53,7 +53,7 @@ export class AddonModBookModuleHandlerService extends CoreModuleHandlerBase impl
     /**
      * @inheritdoc
      */
-    async getMainComponent(): Promise<Type<unknown> | undefined> {
+    async getMainComponent(): Promise<Type<unknown>> {
         const { AddonModBookIndexComponent } = await import('../../components/index');
 
         return AddonModBookIndexComponent;

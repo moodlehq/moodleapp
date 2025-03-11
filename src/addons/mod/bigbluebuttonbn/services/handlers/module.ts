@@ -18,7 +18,6 @@ import { CoreCourseModuleData } from '@features/course/services/course-helper';
 import { CoreCourseModuleHandler, CoreCourseModuleHandlerData } from '@features/course/services/module-delegate';
 import { CoreSitePluginsModuleHandler } from '@features/siteplugins/classes/handlers/module-handler';
 import { makeSingleton } from '@singletons';
-import { AddonModBBBIndexComponent } from '../../components/index';
 import { AddonModBBB } from '../bigbluebuttonbn';
 import { ADDON_MOD_BBB_COMPONENT, ADDON_MOD_BBB_MODNAME, ADDON_MOD_BBB_PAGE_NAME } from '../../constants';
 import { ModFeature, ModPurpose } from '@addons/mod/constants';
@@ -96,6 +95,8 @@ export class AddonModBBBModuleHandlerService extends CoreModuleHandlerBase imple
         if (this.sitePluginHandler) {
             return this.sitePluginHandler.getMainComponent();
         }
+
+        const { AddonModBBBIndexComponent } = await import('../../components/index');
 
         return AddonModBBBIndexComponent;
     }
