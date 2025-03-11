@@ -19,11 +19,11 @@ import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
 import { CoreCourseCommonModWSOptions } from '@features/course/services/course';
 import { CoreCourseLogHelper } from '@features/course/services/log-helper';
 import { CoreSites, CoreSitesCommonWSOptions } from '@services/sites';
-import { CoreText } from '@singletons/text';
+import { CoreText, CoreTextFormat } from '@singletons/text';
 import { CoreObject } from '@singletons/object';
 import { CoreWSExternalFile, CoreWSExternalWarning } from '@services/ws';
 import { makeSingleton, Translate } from '@singletons';
-import { ADDON_MOD_BBB_COMPONENT } from '../constants';
+import { ADDON_MOD_BBB_COMPONENT_LEGACY } from '../constants';
 import { CoreCacheUpdateFrequency } from '@/core/constants';
 
 /**
@@ -74,7 +74,7 @@ export class AddonModBBBService {
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getBBBsCacheKey(courseId),
             updateFrequency: CoreCacheUpdateFrequency.RARELY,
-            component: ADDON_MOD_BBB_COMPONENT,
+            component: ADDON_MOD_BBB_COMPONENT_LEGACY,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
         };
 
@@ -165,7 +165,7 @@ export class AddonModBBBService {
             cacheKey: this.getMeetingInfoCacheKey(id, groupId),
             getCacheUsingCacheKey: true,
             uniqueCacheKey: true,
-            component: ADDON_MOD_BBB_COMPONENT,
+            component: ADDON_MOD_BBB_COMPONENT_LEGACY,
             componentId: options.cmId,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
         };
@@ -233,7 +233,7 @@ export class AddonModBBBService {
         };
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getRecordingsCacheKey(id, groupId),
-            component: ADDON_MOD_BBB_COMPONENT,
+            component: ADDON_MOD_BBB_COMPONENT_LEGACY,
             componentId: options.cmId,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
         };
@@ -292,7 +292,7 @@ export class AddonModBBBService {
         await CoreCourseLogHelper.log(
             'mod_bigbluebuttonbn_view_bigbluebuttonbn',
             params,
-            ADDON_MOD_BBB_COMPONENT,
+            ADDON_MOD_BBB_COMPONENT_LEGACY,
             id,
             siteId,
         );
@@ -303,7 +303,6 @@ export class AddonModBBBService {
      *
      * @param courseId Course ID.
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateBBBs(courseId: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -317,7 +316,6 @@ export class AddonModBBBService {
      * @param id BBB ID.
      * @param groupId Group ID, 0 means that the function will determine the user group.
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateMeetingInfo(id: number, groupId: number = 0, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -330,7 +328,6 @@ export class AddonModBBBService {
      *
      * @param id BBB ID.
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateAllGroupsMeetingInfo(id: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -344,7 +341,6 @@ export class AddonModBBBService {
      * @param id BBB ID.
      * @param groupId Group ID, 0 means that the function will determine the user group.
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateRecordings(id: number, groupId: number = 0, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -357,7 +353,6 @@ export class AddonModBBBService {
      *
      * @param id BBB ID.
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateAllGroupsRecordings(id: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -407,7 +402,7 @@ export type AddonModBBBData = {
     name: string; // Name.
     intro: string; // Description.
     meetingid: string; // Meeting id.
-    introformat?: number; // Intro format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
+    introformat?: CoreTextFormat; // Intro format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
     introfiles: CoreWSExternalFile[];
     timemodified: number; // Last time the instance was modified.
     section: number; // Course section id.

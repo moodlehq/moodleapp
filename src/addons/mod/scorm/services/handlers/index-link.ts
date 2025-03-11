@@ -15,6 +15,7 @@
 import { Injectable } from '@angular/core';
 import { CoreContentLinksModuleIndexHandler } from '@features/contentlinks/classes/module-index-handler';
 import { makeSingleton } from '@singletons';
+import { ADDON_MOD_SCORM_COMPONENT, ADDON_MOD_SCORM_MODNAME } from '../../constants';
 
 /**
  * Handler to treat links to SCORM index.
@@ -25,7 +26,7 @@ export class AddonModScormIndexLinkHandlerService extends CoreContentLinksModule
     name = 'AddonModScormIndexLinkHandler';
 
     constructor() {
-        super('AddonModScorm', 'scorm', 'a');
+        super(ADDON_MOD_SCORM_COMPONENT, ADDON_MOD_SCORM_MODNAME, 'a');
     }
 
 }

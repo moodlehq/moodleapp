@@ -35,7 +35,7 @@ import {
 } from '../quiz';
 import { AddonModQuizHelper } from '../quiz-helper';
 import { AddonModQuizSync, AddonModQuizSyncResult } from '../quiz-sync';
-import { AddonModQuizAttemptStates, ADDON_MOD_QUIZ_COMPONENT } from '../../constants';
+import { AddonModQuizAttemptStates, ADDON_MOD_QUIZ_COMPONENT_LEGACY } from '../../constants';
 
 /**
  * Handler to prefetch quizzes.
@@ -45,7 +45,7 @@ export class AddonModQuizPrefetchHandlerService extends CoreCourseActivityPrefet
 
     name = 'AddonModQuiz';
     modName = 'quiz';
-    component = ADDON_MOD_QUIZ_COMPONENT;
+    component = ADDON_MOD_QUIZ_COMPONENT_LEGACY;
     updatesNames = /^configuration$|^.*files$|^grades$|^gradeitems$|^questions$|^attempts$/;
 
     /**
@@ -144,10 +144,9 @@ export class AddonModQuizPrefetchHandlerService extends CoreCourseActivityPrefet
      *
      * @param moduleId The module ID.
      * @param courseId The course ID the module belongs to.
-     * @returns Promise resolved when the data is invalidated.
      */
-    invalidateContent(moduleId: number, courseId: number): Promise<void> {
-        return AddonModQuiz.invalidateContent(moduleId, courseId);
+    async invalidateContent(moduleId: number, courseId: number): Promise<void> {
+        await AddonModQuiz.invalidateContent(moduleId, courseId);
     }
 
     /**
@@ -262,7 +261,7 @@ export class AddonModQuizPrefetchHandlerService extends CoreCourseActivityPrefet
             AddonModQuiz.getUserAttempts(quiz.id, modOptions),
             AddonModQuiz.getAttemptAccessInformation(quiz.id, 0, modOptions),
             AddonModQuiz.getQuizRequiredQtypes(quiz.id, modOptions),
-            CoreFilepool.addFilesToQueue(siteId, introFiles, ADDON_MOD_QUIZ_COMPONENT, module.id),
+            CoreFilepool.addFilesToQueue(siteId, introFiles, ADDON_MOD_QUIZ_COMPONENT_LEGACY, module.id),
         ]);
 
         // Check if we need to start a new attempt.
@@ -302,17 +301,17 @@ export class AddonModQuizPrefetchHandlerService extends CoreCourseActivityPrefet
 
                 const attemptFiles = await this.getAttemptsFeedbackFiles(quiz, attempts, siteId);
 
-                return CoreFilepool.addFilesToQueue(siteId, attemptFiles, ADDON_MOD_QUIZ_COMPONENT, module.id);
+                return CoreFilepool.addFilesToQueue(siteId, attemptFiles, ADDON_MOD_QUIZ_COMPONENT_LEGACY, module.id);
             }));
 
             // Update the download time to prevent detecting the new attempt as an update.
             promises.push(CorePromiseUtils.ignoreErrors(
-                CoreFilepool.updatePackageDownloadTime(siteId, ADDON_MOD_QUIZ_COMPONENT, module.id),
+                CoreFilepool.updatePackageDownloadTime(siteId, ADDON_MOD_QUIZ_COMPONENT_LEGACY, module.id),
             ));
         } else {
             // Use the already fetched attempts.
             promises.push(this.getAttemptsFeedbackFiles(quiz, attempts, siteId).then((attemptFiles) =>
-                CoreFilepool.addFilesToQueue(siteId, attemptFiles, ADDON_MOD_QUIZ_COMPONENT, module.id)));
+                CoreFilepool.addFilesToQueue(siteId, attemptFiles, ADDON_MOD_QUIZ_COMPONENT_LEGACY, module.id)));
         }
 
         // Fetch attempt related data.

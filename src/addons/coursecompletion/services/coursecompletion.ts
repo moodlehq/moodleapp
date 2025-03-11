@@ -27,19 +27,15 @@ import { CoreSiteWSPreSets, WSObservable } from '@classes/sites/authenticated-si
 import { firstValueFrom } from 'rxjs';
 import { CoreCacheUpdateFrequency } from '@/core/constants';
 
-const ROOT_CACHE_KEY = 'mmaCourseCompletion:';
-
 /**
  * Service to handle course completion.
  */
 @Injectable({ providedIn: 'root' })
 export class AddonCourseCompletionProvider {
 
-    protected logger: CoreLogger;
+    protected static readonly ROOT_CACHE_KEY = 'mmaCourseCompletion:';
 
-    constructor() {
-        this.logger = CoreLogger.getInstance('AddonCourseCompletion');
-    }
+    protected logger = CoreLogger.getInstance('AddonCourseCompletion');
 
     /**
      * Check whether completion is available in a certain site.
@@ -195,7 +191,7 @@ export class AddonCourseCompletionProvider {
      * @returns Cache key.
      */
     protected getCompletionCacheKey(courseId: number, userId: number): string {
-        return ROOT_CACHE_KEY + 'view:' + courseId + ':' + userId;
+        return `${AddonCourseCompletionProvider.ROOT_CACHE_KEY}view:${courseId}:${userId}`;
     }
 
     /**
@@ -204,7 +200,6 @@ export class AddonCourseCompletionProvider {
      * @param courseId Course ID.
      * @param userId User ID. If not defined, use current user.
      * @param siteId Site ID. If not defined, use current site.
-     * @returns Promise resolved when the list is invalidated.
      */
     async invalidateCourseCompletion(courseId: number, userId?: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);

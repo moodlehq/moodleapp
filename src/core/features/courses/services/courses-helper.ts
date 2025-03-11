@@ -33,6 +33,7 @@ import { catchError, map } from 'rxjs/operators';
 import { chainRequests, WSObservable } from '@classes/sites/authenticated-site';
 import { CoreSite } from '@classes/sites/site';
 import { LazyDefaultStandaloneComponent } from '@/app/app-routing.module';
+import { DEFAULT_TEXT_FORMAT } from '@singletons/text';
 
 // Id for a course item representing all courses (for example, for course filters).
 export const ALL_COURSES_ID = -1;
@@ -61,7 +62,7 @@ export class CoreCoursesHelperProvider {
             shortname: Translate.instant('core.fulllistofcourses'),
             categoryid: -1,
             summary: '',
-            summaryformat: 1,
+            summaryformat: DEFAULT_TEXT_FORMAT,
         });
 
         let categoryId: number | undefined;

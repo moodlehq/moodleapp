@@ -14,9 +14,9 @@
 
 import { AsyncInstance, asyncInstance } from '@/core/utils/async-instance';
 import {
-    ADDON_MOD_SURVEY_PREFETCH_COMPONENT,
-    ADDON_MOD_SURVEY_PREFETCH_MODNAME,
-    ADDON_MOD_SURVEY_PREFETCH_NAME,
+    ADDON_MOD_SURVEY_COMPONENT,
+    ADDON_MOD_SURVEY_COMPONENT_LEGACY,
+    ADDON_MOD_SURVEY_MODNAME,
     ADDON_MOD_SURVEY_PREFETCH_UPDATE_NAMES,
 } from '@addons/mod/survey/constants';
 import { CoreCourseActivityPrefetchHandlerBase } from '@features/course/classes/activity-prefetch-handler';
@@ -30,9 +30,9 @@ let prefetchHandlerInstance: AsyncInstance<
 
 export class AddonModSurveyPrefetchHandlerService extends CoreCourseActivityPrefetchHandlerBase {
 
-    name = ADDON_MOD_SURVEY_PREFETCH_NAME;
-    modName = ADDON_MOD_SURVEY_PREFETCH_MODNAME;
-    component = ADDON_MOD_SURVEY_PREFETCH_COMPONENT;
+    name = ADDON_MOD_SURVEY_COMPONENT;
+    modName = ADDON_MOD_SURVEY_MODNAME;
+    component = ADDON_MOD_SURVEY_COMPONENT_LEGACY;
     updatesNames = ADDON_MOD_SURVEY_PREFETCH_UPDATE_NAMES;
 
 }

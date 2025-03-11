@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { CoreConstants, ModPurpose } from '@/core/constants';
+import { ModFeature, ModPurpose } from '@addons/mod/constants';
 import { ADDON_MOD_WORKSHOP_PAGE_NAME } from '@addons/mod/workshop/constants';
 import { Injectable, Type } from '@angular/core';
 import { CoreModuleHandlerBase } from '@features/course/classes/module-base-handler';
@@ -30,15 +30,15 @@ export class AddonModWorkshopModuleHandlerService extends CoreModuleHandlerBase 
     protected pageName = ADDON_MOD_WORKSHOP_PAGE_NAME;
 
     supportedFeatures = {
-        [CoreConstants.FEATURE_GROUPS]: true,
-        [CoreConstants.FEATURE_GROUPINGS]: true,
-        [CoreConstants.FEATURE_MOD_INTRO]: true,
-        [CoreConstants.FEATURE_COMPLETION_TRACKS_VIEWS]: true,
-        [CoreConstants.FEATURE_GRADE_HAS_GRADE]: true,
-        [CoreConstants.FEATURE_BACKUP_MOODLE2]: true,
-        [CoreConstants.FEATURE_SHOW_DESCRIPTION]: true,
-        [CoreConstants.FEATURE_PLAGIARISM]: true,
-        [CoreConstants.FEATURE_MOD_PURPOSE]: ModPurpose.MOD_PURPOSE_ASSESSMENT,
+        [ModFeature.GROUPS]: true,
+        [ModFeature.GROUPINGS]: true,
+        [ModFeature.MOD_INTRO]: true,
+        [ModFeature.COMPLETION_TRACKS_VIEWS]: true,
+        [ModFeature.GRADE_HAS_GRADE]: true,
+        [ModFeature.BACKUP_MOODLE2]: true,
+        [ModFeature.SHOW_DESCRIPTION]: true,
+        [ModFeature.PLAGIARISM]: true,
+        [ModFeature.MOD_PURPOSE]: ModPurpose.ASSESSMENT,
     };
 
     /**

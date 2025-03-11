@@ -48,6 +48,7 @@ import {
     ADDON_MOD_FORUM_ALL_PARTICIPANTS,
     ADDON_MOD_FORUM_AUTO_SYNCED,
     ADDON_MOD_FORUM_COMPONENT,
+    ADDON_MOD_FORUM_COMPONENT_LEGACY,
     ADDON_MOD_FORUM_NEW_DISCUSSION_EVENT,
 } from '../../constants';
 import CoreCourseContentsPage from '@features/course/pages/contents/contents';
@@ -84,7 +85,7 @@ export default class AddonModForumNewDiscussionPage implements OnInit, OnDestroy
     @ViewChild('newDiscFormEl') formElement!: ElementRef;
     @ViewChild(CoreEditorRichTextEditorComponent) messageEditor!: CoreEditorRichTextEditorComponent;
 
-    component = ADDON_MOD_FORUM_COMPONENT;
+    component = ADDON_MOD_FORUM_COMPONENT_LEGACY;
     messageControl = new FormControl<string | null>(null);
     groupsLoaded = false;
     showGroups = false;

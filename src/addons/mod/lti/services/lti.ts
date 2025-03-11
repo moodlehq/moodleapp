@@ -21,12 +21,12 @@ import { CoreCourseLogHelper } from '@features/course/services/log-helper';
 import { CoreFile } from '@services/file';
 import { CorePlatform } from '@services/platform';
 import { CoreSites, CoreSitesCommonWSOptions } from '@services/sites';
-import { CoreText } from '@singletons/text';
+import { CoreText, CoreTextFormat } from '@singletons/text';
 import { CoreUrl } from '@singletons/url';
 import { CoreOpener } from '@singletons/opener';
 import { CoreWSExternalFile, CoreWSExternalWarning } from '@services/ws';
 import { makeSingleton, Translate } from '@singletons';
-import { ADDON_MOD_LTI_COMPONENT } from '../constants';
+import { ADDON_MOD_LTI_COMPONENT_LEGACY, ADDON_MOD_LTI_FEATURE_NAME } from '../constants';
 import { CoreCacheUpdateFrequency } from '@/core/constants';
 
 /**
@@ -94,7 +94,7 @@ export class AddonModLtiProvider {
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getLtiCacheKey(courseId),
             updateFrequency: CoreCacheUpdateFrequency.RARELY,
-            component: ADDON_MOD_LTI_COMPONENT,
+            component: ADDON_MOD_LTI_COMPONENT_LEGACY,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
         };
 
@@ -160,7 +160,6 @@ export class AddonModLtiProvider {
      *
      * @param courseId Course ID.
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateLti(courseId: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -173,7 +172,6 @@ export class AddonModLtiProvider {
      *
      * @param id LTI id.
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateLtiLaunchData(id: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -204,7 +202,7 @@ export class AddonModLtiProvider {
     isLaunchViaSiteDisabledInSite(site?: CoreSite): boolean {
         site = site || CoreSites.getCurrentSite();
 
-        return !!site?.isFeatureDisabled('CoreCourseModuleDelegate_AddonModLti:launchViaSite');
+        return !!site?.isFeatureDisabled(ADDON_MOD_LTI_FEATURE_NAME + ':launchViaSite');
     }
 
     /**
@@ -230,7 +228,7 @@ export class AddonModLtiProvider {
     isOpenInAppBrowserDisabledInSite(site?: CoreSite): boolean {
         site = site || CoreSites.getCurrentSite();
 
-        return !!site?.isFeatureDisabled('CoreCourseModuleDelegate_AddonModLti:openInAppBrowser');
+        return !!site?.isFeatureDisabled(ADDON_MOD_LTI_FEATURE_NAME + ':openInAppBrowser');
     }
 
     /**
@@ -272,7 +270,7 @@ export class AddonModLtiProvider {
         return CoreCourseLogHelper.log(
             'mod_lti_view_lti',
             params,
-            ADDON_MOD_LTI_COMPONENT,
+            ADDON_MOD_LTI_COMPONENT_LEGACY,
             id,
             siteId,
         );
@@ -324,7 +322,7 @@ export type AddonModLtiLti = {
     course: number; // Course id.
     name: string; // LTI name.
     intro?: string; // The LTI intro.
-    introformat?: number; // Intro format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
+    introformat?: CoreTextFormat; // Intro format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
     introfiles?: CoreWSExternalFile[];
     timecreated?: number; // Time of creation.
     timemodified?: number; // Time of last modification.

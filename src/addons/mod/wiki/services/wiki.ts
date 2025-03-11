@@ -28,11 +28,12 @@ import { AddonModWikiPageDBRecord } from './database/wiki';
 import { AddonModWikiOffline } from './wiki-offline';
 import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
 import {
-    ADDON_MOD_WIKI_COMPONENT,
+    ADDON_MOD_WIKI_COMPONENT_LEGACY,
     ADDON_MOD_WIKI_PAGE_CREATED_EVENT,
 } from '../constants';
 import { CoreCacheUpdateFrequency } from '@/core/constants';
 import { CorePromiseUtils } from '@singletons/promise-utils';
+import { CoreTextFormat } from '@singletons/text';
 
 /**
  * Service that provides some features for wikis.
@@ -137,7 +138,7 @@ export class AddonModWikiProvider {
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getPageContentsCacheKey(pageId),
             updateFrequency: CoreCacheUpdateFrequency.SOMETIMES,
-            component: ADDON_MOD_WIKI_COMPONENT,
+            component: ADDON_MOD_WIKI_COMPONENT_LEGACY,
             componentId: options.cmId,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
         };
@@ -210,7 +211,7 @@ export class AddonModWikiProvider {
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getSubwikiFilesCacheKey(wikiId, groupId, userId),
             updateFrequency: CoreCacheUpdateFrequency.SOMETIMES,
-            component: ADDON_MOD_WIKI_COMPONENT,
+            component: ADDON_MOD_WIKI_COMPONENT_LEGACY,
             componentId: options.cmId,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
         };
@@ -280,7 +281,7 @@ export class AddonModWikiProvider {
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getSubwikiPagesCacheKey(wikiId, groupId, userId),
             updateFrequency: CoreCacheUpdateFrequency.SOMETIMES,
-            component: ADDON_MOD_WIKI_COMPONENT,
+            component: ADDON_MOD_WIKI_COMPONENT_LEGACY,
             componentId: options.cmId,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
         };
@@ -328,7 +329,7 @@ export class AddonModWikiProvider {
         const preSets = {
             cacheKey: this.getSubwikisCacheKey(wikiId),
             updateFrequency: CoreCacheUpdateFrequency.RARELY,
-            component: ADDON_MOD_WIKI_COMPONENT,
+            component: ADDON_MOD_WIKI_COMPONENT_LEGACY,
             componentId: options.cmId,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
         };
@@ -386,7 +387,7 @@ export class AddonModWikiProvider {
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getWikiDataCacheKey(courseId),
             updateFrequency: CoreCacheUpdateFrequency.RARELY,
-            component: ADDON_MOD_WIKI_COMPONENT,
+            component: ADDON_MOD_WIKI_COMPONENT_LEGACY,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
         };
 
@@ -513,7 +514,6 @@ export class AddonModWikiProvider {
      *
      * @param pageId Wiki Page ID.
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidatePage(pageId: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -526,7 +526,6 @@ export class AddonModWikiProvider {
      *
      * @param wikiId Wiki ID.
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateSubwikiFiles(wikiId: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -539,7 +538,6 @@ export class AddonModWikiProvider {
      *
      * @param wikiId Wiki ID.
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateSubwikiPages(wikiId: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -552,7 +550,6 @@ export class AddonModWikiProvider {
      *
      * @param wikiId Wiki ID.
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateSubwikis(wikiId: number, siteId?: string): Promise<void> {
         this.clearSubwikiList(wikiId);
@@ -567,7 +564,6 @@ export class AddonModWikiProvider {
      *
      * @param courseId Course ID.
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateWikiData(courseId: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -633,7 +629,7 @@ export class AddonModWikiProvider {
         return CoreCourseLogHelper.log(
             'mod_wiki_view_page',
             params,
-            ADDON_MOD_WIKI_COMPONENT,
+            ADDON_MOD_WIKI_COMPONENT_LEGACY,
             wikiId,
             siteId,
         );
@@ -654,7 +650,7 @@ export class AddonModWikiProvider {
         return CoreCourseLogHelper.log(
             'mod_wiki_view_wiki',
             params,
-            ADDON_MOD_WIKI_COMPONENT,
+            ADDON_MOD_WIKI_COMPONENT_LEGACY,
             id,
             siteId,
         );
@@ -1002,7 +998,7 @@ export type AddonModWikiPageContents = {
     userid: number; // Page's user ID.
     title: string; // Page title.
     cachedcontent: string; // Page contents.
-    contentformat?: number; // Cachedcontent format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
+    contentformat?: CoreTextFormat; // Cachedcontent format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
     caneditpage: boolean; // True if user can edit the page.
     version?: number; // Latest version of the page.
     tags?: CoreTagItem[]; // Tags.
@@ -1089,7 +1085,7 @@ export type AddonModWikiSubwikiPage = {
     caneditpage: boolean; // True if user can edit the page.
     firstpage: boolean; // True if it's the first page.
     cachedcontent?: string; // Page contents.
-    contentformat?: number; // Cachedcontent format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
+    contentformat?: CoreTextFormat; // Cachedcontent format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
     contentsize?: number; // Size of page contents in bytes (doesn't include size of attached files).
     tags?: CoreTagItem[]; // Tags.
 };
@@ -1151,7 +1147,7 @@ export type AddonModWikiWiki = {
     course: number; // Course ID.
     name: string; // Wiki name.
     intro?: string; // Wiki intro.
-    introformat?: number; // Wiki intro format. format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
+    introformat?: CoreTextFormat; // Wiki intro format. format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
     introfiles?: CoreWSExternalFile[];
     timecreated?: number; // Time of creation.
     timemodified?: number; // Time of last modification.

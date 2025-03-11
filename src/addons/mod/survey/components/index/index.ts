@@ -35,7 +35,7 @@ import {
     AddonModSurveySyncResult,
 } from '../../services/survey-sync';
 import { CorePromiseUtils } from '@singletons/promise-utils';
-import { ADDON_MOD_SURVEY_AUTO_SYNCED, ADDON_MOD_SURVEY_COMPONENT } from '../../constants';
+import { ADDON_MOD_SURVEY_AUTO_SYNCED, ADDON_MOD_SURVEY_COMPONENT_LEGACY } from '../../constants';
 import { CoreLoadings } from '@services/overlays/loadings';
 import { CoreAlerts } from '@services/overlays/alerts';
 import { CoreCourseModuleNavigationComponent } from '@features/course/components/module-navigation/module-navigation';
@@ -58,7 +58,7 @@ import { CoreSharedModule } from '@/core/shared.module';
 })
 export class AddonModSurveyIndexComponent extends CoreCourseModuleMainActivityComponent implements OnInit {
 
-    component = ADDON_MOD_SURVEY_COMPONENT;
+    component = ADDON_MOD_SURVEY_COMPONENT_LEGACY;
     pluginName = 'survey';
 
     survey?: AddonModSurveySurvey;

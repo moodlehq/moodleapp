@@ -40,13 +40,14 @@ import {
     AddonModScormSyncResult,
 } from '../../services/scorm-sync';
 import {
-    ADDON_MOD_SCORM_COMPONENT,
+    ADDON_MOD_SCORM_COMPONENT_LEGACY,
     AddonModScormForceAttempt,
     AddonModScormMode,
     AddonModScormSkipView,
     ADDON_MOD_SCORM_DATA_SENT_EVENT,
     ADDON_MOD_SCORM_DATA_AUTO_SYNCED,
     ADDON_MOD_SCORM_PAGE_NAME,
+    ADDON_MOD_SCORM_COMPONENT,
 } from '../../constants';
 import { CoreWait } from '@singletons/wait';
 import { CorePromiseUtils } from '@singletons/promise-utils';
@@ -75,7 +76,7 @@ export class AddonModScormIndexComponent extends CoreCourseModuleMainActivityCom
 
     @Input() autoPlayData?: AddonModScormAutoPlayData; // Data to use to play the SCORM automatically.
 
-    component = ADDON_MOD_SCORM_COMPONENT;
+    component = ADDON_MOD_SCORM_COMPONENT_LEGACY;
     pluginName = 'scorm';
 
     scorm?: AddonModScormScorm; // The SCORM object.
