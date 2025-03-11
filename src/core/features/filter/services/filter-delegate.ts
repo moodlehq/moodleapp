@@ -140,7 +140,7 @@ export class CoreFilterDelegateService extends CoreDelegate<CoreFilterHandler> {
 
                 text = newText || text;
             } catch (error) {
-                this.logger.error('Error applying filter' + filter.filter, error);
+                this.logger.error(`Error applying filter${filter.filter}`, error);
             }
         }
 
@@ -225,7 +225,7 @@ export class CoreFilterDelegateService extends CoreDelegate<CoreFilterHandler> {
                     [container, filter, options, viewContainerRef, component, componentId, siteId],
                 );
             } catch (error) {
-                this.logger.error('Error handling HTML' + filter.filter, error);
+                this.logger.error(`Error handling HTML${filter.filter}`, error);
             }
         }
     }

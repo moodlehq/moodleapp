@@ -112,8 +112,7 @@ export default class CoreSettingsDeviceInfoPage implements OnDestroy {
         }
 
         if (window.screen) {
-            this.deviceInfo.screen = window.innerWidth + 'x' + window.innerHeight +
-                ' (' + window.screen.width + 'x' + window.screen.height + ')';
+            this.deviceInfo.screen = `${window.innerWidth}x${window.innerHeight} (${window.screen.width}x${window.screen.height})`;
         }
 
         if (CorePlatform.isMobile()) {

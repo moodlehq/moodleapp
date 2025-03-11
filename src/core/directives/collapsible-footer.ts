@@ -115,7 +115,7 @@ export class CoreCollapsibleFooterDirective implements OnInit, OnDestroy {
 
         this.previousHeight = this.initialHeight;
 
-        this.content?.style.setProperty('--core-collapsible-footer-max-height', this.initialHeight + 'px');
+        this.content?.style.setProperty('--core-collapsible-footer-max-height', `${this.initialHeight}px`);
         this.element.classList.add('is-active');
 
         this.setBarHeight(this.initialHeight);
@@ -244,7 +244,7 @@ export class CoreCollapsibleFooterDirective implements OnInit, OnDestroy {
         const expanded = height >= this.initialHeight;
         this.element.classList.toggle('footer-collapsed', collapsed);
         this.element.classList.toggle('footer-expanded', expanded);
-        this.content?.style.setProperty('--core-collapsible-footer-height', height + 'px');
+        this.content?.style.setProperty('--core-collapsible-footer-height', `${height}px`);
         this.previousHeight = height;
     }
 

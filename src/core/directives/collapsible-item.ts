@@ -67,7 +67,7 @@ export class CoreCollapsibleItemDirective implements OnInit, OnDestroy {
         this.element = el.nativeElement;
 
         this.element.addEventListener('click', (event) => this.elementClicked(event));
-        this.uniqueId = 'collapsible-item-' + CoreUtils.getUniqueId('CoreCollapsibleItemDirective');
+        this.uniqueId = `collapsible-item-${CoreUtils.getUniqueId('CoreCollapsibleItemDirective')}`;
         this.element.id = this.uniqueId;
     }
 
@@ -238,9 +238,9 @@ export class CoreCollapsibleItemDirective implements OnInit, OnDestroy {
      */
     protected setHeight(height?: number): void {
         if (height) {
-            this.element.style.setProperty('--collapsible-height', height + 'px');
+            this.element.style.setProperty('--collapsible-height', `${height}px`);
         } else if (this.expandedHeight) {
-            this.element.style.setProperty('--collapsible-height', this.expandedHeight + 'px');
+            this.element.style.setProperty('--collapsible-height', `${this.expandedHeight}px`);
         } else {
             this.element.style.removeProperty('--collapsible-height');
 

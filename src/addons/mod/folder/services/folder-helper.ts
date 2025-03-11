@@ -63,7 +63,7 @@ export class AddonModFolderHelperProvider {
             const directories: string[] = path.split('/');
 
             directories.forEach((directory) => {
-                completePath = completePath + '/' + directory;
+                completePath = `${completePath}/${directory}`;
                 // Search if the directory is already stored in folders array.
                 let subFolder = currentFolder.folders.find((list) => list.filename === directory);
 

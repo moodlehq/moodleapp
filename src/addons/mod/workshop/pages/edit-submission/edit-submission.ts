@@ -514,7 +514,7 @@ export default class AddonModWorkshopEditSubmissionPage implements OnInit, OnDes
             ? this.submissionId
             : 'newsub';
 
-        return this.workshopId + '_' + id;
+        return `${this.workshopId}_${id}`;
     }
 
     /**

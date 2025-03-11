@@ -105,7 +105,7 @@ export class AddonModWikiCreateLinkHandlerLazyService extends AddonModWikiCreate
                 // User is seeing the wiki, we can get the module from the wiki params.
                 const routeParams = CoreNavigator.getRouteParams(route);
 
-                path = path + `/${routeParams.courseId}/${routeParams.cmId}/edit`;
+                path = `${path}/${routeParams.courseId}/${routeParams.cmId}/edit`;
             } else if (wikiId) {
                 // The URL specifies which wiki it belongs to. Get the module.
                 const module = await CoreCourse.getModuleBasicInfoByInstance(
@@ -114,10 +114,10 @@ export class AddonModWikiCreateLinkHandlerLazyService extends AddonModWikiCreate
                     { siteId, readingStrategy: CoreSitesReadingStrategy.PREFER_CACHE },
                 );
 
-                path = path + `/${module.course}/${module.id}/edit`;
+                path = `${path}/${module.course}/${module.id}/edit`;
             } else {
                 // Cannot get module ID.
-                path = path + `/${courseId || 0}/0/edit`;
+                path = `${path}/${courseId || 0}/0/edit`;
             }
 
             // Open the page.

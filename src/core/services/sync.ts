@@ -134,7 +134,7 @@ export class CoreSyncProvider {
      * @returns Unique sync id.
      */
     protected getUniqueSyncBlockId(component: string, id: string | number): string {
-        return component + '#' + id;
+        return `${component}#${id}`;
     }
 
     /**

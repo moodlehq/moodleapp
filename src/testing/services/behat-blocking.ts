@@ -139,12 +139,12 @@ export class TestingBehatBlockingService {
             this.pendingList.push('DELAY');
         }
         if (!key) {
-            key = 'generated-' + this.keyIndex;
+            key = `generated-${this.keyIndex}`;
             this.keyIndex++;
         }
         this.pendingList.push(key);
 
-        TestingBehatRuntime.log('PENDING+: ' + this.pendingList);
+        TestingBehatRuntime.log(`PENDING+: ${this.pendingList}`);
 
         return key;
     }
@@ -159,7 +159,7 @@ export class TestingBehatBlockingService {
         // Remove the key immediately.
         this.pendingList = this.pendingList.filter((x) => x !== key);
 
-        TestingBehatRuntime.log('PENDING-: ' + this.pendingList);
+        TestingBehatRuntime.log(`PENDING-: ${this.pendingList}`);
 
         // If the only thing left is DELAY, then remove that as well, later...
         if (this.pendingList.length === 1) {
@@ -178,7 +178,7 @@ export class TestingBehatBlockingService {
             // Only remove it if the pending array is STILL empty after all that.
             if (this.pendingList.length === 1) {
                 this.pendingList = [];
-                TestingBehatRuntime.log('PENDING-: ' + this.pendingList);
+                TestingBehatRuntime.log(`PENDING-: ${this.pendingList}`);
             }
         }
     }
@@ -302,7 +302,7 @@ export class TestingBehatBlockingService {
         XMLHttpRequest.prototype.open = function(...args) {
             NgZone.run(() => {
                 const index = requestIndex++;
-                const key = 'httprequest-' + index;
+                const key = `httprequest-${index}`;
                 const isAsync = args[2] !== false;
 
                 try {

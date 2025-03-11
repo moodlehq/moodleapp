@@ -82,7 +82,7 @@ export class CoreEnrolService {
      * @returns Cache key.
      */
     protected getCourseEnrolmentMethodsCacheKey(courseId: number): string {
-        return CoreEnrolService.ROOT_CACHE_KEY + 'enrolmentmethods:' + courseId;
+        return `${CoreEnrolService.ROOT_CACHE_KEY}enrolmentmethods:${courseId}`;
     }
 
     /**

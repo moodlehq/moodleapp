@@ -647,7 +647,7 @@ export class AddonMessagesProvider {
      * @returns Cache key.
      */
     protected getRootCacheKeyForConversations(): string {
-        return AddonMessagesProvider.ROOT_CACHE_KEY + 'conversations:';
+        return `${AddonMessagesProvider.ROOT_CACHE_KEY}conversations:`;
     }
 
     /**
@@ -1460,7 +1460,7 @@ export class AddonMessagesProvider {
      * @returns Cache key.
      */
     protected getMessagePreferencesCacheKey(): string {
-        return AddonMessagesProvider.ROOT_CACHE_KEY + 'messagePreferences';
+        return `${AddonMessagesProvider.ROOT_CACHE_KEY}messagePreferences`;
     }
 
     /**

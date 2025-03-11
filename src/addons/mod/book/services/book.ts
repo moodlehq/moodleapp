@@ -125,7 +125,7 @@ export class AddonModBookProvider {
             }
             let key: string;
             const chapter: string = matches[1];
-            const filepathIsChapter = content.filepath == '/' + chapter + '/';
+            const filepathIsChapter = content.filepath == `/${chapter}/`;
 
             // Init the chapter if it's not defined yet.
             map[chapter] = map[chapter] || { paths: {} };
@@ -141,11 +141,11 @@ export class AddonModBookProvider {
             if (filepathIsChapter) {
                 // It's a file in the root folder OR the WS isn't returning the filepath as it should (MDL-53671).
                 // Try to get the path to the file from the URL.
-                const split = content.fileurl.split('mod_book/chapter' + content.filepath);
+                const split = content.fileurl.split(`mod_book/chapter${content.filepath}`);
                 key = split[1] || content.filename; // Use filename if we couldn't find the path.
             } else {
                 // Remove the chapter folder from the path and add the filename.
-                key = content.filepath.replace('/' + chapter + '/', '') + content.filename;
+                key = content.filepath.replace(`/${chapter}/`, '') + content.filename;
             }
 
             map[chapter].paths[CoreUrl.decodeURIComponent(key)] = content.fileurl;
@@ -213,7 +213,7 @@ export class AddonModBookProvider {
         ): AddonModBookTocChapter => {
             const hidden = !!parseInt(chapter.hidden, 10);
 
-            const fullChapterNumber = previousNumber + (hidden ? 'x.' : chapterNumber + '.');
+            const fullChapterNumber = previousNumber + (hidden ? 'x.' : `${chapterNumber}.`);
 
             return {
                 id: parseInt(chapter.href.replace('/index.html', ''), 10),

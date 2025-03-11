@@ -227,7 +227,7 @@ export default class CoreLoginSitePage implements OnInit {
             const alias = this.siteFinderSettings.displayalias && site.alias ? site.alias : '';
 
             // Set title with parenthesis if both name and alias are present.
-            site.title = name && alias ? name + ' (' + alias + ')' : name + alias;
+            site.title = name && alias ? `${name} (${alias})` : name + alias;
 
             const country = this.siteFinderSettings.displaycountry && site.countrycode ?
                 CoreCountries.getCountryName(site.countrycode) : '';
@@ -235,7 +235,7 @@ export default class CoreLoginSitePage implements OnInit {
                 site.city : '';
 
             // Separate location with hiphen if both country and city are present.
-            site.location = city && country ? city + ' - ' + country : city + country;
+            site.location = city && country ? `${city} - ${country}` : city + country;
 
             if (CoreSites.hasDefaultImage(site) && this.siteFinderSettings.defaultimageurl) {
                 site.imageurl = this.siteFinderSettings.defaultimageurl;
@@ -633,7 +633,7 @@ export default class CoreLoginSitePage implements OnInit {
         // Now display the error.
         error.error = CoreErrorHelper.addTextToError(
             error.error,
-            '<br><br>' + Translate.instant('core.login.youcanstillconnectwithcredentials'),
+            `<br><br>${Translate.instant('core.login.youcanstillconnectwithcredentials')}`,
         );
 
         CoreCustomURLSchemes.treatHandleCustomURLError(error, customURL, 'CoreLoginSitePage');

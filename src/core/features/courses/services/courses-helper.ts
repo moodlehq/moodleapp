@@ -192,7 +192,7 @@ export class CoreCoursesHelperProvider {
         try {
             const configs = await site.getConfig();
             for (let x = 0; x < 10; x++) {
-                colors[x] = configs['core_admin_coursecolor' + (x + 1)] || undefined;
+                colors[x] = configs[`core_admin_coursecolor${x + 1}`] || undefined;
             }
 
             this.courseSiteColors[siteId] = colors;

@@ -234,7 +234,7 @@ export class AddonModAssignOfflineProvider {
 
         userId = userId || site.getUserId();
         const siteFolderPath = CoreFile.getSiteFolder(site.getId());
-        const submissionFolderPath = 'offlineassign/' + assignId + '/' + userId;
+        const submissionFolderPath = `offlineassign/${assignId}/${userId}`;
 
         return CorePath.concatenatePaths(siteFolderPath, submissionFolderPath);
     }

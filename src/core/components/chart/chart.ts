@@ -82,7 +82,7 @@ export class CoreChartComponent implements OnDestroy, OnInit, OnChanges {
                             const datasets = data.datasets?.[0];
 
                             return data.labels.map<LegendItem>((label, i) => ({
-                                text: label + ': ' + datasets?.data?.[i],
+                                text: `${label}: ${datasets?.data?.[i]}`,
                                 fillStyle: datasets?.backgroundColor?.[i],
                             }));
                         }
@@ -191,7 +191,7 @@ export class CoreChartComponent implements OnDestroy, OnInit, OnChanges {
             const red = Math.floor(Math.random() * 255);
             const green = Math.floor(Math.random() * 255);
             const blue = Math.floor(Math.random() * 255);
-            CoreChartComponent.backgroundColors.push('rgba(' + red + ', ' + green + ', ' + blue + ', 0.6)');
+            CoreChartComponent.backgroundColors.push(`rgba(${red}, ${green}, ${blue}, 0.6)`);
         }
 
         return CoreChartComponent.backgroundColors.slice(0, n);

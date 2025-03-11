@@ -70,7 +70,7 @@ export class AddonModLessonGradeLinkHandlerService extends CoreContentLinksModul
             if (accessInfo.canviewreports) {
                 // User can view reports, go to view the report.
                 CoreNavigator.navigateToSitePath(
-                    ADDON_MOD_LESSON_PAGE_NAME + `/${module.course}/${module.id}/user-retake/${userId}`,
+                    `${ADDON_MOD_LESSON_PAGE_NAME}/${module.course}/${module.id}/user-retake/${userId}`,
                     {
                         siteId,
                     },

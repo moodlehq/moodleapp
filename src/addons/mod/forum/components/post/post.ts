@@ -131,7 +131,7 @@ export class AddonModForumPostComponent implements OnInit, OnDestroy, OnChanges 
      */
     ngOnInit(): void {
         this.tagsEnabled = CoreTag.areTagsAvailableInSite();
-        this.uniqueId = this.post.id > 0 ? 'reply' + this.post.id : 'edit' + this.post.parentid;
+        this.uniqueId = this.post.id > 0 ? `reply${this.post.id}` : `edit${this.post.parentid}`;
 
         const reTranslated = Translate.instant('addon.mod_forum.re');
         this.displaySubject = !this.parentSubject ||
@@ -152,7 +152,7 @@ export class AddonModForumPostComponent implements OnInit, OnDestroy, OnChanges 
     }
 
     /**
-     * Detect changes on input properties.
+     * @inheritdoc
      */
     ngOnChanges(changes: {[name: string]: SimpleChange}): void {
         if (changes.leavingPage && this.leavingPage) {
@@ -599,20 +599,22 @@ export class AddonModForumPostComponent implements OnInit, OnDestroy, OnChanges 
      * Discard offline reply.
      */
     async discardOfflineReply(): Promise<void> {
+        if (this.post.parentid === undefined) {
+            return;
+        }
+
         try {
             await CoreAlerts.confirmDelete(Translate.instant('core.areyousure'));
 
             const promises: Promise<void>[] = [];
 
-            promises.push(AddonModForumOffline.deleteReply(this.post.parentid!));
+            promises.push(AddonModForumOffline.deleteReply(this.post.parentid));
 
             if (this.forum.id) {
-                promises.push(AddonModForumHelper.deleteReplyStoredFiles(this.forum.id, this.post.parentid!).catch(() => {
-                    // Ignore errors, maybe there are no files.
-                }));
+                promises.push(AddonModForumHelper.deleteReplyStoredFiles(this.forum.id, this.post.parentid));
             }
 
-            await CorePromiseUtils.ignoreErrors(Promise.all(promises));
+            await CorePromiseUtils.allPromisesIgnoringErrors(promises);
 
             // Reset data.
             this.setFormData();
@@ -620,7 +622,7 @@ export class AddonModForumPostComponent implements OnInit, OnDestroy, OnChanges 
             this.onPostChange.emit();
 
             this.unblockOperation();
-        } catch (error) {
+        } catch {
             // Cancelled.
         }
     }
@@ -648,8 +650,6 @@ export class AddonModForumPostComponent implements OnInit, OnDestroy, OnChanges 
 
     /**
      * Confirm discard changes if any.
-     *
-     * @returns Promise resolved if the user confirms or data was not changed and rejected otherwise.
      */
     protected async confirmDiscard(): Promise<void> {
         if (AddonModForumHelper.hasPostDataChanged(this.formData, this.originalData)) {
@@ -674,13 +674,11 @@ export class AddonModForumPostComponent implements OnInit, OnDestroy, OnChanges 
 
     /**
      * Scroll to reply/edit form.
-     *
-     * @returns Promise resolved when done.
      */
     protected async scrollToForm(): Promise<void> {
         await CoreDom.scrollToElement(
             this.elementRef.nativeElement,
-            '#addon-forum-reply-edit-form-' + this.uniqueId,
+            `#addon-forum-reply-edit-form-${this.uniqueId}`,
         );
     }
 

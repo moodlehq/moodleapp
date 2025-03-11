@@ -51,7 +51,7 @@ export class AddonModFeedbackCompleteLinkHandlerService extends CoreContentLinks
                     );
 
                     await CoreNavigator.navigateToSitePath(
-                        ADDON_MOD_FEEDBACK_PAGE_NAME + `/${module.course}/${module.id}/form`,
+                        `${ADDON_MOD_FEEDBACK_PAGE_NAME}/${module.course}/${module.id}/form`,
                         {
                             params: {
                                 page: params.gopage !== undefined ? Number(params.gopage) : undefined,

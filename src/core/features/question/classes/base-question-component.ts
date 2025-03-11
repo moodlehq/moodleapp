@@ -165,7 +165,7 @@ export class CoreQuestionBaseComponent<T extends AddonModQuizQuestion = AddonMod
                 disabled: radioEl.disabled,
             };
             // Get the label with the question text.
-            const label = questionEl.querySelector<HTMLLabelElement>('label[for="' + option.id + '"]');
+            const label = questionEl.querySelector<HTMLLabelElement>(`label[for="${option.id}"]`);
 
             question.optionsName = option.name;
 
@@ -251,7 +251,7 @@ export class CoreQuestionBaseComponent<T extends AddonModQuizQuestion = AddonMod
         }
 
         // Get the accessibility label.
-        const accessibilityLabel = questionEl.querySelector<HTMLLabelElement>('label[for="' + select.id + '"]');
+        const accessibilityLabel = questionEl.querySelector<HTMLLabelElement>(`label[for="${select.id}"]`);
         selectModel.accessibilityLabel = accessibilityLabel?.innerHTML;
 
         question.select = selectModel;
@@ -690,10 +690,10 @@ export class CoreQuestionBaseComponent<T extends AddonModQuizQuestion = AddonMod
 
             // Get the label with the question text. Try the new format first.
             const labelId = element.getAttribute('aria-labelledby');
-            let label = labelId ? questionEl.querySelector('#' + labelId.replace(/:/g, '\\:')) : undefined;
+            let label = labelId ? questionEl.querySelector(`#${labelId.replace(/:/g, '\\:')}`) : undefined;
             if (!label) {
                 // Not found, use the old format.
-                label = questionEl.querySelector('label[for="' + option.id + '"]');
+                label = questionEl.querySelector(`label[for="${option.id}"]`);
             }
             option.class = label?.className || option.class;
 

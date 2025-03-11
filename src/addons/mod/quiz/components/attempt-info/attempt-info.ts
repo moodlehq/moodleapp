@@ -89,7 +89,7 @@ export class AddonModQuizAttemptInfoComponent implements OnChanges {
             this.gradeItemMarks = this.attempt.gradeitemmarks.map((gradeItemMark) => ({
                 name: gradeItemMark.name,
                 grade: Translate.instant('addon.mod_quiz.outof', { $a: {
-                    grade: '<strong>' + AddonModQuiz.formatGrade(gradeItemMark.grade, this.quiz?.decimalpoints) + '</strong>',
+                    grade: `<strong>${AddonModQuiz.formatGrade(gradeItemMark.grade, this.quiz?.decimalpoints)}</strong>`,
                     maxgrade: AddonModQuiz.formatGrade(gradeItemMark.maxgrade, this.quiz?.decimalpoints),
                 } }),
             }));
@@ -114,13 +114,13 @@ export class AddonModQuizAttemptInfoComponent implements OnChanges {
         }
 
         const gradeObject: Record<string, unknown> = {
-            grade: '<strong>' + AddonModQuiz.formatGrade(this.attempt.rescaledGrade, this.quiz.decimalpoints) + '</strong>',
+            grade: `<strong>${AddonModQuiz.formatGrade(this.attempt.rescaledGrade, this.quiz.decimalpoints)}</strong>`,
             maxgrade: AddonModQuiz.formatGrade(this.quiz.grade, this.quiz.decimalpoints),
         };
 
         if (this.quiz.grade != 100) {
             const percentage = (this.attempt.sumgrades ?? 0) * 100 / (this.quiz.sumgrades ?? 1);
-            gradeObject.percent = '<strong>' + AddonModQuiz.formatGrade(percentage, this.quiz.decimalpoints) + '</strong>';
+            gradeObject.percent = `<strong>${AddonModQuiz.formatGrade(percentage, this.quiz.decimalpoints)}</strong>`;
             this.readableGrade = Translate.instant('addon.mod_quiz.outofpercent', { $a: gradeObject });
         } else {
             this.readableGrade = Translate.instant('addon.mod_quiz.outof', { $a: gradeObject });

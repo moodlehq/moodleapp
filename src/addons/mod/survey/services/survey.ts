@@ -75,7 +75,7 @@ export class AddonModSurveyProvider {
      * @returns Cache key.
      */
     protected getQuestionsCacheKey(surveyId: number): string {
-        return AddonModSurveyProvider.ROOT_CACHE_KEY + 'questions:' + surveyId;
+        return `${AddonModSurveyProvider.ROOT_CACHE_KEY}questions:${surveyId}`;
     }
 
     /**
@@ -85,7 +85,7 @@ export class AddonModSurveyProvider {
      * @returns Cache key.
      */
     protected getSurveyCacheKey(courseId: number): string {
-        return AddonModSurveyProvider.ROOT_CACHE_KEY + 'survey:' + courseId;
+        return `${AddonModSurveyProvider.ROOT_CACHE_KEY}survey:${courseId}`;
     }
 
     /**

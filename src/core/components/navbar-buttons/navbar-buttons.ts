@@ -101,7 +101,7 @@ export class CoreNavBarButtonsComponent implements OnInit, OnDestroy {
                     slot = this.element.parentElement.getAttribute('slot');
                 }
                 if (slot) {
-                    selector += '[slot="' + slot + '"]';
+                    selector += `[slot="${slot}"]`;
                 }
 
                 const buttonsContainer = header.querySelector<HTMLIonButtonsElement>(selector);

@@ -73,7 +73,7 @@ export class AddonModWorkshopProvider {
      * @returns Cache key.
      */
     protected getWorkshopDataCacheKey(courseId: number): string {
-        return AddonModWorkshopProvider.ROOT_CACHE_KEY + 'workshop:' + courseId;
+        return `${AddonModWorkshopProvider.ROOT_CACHE_KEY}workshop:${courseId}`;
     }
 
     /**
@@ -93,7 +93,7 @@ export class AddonModWorkshopProvider {
      * @returns Cache key.
      */
     protected getWorkshopAccessInformationDataCacheKey(workshopId: number): string {
-        return this.getWorkshopDataPrefixCacheKey(workshopId) + ':access';
+        return `${this.getWorkshopDataPrefixCacheKey(workshopId)}:access`;
     }
 
     /**
@@ -103,7 +103,7 @@ export class AddonModWorkshopProvider {
      * @returns Cache key.
      */
     protected getUserPlanDataCacheKey(workshopId: number): string {
-        return this.getWorkshopDataPrefixCacheKey(workshopId) + ':userplan';
+        return `${this.getWorkshopDataPrefixCacheKey(workshopId)}:userplan`;
     }
 
     /**
@@ -115,7 +115,7 @@ export class AddonModWorkshopProvider {
      * @returns Cache key.
      */
     protected getSubmissionsDataCacheKey(workshopId: number, userId: number = 0, groupId: number = 0): string {
-        return this.getWorkshopDataPrefixCacheKey(workshopId) + ':submissions:' + userId + ':' + groupId;
+        return `${this.getWorkshopDataPrefixCacheKey(workshopId)}:submissions:${userId}:${groupId}`;
     }
 
     /**
@@ -126,7 +126,7 @@ export class AddonModWorkshopProvider {
      * @returns Cache key.
      */
     protected getSubmissionDataCacheKey(workshopId: number, submissionId: number): string {
-        return this.getWorkshopDataPrefixCacheKey(workshopId) + ':submission:' + submissionId;
+        return `${this.getWorkshopDataPrefixCacheKey(workshopId)}:submission:${submissionId}`;
     }
 
     /**
@@ -136,7 +136,7 @@ export class AddonModWorkshopProvider {
      * @returns Cache key.
      */
     protected getGradesDataCacheKey(workshopId: number): string {
-        return this.getWorkshopDataPrefixCacheKey(workshopId) + ':grades';
+        return `${this.getWorkshopDataPrefixCacheKey(workshopId)}:grades`;
     }
 
     /**
@@ -147,7 +147,7 @@ export class AddonModWorkshopProvider {
      * @returns Cache key.
      */
     protected getGradesReportDataCacheKey(workshopId: number, groupId: number = 0): string {
-        return this.getWorkshopDataPrefixCacheKey(workshopId) + ':report:' + groupId;
+        return `${this.getWorkshopDataPrefixCacheKey(workshopId)}:report:${groupId}`;
     }
 
     /**
@@ -158,7 +158,7 @@ export class AddonModWorkshopProvider {
      * @returns Cache key.
      */
     protected getSubmissionAssessmentsDataCacheKey(workshopId: number, submissionId: number): string {
-        return this.getWorkshopDataPrefixCacheKey(workshopId) + ':assessments:' + submissionId;
+        return `${this.getWorkshopDataPrefixCacheKey(workshopId)}:assessments:${submissionId}`;
     }
 
     /**
@@ -169,7 +169,7 @@ export class AddonModWorkshopProvider {
      * @returns Cache key.
      */
     protected getReviewerAssessmentsDataCacheKey(workshopId: number, userId: number = 0): string {
-        return this.getWorkshopDataPrefixCacheKey(workshopId) + ':reviewerassessments:' + userId;
+        return `${this.getWorkshopDataPrefixCacheKey(workshopId)}:reviewerassessments:${userId}`;
     }
 
     /**
@@ -180,7 +180,7 @@ export class AddonModWorkshopProvider {
      * @returns Cache key.
      */
     protected getAssessmentDataCacheKey(workshopId: number, assessmentId: number): string {
-        return this.getWorkshopDataPrefixCacheKey(workshopId) + ':assessment:' + assessmentId;
+        return `${this.getWorkshopDataPrefixCacheKey(workshopId)}:assessment:${assessmentId}`;
     }
 
     /**
@@ -192,7 +192,7 @@ export class AddonModWorkshopProvider {
      * @returns Cache key.
      */
     protected getAssessmentFormDataCacheKey(workshopId: number, assessmentId: number, mode: string = 'assessment'): string {
-        return this.getWorkshopDataPrefixCacheKey(workshopId) + ':assessmentsform:' + assessmentId + ':' + mode;
+        return `${this.getWorkshopDataPrefixCacheKey(workshopId)}:assessmentsform:${assessmentId}:${mode}`;
     }
 
     /**

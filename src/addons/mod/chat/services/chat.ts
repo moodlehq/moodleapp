@@ -202,7 +202,7 @@ export class AddonModChatProvider {
                 message.userprofileimageurl = user.profileimageurl;
             } catch {
                 // Error getting profile, most probably the user is deleted.
-                message.userfullname = Translate.instant('core.deleteduser') + ' ' + message.userid;
+                message.userfullname = `${Translate.instant('core.deleteduser')} ${message.userid}`;
             }
         }));
 
@@ -382,7 +382,7 @@ export class AddonModChatProvider {
      * @returns Cache key.
      */
     protected getChatsCacheKey(courseId: number): string {
-        return AddonModChatProvider.ROOT_CACHE_KEY + 'chats:' + courseId;
+        return `${AddonModChatProvider.ROOT_CACHE_KEY}chats:${courseId}`;
     }
 
     /**
@@ -404,7 +404,7 @@ export class AddonModChatProvider {
      * @returns Cache key prefix.
      */
     protected getSessionsCacheKeyPrefix(chatId: number): string {
-        return AddonModChatProvider.ROOT_CACHE_KEY + 'sessions:' + chatId + ':';
+        return `${AddonModChatProvider.ROOT_CACHE_KEY}sessions:${chatId}:`;
     }
 
     /**
@@ -426,7 +426,7 @@ export class AddonModChatProvider {
      * @returns Cache key prefix.
      */
     protected getSessionMessagesCacheKeyPrefix(chatId: number): string {
-        return AddonModChatProvider.ROOT_CACHE_KEY + 'sessionsMessages:' + chatId + ':';
+        return `${AddonModChatProvider.ROOT_CACHE_KEY}sessionsMessages:${chatId}:`;
     }
 
 }

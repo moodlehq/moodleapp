@@ -95,7 +95,7 @@ export class AddonModBBBService {
      * @returns Cache key.
      */
     protected getBBBsCacheKey(courseId: number): string {
-        return AddonModBBBService.ROOT_CACHE_KEY + 'bbb:' + courseId;
+        return `${AddonModBBBService.ROOT_CACHE_KEY}bbb:${courseId}`;
     }
 
     /**
@@ -205,7 +205,7 @@ export class AddonModBBBService {
      * @returns Cache key prefix.
      */
     protected getMeetingInfoCacheKeyPrefix(id: number): string {
-        return AddonModBBBService.ROOT_CACHE_KEY + 'meetingInfo:' + id + ':';
+        return `${AddonModBBBService.ROOT_CACHE_KEY}meetingInfo:${id}:`;
     }
 
     /**
@@ -270,7 +270,7 @@ export class AddonModBBBService {
      * @returns Cache key prefix.
      */
     protected getRecordingsCacheKeyPrefix(id: number): string {
-        return AddonModBBBService.ROOT_CACHE_KEY + 'recordings:' + id + ':';
+        return `${AddonModBBBService.ROOT_CACHE_KEY}recordings:${id}:`;
     }
 
     /**

@@ -43,7 +43,7 @@ export class CoreSitePluginsOnlyTitleBlockComponent extends CoreBlockBaseCompone
     async ngOnInit(): Promise<void> {
         super.ngOnInit();
 
-        this.fetchContentDefaultError = 'Error getting ' + (this.block.contents?.title || 'block') + ' data.';
+        this.fetchContentDefaultError = `Error getting ${this.block.contents?.title || 'block'} data.`;
     }
 
     /**

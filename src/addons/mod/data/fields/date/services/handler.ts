@@ -50,23 +50,23 @@ export class AddonModDataFieldDateHandlerService implements AddonModDataFieldHan
         field: AddonModDataField,
         inputData: CoreFormFields<string>,
     ): AddonModDataSearchEntriesAdvancedFieldFormatted[] {
-        const fieldName = 'f_' + field.id;
-        const enabledName = 'f_' + field.id + '_z';
+        const fieldName = `f_${field.id}`;
+        const enabledName = `f_${field.id}_z`;
 
         if (inputData[enabledName] && typeof inputData[fieldName] == 'string') {
             const date = inputData[fieldName].substring(0, 10).split('-');
 
             return [
                 {
-                    name: fieldName + '_y',
+                    name: `${fieldName}_y`,
                     value: date[0],
                 },
                 {
-                    name: fieldName + '_m',
+                    name: `${fieldName}_m`,
                     value: date[1],
                 },
                 {
-                    name: fieldName + '_d',
+                    name: `${fieldName}_d`,
                     value: date[2],
                 },
                 {
@@ -83,7 +83,7 @@ export class AddonModDataFieldDateHandlerService implements AddonModDataFieldHan
      * @inheritdoc
      */
     getFieldEditData(field: AddonModDataField, inputData: CoreFormFields<string>): AddonModDataSubfieldData[] {
-        const fieldName = 'f_' + field.id;
+        const fieldName = `f_${field.id}`;
 
         if (typeof inputData[fieldName] != 'string') {
             return [];
@@ -118,7 +118,7 @@ export class AddonModDataFieldDateHandlerService implements AddonModDataFieldHan
         inputData: CoreFormFields<string>,
         originalFieldData: AddonModDataEntryField,
     ): boolean {
-        const fieldName = 'f_' + field.id;
+        const fieldName = `f_${field.id}`;
         const input = inputData[fieldName] && inputData[fieldName].substring(0, 10) || '';
 
         const content = (originalFieldData && originalFieldData?.content &&

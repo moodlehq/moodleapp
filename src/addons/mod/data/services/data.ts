@@ -510,7 +510,7 @@ export class AddonModDataProvider {
      * @returns Cache key.
      */
     protected getDatabaseDataCacheKey(courseId: number): string {
-        return AddonModDataProvider.ROOT_CACHE_KEY + 'data:' + courseId;
+        return `${AddonModDataProvider.ROOT_CACHE_KEY}data:${courseId}`;
     }
 
     /**
@@ -751,7 +751,7 @@ export class AddonModDataProvider {
      * @returns Cache key.
      */
     protected getEntryCacheKey(dataId: number, entryId: number): string {
-        return this.getDatabaseDataPrefixCacheKey(dataId) + ':entry:' + entryId;
+        return `${this.getDatabaseDataPrefixCacheKey(dataId)}:entry:${entryId}`;
     }
 
     /**
@@ -791,7 +791,7 @@ export class AddonModDataProvider {
      * @returns Cache key.
      */
     protected getFieldsCacheKey(dataId: number): string {
-        return this.getDatabaseDataPrefixCacheKey(dataId) + ':fields';
+        return `${this.getDatabaseDataPrefixCacheKey(dataId)}:fields`;
     }
 
     /**

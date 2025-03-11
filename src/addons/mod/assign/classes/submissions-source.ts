@@ -224,7 +224,7 @@ export class AddonModAssignSubmissionsSource extends CoreRoutedItemsManagerSourc
                 );
 
                 submission.statusTranslated = Translate.instant(
-                    'addon.mod_assign.submissionstatus_' + submission.status,
+                    `addon.mod_assign.submissionstatus_${submission.status}`,
                 );
 
                 if (notSynced) {

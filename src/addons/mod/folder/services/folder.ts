@@ -68,7 +68,7 @@ export class AddonModFolderProvider {
      * @returns Cache key.
      */
     protected getFolderCacheKey(courseId: number): string {
-        return AddonModFolderProvider.ROOT_CACHE_KEY + 'folder:' + courseId;
+        return `${AddonModFolderProvider.ROOT_CACHE_KEY}folder:${courseId}`;
     }
 
     /**

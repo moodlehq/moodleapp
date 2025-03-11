@@ -39,7 +39,7 @@ export class AddonModLabelProvider {
      * @returns Cache key.
      */
     protected getLabelDataCacheKey(courseId: number): string {
-        return AddonModLabelProvider.ROOT_CACHE_KEY + 'label:' + courseId;
+        return `${AddonModLabelProvider.ROOT_CACHE_KEY}label:${courseId}`;
     }
 
     /**

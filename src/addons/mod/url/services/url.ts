@@ -94,7 +94,7 @@ export class AddonModUrlProvider {
      * @returns Cache key.
      */
     protected getUrlCacheKey(courseId: number): string {
-        return AddonModUrlProvider.ROOT_CACHE_KEY + 'url:' + courseId;
+        return `${AddonModUrlProvider.ROOT_CACHE_KEY}url:${courseId}`;
     }
 
     /**

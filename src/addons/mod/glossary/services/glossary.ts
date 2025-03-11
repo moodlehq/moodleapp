@@ -421,7 +421,7 @@ export class AddonModGlossaryProvider {
      * @returns The cache key.
      */
     protected getCategoriesCacheKey(glossaryId: number): string {
-        return AddonModGlossaryProvider.ROOT_CACHE_KEY + 'categories:' + glossaryId;
+        return `${AddonModGlossaryProvider.ROOT_CACHE_KEY}categories:${glossaryId}`;
     }
 
     /**

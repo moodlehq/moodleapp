@@ -60,7 +60,7 @@ export class AddonModDataFieldFileComponent extends AddonModDataFieldPluginBaseC
      */
     protected init(): void {
         if (this.searchMode) {
-            this.addControl('f_' + this.field.id);
+            this.addControl(`f_${this.field.id}`);
 
             return;
         }
@@ -72,7 +72,7 @@ export class AddonModDataFieldFileComponent extends AddonModDataFieldPluginBaseC
 
         if (this.editMode) {
             this.maxSizeBytes = parseInt(this.field.param3, 10);
-            CoreFileSession.setFiles(this.component, this.database!.id + '_' + this.field.id, this.files);
+            CoreFileSession.setFiles(this.component, `${this.database!.id}_${this.field.id}`, this.files);
         }
     }
 

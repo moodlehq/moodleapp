@@ -156,7 +156,7 @@ export class AddonModWikiProvider {
      * @returns Cache key.
      */
     protected getPageContentsCacheKey(pageId: number): string {
-        return AddonModWikiProvider.ROOT_CACHE_KEY + 'page:' + pageId;
+        return `${AddonModWikiProvider.ROOT_CACHE_KEY}page:${pageId}`;
     }
 
     /**
@@ -231,7 +231,7 @@ export class AddonModWikiProvider {
      * @returns Cache key.
      */
     protected getSubwikiFilesCacheKey(wikiId: number, groupId: number, userId: number): string {
-        return this.getSubwikiFilesCacheKeyPrefix(wikiId) + ':' + groupId + ':' + userId;
+        return `${this.getSubwikiFilesCacheKeyPrefix(wikiId)}:${groupId}:${userId}`;
     }
 
     /**
@@ -241,7 +241,7 @@ export class AddonModWikiProvider {
      * @returns Cache key.
      */
     protected getSubwikiFilesCacheKeyPrefix(wikiId: number): string {
-        return AddonModWikiProvider.ROOT_CACHE_KEY + 'subwikifiles:' + wikiId;
+        return `${AddonModWikiProvider.ROOT_CACHE_KEY}subwikifiles:${wikiId}`;
     }
 
     /**
@@ -301,7 +301,7 @@ export class AddonModWikiProvider {
      * @returns Cache key.
      */
     protected getSubwikiPagesCacheKey(wikiId: number, groupId: number, userId: number): string {
-        return this.getSubwikiPagesCacheKeyPrefix(wikiId) + ':' + groupId + ':' + userId;
+        return `${this.getSubwikiPagesCacheKeyPrefix(wikiId)}:${groupId}:${userId}`;
     }
 
     /**
@@ -311,7 +311,7 @@ export class AddonModWikiProvider {
      * @returns Cache key.
      */
     protected getSubwikiPagesCacheKeyPrefix(wikiId: number): string {
-        return AddonModWikiProvider.ROOT_CACHE_KEY + 'subwikipages:' + wikiId;
+        return `${AddonModWikiProvider.ROOT_CACHE_KEY}subwikipages:${wikiId}`;
     }
 
     /**
@@ -350,7 +350,7 @@ export class AddonModWikiProvider {
      * @returns Cache key.
      */
     protected getSubwikisCacheKey(wikiId: number): string {
-        return AddonModWikiProvider.ROOT_CACHE_KEY + 'subwikis:' + wikiId;
+        return `${AddonModWikiProvider.ROOT_CACHE_KEY}subwikis:${wikiId}`;
     }
 
     /**
@@ -386,7 +386,7 @@ export class AddonModWikiProvider {
      * @returns Cache key.
      */
     protected getWikiDataCacheKey(courseId: number): string {
-        return AddonModWikiProvider.ROOT_CACHE_KEY + 'wiki:' + courseId;
+        return `${AddonModWikiProvider.ROOT_CACHE_KEY}wiki:${courseId}`;
     }
 
     /**

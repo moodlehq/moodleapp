@@ -109,7 +109,7 @@ export class CoreCourseModuleCompletionLegacyComponent extends CoreCourseModuleC
             if (this.completion.overrideby && this.completion.overrideby > 0) {
                 image += '-override';
             }
-            this.completionImage = 'assets/img/completion/' + image + '.svg';
+            this.completionImage = `assets/img/completion/${image}.svg`;
         }
 
         if (!moduleName || !this.moduleId || !langKey) {

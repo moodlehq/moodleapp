@@ -73,7 +73,7 @@ export class CoreContextMenuComponent implements OnInit, OnDestroy {
         });
 
         // Calculate the unique ID.
-        this.uniqueId = 'core-context-menu-' + CoreUtils.getUniqueId('CoreContextMenuComponent');
+        this.uniqueId = `core-context-menu-${CoreUtils.getUniqueId('CoreContextMenuComponent')}`;
 
         CoreDirectivesRegistry.register(elementRef.nativeElement, this);
     }

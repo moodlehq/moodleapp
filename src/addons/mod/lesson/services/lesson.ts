@@ -138,7 +138,7 @@ export class AddonModLessonProvider {
 
         if (addMessage) {
             const params = typeof value != 'boolean' ? { $a: value } : undefined;
-            message = Translate.instant('addon.mod_lesson.' + name, params);
+            message = Translate.instant(`addon.mod_lesson.${name}`, params);
         }
 
         result.data[name] = {
@@ -489,7 +489,7 @@ export class AddonModLessonProvider {
             if (answers[id] !== undefined) {
                 const answer = answers[id];
 
-                result.studentanswer += '<br />' + answer.answer + ' = ' + value;
+                result.studentanswer += `<br />${answer.answer} = ${value}`;
                 if (answer.response && answer.response.trim() == value.trim()) {
                     hits++;
                 }
@@ -755,11 +755,11 @@ export class AddonModLessonProvider {
             // See if user typed in any of the correct answers.
             if (this.isAnswerCorrect(lesson, pageData.page!.id, answer, pageIndex)) {
                 if (!useRegExp) { // We are using 'normal analysis', which ignores case.
-                    if (studentAnswer.match(new RegExp('^' + expectedAnswer + '$', 'i'))) {
+                    if (studentAnswer.match(new RegExp(`^${expectedAnswer}$`, 'i'))) {
                         isMatch = true;
                     }
                 } else {
-                    if (studentAnswer.match(new RegExp('^' + expectedAnswer + '$', ignoreCase))) {
+                    if (studentAnswer.match(new RegExp(`^${expectedAnswer}$`, ignoreCase))) {
                         isMatch = true;
                     }
                 }
@@ -770,7 +770,7 @@ export class AddonModLessonProvider {
                 if (!useRegExp) {
                     // We are using 'normal analysis'.
                     // See if user typed in any of the wrong answers; don't worry about case.
-                    if (studentAnswer.match(new RegExp('^' + expectedAnswer + '$', 'i'))) {
+                    if (studentAnswer.match(new RegExp(`^${expectedAnswer}$`, 'i'))) {
                         isMatch = true;
                     }
                 } else { // We are using regular expressions analysis.
@@ -780,7 +780,7 @@ export class AddonModLessonProvider {
                         // 1- Check for absence of required string in studentAnswer (coded by initial '--').
                         case '--':
                             expectedAnswer = expectedAnswer.substring(2);
-                            if (!studentAnswer.match(new RegExp('^' + expectedAnswer + '$', ignoreCase))) {
+                            if (!studentAnswer.match(new RegExp(`^${expectedAnswer}$`, ignoreCase))) {
                                 isMatch = true;
                             }
                             break;
@@ -790,7 +790,7 @@ export class AddonModLessonProvider {
                             expectedAnswer = expectedAnswer.substring(2);
 
                             // Check for one or several matches.
-                            const matches = studentAnswer.match(new RegExp(expectedAnswer, 'g' + ignoreCase));
+                            const matches = studentAnswer.match(new RegExp(expectedAnswer, `g${ignoreCase}`));
                             if (matches) {
                                 isMatch = true;
                                 const nb = matches.length;
@@ -799,7 +799,7 @@ export class AddonModLessonProvider {
 
                                 for (let j = 0; j < nb; j++) {
                                     original.push(matches[j]);
-                                    marked.push('<span class="incorrect matches">' + matches[j] + '</span>');
+                                    marked.push(`<span class="incorrect matches">${matches[j]}</span>`);
                                 }
 
                                 for (let j = 0; j < original.length; j++) {
@@ -810,7 +810,7 @@ export class AddonModLessonProvider {
                         }
                         // 3- Check for wrong answers belonging neither to -- nor to ++ categories.
                         default:
-                            if (studentAnswer.match(new RegExp('^' + expectedAnswer + '$', ignoreCase))) {
+                            if (studentAnswer.match(new RegExp(`^${expectedAnswer}$`, ignoreCase))) {
                                 isMatch = true;
                             }
                             break;
@@ -1177,7 +1177,7 @@ export class AddonModLessonProvider {
      * @returns Cache key.
      */
     protected getAccessInformationCacheKey(lessonId: number): string {
-        return AddonModLessonProvider.ROOT_CACHE_KEY + 'accessInfo:' + lessonId;
+        return `${AddonModLessonProvider.ROOT_CACHE_KEY}accessInfo:${lessonId}`;
     }
 
     /**
@@ -1216,7 +1216,7 @@ export class AddonModLessonProvider {
      * @returns Cache key.
      */
     protected getContentPagesViewedCacheKey(lessonId: number, retake: number): string {
-        return this.getContentPagesViewedCommonCacheKey(lessonId) + ':' + retake;
+        return `${this.getContentPagesViewedCommonCacheKey(lessonId)}:${retake}`;
     }
 
     /**
@@ -1226,7 +1226,7 @@ export class AddonModLessonProvider {
      * @returns Cache key.
      */
     protected getContentPagesViewedCommonCacheKey(lessonId: number): string {
-        return AddonModLessonProvider.ROOT_CACHE_KEY + 'contentPagesViewed:' + lessonId;
+        return `${AddonModLessonProvider.ROOT_CACHE_KEY}contentPagesViewed:${lessonId}`;
     }
 
     /**
@@ -1442,7 +1442,7 @@ export class AddonModLessonProvider {
      * @returns Cache key.
      */
     protected getLessonDataCacheKey(courseId: number): string {
-        return AddonModLessonProvider.ROOT_CACHE_KEY + 'lesson:' + courseId;
+        return `${AddonModLessonProvider.ROOT_CACHE_KEY}lesson:${courseId}`;
     }
 
     /**
@@ -1498,7 +1498,7 @@ export class AddonModLessonProvider {
      * @returns Cache key.
      */
     protected getLessonWithPasswordCacheKey(lessonId: number): string {
-        return AddonModLessonProvider.ROOT_CACHE_KEY + 'lessonWithPswrd:' + lessonId;
+        return `${AddonModLessonProvider.ROOT_CACHE_KEY}lessonWithPswrd:${lessonId}`;
     }
 
     /**
@@ -1675,7 +1675,7 @@ export class AddonModLessonProvider {
      * @returns Cache key.
      */
     protected getPageDataCacheKey(lessonId: number, pageId: number): string {
-        return this.getPageDataCommonCacheKey(lessonId) + ':' + pageId;
+        return `${this.getPageDataCommonCacheKey(lessonId)}:${pageId}`;
     }
 
     /**
@@ -1685,7 +1685,7 @@ export class AddonModLessonProvider {
      * @returns Cache key.
      */
     protected getPageDataCommonCacheKey(lessonId: number): string {
-        return AddonModLessonProvider.ROOT_CACHE_KEY + 'pageData:' + lessonId;
+        return `${AddonModLessonProvider.ROOT_CACHE_KEY}pageData:${lessonId}`;
     }
 
     /**
@@ -1726,7 +1726,7 @@ export class AddonModLessonProvider {
      * @returns Cache key.
      */
     protected getPagesCacheKey(lessonId: number): string {
-        return AddonModLessonProvider.ROOT_CACHE_KEY + 'pages:' + lessonId;
+        return `${AddonModLessonProvider.ROOT_CACHE_KEY}pages:${lessonId}`;
     }
 
     /**
@@ -1779,7 +1779,7 @@ export class AddonModLessonProvider {
      * @returns Cache key.
      */
     protected getPagesPossibleJumpsCacheKey(lessonId: number): string {
-        return AddonModLessonProvider.ROOT_CACHE_KEY + 'pagesJumps:' + lessonId;
+        return `${AddonModLessonProvider.ROOT_CACHE_KEY}pagesJumps:${lessonId}`;
     }
 
     /**
@@ -1964,7 +1964,7 @@ export class AddonModLessonProvider {
      * @returns Cache key.
      */
     protected getQuestionsAttemptsCacheKey(lessonId: number, retake: number, userId: number): string {
-        return this.getQuestionsAttemptsCommonCacheKey(lessonId) + ':' + userId + ':' + retake;
+        return `${this.getQuestionsAttemptsCommonCacheKey(lessonId)}:${userId}:${retake}`;
     }
 
     /**
@@ -1974,7 +1974,7 @@ export class AddonModLessonProvider {
      * @returns Cache key.
      */
     protected getQuestionsAttemptsCommonCacheKey(lessonId: number): string {
-        return AddonModLessonProvider.ROOT_CACHE_KEY + 'questionsAttempts:' + lessonId;
+        return `${AddonModLessonProvider.ROOT_CACHE_KEY}questionsAttempts:${lessonId}`;
     }
 
     /**
@@ -2076,7 +2076,7 @@ export class AddonModLessonProvider {
      * @returns Cache key.
      */
     protected getRetakesOverviewCacheKey(lessonId: number, groupId: number): string {
-        return this.getRetakesOverviewCommonCacheKey(lessonId) + ':' + groupId;
+        return `${this.getRetakesOverviewCommonCacheKey(lessonId)}:${groupId}`;
     }
 
     /**
@@ -2086,7 +2086,7 @@ export class AddonModLessonProvider {
      * @returns Cache key.
      */
     protected getRetakesOverviewCommonCacheKey(lessonId: number): string {
-        return AddonModLessonProvider.ROOT_CACHE_KEY + 'retakesOverview:' + lessonId;
+        return `${AddonModLessonProvider.ROOT_CACHE_KEY}retakesOverview:${lessonId}`;
     }
 
     /**
@@ -2164,7 +2164,7 @@ export class AddonModLessonProvider {
      * @returns Cache key.
      */
     protected getTimersCacheKey(lessonId: number, userId: number): string {
-        return this.getTimersCommonCacheKey(lessonId) + ':' + userId;
+        return `${this.getTimersCommonCacheKey(lessonId)}:${userId}`;
     }
 
     /**
@@ -2174,7 +2174,7 @@ export class AddonModLessonProvider {
      * @returns Cache key.
      */
     protected getTimersCommonCacheKey(lessonId: number): string {
-        return AddonModLessonProvider.ROOT_CACHE_KEY + 'timers:' + lessonId;
+        return `${AddonModLessonProvider.ROOT_CACHE_KEY}timers:${lessonId}`;
     }
 
     /**
@@ -2285,7 +2285,7 @@ export class AddonModLessonProvider {
      * @returns Cache key.
      */
     protected getUserRetakeCacheKey(lessonId: number, userId: number, retake: number): string {
-        return this.getUserRetakeUserCacheKey(lessonId, userId) + ':' + retake;
+        return `${this.getUserRetakeUserCacheKey(lessonId, userId)}:${retake}`;
     }
 
     /**
@@ -2296,7 +2296,7 @@ export class AddonModLessonProvider {
      * @returns Cache key.
      */
     protected getUserRetakeUserCacheKey(lessonId: number, userId: number): string {
-        return this.getUserRetakeLessonCacheKey(lessonId) + ':' + userId;
+        return `${this.getUserRetakeLessonCacheKey(lessonId)}:${userId}`;
     }
 
     /**
@@ -2306,7 +2306,7 @@ export class AddonModLessonProvider {
      * @returns Cache key.
      */
     protected getUserRetakeLessonCacheKey(lessonId: number): string {
-        return AddonModLessonProvider.ROOT_CACHE_KEY + 'userRetake:' + lessonId;
+        return `${AddonModLessonProvider.ROOT_CACHE_KEY}userRetake:${lessonId}`;
     }
 
     /**

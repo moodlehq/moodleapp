@@ -50,7 +50,7 @@ export class AddonModFeedbackShowNonRespondentsLinkHandlerService extends CoreCo
                     );
 
                     await CoreNavigator.navigateToSitePath(
-                        ADDON_MOD_FEEDBACK_PAGE_NAME + `/${module.course}/${module.id}/nonrespondents`,
+                        `${ADDON_MOD_FEEDBACK_PAGE_NAME}/${module.course}/${module.id}/nonrespondents`,
                         { siteId },
                     );
                 } catch (error) {

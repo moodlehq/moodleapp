@@ -99,7 +99,7 @@ export class AddonModFeedbackProvider {
             if (item.rawValue === undefined) {
                 values = [''];
             } else {
-                item.rawValue = '' + item.rawValue;
+                item.rawValue = `${item.rawValue}`;
                 values = item.rawValue.split(ADDON_MOD_FEEDBACK_LINE_SEP);
             }
         } else {
@@ -354,7 +354,7 @@ export class AddonModFeedbackProvider {
      * @returns Cache key.
      */
     protected getAnalysisDataPrefixCacheKey(feedbackId: number): string {
-        return this.getFeedbackDataPrefixCacheKey(feedbackId) + ':analysis:';
+        return `${this.getFeedbackDataPrefixCacheKey(feedbackId)}:analysis:`;
     }
 
     /**
@@ -421,7 +421,7 @@ export class AddonModFeedbackProvider {
      * @returns Cache key.
      */
     protected getCompletedDataCacheKey(feedbackId: number): string {
-        return this.getFeedbackDataPrefixCacheKey(feedbackId) + ':completed:';
+        return `${this.getFeedbackDataPrefixCacheKey(feedbackId)}:completed:`;
     }
 
     /**
@@ -465,7 +465,7 @@ export class AddonModFeedbackProvider {
      * @returns Cache key.
      */
     protected getCurrentCompletedTimeModifiedDataCacheKey(feedbackId: number): string {
-        return this.getFeedbackDataPrefixCacheKey(feedbackId) + ':completedtime:';
+        return `${this.getFeedbackDataPrefixCacheKey(feedbackId)}:completedtime:`;
     }
 
     /**
@@ -518,7 +518,7 @@ export class AddonModFeedbackProvider {
      * @returns Cache key.
      */
     protected getCurrentValuesDataCacheKey(feedbackId: number): string {
-        return this.getFeedbackDataPrefixCacheKey(feedbackId) + ':currentvalues';
+        return `${this.getFeedbackDataPrefixCacheKey(feedbackId)}:currentvalues`;
     }
 
     /**
@@ -554,7 +554,7 @@ export class AddonModFeedbackProvider {
      * @returns Cache key.
      */
     protected getFeedbackAccessInformationDataCacheKey(feedbackId: number): string {
-        return this.getFeedbackDataPrefixCacheKey(feedbackId) + ':access';
+        return `${this.getFeedbackDataPrefixCacheKey(feedbackId)}:access`;
     }
 
     /**
@@ -564,7 +564,7 @@ export class AddonModFeedbackProvider {
      * @returns Cache key.
      */
     protected getFeedbackCacheKey(courseId: number): string {
-        return AddonModFeedbackProvider.ROOT_CACHE_KEY + 'feedback:' + courseId;
+        return `${AddonModFeedbackProvider.ROOT_CACHE_KEY}feedback:${courseId}`;
     }
 
     /**
@@ -668,7 +668,7 @@ export class AddonModFeedbackProvider {
      * @returns Cache key.
      */
     protected getItemsDataCacheKey(feedbackId: number): string {
-        return this.getFeedbackDataPrefixCacheKey(feedbackId) + ':items';
+        return `${this.getFeedbackDataPrefixCacheKey(feedbackId)}:items`;
     }
 
     /**
@@ -721,7 +721,7 @@ export class AddonModFeedbackProvider {
      * @returns Cache key.
      */
     protected getNonRespondentsDataPrefixCacheKey(feedbackId: number): string {
-        return this.getFeedbackDataPrefixCacheKey(feedbackId) + ':nonrespondents:';
+        return `${this.getFeedbackDataPrefixCacheKey(feedbackId)}:nonrespondents:`;
     }
 
     /**
@@ -897,7 +897,7 @@ export class AddonModFeedbackProvider {
      * @returns Cache key.
      */
     protected getResponsesAnalysisDataPrefixCacheKey(feedbackId: number): string {
-        return this.getFeedbackDataPrefixCacheKey(feedbackId) + ':responsesanalysis:';
+        return `${this.getFeedbackDataPrefixCacheKey(feedbackId)}:responsesanalysis:`;
     }
 
     /**
@@ -933,7 +933,7 @@ export class AddonModFeedbackProvider {
      * @returns Cache key.
      */
     protected getResumePageDataCacheKey(feedbackId: number): string {
-        return this.getFeedbackDataPrefixCacheKey(feedbackId) + ':launch';
+        return `${this.getFeedbackDataPrefixCacheKey(feedbackId)}:launch`;
     }
 
     /**

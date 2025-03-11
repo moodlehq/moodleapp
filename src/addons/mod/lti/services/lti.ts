@@ -112,7 +112,7 @@ export class AddonModLtiProvider {
      * @returns Cache key.
      */
     protected getLtiCacheKey(courseId: number): string {
-        return AddonModLtiProvider.ROOT_CACHE_KEY + 'lti:' + courseId;
+        return `${AddonModLtiProvider.ROOT_CACHE_KEY}lti:${courseId}`;
     }
 
     /**
@@ -197,7 +197,7 @@ export class AddonModLtiProvider {
     isLaunchViaSiteDisabledInSite(site?: CoreSite): boolean {
         site = site || CoreSites.getCurrentSite();
 
-        return !!site?.isFeatureDisabled(ADDON_MOD_LTI_FEATURE_NAME + ':launchViaSite');
+        return !!site?.isFeatureDisabled(`${ADDON_MOD_LTI_FEATURE_NAME}:launchViaSite`);
     }
 
     /**
@@ -223,7 +223,7 @@ export class AddonModLtiProvider {
     isOpenInAppBrowserDisabledInSite(site?: CoreSite): boolean {
         site = site || CoreSites.getCurrentSite();
 
-        return !!site?.isFeatureDisabled(ADDON_MOD_LTI_FEATURE_NAME + ':openInAppBrowser');
+        return !!site?.isFeatureDisabled(`${ADDON_MOD_LTI_FEATURE_NAME}:openInAppBrowser`);
     }
 
     /**

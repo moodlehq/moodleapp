@@ -147,7 +147,7 @@ export class AddonModH5PActivityProvider {
      * @returns Cache key.
      */
     protected getAccessInformationCacheKey(id: number): string {
-        return AddonModH5PActivityProvider.ROOT_CACHE_KEY + 'accessInfo:' + id;
+        return `${AddonModH5PActivityProvider.ROOT_CACHE_KEY}accessInfo:${id}`;
     }
 
     /**
@@ -316,7 +316,7 @@ export class AddonModH5PActivityProvider {
      * @returns Cache key.
      */
     protected getUsersAttemptsCommonCacheKey(id: number): string {
-        return AddonModH5PActivityProvider.ROOT_CACHE_KEY + 'userAttempts:' + id;
+        return `${AddonModH5PActivityProvider.ROOT_CACHE_KEY}userAttempts:${id}`;
     }
 
     /**
@@ -337,7 +337,7 @@ export class AddonModH5PActivityProvider {
      * @returns Cache key.
      */
     protected getAttemptResultsCommonCacheKey(id: number): string {
-        return AddonModH5PActivityProvider.ROOT_CACHE_KEY + 'results:' + id;
+        return `${AddonModH5PActivityProvider.ROOT_CACHE_KEY}results:${id}`;
     }
 
     /**
@@ -487,7 +487,7 @@ export class AddonModH5PActivityProvider {
      * @returns Cache key.
      */
     protected getH5PActivityDataCacheKey(courseId: number): string {
-        return AddonModH5PActivityProvider.ROOT_CACHE_KEY + 'h5pactivity:' + courseId;
+        return `${AddonModH5PActivityProvider.ROOT_CACHE_KEY}h5pactivity:${courseId}`;
     }
 
     /**
@@ -633,7 +633,7 @@ export class AddonModH5PActivityProvider {
      * @returns Cache key.
      */
     protected getUserAttemptsCommonCacheKey(id: number): string {
-        return AddonModH5PActivityProvider.ROOT_CACHE_KEY + 'attempts:' + id;
+        return `${AddonModH5PActivityProvider.ROOT_CACHE_KEY}attempts:${id}`;
     }
 
     /**

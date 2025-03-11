@@ -686,7 +686,7 @@ export class AddonCalendarHelperProvider {
                     ));
                 }
 
-                const dayId = monthId + '#' + day.date();
+                const dayId = `${monthId}#${day.date()}`;
                 if (!treatedDays[dayId]) {
                     // Dat not refetch or invalidated already, do it now.
                     treatedDays[dayId] = true;
@@ -715,7 +715,7 @@ export class AddonCalendarHelperProvider {
                     finalPromises.push(AddonCalendar.invalidateMonthlyEvents(day.year(), day.month() + 1, site.id));
                 }
 
-                const dayId = monthId + '#' + day.date();
+                const dayId = `${monthId}#${day.date()}`;
                 if (!treatedDays[dayId]) {
                     // Dat not refetch or invalidated already, do it now.
                     treatedDays[dayId] = true;

@@ -57,7 +57,7 @@ export class CoreFormatDatePipe implements PipeTransform {
 
         // Add "core." if needed.
         if (format.indexOf('strf') === 0 || format.indexOf('df') === 0) {
-            format = 'core.' + format;
+            format = `core.${format}`;
         }
 
         if (convert === undefined) {

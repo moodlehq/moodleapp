@@ -116,7 +116,7 @@ export class AddonModAssignDefaultSubmissionHandler implements AddonModAssignSub
      */
     getPluginName(plugin: AddonModAssignPlugin): string {
         // Check if there's a translated string for the plugin.
-        const translationId = 'addon.mod_assign_submission_' + plugin.type + '.pluginname';
+        const translationId = `addon.mod_assign_submission_${plugin.type}.pluginname`;
         const translation = Translate.instant(translationId);
 
         if (translationId != translation) {

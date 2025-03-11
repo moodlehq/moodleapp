@@ -106,10 +106,10 @@ export class CoreCourseModuleCompletionComponent
                     },
                 };
                 const setByLangKey = this.completion.state ? 'completion_setby:manual:done' : 'completion_setby:manual:markdone';
-                this.accessibleDescription = Translate.instant('core.course.' + setByLangKey, setByData);
+                this.accessibleDescription = Translate.instant(`core.course.${setByLangKey}`, setByData);
             } else {
                 const langKey = this.completion.state ? 'completion_manual:aria:done' : 'completion_manual:aria:markdone';
-                this.accessibleDescription = Translate.instant('core.course.' + langKey, { $a: this.moduleName });
+                this.accessibleDescription = Translate.instant(`core.course.${langKey}`, { $a: this.moduleName });
             }
         }
     }
