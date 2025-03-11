@@ -633,25 +633,38 @@ export class CoreAuthenticatedSite extends CoreUnauthenticatedSite {
             throw new CoreError(Translate.instant('core.cannotconnect'));
         }
 
+        // Helper function to fetch original content if needed.
+        const fetchOriginalIfNeeded = async (response: T) => {
+            const fetchOriginalToo = typeof preSets.fetchOriginalToo === 'function' ?
+                await preSets.fetchOriginalToo(response) :
+                preSets.fetchOriginalToo;
+
+            if (!fetchOriginalToo) {
+                return;
+            }
+
+            await CorePromiseUtils.ignoreErrors(this.getFromWS(
+                method,
+                {
+                    ...data,
+                    moodlewssettingfilter: 'false',
+                    moodlewssettingfileurl: 'false',
+                },
+                {
+                    ...preSets,
+                    filter: false,
+                    rewriteurls: false,
+                },
+                wsPreSets,
+            ));
+        };
+
         try {
             const response = await this.callOrEnqueueWS<T>(method, data, preSets, wsPreSets);
 
-            if (preSets.fetchOriginalToo && preSets.filter !== false && preSets.saveToCache) {
-                // Also fetch the content unfiltered. Do it in background.
-                CorePromiseUtils.ignoreErrors(this.getFromWS(
-                    method,
-                    {
-                        ...data,
-                        moodlewssettingfilter: 'false',
-                        moodlewssettingfileurl: 'false',
-                    },
-                    {
-                        ...preSets,
-                        filter: false,
-                        rewriteurls: false,
-                    },
-                    wsPreSets,
-                ));
+            if (preSets.filter !== false && preSets.saveToCache) {
+                // Fetch original data if needed. Don't block the user for this.
+                fetchOriginalIfNeeded(response);
             }
 
             if (preSets.saveToCache) {
@@ -1800,7 +1813,7 @@ export type CoreSiteWSPreSets = {
      * Whether to also fetch in background the  original content (unfiltered and without rewriting URLs).
      * Ignored if filter=false or data is not saved to cache.
      */
-    fetchOriginalToo?: boolean;
+    fetchOriginalToo?: boolean | ((response: unknown) => boolean | Promise<boolean>);
 };
 
 /**
