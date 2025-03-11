@@ -52,7 +52,7 @@ import {
 import { AddonModWikiMapModalReturn } from '../map/map';
 import {
     ADDON_MOD_WIKI_AUTO_SYNCED,
-    ADDON_MOD_WIKI_COMPONENT,
+    ADDON_MOD_WIKI_COMPONENT_LEGACY,
     ADDON_MOD_WIKI_MANUAL_SYNCED,
     ADDON_MOD_WIKI_PAGE_CREATED_EVENT,
     ADDON_MOD_WIKI_PAGE_NAME,
@@ -89,7 +89,7 @@ export class AddonModWikiIndexComponent extends CoreCourseModuleMainActivityComp
     @Input() userId?: number;
     @Input() groupId?: number;
 
-    component = ADDON_MOD_WIKI_COMPONENT;
+    component = ADDON_MOD_WIKI_COMPONENT_LEGACY;
     componentId?: number;
     pluginName = 'wiki';
     groupWiki = false;

@@ -14,7 +14,6 @@
 
 import { Injectable, Type } from '@angular/core';
 
-import { CoreConstants, ModPurpose } from '@/core/constants';
 import { CoreCourseModuleHandler, CoreCourseModuleHandlerData } from '@features/course/services/module-delegate';
 import { CoreCourseModuleData } from '@features/course/services/course-helper';
 import { makeSingleton } from '@singletons';
@@ -22,6 +21,7 @@ import { AddonModLtiHelper } from '../lti-helper';
 import { CoreModuleHandlerBase } from '@features/course/classes/module-base-handler';
 import { CoreCourse } from '@features/course/services/course';
 import { ADDON_MOD_LTI_PAGE_NAME } from '../../constants';
+import { ModFeature, ModPurpose } from '@addons/mod/constants';
 
 /**
  * Handler to support LTI modules.
@@ -34,15 +34,15 @@ export class AddonModLtiModuleHandlerService extends CoreModuleHandlerBase imple
     protected pageName = ADDON_MOD_LTI_PAGE_NAME;
 
     supportedFeatures = {
-        [CoreConstants.FEATURE_GROUPS]: false,
-        [CoreConstants.FEATURE_GROUPINGS]: false,
-        [CoreConstants.FEATURE_MOD_INTRO]: true,
-        [CoreConstants.FEATURE_COMPLETION_TRACKS_VIEWS]: true,
-        [CoreConstants.FEATURE_GRADE_HAS_GRADE]: true,
-        [CoreConstants.FEATURE_GRADE_OUTCOMES]: true,
-        [CoreConstants.FEATURE_BACKUP_MOODLE2]: true,
-        [CoreConstants.FEATURE_SHOW_DESCRIPTION]: true,
-        [CoreConstants.FEATURE_MOD_PURPOSE]: ModPurpose.MOD_PURPOSE_OTHER,
+        [ModFeature.GROUPS]: false,
+        [ModFeature.GROUPINGS]: false,
+        [ModFeature.MOD_INTRO]: true,
+        [ModFeature.COMPLETION_TRACKS_VIEWS]: true,
+        [ModFeature.GRADE_HAS_GRADE]: true,
+        [ModFeature.GRADE_OUTCOMES]: true,
+        [ModFeature.BACKUP_MOODLE2]: true,
+        [ModFeature.SHOW_DESCRIPTION]: true,
+        [ModFeature.MOD_PURPOSE]: ModPurpose.OTHER,
     };
 
     /**

@@ -14,9 +14,9 @@
 
 import { asyncInstance } from '@/core/utils/async-instance';
 import {
-    ADDON_MOD_WORKSHOP_PREFETCH_COMPONENT,
-    ADDON_MOD_WORKSHOP_PREFETCH_MODNAME,
-    ADDON_MOD_WORKSHOP_PREFETCH_NAME,
+    ADDON_MOD_WORKSHOP_COMPONENT,
+    ADDON_MOD_WORKSHOP_COMPONENT_LEGACY,
+    ADDON_MOD_WORKSHOP_MODNAME,
     ADDON_MOD_WORKSHOP_PREFETCH_UPDATE_NAMES,
 } from '@addons/mod/workshop/constants';
 import { CoreCourseActivityPrefetchHandlerBase } from '@features/course/classes/activity-prefetch-handler';
@@ -25,9 +25,9 @@ import type { AddonModWorkshopPrefetchHandlerLazyService } from './prefetch-lazy
 
 export class AddonModWorkshopPrefetchHandlerService extends CoreCourseActivityPrefetchHandlerBase {
 
-    name = ADDON_MOD_WORKSHOP_PREFETCH_NAME;
-    modName = ADDON_MOD_WORKSHOP_PREFETCH_MODNAME;
-    component = ADDON_MOD_WORKSHOP_PREFETCH_COMPONENT;
+    name = ADDON_MOD_WORKSHOP_COMPONENT;
+    modName = ADDON_MOD_WORKSHOP_MODNAME;
+    component = ADDON_MOD_WORKSHOP_COMPONENT_LEGACY;
     updatesNames = ADDON_MOD_WORKSHOP_PREFETCH_UPDATE_NAMES;
 
 }

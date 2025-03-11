@@ -31,7 +31,7 @@ import { AddonModScormPlayerLinkHandler } from './services/handlers/player-link'
 import { AddonModScormPluginFileHandler } from './services/handlers/pluginfile';
 import { AddonModScormPrefetchHandler } from './services/handlers/prefetch';
 import { AddonModScormSyncCronHandler } from './services/handlers/sync-cron';
-import { ADDON_MOD_SCORM_COMPONENT, ADDON_MOD_SCORM_PAGE_NAME } from './constants';
+import { ADDON_MOD_SCORM_COMPONENT_LEGACY, ADDON_MOD_SCORM_PAGE_NAME } from './constants';
 
 const routes: Routes = [
     {
@@ -76,7 +76,7 @@ const routes: Routes = [
                 CoreContentLinksDelegate.registerHandler(AddonModScormPlayerLinkHandler.instance);
                 CorePluginFileDelegate.registerHandler(AddonModScormPluginFileHandler.instance);
 
-                CoreCourseHelper.registerModuleReminderClick(ADDON_MOD_SCORM_COMPONENT);
+                CoreCourseHelper.registerModuleReminderClick(ADDON_MOD_SCORM_COMPONENT_LEGACY);
             },
         },
     ],

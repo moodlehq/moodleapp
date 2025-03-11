@@ -45,6 +45,7 @@ import { CoreFileEntry, CoreFileHelper } from '@services/file-helper';
 import { CoreTime } from '@singletons/time';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreAlerts } from '@services/overlays/alerts';
+import { DEFAULT_TEXT_FORMAT } from '@singletons/text';
 
 @Component({
     selector: 'addon-blog-edit-entry',
@@ -453,7 +454,7 @@ export default class AddonBlogEditEntryPage implements CanLeave, OnInit, OnDestr
             await AddonBlog.addEntry({
                 subject,
                 summary: CoreFileHelper.restorePluginfileUrls(summary, this.entry?.summaryfiles ?? []),
-                summaryformat: 1,
+                summaryformat: DEFAULT_TEXT_FORMAT,
                 options,
                 created: params.created ?? CoreTime.timestamp(),
                 forceOffline: params.forceOffline,
@@ -462,7 +463,7 @@ export default class AddonBlogEditEntryPage implements CanLeave, OnInit, OnDestr
             await AddonBlog.updateEntry({
                 subject,
                 summary: CoreFileHelper.restorePluginfileUrls(summary, this.entry?.summaryfiles ?? []),
-                summaryformat: 1,
+                summaryformat: DEFAULT_TEXT_FORMAT,
                 options,
                 forceOffline: params.forceOffline,
                 entryid: this.entry.id,

@@ -22,7 +22,7 @@ import { CoreSites, CoreSitesReadingStrategy } from '@services/sites';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { makeSingleton } from '@singletons';
 import { AddonModH5PActivity } from '../h5pactivity';
-import { ADDON_MOD_H5PACTIVITY_PAGE_NAME } from '../../constants';
+import { ADDON_MOD_H5PACTIVITY_FEATURE_NAME, ADDON_MOD_H5PACTIVITY_PAGE_NAME } from '../../constants';
 import { CoreLoadings } from '@services/overlays/loadings';
 import { CoreAlerts } from '@services/overlays/alerts';
 
@@ -33,7 +33,7 @@ import { CoreAlerts } from '@services/overlays/alerts';
 export class AddonModH5PActivityReportLinkHandlerService extends CoreContentLinksHandlerBase {
 
     name = 'AddonModH5PActivityReportLinkHandler';
-    featureName = 'CoreCourseModuleDelegate_AddonModH5PActivity';
+    featureName = ADDON_MOD_H5PACTIVITY_FEATURE_NAME;
     pattern = /\/mod\/h5pactivity\/report\.php.*([&?]a=\d+)/;
 
     /**

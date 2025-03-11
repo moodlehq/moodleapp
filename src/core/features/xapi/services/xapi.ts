@@ -295,7 +295,6 @@ export class CoreXAPIProvider {
      * @param activityId Activity ID.
      * @param stateId The xAPI state ID.
      * @param options Options.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateState(
         component: string,

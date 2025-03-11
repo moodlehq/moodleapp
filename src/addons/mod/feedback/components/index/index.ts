@@ -39,7 +39,7 @@ import {
 } from '../../services/feedback-sync';
 import {
     ADDON_MOD_FEEDBACK_AUTO_SYNCED,
-    ADDON_MOD_FEEDBACK_COMPONENT,
+    ADDON_MOD_FEEDBACK_COMPONENT_LEGACY,
     ADDON_MOD_FEEDBACK_FORM_SUBMITTED,
     ADDON_MOD_FEEDBACK_PAGE_NAME,
     AddonModFeedbackAnalysisTemplateNames,
@@ -72,7 +72,7 @@ export class AddonModFeedbackIndexComponent extends CoreCourseModuleMainActivity
     @Input() selectedTab: AddonModFeedbackIndexTabName = AddonModFeedbackIndexTabName.OVERVIEW;
     @Input() group = 0;
 
-    component = ADDON_MOD_FEEDBACK_COMPONENT;
+    component = ADDON_MOD_FEEDBACK_COMPONENT_LEGACY;
     pluginName = 'feedback';
     feedback?: AddonModFeedbackWSFeedback;
     goPage?: number;

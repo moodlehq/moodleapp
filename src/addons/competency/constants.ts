@@ -15,3 +15,23 @@
 export const ADDON_COMPETENCY_LEARNING_PLANS_PAGE = 'learning-plans';
 export const ADDON_COMPETENCY_COMPETENCIES_PAGE = 'competencies';
 export const ADDON_COMPETENCY_SUMMARY_PAGE = 'summary';
+
+/**
+ * Learning plan status.
+ */
+export enum AddonCompetencyLearningPlanStatus {
+    DRAFT = 0,
+    ACTIVE = 1,
+    COMPLETE = 2,
+    WAITING_FOR_REVIEW = 3,
+    IN_REVIEW = 4,
+}
+
+/**
+ * Competency status.
+ */
+export enum AddonCompetencyReviewStatus {
+    IDLE = 0,
+    WAITING_FOR_REVIEW = 1,
+    IN_REVIEW = 2,
+}

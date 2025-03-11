@@ -46,7 +46,7 @@ import {
 import {
     ADDON_MOD_QUIZ_ATTEMPT_FINISHED_EVENT,
     AddonModQuizAttemptStates,
-    ADDON_MOD_QUIZ_COMPONENT,
+    ADDON_MOD_QUIZ_COMPONENT_LEGACY,
     AddonModQuizGradeMethods,
     AddonModQuizDisplayOptionsAttemptStates,
     ADDON_MOD_QUIZ_IMMEDIATELY_AFTER_PERIOD,
@@ -56,6 +56,7 @@ import { CoreIonicColorNames } from '@singletons/colors';
 import { CoreCacheUpdateFrequency } from '@/core/constants';
 import { CoreObject } from '@singletons/object';
 import { CoreArray } from '@singletons/array';
+import { CoreTextFormat } from '@singletons/text';
 
 declare module '@singletons/events' {
 
@@ -180,7 +181,7 @@ export class AddonModQuizProvider {
         };
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getAttemptAccessInformationCacheKey(quizId, attemptId),
-            component: ADDON_MOD_QUIZ_COMPONENT,
+            component: ADDON_MOD_QUIZ_COMPONENT_LEGACY,
             componentId: options.cmId,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
         };
@@ -239,7 +240,7 @@ export class AddonModQuizProvider {
         };
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getAttemptDataCacheKey(attemptId, page),
-            component: ADDON_MOD_QUIZ_COMPONENT,
+            component: ADDON_MOD_QUIZ_COMPONENT_LEGACY,
             componentId: options.cmId,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
         };
@@ -513,7 +514,7 @@ export class AddonModQuizProvider {
         };
         const preSets = {
             cacheKey: this.getAttemptReviewCacheKey(attemptId, page),
-            component: ADDON_MOD_QUIZ_COMPONENT,
+            component: ADDON_MOD_QUIZ_COMPONENT_LEGACY,
             componentId: options.cmId,
             deleteCacheIfWSError: true,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
@@ -563,7 +564,7 @@ export class AddonModQuizProvider {
         };
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getAttemptSummaryCacheKey(attemptId),
-            component: ADDON_MOD_QUIZ_COMPONENT,
+            component: ADDON_MOD_QUIZ_COMPONENT_LEGACY,
             componentId: options.cmId,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
         };
@@ -620,7 +621,7 @@ export class AddonModQuizProvider {
         };
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getCombinedReviewOptionsCacheKey(quizId, userId),
-            component: ADDON_MOD_QUIZ_COMPONENT,
+            component: ADDON_MOD_QUIZ_COMPONENT_LEGACY,
             componentId: options.cmId,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
         };
@@ -682,7 +683,7 @@ export class AddonModQuizProvider {
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getFeedbackForGradeCacheKey(quizId, grade),
             updateFrequency: CoreCacheUpdateFrequency.RARELY,
-            component: ADDON_MOD_QUIZ_COMPONENT,
+            component: ADDON_MOD_QUIZ_COMPONENT_LEGACY,
             componentId: options.cmId,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
         };
@@ -822,7 +823,7 @@ export class AddonModQuizProvider {
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getQuizDataCacheKey(courseId),
             updateFrequency: CoreCacheUpdateFrequency.RARELY,
-            component: ADDON_MOD_QUIZ_COMPONENT,
+            component: ADDON_MOD_QUIZ_COMPONENT_LEGACY,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
         };
 
@@ -894,7 +895,7 @@ export class AddonModQuizProvider {
         };
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getQuizAccessInformationCacheKey(quizId),
-            component: ADDON_MOD_QUIZ_COMPONENT,
+            component: ADDON_MOD_QUIZ_COMPONENT_LEGACY,
             componentId: options.cmId,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
         };
@@ -957,7 +958,7 @@ export class AddonModQuizProvider {
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getQuizRequiredQtypesCacheKey(quizId),
             updateFrequency: CoreCacheUpdateFrequency.SOMETIMES,
-            component: ADDON_MOD_QUIZ_COMPONENT,
+            component: ADDON_MOD_QUIZ_COMPONENT_LEGACY,
             componentId: options.cmId,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
         };
@@ -1121,7 +1122,7 @@ export class AddonModQuizProvider {
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getUserAttemptsCacheKey(quizId, userId),
             updateFrequency: CoreCacheUpdateFrequency.SOMETIMES,
-            component: ADDON_MOD_QUIZ_COMPONENT,
+            component: ADDON_MOD_QUIZ_COMPONENT_LEGACY,
             componentId: options.cmId,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
         };
@@ -1169,7 +1170,7 @@ export class AddonModQuizProvider {
         };
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getUserBestGradeCacheKey(quizId, userId),
-            component: ADDON_MOD_QUIZ_COMPONENT,
+            component: ADDON_MOD_QUIZ_COMPONENT_LEGACY,
             componentId: options.cmId,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
         };
@@ -1185,7 +1186,6 @@ export class AddonModQuizProvider {
      * @param attemptId Attempt ID to invalidate some WS calls.
      * @param siteId Site ID. If not defined, current site.
      * @param userId User ID. If not defined use site's current user.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateAllQuizData(
         quizId: number,
@@ -1224,7 +1224,6 @@ export class AddonModQuizProvider {
      *
      * @param quizId Quiz ID.
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateAttemptAccessInformation(quizId: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -1238,7 +1237,6 @@ export class AddonModQuizProvider {
      * @param quizId Quiz ID.
      * @param attemptId Attempt ID.
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateAttemptAccessInformationForAttempt(quizId: number, attemptId: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -1251,7 +1249,6 @@ export class AddonModQuizProvider {
      *
      * @param attemptId Attempt ID.
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateAttemptData(attemptId: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -1265,7 +1262,6 @@ export class AddonModQuizProvider {
      * @param attemptId Attempt ID.
      * @param page Page.
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateAttemptDataForPage(attemptId: number, page: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -1278,7 +1274,6 @@ export class AddonModQuizProvider {
      *
      * @param attemptId Attempt ID.
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateAttemptReview(attemptId: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -1292,7 +1287,6 @@ export class AddonModQuizProvider {
      * @param attemptId Attempt ID.
      * @param page Page.
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateAttemptReviewForPage(attemptId: number, page: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -1305,7 +1299,6 @@ export class AddonModQuizProvider {
      *
      * @param attemptId Attempt ID.
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateAttemptSummary(attemptId: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -1318,7 +1311,6 @@ export class AddonModQuizProvider {
      *
      * @param quizId Quiz ID.
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateCombinedReviewOptions(quizId: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -1332,12 +1324,11 @@ export class AddonModQuizProvider {
      * @param quizId Quiz ID.
      * @param siteId Site ID. If not defined, current site.
      * @param userId User ID. If not defined use site's current user.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateCombinedReviewOptionsForUser(quizId: number, siteId?: string, userId?: number): Promise<void> {
         const site = await CoreSites.getSite(siteId);
 
-        return site.invalidateWsCacheForKey(this.getCombinedReviewOptionsCacheKey(quizId, userId || site.getUserId()));
+        await site.invalidateWsCacheForKey(this.getCombinedReviewOptionsCacheKey(quizId, userId || site.getUserId()));
     }
 
     /**
@@ -1346,7 +1337,6 @@ export class AddonModQuizProvider {
      * @param moduleId The module ID.
      * @param courseId Course ID.
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateContent(moduleId: number, courseId: number, siteId?: string): Promise<void> {
         siteId = siteId || CoreSites.getCurrentSiteId();
@@ -1370,7 +1360,6 @@ export class AddonModQuizProvider {
      *
      * @param quizId Quiz ID.
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateFeedback(quizId: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -1384,7 +1373,6 @@ export class AddonModQuizProvider {
      * @param quizId Quiz ID.
      * @param grade Grade.
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateFeedbackForGrade(quizId: number, grade: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -1398,7 +1386,6 @@ export class AddonModQuizProvider {
      * @param courseId Course ID.
      * @param siteId Site ID. If not defined, current site.
      * @param userId User ID. If not defined use site's current user.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateGradeFromGradebook(courseId: number, siteId?: string, userId?: number): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -1411,7 +1398,6 @@ export class AddonModQuizProvider {
      *
      * @param quizId Quiz ID.
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateQuizAccessInformation(quizId: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -1424,7 +1410,6 @@ export class AddonModQuizProvider {
      *
      * @param quizId Quiz ID.
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateQuizRequiredQtypes(quizId: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -1437,7 +1422,6 @@ export class AddonModQuizProvider {
      *
      * @param quizId Quiz ID.
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateUserAttempts(quizId: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -1451,7 +1435,6 @@ export class AddonModQuizProvider {
      * @param quizId Quiz ID.
      * @param siteId Site ID. If not defined, current site.
      * @param userId User ID. If not defined use site's current user.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateUserAttemptsForUser(quizId: number, siteId?: string, userId?: number): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -1464,7 +1447,6 @@ export class AddonModQuizProvider {
      *
      * @param quizId Quiz ID.
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateUserBestGrade(quizId: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -1478,7 +1460,6 @@ export class AddonModQuizProvider {
      * @param quizId Quiz ID.
      * @param siteId Site ID. If not defined, current site.
      * @param userId User ID. If not defined use site's current user.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateUserBestGradeForUser(quizId: number, siteId?: string, userId?: number): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -1491,7 +1472,6 @@ export class AddonModQuizProvider {
      *
      * @param courseId Course ID.
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateQuizData(courseId: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -1676,7 +1656,7 @@ export class AddonModQuizProvider {
         return CoreCourseLogHelper.log(
             'mod_quiz_view_attempt_review',
             params,
-            ADDON_MOD_QUIZ_COMPONENT,
+            ADDON_MOD_QUIZ_COMPONENT_LEGACY,
             quizId,
             siteId,
         );
@@ -1709,7 +1689,7 @@ export class AddonModQuizProvider {
         return CoreCourseLogHelper.log(
             'mod_quiz_view_attempt_summary',
             params,
-            ADDON_MOD_QUIZ_COMPONENT,
+            ADDON_MOD_QUIZ_COMPONENT_LEGACY,
             quizId,
             siteId,
         );
@@ -1730,7 +1710,7 @@ export class AddonModQuizProvider {
         return CoreCourseLogHelper.log(
             'mod_quiz_view_quiz',
             params,
-            ADDON_MOD_QUIZ_COMPONENT,
+            ADDON_MOD_QUIZ_COMPONENT_LEGACY,
             id,
             siteId,
         );
@@ -2236,7 +2216,7 @@ export type AddonModQuizGetQuizFeedbackForGradeWSParams = {
  */
 export type AddonModQuizGetQuizFeedbackForGradeWSResponse = {
     feedbacktext: string; // The comment that corresponds to this grade (empty for none).
-    feedbacktextformat?: number; // Feedbacktext format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
+    feedbacktextformat?: CoreTextFormat; // Feedbacktext format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
     feedbackinlinefiles?: CoreWSExternalFile[];
     warnings?: CoreWSExternalWarning[];
 };
@@ -2265,7 +2245,7 @@ export type AddonModQuizQuizWSData = {
     coursemodule: number; // Course module id.
     name: string; // Quiz name.
     intro?: string; // Quiz introduction text.
-    introformat?: number; // Intro format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
+    introformat?: CoreTextFormat; // Intro format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
     introfiles?: CoreWSExternalFile[];
     timeopen?: number; // The time when this quiz opens. (0 = no restriction.).
     timeclose?: number; // The time when this quiz closes. (0 = no restriction.).

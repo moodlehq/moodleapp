@@ -22,7 +22,7 @@ import { Md5 } from 'ts-md5';
 import { AddonModFolder, AddonModFolderFolder } from '../../services/folder';
 import { AddonModFolderFolderFormattedData, AddonModFolderHelper } from '../../services/folder-helper';
 import { CorePromiseUtils } from '@singletons/promise-utils';
-import { ADDON_MOD_FOLDER_COMPONENT, ADDON_MOD_FOLDER_PAGE_NAME } from '../../constants';
+import { ADDON_MOD_FOLDER_COMPONENT_LEGACY, ADDON_MOD_FOLDER_PAGE_NAME } from '../../constants';
 import { CoreCourseModuleNavigationComponent } from '@features/course/components/module-navigation/module-navigation';
 import { CoreCourseModuleInfoComponent } from '@features/course/components/module-info/module-info';
 import { CoreSharedModule } from '@/core/shared.module';
@@ -48,7 +48,7 @@ export class AddonModFolderIndexComponent extends CoreCourseModuleMainResourceCo
     @Input() folderInstance?: AddonModFolderFolder; // The mod_folder instance.
     @Input() subfolder?: AddonModFolderFolderFormattedData; // Subfolder to show.
 
-    component = ADDON_MOD_FOLDER_COMPONENT;
+    component = ADDON_MOD_FOLDER_COMPONENT_LEGACY;
     pluginName = 'folder';
     contents?: AddonModFolderFolderFormattedData;
 

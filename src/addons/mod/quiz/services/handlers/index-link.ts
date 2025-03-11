@@ -16,6 +16,7 @@ import { Injectable } from '@angular/core';
 
 import { CoreContentLinksModuleIndexHandler } from '@features/contentlinks/classes/module-index-handler';
 import { makeSingleton } from '@singletons';
+import { ADDON_MOD_QUIZ_COMPONENT, ADDON_MOD_QUIZ_MODNAME } from '../../constants';
 
 /**
  * Handler to treat links to quiz index.
@@ -26,7 +27,7 @@ export class AddonModQuizIndexLinkHandlerService extends CoreContentLinksModuleI
     name = 'AddonModQuizIndexLinkHandler';
 
     constructor() {
-        super('AddonModQuiz', 'quiz', 'q');
+        super(ADDON_MOD_QUIZ_COMPONENT, ADDON_MOD_QUIZ_MODNAME, 'q');
     }
 
 }

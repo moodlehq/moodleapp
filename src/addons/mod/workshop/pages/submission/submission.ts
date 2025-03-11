@@ -313,7 +313,7 @@ export default class AddonModWorkshopSubmissionPage implements OnInit, OnDestroy
             if (this.canAddFeedback) {
                 if (!this.isDestroyed) {
                     // Block the workshop.
-                    CoreSync.blockOperation(this.component, this.workshopId);
+                    CoreSync.blockOperation(ADDON_MOD_WORKSHOP_COMPONENT, this.workshopId);
                 }
 
                 promises.push(this.fillEvaluationsGrades());
@@ -679,7 +679,7 @@ export default class AddonModWorkshopSubmissionPage implements OnInit, OnDestroy
         this.syncObserver?.off();
         this.obsAssessmentSaved?.off();
         // Restore original back functions.
-        CoreSync.unblockOperation(this.component, this.workshopId);
+        CoreSync.unblockOperation(ADDON_MOD_WORKSHOP_COMPONENT, this.workshopId);
     }
 
 }

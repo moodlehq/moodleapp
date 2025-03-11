@@ -30,7 +30,7 @@ import { AddonModGlossaryHelper } from './glossary-helper';
 import { AddonModGlossaryOffline, AddonModGlossaryOfflineEntry } from './glossary-offline';
 import { CoreFileUploader } from '@features/fileuploader/services/fileuploader';
 import { CoreFileEntry } from '@services/file-helper';
-import { ADDON_MOD_GLOSSARY_COMPONENT, GLOSSARY_AUTO_SYNCED } from '../constants';
+import { ADDON_MOD_GLOSSARY_COMPONENT, ADDON_MOD_GLOSSARY_COMPONENT_LEGACY, GLOSSARY_AUTO_SYNCED } from '../constants';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 
 /**
@@ -173,7 +173,9 @@ export class AddonModGlossarySyncProvider extends CoreCourseActivitySyncBaseProv
         const syncId = this.getGlossarySyncId(glossaryId, userId);
 
         // Sync offline logs.
-        await CorePromiseUtils.ignoreErrors(CoreCourseLogHelper.syncActivity(ADDON_MOD_GLOSSARY_COMPONENT, glossaryId, siteId));
+        await CorePromiseUtils.ignoreErrors(
+            CoreCourseLogHelper.syncActivity(ADDON_MOD_GLOSSARY_COMPONENT_LEGACY, glossaryId, siteId),
+        );
 
         // Get offline responses to be sent.
         const entries = await CorePromiseUtils.ignoreErrors(
@@ -317,7 +319,7 @@ export class AddonModGlossarySyncProvider extends CoreCourseActivitySyncBaseProv
             files = files.concat(storedFiles);
         }
 
-        return CoreFileUploader.uploadOrReuploadFiles(files, ADDON_MOD_GLOSSARY_COMPONENT, glossaryId, siteId);
+        return CoreFileUploader.uploadOrReuploadFiles(files, ADDON_MOD_GLOSSARY_COMPONENT_LEGACY, glossaryId, siteId);
     }
 
     /**

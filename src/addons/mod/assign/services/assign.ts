@@ -45,6 +45,7 @@ import {
     AddonModAssignGradingStates,
     AddonModAssignSubmissionStatusValues,
 } from '../constants';
+import { CoreTextFormat } from '@singletons/text';
 
 declare module '@singletons/events' {
 
@@ -685,7 +686,6 @@ export class AddonModAssignProvider {
      *
      * @param assignId Assignment instance id.
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateAllSubmissionData(assignId: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -698,7 +698,6 @@ export class AddonModAssignProvider {
      *
      * @param courseId Course ID.
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateAssignmentData(courseId: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -711,7 +710,6 @@ export class AddonModAssignProvider {
      *
      * @param assignId Assignment ID.
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateAssignmentUserMappingsData(assignId: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -724,7 +722,6 @@ export class AddonModAssignProvider {
      *
      * @param assignId Assignment ID.
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateAssignmentGradesData(assignId: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -738,7 +735,6 @@ export class AddonModAssignProvider {
      * @param moduleId The module ID.
      * @param courseId Course ID.
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateContent(moduleId: number, courseId: number, siteId?: string): Promise<void> {
         siteId = siteId || CoreSites.getCurrentSiteId();
@@ -762,7 +758,6 @@ export class AddonModAssignProvider {
      *
      * @param assignId Assignment instance id.
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateSubmissionData(assignId: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -778,7 +773,6 @@ export class AddonModAssignProvider {
      * @param groupId Group Id (empty for all participants).
      * @param isBlind Whether blind marking is enabled or not.
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateSubmissionStatusData(
         assignId: number,
@@ -803,7 +797,6 @@ export class AddonModAssignProvider {
      *
      * @param assignId Assignment instance id.
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateListParticipantsData(assignId: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -1475,14 +1468,14 @@ export type AddonModAssignAssign = {
     requiresubmissionstatement: number; // Student must accept submission statement.
     preventsubmissionnotingroup?: number; // Prevent submission not in group.
     submissionstatement?: string; // Submission statement formatted.
-    submissionstatementformat?: number; // Submissionstatement format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
+    submissionstatementformat?: CoreTextFormat; // Submissionstatement format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
     configs: AddonModAssignConfig[]; // Configuration settings.
     intro?: string; // Assignment intro, not allways returned because it deppends on the activity configuration.
-    introformat?: number; // Intro format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
+    introformat?: CoreTextFormat; // Intro format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
     introfiles?: CoreWSExternalFile[];
     introattachments?: CoreWSExternalFile[];
     activity?: string; // @since 4.0. Description of activity.
-    activityformat?: number; // @since 4.0. Format of activity.
+    activityformat?: CoreTextFormat; // @since 4.0. Format of activity.
     activityattachments?: CoreWSExternalFile[]; // @since 4.0. Files from activity field.
     timelimit?: number; // @since 4.0. Time limit to complete assigment.
     submissionattachments?: number; // @since 4.0. Flag to only show files during submission.
@@ -1547,7 +1540,7 @@ export type AddonModAssignPlugin = {
         name: string; // Field name.
         description: string; // Field description.
         text: string; // Field value.
-        format: number; // Text format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
+        format: CoreTextFormat; // Text format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
     }[];
 };
 
@@ -1649,7 +1642,7 @@ export type AddonModAssignParticipant = {
     lastaccess?: number; // Last access to the site (0 if never).
     suspended?: boolean; // Suspend user account, either false to enable user login or true to disable it.
     description?: string; // User profile description.
-    descriptionformat?: number; // Int format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
+    descriptionformat?: CoreTextFormat; // Int format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
     city?: string; // Home city of the user.
     url?: string; // URL of the user.
     country?: string; // Home country code of the user, such as AU or CZ.
@@ -1748,7 +1741,7 @@ export type AddonModAssignGetSubmissionStatusWSResponse = {
             activity?: CoreWSExternalFile[]; // Activity attachments files.
         };
         activity?: string; // Text of activity.
-        activityformat?: number; // Format of activity.
+        activityformat?: CoreTextFormat; // Format of activity.
     };
     warnings?: CoreWSExternalWarning[];
 };

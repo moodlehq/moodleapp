@@ -57,7 +57,7 @@ import { CoreFileHelper } from '@services/file-helper';
 import { CoreNetwork } from '@services/network';
 import { CoreSite } from '@classes/sites/site';
 import { CoreUrl } from '@singletons/url';
-import { CoreText } from '@singletons/text';
+import { CoreText, DEFAULT_TEXT_FORMAT } from '@singletons/text';
 import { CoreTime } from '@singletons/time';
 import { CoreFilterHelper } from '@features/filter/services/filter-helper';
 import { CoreNetworkError } from '@classes/errors/network-error';
@@ -590,7 +590,7 @@ export class CoreCourseHelperProvider {
             name: Translate.instant('core.course.allsections'),
             hasContent: true,
             summary: '',
-            summaryformat: 1,
+            summaryformat: DEFAULT_TEXT_FORMAT,
             modules: [],
             contents: [],
         };

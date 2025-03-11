@@ -663,4 +663,4 @@ export enum CoreTextFormat {
     FORMAT_MARKDOWN = 4, // Markdown-formatted text http://daringfireball.net/projects/markdown/
 }
 
-export const defaultTextFormat = CoreTextFormat.FORMAT_HTML;
+export const DEFAULT_TEXT_FORMAT = CoreTextFormat.FORMAT_HTML;

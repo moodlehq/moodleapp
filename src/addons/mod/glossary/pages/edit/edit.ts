@@ -38,7 +38,7 @@ import {
 import { AddonModGlossaryHelper } from '../../services/glossary-helper';
 import { AddonModGlossaryOffline } from '../../services/glossary-offline';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
-import { ADDON_MOD_GLOSSARY_COMPONENT } from '../../constants';
+import { ADDON_MOD_GLOSSARY_COMPONENT_LEGACY } from '../../constants';
 import { CoreLoadings } from '@services/overlays/loadings';
 import { CoreAlerts } from '@services/overlays/alerts';
 import { CoreEditorRichTextEditorComponent } from '@features/editor/components/rich-text-editor/rich-text-editor';
@@ -60,7 +60,7 @@ export default class AddonModGlossaryEditPage implements OnInit, CanLeave {
 
     @ViewChild('editFormEl') formElement?: ElementRef;
 
-    component = ADDON_MOD_GLOSSARY_COMPONENT;
+    component = ADDON_MOD_GLOSSARY_COMPONENT_LEGACY;
     cmId!: number;
     courseId!: number;
     loaded = false;
@@ -303,7 +303,7 @@ abstract class AddonModGlossaryFormHandler {
         const data = this.page.data;
         const itemId = await CoreFileUploader.uploadOrReuploadFiles(
             data.attachments,
-            ADDON_MOD_GLOSSARY_COMPONENT,
+            ADDON_MOD_GLOSSARY_COMPONENT_LEGACY,
             glossary.id,
         );
 

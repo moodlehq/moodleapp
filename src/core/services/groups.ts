@@ -21,14 +21,15 @@ import { CoreWSExternalWarning } from '@services/ws';
 import { CoreCourses } from '@features/courses/services/courses';
 import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
 import { CoreCacheUpdateFrequency } from '../constants';
-
-const ROOT_CACHE_KEY = 'mmGroups:';
+import { CoreTextFormat } from '@singletons/text';
 
 /*
  * Service to handle groups.
 */
 @Injectable({ providedIn: 'root' })
 export class CoreGroupsProvider {
+
+    protected static readonly ROOT_CACHE_KEY = 'mmGroups:';
 
     // Group mode constants.
     static readonly NOGROUPS = 0;
@@ -104,7 +105,7 @@ export class CoreGroupsProvider {
      * @returns Cache key.
      */
     protected getActivityAllowedGroupsCacheKey(cmId: number, userId: number): string {
-        return ROOT_CACHE_KEY + 'allowedgroups:' + cmId + ':' + userId;
+        return `${CoreGroupsProvider.ROOT_CACHE_KEY}allowedgroups:${cmId}:${userId}`;
     }
 
     /**
@@ -227,7 +228,7 @@ export class CoreGroupsProvider {
      * @returns Cache key.
      */
     protected getActivityGroupModeCacheKey(cmId: number): string {
-        return ROOT_CACHE_KEY + 'groupmode:' + cmId;
+        return `${CoreGroupsProvider.ROOT_CACHE_KEY}groupmode:${cmId}`;
     }
 
     /**
@@ -304,7 +305,7 @@ export class CoreGroupsProvider {
      * @returns Prefix Cache key.
      */
     protected getUserGroupsInCoursePrefixCacheKey(): string {
-        return ROOT_CACHE_KEY + 'courseGroups:';
+        return `${CoreGroupsProvider.ROOT_CACHE_KEY}courseGroups:`;
     }
 
     /**
@@ -324,7 +325,6 @@ export class CoreGroupsProvider {
      * @param cmId Course module ID.
      * @param userId User ID. If not defined, use current user.
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateActivityAllowedGroups(cmId: number, userId?: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -338,7 +338,6 @@ export class CoreGroupsProvider {
      *
      * @param cmId Course module ID.
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateActivityGroupMode(cmId: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -352,7 +351,6 @@ export class CoreGroupsProvider {
      * @param cmId Course module ID.
      * @param userId User ID. If not defined, use current user.
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateActivityGroupInfo(cmId: number, userId?: number, siteId?: string): Promise<void> {
         const promises = <Promise<void>[]>[];
@@ -366,13 +364,14 @@ export class CoreGroupsProvider {
      * Invalidates user groups in all user enrolled courses.
      *
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateAllUserGroups(siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
 
         if (site.isVersionGreaterEqualThan('3.6')) {
-            return this.invalidateUserGroupsInCourse(0, siteId);
+            await this.invalidateUserGroupsInCourse(0, siteId);
+
+            return;
         }
 
         await site.invalidateWsCacheForKeyStartingWith(this.getUserGroupsInCoursePrefixCacheKey());
@@ -384,7 +383,6 @@ export class CoreGroupsProvider {
      * @param courses List of courses or course ids.
      * @param siteId Site ID. If not defined, current site.
      * @param userId User ID. If not defined, use current user.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateUserGroups(courses: CoreCourseBase[] | number[], siteId?: string, userId?: number): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -401,7 +399,6 @@ export class CoreGroupsProvider {
      * @param courseId ID of the course. 0 to get all enrolled courses groups (Moodle version > 3.6).
      * @param siteId Site ID. If not defined, current site.
      * @param userId User ID. If not defined, use current user.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateUserGroupsInCourse(courseId: number, siteId?: string, userId?: number): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -445,7 +442,7 @@ export type CoreGroup = {
     id: number; // Group ID.
     name: string; // Multilang compatible name, course unique'.
     description?: string; // Group description text.
-    descriptionformat?: number; // Description format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
+    descriptionformat?: CoreTextFormat; // Description format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
     idnumber?: string; // Id number.
     courseid?: number; // Coure Id.
 };
@@ -529,7 +526,7 @@ export type CoreGroupGetCourseUserGroupsWSResponse = {
         id: number; // Group record id.
         name: string; // Multilang compatible name, course unique.
         description: string; // Group description text.
-        descriptionformat: number; // Description format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
+        descriptionformat: CoreTextFormat; // Description format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
         idnumber: string; // Id number.
         courseid?: number; // Course id.
     }[];

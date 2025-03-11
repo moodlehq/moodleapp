@@ -12,11 +12,18 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-export const ADDON_MOD_FEEDBACK_COMPONENT = 'mmaModFeedback';
+import { CORE_COURSE_MODULE_FEATURE_PREFIX } from '@features/course/constants';
 
+export const ADDON_MOD_FEEDBACK_COMPONENT = 'AddonModFeedback';
+export const ADDON_MOD_FEEDBACK_COMPONENT_LEGACY = 'mmaModFeedback';
 export const ADDON_MOD_FEEDBACK_PAGE_NAME = 'mod_feedback';
+export const ADDON_MOD_FEEDBACK_MODNAME = 'feedback';
 
+export const ADDON_MOD_FEEDBACK_FEATURE_NAME = CORE_COURSE_MODULE_FEATURE_PREFIX + ADDON_MOD_FEEDBACK_COMPONENT;
+
+// Events.
 export const ADDON_MOD_FEEDBACK_FORM_SUBMITTED = 'addon_mod_feedback_form_submitted';
+
 export const ADDON_MOD_FEEDBACK_LINE_SEP = '|';
 export const ADDON_MOD_FEEDBACK_MULTICHOICE_TYPE_SEP = '>>>>>';
 export const ADDON_MOD_FEEDBACK_MULTICHOICE_ADJUST_SEP = '<<<<<';
