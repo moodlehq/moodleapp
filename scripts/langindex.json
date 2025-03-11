@@ -2556,6 +2556,7 @@
   "core.settings.total": "moodle",
   "core.settings.wificonnection": "local_moodlemobileapp",
   "core.settings.youradev": "local_moodlemobileapp",
+  "core.share": "moodle",
   "core.sharedfiles.chooseaccountstorefile": "local_moodlemobileapp",
   "core.sharedfiles.chooseactionrepeatedfile": "local_moodlemobileapp",
   "core.sharedfiles.errorreceivefilenosites": "local_moodlemobileapp",
