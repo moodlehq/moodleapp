@@ -205,7 +205,7 @@ export class CoreSitePluginsModuleHandler extends CoreSitePluginsBaseHandler imp
      */
     async getMainComponent(): Promise<Type<unknown>> {
         const { CoreSitePluginsModuleIndexComponent } =
-         await import('@features/siteplugins/components/module-index/module-index');
+            await import('@features/siteplugins/components/module-index/module-index');
 
         return CoreSitePluginsModuleIndexComponent;
     }

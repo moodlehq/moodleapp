@@ -48,7 +48,7 @@ export class AddonModAssignModuleHandlerService extends CoreModuleHandlerBase im
     /**
      * @inheritdoc
      */
-    async getMainComponent(): Promise<Type<unknown> | undefined> {
+    async getMainComponent(): Promise<Type<unknown>> {
         const { AddonModAssignIndexComponent } = await import('../../components/index');
 
         return AddonModAssignIndexComponent;
