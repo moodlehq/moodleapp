@@ -306,6 +306,7 @@
     "sending": "Sending",
     "sent": "Sent",
     "serverconnection": "Error connecting to the server: {{details}}",
+    "share": "Share",
     "show": "Show",
     "showadvanced": "Show advanced",
     "showless": "Show less...",
