@@ -233,7 +233,7 @@ export class CoreFilterHelperProvider {
                 options.filter = true;
 
                 // We cannot check which filters are available, apply them all.
-                return await CoreFilterDelegate.getEnabledFilters(contextLevel, instanceId);
+                return CoreFilterDelegate.getEnabledFilters(contextLevel, instanceId);
             }
 
             const filters = await this.getFiltersInContextUsingAllStates(contextLevel, instanceId, options, site);
@@ -248,7 +248,7 @@ export class CoreFilterHelperProvider {
 
             if (
                 contextLevel === ContextLevel.SYSTEM ||
-                (contextLevel === ContextLevel.COURSE && instanceId == site.getSiteHomeId())
+                (contextLevel === ContextLevel.COURSE && instanceId === site.getSiteHomeId())
             ) {
                 // No need to check the site filters because we're requesting the same context, so we'd do the same twice.
             } else {
@@ -399,7 +399,7 @@ export class CoreFilterHelperProvider {
 
         text = await CoreFilter.formatText(text, options, filters, siteId);
 
-        return { text, filters: filters };
+        return { text, filters };
     }
 
     /**
