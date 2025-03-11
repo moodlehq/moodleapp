@@ -2439,6 +2439,7 @@
   "core.resources": "moodle",
   "core.restore": "moodle",
   "core.restricted": "moodle",
+  "core.resultsfound": "moodle",
   "core.resume": "local_moodlemobileapp",
   "core.retry": "local_moodlemobileapp",
   "core.save": "moodle",
