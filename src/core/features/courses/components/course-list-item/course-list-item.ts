@@ -14,14 +14,17 @@
 
 import { DownloadStatus } from '@/core/constants';
 import { Component, ElementRef, HostBinding, Input, OnChanges, OnDestroy, OnInit } from '@angular/core';
-import { CoreCourse } from '@features/course/services/course';
+import {
+    CoreCourseDownloadStatusHelper,
+    CoreEventCourseStatusChanged,
+} from '@features/course/services/course-download-status-helper';
 import { CoreCourseHelper, CorePrefetchStatusInfo } from '@features/course/services/course-helper';
 import { CoreUser } from '@features/user/services/user';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSites } from '@services/sites';
 import { Translate } from '@singletons';
 import { CoreColors } from '@singletons/colors';
-import { CoreEventCourseStatusChanged, CoreEventObserver, CoreEvents } from '@singletons/events';
+import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { CoreCourseListItem, CoreCourses } from '../../services/courses';
 import { CoreCoursesHelper, CoreEnrolledCourseDataWithExtraInfoAndOptions } from '../../services/courses-helper';
 import { CoreEnrolHelper } from '@features/enrol/services/enrol-helper';
@@ -35,7 +38,11 @@ import {
     CORE_COURSES_STATE_HIDDEN,
     CORE_COURSES_STATE_FAVOURITE,
 } from '@features/courses/constants';
-import { CORE_COURSE_ALL_COURSES_CLEARED, CORE_COURSE_PROGRESS_UPDATED_EVENT } from '@features/course/constants';
+import {
+    CORE_COURSE_ALL_COURSES_CLEARED,
+    CORE_COURSE_PROGRESS_UPDATED_EVENT,
+    COURSE_STATUS_CHANGED_EVENT,
+} from '@features/course/constants';
 import { CoreAlerts } from '@services/overlays/alerts';
 import { CoreErrorHelper } from '@services/error-helper';
 import { CoreSharedModule } from '@/core/shared.module';
@@ -113,7 +120,7 @@ export class CoreCoursesCourseListItemComponent implements OnInit, OnDestroy, On
         this.setCourseColor();
 
         // Assume is enroled if mode is not listwithenrol.
-        this.isEnrolled = this.layout != 'listwithenrol' || this.course.progress !== undefined;
+        this.isEnrolled = this.layout !== 'listwithenrol' || this.course.progress !== undefined;
 
         if (!this.isEnrolled) {
             try {
@@ -213,14 +220,14 @@ export class CoreCoursesCourseListItemComponent implements OnInit, OnDestroy, On
         }
 
         // Listen for status change in course.
-        this.courseStatusObserver = CoreEvents.on(CoreEvents.COURSE_STATUS_CHANGED, (data: CoreEventCourseStatusChanged) => {
-            if (data.courseId == this.course.id || data.courseId == CORE_COURSE_ALL_COURSES_CLEARED) {
+        this.courseStatusObserver = CoreEvents.on(COURSE_STATUS_CHANGED_EVENT, (data: CoreEventCourseStatusChanged) => {
+            if (data.courseId == this.course.id || data.courseId === CORE_COURSE_ALL_COURSES_CLEARED) {
                 this.updateCourseStatus(data.status);
             }
         }, CoreSites.getCurrentSiteId());
 
         // Determine course prefetch icon.
-        const status = await CoreCourse.getCourseStatus(this.course.id);
+        const status = await CoreCourseDownloadStatusHelper.getCourseStatus(this.course.id);
 
         this.updateCourseStatus(status);
 
@@ -236,7 +243,7 @@ export class CoreCoursesCourseListItemComponent implements OnInit, OnDestroy, On
                 });
             } else {
                 // No download, this probably means that the app was closed while downloading. Set previous status.
-                CoreCourse.setCoursePreviousStatus(this.course.id);
+                CoreCourseDownloadStatusHelper.setCoursePreviousStatus(this.course.id);
             }
         }
 

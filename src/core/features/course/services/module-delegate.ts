@@ -19,7 +19,7 @@ import { CoreSite } from '@classes/sites/site';
 import { CoreCourseModuleDefaultHandler } from './handlers/default-module';
 import { CoreDelegate, CoreDelegateHandler } from '@classes/delegate';
 import { CoreCourseAnyCourseData } from '@features/courses/services/courses';
-import { CoreCourse } from './course';
+import { CoreCourseModuleHelper } from './course-module-helper';
 import { CoreSites } from '@services/sites';
 import { makeSingleton } from '@singletons';
 import { CoreCourseModuleData } from './course-helper';
@@ -416,7 +416,7 @@ export class CoreCourseModuleDelegateService extends CoreDelegate<CoreCourseModu
     async getModuleIconSrc(modname: string, modicon?: string, module?: CoreCourseModuleData): Promise<string> {
         const icon = await this.executeFunctionOnEnabled<Promise<string>>(modname, 'getIconSrc', [module, modicon]);
 
-        return icon ?? CoreCourse.getModuleIconSrc(modname, modicon) ?? '';
+        return icon ?? CoreCourseModuleHelper.getModuleIconSrc(modname, modicon) ?? '';
     }
 
     /**

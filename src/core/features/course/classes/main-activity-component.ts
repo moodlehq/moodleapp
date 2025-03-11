@@ -56,7 +56,7 @@ export class CoreCourseModuleMainActivityComponent extends CoreCourseModuleMainR
         await super.ngOnInit();
 
         this.hasOffline = false;
-        this.moduleName = CoreCourse.translateModuleName(this.pluginName || this.moduleName || '');
+        this.moduleName = CoreCourseModuleHelper.translateModuleName(this.pluginName || this.moduleName || '');
 
         if (this.syncEventName) {
             // Refresh data if this discussion is synchronized automatically.

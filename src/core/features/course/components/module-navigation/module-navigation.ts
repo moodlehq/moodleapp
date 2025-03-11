@@ -25,6 +25,7 @@ import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { CoreAlerts } from '@services/overlays/alerts';
 import { Translate } from '@singletons';
 import { CoreSharedModule } from '@/core/shared.module';
+import { CoreCourseModuleHelper } from '@features/course/services/course-module-helper';
 
 /**
  * Component to show a button to go to the next resource/activity.
@@ -150,7 +151,7 @@ export class CoreCourseModuleNavigationComponent implements OnInit, OnDestroy {
      * @returns Wether the module is available to the user or not.
      */
     protected isModuleAvailable(module: CoreCourseModuleData): boolean {
-        return !CoreCourseHelper.isModuleStealth(module) && CoreCourse.moduleHasView(module);
+        return !CoreCourseHelper.isModuleStealth(module) && CoreCourseModuleHelper.moduleHasView(module);
     }
 
     /**

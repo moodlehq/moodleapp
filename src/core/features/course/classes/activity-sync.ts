@@ -13,8 +13,9 @@
 // limitations under the License.
 
 import { CoreSyncBaseProvider } from '@classes/base-sync';
-import { CoreCourse, CoreCourseAnyModuleData } from '../services/course';
+import { CoreCourseAnyModuleData } from '../services/course';
 import { CoreCourseModulePrefetchDelegate, CoreCourseModulePrefetchHandler } from '../services/module-prefetch-delegate';
+import { CoreCourseModuleHelper } from '../services/course-module-helper';
 
 /**
  * Base class to create activity sync providers. It provides some common functions.
@@ -94,7 +95,7 @@ export class CoreCourseActivitySyncBaseProvider<T = void> extends CoreSyncBasePr
      */
     protected get componentTranslate(): string {
         if (!this.componentTranslateInternal) {
-            this.componentTranslateInternal = CoreCourse.translateModuleName(this.componentTranslatableString);
+            this.componentTranslateInternal = CoreCourseModuleHelper.translateModuleName(this.componentTranslatableString);
         }
 
         return this.componentTranslateInternal;
