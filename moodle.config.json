@@ -87,7 +87,7 @@
     "enableonboarding": true,
     "forceColorScheme": "",
     "forceLoginLogo": false,
-    "showTopLogo": "hidden",
+    "showTopLogo": "online",
     "ioswebviewscheme": "moodleappfs",
     "appstores": "",
     "wsrequestqueuelimit": 10,
