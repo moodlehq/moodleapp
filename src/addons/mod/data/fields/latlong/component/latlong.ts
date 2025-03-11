@@ -83,12 +83,12 @@ export class AddonModDataFieldLatlongComponent extends AddonModDataFieldPluginBa
         }
 
         if (this.editMode) {
-            this.addControl('f_' + this.field.id + '_0', this.north);
-            this.addControl('f_' + this.field.id + '_1', this.east);
+            this.addControl(`f_${this.field.id}_0`, this.north);
+            this.addControl(`f_${this.field.id}_1`, this.east);
             this.mapsUrl = CoreUrl.buildMapsURL();
 
         } else if (this.searchMode) {
-            this.addControl('f_' + this.field.id);
+            this.addControl(`f_${this.field.id}`);
         }
     }
 

@@ -150,7 +150,7 @@ export class CoreQuestionComponent implements OnInit, AsyncDirective {
             this.logger.warn('Aborting question because the behaviour is not supported.', this.question.slot);
             CoreQuestionHelper.showComponentError(
                 this.onAbort,
-                Translate.instant('addon.mod_quiz.errorbehaviournotsupported') + ' ' + behaviour,
+                `${Translate.instant('addon.mod_quiz.errorbehaviournotsupported')} ${behaviour}`,
             );
 
             return;

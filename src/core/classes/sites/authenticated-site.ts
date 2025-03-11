@@ -1040,7 +1040,7 @@ export class CoreAuthenticatedSite extends CoreUnauthenticatedSite {
      */
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     protected getCacheId(method: string, data: any): string {
-        return Md5.hashAsciiStr(method + ':' + CoreObject.sortAndStringify(data));
+        return Md5.hashAsciiStr(`${method}:${CoreObject.sortAndStringify(data)}`);
     }
 
     /**
@@ -1252,7 +1252,7 @@ export class CoreAuthenticatedSite extends CoreUnauthenticatedSite {
             return;
         }
 
-        this.logger.debug('Invalidate cache for key: ' + key);
+        this.logger.debug(`Invalidate cache for key: ${key}`);
 
         const entries = await this.getCacheEntriesByKey(key);
         entries.forEach(entry => {
@@ -1286,7 +1286,7 @@ export class CoreAuthenticatedSite extends CoreUnauthenticatedSite {
             return;
         }
 
-        this.logger.debug('Invalidate cache for key starting with: ' + key);
+        this.logger.debug(`Invalidate cache for key starting with: ${key}`);
         Object.values(this.memoryCache).filter(entry => entry.key?.startsWith(key)).forEach(entry => {
             entry.expirationTime = 0;
         });
@@ -1302,7 +1302,7 @@ export class CoreAuthenticatedSite extends CoreUnauthenticatedSite {
      */
     async getDocsUrl(page?: string): Promise<string> {
         const release = this.infos?.release ? this.infos.release : undefined;
-        let docsUrl = 'https://docs.moodle.org/en/' + page;
+        let docsUrl = `https://docs.moodle.org/en/${page}`;
 
         if (release !== undefined) {
             // Remove this part of the function if this file only uses CoreSites here.
@@ -1311,7 +1311,7 @@ export class CoreAuthenticatedSite extends CoreUnauthenticatedSite {
             // Check is a valid number.
             if (Number(version) >= 24) {
                 // Append release number.
-                docsUrl = docsUrl.replace('https://docs.moodle.org/', 'https://docs.moodle.org/' + version + '/');
+                docsUrl = docsUrl.replace('https://docs.moodle.org/', `https://docs.moodle.org/${version}/`);
             }
         }
 
@@ -1320,7 +1320,7 @@ export class CoreAuthenticatedSite extends CoreUnauthenticatedSite {
             let lang = CoreLang.getCurrentLanguageSync(CoreLangFormat.LMS);
             lang = CoreLang.getParentLanguage() || lang;
 
-            return docsUrl.replace('/en/', '/' + lang + '/');
+            return docsUrl.replace('/en/', `/${lang}/`);
         } catch {
             return docsUrl;
         }
@@ -1535,7 +1535,7 @@ export class CoreAuthenticatedSite extends CoreUnauthenticatedSite {
         }
 
         return {
-            major: match[1] + '.' + (match[3] || '0'),
+            major: `${match[1]}.${match[3] || '0'}`,
             minor: parseInt(match[5], 10) || 0,
         };
     }

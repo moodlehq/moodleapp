@@ -43,7 +43,7 @@ export class CoreBlockPreRenderedComponent extends CoreBlockBaseComponent implem
      */
     async ngOnInit(): Promise<void> {
         this.courseId = this.contextLevel === ContextLevel.COURSE ? this.instanceId : undefined;
-        this.fetchContentDefaultError = 'Error getting ' + this.block.contents?.title + ' data.';
+        this.fetchContentDefaultError = `Error getting ${this.block.contents?.title} data.`;
         this.id = `block-${this.block.instanceid}`;
 
         await super.ngOnInit();

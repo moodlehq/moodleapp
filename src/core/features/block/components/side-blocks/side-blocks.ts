@@ -138,7 +138,7 @@ export class CoreBlockSideBlocksComponent implements OnInit {
             return;
         }
 
-        const selector = '#block-' + this.initialBlockInstanceId;
+        const selector = `#block-${this.initialBlockInstanceId}`;
 
         await CoreWait.waitFor(() => !!this.elementRef.nativeElement.querySelector(selector));
         await CoreWait.wait(200);

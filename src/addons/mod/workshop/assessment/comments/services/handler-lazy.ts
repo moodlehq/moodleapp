@@ -95,14 +95,14 @@ export class AddonModWorkshopAssessmentStrategyCommentsHandlerLazyService
         form.fields.forEach((field, idx) => {
             if (idx < form.dimenssionscount) {
                 if (currentValues[idx].peercomment) {
-                    data['peercomment__idx_' + idx] = currentValues[idx].peercomment;
+                    data[`peercomment__idx_${idx}`] = currentValues[idx].peercomment;
                 } else {
-                    errors['peercomment_' + idx] = Translate.instant('core.err_required');
+                    errors[`peercomment_${idx}`] = Translate.instant('core.err_required');
                     hasErrors = true;
                 }
 
-                data['gradeid__idx_' + idx] = parseInt(form.current[idx].gradeid, 10) || 0;
-                data['dimensionid__idx_' + idx] = parseInt(field.dimensionid, 10);
+                data[`gradeid__idx_${idx}`] = parseInt(form.current[idx].gradeid, 10) || 0;
+                data[`dimensionid__idx_${idx}`] = parseInt(field.dimensionid, 10);
             }
         });
 

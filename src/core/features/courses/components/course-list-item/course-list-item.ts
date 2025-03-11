@@ -161,7 +161,7 @@ export class CoreCoursesCourseListItemComponent implements OnInit, OnDestroy, On
             const tint = CoreColors.lighter(this.course.color, 50);
             this.element.style.setProperty('--course-color-tint', tint);
         } else if(this.course.colorNumber !== undefined) {
-            this.element.classList.add('course-color-' + this.course.colorNumber);
+            this.element.classList.add(`course-color-${this.course.colorNumber}`);
         }
     }
 
@@ -365,7 +365,7 @@ export class CoreCoursesCourseListItemComponent implements OnInit, OnDestroy, On
         // We should use null to unset the preference.
         try {
             await CoreUser.updateUserPreference(
-                'block_myoverview_hidden_course_' + this.course.id,
+                `block_myoverview_hidden_course_${this.course.id}`,
                 hide ? '1' : undefined,
             );
 

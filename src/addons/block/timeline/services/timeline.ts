@@ -86,7 +86,7 @@ export class AddonBlockTimelineProvider {
      * @returns Cache key.
      */
     protected getActionEventsByCourseCacheKey(courseId: number): string {
-        return this.getActionEventsByCoursesCacheKey() + ':' + courseId;
+        return `${this.getActionEventsByCoursesCacheKey()}:${courseId}`;
     }
 
     /**
@@ -145,7 +145,7 @@ export class AddonBlockTimelineProvider {
      * @returns Cache key.
      */
     protected getActionEventsByCoursesCacheKey(): string {
-        return AddonBlockTimelineProvider.ROOT_CACHE_KEY + 'bycourse';
+        return `${AddonBlockTimelineProvider.ROOT_CACHE_KEY}bycourse`;
     }
 
     /**
@@ -184,7 +184,7 @@ export class AddonBlockTimelineProvider {
         if (searchValue != '') {
             data.searchvalue = searchValue;
             preSets.getFromCache = false;
-            preSets.cacheKey += ':' + searchValue;
+            preSets.cacheKey += `:${searchValue}`;
         }
 
         const result = await site.read<AddonBlockTimelineGetActionEventsByTimesortWSResponse>(
@@ -210,7 +210,7 @@ export class AddonBlockTimelineProvider {
      * @returns Cache key.
      */
     protected getActionEventsByTimesortPrefixCacheKey(): string {
-        return AddonBlockTimelineProvider.ROOT_CACHE_KEY + 'bytimesort:';
+        return `${AddonBlockTimelineProvider.ROOT_CACHE_KEY}bytimesort:`;
     }
 
     /**
@@ -224,7 +224,7 @@ export class AddonBlockTimelineProvider {
         afterEventId = afterEventId || 0;
         limit = limit || 0;
 
-        return this.getActionEventsByTimesortPrefixCacheKey() + afterEventId + ':' + limit;
+        return `${this.getActionEventsByTimesortPrefixCacheKey() + afterEventId  }:${limit}`;
     }
 
     /**

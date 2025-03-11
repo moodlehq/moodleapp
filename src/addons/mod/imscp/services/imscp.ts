@@ -88,7 +88,7 @@ export class AddonModImscpProvider {
      * @returns Cache key.
      */
     protected getImscpDataCacheKey(courseId: number): string {
-        return AddonModImscpProvider.ROOT_CACHE_KEY + 'imscp:' + courseId;
+        return `${AddonModImscpProvider.ROOT_CACHE_KEY}imscp:${courseId}`;
     }
 
     /**
@@ -133,7 +133,7 @@ export class AddonModImscpProvider {
             }
 
             const filePath = CorePath.concatenatePaths(item.filepath, item.filename);
-            const filePathAlt = filePath.charAt(0) === '/' ? filePath.substring(1) : '/' + filePath;
+            const filePathAlt = filePath.charAt(0) === '/' ? filePath.substring(1) : `/${filePath}`;
 
             // Check if it's main file.
             return filePath === targetFilePath || filePathAlt === targetFilePath;

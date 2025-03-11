@@ -342,7 +342,7 @@ export class CoreUrl {
 
         if (url.startsWith('//')) {
             // It only lacks the protocol, add it.
-            return (parsedParentUrl?.protocol || 'https') + ':' + url;
+            return `${parsedParentUrl?.protocol || 'https'  }:${url}`;
         }
 
         // The URL should be added after the domain (if starts with /) or after the parent path.
@@ -388,7 +388,7 @@ export class CoreUrl {
             return url;
         }
 
-        const treatedUrl = url.replace(new RegExp('^' + CoreText.escapeForRegex(parentUrlParts.path), 'i'), '');
+        const treatedUrl = url.replace(new RegExp(`^${CoreText.escapeForRegex(parentUrlParts.path)}`, 'i'), '');
 
         return treatedUrl !== url ? CoreText.removeStartingSlash(treatedUrl) : url;
     }
@@ -421,8 +421,8 @@ export class CoreUrl {
             return;
         }
 
-        let newUrl = CorePath.concatenatePaths(site.getURL(), '/media/player/vimeo/wsplayer.php?video=') +
-            matches[1] + '&token=' + site.getToken();
+        let newUrl = `${CorePath.concatenatePaths(site.getURL(), '/media/player/vimeo/wsplayer.php?video=') +
+            matches[1]  }&token=${site.getToken()}`;
 
         let privacyHash: string | undefined | null = matches[3];
         if (!privacyHash) {
@@ -487,7 +487,7 @@ export class CoreUrl {
 
             // Ignore objects and undefined.
             if (typeof value !== 'object' && value !== undefined) {
-                urlToTreat += separator + key + '=' + value;
+                urlToTreat += `${separator + key  }=${value}`;
                 separator = '&';
             }
         }
@@ -498,11 +498,11 @@ export class CoreUrl {
             urlAndAnchor.shift();
 
             // Use a join in case there is more than one #.
-            urlToTreat += '#' + urlAndAnchor.join('#');
+            urlToTreat += `#${urlAndAnchor.join('#')}`;
         }
 
         if (options.anchor) {
-            urlToTreat += '#' + options.anchor;
+            urlToTreat += `#${options.anchor}`;
         }
 
         if (!urlParams?.urltogo) {
@@ -521,7 +521,7 @@ export class CoreUrl {
      * @returns Link.
      */
     static buildLink(url: string, text: string): string {
-        return '<a href="' + url + '">' + text + '</a>';
+        return `<a href="${url}">${text}</a>`;
     }
 
     /**
@@ -592,7 +592,7 @@ export class CoreUrl {
             // We only want to treat the first level of params, so we'll remove this second list of params and restore it later.
             questionMarkSplit.splice(0, 2);
 
-            subParams = '?' + questionMarkSplit.join('?');
+            subParams = `?${questionMarkSplit.join('?')}`;
             urlAndHash[0] = urlAndHash[0].replace(subParams, subParamsPlaceholder);
         }
 
@@ -649,7 +649,7 @@ export class CoreUrl {
 
         if (canUseTokenPluginFile) {
             // Use tokenpluginfile.php.
-            url = url.replace(/(\/webservice)?\/pluginfile\.php/, '/tokenpluginfile.php/' + accessKey);
+            url = url.replace(/(\/webservice)?\/pluginfile\.php/, `/tokenpluginfile.php/${accessKey}`);
         } else {
             // Use pluginfile.php. Some webservices returns directly the correct download url, others not.
             if (url.indexOf(CorePath.concatenatePaths(siteUrl, 'pluginfile.php')) === 0) {
@@ -675,7 +675,7 @@ export class CoreUrl {
         // Check if the URL starts by http or https.
         if (! /^http(s)?:\/\/.*/i.test(url)) {
             // Test first allways https.
-            url = 'https://' + url;
+            url = `https://${url}`;
         }
 
         // http always in lowercase.
@@ -739,7 +739,7 @@ export class CoreUrl {
             }
         }
 
-        return CoreUrl.addParamsToUrl('https://www.youtube.com/embed/' + videoId, params);
+        return CoreUrl.addParamsToUrl(`https://www.youtube.com/embed/${videoId}`, params);
     }
 
     /**

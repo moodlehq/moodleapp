@@ -75,7 +75,7 @@ export class CoreAutoRowsDirective implements AfterViewInit, OnChanges {
 
         // Set height to 1px to force scroll height to calculate correctly.
         nativeElement.style.height = '1px';
-        nativeElement.style.height = nativeElement.scrollHeight + 'px';
+        nativeElement.style.height = `${nativeElement.scrollHeight}px`;
 
         // Emit event when resizing.
         if (this.height != nativeElement.scrollHeight) {

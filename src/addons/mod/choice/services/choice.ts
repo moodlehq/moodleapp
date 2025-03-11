@@ -196,7 +196,7 @@ export class AddonModChoiceProvider {
      * @returns Cache key.
      */
     protected getChoiceDataCacheKey(courseId: number): string {
-        return AddonModChoiceProvider.ROOT_CACHE_KEY + 'choice:' + courseId;
+        return `${AddonModChoiceProvider.ROOT_CACHE_KEY}choice:${courseId}`;
     }
 
     /**
@@ -206,7 +206,7 @@ export class AddonModChoiceProvider {
      * @returns Cache key.
      */
     protected getChoiceOptionsCacheKey(choiceId: number): string {
-        return AddonModChoiceProvider.ROOT_CACHE_KEY + 'options:' + choiceId;
+        return `${AddonModChoiceProvider.ROOT_CACHE_KEY}options:${choiceId}`;
     }
 
     /**
@@ -216,7 +216,7 @@ export class AddonModChoiceProvider {
      * @returns Cache key.
      */
     protected getChoiceResultsCacheKey(choiceId: number): string {
-        return AddonModChoiceProvider.ROOT_CACHE_KEY + 'results:' + choiceId;
+        return `${AddonModChoiceProvider.ROOT_CACHE_KEY}results:${choiceId}`;
     }
 
     /**

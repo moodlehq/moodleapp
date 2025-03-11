@@ -67,7 +67,7 @@ export class AddonModDataFieldTextareaComponent extends AddonModDataFieldPluginB
             text = this.format(this.value);
         }
 
-        this.addControl('f_' + this.field.id, text);
+        this.addControl(`f_${this.field.id}`, text);
     }
 
 }

@@ -60,7 +60,7 @@ export class AddonModBookTagAreaHandlerService implements CoreTagAreaHandler {
                     ADDON_MOD_BOOK_MODNAME,
                     { readingStrategy: CoreSitesReadingStrategy.PREFER_CACHE },
                 );
-                item.url += '&id=' + module.id;
+                item.url += `&id=${module.id}`;
             }
         }));
 

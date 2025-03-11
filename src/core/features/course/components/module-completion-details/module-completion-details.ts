@@ -79,7 +79,7 @@ export class CoreCourseModuleCompletionDetailsComponent implements OnInit {
                 };
                 const overrideStatus = rule.statusComplete ? 'done' : 'todo';
 
-                rule.accessibleDescription = Translate.instant('core.course.completion_setby:auto:' + overrideStatus, setByData);
+                rule.accessibleDescription = Translate.instant(`core.course.completion_setby:auto:${overrideStatus}`, setByData);
             }
 
             return rule;

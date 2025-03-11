@@ -42,7 +42,7 @@ export class AddonModResourceProvider {
      * @returns Cache key.
      */
     protected getResourceCacheKey(courseId: number): string {
-        return AddonModResourceProvider.ROOT_CACHE_KEY + 'resource:' + courseId;
+        return `${AddonModResourceProvider.ROOT_CACHE_KEY}resource:${courseId}`;
     }
 
     /**

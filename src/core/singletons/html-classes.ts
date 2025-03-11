@@ -80,8 +80,8 @@ export class CoreHTMLClasses {
         parts[2] = parts[2] || '0';
 
         CoreHTMLClasses.toggleModeClass(prefix + parts[0], true);
-        CoreHTMLClasses.toggleModeClass(prefix + parts[0] + '-' + parts[1], true);
-        CoreHTMLClasses.toggleModeClass(prefix + parts[0] + '-' + parts[1] + '-' + parts[2], true);
+        CoreHTMLClasses.toggleModeClass(`${prefix + parts[0]  }-${parts[1]}`, true);
+        CoreHTMLClasses.toggleModeClass(`${prefix + parts[0]  }-${parts[1]}-${parts[2]}`, true);
     }
 
     /**
@@ -155,7 +155,7 @@ export class CoreHTMLClasses {
             const trailing = new RegExp('/+$');
             const path = parsedUrl.path.replace(leading, '').replace(trailing, '');
             if (path) {
-                className += '--' + path.replace(/\//g, '-') || '';
+                className += `--${path.replace(/\//g, '-')}` || '';
             }
         }
 

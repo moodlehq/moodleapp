@@ -72,7 +72,7 @@ export class AddonModFolderModuleHandlerService extends CoreModuleHandlerBase im
             options.params = options.params || {};
             Object.assign(options.params, { module });
 
-            const routeParams = '/' + courseId + '/' + module.id;
+            const routeParams = `/${courseId}/${module.id}`;
 
             await CoreNavigator.navigateToSitePath(this.pageName + routeParams, options);
         };

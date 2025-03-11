@@ -47,7 +47,7 @@ export class AddonModDataFieldRadiobuttonComponent extends AddonModDataFieldPlug
             val = this.value.content;
         }
 
-        this.addControl('f_' + this.field.id, val);
+        this.addControl(`f_${this.field.id}`, val);
     }
 
 }

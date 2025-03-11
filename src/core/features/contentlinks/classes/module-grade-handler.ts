@@ -48,7 +48,7 @@ export class CoreContentLinksModuleGradeHandler extends CoreContentLinksHandlerB
         super();
 
         // Match the grade.php URL with an id param.
-        this.pattern = new RegExp('/mod/' + modName + '/grade.php.*([&?]id=\\d+)');
+        this.pattern = new RegExp(`/mod/${modName}/grade.php.*([&?]id=\\d+)`);
         this.featureName = CORE_COURSE_MODULE_FEATURE_PREFIX + addon;
     }
 

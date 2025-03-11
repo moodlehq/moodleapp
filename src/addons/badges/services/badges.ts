@@ -50,7 +50,7 @@ export class AddonBadgesProvider {
      * @returns Cache key.
      */
     protected getBadgesCacheKey(courseId: number, userId: number): string {
-        return ROOT_CACHE_KEY + 'badges:' + courseId + ':' + userId;
+        return `${ROOT_CACHE_KEY}badges:${courseId}:${userId}`;
     }
 
     /**
@@ -116,7 +116,7 @@ export class AddonBadgesProvider {
      * @returns Cache key.
      */
     protected getUserBadgeByHashCacheKey(hash: string): string {
-        return ROOT_CACHE_KEY + 'badge:' + hash;
+        return `${ROOT_CACHE_KEY}badge:${hash}`;
     }
 
     /**
@@ -172,7 +172,7 @@ export class AddonBadgesProvider {
      * @returns Cache key.
      */
     protected getBadgeClassCacheKey(id: number): string {
-        return ROOT_CACHE_KEY + 'badgeclass:' + id;
+        return `${ROOT_CACHE_KEY}badgeclass:${id}`;
     }
 
     /**

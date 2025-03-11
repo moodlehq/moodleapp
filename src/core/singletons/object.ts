@@ -194,10 +194,10 @@ export class CoreObject {
         let value2 = obj2[key] !== undefined ? obj2[key] : '';
 
         if (typeof value1 == 'number' || typeof value1 == 'boolean') {
-            value1 = '' + value1;
+            value1 = `${value1}`;
         }
         if (typeof value2 == 'number' || typeof value2 == 'boolean') {
-            value2 = '' + value2;
+            value2 = `${value2}`;
         }
 
         return value1 === value2;
@@ -294,7 +294,7 @@ export class CoreObject {
                 let entries: unknown[] = [];
 
                 keys.forEach((key) => {
-                    const newElKey = elKey ? elKey + '[' + key + ']' : key;
+                    const newElKey = elKey ? `${elKey}[${key}]` : key;
                     const subEntries = getEntries(newElKey, value[key]);
 
                     if (subEntries) {
@@ -383,7 +383,7 @@ export class CoreObject {
                 value = value ? 1 : 0;
             }
 
-            result += joinChar + name + '=' + value;
+            result += `${joinChar + name  }=${value}`;
             joinChar = '&';
         }
 
@@ -453,7 +453,7 @@ export class CoreObject {
                         continue;
                     }
 
-                    const newName = useDotNotation ? name + '.' + subName : name + '[' + subName + ']';
+                    const newName = useDotNotation ? `${name}.${subName}` : `${name}[${subName}]`;
                     toReturn[newName] = flatObject[subName];
                 }
             } else {

@@ -451,7 +451,7 @@ export class CoreDomUtilsProvider {
      */
     replaceClassesInElement(element: HTMLElement, map: {[currentValue: string]: string}): void {
         for (const key in map) {
-            const foundElements = element.querySelectorAll('.' + key);
+            const foundElements = element.querySelectorAll(`.${key}`);
 
             for (let i = 0; i < foundElements.length; i++) {
                 const foundElement = foundElements[i];

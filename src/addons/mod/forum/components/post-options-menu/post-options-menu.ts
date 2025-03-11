@@ -95,7 +95,7 @@ export class AddonModForumPostOptionsMenuComponent implements OnInit {
             return;
         }
 
-        this.url = site.createSiteUrl('/mod/forum/discuss.php', { d: this.post.discussionid.toString() }, 'p' + this.post.id);
+        this.url = site.createSiteUrl('/mod/forum/discuss.php', { d: this.post.discussionid.toString() }, `p${this.post.id}`);
     }
 
     /**

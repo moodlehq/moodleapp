@@ -146,7 +146,7 @@ export class AddonModLessonReportLinkHandlerService extends CoreContentLinksHand
             };
 
             CoreNavigator.navigateToSitePath(
-                ADDON_MOD_LESSON_PAGE_NAME + `/${module.course}/${module.id}/user-retake/${userId}`,
+                `${ADDON_MOD_LESSON_PAGE_NAME}/${module.course}/${module.id}/user-retake/${userId}`,
                 { params, siteId },
             );
         } catch (error) {

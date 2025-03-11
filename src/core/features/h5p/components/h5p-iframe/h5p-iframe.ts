@@ -144,8 +144,8 @@ export class CoreH5PIframeComponent implements OnChanges, OnDestroy {
             } else {
                 // Never allow downloading in the app. This will only work if the user is allowed to change the params.
                 const src = this.onlinePlayerUrl.replace(
-                    CoreH5PCore.DISPLAY_OPTION_DOWNLOAD + '=1',
-                    CoreH5PCore.DISPLAY_OPTION_DOWNLOAD + '=0',
+                    `${CoreH5PCore.DISPLAY_OPTION_DOWNLOAD}=1`,
+                    `${CoreH5PCore.DISPLAY_OPTION_DOWNLOAD}=0`,
                 );
 
                 // Add the preventredirect param so the user can authenticate.

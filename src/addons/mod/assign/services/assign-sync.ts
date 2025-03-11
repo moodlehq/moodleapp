@@ -68,7 +68,7 @@ export class AddonModAssignSyncProvider extends CoreCourseActivitySyncBaseProvid
      * @returns Sync ID.
      */
     getGradeSyncId(assignId: number, userId: number): string {
-        return 'assignGrade#' + assignId + '#' + userId;
+        return `assignGrade#${assignId}#${userId}`;
     }
 
     /**
@@ -175,12 +175,12 @@ export class AddonModAssignSyncProvider extends CoreCourseActivitySyncBaseProvid
 
         // Verify that assign isn't blocked.
         if (CoreSync.isBlocked(ADDON_MOD_ASSIGN_COMPONENT, assignId, siteId)) {
-            this.logger.debug('Cannot sync assign ' + assignId + ' because it is blocked.');
+            this.logger.debug(`Cannot sync assign ${assignId} because it is blocked.`);
 
             throw new CoreSyncBlockedError(Translate.instant('core.errorsyncblocked', { $a: this.componentTranslate }));
         }
 
-        this.logger.debug('Try to sync assign ' + assignId + ' in site ' + siteId);
+        this.logger.debug(`Try to sync assign ${assignId} in site ${siteId}`);
 
         const syncPromise = this.performSyncAssign(assignId, siteId);
 

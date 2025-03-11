@@ -85,7 +85,7 @@ export class CoreTabComponent implements OnInit, OnDestroy, CoreTabBase {
         element: ElementRef,
     ) {
         this.element = element.nativeElement;
-        this.id = this.id || 'core-tab-' + CoreUtils.getUniqueId('CoreTabComponent');
+        this.id = this.id || `core-tab-${CoreUtils.getUniqueId('CoreTabComponent')}`;
         this.element.setAttribute('role', 'tabpanel');
         this.element.setAttribute('tabindex', '0');
         this.element.setAttribute('aria-hidden', 'true');
@@ -95,7 +95,7 @@ export class CoreTabComponent implements OnInit, OnDestroy, CoreTabBase {
      * @inheritdoc
      */
     ngOnInit(): void {
-        this.element.setAttribute('aria-labelledby', this.id + '-tab');
+        this.element.setAttribute('aria-labelledby', `${this.id}-tab`);
         this.element.setAttribute('id', this.id);
 
         this.tabs.addTab(this);
@@ -115,7 +115,7 @@ export class CoreTabComponent implements OnInit, OnDestroy, CoreTabBase {
     async selectTab(): Promise<void> {
         this.element.classList.add('selected');
 
-        this.tabElement = this.tabElement || document.getElementById(this.id + '-tab');
+        this.tabElement = this.tabElement || document.getElementById(`${this.id}-tab`);
         this.tabElement?.setAttribute('aria-selected', 'true');
         this.element.setAttribute('aria-hidden', 'false');
 

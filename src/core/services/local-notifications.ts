@@ -264,7 +264,7 @@ export class CoreLocalNotificationsProvider {
     async cancel(id: number, component: string, siteId: string): Promise<void> {
         const uniqueId = await this.getUniqueNotificationId(id, component, siteId);
 
-        const queueId = 'cancel-' + uniqueId;
+        const queueId = `cancel-${uniqueId}`;
 
         await this.queueRunner.run(queueId, () => LocalNotifications.cancel(uniqueId), {
             allowRepeated: true,
@@ -285,7 +285,7 @@ export class CoreLocalNotificationsProvider {
         const scheduled = await this.getAllScheduled();
 
         const ids: number[] = [];
-        const queueId = 'cancelSiteNotifications-' + siteId;
+        const queueId = `cancelSiteNotifications-${siteId}`;
 
         scheduled.forEach((notif) => {
             notif.data = this.parseNotificationData(notif.data);
@@ -354,7 +354,7 @@ export class CoreLocalNotificationsProvider {
         table: AsyncInstance<CoreDatabaseTable<{ id: string; code: number }>>,
         id: string,
     ): Promise<number> {
-        const key = table + '#' + id;
+        const key = `${table}#${id}`;
 
         // Check if the code is already in memory.
         if (this.codes[key] !== undefined) {
@@ -443,7 +443,7 @@ export class CoreLocalNotificationsProvider {
      */
     protected handleEvent(eventName: string, notification: ILocalNotification): void {
         if (notification && notification.data) {
-            this.logger.debug('Notification event: ' + eventName + '. Data:', notification.data);
+            this.logger.debug(`Notification event: ${eventName}. Data:`, notification.data);
 
             this.notifyEvent(eventName, notification.data);
         }
@@ -494,7 +494,7 @@ export class CoreLocalNotificationsProvider {
         } catch {
             const notificationId = notification.id || 0;
             if (useQueue) {
-                const queueId = 'isTriggered-' + notificationId;
+                const queueId = `isTriggered-${notificationId}`;
 
                 return this.queueRunner.run(queueId, () => LocalNotifications.isTriggered(notificationId), {
                     allowRepeated: true,
@@ -658,7 +658,7 @@ export class CoreLocalNotificationsProvider {
      */
     protected requestCode(table: typeof SITES_TABLE_NAME | typeof COMPONENTS_TABLE_NAME, id: string): Promise<number> {
         const deferred = new CorePromisedValue<number>();
-        const key = table + '#' + id;
+        const key = `${table}#${id}`;
         const isQueueEmpty = Object.keys(this.codeRequestsQueue).length == 0;
 
         if (this.codeRequestsQueue[key] !== undefined) {
@@ -693,7 +693,7 @@ export class CoreLocalNotificationsProvider {
             // Convert some properties to the needed types.
             notification.data = this.parseNotificationData(notification.data);
 
-            const queueId = 'schedule-' + notification.id;
+            const queueId = `schedule-${notification.id}`;
 
             await this.queueRunner.run(queueId, () => this.scheduleNotification(notification), {
                 allowRepeated: true,
@@ -750,7 +750,7 @@ export class CoreLocalNotificationsProvider {
             }
         }
 
-        const queueId = 'schedule-' + notification.id;
+        const queueId = `schedule-${notification.id}`;
 
         await this.queueRunner.run(queueId, () => this.scheduleNotification(notification), {
             allowRepeated: true,
@@ -826,8 +826,8 @@ export class CoreLocalNotificationsProvider {
      * @returns Promise resolved when done.
      */
     async updateComponentName(oldName: string, newName: string): Promise<void> {
-        const oldId = COMPONENTS_TABLE_NAME + '#' + oldName;
-        const newId = COMPONENTS_TABLE_NAME + '#' + newName;
+        const oldId = `${COMPONENTS_TABLE_NAME}#${oldName}`;
+        const newId = `${COMPONENTS_TABLE_NAME}#${newName}`;
 
         await this.componentsTable.update({ id: newId }, { id: oldId });
     }

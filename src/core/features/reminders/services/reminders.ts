@@ -432,7 +432,7 @@ export class CoreRemindersService {
     async getDefaultNotificationTime(siteId?: string): Promise<number> {
         siteId = siteId || CoreSites.getCurrentSiteId();
 
-        const key = REMINDERS_DEFAULT_NOTIFICATION_TIME_SETTING + '#' + siteId;
+        const key = `${REMINDERS_DEFAULT_NOTIFICATION_TIME_SETTING}#${siteId}`;
 
         return CoreConfig.get(key, CoreConstants.CONFIG.calendarreminderdefaultvalue || 3600);
     }
@@ -447,7 +447,7 @@ export class CoreRemindersService {
     async setDefaultNotificationTime(time: number, siteId?: string): Promise<void> {
         siteId = siteId || CoreSites.getCurrentSiteId();
 
-        const key = REMINDERS_DEFAULT_NOTIFICATION_TIME_SETTING + '#' + siteId;
+        const key = `${REMINDERS_DEFAULT_NOTIFICATION_TIME_SETTING}#${siteId}`;
 
         await CoreConfig.set(key, time);
 

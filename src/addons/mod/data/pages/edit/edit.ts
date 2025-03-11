@@ -187,7 +187,7 @@ export default class AddonModDataEditPage implements OnInit {
         try {
             this.database = await AddonModData.getDatabase(this.courseId, this.moduleId);
             this.title = this.database.name || this.title;
-            this.cssClass = 'addon-data-entries-' + this.database.id;
+            this.cssClass = `addon-data-entries-${this.database.id}`;
 
             this.fieldsArray = await AddonModData.getFields(this.database.id, { cmId: this.moduleId });
             this.fields = CoreArray.toObject(this.fieldsArray, 'id');
@@ -450,7 +450,7 @@ export default class AddonModDataEditPage implements OnInit {
 
         // Replace the fields found on template.
         this.fieldsArray.forEach((field) => {
-            let replace = '[[' + field.name + ']]';
+            let replace = `[[${field.name}]]`;
             replace = replace.replace(/[-[\]/{}()*+?.\\^$|]/g, '\\$&');
             let replaceRegEx = new RegExp(replace, 'gi');
 
@@ -462,21 +462,21 @@ export default class AddonModDataEditPage implements OnInit {
             template = template.replace(replaceRegEx, render);
 
             // Replace the field id tag.
-            replace = '[[' + field.name + '#id]]';
+            replace = `[[${field.name}#id]]`;
             replace = replace.replace(/[-[\]/{}()*+?.\\^$|]/g, '\\$&');
             replaceRegEx = new RegExp(replace, 'gi');
 
-            template = template.replace(replaceRegEx, 'field_' + field.id);
+            template = template.replace(replaceRegEx, `field_${field.id}`);
 
             // Replace the field name tag.
-            replace = '[[' + field.name + '#name]]';
+            replace = `[[${field.name}#name]]`;
             replace = replace.replace(/[-[\]/{}()*+?.\\^$|]/g, '\\$&');
             replaceRegEx = new RegExp(replace, 'gi');
 
             template = template.replace(replaceRegEx, field.name);
 
             // Replace the field description tag.
-            replace = '[[' + field.name + '#description]]';
+            replace = `[[${field.name}#description]]`;
             replace = replace.replace(/[-[\]/{}()*+?.\\^$|]/g, '\\$&');
             replaceRegEx = new RegExp(replace, 'gi');
 

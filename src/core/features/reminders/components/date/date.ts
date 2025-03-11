@@ -87,11 +87,11 @@ export class CoreRemindersDateComponent implements OnInit {
         }
 
         return Translate.instant(
-            'core.course.relativedatessubmissionduedate' + (timestamp > relativeTo ? 'after' : 'before'),
+            `core.course.relativedatessubmissionduedate${timestamp > relativeTo ? 'after' : 'before'}`,
             {
                 $a: {
                     datediffstr: relativeTo === timestamp ?
-                        '0 ' + Translate.instant('core.secs') :
+                        `0 ${Translate.instant('core.secs')}` :
                         CoreTime.formatTime(relativeTo - timestamp, 3),
                 },
             },

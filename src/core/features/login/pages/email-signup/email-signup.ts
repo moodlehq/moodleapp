@@ -246,7 +246,7 @@ export default class CoreLoginEmailSignupPage implements OnInit {
         const namefieldsErrors = {};
         if (this.settings.namefields) {
             this.settings.namefields.forEach((field) => {
-                namefieldsErrors[field] = { required: 'core.login.missing' + field };
+                namefieldsErrors[field] = { required: `core.login.missing${field}` };
             });
         }
         this.namefieldsErrors = namefieldsErrors;

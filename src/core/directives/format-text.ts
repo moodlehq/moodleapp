@@ -242,9 +242,9 @@ export class CoreFormatTextDirective implements OnChanges, OnDestroy, AsyncDirec
         const forcedWidth = Number(originalWidth?.value);
         if (originalWidth && !isNaN(forcedWidth)) {
             if (originalWidth.value.indexOf('%') < 0) {
-                img.style.width = forcedWidth + 'px';
+                img.style.width = `${forcedWidth}px`;
             } else {
-                img.style.width = forcedWidth + '%';
+                img.style.width = `${forcedWidth}%`;
             }
         }
 
@@ -824,7 +824,7 @@ export class CoreFormatTextDirective implements OnChanges, OnDestroy, AsyncDirec
                 return;
             }
 
-            element.setAttribute('src', src + '#t=0.001');
+            element.setAttribute('src', `${src}#t=0.001`);
         });
     }
 
@@ -903,7 +903,7 @@ export class CoreFormatTextDirective implements OnChanges, OnDestroy, AsyncDirec
 
                 // Width and height parameters are required in 3.6 and older sites.
                 if (site && !site.isVersionGreaterEqualThan('3.7')) {
-                    vimeoUrl += '&width=' + width + '&height=' + height;
+                    vimeoUrl += `&width=${width}&height=${height}`;
                 }
 
                 await CoreIframeUtils.fixIframeCookies(vimeoUrl);

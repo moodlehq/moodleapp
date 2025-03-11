@@ -148,7 +148,7 @@ export class AddonFilterMathJaxLoaderHandlerService extends CoreFilterDefaultHan
         }
 
         if (hasDisplayOrInline) {
-            return '<span class="filter_mathjaxloader_equation">' + text + '</span>';
+            return `<span class="filter_mathjaxloader_equation">${text}</span>`;
         }
 
         return text;
@@ -196,7 +196,7 @@ export class AddonFilterMathJaxLoaderHandlerService extends CoreFilterDefaultHan
     protected insertSpan(text: string, start: number, end: number): string {
         return CoreText.substrReplace(
             text,
-            '<span class="nolink">' + text.substring(start, end + 1) + '</span>',
+            `<span class="nolink">${text.substring(start, end + 1)}</span>`,
             start,
             end - start + 1,
         );

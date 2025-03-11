@@ -584,7 +584,7 @@ export class AddonModScormSyncProvider extends CoreCourseActivitySyncBaseProvide
 
         // Verify that SCORM isn't blocked.
         if (CoreSync.isBlocked(ADDON_MOD_SCORM_COMPONENT, scorm.id, siteId)) {
-            this.logger.debug('Cannot sync SCORM ' + scorm.id + ' because it is blocked.');
+            this.logger.debug(`Cannot sync SCORM ${scorm.id} because it is blocked.`);
 
             throw new CoreError(Translate.instant('core.errorsyncblocked', { $a: this.componentTranslate }));
         }

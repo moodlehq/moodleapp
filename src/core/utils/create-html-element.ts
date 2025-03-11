@@ -23,7 +23,7 @@ export function convertTextToHTMLElement(html: string): HTMLElement {
     const element = document.createElement('template');
 
     // Add a div to hold the content, that's the element that will be returned.
-    element.innerHTML = '<div>' + html + '</div>';
+    element.innerHTML = `<div>${html}</div>`;
 
     return <HTMLElement> element.content.children[0];
 }

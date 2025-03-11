@@ -73,7 +73,7 @@ export class CoreFileUploaderProvider {
      * @returns Treated extension.
      */
     protected addDot(extension: string): string {
-        return '.' + extension;
+        return `.${extension}`;
     }
 
     /**
@@ -249,7 +249,7 @@ export class CoreFileUploaderProvider {
             // In iOS, the pictures can have repeated names, even if they come from the album.
             // Add a timestamp to the filename to make it unique.
             const split = fileName.split('.');
-            split[0] += '_' + CoreTime.readableTimestamp();
+            split[0] += `_${CoreTime.readableTimestamp()}`;
 
             options.fileName = split.join('.');
         } else {
@@ -344,7 +344,7 @@ export class CoreFileUploaderProvider {
         if (!filename.match(/_\d{14}(\..*)?$/)) {
             // Add a timestamp to the filename to make it unique.
             const split = filename.split('.');
-            split[0] += '_' + CoreTime.readableTimestamp();
+            split[0] += `_${CoreTime.readableTimestamp()}`;
             filename = split.join('.');
         }
 

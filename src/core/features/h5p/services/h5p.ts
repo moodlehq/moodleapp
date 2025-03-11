@@ -182,7 +182,7 @@ export class CoreH5PProvider {
      * @returns Cache key.
      */
     protected getTrustedH5PFilePrefixCacheKey(): string {
-        return CoreH5PProvider.ROOT_CACHE_KEY + 'trustedH5PFile:';
+        return `${CoreH5PProvider.ROOT_CACHE_KEY}trustedH5PFile:`;
     }
 
     /**

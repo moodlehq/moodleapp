@@ -151,7 +151,7 @@ export class CoreRemindersSetButtonComponent implements OnInit {
             component: this.component,
             instanceId: this.instanceId,
             type: this.type,
-            title: this.label + ' ' + this.title,
+            title: `${this.label} ${this.title}`,
             url: this.url,
             time: this.time,
         };

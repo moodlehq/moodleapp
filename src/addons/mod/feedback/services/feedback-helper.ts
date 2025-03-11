@@ -90,7 +90,7 @@ export class AddonModFeedbackHelperProvider {
 
             if (itemData.typ === AddonModFeedbackQuestionType.CAPTCHA) {
                 const value = itemData.value || '';
-                const name = itemData.typ + '_' + itemData.id;
+                const name = `${itemData.typ}_${itemData.id}`;
 
                 answered = !!value;
                 responses[name] = 1;
@@ -106,13 +106,13 @@ export class AddonModFeedbackHelperProvider {
             } else if (itemData.hasvalue) {
                 let name: string;
                 let value: AddonModFeedbackResponseValue;
-                const nameTemp = itemData.typ + '_' + itemData.id;
+                const nameTemp = `${itemData.typ}_${itemData.id}`;
 
                 if (this.isMultiChoiceItem(itemData) && itemData.subtype === AddonModFeedbackMultichoiceSubtype.CHECKBOX) {
-                    name = nameTemp + '[0]';
+                    name = `${nameTemp}[0]`;
                     responses[name] = 0;
                     itemData.choices.forEach((choice, index) => {
-                        name = nameTemp + '[' + (index + 1) + ']';
+                        name = `${nameTemp}[${index + 1  }]`;
                         value = choice.checked ? choice.value : 0;
                         if (!answered && value) {
                             answered = true;
@@ -121,7 +121,7 @@ export class AddonModFeedbackHelperProvider {
                     });
                 } else {
                     if (this.isMultiChoiceItem(itemData) && itemData.subtype !== AddonModFeedbackMultichoiceSubtype.RADIO) {
-                        name = nameTemp + '[0]';
+                        name = `${nameTemp}[0]`;
                     } else {
                         name = nameTemp;
                     }
@@ -197,7 +197,7 @@ export class AddonModFeedbackHelperProvider {
             if (params.showcompleted === undefined) {
                 // Param showcompleted not defined. Show entry list.
                 await CoreNavigator.navigateToSitePath(
-                    ADDON_MOD_FEEDBACK_PAGE_NAME + `/${module.course}/${module.id}/attempts`,
+                    `${ADDON_MOD_FEEDBACK_PAGE_NAME}/${module.course}/${module.id}/attempts`,
                     { siteId },
                 );
 
@@ -211,7 +211,7 @@ export class AddonModFeedbackHelperProvider {
             });
 
             await CoreNavigator.navigateToSitePath(
-                ADDON_MOD_FEEDBACK_PAGE_NAME + `/${module.course}/${module.id}/attempts/${attempt.id}`,
+                `${ADDON_MOD_FEEDBACK_PAGE_NAME}/${module.course}/${module.id}/attempts/${attempt.id}`,
                 {
                     params: {
                         feedbackId: module.instance,
@@ -384,7 +384,7 @@ export class AddonModFeedbackHelperProvider {
         const choices = formItem.presentation.split(ADDON_MOD_FEEDBACK_LINE_SEP) || [];
         formItem.choices = choices.map((choice, index) => {
             const weightValue = choice.split(ADDON_MOD_FEEDBACK_MULTICHOICERATED_VALUE_SEP) || [''];
-            choice = weightValue.length == 1 ? weightValue[0] : '(' + weightValue[0] + ') ' + weightValue[1];
+            choice = weightValue.length == 1 ? weightValue[0] : `(${weightValue[0]}) ${weightValue[1]}`;
 
             return { value: index + 1, label: choice };
         });

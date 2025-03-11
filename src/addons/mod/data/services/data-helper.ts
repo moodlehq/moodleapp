@@ -218,7 +218,7 @@ export class AddonModDataHelperProvider {
 
         // Replace the fields found on template.
         fields.forEach((field) => {
-            let replace = '[[' + field.name + ']]';
+            let replace = `[[${field.name}]]`;
             replace = replace.replace(/[-[\]/{}()*+?.\\^$|]/g, '\\$&');
             let replaceRegex = new RegExp(replace, 'gi');
 
@@ -230,14 +230,14 @@ export class AddonModDataHelperProvider {
             template = template.replace(replaceRegex, render);
 
             // Replace the field name tag.
-            replace = '[[' + field.name + '#name]]';
+            replace = `[[${field.name}#name]]`;
             replace = replace.replace(/[-[\]/{}()*+?.\\^$|]/g, '\\$&');
             replaceRegex = new RegExp(replace, 'gi');
 
             template = template.replace(replaceRegex, field.name);
 
             // Replace the field description tag.
-            replace = '[[' + field.name + '#description]]';
+            replace = `[[${field.name}#description]]`;
             replace = replace.replace(/[-[\]/{}()*+?.\\^$|]/g, '\\$&');
             replaceRegex = new RegExp(replace, 'gi');
 
@@ -245,7 +245,7 @@ export class AddonModDataHelperProvider {
         });
 
         for (const action in actions) {
-            const replaceRegex = new RegExp('##' + action + '##', 'gi');
+            const replaceRegex = new RegExp(`##${action}##`, 'gi');
             // Is enabled?
             if (!actions[action]) {
                 template = template.replace(replaceRegex, '');
@@ -257,7 +257,7 @@ export class AddonModDataHelperProvider {
                 // Render more url directly because it can be part of an HTML attribute.
                 template = template.replace(
                     replaceRegex,
-                    CoreSites.getRequiredCurrentSite().getURL() + '/mod/data/view.php?d={{database.id}}&rid=' + entry.id,
+                    CoreSites.getRequiredCurrentSite().getURL() + `/mod/data/view.php?d={{database.id}}&rid=${entry.id}`,
                 );
 
                 continue;
@@ -824,7 +824,7 @@ export class AddonModDataHelperProvider {
         // Add core-link directive to links.
         template = template.replace(
             /<a ([^>]*href="[^>]*)>/ig,
-            (match, attributes) => '<a core-link capture="true" ' + attributes + '>',
+            (match, attributes) => `<a core-link capture="true" ${attributes}>`,
         );
 
         return template;

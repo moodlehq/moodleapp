@@ -227,7 +227,7 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy {
             const onTime = lateCalculation <= lateThreshold;
 
             this.timeRemaining = Translate.instant(
-                'addon.mod_assign.' + (onTime ? earlyString : lateString),
+                `addon.mod_assign.${onTime ? earlyString : lateString}`,
                 { $a: CoreTime.formatTime(Math.abs(lateCalculation - lateThreshold)) },
             );
             this.timeRemainingClass = onTime ? 'earlysubmission' : 'latesubmission';
@@ -239,7 +239,7 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy {
             // There is no submission, due date has passed, show assignment is overdue.
             const submissionsEnabled = response.lastattempt?.submissionsenabled || response.gradingsummary?.submissionsenabled;
             this.timeRemaining = Translate.instant(
-                'addon.mod_assign.' + (submissionsEnabled ? 'overdue' : 'duedatereached'),
+                `addon.mod_assign.${submissionsEnabled ? 'overdue' : 'duedatereached'}`,
                 { $a: CoreTime.formatTime(time - duedate) },
             );
             this.timeRemainingClass = 'overdue';
@@ -347,7 +347,7 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy {
         }
 
         CoreNavigator.navigateToSitePath(
-            ADDON_MOD_ASSIGN_PAGE_NAME + '/' + this.courseId + '/' + this.moduleId + '/edit',
+            `${ADDON_MOD_ASSIGN_PAGE_NAME}/${this.courseId}/${this.moduleId}/edit`,
             {
                 params: {
                     blindId: this.blindId,
@@ -647,7 +647,7 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy {
         if (!this.canSaveGrades) {
             // User cannot save grades in the app. Load the URL to grade it in browser.
             const mod = await CoreCourse.getModule(this.moduleId, this.courseId, undefined, true);
-            this.gradeUrl = mod.url + '&action=grader&userid=' + this.submitId;
+            this.gradeUrl = `${mod.url}&action=grader&userid=${this.submitId}`;
 
             return;
         }
@@ -737,7 +737,7 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy {
             // Single submission.
             if (submissionStatus && submissionStatus !== this.statusNew && !this.removedOffline) {
                 return {
-                    translationId: 'addon.mod_assign.submissionstatus_' + submissionStatus,
+                    translationId: `addon.mod_assign.submissionstatus_${submissionStatus}`,
                     color: AddonModAssign.getSubmissionStatusColor(submissionStatus),
                 };
             }
@@ -765,7 +765,7 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy {
 
         if (submissionStatus && submissionStatus !== this.statusNew && !this.removedOffline) {
             return {
-                translationId: 'addon.mod_assign.submissionstatus_' + submissionStatus,
+                translationId: `addon.mod_assign.submissionstatus_${submissionStatus}`,
                 color: AddonModAssign.getSubmissionStatusColor(submissionStatus),
             };
         }

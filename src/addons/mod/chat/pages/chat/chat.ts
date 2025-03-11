@@ -206,7 +206,7 @@ export default class AddonModChatChatPage implements OnInit, OnDestroy, CanLeave
 
         if (modalData) {
             if (modalData.talkTo) {
-                this.newMessage = `To ${modalData.talkTo}: ` + (this.sendMessageForm?.message || '');
+                this.newMessage = `To ${modalData.talkTo}: ${this.sendMessageForm?.message || ''}`;
             }
             if (modalData.beepTo) {
                 this.sendMessage('', modalData.beepTo);

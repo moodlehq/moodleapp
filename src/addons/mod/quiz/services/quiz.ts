@@ -147,7 +147,7 @@ export class AddonModQuizProvider {
      * @returns Cache key.
      */
     protected getAttemptAccessInformationCacheKey(quizId: number, attemptId: number): string {
-        return this.getAttemptAccessInformationCommonCacheKey(quizId) + ':' + attemptId;
+        return `${this.getAttemptAccessInformationCommonCacheKey(quizId)}:${attemptId}`;
     }
 
     /**
@@ -157,7 +157,7 @@ export class AddonModQuizProvider {
      * @returns Cache key.
      */
     protected getAttemptAccessInformationCommonCacheKey(quizId: number): string {
-        return AddonModQuizProvider.ROOT_CACHE_KEY + 'attemptAccessInformation:' + quizId;
+        return `${AddonModQuizProvider.ROOT_CACHE_KEY}attemptAccessInformation:${quizId}`;
     }
 
     /**
@@ -198,7 +198,7 @@ export class AddonModQuizProvider {
      * @returns Cache key.
      */
     protected getAttemptDataCacheKey(attemptId: number, page: number): string {
-        return this.getAttemptDataCommonCacheKey(attemptId) + ':' + page;
+        return `${this.getAttemptDataCommonCacheKey(attemptId)}:${page}`;
     }
 
     /**
@@ -208,7 +208,7 @@ export class AddonModQuizProvider {
      * @returns Cache key.
      */
     protected getAttemptDataCommonCacheKey(attemptId: number): string {
-        return AddonModQuizProvider.ROOT_CACHE_KEY + 'attemptData:' + attemptId;
+        return `${AddonModQuizProvider.ROOT_CACHE_KEY}attemptData:${attemptId}`;
     }
 
     /**
@@ -288,7 +288,7 @@ export class AddonModQuizProvider {
                 return (dueDate + (quiz.graceperiod ?? 0)) * 1000;
 
             default:
-                this.logger.warn('Unexpected state when getting due date: ' + attempt.state);
+                this.logger.warn(`Unexpected state when getting due date: ${attempt.state}`);
 
                 return 0;
         }
@@ -481,7 +481,7 @@ export class AddonModQuizProvider {
      * @returns Cache key.
      */
     protected getAttemptReviewCacheKey(attemptId: number, page: number): string {
-        return this.getAttemptReviewCommonCacheKey(attemptId) + ':' + page;
+        return `${this.getAttemptReviewCommonCacheKey(attemptId)}:${page}`;
     }
 
     /**
@@ -491,7 +491,7 @@ export class AddonModQuizProvider {
      * @returns Cache key.
      */
     protected getAttemptReviewCommonCacheKey(attemptId: number): string {
-        return AddonModQuizProvider.ROOT_CACHE_KEY + 'attemptReview:' + attemptId;
+        return `${AddonModQuizProvider.ROOT_CACHE_KEY}attemptReview:${attemptId}`;
     }
 
     /**
@@ -535,7 +535,7 @@ export class AddonModQuizProvider {
      * @returns Cache key.
      */
     protected getAttemptSummaryCacheKey(attemptId: number): string {
-        return AddonModQuizProvider.ROOT_CACHE_KEY + 'attemptSummary:' + attemptId;
+        return `${AddonModQuizProvider.ROOT_CACHE_KEY}attemptSummary:${attemptId}`;
     }
 
     /**
@@ -589,7 +589,7 @@ export class AddonModQuizProvider {
      * @returns Cache key.
      */
     protected getCombinedReviewOptionsCacheKey(quizId: number, userId: number): string {
-        return this.getCombinedReviewOptionsCommonCacheKey(quizId) + ':' + userId;
+        return `${this.getCombinedReviewOptionsCommonCacheKey(quizId)}:${userId}`;
     }
 
     /**
@@ -599,7 +599,7 @@ export class AddonModQuizProvider {
      * @returns Cache key.
      */
     protected getCombinedReviewOptionsCommonCacheKey(quizId: number): string {
-        return AddonModQuizProvider.ROOT_CACHE_KEY + 'combinedReviewOptions:' + quizId;
+        return `${AddonModQuizProvider.ROOT_CACHE_KEY}combinedReviewOptions:${quizId}`;
     }
 
     /**
@@ -649,7 +649,7 @@ export class AddonModQuizProvider {
      * @returns Cache key.
      */
     protected getFeedbackForGradeCacheKey(quizId: number, grade: number): string {
-        return this.getFeedbackForGradeCommonCacheKey(quizId) + ':' + grade;
+        return `${this.getFeedbackForGradeCommonCacheKey(quizId)}:${grade}`;
     }
 
     /**
@@ -659,7 +659,7 @@ export class AddonModQuizProvider {
      * @returns Cache key.
      */
     protected getFeedbackForGradeCommonCacheKey(quizId: number): string {
-        return AddonModQuizProvider.ROOT_CACHE_KEY + 'feedbackForGrade:' + quizId;
+        return `${AddonModQuizProvider.ROOT_CACHE_KEY}feedbackForGrade:${quizId}`;
     }
 
     /**
@@ -797,7 +797,7 @@ export class AddonModQuizProvider {
      * @returns Cache key.
      */
     protected getQuizDataCacheKey(courseId: number): string {
-        return AddonModQuizProvider.ROOT_CACHE_KEY + 'quiz:' + courseId;
+        return `${AddonModQuizProvider.ROOT_CACHE_KEY}quiz:${courseId}`;
     }
 
     /**
@@ -869,7 +869,7 @@ export class AddonModQuizProvider {
      * @returns Cache key.
      */
     protected getQuizAccessInformationCacheKey(quizId: number): string {
-        return AddonModQuizProvider.ROOT_CACHE_KEY + 'quizAccessInformation:' + quizId;
+        return `${AddonModQuizProvider.ROOT_CACHE_KEY}quizAccessInformation:${quizId}`;
     }
 
     /**
@@ -934,7 +934,7 @@ export class AddonModQuizProvider {
      * @returns Cache key.
      */
     protected getQuizRequiredQtypesCacheKey(quizId: number): string {
-        return AddonModQuizProvider.ROOT_CACHE_KEY + 'quizRequiredQtypes:' + quizId;
+        return `${AddonModQuizProvider.ROOT_CACHE_KEY}quizRequiredQtypes:${quizId}`;
     }
 
     /**
@@ -1077,7 +1077,7 @@ export class AddonModQuizProvider {
      * @returns Cache key.
      */
     protected getUserAttemptsCacheKey(quizId: number, userId: number): string {
-        return this.getUserAttemptsCommonCacheKey(quizId) + ':' + userId;
+        return `${this.getUserAttemptsCommonCacheKey(quizId)}:${userId}`;
     }
 
     /**
@@ -1087,7 +1087,7 @@ export class AddonModQuizProvider {
      * @returns Cache key.
      */
     protected getUserAttemptsCommonCacheKey(quizId: number): string {
-        return AddonModQuizProvider.ROOT_CACHE_KEY + 'userAttempts:' + quizId;
+        return `${AddonModQuizProvider.ROOT_CACHE_KEY}userAttempts:${quizId}`;
     }
 
     /**
@@ -1135,7 +1135,7 @@ export class AddonModQuizProvider {
      * @returns Cache key.
      */
     protected getUserBestGradeCacheKey(quizId: number, userId: number): string {
-        return this.getUserBestGradeCommonCacheKey(quizId) + ':' + userId;
+        return `${this.getUserBestGradeCommonCacheKey(quizId)}:${userId}`;
     }
 
     /**
@@ -1145,7 +1145,7 @@ export class AddonModQuizProvider {
      * @returns Cache key.
      */
     protected getUserBestGradeCommonCacheKey(quizId: number): string {
-        return AddonModQuizProvider.ROOT_CACHE_KEY + 'userBestGrade:' + quizId;
+        return `${AddonModQuizProvider.ROOT_CACHE_KEY}userBestGrade:${quizId}`;
     }
 
     /**
