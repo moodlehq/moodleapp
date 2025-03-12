@@ -15,6 +15,7 @@
 import { Injectable } from '@angular/core';
 import { CoreContentLinksModuleListHandler } from '@features/contentlinks/classes/module-list-handler';
 import { makeSingleton } from '@singletons';
+import { ADDON_MOD_WIKI_COMPONENT, ADDON_MOD_WIKI_MODNAME } from '../../constants';
 
 /**
  * Handler to treat links to wiki list page.
@@ -25,7 +26,7 @@ export class AddonModWikiListLinkHandlerService extends CoreContentLinksModuleLi
     name = 'AddonModWikiListLinkHandler';
 
     constructor() {
-        super('AddonModWiki', 'wiki');
+        super(ADDON_MOD_WIKI_COMPONENT, ADDON_MOD_WIKI_MODNAME);
     }
 
 }

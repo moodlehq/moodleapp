@@ -18,13 +18,13 @@ import { CoreCourse, CoreCourseWSSection, sectionContentIsModule } from '@featur
 import { CoreCourseModuleDelegate } from '@features/course/services/module-delegate';
 import { CoreCourseHelper, CoreCourseSection } from '@features/course/services/course-helper';
 import { CoreNavigator } from '@services/navigator';
-import { CoreConstants } from '@/core/constants';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreTime } from '@singletons/time';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 import { CoreAlerts } from '@services/overlays/alerts';
 import { CoreCourseModuleComponent } from '../../components/module/module';
 import { CoreSharedModule } from '@/core/shared.module';
+import { ModFeature, ModArchetype } from '@addons/mod/constants';
 
 /**
  * Page that displays all modules of a certain type in a course.
@@ -154,12 +154,12 @@ export default class CoreCourseListModTypePage implements OnInit {
                     if (this.archetypes[modOrSubsection.modname] === undefined) {
                         this.archetypes[modOrSubsection.modname] = CoreCourseModuleDelegate.supportsFeature<number>(
                             modOrSubsection.modname,
-                            CoreConstants.FEATURE_MOD_ARCHETYPE,
-                            CoreConstants.MOD_ARCHETYPE_OTHER,
+                            ModFeature.MOD_ARCHETYPE,
+                            ModArchetype.OTHER,
                         );
                     }
 
-                    if (this.archetypes[modOrSubsection.modname] === CoreConstants.MOD_ARCHETYPE_RESOURCE) {
+                    if (this.archetypes[modOrSubsection.modname] === ModArchetype.RESOURCE) {
                         return true;
                     }
 

@@ -36,6 +36,7 @@ import {
     ADDON_MOD_FORUM_ALL_GROUPS,
     ADDON_MOD_FORUM_AUTO_SYNCED,
     ADDON_MOD_FORUM_COMPONENT,
+    ADDON_MOD_FORUM_COMPONENT_LEGACY,
     ADDON_MOD_FORUM_MANUAL_SYNCED,
 } from '../constants';
 import { CorePromiseUtils } from '@singletons/promise-utils';
@@ -227,7 +228,7 @@ export class AddonModForumSyncProvider extends CoreCourseActivitySyncBaseProvide
         // Sync offline logs.
         const syncDiscussions = async (): Promise<AddonModForumSyncResult> => {
             await CorePromiseUtils.ignoreErrors(
-                CoreCourseLogHelper.syncActivity(ADDON_MOD_FORUM_COMPONENT, forumId, siteId),
+                CoreCourseLogHelper.syncActivity(ADDON_MOD_FORUM_COMPONENT_LEGACY, forumId, siteId),
             );
 
             // Get offline responses to be sent.
@@ -611,7 +612,7 @@ export class AddonModForumSyncProvider extends CoreCourseActivitySyncBaseProvide
             }
         }
 
-        return CoreFileUploader.uploadOrReuploadFiles(files, ADDON_MOD_FORUM_COMPONENT, forumId, siteId);
+        return CoreFileUploader.uploadOrReuploadFiles(files, ADDON_MOD_FORUM_COMPONENT_LEGACY, forumId, siteId);
     }
 
     /**

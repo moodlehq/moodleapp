@@ -12,14 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-export const ADDON_MOD_QUIZ_COMPONENT = 'mmaModQuiz';
+import { CORE_COURSE_MODULE_FEATURE_PREFIX } from '@features/course/constants';
 
+export const ADDON_MOD_QUIZ_COMPONENT = 'AddonModQuiz';
+export const ADDON_MOD_QUIZ_COMPONENT_LEGACY = 'mmaModQuiz';
 export const ADDON_MOD_QUIZ_PAGE_NAME = 'mod_quiz';
+export const ADDON_MOD_QUIZ_MODNAME = 'quiz';
 
-export const ADDON_MOD_QUIZ_FEATURE_NAME = 'CoreCourseModuleDelegate_AddonModQuiz';
+export const ADDON_MOD_QUIZ_FEATURE_NAME = CORE_COURSE_MODULE_FEATURE_PREFIX + ADDON_MOD_QUIZ_COMPONENT;
 
+// Events.
 export const ADDON_MOD_QUIZ_ATTEMPT_FINISHED_EVENT = 'addon_mod_quiz_attempt_finished';
-
 export const ADDON_MOD_QUIZ_AUTO_SYNCED = 'addon_mod_quiz_autom_synced';
 
 export const ADDON_MOD_QUIZ_SHOW_TIME_BEFORE_DEADLINE = 3600;

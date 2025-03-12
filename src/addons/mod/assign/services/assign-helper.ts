@@ -64,78 +64,6 @@ export class AddonModAssignHelperProvider {
     }
 
     /**
-     * Check if feedback can be edited in offline.
-     *
-     * @param assign Assignment.
-     * @param submitId The submission ID.
-     * @param feedback Feedback to check.
-     * @returns Whether it can be edited offline.
-     */
-    async canEditFeedbackOffline(
-        assign: AddonModAssignAssign,
-        submitId: number,
-        feedback?: AddonModAssignSubmissionFeedback,
-    ): Promise<boolean> {
-        if (!feedback) {
-            return false;
-        }
-
-        if (await CorePromiseUtils.promiseWorks(AddonModAssignOffline.getSubmissionGrade(assign.id, submitId))) {
-            // There is offline feedback, it can be edited.
-            return true;
-        }
-
-        // There is online feedback, check if plugins allow editing it.
-        const canPluginsEdit = await Promise.all((feedback.plugins ?? []).map(
-            plugin => AddonModAssignFeedbackDelegate.canPluginEditOffline(assign, submitId, feedback, plugin),
-        ));
-
-        return !canPluginsEdit.some(canEdit => !canEdit);
-    }
-
-    /**
-     * Check if a submission can be edited in offline.
-     *
-     * @param assign Assignment.
-     * @param submission Submission.
-     * @returns Whether it can be edited offline.
-     */
-    async canEditSubmissionOffline(assign: AddonModAssignAssign, submission?: AddonModAssignSubmission): Promise<boolean> {
-        if (!submission) {
-            return false;
-        }
-
-        if (submission.status == AddonModAssignSubmissionStatusValues.NEW ||
-                submission.status == AddonModAssignSubmissionStatusValues.REOPENED) {
-            // It's a new submission, allow creating it in offline.
-            return true;
-        }
-
-        if (await CorePromiseUtils.promiseWorks(AddonModAssignOffline.getSubmission(assign.id, submission.userid))) {
-            // Submission was saved or deleted offline, allow editing it or creating a new one.
-            return true;
-        }
-
-        // Submission was created online, check if plugins allow editing it.
-        let canEdit = true;
-
-        const promises = submission.plugins
-            ? submission.plugins.map((plugin) =>
-                AddonModAssignSubmissionDelegate.canPluginEditOffline(assign, submission, plugin).then((canEditPlugin) => {
-                    if (!canEditPlugin) {
-                        canEdit = false;
-                    }
-
-                    return;
-                }))
-            : [];
-
-        await Promise.all(promises);
-
-        return canEdit;
-    }
-
-    /**
      * Clear plugins temporary data because a submission was cancelled.
      *
      * @param assign Assignment.
@@ -678,6 +606,69 @@ export class AddonModAssignHelperProvider {
         await Promise.all(promises);
 
         return pluginData;
+    }
+
+    /**
+     * Check if feedback needs to be fetched unfiltered to edit it.
+     *
+     * @param assign Assignment.
+     * @param submitId The submission ID.
+     * @param feedback Feedback to check.
+     * @returns Whether the app should fetch unfiltered feedback to edit it.
+     */
+    async shouldFetchUnfilteredFeedbackToEdit(
+        assign: AddonModAssignAssign,
+        submitId: number,
+        feedback?: AddonModAssignSubmissionFeedback,
+    ): Promise<boolean> {
+        if (!feedback) {
+            return false;
+        }
+
+        if (await CorePromiseUtils.promiseWorks(AddonModAssignOffline.getSubmissionGrade(assign.id, submitId))) {
+            // There is offline feedback, no need to fetch the feedback from the server.
+            return false;
+        }
+
+        // There is online feedback, check if plugins can contain filters.
+        const canPluginsContainFilters = await Promise.all((feedback.plugins ?? []).map(
+            plugin => AddonModAssignFeedbackDelegate.canPluginContainFiltersWhenEditing(assign, submitId, feedback, plugin),
+        ));
+
+        return canPluginsContainFilters.some(canContainFilters => canContainFilters);
+    }
+
+    /**
+     * Check if submission needs to be fetched unfiltered to edit it.
+     *
+     * @param assign Assignment.
+     * @param submission Submission.
+     * @returns Whether the app should fetch unfiltered submission to edit it.
+     */
+    async shouldFetchUnfilteredSubmissionToEdit(
+        assign: AddonModAssignAssign,
+        submission?: AddonModAssignSubmission,
+    ): Promise<boolean> {
+        if (!submission) {
+            return false;
+        }
+
+        if (AddonModAssign.isNewOrReopenedSubmission(submission.status)) {
+            // It's a new submission, no submission data to fetch.
+            return false;
+        }
+
+        if (await CorePromiseUtils.promiseWorks(AddonModAssignOffline.getSubmission(assign.id, submission.userid))) {
+            // Submission was saved or deleted offline, no need to fetch the submission from the server.
+            return false;
+        }
+
+        // There is an online submission, check if plugins can contain filters.
+        const canPluginsContainFilters = await Promise.all((submission.plugins ?? []).map(
+            plugin => AddonModAssignSubmissionDelegate.canPluginContainFiltersWhenEditing(assign, submission, plugin),
+        ));
+
+        return canPluginsContainFilters.some(canContainFilters => canContainFilters);
     }
 
     /**

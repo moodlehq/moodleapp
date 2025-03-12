@@ -30,7 +30,7 @@ import {
     AddonModScormUserDataMap,
 } from './scorm';
 import { AddonModScormOffline } from './scorm-offline';
-import { ADDON_MOD_SCORM_COMPONENT, ADDON_MOD_SCORM_DATA_AUTO_SYNCED } from '../constants';
+import { ADDON_MOD_SCORM_COMPONENT, ADDON_MOD_SCORM_COMPONENT_LEGACY, ADDON_MOD_SCORM_DATA_AUTO_SYNCED } from '../constants';
 
 /**
  * Service to sync SCORMs.
@@ -609,7 +609,7 @@ export class AddonModScormSyncProvider extends CoreCourseActivitySyncBaseProvide
         let lastOnlineWasFinished = false;
 
         // Sync offline logs.
-        await CorePromiseUtils.ignoreErrors(CoreCourseLogHelper.syncActivity(ADDON_MOD_SCORM_COMPONENT, scorm.id, siteId));
+        await CorePromiseUtils.ignoreErrors(CoreCourseLogHelper.syncActivity(ADDON_MOD_SCORM_COMPONENT_LEGACY, scorm.id, siteId));
 
         // Get attempts data. We ignore cache for online attempts, so this call will fail if offline or server down.
         const attemptsData = await AddonModScorm.getAttemptCount(scorm.id, {

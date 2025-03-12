@@ -322,7 +322,7 @@ export class AddonModAssignSyncProvider extends CoreCourseActivitySyncBaseProvid
             siteId,
         };
 
-        const status = await AddonModAssign.getSubmissionStatus(assign.id, options);
+        const status = await AddonModAssign.getSubmissionStatus(assign, options);
 
         const submission = AddonModAssign.getSubmissionObjectFromAttempt(assign, status.lastattempt);
 
@@ -364,7 +364,7 @@ export class AddonModAssignSyncProvider extends CoreCourseActivitySyncBaseProvid
             }
 
             // Submission data sent, update cached data. No need to block the user for this.
-            AddonModAssign.getSubmissionStatus(assign.id, options);
+            AddonModAssign.getSubmissionStatus(assign, options);
         } catch (error) {
             if (!CoreWSError.isWebServiceError(error)) {
                 // Local error, reject.
@@ -448,7 +448,7 @@ export class AddonModAssignSyncProvider extends CoreCourseActivitySyncBaseProvid
             ));
         }
 
-        const status = await AddonModAssign.getSubmissionStatus(assign.id, options);
+        const status = await AddonModAssign.getSubmissionStatus(assign, options);
 
         const timemodified = (status.feedback && (status.feedback.gradeddate || status.feedback.grade?.timemodified)) || 0;
 
@@ -514,7 +514,7 @@ export class AddonModAssignSyncProvider extends CoreCourseActivitySyncBaseProvid
             }
 
             // Update cached data.
-            promises.push(AddonModAssign.getSubmissionStatus(assign.id, options));
+            promises.push(AddonModAssign.getSubmissionStatus(assign, options));
 
             await CorePromiseUtils.allPromises(promises);
         } catch (error) {

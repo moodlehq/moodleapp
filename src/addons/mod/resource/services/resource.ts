@@ -22,8 +22,10 @@ import { CoreSites, CoreSitesCommonWSOptions } from '@services/sites';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreWSExternalFile, CoreWSExternalWarning } from '@services/ws';
 import { makeSingleton, Translate } from '@singletons';
-import { ADDON_MOD_RESOURCE_COMPONENT } from '../constants';
+import { ADDON_MOD_RESOURCE_COMPONENT_LEGACY } from '../constants';
 import { CoreCacheUpdateFrequency } from '@/core/constants';
+import { CoreTextFormat } from '@singletons/text';
+import { ModResourceDisplay } from '@addons/mod/constants';
 
 /**
  * Service that provides some features for resources.
@@ -67,7 +69,7 @@ export class AddonModResourceProvider {
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getResourceCacheKey(courseId),
             updateFrequency: CoreCacheUpdateFrequency.RARELY,
-            component: ADDON_MOD_RESOURCE_COMPONENT,
+            component: ADDON_MOD_RESOURCE_COMPONENT_LEGACY,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy),
         };
 
@@ -103,7 +105,6 @@ export class AddonModResourceProvider {
      * @param moduleId The module ID.
      * @param courseId Course ID of the module.
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateContent(moduleId: number, courseId: number, siteId?: string): Promise<void> {
         siteId = siteId || CoreSites.getCurrentSiteId();
@@ -111,7 +112,7 @@ export class AddonModResourceProvider {
         const promises: Promise<void>[] = [];
 
         promises.push(this.invalidateResourceData(courseId, siteId));
-        promises.push(CoreFilepool.invalidateFilesByComponent(siteId, ADDON_MOD_RESOURCE_COMPONENT, moduleId));
+        promises.push(CoreFilepool.invalidateFilesByComponent(siteId, ADDON_MOD_RESOURCE_COMPONENT_LEGACY, moduleId));
         promises.push(CoreCourse.invalidateModule(moduleId, siteId, 'resource'));
 
         await CorePromiseUtils.allPromises(promises);
@@ -122,7 +123,6 @@ export class AddonModResourceProvider {
      *
      * @param courseId Course ID.
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateResourceData(courseId: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -157,7 +157,7 @@ export class AddonModResourceProvider {
         await CoreCourseLogHelper.log(
             'mod_resource_view_resource',
             params,
-            ADDON_MOD_RESOURCE_COMPONENT,
+            ADDON_MOD_RESOURCE_COMPONENT_LEGACY,
             id,
             siteId,
         );
@@ -182,13 +182,13 @@ export type AddonModResourceResource = {
     course: number; // Course id.
     name: string; // Page name.
     intro: string; // Summary.
-    introformat: number; // Intro format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
+    introformat: CoreTextFormat; // Intro format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
     introfiles: CoreWSExternalFile[];
     contentfiles: CoreWSExternalFile[];
     tobemigrated: number; // Whether this resource was migrated.
     legacyfiles: number; // Legacy files flag.
     legacyfileslast: number; // Legacy files last control flag.
-    display: number; // How to display the resource.
+    display: ModResourceDisplay; // How to display the resource.
     displayoptions: string; // Display options (width, height).
     filterfiles: number; // If filters should be applied to the resource content.
     revision: number; // Incremented when after each file changes, to avoid cache.

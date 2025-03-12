@@ -12,12 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-export const ADDON_MOD_CHAT_COMPONENT = 'mmaModChat';
+import { CORE_COURSE_MODULE_FEATURE_PREFIX } from '@features/course/constants';
 
-// Routing.
+export const ADDON_MOD_CHAT_COMPONENT = 'AddonModChat';
+export const ADDON_MOD_CHAT_COMPONENT_LEGACY = 'mmaModChat';
 export const ADDON_MOD_CHAT_PAGE_NAME = 'mod_chat';
+export const ADDON_MOD_CHAT_MODNAME = 'chat';
 
-// Handlers.
-export const ADDON_MOD_CHAT_PREFETCH_NAME = 'AddonModChat';
-export const ADDON_MOD_CHAT_PREFETCH_MODNAME = 'chat';
-export const ADDON_MOD_CHAT_PREFETCH_COMPONENT = ADDON_MOD_CHAT_COMPONENT;
+export const ADDON_MOD_CHAT_FEATURE_NAME = CORE_COURSE_MODULE_FEATURE_PREFIX + ADDON_MOD_CHAT_COMPONENT;

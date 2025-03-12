@@ -220,7 +220,6 @@ export class CoreCourseModulePrefetchHandlerBase implements CoreCourseModulePref
      *
      * @param moduleId The module ID.
      * @param courseId The course ID the module belongs to.
-     * @returns Promise resolved when the data is invalidated.
      */
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     async invalidateContent(moduleId: number, courseId: number): Promise<void> {

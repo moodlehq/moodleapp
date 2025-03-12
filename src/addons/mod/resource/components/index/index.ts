@@ -32,7 +32,7 @@ import {
 } from '../../services/resource';
 import { AddonModResourceHelper } from '../../services/resource-helper';
 import { CorePlatform } from '@services/platform';
-import { ADDON_MOD_RESOURCE_COMPONENT } from '../../constants';
+import { ADDON_MOD_RESOURCE_COMPONENT_LEGACY } from '../../constants';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { OpenFileAction } from '@singletons/opener';
 import { CoreAlerts } from '@services/overlays/alerts';
@@ -56,7 +56,7 @@ import { CoreSharedModule } from '@/core/shared.module';
 })
 export class AddonModResourceIndexComponent extends CoreCourseModuleMainResourceComponent implements OnInit, OnDestroy {
 
-    component = ADDON_MOD_RESOURCE_COMPONENT;
+    component = ADDON_MOD_RESOURCE_COMPONENT_LEGACY;
     pluginName = 'resource';
 
     mode = '';

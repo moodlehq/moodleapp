@@ -26,7 +26,7 @@ import { CoreWSFile } from '@services/ws';
 import { makeSingleton } from '@singletons';
 import { AddonModScorm, AddonModScormScorm } from '../scorm';
 import { AddonModScormSync } from '../scorm-sync';
-import { ADDON_MOD_SCORM_COMPONENT } from '../../constants';
+import { ADDON_MOD_SCORM_COMPONENT_LEGACY } from '../../constants';
 
 /**
  * Handler to prefetch SCORMs.
@@ -36,7 +36,7 @@ export class AddonModScormPrefetchHandlerService extends CoreCourseActivityPrefe
 
     name = 'AddonModScorm';
     modName = 'scorm';
-    component = ADDON_MOD_SCORM_COMPONENT;
+    component = ADDON_MOD_SCORM_COMPONENT_LEGACY;
     updatesNames = /^configuration$|^.*files$|^tracks$/;
 
     /**

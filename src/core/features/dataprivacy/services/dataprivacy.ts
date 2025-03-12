@@ -19,6 +19,7 @@ import { CoreUserSummary } from '@features/user/services/user';
 import { CoreSites, CoreSitesCommonWSOptions } from '@services/sites';
 import { CoreWSExternalWarning } from '@services/ws';
 import { makeSingleton } from '@singletons';
+import { CoreTextFormat } from '@singletons/text';
 
 /**
  * Service to handle data privacy.
@@ -80,7 +81,6 @@ export class CoreDataPrivacyService {
      * Invalidates access information.
      *
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved when the data is invalidated.
      */
     protected async invalidateAccessInformation(siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -150,7 +150,6 @@ export class CoreDataPrivacyService {
      * Invalidate data requests.
      *
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateDataRequests(siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -350,13 +349,13 @@ type CoreDataPrivacyGetDataRequestsWSResponse = {
 export type CoreDataPrivacyRequest = {
     type: CoreDataPrivacyDataRequestType; // Type.
     comments: string; // Comments.
-    commentsformat: number; // Commentsformat.
+    commentsformat: CoreTextFormat; // Commentsformat.
     userid: number; // Userid.
     requestedby: number; // Requestedby.
     status: CoreDataPrivacyDataRequestStatus; // Status.
     dpo: number; // Dpo.
     dpocomment: string; // Dpocomment.
-    dpocommentformat: number; // Dpocommentformat.
+    dpocommentformat: CoreTextFormat; // Dpocommentformat.
     systemapproved: boolean; // Systemapproved.
     creationmethod: number; // Creationmethod.
     id: number; // Id.

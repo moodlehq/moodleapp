@@ -14,9 +14,9 @@
 
 import { asyncInstance } from '@/core/utils/async-instance';
 import {
-    ADDON_MOD_WIKI_PREFETCH_COMPONENT,
-    ADDON_MOD_WIKI_PREFETCH_MODNAME,
-    ADDON_MOD_WIKI_PREFETCH_NAME,
+    ADDON_MOD_WIKI_COMPONENT,
+    ADDON_MOD_WIKI_COMPONENT_LEGACY,
+    ADDON_MOD_WIKI_MODNAME,
 } from '@addons/mod/wiki/constants';
 import { CoreCourseActivityPrefetchHandlerBase } from '@features/course/classes/activity-prefetch-handler';
 import { CoreCourseModulePrefetchHandler } from '@features/course/services/module-prefetch-delegate';
@@ -24,9 +24,9 @@ import type { AddonModWikiPrefetchHandlerLazyService } from '@addons/mod/wiki/se
 
 export class AddonModWikiPrefetchHandlerService extends CoreCourseActivityPrefetchHandlerBase {
 
-    name = ADDON_MOD_WIKI_PREFETCH_NAME;
-    modName = ADDON_MOD_WIKI_PREFETCH_MODNAME;
-    component = ADDON_MOD_WIKI_PREFETCH_COMPONENT;
+    name = ADDON_MOD_WIKI_COMPONENT;
+    modName = ADDON_MOD_WIKI_MODNAME;
+    component = ADDON_MOD_WIKI_COMPONENT_LEGACY;
     updatesNames = /^.*files$|^pages$/;
 
 }

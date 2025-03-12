@@ -21,8 +21,9 @@ import { CoreUser } from '@features/user/services/user';
 import { CoreSites, CoreSitesCommonWSOptions, CoreSitesReadingStrategy } from '@services/sites';
 import { CoreWSExternalFile, CoreWSExternalWarning } from '@services/ws';
 import { makeSingleton, Translate } from '@singletons';
-import { ADDON_MOD_CHAT_COMPONENT } from '../constants';
+import { ADDON_MOD_CHAT_COMPONENT_LEGACY } from '../constants';
 import { CoreCacheUpdateFrequency } from '@/core/constants';
+import { CoreTextFormat } from '@singletons/text';
 
 /**
  * Service that provides some features for chats.
@@ -49,7 +50,7 @@ export class AddonModChatProvider {
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getChatsCacheKey(courseId),
             updateFrequency: CoreCacheUpdateFrequency.RARELY,
-            component: ADDON_MOD_CHAT_COMPONENT,
+            component: ADDON_MOD_CHAT_COMPONENT_LEGACY,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
         };
 
@@ -97,7 +98,7 @@ export class AddonModChatProvider {
         await CoreCourseLogHelper.log(
             'mod_chat_view_chat',
             params,
-            ADDON_MOD_CHAT_COMPONENT,
+            ADDON_MOD_CHAT_COMPONENT_LEGACY,
             id,
             siteId,
         );
@@ -124,7 +125,7 @@ export class AddonModChatProvider {
         await CoreCourseLogHelper.log(
             'mod_chat_view_sessions',
             params,
-            ADDON_MOD_CHAT_COMPONENT,
+            ADDON_MOD_CHAT_COMPONENT_LEGACY,
             id,
         );
     }
@@ -230,7 +231,7 @@ export class AddonModChatProvider {
             chatsid: sessionId,
         };
         const preSets: CoreSiteWSPreSets = {
-            component: ADDON_MOD_CHAT_COMPONENT,
+            component: ADDON_MOD_CHAT_COMPONENT_LEGACY,
             componentId: options.cmId,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
         };
@@ -263,7 +264,7 @@ export class AddonModChatProvider {
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getSessionsCacheKey(chatId, groupId, showAll),
             updateFrequency: CoreCacheUpdateFrequency.SOMETIMES,
-            component: ADDON_MOD_CHAT_COMPONENT,
+            component: ADDON_MOD_CHAT_COMPONENT_LEGACY,
             componentId: options.cmId,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
         };
@@ -301,7 +302,7 @@ export class AddonModChatProvider {
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getSessionMessagesCacheKey(chatId, sessionStart, groupId),
             updateFrequency: CoreCacheUpdateFrequency.RARELY,
-            component: ADDON_MOD_CHAT_COMPONENT,
+            component: ADDON_MOD_CHAT_COMPONENT_LEGACY,
             componentId: options.cmId,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
         };
@@ -320,7 +321,6 @@ export class AddonModChatProvider {
      *
      * @param courseId Course ID.
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateChats(courseId: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -335,7 +335,6 @@ export class AddonModChatProvider {
      * @param groupId Group ID, 0 means that the function will determine the user group.
      * @param showAll Whether to include incomplete sessions or not.
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateSessions(chatId: number, groupId: number = 0, showAll: boolean = false, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -348,7 +347,6 @@ export class AddonModChatProvider {
      *
      * @param chatId Chat ID.
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateAllSessions(chatId: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -363,7 +361,6 @@ export class AddonModChatProvider {
      * @param sessionStart Session start time.
      * @param groupId Group ID, 0 means that the function will determine the user group.
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateSessionMessages(chatId: number, sessionStart: number, groupId: number = 0, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -376,7 +373,6 @@ export class AddonModChatProvider {
      *
      * @param chatId Chat ID.
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateAllSessionMessages(chatId: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -466,7 +462,7 @@ export type AddonModChatChat = {
     course: number; // Course id.
     name: string; // Chat name.
     intro: string; // The Chat intro.
-    introformat: number; // Intro format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
+    introformat: CoreTextFormat; // Intro format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
     introfiles?: CoreWSExternalFile[];
     chatmethod?: string; // Chat method (sockets, ajax, header_js).
     keepdays?: number; // Keep days.

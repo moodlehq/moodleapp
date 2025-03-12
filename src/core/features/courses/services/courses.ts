@@ -36,6 +36,7 @@ import {
     CORE_COURSES_STATE_FAVOURITE,
     CORE_COURSES_STATE_HIDDEN,
 } from '../constants';
+import { CoreTextFormat } from '@singletons/text';
 
 declare module '@singletons/events' {
 
@@ -1041,7 +1042,6 @@ export class CoreCoursesProvider {
      * @param categoryId Category ID to get.
      * @param addSubcategories If it should add subcategories to the list.
      * @param siteId Site Id. If not defined, use current site.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateCategories(categoryId: number, addSubcategories?: boolean, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -1054,10 +1054,9 @@ export class CoreCoursesProvider {
      *
      * @param id Course ID.
      * @param siteId Site Id. If not defined, use current site.
-     * @returns Promise resolved when the data is invalidated.
      */
-    invalidateCourse(id: number, siteId?: string): Promise<void> {
-        return this.invalidateCourses([id], siteId);
+    async invalidateCourse(id: number, siteId?: string): Promise<void> {
+        await this.invalidateCourses([id], siteId);
     }
 
     /**
@@ -1091,7 +1090,6 @@ export class CoreCoursesProvider {
      *
      * @param courseIds IDs of courses to get.
      * @param siteId Site ID to invalidate. If not defined, use current site.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateCoursesAdminAndNavOptions(courseIds: number[], siteId?: string): Promise<void> {
         siteId = siteId || CoreSites.getCurrentSiteId();
@@ -1110,7 +1108,6 @@ export class CoreCoursesProvider {
      *
      * @param ids Courses IDs.
      * @param siteId Site Id. If not defined, use current site.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateCourses(ids: number[], siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -1124,7 +1121,6 @@ export class CoreCoursesProvider {
      * @param field See getCoursesByField for info.
      * @param value The value to match.
      * @param siteId Site Id. If not defined, use current site.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateCoursesByField(field: string = '', value: number | string = '', siteId?: string): Promise<void> {
         if (typeof value === 'string' && value.length === 0) {
@@ -1139,7 +1135,7 @@ export class CoreCoursesProvider {
 
         const site = await CoreSites.getSite(siteId);
 
-        return site.invalidateWsCacheForKey(this.getCoursesByFieldCacheKey(field, value));
+        await site.invalidateWsCacheForKey(this.getCoursesByFieldCacheKey(field, value));
     }
 
     /**
@@ -1147,7 +1143,6 @@ export class CoreCoursesProvider {
      *
      * @param userId User ID. If not defined, current user.
      * @param siteId Site Id. If not defined, use current site.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateRecentCourses(userId?: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -1159,7 +1154,6 @@ export class CoreCoursesProvider {
      * Invalidates all user administration options.
      *
      * @param siteId Site ID to invalidate. If not defined, use current site.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateUserAdministrationOptions(siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -1172,7 +1166,6 @@ export class CoreCoursesProvider {
      *
      * @param courseIds IDs of courses.
      * @param siteId Site ID to invalidate. If not defined, use current site.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateUserAdministrationOptionsForCourses(courseIds: number[], siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -1184,7 +1177,6 @@ export class CoreCoursesProvider {
      * Invalidates get user courses WS call.
      *
      * @param siteId Site ID to invalidate. If not defined, use current site.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateUserCourses(siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -1196,7 +1188,6 @@ export class CoreCoursesProvider {
      * Invalidates all user navigation options.
      *
      * @param siteId Site ID to invalidate. If not defined, use current site.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateUserNavigationOptions(siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -1209,7 +1200,6 @@ export class CoreCoursesProvider {
      *
      * @param courseIds IDs of courses.
      * @param siteId Site ID to invalidate. If not defined, use current site.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateUserNavigationOptionsForCourses(courseIds: number[], siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -1385,7 +1375,7 @@ export type CoreCourseBasicData = {
     displayname?: string; // Course display name.
     shortname: string; // Course short name.
     summary: string; // Summary.
-    summaryformat: number; // Summary format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
+    summaryformat: CoreTextFormat; // Summary format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
     categoryid?: number; // Course category id.
 };
 
@@ -1679,7 +1669,7 @@ export type CoreCategoryData = {
     name: string; // Category name.
     idnumber?: string; // Category id number.
     description: string; // Category description.
-    descriptionformat: number; // Description format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
+    descriptionformat: CoreTextFormat; // Description format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
     parent: number; // Parent category id.
     sortorder: number; // Category sorting order.
     coursecount: number; // Number of courses in this category.

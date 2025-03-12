@@ -46,9 +46,8 @@ export class AddonModAssignSubmissionFileHandlerService implements AddonModAssig
     /**
      * @inheritdoc
      */
-    canEditOffline(): boolean {
-        // This plugin doesn't use Moodle filters, it can be edited in offline.
-        return true;
+    async canContainFiltersWhenEditing(): Promise<boolean> {
+        return false;
     }
 
     /**

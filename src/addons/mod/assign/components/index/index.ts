@@ -241,7 +241,7 @@ export class AddonModAssignIndexComponent extends CoreCourseModuleMainActivityCo
 
         try {
             // Check if the user can view their own submission.
-            await AddonModAssign.getSubmissionStatus(this.assign.id, { cmId: this.module.id });
+            await AddonModAssign.getSubmissionStatus(this.assign, { cmId: this.module.id });
             this.canViewOwnSubmission = true;
         } catch (error) {
             this.canViewOwnSubmission = false;
@@ -290,7 +290,7 @@ export class AddonModAssignIndexComponent extends CoreCourseModuleMainActivityCo
             return;
         }
 
-        const submissionStatus = await AddonModAssign.getSubmissionStatus(this.assign.id, {
+        const submissionStatus = await AddonModAssign.getSubmissionStatus(this.assign, {
             groupId: this.group,
             cmId: this.module.id,
         });

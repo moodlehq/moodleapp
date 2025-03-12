@@ -18,6 +18,7 @@ import { CoreTime } from '@singletons/time';
 import { makeSingleton } from '@singletons';
 import { AddonNotesDBRecord, AddonNotesDeletedDBRecord, NOTES_DELETED_TABLE, NOTES_TABLE } from './database/notes';
 import { AddonNotesPublishState } from './notes';
+import { DEFAULT_TEXT_FORMAT } from '@singletons/text';
 
 /**
  * Service to handle offline notes.
@@ -221,7 +222,7 @@ export class AddonNotesOfflineProvider {
             courseid: courseId,
             publishstate: state,
             content: content,
-            format: 1,
+            format: DEFAULT_TEXT_FORMAT,
             created: now,
             lastmodified: now,
         };

@@ -23,7 +23,7 @@ import {
 import { AddonModAssignOffline } from '@addons/mod/assign/services/assign-offline';
 import { AddonModAssignFeedbackHandler } from '@addons/mod/assign/services/feedback-delegate';
 import { Injectable, Type } from '@angular/core';
-import { CoreText, CoreTextFormat } from '@singletons/text';
+import { CoreText, CoreTextFormat, DEFAULT_TEXT_FORMAT } from '@singletons/text';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreWSFile } from '@services/ws';
 import { makeSingleton } from '@singletons';
@@ -41,9 +41,8 @@ export class AddonModAssignFeedbackCommentsHandlerService implements AddonModAss
     /**
      * @inheritdoc
      */
-    canEditOffline(): boolean {
-        // This plugin can use Moodle filters, it cannot be edited in offline.
-        return false;
+    async canContainFiltersWhenEditing(): Promise<boolean> {
+        return true;
     }
 
     /**
@@ -144,7 +143,7 @@ export class AddonModAssignFeedbackCommentsHandlerService implements AddonModAss
 
         const data: AddonModAssignFeedbackCommentsInputData = {
             text: CoreText.formatHtmlLines(text),
-            format: CoreTextFormat.FORMAT_HTML,
+            format: DEFAULT_TEXT_FORMAT,
         };
         pluginData.assignfeedbackcomments_editor = data;
     }

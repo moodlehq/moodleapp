@@ -12,23 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-export const ADDON_MOD_ASSIGN_FEATURE_NAME = 'CoreCourseModuleDelegate_AddonModAssign';
+import { CORE_COURSE_MODULE_FEATURE_PREFIX } from '@features/course/constants';
 
-export const ADDON_MOD_ASSIGN_COMPONENT_LEGACY = 'mmaModAssign';
 export const ADDON_MOD_ASSIGN_COMPONENT = 'AddonModAssign';
-
+export const ADDON_MOD_ASSIGN_COMPONENT_LEGACY = 'mmaModAssign';
 export const ADDON_MOD_ASSIGN_PAGE_NAME = 'mod_assign';
 export const ADDON_MOD_ASSIGN_MODNAME = 'assign';
 
-export const ADDON_MOD_ASSIGN_PREFETCH_NAME = ADDON_MOD_ASSIGN_COMPONENT;
+export const ADDON_MOD_ASSIGN_FEATURE_NAME = CORE_COURSE_MODULE_FEATURE_PREFIX + ADDON_MOD_ASSIGN_COMPONENT;
 
+// Handlers.
 export const ADDON_MOD_ASSIGN_SYNC_CRON_NAME = 'AddonModAssignSyncCronHandler';
-
-export const ADDON_MOD_ASSIGN_UNLIMITED_ATTEMPTS = -1;
-
-// Group submissions warnings.
-export const ADDON_MOD_ASSIGN_WARN_GROUPS_REQUIRED = 'warnrequired';
-export const ADDON_MOD_ASSIGN_WARN_GROUPS_OPTIONAL = 'warnoptional';
 
 // Events.
 export const ADDON_MOD_ASSIGN_SUBMISSION_SAVED_EVENT = 'addon_mod_assign_submission_saved';
@@ -38,6 +32,12 @@ export const ADDON_MOD_ASSIGN_GRADED_EVENT = 'addon_mod_assign_graded';
 export const ADDON_MOD_ASSIGN_STARTED_EVENT = 'addon_mod_assign_started';
 export const ADDON_MOD_ASSIGN_AUTO_SYNCED = 'addon_mod_assign_autom_synced';
 export const ADDON_MOD_ASSIGN_MANUAL_SYNCED = 'addon_mod_assign_manual_synced';
+
+export const ADDON_MOD_ASSIGN_UNLIMITED_ATTEMPTS = -1;
+
+// Group submissions warnings.
+export const ADDON_MOD_ASSIGN_WARN_GROUPS_REQUIRED = 'warnrequired';
+export const ADDON_MOD_ASSIGN_WARN_GROUPS_OPTIONAL = 'warnoptional';
 
 /**
  * Submission status.
