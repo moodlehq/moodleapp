@@ -486,7 +486,7 @@ export default class AddonBlogIndexPage implements OnInit, OnDestroy {
             case 'edit': {
                 await CoreNavigator.navigateToSitePath(`blog/edit/${this.isOnlineEntry(entry) && entry.id
                     ? entry.id
-                    : 'new-' + entry.created}`, {
+                    : `new-${entry.created}`}`, {
                         params: this.filter.cmid
                             ? { cmId: this.filter.cmid, filters: this.filter, lastModified: entry.lastmodified }
                             : { filters: this.filter, lastModified: entry.lastmodified },

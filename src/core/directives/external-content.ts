@@ -219,7 +219,7 @@ export class CoreExternalContentDirective implements AfterViewInit, OnChanges, O
         if (!url || !url.match(/^https?:\/\//i) || CoreUrl.isLocalFileUrl(url) ||
                 (tagName === 'A' && !(isSiteFile || site?.isSiteThemeImageUrl(url) || CoreUrl.isGravatarUrl(url)))) {
 
-            this.logger.debug('Ignoring non-downloadable URL: ' + url);
+            this.logger.debug(`Ignoring non-downloadable URL: ${url}`);
 
             throw new CoreError('Non-downloadable URL');
         }
@@ -232,7 +232,7 @@ export class CoreExternalContentDirective implements AfterViewInit, OnChanges, O
 
         const finalUrl = await this.getUrlToUse(targetAttr, url, site);
 
-        this.logger.debug('Using URL ' + finalUrl + ' for ' + url);
+        this.logger.debug(`Using URL ${finalUrl} for ${url}`);
 
         this.setElementUrl(targetAttr, finalUrl);
 
@@ -268,7 +268,7 @@ export class CoreExternalContentDirective implements AfterViewInit, OnChanges, O
                 (this.posterUrl ?? this.poster) : // eslint-disable-line deprecation/deprecation
                 (this.url ?? this.src ?? this.href); // eslint-disable-line deprecation/deprecation
             if (originalUrl && originalUrl !== url) {
-                this.element.setAttribute('data-original-' + targetAttr, originalUrl);
+                this.element.setAttribute(`data-original-${targetAttr}`, originalUrl);
             }
         }
 
@@ -310,7 +310,7 @@ export class CoreExternalContentDirective implements AfterViewInit, OnChanges, O
         const promises = urls.map(async (url) => {
             const finalUrl = await CoreFilepool.getSrcByUrl(siteId, url, this.component, this.componentId, 0, true, true);
 
-            this.logger.debug('Using URL ' + finalUrl + ' for ' + url + ' in inline styles');
+            this.logger.debug(`Using URL ${finalUrl} for ${url} in inline styles`);
             inlineStyles = inlineStyles.replace(new RegExp(CoreText.escapeForRegex(url), 'gi'), finalUrl);
         });
 
@@ -408,7 +408,7 @@ export class CoreExternalContentDirective implements AfterViewInit, OnChanges, O
                downloads a few bytes (cached ones). Add an anchor to the URL so both URLs are different.
                Don't add this anchor if the URL already has an anchor, otherwise other anchors might not work.
                The downloaded URL won't have anchors so the URLs will already be different. */
-            finalUrl = finalUrl + '#moodlemobile-embedded';
+            finalUrl = `${finalUrl}#moodlemobile-embedded`;
         }
 
         return finalUrl;
@@ -430,7 +430,7 @@ export class CoreExternalContentDirective implements AfterViewInit, OnChanges, O
         const fileId = CoreFilepool.getFileIdByUrl(url);
         const extension = CoreMimetypeUtils.guessExtensionFromUrl(url);
 
-        const filePath = CoreFileProvider.NO_SITE_FOLDER + '/' + fileId + (extension ? '.' + extension : '');
+        const filePath = `${CoreFileProvider.NO_SITE_FOLDER}/${fileId}${extension ? `.${extension}` : ''}`;
         let fileEntry: FileEntry;
 
         try {

@@ -160,7 +160,7 @@ export class AddonCourseCompletionProvider {
             const site = await CoreSites.getSite(options.siteId);
 
             const userId = options.userId || site.getUserId();
-            this.logger.debug('Get completion for course ' + courseId + ' and user ' + userId);
+            this.logger.debug(`Get completion for course ${courseId} and user ${userId}`);
 
             const data: AddonCourseCompletionGetCourseCompletionStatusWSParams = {
                 courseid: courseId,

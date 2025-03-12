@@ -160,7 +160,7 @@ export class CorePolicyService {
      * @returns Cache key.
      */
     protected getUserAcceptancesCacheKey(userId: number): string {
-        return CorePolicyService.ROOT_CACHE_KEY + 'userAcceptances:' + userId;
+        return `${CorePolicyService.ROOT_CACHE_KEY}userAcceptances:${userId}`;
     }
 
     /**

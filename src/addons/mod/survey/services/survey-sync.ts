@@ -49,7 +49,7 @@ export class AddonModSurveySyncProvider extends CoreCourseActivitySyncBaseProvid
      * @protected
      */
     getSyncId(surveyId: number, userId: number): string {
-        return surveyId + '#' + userId;
+        return `${surveyId}#${userId}`;
     }
 
     /**

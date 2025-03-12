@@ -215,7 +215,7 @@ export default class AddonModForumDiscussionPage implements OnInit, AfterViewIni
             // Scroll to the post.
             CoreDom.scrollToElement(
                 this.elementRef.nativeElement,
-                '#addon-mod_forum-post-' + scrollTo,
+                `#addon-mod_forum-post-${scrollTo}`,
             );
         }
     }

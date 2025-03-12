@@ -61,7 +61,7 @@ export class AddonModChoiceSyncProvider extends CoreCourseActivitySyncBaseProvid
      * @returns Sync ID.
      */
     protected getSyncId(choiceId: number, userId: number): string {
-        return choiceId + '#' + userId;
+        return `${choiceId}#${userId}`;
     }
 
     /**

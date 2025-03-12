@@ -231,7 +231,7 @@ export class CoreModIconComponent implements OnInit, OnChanges {
 
         const path = CoreCourse.getModuleIconsPath();
 
-        this.iconUrl.set(path + moduleName + '.svg');
+        this.iconUrl.set(`${path + moduleName  }.svg`);
     }
 
     /**

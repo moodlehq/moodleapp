@@ -842,7 +842,7 @@ export default class AddonModQuizPlayerPage implements OnInit, OnDestroy, CanLea
         await CoreDirectivesRegistry.waitDirectivesReady(this.elementRef.nativeElement, 'core-question');
         await CoreDom.scrollToElement(
             this.elementRef.nativeElement,
-            '#addon-mod_quiz-question-' + slot,
+            `#addon-mod_quiz-question-${slot}`,
         );
     }
 

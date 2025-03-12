@@ -71,7 +71,7 @@ export class CoreRecaptchaComponent implements OnInit {
         // Open the recaptcha challenge in an InAppBrowser.
         // The app used to use an iframe for this, but the app can no longer access the iframe to create the required callbacks.
         // The app cannot render the recaptcha directly because it has problems with the local protocols and domains.
-        const src = CorePath.concatenatePaths(this.siteUrl, 'webservice/recaptcha.php?lang=' + this.lang);
+        const src = CorePath.concatenatePaths(this.siteUrl, `webservice/recaptcha.php?lang=${this.lang}`);
 
         const inAppBrowserWindow = CoreOpener.openInApp(src);
         if (!inAppBrowserWindow) {

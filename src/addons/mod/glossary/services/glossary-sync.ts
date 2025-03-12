@@ -149,12 +149,12 @@ export class AddonModGlossarySyncProvider extends CoreCourseActivitySyncBaseProv
 
         // Verify that glossary isn't blocked.
         if (CoreSync.isBlocked(ADDON_MOD_GLOSSARY_COMPONENT, syncId, siteId)) {
-            this.logger.debug('Cannot sync glossary ' + glossaryId + ' because it is blocked.');
+            this.logger.debug(`Cannot sync glossary ${glossaryId} because it is blocked.`);
 
             throw new CoreSyncBlockedError(Translate.instant('core.errorsyncblocked', { $a: this.componentTranslate }));
         }
 
-        this.logger.debug('Try to sync glossary ' + glossaryId + ' for user ' + userId);
+        this.logger.debug(`Try to sync glossary ${glossaryId} for user ${userId}`);
 
         const syncPromise = this.performSyncGlossaryEntries(glossaryId, userId, siteId);
 
@@ -332,7 +332,7 @@ export class AddonModGlossarySyncProvider extends CoreCourseActivitySyncBaseProv
     protected getGlossarySyncId(glossaryId: number, userId?: number): string {
         userId = userId || CoreSites.getCurrentSiteUserId();
 
-        return 'glossary#' + glossaryId + '#' + userId;
+        return `glossary#${glossaryId}#${userId}`;
     }
 
 }

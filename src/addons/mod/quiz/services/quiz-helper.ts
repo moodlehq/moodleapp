@@ -168,7 +168,7 @@ export class AddonModQuizHelperProvider {
         }
 
         if (reviewFrom) {
-            return Translate.instant('addon.mod_quiz.noreviewuntil' + (short ? 'short' : ''), {
+            return Translate.instant(`addon.mod_quiz.noreviewuntil${short ? 'short' : ''}`, {
                 $a: CoreTime.userDate(reviewFrom * 1000, short ? 'core.strftimedatetimeshort': undefined),
             });
         } else {

@@ -192,7 +192,7 @@ export default class CoreMainMenuPage implements OnInit, OnDestroy {
 
             tab ? tab.hide = false : null;
             handler.hide = false;
-            handler.id = handler.id || 'core-mainmenu-' + CoreUtils.getUniqueId('CoreMainMenuPage');
+            handler.id = handler.id || `core-mainmenu-${CoreUtils.getUniqueId('CoreMainMenuPage')}`;
 
             newTabs.push(tab || handler);
         }

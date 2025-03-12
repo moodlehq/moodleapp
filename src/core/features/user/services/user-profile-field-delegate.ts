@@ -136,7 +136,7 @@ export class CoreUserProfileFieldDelegateService extends CoreDelegate<CoreUserPr
         const handler = this.getHandler(type, !signup);
 
         if (handler) {
-            const name = 'profile_field_' + field.shortname;
+            const name = `profile_field_${field.shortname}`;
 
             if (handler.getData) {
                 return handler.getData(field, signup, registerAuth, formValues);

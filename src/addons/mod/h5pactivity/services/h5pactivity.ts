@@ -21,7 +21,7 @@ import { CoreCourseLogHelper } from '@features/course/services/log-helper';
 import { CoreH5P } from '@features/h5p/services/h5p';
 import { CoreH5PDisplayOptions } from '@features/h5p/classes/core';
 import { CoreCourseCommonModWSOptions } from '@features/course/services/course';
-import { makeSingleton, Translate } from '@singletons/index';
+import { makeSingleton } from '@singletons/index';
 import { CoreWSError } from '@classes/errors/wserror';
 import { CoreError } from '@classes/errors/error';
 import { CoreTime } from '@singletons/time';
@@ -36,6 +36,7 @@ import { CoreFileHelper } from '@services/file-helper';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreH5PMissingDependencyDBRecord } from '@features/h5p/services/database/h5p';
 import { CoreTextFormat } from '@singletons/text';
+import { CoreCourseModuleHelper } from '@features/course/services/course-module-helper';
 
 /**
  * Service that provides some features for H5P activity.
@@ -146,7 +147,7 @@ export class AddonModH5PActivityProvider {
      * @returns Cache key.
      */
     protected getAccessInformationCacheKey(id: number): string {
-        return AddonModH5PActivityProvider.ROOT_CACHE_KEY + 'accessInfo:' + id;
+        return `${AddonModH5PActivityProvider.ROOT_CACHE_KEY}accessInfo:${id}`;
     }
 
     /**
@@ -315,7 +316,7 @@ export class AddonModH5PActivityProvider {
      * @returns Cache key.
      */
     protected getUsersAttemptsCommonCacheKey(id: number): string {
-        return AddonModH5PActivityProvider.ROOT_CACHE_KEY + 'userAttempts:' + id;
+        return `${AddonModH5PActivityProvider.ROOT_CACHE_KEY}userAttempts:${id}`;
     }
 
     /**
@@ -336,7 +337,7 @@ export class AddonModH5PActivityProvider {
      * @returns Cache key.
      */
     protected getAttemptResultsCommonCacheKey(id: number): string {
-        return AddonModH5PActivityProvider.ROOT_CACHE_KEY + 'results:' + id;
+        return `${AddonModH5PActivityProvider.ROOT_CACHE_KEY}results:${id}`;
     }
 
     /**
@@ -486,7 +487,7 @@ export class AddonModH5PActivityProvider {
      * @returns Cache key.
      */
     protected getH5PActivityDataCacheKey(courseId: number): string {
-        return AddonModH5PActivityProvider.ROOT_CACHE_KEY + 'h5pactivity:' + courseId;
+        return `${AddonModH5PActivityProvider.ROOT_CACHE_KEY}h5pactivity:${courseId}`;
     }
 
     /**
@@ -500,8 +501,8 @@ export class AddonModH5PActivityProvider {
      */
     protected async getH5PActivityByField(
         courseId: number,
-        key: string,
-        value: unknown,
+        key: 'coursemodule' | 'context' | 'id',
+        value: number,
         options: CoreSitesCommonWSOptions = {},
     ): Promise<AddonModH5PActivityData> {
 
@@ -523,16 +524,12 @@ export class AddonModH5PActivityProvider {
             preSets,
         );
 
-        const currentActivity = response.h5pactivities.find((h5pActivity) => h5pActivity[key] == value);
+        const currentActivity = CoreCourseModuleHelper.getActivityByField(response.h5pactivities, key, value);
 
-        if (currentActivity) {
-            return {
-                ...currentActivity,
-                ...response.h5pglobalsettings,
-            };
-        }
-
-        throw new CoreError(Translate.instant('core.course.modulenotfound'));
+        return {
+            ...currentActivity,
+            ...response.h5pglobalsettings,
+        };
     }
 
     /**
@@ -636,7 +633,7 @@ export class AddonModH5PActivityProvider {
      * @returns Cache key.
      */
     protected getUserAttemptsCommonCacheKey(id: number): string {
-        return AddonModH5PActivityProvider.ROOT_CACHE_KEY + 'attempts:' + id;
+        return `${AddonModH5PActivityProvider.ROOT_CACHE_KEY}attempts:${id}`;
     }
 
     /**

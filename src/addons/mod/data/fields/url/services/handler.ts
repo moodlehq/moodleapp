@@ -41,7 +41,7 @@ export class AddonModDataFieldUrlHandlerService extends AddonModDataFieldTextHan
      * @inheritdoc
      */
     getFieldEditData(field: AddonModDataField, inputData: CoreFormFields<string>): AddonModDataSubfieldData[] {
-        const fieldName = 'f_' + field.id;
+        const fieldName = `f_${field.id}`;
 
         return [
             {

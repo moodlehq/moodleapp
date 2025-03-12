@@ -128,7 +128,7 @@ export class CoreViewerService {
      * @param settings Settings to apply.
      */
     protected applyReadingModeSettings(settings: CoreViewerReadingModeSettings): void {
-        document.body.style.setProperty('--reading-mode-zoom', settings.zoom + '%');
+        document.body.style.setProperty('--reading-mode-zoom', `${settings.zoom}%`);
         Object.values(CoreViewerReadingModeThemes).forEach((theme) => {
             document.body.classList.remove(`core-reading-mode-theme-${theme}`);
         });

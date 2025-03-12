@@ -367,9 +367,9 @@ export class CoreEmulatorCaptureMediaComponent implements OnInit, OnDestroy {
      * @returns Path.
      */
     protected getFilePath(): string {
-        const fileName = this.type + '_' + CoreTime.readableTimestamp() + '.' + this.extension;
+        const fileName = `${this.type}_${CoreTime.readableTimestamp()}.${this.extension}`;
 
-        return CorePath.concatenatePaths(CoreFileProvider.TMPFOLDER, 'media/' + fileName);
+        return CorePath.concatenatePaths(CoreFileProvider.TMPFOLDER, `media/${fileName}`);
     }
 
     /**

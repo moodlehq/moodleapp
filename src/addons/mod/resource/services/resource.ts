@@ -13,7 +13,6 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
-import { CoreError } from '@classes/errors/error';
 import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
 import { CoreCourse } from '@features/course/services/course';
 import { CoreCourseLogHelper } from '@features/course/services/log-helper';
@@ -21,11 +20,12 @@ import { CoreFilepool } from '@services/filepool';
 import { CoreSites, CoreSitesCommonWSOptions } from '@services/sites';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreWSExternalFile, CoreWSExternalWarning } from '@services/ws';
-import { makeSingleton, Translate } from '@singletons';
+import { makeSingleton } from '@singletons';
 import { ADDON_MOD_RESOURCE_COMPONENT_LEGACY } from '../constants';
 import { CoreCacheUpdateFrequency } from '@/core/constants';
 import { CoreTextFormat } from '@singletons/text';
 import { ModResourceDisplay } from '@addons/mod/constants';
+import { CoreCourseModuleHelper } from '@features/course/services/course-module-helper';
 
 /**
  * Service that provides some features for resources.
@@ -42,22 +42,20 @@ export class AddonModResourceProvider {
      * @returns Cache key.
      */
     protected getResourceCacheKey(courseId: number): string {
-        return AddonModResourceProvider.ROOT_CACHE_KEY + 'resource:' + courseId;
+        return `${AddonModResourceProvider.ROOT_CACHE_KEY}resource:${courseId}`;
     }
 
     /**
-     * Get a resource data.
+     * Get a resource by course module ID.
      *
      * @param courseId Course ID.
-     * @param key Name of the property to check.
-     * @param value Value to search.
+     * @param cmId Course module ID.
      * @param options Other options.
      * @returns Promise resolved when the resource is retrieved.
      */
-    protected async getResourceDataByKey(
+    async getResourceData(
         courseId: number,
-        key: string,
-        value: number,
+        cmId: number,
         options: CoreSitesCommonWSOptions = {},
     ): Promise<AddonModResourceResource> {
         const site = await CoreSites.getSite(options.siteId);
@@ -79,24 +77,7 @@ export class AddonModResourceProvider {
             preSets,
         );
 
-        const currentResource = response.resources.find((resource) => resource[key] == value);
-        if (currentResource) {
-            return currentResource;
-        }
-
-        throw new CoreError(Translate.instant('core.course.modulenotfound'));
-    }
-
-    /**
-     * Get a resource by course module ID.
-     *
-     * @param courseId Course ID.
-     * @param cmId Course module ID.
-     * @param options Other options.
-     * @returns Promise resolved when the resource is retrieved.
-     */
-    getResourceData(courseId: number, cmId: number, options: CoreSitesCommonWSOptions = {}): Promise<AddonModResourceResource> {
-        return this.getResourceDataByKey(courseId, 'coursemodule', cmId, options);
+        return CoreCourseModuleHelper.getActivityByCmId(response.resources, cmId);
     }
 
     /**

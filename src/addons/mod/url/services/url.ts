@@ -15,17 +15,17 @@
 import { Injectable } from '@angular/core';
 import { CoreSites, CoreSitesCommonWSOptions } from '@services/sites';
 import { CoreWSExternalWarning, CoreWSExternalFile } from '@services/ws';
-import { makeSingleton, Translate } from '@singletons';
+import { makeSingleton } from '@singletons';
 import { CoreCacheUpdateFrequency } from '@/core/constants';
 import { CoreMimetypeUtils } from '@services/utils/mimetype';
 import { CoreCourse } from '@features/course/services/course';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreCourseLogHelper } from '@features/course/services/log-helper';
-import { CoreError } from '@classes/errors/error';
 import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
 import { ADDON_MOD_URL_COMPONENT_LEGACY } from '../constants';
 import { CoreTextFormat } from '@singletons/text';
 import { ModResourceDisplay } from '@addons/mod/constants';
+import { CoreCourseModuleHelper } from '@features/course/services/course-module-helper';
 
 /**
  * Service that provides some features for urls.
@@ -94,24 +94,18 @@ export class AddonModUrlProvider {
      * @returns Cache key.
      */
     protected getUrlCacheKey(courseId: number): string {
-        return AddonModUrlProvider.ROOT_CACHE_KEY + 'url:' + courseId;
+        return `${AddonModUrlProvider.ROOT_CACHE_KEY}url:${courseId}`;
     }
 
     /**
-     * Get a url data.
+     * Get a url by course module ID.
      *
      * @param courseId Course ID.
-     * @param key Name of the property to check.
-     * @param value Value to search.
+     * @param cmId Course module ID.
      * @param options Other options.
      * @returns Promise resolved when the url is retrieved.
      */
-    protected async getUrlDataByKey(
-        courseId: number,
-        key: string,
-        value: number,
-        options: CoreSitesCommonWSOptions = {},
-    ): Promise<AddonModUrlUrl> {
+    async getUrl(courseId: number, cmId: number, options: CoreSitesCommonWSOptions = {}): Promise<AddonModUrlUrl> {
         const site = await CoreSites.getSite(options.siteId);
 
         const params: AddonModUrlGetUrlsByCoursesWSParams = {
@@ -127,24 +121,7 @@ export class AddonModUrlProvider {
 
         const response = await site.read<AddonModUrlGetUrlsByCoursesResult>('mod_url_get_urls_by_courses', params, preSets);
 
-        const currentUrl = response.urls.find((url) => url[key] == value);
-        if (currentUrl) {
-            return currentUrl;
-        }
-
-        throw new CoreError(Translate.instant('core.course.modulenotfound'));
-    }
-
-    /**
-     * Get a url by course module ID.
-     *
-     * @param courseId Course ID.
-     * @param cmId Course module ID.
-     * @param options Other options.
-     * @returns Promise resolved when the url is retrieved.
-     */
-    getUrl(courseId: number, cmId: number, options: CoreSitesCommonWSOptions = {}): Promise<AddonModUrlUrl> {
-        return this.getUrlDataByKey(courseId, 'coursemodule', cmId, options);
+        return CoreCourseModuleHelper.getActivityByCmId(response.urls, cmId);
     }
 
     /**

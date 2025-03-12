@@ -53,14 +53,14 @@ export class AddonModDataFieldDateComponent extends AddonModDataFieldPluginBaseC
         this.minDate = CoreTime.getDatetimeDefaultMin();
 
         if (this.searchMode && this.searchFields) {
-            this.addControl('f_' + this.field.id + '_z');
+            this.addControl(`f_${this.field.id}_z`);
 
             dayJSInstance = this.searchFields['f_' + this.field.id + '_y']
                 ? dayjs.tz(this.searchFields['f_' + this.field.id + '_y'] + '-' +
                     this.searchFields['f_' + this.field.id + '_m'] + '-' + this.searchFields['f_' + this.field.id + '_d'])
                 : dayjs.tz();
 
-            this.searchFields['f_' + this.field.id] = CoreTime.toDatetimeFormat(dayJSInstance.valueOf());
+            this.searchFields[`f_${this.field.id}`] = CoreTime.toDatetimeFormat(dayJSInstance.valueOf());
         } else {
             dayJSInstance = this.value?.content
                 ? dayjs.tz(parseInt(this.value.content, 10) * 1000)
@@ -68,7 +68,7 @@ export class AddonModDataFieldDateComponent extends AddonModDataFieldPluginBaseC
 
         }
 
-        this.addControl('f_' + this.field.id, CoreTime.toDatetimeFormat(dayJSInstance.valueOf()));
+        this.addControl(`f_${this.field.id}`, CoreTime.toDatetimeFormat(dayJSInstance.valueOf()));
 
         if (!this.searchMode && !this.value?.content) {
             this.onFieldInit.emit({

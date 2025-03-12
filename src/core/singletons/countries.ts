@@ -32,7 +32,7 @@ export class CoreCountries {
      * @returns Country name. If the country is not found, return the country code.
      */
     static getCountryName(code: string): string {
-        const countryKey = 'assets.countries.' + code;
+        const countryKey = `assets.countries.${code}`;
         const countryName = Translate.instant(countryKey);
 
         return countryName !== countryKey ? countryName : code;

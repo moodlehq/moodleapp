@@ -22,7 +22,7 @@ import { CoreSites, CoreSitesCommonWSOptions, CoreSitesReadingStrategy } from '@
 import { CoreTextFormat, DEFAULT_TEXT_FORMAT } from '@singletons/text';
 import { CoreArray } from '@singletons/array';
 import { CoreStatusWithWarningsWSResponse, CoreWS, CoreWSExternalFile, CoreWSExternalWarning } from '@services/ws';
-import { makeSingleton, Translate } from '@singletons';
+import { makeSingleton } from '@singletons';
 import { CoreFormFields } from '@singletons/form';
 import { AddonModWorkshopOffline } from './workshop-offline';
 import {
@@ -42,6 +42,7 @@ import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
 import { CoreCacheUpdateFrequency } from '@/core/constants';
 import { CoreWSError } from '@classes/errors/wserror';
 import { CoreObject } from '@singletons/object';
+import { CoreCourseModuleHelper } from '@features/course/services/course-module-helper';
 
 declare module '@singletons/events' {
 
@@ -72,7 +73,7 @@ export class AddonModWorkshopProvider {
      * @returns Cache key.
      */
     protected getWorkshopDataCacheKey(courseId: number): string {
-        return AddonModWorkshopProvider.ROOT_CACHE_KEY + 'workshop:' + courseId;
+        return `${AddonModWorkshopProvider.ROOT_CACHE_KEY}workshop:${courseId}`;
     }
 
     /**
@@ -92,7 +93,7 @@ export class AddonModWorkshopProvider {
      * @returns Cache key.
      */
     protected getWorkshopAccessInformationDataCacheKey(workshopId: number): string {
-        return this.getWorkshopDataPrefixCacheKey(workshopId) + ':access';
+        return `${this.getWorkshopDataPrefixCacheKey(workshopId)}:access`;
     }
 
     /**
@@ -102,7 +103,7 @@ export class AddonModWorkshopProvider {
      * @returns Cache key.
      */
     protected getUserPlanDataCacheKey(workshopId: number): string {
-        return this.getWorkshopDataPrefixCacheKey(workshopId) + ':userplan';
+        return `${this.getWorkshopDataPrefixCacheKey(workshopId)}:userplan`;
     }
 
     /**
@@ -114,7 +115,7 @@ export class AddonModWorkshopProvider {
      * @returns Cache key.
      */
     protected getSubmissionsDataCacheKey(workshopId: number, userId: number = 0, groupId: number = 0): string {
-        return this.getWorkshopDataPrefixCacheKey(workshopId) + ':submissions:' + userId + ':' + groupId;
+        return `${this.getWorkshopDataPrefixCacheKey(workshopId)}:submissions:${userId}:${groupId}`;
     }
 
     /**
@@ -125,7 +126,7 @@ export class AddonModWorkshopProvider {
      * @returns Cache key.
      */
     protected getSubmissionDataCacheKey(workshopId: number, submissionId: number): string {
-        return this.getWorkshopDataPrefixCacheKey(workshopId) + ':submission:' + submissionId;
+        return `${this.getWorkshopDataPrefixCacheKey(workshopId)}:submission:${submissionId}`;
     }
 
     /**
@@ -135,7 +136,7 @@ export class AddonModWorkshopProvider {
      * @returns Cache key.
      */
     protected getGradesDataCacheKey(workshopId: number): string {
-        return this.getWorkshopDataPrefixCacheKey(workshopId) + ':grades';
+        return `${this.getWorkshopDataPrefixCacheKey(workshopId)}:grades`;
     }
 
     /**
@@ -146,7 +147,7 @@ export class AddonModWorkshopProvider {
      * @returns Cache key.
      */
     protected getGradesReportDataCacheKey(workshopId: number, groupId: number = 0): string {
-        return this.getWorkshopDataPrefixCacheKey(workshopId) + ':report:' + groupId;
+        return `${this.getWorkshopDataPrefixCacheKey(workshopId)}:report:${groupId}`;
     }
 
     /**
@@ -157,7 +158,7 @@ export class AddonModWorkshopProvider {
      * @returns Cache key.
      */
     protected getSubmissionAssessmentsDataCacheKey(workshopId: number, submissionId: number): string {
-        return this.getWorkshopDataPrefixCacheKey(workshopId) + ':assessments:' + submissionId;
+        return `${this.getWorkshopDataPrefixCacheKey(workshopId)}:assessments:${submissionId}`;
     }
 
     /**
@@ -168,7 +169,7 @@ export class AddonModWorkshopProvider {
      * @returns Cache key.
      */
     protected getReviewerAssessmentsDataCacheKey(workshopId: number, userId: number = 0): string {
-        return this.getWorkshopDataPrefixCacheKey(workshopId) + ':reviewerassessments:' + userId;
+        return `${this.getWorkshopDataPrefixCacheKey(workshopId)}:reviewerassessments:${userId}`;
     }
 
     /**
@@ -179,7 +180,7 @@ export class AddonModWorkshopProvider {
      * @returns Cache key.
      */
     protected getAssessmentDataCacheKey(workshopId: number, assessmentId: number): string {
-        return this.getWorkshopDataPrefixCacheKey(workshopId) + ':assessment:' + assessmentId;
+        return `${this.getWorkshopDataPrefixCacheKey(workshopId)}:assessment:${assessmentId}`;
     }
 
     /**
@@ -191,7 +192,7 @@ export class AddonModWorkshopProvider {
      * @returns Cache key.
      */
     protected getAssessmentFormDataCacheKey(workshopId: number, assessmentId: number, mode: string = 'assessment'): string {
-        return this.getWorkshopDataPrefixCacheKey(workshopId) + ':assessmentsform:' + assessmentId + ':' + mode;
+        return `${this.getWorkshopDataPrefixCacheKey(workshopId)}:assessmentsform:${assessmentId}:${mode}`;
     }
 
     /**
@@ -205,7 +206,7 @@ export class AddonModWorkshopProvider {
      */
     protected async getWorkshopByKey(
         courseId: number,
-        key: string,
+        key: 'coursemodule' | 'id',
         value: number,
         options: CoreSitesCommonWSOptions = {},
     ): Promise<AddonModWorkshopData> {
@@ -227,10 +228,7 @@ export class AddonModWorkshopProvider {
             preSets,
         );
 
-        const workshop = response.workshops.find((workshop) => workshop[key] == value);
-        if (!workshop) {
-            throw new CoreError(Translate.instant('core.course.modulenotfound'));
-        }
+        const workshop = CoreCourseModuleHelper.getActivityByField(response.workshops, key, value);
 
         // Set submission types for Moodle 3.5.
         if (workshop.submissiontypetext === undefined) {

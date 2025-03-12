@@ -324,7 +324,7 @@ export class CoreQuestionProvider {
      * @returns Question component ID.
      */
     getQuestionComponentId(question: CoreQuestionQuestionParsed, componentId: string | number): string {
-        return componentId + '_' + question.questionnumber;
+        return `${componentId}_${question.questionnumber}`;
     }
 
     /**
@@ -340,7 +340,7 @@ export class CoreQuestionProvider {
         siteId = siteId || CoreSites.getCurrentSiteId();
 
         const siteFolderPath = CoreFile.getSiteFolder(siteId);
-        const questionFolderPath = 'offlinequestion/' + type + '/' + component + '/' + componentId;
+        const questionFolderPath = `offlinequestion/${type}/${component}/${componentId}`;
 
         return CorePath.concatenatePaths(siteFolderPath, questionFolderPath);
     }

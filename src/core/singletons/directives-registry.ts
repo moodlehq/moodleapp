@@ -93,7 +93,7 @@ export class CoreDirectivesRegistry {
     ): Promise<void> {
         const instance = CoreDirectivesRegistry.resolve(element, directiveClass);
         if (!instance) {
-            CoreDirectivesRegistry.logger.error('No instance registered for element ' + directiveClass, element);
+            CoreDirectivesRegistry.logger.error(`No instance registered for element ${directiveClass}`, element);
 
             return;
         }

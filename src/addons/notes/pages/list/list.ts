@@ -123,7 +123,7 @@ export default class AddonNotesListPage implements OnInit, OnDestroy {
         try {
             const allNotes = await AddonNotes.getNotes(this.courseId, this.userId);
 
-            const notesList: AddonNotesNoteFormatted[] = allNotes[this.type + 'notes'] || [];
+            const notesList: AddonNotesNoteFormatted[] = allNotes[`${this.type}notes`] || [];
 
             notesList.forEach((note) => {
                 note.content = CoreText.decodeHTML(note.content);

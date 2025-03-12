@@ -745,7 +745,7 @@ export class CoreDom {
         // Add prefix.
         regExp = /([^]*?)({[^]*?}|,)/g;
 
-        return css.replace(regExp, prefix + ' $1 $2');
+        return css.replace(regExp, `${prefix} $1 $2`);
     }
 
     /**
@@ -785,7 +785,7 @@ export class CoreDom {
     protected static hasValidSizeUnits(size: string): boolean {
         const validUnits = ['px', '%', 'em', 'rem', 'cm', 'mm', 'in', 'pt', 'pc', 'ex', 'ch', 'vw', 'vh', 'vmin', 'vmax'];
 
-        const units = size.match('^[0-9]*\\.?[0-9]+(' + validUnits.join('|') + ')$');
+        const units = size.match(`^[0-9]*\\.?[0-9]+(${validUnits.join('|')})$`);
 
         return !!units && units.length > 1;
     }

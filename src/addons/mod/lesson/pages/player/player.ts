@@ -645,7 +645,7 @@ export default class AddonModLessonPlayerPage implements OnInit, OnDestroy, CanL
         CoreAnalytics.logEvent({
             type: CoreAnalyticsEventType.VIEW_ITEM,
             ws: 'mod_lesson_get_page_data',
-            name: this.lesson.name + ': ' + title,
+            name: `${this.lesson.name}: ${title}`,
             data: { id: this.lesson.id, pageid: pageId, category: 'lesson' },
             url: `/mod/lesson/view.php?id=${this.lesson.id}&pageid=${pageId}`,
         });

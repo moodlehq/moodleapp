@@ -403,7 +403,7 @@ export class CoreUnauthenticatedSite {
             return false;
         }
 
-        const regEx = new RegExp('(,|^)' + CoreText.escapeForRegex(name) + '(,|$)', 'g');
+        const regEx = new RegExp(`(,|^)${CoreText.escapeForRegex(name)}(,|$)`, 'g');
 
         return !!disabledFeatures.match(regEx);
     }

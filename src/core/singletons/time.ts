@@ -219,11 +219,11 @@ export class CoreTime {
         const mins = Math.floor(remainder / CoreConstants.SECONDS_MINUTE);
         const secs = remainder - (mins * CoreConstants.SECONDS_MINUTE);
 
-        const secondsUnit = Translate.instant('core.' + (secs === 1 ? 'sec' : 'secs'));
-        const minutesUnit = Translate.instant('core.' + (mins === 1 ? 'min' : 'mins'));
-        const hoursUnit = Translate.instant('core.' + (hours === 1 ? 'hour' : 'hours'));
-        const daysUnit = Translate.instant('core.' + (days === 1 ? 'day' : 'days'));
-        const yearsUnit = Translate.instant('core.' + (years === 1 ? 'year' : 'years'));
+        const secondsUnit = Translate.instant(`core.${secs === 1 ? 'sec' : 'secs'}`);
+        const minutesUnit = Translate.instant(`core.${mins === 1 ? 'min' : 'mins'}`);
+        const hoursUnit = Translate.instant(`core.${hours === 1 ? 'hour' : 'hours'}`);
+        const daysUnit = Translate.instant(`core.${days === 1 ? 'day' : 'days'}`);
+        const yearsUnit = Translate.instant(`core.${years === 1 ? 'year' : 'years'}`);
         const parts: string[] = [];
 
         if (precision && years) {
@@ -262,11 +262,11 @@ export class CoreTime {
         const durations = <string[]>[];
 
         if (minutes > 0) {
-            durations.push(minutes + '\'');
+            durations.push(`${minutes}'`);
         }
 
         if (seconds > 0 || minutes === 0) {
-            durations.push(seconds + '\'\'');
+            durations.push(`${seconds}''`);
         }
 
         return durations.join(' ');

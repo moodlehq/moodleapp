@@ -271,7 +271,7 @@ export class CoreLoginHelperProvider {
         site = site || CoreSites.getCurrentSite();
         const config = site?.getStoredConfig();
 
-        return 'core.mainmenu.' + (config && config.tool_mobile_forcelogout == '1' ? 'logout' : 'switchaccount');
+        return `core.mainmenu.${config && config.tool_mobile_forcelogout == '1' ? 'logout' : 'switchaccount'}`;
     }
 
     /**
@@ -507,7 +507,7 @@ export class CoreLoginHelperProvider {
        // eslint-disable-next-line deprecation/deprecation
        const disabledFeatures = this.getDisabledFeatures(config);
 
-        const regEx = new RegExp('(,|^)' + feature + '(,|$)', 'g');
+        const regEx = new RegExp(`(,|^)${feature}(,|$)`, 'g');
 
         return !!disabledFeatures.match(regEx);
     }
@@ -618,7 +618,7 @@ export class CoreLoginHelperProvider {
         launchUrl?: string,
         redirectData?: CoreRedirectPayload,
     ): Promise<boolean> {
-        launchUrl = launchUrl || siteUrl + '/admin/tool/mobile/launch.php';
+        launchUrl = launchUrl || `${siteUrl}/admin/tool/mobile/launch.php`;
 
         this.logger.debug('openBrowserForOAuthLogin launchUrl:', launchUrl);
 
@@ -707,7 +707,7 @@ export class CoreLoginHelperProvider {
 
         await alert.onDidDismiss();
 
-        CoreOpener.openInApp(siteUrl + '/login/change_password.php');
+        CoreOpener.openInApp(`${siteUrl}/login/change_password.php`);
     }
 
     /**
@@ -716,7 +716,7 @@ export class CoreLoginHelperProvider {
      * @param siteUrl URL of the site.
      */
     openForgottenPassword(siteUrl: string): void {
-        CoreOpener.openInApp(siteUrl + '/login/forgot_password.php');
+        CoreOpener.openInApp(`${siteUrl}/login/forgot_password.php`);
     }
 
     /**
@@ -749,8 +749,8 @@ export class CoreLoginHelperProvider {
 
             // Open change password.
             if (alertMessage) {
-                alertMessage = Translate.instant(alertMessage) + '<br>' +
-                    Translate.instant('core.redirectingtosite');
+                alertMessage = `${Translate.instant(alertMessage)}<br>${
+                    Translate.instant('core.redirectingtosite')}`;
             }
 
             try {
@@ -807,7 +807,7 @@ export class CoreLoginHelperProvider {
     ): Promise<string> {
 
         service = service || CoreConstants.CONFIG.wsservice;
-        launchUrl = launchUrl || siteUrl + '/admin/tool/mobile/launch.php';
+        launchUrl = launchUrl || `${siteUrl}/admin/tool/mobile/launch.php`;
 
         const passport = Math.random() * 1000;
 
@@ -1213,8 +1213,8 @@ export class CoreLoginHelperProvider {
                 ssoUrlParams: data.ssoUrlParams,
             };
         } else {
-            this.logger.debug('Invalid signature in the URL request yours: ' + params[0] + ' mine: '
-                + signature + ' for passport ' + passport);
+            this.logger.debug(`Invalid signature in the URL request yours: ${params[0]} mine: ${
+                 signature } for passport ${passport}`);
 
             throw new CoreError(Translate.instant('core.unexpectederror'));
         }
@@ -1292,7 +1292,7 @@ export class CoreLoginHelperProvider {
 
         const message = Translate.instant(
             'core.login.faqwhereisqrcodeanswer',
-            { $image: '<div class="text-center">'+ FAQ_QRCODE_IMAGE_HTML + '</div>' },
+            { $image: `<div class="text-center">${FAQ_QRCODE_IMAGE_HTML}</div>` },
         );
         const header = Translate.instant('core.login.faqwhereisqrcode');
 

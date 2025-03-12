@@ -159,7 +159,7 @@ export class CoreOpener {
                 await openFile(path, deprecatedMimetype);
             }
         } catch (error) {
-            CoreOpener.logger.error('Error opening file ' + path + ' with mimetype ' + mimetype);
+            CoreOpener.logger.error(`Error opening file ${path} with mimetype ${mimetype}`);
             CoreOpener.logger.error('Error: ', JSON.stringify(error));
 
             if (!extension || extension.indexOf('/') > -1 || extension.indexOf('\\') > -1) {
@@ -233,7 +233,7 @@ export class CoreOpener {
 
                 return;
             } catch (error) {
-                CoreOpener.logger.error('Error opening online file ' + url + ' with mimetype ' + mimetype);
+                CoreOpener.logger.error(`Error opening online file ${url} with mimetype ${mimetype}`);
                 CoreOpener.logger.error('Error: ', JSON.stringify(error));
 
                 throw new Error(Translate.instant('core.erroropenfilenoapp'));

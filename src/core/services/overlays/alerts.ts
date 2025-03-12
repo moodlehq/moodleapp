@@ -90,7 +90,7 @@ export class CoreAlertsService {
 
             let cssClass = alertOptions.cssClass || '';
             if (!alertOptions.header) {
-                cssClass = cssClass + ' core-nohead';
+                cssClass = `${cssClass} core-nohead`;
             }
 
             this.show({
@@ -282,7 +282,7 @@ export class CoreAlertsService {
             message = await CoreLang.filterMultilang(message);
         }
 
-        const alertId = Md5.hashAsciiStr((options.header || '') + '#' + (message|| ''));
+        const alertId = Md5.hashAsciiStr(`${options.header || ''}#${message|| ''}`);
 
         if (this.displayedAlerts[alertId]) {
             // There's already an alert with the same message and title. Return it.

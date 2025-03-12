@@ -43,7 +43,7 @@ export class CoreModuleHandlerBase implements Partial<CoreCourseModuleHandler> {
         return {
             icon: this.getIconSrc(module, module.modicon),
             title: module.name,
-            class: 'addon-mod_' + module.modname + '-handler',
+            class: `addon-mod_${module.modname}-handler`,
             showDownloadButton: true,
             hasCustomCmListItem: false,
             action: async (
@@ -74,7 +74,7 @@ export class CoreModuleHandlerBase implements Partial<CoreCourseModuleHandler> {
         options.params = options.params || {};
         Object.assign(options.params, { module });
 
-        const routeParams = '/' + courseId + '/' + module.id;
+        const routeParams = `/${courseId}/${module.id}`;
 
         await CoreNavigator.navigateToSitePath(this.pageName + routeParams, options);
     }

@@ -120,7 +120,7 @@ export class CoreEmulatorCaptureHelperProvider {
         if (mimetypes?.length) {
             // Search for a supported mimetype.
             result.mimetype = mimetypes.find((mimetype) => {
-                const matches = mimetype.match(new RegExp('^' + type + '/'));
+                const matches = mimetype.match(new RegExp(`^${type}/`));
 
                 return matches?.length && window.MediaRecorder.isTypeSupported(mimetype);
             });

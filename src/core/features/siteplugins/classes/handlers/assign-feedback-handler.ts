@@ -43,7 +43,7 @@ export class CoreSitePluginsAssignFeedbackHandler extends AddonModAssignDefaultF
      */
     getPluginName(plugin: AddonModAssignPlugin): string {
         // Check if there's a translated string for the plugin.
-        const translationId = this.prefix + 'pluginname';
+        const translationId = `${this.prefix}pluginname`;
         const translation = Translate.instant(translationId);
 
         if (translationId != translation) {

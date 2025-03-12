@@ -89,19 +89,19 @@ export class AddonModSurveyHelperProvider {
 
                 if (parent.type === 1 || parent.type === 2) {
                     // One answer question. Set its name and add it to the returned array.
-                    q1.name = 'q' + (parent.type == 2 ? 'P' : '') + q1.id;
+                    q1.name = `q${parent.type == 2 ? 'P' : ''}${q1.id}`;
                     q1.num = num++;
                 } else {
                     // Two answers per question (COLLES P&A). We'll add two questions.
                     const q2 = Object.assign({}, q1);
 
-                    q1.text = strIPreferThat + ' ' + q1.text;
-                    q1.name = 'qP' + q1.id;
+                    q1.text = `${strIPreferThat} ${q1.text}`;
+                    q1.name = `qP${q1.id}`;
                     q1.num = num++;
                     formatted.push(q1);
 
-                    q2.text = strIFoundThat + ' ' + q2.text;
-                    q2.name = 'q' + q1.id;
+                    q2.text = `${strIFoundThat} ${q2.text}`;
+                    q2.name = `q${q1.id}`;
                     q2.num = num++;
                     formatted.push(q2);
 
@@ -109,7 +109,7 @@ export class AddonModSurveyHelperProvider {
                 }
             } else if (q1.multiArray && q1.multiArray.length === 0) {
                 // It's a single question.
-                q1.name = 'q' + q1.id;
+                q1.name = `q${q1.id}`;
                 q1.num = num++;
             }
 

@@ -250,7 +250,7 @@ export class AddonModWorkshopAssessmentStrategyComponent implements OnInit, OnDe
             if (this.edit) {
                 CoreFileSession.setFiles(
                     ADDON_MOD_WORKSHOP_COMPONENT,
-                    this.workshop.id + '_' + this.assessmentId,
+                    `${this.workshop.id}_${this.assessmentId}`,
                     this.data.assessment.feedbackattachmentfiles,
                 );
                 if (this.access.canallocate) {
@@ -283,7 +283,7 @@ export class AddonModWorkshopAssessmentStrategyComponent implements OnInit, OnDe
         // Compare feedback files.
         const files = CoreFileSession.getFiles(
             ADDON_MOD_WORKSHOP_COMPONENT,
-            this.workshop.id + '_' + this.assessmentId,
+            `${this.workshop.id}_${this.assessmentId}`,
         ) || [];
         if (CoreFileUploader.areFileListDifferent(files, this.originalData.files)) {
             return true;
@@ -308,7 +308,7 @@ export class AddonModWorkshopAssessmentStrategyComponent implements OnInit, OnDe
 
         const files = CoreFileSession.getFiles(
             ADDON_MOD_WORKSHOP_COMPONENT,
-            this.workshop.id + '_' + this.assessmentId,
+            `${this.workshop.id}_${this.assessmentId}`,
         ) || [];
 
         let saveOffline = false;

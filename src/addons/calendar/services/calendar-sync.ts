@@ -111,7 +111,7 @@ export class AddonCalendarSyncProvider extends CoreSyncBaseProvider<AddonCalenda
             return currentSyncPromise;
         }
 
-        this.logger.debug('Try to sync calendar events for site ' + siteId);
+        this.logger.debug(`Try to sync calendar events for site ${siteId}`);
 
         // Get offline events.
         const syncPromise = this.performSyncEvents(siteId);
@@ -178,7 +178,7 @@ export class AddonCalendarSyncProvider extends CoreSyncBaseProvider<AddonCalenda
 
         // Verify that event isn't blocked.
         if (CoreSync.isBlocked(ADDON_CALENDAR_COMPONENT, eventId, siteId)) {
-            this.logger.debug('Cannot sync event ' + eventId + ' because it is blocked.');
+            this.logger.debug(`Cannot sync event ${eventId} because it is blocked.`);
 
             throw new CoreSyncBlockedError(Translate.instant(
                 'core.errorsyncblocked',

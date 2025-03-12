@@ -47,10 +47,10 @@ export class AddonModDataFieldMultimenuComponent extends AddonModDataFieldPlugin
         }
 
         if (this.searchMode) {
-            this.addControl('f_' + this.field.id + '_allreq');
+            this.addControl(`f_${this.field.id}_allreq`);
         }
 
-        this.addControl('f_' + this.field.id, this.getValidValues(this.value));
+        this.addControl(`f_${this.field.id}`, this.getValidValues(this.value));
     }
 
     /**

@@ -127,7 +127,7 @@ export class CoreFileProvider {
         }
 
         this.initialized = true;
-        this.logger.debug('FS initialized: ' + this.basePath);
+        this.logger.debug(`FS initialized: ${this.basePath}`);
     }
 
     /**
@@ -148,7 +148,7 @@ export class CoreFileProvider {
      */
     async getFile(path: string): Promise<FileEntry> {
         await this.init();
-        this.logger.debug('Get file: ' + path);
+        this.logger.debug(`Get file: ${path}`);
 
         try {
             return <FileEntry> await File.resolveLocalFilesystemUrl(this.addBasePathIfNeeded(path));
@@ -174,7 +174,7 @@ export class CoreFileProvider {
     async getDir(path: string): Promise<DirectoryEntry> {
         await this.init();
 
-        this.logger.debug('Get directory: ' + path);
+        this.logger.debug(`Get directory: ${path}`);
 
         try {
             return await File.resolveDirectoryUrl(this.addBasePathIfNeeded(path));
@@ -198,7 +198,7 @@ export class CoreFileProvider {
      * @returns Site folder path.
      */
     getSiteFolder(siteId: string): string {
-        return CoreFileProvider.SITESFOLDER + '/' + siteId;
+        return `${CoreFileProvider.SITESFOLDER}/${siteId}`;
     }
 
     /**
@@ -223,11 +223,11 @@ export class CoreFileProvider {
 
         if (path.indexOf('/') == -1) {
             if (isDirectory) {
-                this.logger.debug('Create dir ' + path + ' in ' + base);
+                this.logger.debug(`Create dir ${path} in ${base}`);
 
                 return File.createDir(base, path, !failIfExists);
             } else {
-                this.logger.debug('Create file ' + path + ' in ' + base);
+                this.logger.debug(`Create file ${path} in ${base}`);
 
                 return File.createFile(base, path, !failIfExists);
             }
@@ -237,7 +237,7 @@ export class CoreFileProvider {
             const firstDir = path.substring(0, path.indexOf('/'));
             const restOfPath = path.substring(path.indexOf('/') + 1);
 
-            this.logger.debug('Create dir ' + firstDir + ' in ' + base);
+            this.logger.debug(`Create dir ${firstDir} in ${base}`);
 
             const newDirEntry = await File.createDir(base, firstDir, true);
 
@@ -281,7 +281,7 @@ export class CoreFileProvider {
         await this.init();
 
         path = this.removeBasePath(path);
-        this.logger.debug('Remove directory: ' + path);
+        this.logger.debug(`Remove directory: ${path}`);
 
         await File.removeRecursively(this.basePath, path);
     }
@@ -296,7 +296,7 @@ export class CoreFileProvider {
         await this.init();
 
         path = this.removeBasePath(path);
-        this.logger.debug('Remove file: ' + path);
+        this.logger.debug(`Remove file: ${path}`);
 
         try {
             await File.removeFile(this.basePath, path);
@@ -332,7 +332,7 @@ export class CoreFileProvider {
         await this.init();
 
         path = this.removeBasePath(path);
-        this.logger.debug('Get contents of dir: ' + path);
+        this.logger.debug(`Get contents of dir: ${path}`);
 
         const result = await File.listDir(this.basePath, path);
 
@@ -401,7 +401,7 @@ export class CoreFileProvider {
     async getDirectorySize(path: string): Promise<number> {
         path = this.removeBasePath(path);
 
-        this.logger.debug('Get size of dir: ' + path);
+        this.logger.debug(`Get size of dir: ${path}`);
 
         const dirEntry = await this.getDir(path);
 
@@ -417,7 +417,7 @@ export class CoreFileProvider {
     async getFileSize(path: string): Promise<number> {
         path = this.removeBasePath(path);
 
-        this.logger.debug('Get size of file: ' + path);
+        this.logger.debug(`Get size of file: ${path}`);
 
         const fileEntry = await this.getFile(path);
 
@@ -432,7 +432,7 @@ export class CoreFileProvider {
      */
     getFileObjectFromFileEntry(entry: FileEntry): Promise<IFile> {
         return new Promise((resolve, reject): void => {
-            this.logger.debug('Get file object of: ' + entry.fullPath);
+            this.logger.debug(`Get file object of: ${entry.fullPath}`);
             entry.file(resolve, reject);
         });
     }
@@ -506,7 +506,7 @@ export class CoreFileProvider {
                     const parsed = CoreText.parseJSON(text, null);
 
                     if (parsed == null && text != null) {
-                        throw new CoreError('Error parsing JSON file: ' + path);
+                        throw new CoreError(`Error parsing JSON file: ${path}`);
                     }
 
                     return parsed;
@@ -525,7 +525,7 @@ export class CoreFileProvider {
      */
     readFileData(fileData: IFile, format: CoreFileFormat = CoreFileFormat.FORMATTEXT): Promise<string | ArrayBuffer | unknown> {
         format = format || CoreFileFormat.FORMATTEXT;
-        this.logger.debug('Read file from file data with format ' + format);
+        this.logger.debug(`Read file from file data with format ${format}`);
 
         return new Promise((resolve, reject): void => {
             const reader = new FileReader();
@@ -591,7 +591,7 @@ export class CoreFileProvider {
         await this.init();
 
         path = this.removeBasePath(path);
-        this.logger.debug('Write file: ' + path);
+        this.logger.debug(`Write file: ${path}`);
 
         // Create file (and parent folders) to prevent errors.
         const fileEntry = await this.createFile(path);
@@ -708,7 +708,7 @@ export class CoreFileProvider {
         if (this.basePath.slice(-1) === '/') {
             return this.basePath;
         } else {
-            return this.basePath + '/';
+            return `${this.basePath}/`;
         }
     }
 
@@ -744,7 +744,7 @@ export class CoreFileProvider {
         } else if (this.basePath.slice(-1) == '/') {
             return this.basePath;
         } else {
-            return this.basePath + '/';
+            return `${this.basePath}/`;
         }
     }
 
@@ -1113,7 +1113,7 @@ export class CoreFileProvider {
 
             // Format extension.
             if (extension) {
-                extension = '.' + extension;
+                extension = `.${extension}`;
             } else {
                 extension = '';
             }
@@ -1142,10 +1142,10 @@ export class CoreFileProvider {
         const nameWithoutExtension = CoreMimetypeUtils.removeExtension(name);
         let extension = CoreMimetypeUtils.getFileExtension(name);
         let num = 1;
-        extension = extension ? '.' + extension : '';
+        extension = extension ? `.${extension}` : '';
 
         do {
-            name = nameWithoutExtension + '(' + num + ')' + extension;
+            name = `${nameWithoutExtension}(${num})${extension}`;
             num++;
         } while (usedNames[name.toLowerCase()] !== undefined);
 
@@ -1301,7 +1301,7 @@ export class CoreFileProvider {
         }
 
         if (CorePlatform.isIOS()) {
-            return src.replace(CoreConstants.CONFIG.ioswebviewscheme + '://localhost/_app_file_', 'file://');
+            return src.replace(`${CoreConstants.CONFIG.ioswebviewscheme}://localhost/_app_file_`, 'file://');
         }
 
         return src.replace('http://localhost/_app_file_', 'file://');

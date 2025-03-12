@@ -228,7 +228,7 @@ export class CoreFilterProvider {
         siteId?: string,
     ): Promise<string> {
 
-        if (!text || typeof text != 'string') {
+        if (!text || typeof text !== 'string') {
             // No need to do any filters and cleaning.
             return '';
         }
