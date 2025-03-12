@@ -133,12 +133,15 @@ export class AddonModForumPostComponent implements OnInit, OnDestroy, OnChanges 
         this.tagsEnabled = CoreTag.areTagsAvailableInSite();
         this.uniqueId = this.post.id > 0 ? `reply${this.post.id}` : `edit${this.post.parentid}`;
 
+        // This re string is deprecated in Moodle from 5.0 (MDL-83230). This means we're not going to add this string anymore.
+        // In the future we should not check "Re: " or it's translation is included in the subject.
         const reTranslated = Translate.instant('addon.mod_forum.re');
+
         this.displaySubject = !this.parentSubject ||
-            (this.post.subject != this.parentSubject && this.post.subject != `Re: ${this.parentSubject}` &&
-                this.post.subject != `${reTranslated} ${this.parentSubject}`);
-        this.defaultReplySubject = this.post.replysubject || ((this.post.subject.startsWith('Re: ') ||
-            this.post.subject.startsWith(reTranslated)) ? this.post.subject : `${reTranslated} ${this.post.subject}`);
+            (this.post.subject !== this.parentSubject && this.post.subject !== `Re: ${this.parentSubject}` &&
+                this.post.subject !== `${reTranslated} ${this.parentSubject}`);
+
+        this.defaultReplySubject = this.post.subject;
 
         if (this.post.id < 0) {
             this.optionsMenuEnabled = true;
