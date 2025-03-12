@@ -2144,7 +2144,7 @@ export class CoreSitesProvider {
             try {
                 await this.storeTokensInSecureStorage(site.id, site.token, site.privateToken);
             } catch {
-                this.logger.error('Error storing tokens in secure storage for site ' + site.id);
+                this.logger.error(`Error storing tokens in secure storage for site ${site.id}`);
             }
         }));
 

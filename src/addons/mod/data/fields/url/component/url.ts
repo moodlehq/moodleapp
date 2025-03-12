@@ -46,7 +46,7 @@ export class AddonModDataFieldUrlComponent extends AddonModDataFieldPluginBaseCo
             value = this.value.content;
         }
 
-        this.addControl('f_' + this.field.id, value);
+        this.addControl(`f_${this.field.id}`, value);
     }
 
     /**

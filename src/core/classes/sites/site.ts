@@ -120,7 +120,7 @@ export class CoreSite extends CoreAuthenticatedSite {
         this.setInfo(otherData.info);
         this.calculateOfflineDisabled();
 
-        this.db = CoreDB.getDB('Site-' + this.id);
+        this.db = CoreDB.getDB(`Site-${this.id}`);
     }
 
     /**
@@ -256,7 +256,7 @@ export class CoreSite extends CoreAuthenticatedSite {
                 jsInitialValue: 0,
             },
             {
-                sql: 'WHERE component = ?' + extraClause,
+                sql: `WHERE component = ?${extraClause}`,
                 sqlParams: params,
                 js: record => record.component === component && (params.length === 1 || record.componentId === componentId),
             },
@@ -321,7 +321,7 @@ export class CoreSite extends CoreAuthenticatedSite {
      * @inheritdoc
      */
     async invalidateWsCache(): Promise<void> {
-        this.logger.debug('Invalidate all the cache for site: ' + this.id);
+        this.logger.debug(`Invalidate all the cache for site: ${this.id}`);
 
         try {
             await this.cacheTable.update({ expirationTime: 0 });
@@ -338,7 +338,7 @@ export class CoreSite extends CoreAuthenticatedSite {
             return;
         }
 
-        this.logger.debug('Invalidate cache for key: ' + key);
+        this.logger.debug(`Invalidate cache for key: ${key}`);
 
         await this.cacheTable.update({ expirationTime: 0 }, { key });
     }
@@ -351,11 +351,11 @@ export class CoreSite extends CoreAuthenticatedSite {
             return;
         }
 
-        this.logger.debug('Invalidate cache for key starting with: ' + key);
+        this.logger.debug(`Invalidate cache for key starting with: ${key}`);
 
         await this.cacheTable.updateWhere({ expirationTime: 0 }, {
             sql: 'key LIKE ?',
-            sqlParams: [key + '%'],
+            sqlParams: [`${key}%`],
             js: record => !!record.key?.startsWith(key),
         });
     }
@@ -392,7 +392,7 @@ export class CoreSite extends CoreAuthenticatedSite {
      * Deletes site's DB.
      */
     async deleteDB(): Promise<void> {
-        await CoreDB.deleteDB('Site-' + this.id);
+        await CoreDB.deleteDB(`Site-${this.id}`);
     }
 
     /**
@@ -581,7 +581,7 @@ export class CoreSite extends CoreAuthenticatedSite {
                     }
                 }
 
-                throw new CoreError('Site config not found: ' + name);
+                throw new CoreError(`Site config not found: ${name}`);
             } else {
                 // Return all settings in the same array.
                 const settings: CoreSiteConfig = {};

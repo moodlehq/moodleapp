@@ -437,7 +437,7 @@ export default class AddonModFeedbackFormPage implements OnInit, OnDestroy, CanL
             return;
         }
 
-        CoreNavigator.navigateToSitePath(ADDON_MOD_FEEDBACK_PAGE_NAME + `/${this.courseId}/${this.cmId}`, {
+        CoreNavigator.navigateToSitePath(`${ADDON_MOD_FEEDBACK_PAGE_NAME}/${this.courseId}/${this.cmId}`, {
             params: {
                 module: this.module,
                 tab: AddonModFeedbackIndexTabName.ANALYSIS,

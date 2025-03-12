@@ -122,7 +122,7 @@ export class AddonNotesSyncProvider extends CoreSyncBaseProvider<AddonNotesSyncR
             return currentSyncPromise;
         }
 
-        this.logger.debug('Try to sync notes for course ' + courseId);
+        this.logger.debug(`Try to sync notes for course ${courseId}`);
 
         const syncPromise = this.performSyncNotes(courseId, siteId);
 

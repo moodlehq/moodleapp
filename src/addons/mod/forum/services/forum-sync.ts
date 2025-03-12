@@ -213,12 +213,12 @@ export class AddonModForumSyncProvider extends CoreCourseActivitySyncBaseProvide
 
         // Verify that forum isn't blocked.
         if (CoreSync.isBlocked(ADDON_MOD_FORUM_COMPONENT, syncId, siteId)) {
-            this.logger.debug('Cannot sync forum ' + forumId + ' because it is blocked.');
+            this.logger.debug(`Cannot sync forum ${forumId} because it is blocked.`);
 
             throw new Error(Translate.instant('core.errorsyncblocked', { $a: this.componentTranslate }));
         }
 
-        this.logger.debug('Try to sync forum ' + forumId + ' for user ' + userId);
+        this.logger.debug(`Try to sync forum ${forumId} for user ${userId}`);
 
         const result: AddonModForumSyncResult = {
             warnings: [],
@@ -445,12 +445,12 @@ export class AddonModForumSyncProvider extends CoreCourseActivitySyncBaseProvide
 
         // Verify that forum isn't blocked.
         if (CoreSync.isBlocked(ADDON_MOD_FORUM_COMPONENT, syncId, siteId)) {
-            this.logger.debug('Cannot sync forum discussion ' + discussionId + ' because it is blocked.');
+            this.logger.debug(`Cannot sync forum discussion ${discussionId} because it is blocked.`);
 
             throw new Error(Translate.instant('core.errorsyncblocked', { $a: this.componentTranslate }));
         }
 
-        this.logger.debug('Try to sync forum discussion ' + discussionId + ' for user ' + userId);
+        this.logger.debug(`Try to sync forum discussion ${discussionId} for user ${userId}`);
 
         let forumId;
         const result: AddonModForumSyncResult = {
@@ -625,7 +625,7 @@ export class AddonModForumSyncProvider extends CoreCourseActivitySyncBaseProvide
     getForumSyncId(forumId: number, userId?: number): string {
         userId = userId || CoreSites.getCurrentSiteUserId();
 
-        return 'forum#' + forumId + '#' + userId;
+        return `forum#${forumId}#${userId}`;
     }
 
     /**
@@ -638,7 +638,7 @@ export class AddonModForumSyncProvider extends CoreCourseActivitySyncBaseProvide
     getDiscussionSyncId(discussionId: number, userId?: number): string {
         userId = userId || CoreSites.getCurrentSiteUserId();
 
-        return 'discussion#' + discussionId + '#' + userId;
+        return `discussion#${discussionId}#${userId}`;
     }
 
 }

@@ -49,7 +49,7 @@ export class AddonModDataFieldLatlongHandlerService implements AddonModDataField
         field: AddonModDataField,
         inputData: CoreFormFields<string>,
     ): AddonModDataSearchEntriesAdvancedFieldFormatted[] {
-        const fieldName = 'f_' + field.id;
+        const fieldName = `f_${field.id}`;
 
         if (inputData[fieldName]) {
             return [{
@@ -65,18 +65,18 @@ export class AddonModDataFieldLatlongHandlerService implements AddonModDataField
      * @inheritdoc
      */
     getFieldEditData(field: AddonModDataField, inputData: CoreFormFields<string>): AddonModDataSubfieldData[] {
-        const fieldName = 'f_' + field.id;
+        const fieldName = `f_${field.id}`;
 
         return [
             {
                 fieldid: field.id,
                 subfield: '0',
-                value: inputData[fieldName + '_0'] || '',
+                value: inputData[`${fieldName}_0`] || '',
             },
             {
                 fieldid: field.id,
                 subfield: '1',
-                value: inputData[fieldName + '_1'] || '',
+                value: inputData[`${fieldName}_1`] || '',
             },
         ];
     }
@@ -89,9 +89,9 @@ export class AddonModDataFieldLatlongHandlerService implements AddonModDataField
         inputData: CoreFormFields<string>,
         originalFieldData: AddonModDataEntryField,
     ): boolean {
-        const fieldName = 'f_' + field.id;
-        const lat = inputData[fieldName + '_0'] || '';
-        const long = inputData[fieldName + '_1'] || '';
+        const fieldName = `f_${field.id}`;
+        const lat = inputData[`${fieldName}_0`] || '';
+        const long = inputData[`${fieldName}_1`] || '';
         const originalLat = (originalFieldData && originalFieldData.content) || '';
         const originalLong = (originalFieldData && originalFieldData.content1) || '';
 

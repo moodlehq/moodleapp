@@ -153,9 +153,9 @@ export class AddonBlogOfflineService {
     async getOfflineEntryFilesFolderPath(params: AddonBlogOfflineParams, siteId?: string): Promise<string> {
         const site = await CoreSites.getSite(siteId);
         const siteFolderPath = CoreFile.getSiteFolder(site.id);
-        const folder = 'created' in params ? 'created-' + params.created : params.id;
+        const folder = 'created' in params ? `created-${params.created}` : params.id;
 
-        return CorePath.concatenatePaths(siteFolderPath, 'offlineblog/' + folder);
+        return CorePath.concatenatePaths(siteFolderPath, `offlineblog/${folder}`);
     }
 
     /**

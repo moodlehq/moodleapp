@@ -13,7 +13,6 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
-import { CoreError } from '@classes/errors/error';
 import { CoreCourse, CoreCourseModuleContentFile } from '@features/course/services/course';
 import { CoreCourseModuleData } from '@features/course/services/course-helper';
 import { CoreCourseLogHelper } from '@features/course/services/log-helper';
@@ -23,11 +22,12 @@ import { CoreSitesCommonWSOptions, CoreSites } from '@services/sites';
 import { CoreText, CoreTextFormat } from '@singletons/text';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreWSExternalFile, CoreWSExternalWarning } from '@services/ws';
-import { makeSingleton, Translate } from '@singletons';
+import { makeSingleton } from '@singletons';
 import { CorePath } from '@singletons/path';
 import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
 import { ADDON_MOD_IMSCP_COMPONENT_LEGACY } from '../constants';
 import { CoreCacheUpdateFrequency } from '@/core/constants';
+import { CoreCourseModuleHelper } from '@features/course/services/course-module-helper';
 
 /**
  * Service that provides some features for IMSCP.
@@ -88,24 +88,18 @@ export class AddonModImscpProvider {
      * @returns Cache key.
      */
     protected getImscpDataCacheKey(courseId: number): string {
-        return AddonModImscpProvider.ROOT_CACHE_KEY + 'imscp:' + courseId;
+        return `${AddonModImscpProvider.ROOT_CACHE_KEY}imscp:${courseId}`;
     }
 
     /**
-     * Get a imscp with key=value. If more than one is found, only the first will be returned.
+     * Get a imscp by course module ID.
      *
      * @param courseId Course ID.
-     * @param key Name of the property to check.
-     * @param value Value to search.
+     * @param cmId Course module ID.
      * @param options Other options.
      * @returns Promise resolved when the imscp is retrieved.
      */
-    protected async getImscpByKey(
-        courseId: number,
-        key: string,
-        value: number,
-        options: CoreSitesCommonWSOptions = {},
-    ): Promise<AddonModImscpImscp> {
+    async getImscp(courseId: number, cmId: number, options: CoreSitesCommonWSOptions = {}): Promise<AddonModImscpImscp> {
         const site = await CoreSites.getSite(options.siteId);
 
         const params: AddonModImscpGetImscpsByCoursesWSParams = {
@@ -122,24 +116,7 @@ export class AddonModImscpProvider {
         const response =
             await site.read<AddonModImscpGetImscpsByCoursesWSResponse>('mod_imscp_get_imscps_by_courses', params, preSets);
 
-        const currentImscp = response.imscps.find((imscp) => imscp[key] == value);
-        if (currentImscp) {
-            return currentImscp;
-        }
-
-        throw new CoreError(Translate.instant('core.course.modulenotfound'));
-    }
-
-    /**
-     * Get a imscp by course module ID.
-     *
-     * @param courseId Course ID.
-     * @param cmId Course module ID.
-     * @param options Other options.
-     * @returns Promise resolved when the imscp is retrieved.
-     */
-    getImscp(courseId: number, cmId: number, options: CoreSitesCommonWSOptions = {}): Promise<AddonModImscpImscp> {
-        return this.getImscpByKey(courseId, 'coursemodule', cmId, options);
+        return CoreCourseModuleHelper.getActivityByCmId(response.imscps, cmId);
     }
 
     /**
@@ -156,7 +133,7 @@ export class AddonModImscpProvider {
             }
 
             const filePath = CorePath.concatenatePaths(item.filepath, item.filename);
-            const filePathAlt = filePath.charAt(0) === '/' ? filePath.substring(1) : '/' + filePath;
+            const filePathAlt = filePath.charAt(0) === '/' ? filePath.substring(1) : `/${filePath}`;
 
             // Check if it's main file.
             return filePath === targetFilePath || filePathAlt === targetFilePath;

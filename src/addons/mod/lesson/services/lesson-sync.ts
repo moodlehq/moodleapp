@@ -197,12 +197,12 @@ export class AddonModLessonSyncProvider extends CoreCourseActivitySyncBaseProvid
 
         // Verify that lesson isn't blocked.
         if (!ignoreBlock && CoreSync.isBlocked(ADDON_MOD_LESSON_COMPONENT, lessonId, siteId)) {
-            this.logger.debug('Cannot sync lesson ' + lessonId + ' because it is blocked.');
+            this.logger.debug(`Cannot sync lesson ${lessonId} because it is blocked.`);
 
             throw new CoreSyncBlockedError(Translate.instant('core.errorsyncblocked', { $a: this.componentTranslate }));
         }
 
-        this.logger.debug('Try to sync lesson ' + lessonId + ' in site ' + siteId);
+        this.logger.debug(`Try to sync lesson ${lessonId} in site ${siteId}`);
 
         syncPromise = this.performSyncLesson(lessonId, askPassword, ignoreBlock, siteId);
 

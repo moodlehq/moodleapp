@@ -267,11 +267,11 @@ export default class CorePolicySitePolicyPage implements OnInit, OnDestroy {
 
         this.pendingPolicies?.forEach(policy => {
             if (policy.optional) {
-                this.policiesForm?.addControl('agreepolicy' + policy.versionid, new FormControl<number | undefined>(undefined, {
+                this.policiesForm?.addControl(`agreepolicy${policy.versionid}`, new FormControl<number | undefined>(undefined, {
                     validators: Validators.required,
                 }));
             } else {
-                this.policiesForm?.addControl('agreepolicy' + policy.versionid, new FormControl(false, {
+                this.policiesForm?.addControl(`agreepolicy${policy.versionid}`, new FormControl(false, {
                     validators: Validators.requiredTrue,
                     nonNullable: true,
                 }));
@@ -409,7 +409,7 @@ export default class CorePolicySitePolicyPage implements OnInit, OnDestroy {
         const acceptances: Record<number, number> = {};
 
         this.pendingPolicies?.forEach(policy => {
-            const control = this.policiesForm?.controls['agreepolicy' + policy.versionid];
+            const control = this.policiesForm?.controls[`agreepolicy${policy.versionid}`];
             if (!control) {
                 return;
             }

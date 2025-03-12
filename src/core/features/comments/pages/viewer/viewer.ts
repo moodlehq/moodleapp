@@ -226,7 +226,7 @@ export default class CoreCommentsViewerPage implements OnInit, OnDestroy, AfterV
                     message: Translate.instant('core.comments.commentsnotworking'),
                 });
             } else {
-                CoreAlerts.showError(error, { default: Translate.instant('core.error') + ': get_comments' });
+                CoreAlerts.showError(error, { default: `${Translate.instant('core.error')}: get_comments` });
             }
         } finally {
             this.commentsLoaded = true;

@@ -209,7 +209,7 @@ export class CoreSyncBaseProvider<T = void> {
      * @returns Unique identifier from component and id.
      */
     protected getUniqueSyncId(id: string | number): string {
-        return this.component + '#' + id;
+        return `${this.component}#${id}`;
     }
 
     /**

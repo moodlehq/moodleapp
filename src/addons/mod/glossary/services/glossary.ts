@@ -41,6 +41,7 @@ import { CoreCacheUpdateFrequency } from '@/core/constants';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreWSError } from '@classes/errors/wserror';
 import { CoreTextFormat, DEFAULT_TEXT_FORMAT } from '@singletons/text';
+import { CoreCourseModuleHelper } from '@features/course/services/course-module-helper';
 
 /**
  * Service that provides some features for glossaries.
@@ -420,7 +421,7 @@ export class AddonModGlossaryProvider {
      * @returns The cache key.
      */
     protected getCategoriesCacheKey(glossaryId: number): string {
-        return AddonModGlossaryProvider.ROOT_CACHE_KEY + 'categories:' + glossaryId;
+        return `${AddonModGlossaryProvider.ROOT_CACHE_KEY}categories:${glossaryId}`;
     }
 
     /**
@@ -775,13 +776,7 @@ export class AddonModGlossaryProvider {
     async getGlossary(courseId: number, cmId: number, options: CoreSitesCommonWSOptions = {}): Promise<AddonModGlossaryGlossary> {
         const glossaries = await this.getCourseGlossaries(courseId, options);
 
-        const glossary = glossaries.find((glossary) => glossary.coursemodule == cmId);
-
-        if (glossary) {
-            return glossary;
-        }
-
-        throw new CoreError(Translate.instant('core.course.modulenotfound'));
+        return CoreCourseModuleHelper.getActivityByCmId(glossaries, cmId);
     }
 
     /**
@@ -799,13 +794,7 @@ export class AddonModGlossaryProvider {
     ): Promise<AddonModGlossaryGlossary> {
         const glossaries = await this.getCourseGlossaries(courseId, options);
 
-        const glossary = glossaries.find((glossary) => glossary.id == glossaryId);
-
-        if (glossary) {
-            return glossary;
-        }
-
-        throw new CoreError(Translate.instant('core.course.modulenotfound'));
+        return CoreCourseModuleHelper.getActivityByField(glossaries, 'id', glossaryId);
     }
 
     /**

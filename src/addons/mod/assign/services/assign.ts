@@ -17,7 +17,7 @@ import { CoreSites, CoreSitesCommonWSOptions, CoreSitesReadingStrategy } from '@
 import { CoreSite } from '@classes/sites/site';
 import { CoreInterceptor } from '@classes/interceptor';
 import { CoreWSExternalWarning, CoreWSExternalFile, CoreWSFile } from '@services/ws';
-import { makeSingleton, Translate } from '@singletons';
+import { makeSingleton } from '@singletons';
 import { CoreCourseCommonModWSOptions, CoreCourseCommonModWSOptionsWithFilter } from '@features/course/services/course';
 import { CoreGrades } from '@features/grades/services/grades';
 import { CoreTime } from '@singletons/time';
@@ -46,6 +46,7 @@ import {
     AddonModAssignSubmissionStatusValues,
 } from '../constants';
 import { CoreTextFormat } from '@singletons/text';
+import { CoreCourseModuleHelper } from '@features/course/services/course-module-helper';
 
 declare module '@singletons/events' {
 
@@ -159,7 +160,7 @@ export class AddonModAssignProvider {
      */
     protected async getAssignmentByField(
         courseId: number,
-        key: string,
+        key: 'id' | 'cmid',
         value: number,
         options: CoreSitesCommonWSOptions = {},
     ): Promise<AddonModAssignAssign> {
@@ -190,15 +191,7 @@ export class AddonModAssignProvider {
         }
 
         // Search the assignment to return.
-        if (response.courses.length) {
-            const assignment = response.courses[0].assignments.find((assignment) => assignment[key] == value);
-
-            if (assignment) {
-                return assignment;
-            }
-        }
-
-        throw new CoreError(Translate.instant('core.course.modulenotfound'));
+        return CoreCourseModuleHelper.getActivityByField(response.courses?.[0].assignments, key, value);
     }
 
     /**
@@ -220,7 +213,7 @@ export class AddonModAssignProvider {
      * @returns Cache key.
      */
     protected getAssignmentCacheKey(courseId: number): string {
-        return AddonModAssignProvider.ROOT_CACHE_KEY + 'assignment:' + courseId;
+        return `${AddonModAssignProvider.ROOT_CACHE_KEY}assignment:${courseId}`;
     }
 
     /**
@@ -273,7 +266,7 @@ export class AddonModAssignProvider {
      * @returns Cache key.
      */
     protected getAssignmentUserMappingsCacheKey(assignId: number): string {
-        return AddonModAssignProvider.ROOT_CACHE_KEY + 'usermappings:' + assignId;
+        return `${AddonModAssignProvider.ROOT_CACHE_KEY}usermappings:${assignId}`;
     }
 
     /**
@@ -320,7 +313,7 @@ export class AddonModAssignProvider {
      * @returns Cache key.
      */
     protected getAssignmentGradesCacheKey(assignId: number): string {
-        return AddonModAssignProvider.ROOT_CACHE_KEY + 'assigngrades:' + assignId;
+        return `${AddonModAssignProvider.ROOT_CACHE_KEY}assigngrades:${assignId}`;
     }
 
     /**
@@ -356,10 +349,10 @@ export class AddonModAssignProvider {
         if (status === AddonModAssignGradingStates.GRADED
                 || status === AddonModAssignGradingStates.NOT_GRADED
                 || status === AddonModAssignGradingStates.GRADED_FOLLOWUP_SUBMIT) {
-            return 'addon.mod_assign.' + status;
+            return `addon.mod_assign.${status}`;
         }
 
-        return 'addon.mod_assign.markingworkflowstate' + status;
+        return `addon.mod_assign.markingworkflowstate${status}`;
     }
 
     /**
@@ -483,7 +476,7 @@ export class AddonModAssignProvider {
      * @returns Cache key.
      */
     protected getSubmissionsCacheKey(assignId: number): string {
-        return AddonModAssignProvider.ROOT_CACHE_KEY + 'submissions:' + assignId;
+        return `${AddonModAssignProvider.ROOT_CACHE_KEY}submissions:${assignId}`;
     }
 
     /**
@@ -706,7 +699,7 @@ export class AddonModAssignProvider {
      * @returns Cache key.
      */
     protected listParticipantsPrefixCacheKey(assignId: number): string {
-        return AddonModAssignProvider.ROOT_CACHE_KEY + 'participants:' + assignId;
+        return `${AddonModAssignProvider.ROOT_CACHE_KEY}participants:${assignId}`;
     }
 
     /**

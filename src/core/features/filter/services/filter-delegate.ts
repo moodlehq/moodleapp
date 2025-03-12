@@ -107,25 +107,27 @@ export class CoreFilterDelegateService extends CoreDelegate<CoreFilterHandler> {
      */
     async filterText(
         text: string,
-        filters?: CoreFilterFilter[],
-        options?: CoreFilterFormatTextOptions,
+        filters: CoreFilterFilter[] = [],
+        options: CoreFilterFormatTextOptions = {},
         skipFilters?: string[],
         siteId?: string,
     ): Promise<string> {
+        if (!filters.length) {
+            return this.removeNolinkTags(text);
+        }
+
         // Wait for filters to be initialized.
         await this.waitForReady();
         const enabled = this.hasHandlers(true);
         if (!enabled) {
             // No enabled filters, return the text.
-            return text;
+            return this.removeNolinkTags(text);
         }
 
         const site = await CoreSites.getSite(siteId);
 
-        filters = filters || [];
-        options = options || {};
-
         for (let i = 0; i < filters.length; i++) {
+
             const filter = filters[i];
             if (!this.isEnabledAndShouldApply(filter, options, site, skipFilters)) {
                 continue;
@@ -140,14 +142,21 @@ export class CoreFilterDelegateService extends CoreDelegate<CoreFilterHandler> {
 
                 text = newText || text;
             } catch (error) {
-                this.logger.error('Error applying filter' + filter.filter, error);
+                this.logger.error(`Error applying filter${filter.filter}`, error);
             }
         }
 
-        // Remove <nolink> tags for XHTML compatibility.
-        text = text.replace(/<\/?nolink>/gi, '');
+        return this.removeNolinkTags(text);
+    }
 
-        return text;
+    /**
+     * Remove <nolink> tags for XHTML compatibility.
+     *
+     * @param text The text to process.
+     * @returns The text with <nolink> tags removed.
+     */
+    protected removeNolinkTags(text: string): string {
+        return text.replace(/<\/?nolink>/gi, '');
     }
 
     /**
@@ -225,7 +234,7 @@ export class CoreFilterDelegateService extends CoreDelegate<CoreFilterHandler> {
                     [container, filter, options, viewContainerRef, component, componentId, siteId],
                 );
             } catch (error) {
-                this.logger.error('Error handling HTML' + filter.filter, error);
+                this.logger.error(`Error handling HTML${filter.filter}`, error);
             }
         }
     }

@@ -49,7 +49,7 @@ export class CoreSitePluginsBlockHandler extends CoreSitePluginsBaseHandler impl
         contextLevel: ContextLevel,
         instanceId: number,
     ): Promise<CoreBlockHandlerData> {
-        const className = this.handlerSchema.displaydata?.class || 'block_' + block.name;
+        const className = this.handlerSchema.displaydata?.class || `block_${block.name}`;
         let component: Type<ICoreBlockComponent> | undefined;
 
         if (this.handlerSchema.displaydata?.type === 'title') {

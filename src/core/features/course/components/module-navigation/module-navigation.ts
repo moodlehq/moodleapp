@@ -199,7 +199,7 @@ export class CoreCourseModuleNavigationComponent implements OnInit, OnDestroy {
             options.params = {
                 module,
             };
-            CoreNavigator.navigateToSitePath('course/' + this.courseId + '/' + module.id +'/module-preview', options);
+            CoreNavigator.navigateToSitePath(`course/${this.courseId}/${module.id}/module-preview`, options);
         } else {
             CoreCourseModuleDelegate.openActivityPage(module.modname, module, this.courseId, options);
         }

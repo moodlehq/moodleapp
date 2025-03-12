@@ -40,7 +40,7 @@ export class CoreCoursesIndexLinkHandlerService extends CoreContentLinksHandlerB
                 const pageParams: Params = {};
 
                 if (params.categoryid) {
-                    pageName += '/categories/' + params.categoryid;
+                    pageName += `/categories/${params.categoryid}`;
                 } else {
                     pageName += '/list';
                     pageParams.mode = 'all';

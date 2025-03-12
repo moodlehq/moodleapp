@@ -416,7 +416,7 @@ export class AddonCalendarProvider {
      * @returns Cache key.
      */
     protected getAccessInformationCacheKey(courseId?: number): string {
-        return AddonCalendarProvider.ROOT_CACHE_KEY + 'accessInformation:' + (courseId || 0);
+        return `${AddonCalendarProvider.ROOT_CACHE_KEY}accessInformation:${courseId || 0}`;
     }
 
     /**
@@ -469,7 +469,7 @@ export class AddonCalendarProvider {
      * @returns Cache key.
      */
     protected getAllowedEventTypesCacheKey(courseId?: number): string {
-        return AddonCalendarProvider.ROOT_CACHE_KEY + 'allowedEventTypes:' + (courseId || 0);
+        return `${AddonCalendarProvider.ROOT_CACHE_KEY}allowedEventTypes:${courseId || 0}`;
     }
 
     /**
@@ -636,7 +636,7 @@ export class AddonCalendarProvider {
      * @returns Cache key.
      */
     protected getEventCacheKey(id: number): string {
-        return AddonCalendarProvider.ROOT_CACHE_KEY + 'events:' + id;
+        return `${AddonCalendarProvider.ROOT_CACHE_KEY}events:${id}`;
     }
 
     /**
@@ -792,7 +792,7 @@ export class AddonCalendarProvider {
      * @returns Prefix Cache key.
      */
     protected getDayEventsPrefixCacheKey(): string {
-        return AddonCalendarProvider.ROOT_CACHE_KEY + 'day:';
+        return `${AddonCalendarProvider.ROOT_CACHE_KEY}day:`;
     }
 
     /**
@@ -902,7 +902,7 @@ export class AddonCalendarProvider {
      * @returns Prefix Cache key.
      */
     protected getEventsListPrefixCacheKey(): string {
-        return AddonCalendarProvider.ROOT_CACHE_KEY + 'events:';
+        return `${AddonCalendarProvider.ROOT_CACHE_KEY}events:`;
     }
 
     /**
@@ -992,7 +992,7 @@ export class AddonCalendarProvider {
      * @returns Prefix Cache key.
      */
     protected getMonthlyEventsPrefixCacheKey(): string {
-        return AddonCalendarProvider.ROOT_CACHE_KEY + 'monthly:';
+        return `${AddonCalendarProvider.ROOT_CACHE_KEY}monthly:`;
     }
 
     /**
@@ -1069,7 +1069,7 @@ export class AddonCalendarProvider {
      * @returns Prefix Cache key.
      */
     protected getUpcomingEventsPrefixCacheKey(): string {
-        return AddonCalendarProvider.ROOT_CACHE_KEY + 'upcoming:';
+        return `${AddonCalendarProvider.ROOT_CACHE_KEY}upcoming:`;
     }
 
     /**
@@ -1094,13 +1094,13 @@ export class AddonCalendarProvider {
      */
     async getViewUrl(view: string, time?: number, courseId?: string, siteId?: string): Promise<string> {
         const site = await CoreSites.getSite(siteId);
-        let url = CorePath.concatenatePaths(site.getURL(), 'calendar/view.php?view=' + view);
+        let url = CorePath.concatenatePaths(site.getURL(), `calendar/view.php?view=${view}`);
 
         if (time) {
-            url += '&time=' + time;
+            url += `&time=${time}`;
         }
         if (courseId) {
-            url += '&course=' + courseId;
+            url += `&course=${courseId}`;
         }
 
         return url;

@@ -295,7 +295,7 @@ export class CoreFileUploaderHelperProvider {
             extension = CoreMimetypeUtils.getExtension(result.mediaType);
 
             if (extension) {
-                nameAndDir.name += '.' + extension;
+                nameAndDir.name += `.${extension}`;
             }
         }
 
@@ -422,7 +422,7 @@ export class CoreFileUploaderHelperProvider {
         });
 
         this.actionSheet = await ActionSheetController.create({
-            header: title ? title : Translate.instant('core.fileuploader.' + (upload ? 'uploadafile' : 'selectafile')),
+            header: title ? title : Translate.instant(`core.fileuploader.${upload ? 'uploadafile' : 'selectafile'}`),
             buttons: buttons,
         });
         await this.actionSheet.present();
@@ -545,7 +545,7 @@ export class CoreFileUploaderHelperProvider {
         upload?: boolean,
         mimetypes?: string[],
     ): Promise<CoreWSUploadFileResult | FileEntry> {
-        this.logger.debug('Trying to record a ' + (isAudio ? 'audio' : 'video') + ' file');
+        this.logger.debug(`Trying to record a ${isAudio ? 'audio' : 'video'  } file`);
 
         let media: MediaFile | CoreFileUploaderAudioRecording;
 
@@ -570,7 +570,7 @@ export class CoreFileUploaderHelperProvider {
 
         // Make sure the path has the protocol. In iOS it doesn't.
         if (CorePlatform.isMobile() && path.indexOf('file://') == -1) {
-            path = 'file://' + path;
+            path = `file://${path}`;
         }
 
         const options = CoreFileUploader.getMediaUploadOptions(media);

@@ -54,7 +54,7 @@ export class CoreDataPrivacyService {
      * @returns Cache key.
      */
     protected getAccessInformationCacheKey(): string {
-        return CoreDataPrivacyService.ROOT_CACHE_KEY + 'accessInformation';
+        return `${CoreDataPrivacyService.ROOT_CACHE_KEY}accessInformation`;
     }
 
     /**
@@ -116,7 +116,7 @@ export class CoreDataPrivacyService {
      * @returns Cache key.
      */
     protected getDataRequestsCacheKey(): string {
-        return CoreDataPrivacyService.ROOT_CACHE_KEY + 'datarequests';
+        return `${CoreDataPrivacyService.ROOT_CACHE_KEY}datarequests`;
     }
 
     /**

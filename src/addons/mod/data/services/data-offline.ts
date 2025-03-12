@@ -207,7 +207,7 @@ export class AddonModDataOfflineProvider {
     protected async getDatabaseFolder(dataId: number, siteId?: string): Promise<string> {
         const site = await CoreSites.getSite(siteId);
         const siteFolderPath = CoreFile.getSiteFolder(site.getId());
-        const folderPath = 'offlinedatabase/' + dataId;
+        const folderPath = `offlinedatabase/${dataId}`;
 
         return CorePath.concatenatePaths(siteFolderPath, folderPath);
     }
@@ -224,7 +224,7 @@ export class AddonModDataOfflineProvider {
     async getEntryFieldFolder(dataId: number, entryId: number, fieldId: number, siteId?: string): Promise<string> {
         const folderPath = await this.getDatabaseFolder(dataId, siteId);
 
-        return CorePath.concatenatePaths(folderPath, entryId + '_' + fieldId);
+        return CorePath.concatenatePaths(folderPath, `${entryId}_${fieldId}`);
     }
 
     /**

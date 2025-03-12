@@ -759,7 +759,7 @@ export class AddonModWikiIndexComponent extends CoreCourseModuleMainActivityComp
 
         if (content.length > 0) {
             const editUrl = CorePath.concatenatePaths(CoreSites.getRequiredCurrentSite().getURL(), '/mod/wiki/edit.php');
-            content = content.replace(/href="edit\.php/g, 'href="' + editUrl);
+            content = content.replace(/href="edit\.php/g, `href="${editUrl}`);
         }
 
         return content;

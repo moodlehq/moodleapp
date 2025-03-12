@@ -89,7 +89,7 @@ export class CoreFilesComponent implements OnInit, DoCheck {
         this.contentText = this.files.reduce((previous, file) => {
             const text = CoreMimetypeUtils.getEmbeddedHtml(file);
 
-            return text ? previous + '<br>' + text : previous;
+            return text ? `${previous}<br>${text}` : previous;
         }, '');
     }
 

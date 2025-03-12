@@ -386,10 +386,10 @@ export class AddonModFeedbackIndexComponent extends CoreCourseModuleMainActivity
                     let label = '';
 
                     if (dataItem.value !== undefined) {
-                        label = '(' + dataItem.value + ') ';
+                        label = `(${dataItem.value}) `;
                     }
                     label += dataItem.answertext;
-                    label += Number(dataItem.quotient) > 0 ? ' (' + dataItem.quotient + '%)' : '';
+                    label += Number(dataItem.quotient) > 0 ? ` (${dataItem.quotient}%)` : '';
 
                     return label;
                 });
@@ -423,7 +423,7 @@ export class AddonModFeedbackIndexComponent extends CoreCourseModuleMainActivity
      */
     gotoAnswerQuestions(preview: boolean = false): void {
         CoreNavigator.navigateToSitePath(
-            ADDON_MOD_FEEDBACK_PAGE_NAME + `/${this.courseId}/${this.module.id}/form`,
+            `${ADDON_MOD_FEEDBACK_PAGE_NAME}/${this.courseId}/${this.module.id}/form`,
             {
                 params: {
                     preview,
@@ -456,7 +456,7 @@ export class AddonModFeedbackIndexComponent extends CoreCourseModuleMainActivity
      */
     openNonRespondents(): void {
         CoreNavigator.navigateToSitePath(
-            ADDON_MOD_FEEDBACK_PAGE_NAME + `/${this.courseId}/${this.module.id}/nonrespondents`,
+            `${ADDON_MOD_FEEDBACK_PAGE_NAME}/${this.courseId}/${this.module.id}/nonrespondents`,
             {
                 params: {
                     group: this.group,
@@ -474,7 +474,7 @@ export class AddonModFeedbackIndexComponent extends CoreCourseModuleMainActivity
         }
 
         CoreNavigator.navigateToSitePath(
-            ADDON_MOD_FEEDBACK_PAGE_NAME + `/${this.courseId}/${this.module.id}/attempts`,
+            `${ADDON_MOD_FEEDBACK_PAGE_NAME}/${this.courseId}/${this.module.id}/attempts`,
             {
                 params: {
                     group: this.group,

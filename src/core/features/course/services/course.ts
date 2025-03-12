@@ -279,7 +279,7 @@ export class CoreCourseProvider {
      */
     async clearAllCoursesStatus(siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
-        this.logger.debug('Clear all course status for site ' + site.id);
+        this.logger.debug(`Clear all course status for site ${site.id}`);
 
         await this.statusTables[site.getId()].delete();
         this.triggerCourseStatusChanged(
@@ -392,7 +392,7 @@ export class CoreCourseProvider {
      * @returns Cache key.
      */
     protected getActivitiesCompletionCacheKey(courseId: number, userId: number): string {
-        return CoreCourseProvider.ROOT_CACHE_KEY + 'activitiescompletion:' + courseId + ':' + userId;
+        return `${CoreCourseProvider.ROOT_CACHE_KEY}activitiescompletion:${courseId}:${userId}`;
     }
 
     /**
@@ -464,7 +464,7 @@ export class CoreCourseProvider {
      * @returns Cache key.
      */
     protected getCourseBlocksCacheKey(courseId: number): string {
-        return CoreCourseProvider.ROOT_CACHE_KEY + 'courseblocks:' + courseId;
+        return `${CoreCourseProvider.ROOT_CACHE_KEY}courseblocks:${courseId}`;
     }
 
     /**
@@ -812,7 +812,7 @@ export class CoreCourseProvider {
      * @returns Cache key.
      */
     protected getModuleBasicInfoByInstanceCacheKey(instanceId: number, moduleName: string): string {
-        return CoreCourseProvider.ROOT_CACHE_KEY + 'moduleByInstance:' + moduleName + ':' + instanceId;
+        return `${CoreCourseProvider.ROOT_CACHE_KEY}moduleByInstance:${moduleName}:${instanceId}`;
     }
 
     /**
@@ -822,7 +822,7 @@ export class CoreCourseProvider {
      * @returns Cache key.
      */
     protected getModuleCacheKey(moduleId: number): string {
-        return CoreCourseProvider.ROOT_CACHE_KEY + 'module:' + moduleId;
+        return `${CoreCourseProvider.ROOT_CACHE_KEY}module:${moduleId}`;
     }
 
     /**
@@ -832,7 +832,7 @@ export class CoreCourseProvider {
      * @returns Cache key.
      */
     protected getModuleByModNameCacheKey(modName: string): string {
-        return CoreCourseProvider.ROOT_CACHE_KEY + 'module:modName:' + modName;
+        return `${CoreCourseProvider.ROOT_CACHE_KEY}module:modName:${modName}`;
     }
 
     /**
@@ -858,7 +858,7 @@ export class CoreCourseProvider {
         const path = this.getModuleIconsPath();
 
         // Use default icon on core modules.
-        return path + moduleName + '.svg';
+        return `${path + moduleName  }.svg`;
     }
 
     /**
@@ -1061,7 +1061,7 @@ export class CoreCourseProvider {
      * @returns Cache key.
      */
     protected getSectionsCacheKey(courseId: number): string {
-        return CoreCourseProvider.ROOT_CACHE_KEY + 'sections:' + courseId;
+        return `${CoreCourseProvider.ROOT_CACHE_KEY}sections:${courseId}`;
     }
 
     /**
@@ -1615,7 +1615,7 @@ export class CoreCourseProvider {
      * @returns Translated name.
      */
     translateModuleName(moduleName: string, fallback?: string): string {
-        const langKey = 'core.mod_' + moduleName;
+        const langKey = `core.mod_${moduleName}`;
         const translated = Translate.instant(langKey);
 
         return translated !== langKey ?

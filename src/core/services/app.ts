@@ -104,11 +104,11 @@ export class CoreAppProvider {
      */
     getAppStoreUrl(storesConfig: CoreStoreConfig): string | undefined {
         if (CorePlatform.isIOS() && storesConfig.ios) {
-            return 'itms-apps://itunes.apple.com/app/' + storesConfig.ios;
+            return `itms-apps://itunes.apple.com/app/${storesConfig.ios}`;
         }
 
         if (CorePlatform.isAndroid() && storesConfig.android) {
-            return 'market://details?id=' + storesConfig.android;
+            return `market://details?id=${storesConfig.android}`;
         }
 
         if (CorePlatform.isMobile() && storesConfig.mobile) {

@@ -254,7 +254,7 @@ export class CoreH5PPlayer {
      * @returns Content identifier.
      */
     protected getContentId(id: number): string {
-        return 'cid-' + id;
+        return `cid-${id}`;
     }
 
     /**
@@ -366,7 +366,7 @@ export class CoreH5PPlayer {
             return '';
         }
 
-        return '<iframe src="' + this.getEmbedUrl(siteUrl, h5pUrl) + '" allowfullscreen="allowfullscreen"></iframe>';
+        return `<iframe src="${this.getEmbedUrl(siteUrl, h5pUrl)}" allowfullscreen="allowfullscreen"></iframe>`;
     }
 
     /**
@@ -377,7 +377,7 @@ export class CoreH5PPlayer {
      * @returns The embed URL.
      */
     protected getEmbedUrl(siteUrl: string, h5pUrl: string): string {
-        return CorePath.concatenatePaths(siteUrl, '/h5p/embed.php') + '?url=' + h5pUrl;
+        return `${CorePath.concatenatePaths(siteUrl, '/h5p/embed.php')}?url=${h5pUrl}`;
     }
 
     /**
@@ -386,7 +386,7 @@ export class CoreH5PPlayer {
      * @returns The HTML code with the resize script.
      */
     protected getResizeCode(): string {
-        return '<script src="' + this.getResizerScriptUrl() + '"></script>';
+        return `<script src="${this.getResizerScriptUrl()}"></script>`;
     }
 
     /**

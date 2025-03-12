@@ -374,7 +374,7 @@ export class CoreCommentsProvider {
         itemId: number,
         area: string = '',
     ): string {
-        return this.getCommentsPrefixCacheKey(contextLevel, instanceId) + ':' + component + ':' + itemId + ':' + area;
+        return `${this.getCommentsPrefixCacheKey(contextLevel, instanceId)}:${component}:${itemId}:${area}`;
     }
 
     /**
@@ -486,10 +486,10 @@ export class CoreCommentsProvider {
         const count = await getCommentsPageCount(0);
 
         if (trueCount || count < CoreCommentsProvider.pageSize) {
-            return count + '';
+            return `${count}`;
         } else if (CoreCommentsProvider.pageSizeOK && count >= CoreCommentsProvider.pageSize) {
             // Page Size is ok, show + in case it reached the limit.
-            return (CoreCommentsProvider.pageSize - 1) + '+';
+            return `${CoreCommentsProvider.pageSize - 1}+`;
         }
 
         const countMore = await getCommentsPageCount(1);
@@ -497,10 +497,10 @@ export class CoreCommentsProvider {
         if (countMore > 0) {
             CoreCommentsProvider.pageSizeOK = true;
 
-            return (CoreCommentsProvider.pageSize - 1) + '+';
+            return `${CoreCommentsProvider.pageSize - 1}+`;
         }
 
-        return count + '';
+        return `${count}`;
     }
 
     /**

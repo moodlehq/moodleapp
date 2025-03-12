@@ -212,7 +212,7 @@ export class CoreCourseModulePrefetchHandlerBase implements CoreCourseModulePref
      * @returns Unique ID.
      */
     getUniqueId(id: number): string {
-        return this.component + '#' + id;
+        return `${this.component}#${id}`;
     }
 
     /**

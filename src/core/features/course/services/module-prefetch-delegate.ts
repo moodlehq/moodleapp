@@ -216,7 +216,7 @@ export class CoreCourseModulePrefetchDelegateService extends CoreDelegate<CoreCo
      */
     async getCourseUpdates(modules: CoreCourseModuleData[], courseId: number): Promise<CourseUpdates> {
         // Check if there's already a getCourseUpdates in progress.
-        const id = Md5.hashAsciiStr(courseId + '#' + JSON.stringify(modules));
+        const id = Md5.hashAsciiStr(`${courseId}#${JSON.stringify(modules)}`);
         const siteId = CoreSites.getCurrentSiteId();
 
         if (this.courseUpdatesPromises[siteId] && this.courseUpdatesPromises[siteId][id] !== undefined) {
@@ -925,7 +925,7 @@ export class CoreCourseModulePrefetchDelegateService extends CoreDelegate<CoreCo
      * @returns Cache key.
      */
     protected getModuleUpdatesCacheKey(courseId: number, moduleId: number): string {
-        return this.getCourseUpdatesCacheKey(courseId) + ':' + moduleId;
+        return `${this.getCourseUpdatesCacheKey(courseId)}:${moduleId}`;
     }
 
     /**

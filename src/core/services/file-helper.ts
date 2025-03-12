@@ -99,7 +99,7 @@ export class CoreFileHelperProvider {
         if (!CoreUrl.isLocalFileUrl(url)) {
             /* In iOS, if we use the same URL in embedded browser and background download then the download only
                downloads a few bytes (cached ones). Add a hash to the URL so both URLs are different. */
-            url = url + '#moodlemobile-embedded';
+            url = `${url}#moodlemobile-embedded`;
 
             try {
                 await CoreOpener.openOnlineFile(url);
@@ -427,13 +427,13 @@ export class CoreFileHelperProvider {
         const regex = /(?:\.([^.]+))?$/;
         const regexResult = regex.exec(file.filename || file.name || '');
 
-        const configKey = 'CoreFileUnsupportedWarningDisabled-' + (regexResult?.[1] ?? 'unknown');
+        const configKey = `CoreFileUnsupportedWarningDisabled-${regexResult?.[1] ?? 'unknown'}`;
         const dontShowWarning = await CoreConfig.get(configKey, 0);
         if (dontShowWarning) {
             return;
         }
 
-        const message = Translate.instant('core.cannotopeninapp' + (onlyDownload ? 'download' : ''));
+        const message = Translate.instant(`core.cannotopeninapp${onlyDownload ? 'download' : ''}`);
         const okButton = Translate.instant(onlyDownload ? 'core.downloadfile' : 'core.openfile');
 
         try {
@@ -466,7 +466,7 @@ export class CoreFileHelperProvider {
             return false;
         }
 
-        const regEx = new RegExp('(,|^)' + fileType + '(,|$)', 'g');
+        const regEx = new RegExp(`(,|^)${fileType}(,|$)`, 'g');
 
         return !!fileTypeExcludeList.match(regEx);
     }
@@ -523,7 +523,7 @@ export class CoreFileHelperProvider {
         }
 
         const draftfileUrl = CorePath.concatenatePaths(siteUrl, 'draftfile.php');
-        const matches = text.match(new RegExp(CoreText.escapeForRegex(draftfileUrl) + '[^\'" ]+', 'ig'));
+        const matches = text.match(new RegExp(`${CoreText.escapeForRegex(draftfileUrl)}[^'" ]+`, 'ig'));
 
         if (!matches || !matches.length) {
             return { text };
@@ -598,7 +598,7 @@ export class CoreFileHelperProvider {
         }
 
         const draftfileUrl = CorePath.concatenatePaths(siteUrl, 'draftfile.php');
-        const draftfileUrlRegexPrefix = CoreText.escapeForRegex(draftfileUrl) + '/[^/]+/[^/]+/[^/]+/[^/]+/';
+        const draftfileUrlRegexPrefix = `${CoreText.escapeForRegex(draftfileUrl)}/[^/]+/[^/]+/[^/]+/[^/]+/`;
 
         files.forEach((file) => {
             // Get the file name from the URL instead of using file.filename because the URL can have encoded characters.
@@ -611,7 +611,7 @@ export class CoreFileHelperProvider {
 
             // Search the draftfile URL in the original text.
             const matches = originalText.match(
-                new RegExp(draftfileUrlRegexPrefix + CoreText.escapeForRegex(filename) + '[^\'" ]*', 'i'),
+                new RegExp(`${draftfileUrlRegexPrefix + CoreText.escapeForRegex(filename)}[^'" ]*`, 'i'),
             );
 
             if (!matches || !matches[0]) {

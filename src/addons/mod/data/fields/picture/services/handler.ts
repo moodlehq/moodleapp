@@ -54,7 +54,7 @@ export class AddonModDataFieldPictureHandlerService implements AddonModDataField
         field: AddonModDataField,
         inputData: CoreFormFields<string>,
     ): AddonModDataSearchEntriesAdvancedFieldFormatted[] {
-        const fieldName = 'f_' + field.id;
+        const fieldName = `f_${field.id}`;
 
         if (inputData[fieldName]) {
             return [{
@@ -71,7 +71,7 @@ export class AddonModDataFieldPictureHandlerService implements AddonModDataField
      */
     getFieldEditData(field: AddonModDataField, inputData: CoreFormFields<string>): AddonModDataSubfieldData[] {
         const files = this.getFieldEditFiles(field);
-        const fieldName = 'f_' + field.id + '_alttext';
+        const fieldName = `f_${field.id}_alttext`;
 
         return [
             {
@@ -91,7 +91,7 @@ export class AddonModDataFieldPictureHandlerService implements AddonModDataField
      * @inheritdoc
      */
     getFieldEditFiles(field: AddonModDataField): CoreFileEntry[] {
-        return CoreFileSession.getFiles(ADDON_MOD_DATA_COMPONENT_LEGACY, field.dataid + '_' + field.id);
+        return CoreFileSession.getFiles(ADDON_MOD_DATA_COMPONENT_LEGACY, `${field.dataid}_${field.id}`);
     }
 
     /**
@@ -102,7 +102,7 @@ export class AddonModDataFieldPictureHandlerService implements AddonModDataField
         inputData: CoreFormFields<string>,
         originalFieldData: AddonModDataEntryField,
     ): boolean {
-        const fieldName = 'f_' + field.id + '_alttext';
+        const fieldName = `f_${field.id}_alttext`;
         const altText = inputData[fieldName] || '';
         const originalAltText = originalFieldData?.content1 || '';
         if (altText != originalAltText) {

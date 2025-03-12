@@ -99,7 +99,7 @@ export default class CoreCoursesCategoriesPage implements OnInit, OnDestroy {
                 ws: 'core_course_get_categories',
                 name: this.title,
                 data: { categoryid: this.categoryId, category: 'course' },
-                url: '/course/index.php' + (this.categoryId > 0 ? `?categoryid=${this.categoryId}` : ''),
+                url: `/course/index.php${this.categoryId > 0 ? `?categoryid=${this.categoryId}` : ''}`,
             });
         });
     }
@@ -198,7 +198,7 @@ export default class CoreCoursesCategoriesPage implements OnInit, OnDestroy {
      */
     openCategory(categoryId: number): void {
         CoreNavigator.navigateToSitePath(
-            'courses/categories/' + categoryId,
+            `courses/categories/${categoryId}`,
             { params: {
                 enrolled: this.showOnlyEnrolled,
             } },

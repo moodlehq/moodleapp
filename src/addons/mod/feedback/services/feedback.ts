@@ -21,7 +21,7 @@ import { CoreFilepool } from '@services/filepool';
 import { CoreSites, CoreSitesCommonWSOptions, CoreSitesReadingStrategy } from '@services/sites';
 import { CoreObject } from '@singletons/object';
 import { CoreWSExternalFile, CoreWSExternalWarning, CoreWSStoredFile } from '@services/ws';
-import { makeSingleton, Translate } from '@singletons';
+import { makeSingleton } from '@singletons';
 import { AddonModFeedbackOffline } from './feedback-offline';
 import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
 import {
@@ -40,6 +40,7 @@ import { CoreCacheUpdateFrequency } from '@/core/constants';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreWSError } from '@classes/errors/wserror';
 import { CoreTextFormat } from '@singletons/text';
+import { CoreCourseModuleHelper } from '@features/course/services/course-module-helper';
 
 /**
  * Service that provides some features for feedbacks.
@@ -98,7 +99,7 @@ export class AddonModFeedbackProvider {
             if (item.rawValue === undefined) {
                 values = [''];
             } else {
-                item.rawValue = '' + item.rawValue;
+                item.rawValue = `${item.rawValue}`;
                 values = item.rawValue.split(ADDON_MOD_FEEDBACK_LINE_SEP);
             }
         } else {
@@ -353,7 +354,7 @@ export class AddonModFeedbackProvider {
      * @returns Cache key.
      */
     protected getAnalysisDataPrefixCacheKey(feedbackId: number): string {
-        return this.getFeedbackDataPrefixCacheKey(feedbackId) + ':analysis:';
+        return `${this.getFeedbackDataPrefixCacheKey(feedbackId)}:analysis:`;
     }
 
     /**
@@ -420,7 +421,7 @@ export class AddonModFeedbackProvider {
      * @returns Cache key.
      */
     protected getCompletedDataCacheKey(feedbackId: number): string {
-        return this.getFeedbackDataPrefixCacheKey(feedbackId) + ':completed:';
+        return `${this.getFeedbackDataPrefixCacheKey(feedbackId)}:completed:`;
     }
 
     /**
@@ -464,7 +465,7 @@ export class AddonModFeedbackProvider {
      * @returns Cache key.
      */
     protected getCurrentCompletedTimeModifiedDataCacheKey(feedbackId: number): string {
-        return this.getFeedbackDataPrefixCacheKey(feedbackId) + ':completedtime:';
+        return `${this.getFeedbackDataPrefixCacheKey(feedbackId)}:completedtime:`;
     }
 
     /**
@@ -517,7 +518,7 @@ export class AddonModFeedbackProvider {
      * @returns Cache key.
      */
     protected getCurrentValuesDataCacheKey(feedbackId: number): string {
-        return this.getFeedbackDataPrefixCacheKey(feedbackId) + ':currentvalues';
+        return `${this.getFeedbackDataPrefixCacheKey(feedbackId)}:currentvalues`;
     }
 
     /**
@@ -553,7 +554,7 @@ export class AddonModFeedbackProvider {
      * @returns Cache key.
      */
     protected getFeedbackAccessInformationDataCacheKey(feedbackId: number): string {
-        return this.getFeedbackDataPrefixCacheKey(feedbackId) + ':access';
+        return `${this.getFeedbackDataPrefixCacheKey(feedbackId)}:access`;
     }
 
     /**
@@ -563,7 +564,7 @@ export class AddonModFeedbackProvider {
      * @returns Cache key.
      */
     protected getFeedbackCacheKey(courseId: number): string {
-        return AddonModFeedbackProvider.ROOT_CACHE_KEY + 'feedback:' + courseId;
+        return `${AddonModFeedbackProvider.ROOT_CACHE_KEY}feedback:${courseId}`;
     }
 
     /**
@@ -587,8 +588,8 @@ export class AddonModFeedbackProvider {
      */
     protected async getFeedbackDataByKey(
         courseId: number,
-        key: string,
-        value: unknown,
+        key: 'id' | 'coursemodule',
+        value: number,
         options: CoreSitesCommonWSOptions = {},
     ): Promise<AddonModFeedbackWSFeedback> {
         const site = await CoreSites.getSite(options.siteId);
@@ -609,12 +610,7 @@ export class AddonModFeedbackProvider {
             preSets,
         );
 
-        const currentFeedback = response.feedbacks.find((feedback) => feedback[key] == value);
-        if (currentFeedback) {
-            return currentFeedback;
-        }
-
-        throw new CoreError(Translate.instant('core.course.modulenotfound'));
+        return CoreCourseModuleHelper.getActivityByField(response.feedbacks, key, value);
     }
 
     /**
@@ -672,7 +668,7 @@ export class AddonModFeedbackProvider {
      * @returns Cache key.
      */
     protected getItemsDataCacheKey(feedbackId: number): string {
-        return this.getFeedbackDataPrefixCacheKey(feedbackId) + ':items';
+        return `${this.getFeedbackDataPrefixCacheKey(feedbackId)}:items`;
     }
 
     /**
@@ -725,7 +721,7 @@ export class AddonModFeedbackProvider {
      * @returns Cache key.
      */
     protected getNonRespondentsDataPrefixCacheKey(feedbackId: number): string {
-        return this.getFeedbackDataPrefixCacheKey(feedbackId) + ':nonrespondents:';
+        return `${this.getFeedbackDataPrefixCacheKey(feedbackId)}:nonrespondents:`;
     }
 
     /**
@@ -901,7 +897,7 @@ export class AddonModFeedbackProvider {
      * @returns Cache key.
      */
     protected getResponsesAnalysisDataPrefixCacheKey(feedbackId: number): string {
-        return this.getFeedbackDataPrefixCacheKey(feedbackId) + ':responsesanalysis:';
+        return `${this.getFeedbackDataPrefixCacheKey(feedbackId)}:responsesanalysis:`;
     }
 
     /**
@@ -937,7 +933,7 @@ export class AddonModFeedbackProvider {
      * @returns Cache key.
      */
     protected getResumePageDataCacheKey(feedbackId: number): string {
-        return this.getFeedbackDataPrefixCacheKey(feedbackId) + ':launch';
+        return `${this.getFeedbackDataPrefixCacheKey(feedbackId)}:launch`;
     }
 
     /**

@@ -47,7 +47,7 @@ export class CoreCourseModuleDefaultHandler implements CoreCourseModuleHandler {
         const defaultData: CoreCourseModuleHandlerData = {
             icon: CoreCourse.getModuleIconSrc(module.modname, module.modicon),
             title: module.name,
-            class: 'core-course-default-handler core-course-module-' + module.modname + '-handler',
+            class: `core-course-default-handler core-course-module-${module.modname}-handler`,
             action: async (event: Event, module: CoreCourseModuleData, courseId: number, options?: CoreNavigationOptions) => {
                 event.preventDefault();
                 event.stopPropagation();
@@ -99,7 +99,7 @@ export class CoreCourseModuleDefaultHandler implements CoreCourseModuleHandler {
         options.params = options.params || {};
         Object.assign(options.params, { module });
 
-        await CoreNavigator.navigateToSitePath('course/' + courseId + '/' + module.id +'/module-preview', options);
+        await CoreNavigator.navigateToSitePath(`course/${courseId}/${module.id}/module-preview`, options);
     }
 
 }

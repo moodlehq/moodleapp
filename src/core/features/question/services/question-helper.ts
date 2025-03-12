@@ -196,7 +196,7 @@ export class CoreQuestionHelperProvider {
         const redoSelector = '[type="submit"][name*=redoslot], [type="submit"][name*=tryagain]';
 
         // Search redo button in feedback.
-        if (!this.searchBehaviourButton(question, 'html', '.outcome ' + redoSelector)) {
+        if (!this.searchBehaviourButton(question, 'html', `.outcome ${redoSelector}`)) {
             // Not found in question HTML.
             if (question.feedbackHtml) {
                 // We extracted the feedback already, search it in there.
@@ -327,13 +327,13 @@ export class CoreQuestionHelperProvider {
             question.html = question.html.replace(scriptCode, '');
 
             // Search init_question functions for this type.
-            const initMatches = scriptCode.match(new RegExp('M.qtype_' + question.type + '.init_question\\(.*?}\\);', 'mg'));
+            const initMatches = scriptCode.match(new RegExp(`M.qtype_${question.type}.init_question\\(.*?}\\);`, 'mg'));
             if (initMatches) {
                 let initMatch = initMatches.pop();
 
                 if (initMatch) {
                     // Remove start and end of the match, we only want the object.
-                    initMatch = initMatch.replace('M.qtype_' + question.type + '.init_question(', '');
+                    initMatch = initMatch.replace(`M.qtype_${question.type}.init_question(`, '');
                     initMatch = initMatch.substring(0, initMatch.length - 2);
 
                     // Try to convert it to an object and add it to the question.
@@ -362,7 +362,7 @@ export class CoreQuestionHelperProvider {
      * @returns Object where the keys are the names.
      */
     getAllInputNamesFromHtml(html: string): Record<string, boolean> {
-        const element = convertTextToHTMLElement('<form>' + html + '</form>');
+        const element = convertTextToHTMLElement(`<form>${html}</form>`);
         const form = <HTMLFormElement> element.children[0];
         const answers: Record<string, boolean> = {};
 
@@ -490,7 +490,7 @@ export class CoreQuestionHelperProvider {
             question.stateclass = state.stateclass;
         }
 
-        question.stateClass = 'core-question-' + (question.stateclass ?? 'unknown');
+        question.stateClass = `core-question-${question.stateclass ?? 'unknown'}`;
     }
 
     /**
@@ -590,7 +590,7 @@ export class CoreQuestionHelperProvider {
      * @param question Question.
      */
     loadLocalAnswersInHtml(question: CoreQuestionQuestion): void {
-        const element = convertTextToHTMLElement('<form>' + question.html + '</form>');
+        const element = convertTextToHTMLElement(`<form>${question.html}</form>`);
         const form = <HTMLFormElement> element.children[0];
 
         // Search all input elements.
@@ -618,7 +618,7 @@ export class CoreQuestionHelperProvider {
                 element.innerHTML = question.localAnswers[name];
             } else if (element.tagName == 'SELECT') {
                 // Search the selected option and select it.
-                const selected = element.querySelector('option[value="' + question.localAnswers[name] + '"]');
+                const selected = element.querySelector(`option[value="${question.localAnswers[name]}"]`);
                 if (selected) {
                     selected.setAttribute('selected', 'selected');
                 }

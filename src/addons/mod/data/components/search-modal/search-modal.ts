@@ -111,7 +111,7 @@ export class AddonModDataSearchModalComponent implements OnInit {
 
         // Replace the fields found on template.
         this.fieldsArray.forEach((field) => {
-            let replace = '[[' + field.name + ']]';
+            let replace = `[[${field.name}]]`;
             replace = replace.replace(/[-[\]/{}()*+?.\\^$|]/g, '\\$&');
             let replaceRegex = new RegExp(replace, 'gi');
 
@@ -121,14 +121,14 @@ export class AddonModDataSearchModalComponent implements OnInit {
             template = template.replace(replaceRegex, render);
 
             // Replace the field name tag.
-            replace = '[[' + field.name + '#name]]';
+            replace = `[[${field.name}#name]]`;
             replace = replace.replace(/[-[\]/{}()*+?.\\^$|]/g, '\\$&');
             replaceRegex = new RegExp(replace, 'gi');
 
             template = template.replace(replaceRegex, field.name);
 
             // Replace the field description tag.
-            replace = '[[' + field.name + '#description]]';
+            replace = `[[${field.name}#description]]`;
             replace = replace.replace(/[-[\]/{}()*+?.\\^$|]/g, '\\$&');
             replaceRegex = new RegExp(replace, 'gi');
 

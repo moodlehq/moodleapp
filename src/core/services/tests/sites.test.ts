@@ -72,8 +72,8 @@ describe('CoreSitesProvider', () => {
         // Wait the event to be processed.
         await CoreWait.nextTick();
 
-        expect(document.documentElement.classList.contains('theme-site-'+themeName)).toBe(true);
-        expect(document.documentElement.classList.contains('theme-site-'+themeName2)).toBe(false);
+        expect(document.documentElement.classList.contains(`theme-site-${themeName}`)).toBe(true);
+        expect(document.documentElement.classList.contains(`theme-site-${themeName2}`)).toBe(false);
 
         if (site.infos) {
             site.infos.theme = themeName2;
@@ -84,21 +84,21 @@ describe('CoreSitesProvider', () => {
         // Wait the event to be processed.
         await CoreWait.nextTick();
 
-        expect(document.documentElement.classList.contains('theme-site-'+themeName2)).toBe(true);
-        expect(document.documentElement.classList.contains('theme-site-'+themeName)).toBe(false);
+        expect(document.documentElement.classList.contains(`theme-site-${themeName2}`)).toBe(true);
+        expect(document.documentElement.classList.contains(`theme-site-${themeName}`)).toBe(false);
 
         CoreEvents.trigger(CoreEvents.LOGOUT);
 
-        expect(document.documentElement.classList.contains('theme-site-'+themeName)).toBe(false);
-        expect(document.documentElement.classList.contains('theme-site-'+themeName2)).toBe(false);
+        expect(document.documentElement.classList.contains(`theme-site-${themeName}`)).toBe(false);
+        expect(document.documentElement.classList.contains(`theme-site-${themeName2}`)).toBe(false);
 
         CoreEvents.trigger(CoreEvents.SITE_ADDED, site.infos , '42');
 
         // Wait the event to be processed.
         await CoreWait.nextTick();
 
-        expect(document.documentElement.classList.contains('theme-site-'+themeName2)).toBe(true);
-        expect(document.documentElement.classList.contains('theme-site-'+themeName)).toBe(false);
+        expect(document.documentElement.classList.contains(`theme-site-${themeName2}`)).toBe(true);
+        expect(document.documentElement.classList.contains(`theme-site-${themeName}`)).toBe(false);
     });
 
 });

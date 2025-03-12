@@ -119,7 +119,7 @@ export class AddonModChatSessionsSource extends CoreRoutedItemsManagerSource<Add
             sessionUser.userfullname = user.fullname;
         } catch {
             // Error getting profile, most probably the user is deleted.
-            sessionUser.userfullname = Translate.instant('core.deleteduser') + ' ' + sessionUser.userid;
+            sessionUser.userfullname = `${Translate.instant('core.deleteduser')} ${sessionUser.userid}`;
         }
     }
 

@@ -125,7 +125,7 @@ export class CoreSharedFilesProvider {
      * @returns Promise resolved when done, rejected otherwise.
      */
     async deleteInboxFile(entry: FileEntry): Promise<void> {
-        this.logger.debug('Delete inbox file: ' + entry.name);
+        this.logger.debug(`Delete inbox file: ${entry.name}`);
 
         await CorePromiseUtils.ignoreErrors(CoreFile.removeFileByFileEntry(entry));
 
@@ -193,7 +193,7 @@ export class CoreSharedFilesProvider {
     getSiteSharedFilesDirPath(siteId?: string): string {
         siteId = siteId || CoreSites.getCurrentSiteId();
 
-        return CoreFile.getSiteFolder(siteId) + '/' + CoreSharedFilesProvider.SHARED_FILES_FOLDER;
+        return `${CoreFile.getSiteFolder(siteId)}/${CoreSharedFilesProvider.SHARED_FILES_FOLDER}`;
     }
 
     /**

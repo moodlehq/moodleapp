@@ -14,7 +14,6 @@
 
 import { CoreCacheUpdateFrequency, DownloadStatus } from '@/core/constants';
 import { Injectable } from '@angular/core';
-import { CoreError } from '@classes/errors/error';
 import { CoreCourseCommonModWSOptions } from '@features/course/services/course';
 import { CoreCourseLogHelper } from '@features/course/services/log-helper';
 import { CoreFilepool } from '@services/filepool';
@@ -44,6 +43,7 @@ import {
     ADDON_MOD_SCORM_COMPONENT,
 } from '../constants';
 import { CorePromiseUtils } from '@singletons/promise-utils';
+import { CoreCourseModuleHelper } from '@features/course/services/course-module-helper';
 
 // Private constants.
 const VALID_STATUSES = ['notattempted', 'passed', 'completed', 'failed', 'incomplete', 'browsed', 'suspend'];
@@ -355,7 +355,7 @@ export class AddonModScormProvider {
                             oper = '==';
                         }
 
-                        element = '(\'' + trackData[element].status + '\' ' + oper + ' \'' + value + '\')';
+                        element = `('${trackData[element].status}' ${oper} '${value}')`;
                     } else {
                         element = 'false';
                     }
@@ -371,11 +371,11 @@ export class AddonModScormProvider {
             }
 
             // Add the element to the list of prerequisites.
-            stack.push(' ' + element + ' ');
+            stack.push(` ${element} `);
         });
 
         // eslint-disable-next-line no-eval
-        return eval(stack.join('') + ';');
+        return eval(`${stack.join('')};`);
     }
 
     /**
@@ -463,7 +463,7 @@ export class AddonModScormProvider {
      * @returns Cache key.
      */
     protected getAccessInformationCacheKey(scormId: number): string {
-        return AddonModScormProvider.ROOT_CACHE_KEY + 'accessInfo:' + scormId;
+        return `${AddonModScormProvider.ROOT_CACHE_KEY}accessInfo:${scormId}`;
     }
 
     /**
@@ -533,7 +533,7 @@ export class AddonModScormProvider {
      * @returns Cache key.
      */
     protected getAttemptCountCacheKey(scormId: number, userId: number): string {
-        return AddonModScormProvider.ROOT_CACHE_KEY + 'attemptcount:' + scormId + ':' + userId;
+        return `${AddonModScormProvider.ROOT_CACHE_KEY}attemptcount:${scormId}:${userId}`;
     }
 
     /**
@@ -762,7 +762,7 @@ export class AddonModScormProvider {
      * @returns Cache key.
      */
     protected getScormUserDataCacheKey(scormId: number, attempt: number): string {
-        return this.getScormUserDataCommonCacheKey(scormId) + ':' + attempt;
+        return `${this.getScormUserDataCommonCacheKey(scormId)}:${attempt}`;
     }
 
     /**
@@ -772,7 +772,7 @@ export class AddonModScormProvider {
      * @returns Cache key.
      */
     protected getScormUserDataCommonCacheKey(scormId: number): string {
-        return AddonModScormProvider.ROOT_CACHE_KEY + 'userdata:' + scormId;
+        return `${AddonModScormProvider.ROOT_CACHE_KEY}userdata:${scormId}`;
     }
 
     /**
@@ -829,7 +829,7 @@ export class AddonModScormProvider {
      * @returns Cache key.
      */
     protected getScosCacheKey(scormId: number): string {
-        return AddonModScormProvider.ROOT_CACHE_KEY + 'scos:' + scormId;
+        return `${AddonModScormProvider.ROOT_CACHE_KEY}scos:${scormId}`;
     }
 
     /**
@@ -1056,7 +1056,7 @@ export class AddonModScormProvider {
 
                 if (incomplete && sco.exitvalue == 'suspend') {
                     imageName = 'suspend';
-                    suspendedStr = ' - ' + Translate.instant('addon.mod_scorm.suspended');
+                    suspendedStr = ` - ${Translate.instant('addon.mod_scorm.suspended')}`;
                 }
             } else {
                 incomplete = true;
@@ -1081,7 +1081,7 @@ export class AddonModScormProvider {
 
         return {
             icon: STATUS_TO_ICON[imageName],
-            description: Translate.instant('addon.mod_scorm.' + descName) + suspendedStr,
+            description: Translate.instant(`addon.mod_scorm.${descName}`) + suspendedStr,
         };
     }
 
@@ -1092,7 +1092,7 @@ export class AddonModScormProvider {
      * @returns Cache key.
      */
     protected getScormDataCacheKey(courseId: number): string {
-        return AddonModScormProvider.ROOT_CACHE_KEY + 'scorm:' + courseId;
+        return `${AddonModScormProvider.ROOT_CACHE_KEY}scorm:${courseId}`;
     }
 
     /**
@@ -1106,8 +1106,8 @@ export class AddonModScormProvider {
      */
     protected async getScormByField(
         courseId: number,
-        key: string,
-        value: unknown,
+        key: 'coursemodule' | 'id',
+        value: number,
         options: AddonModScormGetScormOptions = {},
     ): Promise<AddonModScormScorm> {
 
@@ -1129,28 +1129,24 @@ export class AddonModScormProvider {
             preSets,
         );
 
-        const currentScorm = <AddonModScormScorm> response.scorms.find(scorm => scorm[key] == value);
-        if (!currentScorm) {
-            throw new CoreError(Translate.instant('core.course.modulenotfound'));
-        }
-
+        const scorm: AddonModScormScorm = CoreCourseModuleHelper.getActivityByField(response.scorms, key, value);
         // If the SCORM isn't available the WS returns a warning and it doesn't return timeopen and timeclosed.
-        if (currentScorm.timeopen === undefined) {
-            const warning = response.warnings?.find(warning => warning.itemid === currentScorm.id);
-            currentScorm.warningMessage = warning?.message;
+        if (scorm.timeopen === undefined) {
+            const warning = response.warnings?.find(warning => warning.itemid === scorm.id);
+            scorm.warningMessage = warning?.message;
         }
 
         if (response.options) {
             const scormOptions = CoreObject.toKeyValueMap(response.options, 'name', 'value');
 
             if (scormOptions.scormstandard) {
-                currentScorm.scormStandard = Number(scormOptions.scormstandard);
+                scorm.scormStandard = Number(scormOptions.scormstandard);
             }
         }
 
-        currentScorm.moduleurl = options.moduleUrl;
+        scorm.moduleurl = options.moduleUrl;
 
-        return currentScorm;
+        return scorm;
     }
 
     /**

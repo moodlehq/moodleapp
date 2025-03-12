@@ -40,7 +40,7 @@ export function CoreModalLateralTransitionEnter(baseEl: HTMLElement): Animation 
     if (wrapper) {
         const wrapperAnimation = createAnimation()
             .addElement(wrapper)
-            .fromTo('transform', 'translateX(' + OFF_RIGHT + ')', 'translateX(0)')
+            .fromTo('transform', `translateX(${OFF_RIGHT})`, 'translateX(0)')
             .fromTo('opacity', 0.8, 1);
 
         otherAnimations.push(wrapperAnimation);
@@ -78,7 +78,7 @@ export function CoreModalLateralTransitionLeave(baseEl: HTMLElement): Animation 
         const wrapperAnimation = createAnimation()
             .addElement(wrapper)
             .beforeStyles({ opacity: 1 })
-            .fromTo('transform', 'translateX(0)', 'translateX(' + OFF_RIGHT + ')');
+            .fromTo('transform', 'translateX(0)', `translateX(${OFF_RIGHT})`);
 
         otherAnimations.push(wrapperAnimation);
     }

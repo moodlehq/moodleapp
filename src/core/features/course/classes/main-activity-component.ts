@@ -24,6 +24,7 @@ import { CoreSites } from '@services/sites';
 import { CoreSyncResult } from '@services/sync';
 import { CoreAlerts } from '@services/overlays/alerts';
 import { Translate } from '@singletons';
+import { CoreCourseModuleHelper } from '../services/course-module-helper';
 
 /**
  * Template class to easily create CoreCourseModuleMainComponent of activities.
@@ -173,7 +174,7 @@ export class CoreCourseModuleMainActivityComponent extends CoreCourseModuleMainR
 
             this.finishSuccessfulFetch();
         } catch (error) {
-            if (!refresh && !CoreSites.getCurrentSite()?.isOfflineDisabled() && this.isNotFoundError(error)) {
+            if (!refresh && !CoreSites.getCurrentSite()?.isOfflineDisabled() && CoreCourseModuleHelper.isNotFoundError(error)) {
                 // Module not found, retry without using cache.
                 return await this.refreshContent(sync);
             }

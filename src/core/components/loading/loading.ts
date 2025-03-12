@@ -72,7 +72,7 @@ export class CoreLoadingComponent implements OnInit, OnChanges, AfterViewInit, A
         CoreDirectivesRegistry.register(this.element, this);
 
         // Calculate the unique ID.
-        this.uniqueId = 'core-loading-content-' + CoreUtils.getUniqueId('CoreLoadingComponent');
+        this.uniqueId = `core-loading-content-${CoreUtils.getUniqueId('CoreLoadingComponent')}`;
         this.element.setAttribute('id', this.uniqueId);
 
         // Throttle 20ms to let mutations resolve.

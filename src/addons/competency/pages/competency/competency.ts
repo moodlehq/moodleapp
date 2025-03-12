@@ -159,7 +159,7 @@ export default class AddonCompetencyCompetencyPage implements OnInit, OnDestroy 
 
             this.competency.evidence.forEach((evidence) => {
                 if (evidence.descidentifier) {
-                    const key = 'addon.competency.' + evidence.descidentifier;
+                    const key = `addon.competency.${evidence.descidentifier}`;
                     evidence.description = Translate.instant(key, { $a: evidence.desca });
                 }
             });

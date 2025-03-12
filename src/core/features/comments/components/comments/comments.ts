@@ -99,7 +99,7 @@ export class CoreCommentsCommentsComponent implements OnInit, OnChanges, OnDestr
                     newNumber = newNumber >= 0 ? newNumber : 0;
 
                     // Parse and unparse string.
-                    this.commentsCount = newNumber + '';
+                    this.commentsCount = `${newNumber}`;
                 }
             },
             CoreSites.getCurrentSiteId(),
@@ -185,7 +185,7 @@ export class CoreCommentsCommentsComponent implements OnInit, OnChanges, OnDestr
         }
 
         CoreNavigator.navigateToSitePath(
-            'comments/' + this.contextLevel + '/' + this.instanceId + '/' + this.component + '/' + this.itemId + '/',
+            `comments/${this.contextLevel}/${this.instanceId}/${this.component}/${this.itemId}/`,
             {
                 params: {
                     area: this.area,

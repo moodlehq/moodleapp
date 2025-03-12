@@ -665,7 +665,7 @@ export class CoreGradesHelperProvider {
 
             for (let i = gradingType; i >= 0; i--) {
                 grades.push({
-                    label: i + ' / ' + gradingType,
+                    label: `${i} / ${gradingType}`,
                     value: i,
                 });
             }

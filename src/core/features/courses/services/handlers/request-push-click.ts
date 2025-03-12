@@ -77,7 +77,7 @@ export class CoreCoursesRequestPushClickHandlerService implements CorePushNotifi
             const params: Params = {
                 course: result.course,
             };
-            let page = 'course/' + courseId;
+            let page = `course/${courseId}`;
 
             if (!result.enrolled) {
                 // User not enrolled (shouldn't happen), open the preview page.
