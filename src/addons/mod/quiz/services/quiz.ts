@@ -57,6 +57,7 @@ import { CoreCacheUpdateFrequency } from '@/core/constants';
 import { CoreObject } from '@singletons/object';
 import { CoreArray } from '@singletons/array';
 import { CoreTextFormat } from '@singletons/text';
+import { CoreCourseModuleHelper } from '@features/course/services/course-module-helper';
 
 declare module '@singletons/events' {
 
@@ -810,8 +811,8 @@ export class AddonModQuizProvider {
      */
     protected async getQuizByField(
         courseId: number,
-        key: string,
-        value: unknown,
+        key: 'coursemodule' | 'id',
+        value: number,
         options: CoreSitesCommonWSOptions = {},
     ): Promise<AddonModQuizQuizWSData> {
 
@@ -834,13 +835,7 @@ export class AddonModQuizProvider {
         );
 
         // Search the quiz.
-        const quiz = response.quizzes.find(quiz => quiz[key] == value);
-
-        if (!quiz) {
-            throw new CoreError(Translate.instant('core.course.modulenotfound'));
-        }
-
-        return quiz;
+        return CoreCourseModuleHelper.getActivityByCmId(response.quizzes, value);
     }
 
     /**

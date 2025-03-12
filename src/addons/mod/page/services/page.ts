@@ -15,16 +15,16 @@
 import { Injectable } from '@angular/core';
 import { CoreSitesCommonWSOptions, CoreSites } from '@services/sites';
 import { CoreWSExternalWarning, CoreWSExternalFile } from '@services/ws';
-import { makeSingleton, Translate } from '@singletons';
+import { makeSingleton } from '@singletons';
 import { CoreFilepool } from '@services/filepool';
 import { CoreCourse } from '@features/course/services/course';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreCourseLogHelper } from '@features/course/services/log-helper';
-import { CoreError } from '@classes/errors/error';
 import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
 import { ADDON_MOD_PAGE_COMPONENT_LEGACY } from '../constants';
 import { CoreCacheUpdateFrequency } from '@/core/constants';
 import { CoreTextFormat } from '@singletons/text';
+import { CoreCourseModuleHelper } from '@features/course/services/course-module-helper';
 
 /**
  * Service that provides some features for page.
@@ -42,25 +42,7 @@ export class AddonModPageProvider {
      * @param options Other options.
      * @returns Promise resolved when the page is retrieved.
      */
-    getPageData(courseId: number, cmId: number, options: CoreSitesCommonWSOptions = {}): Promise<AddonModPagePage> {
-        return this.getPageByKey(courseId, 'coursemodule', cmId, options);
-    }
-
-    /**
-     * Get a page.
-     *
-     * @param courseId Course ID.
-     * @param key Name of the property to check.
-     * @param value Value to search.
-     * @param options Other options.
-     * @returns Promise resolved when the page is retrieved.
-     */
-    protected async getPageByKey(
-        courseId: number,
-        key: string,
-        value: number,
-        options: CoreSitesCommonWSOptions = {},
-    ): Promise<AddonModPagePage> {
+    async getPageData(courseId: number, cmId: number, options: CoreSitesCommonWSOptions = {}): Promise<AddonModPagePage> {
         const site = await CoreSites.getSite(options.siteId);
 
         const params: AddonModPageGetPagesByCoursesWSParams = {
@@ -75,12 +57,7 @@ export class AddonModPageProvider {
 
         const response = await site.read<AddonModPageGetPagesByCoursesWSResponse>('mod_page_get_pages_by_courses', params, preSets);
 
-        const currentPage = response.pages.find((page) => page[key] === value);
-        if (currentPage) {
-            return currentPage;
-        }
-
-        throw new CoreError(Translate.instant('core.course.modulenotfound'));
+        return CoreCourseModuleHelper.getActivityByCmId(response.pages, cmId);
     }
 
     /**

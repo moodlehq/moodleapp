@@ -13,7 +13,6 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
-import { CoreError } from '@classes/errors/error';
 import { CoreSite } from '@classes/sites/site';
 import { CoreCourseCommonModWSOptions } from '@features/course/services/course';
 import { CoreCourseLogHelper } from '@features/course/services/log-helper';
@@ -54,6 +53,7 @@ import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreWSError } from '@classes/errors/wserror';
 import { CoreObject } from '@singletons/object';
 import { CoreTextFormat } from '@singletons/text';
+import { CoreCourseModuleHelper } from '@features/course/services/course-module-helper';
 
 declare module '@singletons/events' {
 
@@ -492,13 +492,8 @@ export class AddonModForumProvider {
      */
     async getForum(courseId: number, cmId: number, options: CoreSitesCommonWSOptions = {}): Promise<AddonModForumData> {
         const forums = await this.getCourseForums(courseId, options);
-        const forum = forums.find(forum => forum.cmid === cmId);
 
-        if (!forum) {
-            throw new CoreError(Translate.instant('core.course.modulenotfound'));
-        }
-
-        return forum;
+        return CoreCourseModuleHelper.getActivityByField(forums, 'cmid', cmId);
     }
 
     /**
@@ -511,13 +506,8 @@ export class AddonModForumProvider {
      */
     async getForumById(courseId: number, forumId: number, options: CoreSitesCommonWSOptions = {}): Promise<AddonModForumData> {
         const forums = await this.getCourseForums(courseId, options);
-        const forum = forums.find(forum => forum.id === forumId);
 
-        if (!forum) {
-            throw new Error(`Forum with id ${forumId} not found`);
-        }
-
-        return forum;
+        return CoreCourseModuleHelper.getActivityByField(forums, 'id', forumId);
     }
 
     /**

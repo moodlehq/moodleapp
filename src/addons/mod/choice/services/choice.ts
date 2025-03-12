@@ -21,7 +21,7 @@ import { CoreNetwork } from '@services/network';
 import { CoreFilepool } from '@services/filepool';
 import { CoreSites, CoreSitesCommonWSOptions } from '@services/sites';
 import { CoreStatusWithWarningsWSResponse, CoreWSExternalFile, CoreWSExternalWarning } from '@services/ws';
-import { makeSingleton, Translate } from '@singletons';
+import { makeSingleton } from '@singletons';
 import { AddonModChoiceOffline } from './choice-offline';
 import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
 import { ADDON_MOD_CHOICE_COMPONENT_LEGACY, AddonModChoiceShowResults } from '../constants';
@@ -29,6 +29,7 @@ import { CoreCacheUpdateFrequency } from '@/core/constants';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreSite } from '@classes/sites/site';
 import { CoreTextFormat } from '@singletons/text';
+import { CoreCourseModuleHelper } from '@features/course/services/course-module-helper';
 
 /**
  * Service that provides some features for choices.
@@ -219,20 +220,14 @@ export class AddonModChoiceProvider {
     }
 
     /**
-     * Get a choice with key=value. If more than one is found, only the first will be returned.
+     * Get a choice by course module ID.
      *
      * @param courseId Course ID.
-     * @param key Name of the property to check.
-     * @param value Value to search.
+     * @param cmId Course module ID.
      * @param options Other options.
      * @returns Promise resolved when the choice is retrieved.
      */
-    protected async getChoiceByDataKey(
-        courseId: number,
-        key: string,
-        value: unknown,
-        options: CoreSitesCommonWSOptions = {},
-    ): Promise<AddonModChoiceChoice> {
+    async getChoice(courseId: number, cmId: number, options: CoreSitesCommonWSOptions = {}): Promise<AddonModChoiceChoice> {
         const site = await CoreSites.getSite(options.siteId);
 
         const params: AddonModChoiceGetChoicesByCoursesWSParams = {
@@ -251,36 +246,7 @@ export class AddonModChoiceProvider {
             preSets,
         );
 
-        const currentChoice = response.choices.find((choice) => choice[key] == value);
-        if (currentChoice) {
-            return currentChoice;
-        }
-
-        throw new CoreError(Translate.instant('core.course.modulenotfound'));
-    }
-
-    /**
-     * Get a choice by course module ID.
-     *
-     * @param courseId Course ID.
-     * @param cmId Course module ID.
-     * @param options Other options.
-     * @returns Promise resolved when the choice is retrieved.
-     */
-    getChoice(courseId: number, cmId: number, options: CoreSitesCommonWSOptions = {}): Promise<AddonModChoiceChoice> {
-        return this.getChoiceByDataKey(courseId, 'coursemodule', cmId, options);
-    }
-
-    /**
-     * Get a choice by ID.
-     *
-     * @param courseId Course ID.
-     * @param choiceId Choice ID.
-     * @param options Other options.
-     * @returns Promise resolved when the choice is retrieved.
-     */
-    getChoiceById(courseId: number, choiceId: number, options: CoreSitesCommonWSOptions = {}): Promise<AddonModChoiceChoice> {
-        return this.getChoiceByDataKey(courseId, 'id', choiceId, options);
+        return CoreCourseModuleHelper.getActivityByCmId(response.choices, cmId);
     }
 
     /**

@@ -13,17 +13,17 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
-import { CoreError } from '@classes/errors/error';
 import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
 import { CoreCourse } from '@features/course/services/course';
 import { CoreCourseLogHelper } from '@features/course/services/log-helper';
 import { CoreSites, CoreSitesCommonWSOptions } from '@services/sites';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreWSExternalFile, CoreWSExternalWarning } from '@services/ws';
-import { makeSingleton, Translate } from '@singletons';
+import { makeSingleton } from '@singletons';
 import { ADDON_MOD_FOLDER_COMPONENT_LEGACY } from '../constants';
 import { CoreCacheUpdateFrequency } from '@/core/constants';
 import { CoreTextFormat } from '@singletons/text';
+import { CoreCourseModuleHelper } from '@features/course/services/course-module-helper';
 
 /**
  * Service that provides some features for folder.
@@ -41,25 +41,7 @@ export class AddonModFolderProvider {
      * @param options Other options.
      * @returns Promise resolved when the book is retrieved.
      */
-    getFolder(courseId: number, cmId: number, options?: CoreSitesCommonWSOptions): Promise<AddonModFolderFolder> {
-        return this.getFolderByKey(courseId, 'coursemodule', cmId, options);
-    }
-
-    /**
-     * Get a folder.
-     *
-     * @param courseId Course ID.
-     * @param key Name of the property to check.
-     * @param value Value to search.
-     * @param options Other options.
-     * @returns Promise resolved when the book is retrieved.
-     */
-    protected async getFolderByKey(
-        courseId: number,
-        key: string,
-        value: number,
-        options: CoreSitesCommonWSOptions = {},
-    ): Promise<AddonModFolderFolder> {
+    async getFolder(courseId: number, cmId: number, options: CoreSitesCommonWSOptions = {}): Promise<AddonModFolderFolder> {
         const site = await CoreSites.getSite(options.siteId);
 
         const params: AddonModFolderGetFoldersByCoursesWSParams = {
@@ -76,12 +58,7 @@ export class AddonModFolderProvider {
         const response =
             await site.read<AddonModFolderGetFoldersByCoursesWSResponse>('mod_folder_get_folders_by_courses', params, preSets);
 
-        const currentFolder = response.folders.find((folder) => folder[key] == value);
-        if (currentFolder) {
-            return currentFolder;
-        }
-
-        throw new CoreError(Translate.instant('core.course.modulenotfound'));
+        return CoreCourseModuleHelper.getActivityByCmId(response.folders, cmId);
     }
 
     /**

@@ -21,13 +21,14 @@ import { CoreFilepool } from '@services/filepool';
 import { CoreSites, CoreSitesCommonWSOptions } from '@services/sites';
 import { CoreWSError } from '@classes/errors/wserror';
 import { CoreStatusWithWarningsWSResponse, CoreWSExternalFile, CoreWSExternalWarning } from '@services/ws';
-import { makeSingleton, Translate } from '@singletons';
+import { makeSingleton } from '@singletons';
 import { AddonModSurveyOffline } from './survey-offline';
 import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
 import { ADDON_MOD_SURVEY_COMPONENT_LEGACY } from '../constants';
 import { CoreCacheUpdateFrequency } from '@/core/constants';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreTextFormat } from '@singletons/text';
+import { CoreCourseModuleHelper } from '@features/course/services/course-module-helper';
 
 /**
  * Service that provides some features for surveys.
@@ -88,20 +89,14 @@ export class AddonModSurveyProvider {
     }
 
     /**
-     * Get a survey data.
+     * Get a survey by course module ID.
      *
      * @param courseId Course ID.
-     * @param key Name of the property to check.
-     * @param value Value to search.
+     * @param cmId Course module ID.
      * @param options Other options.
      * @returns Promise resolved when the survey is retrieved.
      */
-    protected async getSurveyDataByKey(
-        courseId: number,
-        key: string,
-        value: number,
-        options: CoreSitesCommonWSOptions = {},
-    ): Promise<AddonModSurveySurvey> {
+    async getSurvey(courseId: number, cmId: number, options: CoreSitesCommonWSOptions = {}): Promise<AddonModSurveySurvey> {
         const site = await CoreSites.getSite(options.siteId);
 
         const params: AddonModSurveyGetSurveysByCoursesWSParams = {
@@ -118,36 +113,7 @@ export class AddonModSurveyProvider {
         const response =
             await site.read<AddonModSurveyGetSurveysByCoursesWSResponse>('mod_survey_get_surveys_by_courses', params, preSets);
 
-        const currentSurvey = response.surveys.find((survey) => survey[key] == value);
-        if (currentSurvey) {
-            return currentSurvey;
-        }
-
-        throw new CoreError(Translate.instant('core.course.modulenotfound'));
-    }
-
-    /**
-     * Get a survey by course module ID.
-     *
-     * @param courseId Course ID.
-     * @param cmId Course module ID.
-     * @param options Other options.
-     * @returns Promise resolved when the survey is retrieved.
-     */
-    getSurvey(courseId: number, cmId: number, options: CoreSitesCommonWSOptions = {}): Promise<AddonModSurveySurvey> {
-        return this.getSurveyDataByKey(courseId, 'coursemodule', cmId, options);
-    }
-
-    /**
-     * Get a survey by ID.
-     *
-     * @param courseId Course ID.
-     * @param id Survey ID.
-     * @param options Other options.
-     * @returns Promise resolved when the survey is retrieved.
-     */
-    getSurveyById(courseId: number, id: number, options: CoreSitesCommonWSOptions = {}): Promise<AddonModSurveySurvey> {
-        return this.getSurveyDataByKey(courseId, 'id', id, options);
+        return CoreCourseModuleHelper.getActivityByCmId(response.surveys, cmId);
     }
 
     /**
