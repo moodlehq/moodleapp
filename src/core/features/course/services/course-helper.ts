@@ -146,11 +146,7 @@ export type CorePrefetchStatusInfo = {
 export class CoreCourseHelperProvider {
 
     protected courseDwnPromises: { [s: string]: { [id: number]: Promise<void> } } = {};
-    protected logger: CoreLogger;
-
-    constructor() {
-        this.logger = CoreLogger.getInstance('CoreCourseHelperProvider');
-    }
+    protected logger = CoreLogger.getInstance('CoreCourseHelperProvider');
 
     /**
      * This function treats every module on the sections provided to load the handler data, treat completion

@@ -25,6 +25,7 @@ import { CoreWSExternalFile, CoreWSExternalWarning } from '@services/ws';
 import { makeSingleton, Translate } from '@singletons';
 import { ADDON_MOD_BBB_COMPONENT_LEGACY } from '../constants';
 import { CoreCacheUpdateFrequency } from '@/core/constants';
+import { CoreCourseModuleHelper } from '@features/course/services/course-module-helper';
 
 /**
  * Service that provides some features for Big Blue Button activity.
@@ -84,12 +85,7 @@ export class AddonModBBBService {
             preSets,
         );
 
-        const bbb = response.bigbluebuttonbns.find((bbb) => bbb.coursemodule == cmId);
-        if (bbb) {
-            return bbb;
-        }
-
-        throw new CoreError(Translate.instant('core.course.modulenotfound'));
+        return CoreCourseModuleHelper.getActivityByCmId(response.bigbluebuttonbns, cmId);
     }
 
     /**
@@ -374,13 +370,12 @@ export class AddonModBBBService {
     }
 
 }
-
 export const AddonModBBB = makeSingleton(AddonModBBBService);
 
 /**
  * Params of mod_bigbluebuttonbn_get_bigbluebuttonbns_by_courses WS.
  */
-export type AddonModBBBGetBigBlueButtonBNsByCoursesWSParams = {
+type AddonModBBBGetBigBlueButtonBNsByCoursesWSParams = {
     courseids?: number[]; // Array of course ids.
 };
 

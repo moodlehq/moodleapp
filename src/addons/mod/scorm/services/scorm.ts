@@ -14,7 +14,6 @@
 
 import { CoreCacheUpdateFrequency, DownloadStatus } from '@/core/constants';
 import { Injectable } from '@angular/core';
-import { CoreError } from '@classes/errors/error';
 import { CoreCourseCommonModWSOptions } from '@features/course/services/course';
 import { CoreCourseLogHelper } from '@features/course/services/log-helper';
 import { CoreFilepool } from '@services/filepool';
@@ -44,6 +43,7 @@ import {
     ADDON_MOD_SCORM_COMPONENT,
 } from '../constants';
 import { CorePromiseUtils } from '@singletons/promise-utils';
+import { CoreCourseModuleHelper } from '@features/course/services/course-module-helper';
 
 // Private constants.
 const VALID_STATUSES = ['notattempted', 'passed', 'completed', 'failed', 'incomplete', 'browsed', 'suspend'];
@@ -1106,8 +1106,8 @@ export class AddonModScormProvider {
      */
     protected async getScormByField(
         courseId: number,
-        key: string,
-        value: unknown,
+        key: 'coursemodule' | 'id',
+        value: number,
         options: AddonModScormGetScormOptions = {},
     ): Promise<AddonModScormScorm> {
 
@@ -1129,28 +1129,24 @@ export class AddonModScormProvider {
             preSets,
         );
 
-        const currentScorm = <AddonModScormScorm> response.scorms.find(scorm => scorm[key] == value);
-        if (!currentScorm) {
-            throw new CoreError(Translate.instant('core.course.modulenotfound'));
-        }
-
+        const scorm: AddonModScormScorm = CoreCourseModuleHelper.getActivityByField(response.scorms, key, value);
         // If the SCORM isn't available the WS returns a warning and it doesn't return timeopen and timeclosed.
-        if (currentScorm.timeopen === undefined) {
-            const warning = response.warnings?.find(warning => warning.itemid === currentScorm.id);
-            currentScorm.warningMessage = warning?.message;
+        if (scorm.timeopen === undefined) {
+            const warning = response.warnings?.find(warning => warning.itemid === scorm.id);
+            scorm.warningMessage = warning?.message;
         }
 
         if (response.options) {
             const scormOptions = CoreObject.toKeyValueMap(response.options, 'name', 'value');
 
             if (scormOptions.scormstandard) {
-                currentScorm.scormStandard = Number(scormOptions.scormstandard);
+                scorm.scormStandard = Number(scormOptions.scormstandard);
             }
         }
 
-        currentScorm.moduleurl = options.moduleUrl;
+        scorm.moduleurl = options.moduleUrl;
 
-        return currentScorm;
+        return scorm;
     }
 
     /**

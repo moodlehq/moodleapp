@@ -13,7 +13,6 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
-import { CoreError } from '@classes/errors/error';
 import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
 import { CoreCourseCommonModWSOptions } from '@features/course/services/course';
 import { CoreCourseLogHelper } from '@features/course/services/log-helper';
@@ -24,6 +23,7 @@ import { makeSingleton, Translate } from '@singletons';
 import { ADDON_MOD_CHAT_COMPONENT_LEGACY } from '../constants';
 import { CoreCacheUpdateFrequency } from '@/core/constants';
 import { CoreTextFormat } from '@singletons/text';
+import { CoreCourseModuleHelper } from '@features/course/services/course-module-helper';
 
 /**
  * Service that provides some features for chats.
@@ -56,12 +56,7 @@ export class AddonModChatProvider {
 
         const response = await site.read<AddonModChatGetChatsByCoursesWSResponse>('mod_chat_get_chats_by_courses', params, preSets);
 
-        const chat = response.chats.find((chat) => chat.coursemodule == cmId);
-        if (chat) {
-            return chat;
-        }
-
-        throw new CoreError(Translate.instant('core.course.modulenotfound'));
+        return CoreCourseModuleHelper.getActivityByCmId(response.chats, cmId);
     }
 
     /**

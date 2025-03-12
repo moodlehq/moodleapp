@@ -14,7 +14,6 @@
 
 import { DownloadStatus } from '@/core/constants';
 import { OnInit, OnDestroy, Input, Output, EventEmitter, Component, Optional, Inject } from '@angular/core';
-import { CoreAnyError } from '@classes/errors/error';
 import { CoreNetwork } from '@services/network';
 import { CoreSites } from '@services/sites';
 import { CoreUtils } from '@singletons/utils';
@@ -35,6 +34,7 @@ import { CoreModals } from '@services/overlays/modals';
 import { CoreErrorHelper, CoreErrorObject } from '@services/error-helper';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreAlerts } from '@services/overlays/alerts';
+import { CoreCourseModuleHelper } from '../services/course-module-helper';
 
 /**
  * Result of a resource download.
@@ -202,7 +202,7 @@ export class CoreCourseModuleMainResourceComponent implements OnInit, OnDestroy,
 
             this.finishSuccessfulFetch();
         } catch (error) {
-            if (!refresh && !CoreSites.getCurrentSite()?.isOfflineDisabled() && this.isNotFoundError(error)) {
+            if (!refresh && !CoreSites.getCurrentSite()?.isOfflineDisabled() && CoreCourseModuleHelper.isNotFoundError(error)) {
                 // Module not found, retry without using cache.
                 return await this.refreshContent();
             }
@@ -211,16 +211,6 @@ export class CoreCourseModuleMainResourceComponent implements OnInit, OnDestroy,
         } finally {
             this.showLoading = false;
         }
-    }
-
-    /**
-     * Check if an error is a "module not found" error.
-     *
-     * @param error Error.
-     * @returns Whether the error is a "module not found" error.
-     */
-    protected isNotFoundError(error: CoreAnyError): boolean {
-        return CoreErrorHelper.getErrorMessageFromError(error) === Translate.instant('core.course.modulenotfound');
     }
 
     /**

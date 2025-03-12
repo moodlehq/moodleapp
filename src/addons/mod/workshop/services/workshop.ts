@@ -22,7 +22,7 @@ import { CoreSites, CoreSitesCommonWSOptions, CoreSitesReadingStrategy } from '@
 import { CoreTextFormat, DEFAULT_TEXT_FORMAT } from '@singletons/text';
 import { CoreArray } from '@singletons/array';
 import { CoreStatusWithWarningsWSResponse, CoreWS, CoreWSExternalFile, CoreWSExternalWarning } from '@services/ws';
-import { makeSingleton, Translate } from '@singletons';
+import { makeSingleton } from '@singletons';
 import { CoreFormFields } from '@singletons/form';
 import { AddonModWorkshopOffline } from './workshop-offline';
 import {
@@ -42,6 +42,7 @@ import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
 import { CoreCacheUpdateFrequency } from '@/core/constants';
 import { CoreWSError } from '@classes/errors/wserror';
 import { CoreObject } from '@singletons/object';
+import { CoreCourseModuleHelper } from '@features/course/services/course-module-helper';
 
 declare module '@singletons/events' {
 
@@ -205,7 +206,7 @@ export class AddonModWorkshopProvider {
      */
     protected async getWorkshopByKey(
         courseId: number,
-        key: string,
+        key: 'coursemodule' | 'id',
         value: number,
         options: CoreSitesCommonWSOptions = {},
     ): Promise<AddonModWorkshopData> {
@@ -227,10 +228,7 @@ export class AddonModWorkshopProvider {
             preSets,
         );
 
-        const workshop = response.workshops.find((workshop) => workshop[key] == value);
-        if (!workshop) {
-            throw new CoreError(Translate.instant('core.course.modulenotfound'));
-        }
+        const workshop = CoreCourseModuleHelper.getActivityByField(response.workshops, key, value);
 
         // Set submission types for Moodle 3.5.
         if (workshop.submissiontypetext === undefined) {

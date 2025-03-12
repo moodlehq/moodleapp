@@ -39,6 +39,7 @@ import { CoreCacheUpdateFrequency } from '@/core/constants';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreObject } from '@singletons/object';
 import { CoreArray } from '@singletons/array';
+import { CoreCourseModuleHelper } from '@features/course/services/course-module-helper';
 
 declare module '@singletons/events' {
 
@@ -1397,11 +1398,10 @@ export class AddonModLessonProvider {
      */
     protected async getLessonByField(
         courseId: number,
-        key: string,
+        key: 'id' | 'coursemodule',
         value: number,
         options: CoreSitesCommonWSOptions = {},
     ): Promise<AddonModLessonLessonWSData> {
-
         const site = await CoreSites.getSite(options.siteId);
 
         const params: AddonModLessonGetLessonsByCoursesWSParams = {
@@ -1420,13 +1420,7 @@ export class AddonModLessonProvider {
             preSets,
         );
 
-        const currentLesson = response.lessons.find((lesson) => lesson[key] == value);
-
-        if (currentLesson) {
-            return currentLesson;
-        }
-
-        throw new CoreError(Translate.instant('core.course.modulenotfound'));
+        return CoreCourseModuleHelper.getActivityByField(response.lessons, key, value);
     }
 
     /**

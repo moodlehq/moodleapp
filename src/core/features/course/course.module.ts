@@ -41,6 +41,7 @@ import { CORE_COURSE_PAGE_NAME, CORE_COURSE_CONTENTS_PAGE_NAME } from './constan
 export async function getCourseServices(): Promise<Type<unknown>[]> {
     const { CoreCourseProvider } = await import('@features/course/services/course');
     const { CoreCourseHelperProvider } = await import('@features/course/services/course-helper');
+    const { CoreCourseModuleHelperService } = await import('@features/course/services/course-module-helper');
     const { CoreCourseLogHelperProvider } = await import('@features/course/services/log-helper');
     const { CoreCourseFormatDelegateService } = await import('@features/course/services/format-delegate');
     const { CoreCourseModuleDelegateService } = await import('@features/course/services/module-delegate');
@@ -52,6 +53,7 @@ export async function getCourseServices(): Promise<Type<unknown>[]> {
     return [
         CoreCourseProvider,
         CoreCourseHelperProvider,
+        CoreCourseModuleHelperService,
         CoreCourseLogHelperProvider,
         CoreCourseFormatDelegateService,
         CoreCourseModuleDelegateService,

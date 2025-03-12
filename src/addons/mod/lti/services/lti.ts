@@ -14,7 +14,6 @@
 
 import { Injectable } from '@angular/core';
 
-import { CoreError } from '@classes/errors/error';
 import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
 import { CoreSite } from '@classes/sites/site';
 import { CoreCourseLogHelper } from '@features/course/services/log-helper';
@@ -28,6 +27,7 @@ import { CoreWSExternalFile, CoreWSExternalWarning } from '@services/ws';
 import { makeSingleton, Translate } from '@singletons';
 import { ADDON_MOD_LTI_COMPONENT_LEGACY, ADDON_MOD_LTI_FEATURE_NAME } from '../constants';
 import { CoreCacheUpdateFrequency } from '@/core/constants';
+import { CoreCourseModuleHelper } from '@features/course/services/course-module-helper';
 
 /**
  * Service that provides some features for LTI.
@@ -102,12 +102,7 @@ export class AddonModLtiProvider {
 
         const response = await site.read<AddonModLtiGetLtisByCoursesWSResponse>('mod_lti_get_ltis_by_courses', params, preSets);
 
-        const currentLti = response.ltis.find((lti) => lti.coursemodule == cmId);
-        if (currentLti) {
-            return currentLti;
-        }
-
-        throw new CoreError(Translate.instant('core.course.modulenotfound'));
+        return CoreCourseModuleHelper.getActivityByCmId(response.ltis, cmId);
     }
 
     /**

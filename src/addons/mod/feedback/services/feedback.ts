@@ -21,7 +21,7 @@ import { CoreFilepool } from '@services/filepool';
 import { CoreSites, CoreSitesCommonWSOptions, CoreSitesReadingStrategy } from '@services/sites';
 import { CoreObject } from '@singletons/object';
 import { CoreWSExternalFile, CoreWSExternalWarning, CoreWSStoredFile } from '@services/ws';
-import { makeSingleton, Translate } from '@singletons';
+import { makeSingleton } from '@singletons';
 import { AddonModFeedbackOffline } from './feedback-offline';
 import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
 import {
@@ -40,6 +40,7 @@ import { CoreCacheUpdateFrequency } from '@/core/constants';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreWSError } from '@classes/errors/wserror';
 import { CoreTextFormat } from '@singletons/text';
+import { CoreCourseModuleHelper } from '@features/course/services/course-module-helper';
 
 /**
  * Service that provides some features for feedbacks.
@@ -587,8 +588,8 @@ export class AddonModFeedbackProvider {
      */
     protected async getFeedbackDataByKey(
         courseId: number,
-        key: string,
-        value: unknown,
+        key: 'id' | 'coursemodule',
+        value: number,
         options: CoreSitesCommonWSOptions = {},
     ): Promise<AddonModFeedbackWSFeedback> {
         const site = await CoreSites.getSite(options.siteId);
@@ -609,12 +610,7 @@ export class AddonModFeedbackProvider {
             preSets,
         );
 
-        const currentFeedback = response.feedbacks.find((feedback) => feedback[key] == value);
-        if (currentFeedback) {
-            return currentFeedback;
-        }
-
-        throw new CoreError(Translate.instant('core.course.modulenotfound'));
+        return CoreCourseModuleHelper.getActivityByField(response.feedbacks, key, value);
     }
 
     /**

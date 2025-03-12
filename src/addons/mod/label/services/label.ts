@@ -13,16 +13,16 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
-import { CoreError } from '@classes/errors/error';
 import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
 import { CoreFilepool } from '@services/filepool';
 import { CoreSites, CoreSitesCommonWSOptions } from '@services/sites';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreWSExternalFile, CoreWSExternalWarning } from '@services/ws';
-import { makeSingleton, Translate } from '@singletons';
+import { makeSingleton } from '@singletons';
 import { ADDON_MOD_LABEL_COMPONENT_LEGACY } from '../constants';
 import { CoreCacheUpdateFrequency } from '@/core/constants';
 import { CoreTextFormat } from '@singletons/text';
+import { CoreCourseModuleHelper } from '@features/course/services/course-module-helper';
 
 /**
  * Service that provides some features for labels.
@@ -43,20 +43,14 @@ export class AddonModLabelProvider {
     }
 
     /**
-     * Get a label with key=value. If more than one is found, only the first will be returned.
+     * Get a label by course module ID.
      *
      * @param courseId Course ID.
-     * @param key Name of the property to check.
-     * @param value Value to search.
+     * @param cmId Course module ID.
      * @param options Other options.
      * @returns Promise resolved when the label is retrieved.
      */
-    protected async getLabelByField(
-        courseId: number,
-        key: string,
-        value: number,
-        options: CoreSitesCommonWSOptions = {},
-    ): Promise<AddonModLabelLabel> {
+    async getLabel(courseId: number, cmId: number, options: CoreSitesCommonWSOptions = {}): Promise<AddonModLabelLabel> {
         const site = await CoreSites.getSite(options.siteId);
 
         const params: AddonModLabelGetLabelsByCoursesWSParams = {
@@ -73,36 +67,7 @@ export class AddonModLabelProvider {
         const response =
             await site.read<AddonModLabelGetLabelsByCoursesWSResponse>('mod_label_get_labels_by_courses', params, preSets);
 
-        const currentLabel = response.labels.find((label) => label[key] == value);
-        if (currentLabel) {
-            return currentLabel;
-        }
-
-        throw new CoreError(Translate.instant('core.course.modulenotfound'));
-    }
-
-    /**
-     * Get a label by course module ID.
-     *
-     * @param courseId Course ID.
-     * @param cmId Course module ID.
-     * @param options Other options.
-     * @returns Promise resolved when the label is retrieved.
-     */
-    getLabel(courseId: number, cmId: number, options: CoreSitesCommonWSOptions = {}): Promise<AddonModLabelLabel> {
-        return this.getLabelByField(courseId, 'coursemodule', cmId, options);
-    }
-
-    /**
-     * Get a label by ID.
-     *
-     * @param courseId Course ID.
-     * @param labelId Label ID.
-     * @param options Other options.
-     * @returns Promise resolved when the label is retrieved.
-     */
-    getLabelById(courseId: number, labelId: number, options: CoreSitesCommonWSOptions = {}): Promise<AddonModLabelLabel> {
-        return this.getLabelByField(courseId, 'id', labelId, options);
+        return CoreCourseModuleHelper.getActivityByCmId(response.labels, cmId);
     }
 
     /**
