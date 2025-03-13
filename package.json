@@ -115,7 +115,7 @@
         "es6-promise-plugin": "^4.2.2",
         "ionicons": "^7.4.0",
         "jszip": "^3.10.1",
-        "mathjax": "2.7.9",
+        "mathjax": "3.2.2",
         "mp3-mediarecorder": "4.0.5",
         "nl.kingsquare.cordova.background-audio": "^1.0.1",
         "ogv": "^1.9.0",
