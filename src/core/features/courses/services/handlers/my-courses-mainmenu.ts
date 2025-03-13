@@ -38,8 +38,7 @@ export class CoreCoursesMyCoursesMainMenuHandlerService implements CoreMainMenuH
     async isEnabled(): Promise<boolean> {
         const site = CoreSites.getRequiredCurrentSite();
 
-        const siteId = site.getId();
-        const disabled = await CoreCourses.isMyCoursesDisabled(siteId);
+        const disabled = CoreCourses.isMyCoursesDisabledInSite(site);
 
         if (disabled) {
             return false;
@@ -48,6 +47,8 @@ export class CoreCoursesMyCoursesMainMenuHandlerService implements CoreMainMenuH
         if (site.isVersionGreaterEqualThan('4.0')) {
             return true;
         }
+
+        const siteId = site.getId();
 
         // Dashboard cannot be disabled on 3.5 or 3.6 so it will never show this tab.
         const dashboardEnabled = await CoreDashboardHomeHandler.isEnabledForSite(siteId);

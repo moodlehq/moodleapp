@@ -1810,7 +1810,7 @@ export type CoreSiteWSPreSets = {
     updateInBackground?: boolean;
 
     /**
-     * Whether to also fetch in background the  original content (unfiltered and without rewriting URLs).
+     * Whether to also fetch in background the original content (unfiltered and without rewriting URLs).
      * Ignored if filter=false or data is not saved to cache.
      */
     fetchOriginalToo?: boolean | ((response: unknown) => boolean | Promise<boolean>);
