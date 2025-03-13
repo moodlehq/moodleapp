@@ -105,7 +105,7 @@ export class CoreFileComponent implements OnInit, OnDestroy {
         this.isIOS = CorePlatform.isIOS();
         this.defaultIsOpenWithPicker = CoreFileHelper.defaultIsOpenWithPicker();
         this.openButtonIcon = this.defaultIsOpenWithPicker ? 'fas-file' : 'fas-share-from-square';
-        this.openButtonLabel = this.defaultIsOpenWithPicker ? 'core.openfile' : 'core.openwith';
+        this.openButtonLabel = this.defaultIsOpenWithPicker ? 'core.openfile' : 'core.share';
 
         if (this.showSize && this.fileSize && this.fileSize >= 0) {
             this.fileSizeReadable = CoreText.bytesToSize(this.fileSize, 2);

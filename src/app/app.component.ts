@@ -98,6 +98,30 @@ export class AppComponent implements OnInit, AfterViewInit {
             });
         });
 
+        // Workaround for error "Blocked aria-hidden on an element because its descendant retained
+        // focus. The focus must not be hidden from assistive technology users. Avoid using
+        // aria-hidden on a focused element or its ancestor. Consider using the inert attribute
+        // instead, which will also prevent focus. For more details, see the aria-hidden section of the
+        // WAI-ARIA specification at https://w3c.github.io/aria/#aria-hidden."
+        const observer = new MutationObserver((mutations) => {
+            if (!(document.activeElement instanceof HTMLElement)) {
+                return;
+            }
+            for (const mutation of mutations) {
+                if (mutation.target instanceof HTMLElement &&
+                        mutation.target.ariaHidden === 'true' &&
+                        mutation.target.contains(document.activeElement)) {
+                    document.activeElement.blur();
+
+                    return;
+                }
+            }
+        });
+        observer.observe(document.body, {
+            attributeFilter: ['aria-hidden'],
+            subtree: true,
+        });
+
         // @todo Pause Youtube videos in Android when app is put in background or screen is locked?
         // See: https://github.com/moodlehq/moodleapp/blob/ionic3/src/app/app.component.ts#L312
     }
