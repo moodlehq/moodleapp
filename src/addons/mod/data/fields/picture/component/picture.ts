@@ -83,7 +83,7 @@ export class AddonModDataFieldPictureComponent extends AddonModDataFieldPluginBa
      */
     protected init(): void {
         if (this.searchMode) {
-            this.addControl('f_' + this.field.id);
+            this.addControl(`f_${this.field.id}`);
 
             return;
         }
@@ -95,10 +95,10 @@ export class AddonModDataFieldPictureComponent extends AddonModDataFieldPluginBa
 
         if (this.editMode) {
             this.maxSizeBytes = parseInt(this.field.param3, 10);
-            CoreFileSession.setFiles(this.component, this.database!.id + '_' + this.field.id, this.files);
+            CoreFileSession.setFiles(this.component, `${this.database!.id}_${this.field.id}`, this.files);
 
             const alttext = (this.value && this.value.content1) || '';
-            this.addControl('f_' + this.field.id + '_alttext', alttext);
+            this.addControl(`f_${this.field.id}_alttext`, alttext);
         }
     }
 
@@ -113,7 +113,7 @@ export class AddonModDataFieldPictureComponent extends AddonModDataFieldPluginBa
         // Get image or thumb.
         if (files.length > 0) {
             const filenameSeek = this.listMode
-                ? 'thumb_' + value?.content
+                ? `thumb_${value?.content}`
                 : value?.content;
             this.image = this.findFile(files, filenameSeek || '');
 

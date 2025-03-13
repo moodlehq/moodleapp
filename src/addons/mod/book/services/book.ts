@@ -16,7 +16,7 @@ import { Injectable } from '@angular/core';
 import { CoreSites, CoreSitesCommonWSOptions } from '@services/sites';
 import { CoreTagItem } from '@features/tag/services/tag';
 import { CoreWSExternalWarning, CoreWSExternalFile, CoreWS } from '@services/ws';
-import { makeSingleton, Translate } from '@singletons';
+import { makeSingleton } from '@singletons';
 import { CoreCourseLogHelper } from '@features/course/services/log-helper';
 import { CoreCourse, CoreCourseModuleContentFile } from '@features/course/services/course';
 import { CorePromiseUtils } from '@singletons/promise-utils';
@@ -28,6 +28,7 @@ import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
 import { ADDON_MOD_BOOK_COMPONENT } from '../constants';
 import { CoreUrl } from '@singletons/url';
 import { CoreCacheUpdateFrequency } from '@/core/constants';
+import { CoreCourseModuleHelper } from '@features/course/services/course-module-helper';
 
 /**
  * Service that provides some features for books.
@@ -45,26 +46,7 @@ export class AddonModBookProvider {
      * @param options Other options.
      * @returns Promise resolved when the book is retrieved.
      */
-    getBook(courseId: number, cmId: number, options: CoreSitesCommonWSOptions = {}): Promise<AddonModBookBookWSData> {
-        return this.getBookByField(courseId, 'coursemodule', cmId, options);
-    }
-
-    /**
-     * Get a book with key=value. If more than one is found, only the first will be returned.
-     *
-     * @param courseId Course ID.
-     * @param key Name of the property to check.
-     * @param value Value to search.
-     * @param options Common WS options.
-     * @returns Promise resolved when the book is retrieved.
-     */
-    protected async getBookByField(
-        courseId: number,
-        key: string,
-        value: number,
-        options: CoreSitesCommonWSOptions = {},
-    ): Promise<AddonModBookBookWSData> {
-
+    async getBook(courseId: number, cmId: number, options: CoreSitesCommonWSOptions = {}): Promise<AddonModBookBookWSData> {
         const site = await CoreSites.getSite(options.siteId);
         const params: AddonModBookGetBooksByCoursesWSParams = {
             courseids: [courseId],
@@ -78,13 +60,7 @@ export class AddonModBookProvider {
 
         const response: AddonModBookGetBooksByCoursesWSResponse = await site.read('mod_book_get_books_by_courses', params, preSets);
 
-        // Search the book.
-        const book = response.books.find((book) => book[key] == value);
-        if (book) {
-            return book;
-        }
-
-        throw new CoreError(Translate.instant('core.course.modulenotfound'));
+        return CoreCourseModuleHelper.getActivityByCmId(response.books, cmId);
     }
 
     /**
@@ -149,7 +125,7 @@ export class AddonModBookProvider {
             }
             let key: string;
             const chapter: string = matches[1];
-            const filepathIsChapter = content.filepath == '/' + chapter + '/';
+            const filepathIsChapter = content.filepath == `/${chapter}/`;
 
             // Init the chapter if it's not defined yet.
             map[chapter] = map[chapter] || { paths: {} };
@@ -165,11 +141,11 @@ export class AddonModBookProvider {
             if (filepathIsChapter) {
                 // It's a file in the root folder OR the WS isn't returning the filepath as it should (MDL-53671).
                 // Try to get the path to the file from the URL.
-                const split = content.fileurl.split('mod_book/chapter' + content.filepath);
+                const split = content.fileurl.split(`mod_book/chapter${content.filepath}`);
                 key = split[1] || content.filename; // Use filename if we couldn't find the path.
             } else {
                 // Remove the chapter folder from the path and add the filename.
-                key = content.filepath.replace('/' + chapter + '/', '') + content.filename;
+                key = content.filepath.replace(`/${chapter}/`, '') + content.filename;
             }
 
             map[chapter].paths[CoreUrl.decodeURIComponent(key)] = content.fileurl;
@@ -237,7 +213,7 @@ export class AddonModBookProvider {
         ): AddonModBookTocChapter => {
             const hidden = !!parseInt(chapter.hidden, 10);
 
-            const fullChapterNumber = previousNumber + (hidden ? 'x.' : chapterNumber + '.');
+            const fullChapterNumber = previousNumber + (hidden ? 'x.' : `${chapterNumber}.`);
 
             return {
                 id: parseInt(chapter.href.replace('/index.html', ''), 10),

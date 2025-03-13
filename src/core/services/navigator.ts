@@ -660,7 +660,7 @@ export class CoreNavigatorService {
      * @returns New param Id.
      */
     protected getNewParamId(): string {
-        return 'param-' + (++this.lastParamId);
+        return `param-${++this.lastParamId}`;
     }
 
     /**
@@ -697,9 +697,9 @@ export class CoreNavigatorService {
         } else if (parentPath && !routePath) {
             return parentPath;
         } else if (!parentPath && routePath) {
-            return '/' + routePath;
+            return `/${routePath}`;
         } else {
-            return parentPath + '/' + routePath;
+            return `${parentPath}/${routePath}`;
         }
     }
 

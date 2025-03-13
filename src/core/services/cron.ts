@@ -80,7 +80,7 @@ export class CoreCronDelegateService {
             this.logger.debug(`Cannot execute cron job because is invalid: ${name}`);
 
             throw new CoreError(
-                Translate.instant('core.errorsomethingwrong') + '<br>' + Translate.instant('core.errorsitesupport'),
+                `${Translate.instant('core.errorsomethingwrong')}<br>${Translate.instant('core.errorsitesupport')}`,
             );
         }
 
@@ -141,7 +141,7 @@ export class CoreCronDelegateService {
      * @returns Promise resolved when the handler finishes or reaches max time, rejected if it fails.
      */
     protected async executeHandler(name: string, force?: boolean, siteId?: string): Promise<void> {
-        this.logger.debug('Executing handler: ' + name);
+        this.logger.debug(`Executing handler: ${name}`);
 
         try {
             // Wrap the call in Promise.resolve to make sure it's a promise.
@@ -233,7 +233,7 @@ export class CoreCronDelegateService {
      * @returns Handler's last execution ID.
      */
     protected getHandlerLastExecutionId(name: string): string {
-        return 'last_execution_' + name;
+        return `last_execution_${name}`;
     }
 
     /**

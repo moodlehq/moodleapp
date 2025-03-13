@@ -316,7 +316,7 @@ export class CoreGroupsProvider {
      * @returns Cache key.
      */
     protected getUserGroupsInCourseCacheKey(courseId: number, userId: number): string {
-        return this.getUserGroupsInCoursePrefixCacheKey() + courseId + ':' + userId;
+        return `${this.getUserGroupsInCoursePrefixCacheKey() + courseId  }:${userId}`;
     }
 
     /**

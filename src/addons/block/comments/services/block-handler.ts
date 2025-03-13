@@ -46,7 +46,7 @@ export class AddonBlockCommentsHandlerService extends CoreBlockBaseHandler {
             title: 'addon.block_comments.pluginname',
             class: 'addon-block-comments',
             component: CoreBlockOnlyTitleComponent,
-            link: 'comments/' + contextLevel + '/' + instanceId + '/block_comments/0',
+            link: `comments/${contextLevel}/${instanceId}/block_comments/0`,
             linkParams: {
                 area: 'page_comments',
             },

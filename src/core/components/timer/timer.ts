@@ -122,11 +122,11 @@ export class CoreTimerComponent implements OnInit, OnDestroy {
                 for (let i = 0; i < this.underTimeClassThresholds.length; i++) {
                     const threshold = this.underTimeClassThresholds[i];
                     if (this.timeLeft <= threshold) {
-                        if (!container.classList.contains('core-timer-under-' + this.timeLeft)) {
+                        if (!container.classList.contains(`core-timer-under-${this.timeLeft}`)) {
                             // Add new class and remove the previous one.
                             const nextTreshold = this.underTimeClassThresholds[i + 1];
-                            container.classList.add('core-timer-under-' + threshold);
-                            nextTreshold && container.classList.remove('core-timer-under-' + nextTreshold);
+                            container.classList.add(`core-timer-under-${threshold}`);
+                            nextTreshold && container.classList.remove(`core-timer-under-${nextTreshold}`);
                         }
 
                         break;

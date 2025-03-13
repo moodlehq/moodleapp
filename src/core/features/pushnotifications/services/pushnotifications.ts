@@ -338,7 +338,7 @@ export class CorePushNotificationsProvider {
             appid:      CoreConstants.CONFIG.app_id,
             name:       Device.manufacturer || '',
             model:      Device.model,
-            platform:   Device.platform + '-fcm',
+            platform:   `${Device.platform}-fcm`,
             version:    Device.version,
             pushid:     this.pushID,
             uuid:       Device.uuid,

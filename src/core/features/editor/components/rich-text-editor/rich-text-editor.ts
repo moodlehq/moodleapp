@@ -182,7 +182,7 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterViewInit,
     ) {
         this.contentChanged = new EventEmitter<string>();
         this.element = elementRef.nativeElement;
-        this.pageInstance = 'app_' + Date.now(); // Generate a "unique" ID based on timestamp.
+        this.pageInstance = `app_${Date.now()}`; // Generate a "unique" ID based on timestamp.
     }
 
     /**
@@ -220,7 +220,7 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterViewInit,
 
         if (this.elementId) {
             // Prepend elementId with 'id_' like in web. Don't use a setter for this because the value shouldn't change.
-            this.elementId = 'id_' + this.elementId;
+            this.elementId = `id_${this.elementId}`;
             this.element.setAttribute('id', this.elementId);
         }
 
@@ -271,7 +271,7 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterViewInit,
 
         // Usually the label won't have an id, so we need to add one.
         if (!label.getAttribute('id')) {
-            label.setAttribute('id', 'rte-'+CoreUtils.getUniqueId('CoreEditorRichTextEditor'));
+            label.setAttribute('id', `rte-${CoreUtils.getUniqueId('CoreEditorRichTextEditor')}`);
         }
 
         updateArialabelledBy();
@@ -348,7 +348,7 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterViewInit,
         const newHeight = blankHeight + this.element.getBoundingClientRect().height;
 
         if (newHeight > this.minHeight) {
-            this.element.style.setProperty('--core-rte-height', (newHeight - 1)  + 'px');
+            this.element.style.setProperty('--core-rte-height', `${newHeight - 1}px`);
         } else {
             this.element.style.removeProperty('--core-rte-height');
         }
@@ -651,7 +651,7 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterViewInit,
     protected executeCommand({ name: command, parameters }: EditorCommand): void {
         if (parameters === 'block') {
             // eslint-disable-next-line deprecation/deprecation
-            document.execCommand('formatBlock', false, '<' + command + '>');
+            document.execCommand('formatBlock', false, `<${command}>`);
 
             return;
         }

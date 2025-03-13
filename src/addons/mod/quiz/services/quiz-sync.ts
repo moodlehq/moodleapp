@@ -272,7 +272,7 @@ export class AddonModQuizSyncProvider extends CoreCourseActivitySyncBaseProvider
 
         // Verify that quiz isn't blocked.
         if (CoreSync.isBlocked(ADDON_MOD_QUIZ_COMPONENT, quiz.id, siteId)) {
-            this.logger.debug('Cannot sync quiz ' + quiz.id + ' because it is blocked.');
+            this.logger.debug(`Cannot sync quiz ${quiz.id} because it is blocked.`);
 
             throw new CoreError(Translate.instant('core.errorsyncblocked', { $a: this.componentTranslate }));
         }
@@ -299,7 +299,7 @@ export class AddonModQuizSyncProvider extends CoreCourseActivitySyncBaseProvider
             siteId,
         };
 
-        this.logger.debug('Try to sync quiz ' + quiz.id + ' in site ' + siteId);
+        this.logger.debug(`Try to sync quiz ${quiz.id} in site ${siteId}`);
 
         // Sync offline logs.
         await CorePromiseUtils.ignoreErrors(

@@ -43,7 +43,7 @@ export class CoreErrorHelperService {
         }
 
         // Local error. Add an extra warning.
-        return errorMessage + '<br><br>' + Translate.instant('core.errorsomedatanotdownloaded');
+        return `${errorMessage}<br><br>${Translate.instant('core.errorsomedatanotdownloaded')}`;
     }
 
     /**
@@ -273,7 +273,7 @@ export class CoreErrorHelperService {
      */
     logUnhandledError(message: string, error: unknown): void {
        // eslint-disable-next-line no-console
-       console.error('Unhandled error: '+message, error);
+       console.error(`Unhandled error: ${message}`, error);
     }
 
 }

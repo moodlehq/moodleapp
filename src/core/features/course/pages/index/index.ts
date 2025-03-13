@@ -323,7 +323,7 @@ export default class CoreCourseIndexPage implements OnInit, OnDestroy {
             const tint = CoreColors.lighter(this.course.color, 50);
             this.courseThumb.nativeElement.style.setProperty('--course-color-tint', tint);
         } else if(this.course.colorNumber !== undefined) {
-            this.courseThumb.nativeElement.classList.add('course-color-' + this.course.colorNumber);
+            this.courseThumb.nativeElement.classList.add(`course-color-${this.course.colorNumber}`);
         }
     }
 

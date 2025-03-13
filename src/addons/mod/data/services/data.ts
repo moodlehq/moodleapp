@@ -24,7 +24,7 @@ import { CoreFilepool } from '@services/filepool';
 import { CoreSites, CoreSitesCommonWSOptions, CoreSitesReadingStrategy } from '@services/sites';
 import { CoreArray } from '@singletons/array';
 import { CoreWSExternalFile, CoreWSExternalWarning } from '@services/ws';
-import { makeSingleton, Translate } from '@singletons';
+import { makeSingleton } from '@singletons';
 import { AddonModDataFieldsDelegate } from './data-fields-delegate';
 import { AddonModDataOffline } from './data-offline';
 import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
@@ -38,6 +38,7 @@ import { CoreCacheUpdateFrequency } from '@/core/constants';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreWSError } from '@classes/errors/wserror';
 import { CoreTextFormat } from '@singletons/text';
+import { CoreCourseModuleHelper } from '@features/course/services/course-module-helper';
 
 declare module '@singletons/events' {
 
@@ -467,12 +468,12 @@ export class AddonModDataProvider {
      */
     fetchAllEntries(dataId: number, options: AddonModDataGetEntriesOptions = {}): Promise<AddonModDataEntry[]> {
         options.siteId = options.siteId || CoreSites.getCurrentSiteId();
-        options = Object.assign({
-            page: 0,
-            perPage: ADDON_MOD_DATA_ENTRIES_PER_PAGE,
-        }, options);
+        const pageOptions = {
+            perPage: options.perPage ?? ADDON_MOD_DATA_ENTRIES_PER_PAGE,
+            page: options.page ?? 0,
+        };
 
-        return this.fetchEntriesRecursive(dataId, [], options);
+        return this.fetchEntriesRecursive(dataId, [], options, pageOptions);
     }
 
     /**
@@ -487,15 +488,16 @@ export class AddonModDataProvider {
         dataId: number,
         entries: AddonModDataEntry[],
         options: AddonModDataGetEntriesOptions,
+        pageOptions: { perPage: number; page: number },
     ): Promise<AddonModDataEntry[]> {
         const result = await this.getEntries(dataId, options);
         entries = entries.concat(result.entries);
 
-        const canLoadMore = options.perPage! > 0 && ((options.page! + 1) * options.perPage!) < result.totalcount;
+        const canLoadMore = pageOptions.perPage > 0 && ((pageOptions.page + 1) * pageOptions.perPage) < result.totalcount;
         if (canLoadMore) {
-            options.page!++;
+            pageOptions.page++;
 
-            return this.fetchEntriesRecursive(dataId, entries, options);
+            return this.fetchEntriesRecursive(dataId, entries, options, pageOptions);
         }
 
         return entries;
@@ -508,7 +510,7 @@ export class AddonModDataProvider {
      * @returns Cache key.
      */
     protected getDatabaseDataCacheKey(courseId: number): string {
-        return AddonModDataProvider.ROOT_CACHE_KEY + 'data:' + courseId;
+        return `${AddonModDataProvider.ROOT_CACHE_KEY}data:${courseId}`;
     }
 
     /**
@@ -532,7 +534,7 @@ export class AddonModDataProvider {
      */
     protected async getDatabaseByKey(
         courseId: number,
-        key: string,
+        key: 'id' | 'coursemodule',
         value: number,
         options: CoreSitesCommonWSOptions = {},
     ): Promise<AddonModDataData> {
@@ -550,12 +552,7 @@ export class AddonModDataProvider {
         const response =
             await site.read<AddonModDataGetDatabasesByCoursesWSResponse>('mod_data_get_databases_by_courses', params, preSets);
 
-        const currentData = response.databases.find((data) => data[key] == value);
-        if (currentData) {
-            return currentData;
-        }
-
-        throw new CoreError(Translate.instant('core.course.modulenotfound'));
+        return CoreCourseModuleHelper.getActivityByField(response.databases, key, value);
     }
 
     /**
@@ -754,7 +751,7 @@ export class AddonModDataProvider {
      * @returns Cache key.
      */
     protected getEntryCacheKey(dataId: number, entryId: number): string {
-        return this.getDatabaseDataPrefixCacheKey(dataId) + ':entry:' + entryId;
+        return `${this.getDatabaseDataPrefixCacheKey(dataId)}:entry:${entryId}`;
     }
 
     /**
@@ -794,7 +791,7 @@ export class AddonModDataProvider {
      * @returns Cache key.
      */
     protected getFieldsCacheKey(dataId: number): string {
-        return this.getDatabaseDataPrefixCacheKey(dataId) + ':fields';
+        return `${this.getDatabaseDataPrefixCacheKey(dataId)}:fields`;
     }
 
     /**

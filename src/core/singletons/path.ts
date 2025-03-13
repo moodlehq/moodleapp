@@ -93,7 +93,7 @@ export class CorePath {
         if (lastCharLeft === '/' && firstCharRight === '/') {
             return leftPath + rightPath.substring(1);
         } else if (lastCharLeft !== '/' && firstCharRight !== '/') {
-            return leftPath + '/' + rightPath;
+            return `${leftPath}/${rightPath}`;
         } else {
             return leftPath + rightPath;
         }

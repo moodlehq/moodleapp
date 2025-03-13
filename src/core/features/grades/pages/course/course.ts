@@ -209,7 +209,7 @@ export default class CoreGradesCoursePage implements AfterViewInit, OnDestroy {
 
                     CoreDom.scrollToElement(
                         this.element.nativeElement,
-                        '#grade-' + row.id,
+                        `#grade-${row.id}`,
                     );
                     this.gradeId = undefined;
                 }

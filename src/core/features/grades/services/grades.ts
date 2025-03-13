@@ -65,7 +65,7 @@ export class CoreGradesProvider {
     protected getCourseGradesItemsCacheKey(courseId: number, userId: number, groupId?: number): string {
         groupId = groupId ?? 0;
 
-        return this.getCourseGradesPrefixCacheKey(courseId) + userId + ':' + groupId;
+        return `${this.getCourseGradesPrefixCacheKey(courseId) + userId  }:${groupId}`;
     }
 
     /**
@@ -75,7 +75,7 @@ export class CoreGradesProvider {
      * @returns Cache key.
      */
     protected getCourseGradesPrefixCacheKey(courseId: number): string {
-        return CoreGradesProvider.ROOT_CACHE_KEY + 'items:' + courseId + ':';
+        return `${CoreGradesProvider.ROOT_CACHE_KEY}items:${courseId}:`;
     }
 
     /**
@@ -85,7 +85,7 @@ export class CoreGradesProvider {
      * @returns Cache key.
      */
     protected getCourseGradesPermissionsCacheKey(courseId: number): string {
-        return this.getCourseGradesPrefixCacheKey(courseId) + ':canviewallgrades';
+        return `${this.getCourseGradesPrefixCacheKey(courseId)}:canviewallgrades`;
     }
 
     /**
@@ -94,7 +94,7 @@ export class CoreGradesProvider {
      * @returns Cache key.
      */
     protected getCoursesGradesCacheKey(): string {
-        return CoreGradesProvider.ROOT_CACHE_KEY + 'coursesgrades';
+        return `${CoreGradesProvider.ROOT_CACHE_KEY}coursesgrades`;
     }
 
     /**

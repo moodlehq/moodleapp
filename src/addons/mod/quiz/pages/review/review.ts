@@ -315,7 +315,7 @@ export default class AddonModQuizReviewPage implements OnInit {
         if (options.showAllDisabled) {
             url += '&showall=0';
         } else if (options.page && options.page > 0) {
-            url += `&page=${ options.page}`;
+            url += `&page=${options.page}`;
         }
 
         CoreAnalytics.logEvent({

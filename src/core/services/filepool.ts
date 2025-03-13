@@ -600,13 +600,13 @@ export class CoreFilepoolProvider {
             const treatedUrl = url.replace(hash, ''); // Remove the hash from the URL.
 
             // Check that the hash is valid.
-            if ('_' + Md5.hashAsciiStr('url:' + treatedUrl) == hash) {
+            if (`_${Md5.hashAsciiStr(`url:${treatedUrl}`)}` == hash) {
                 // The data found is a hash of the URL, don't need to add it again.
                 return filename;
             }
         }
 
-        return filename + '_' + Md5.hashAsciiStr('url:' + url);
+        return `${filename}_${Md5.hashAsciiStr(`url:${url}`)}`;
     }
 
     /**
@@ -890,7 +890,7 @@ export class CoreFilepoolProvider {
      * @returns Promise resolved when all status are cleared.
      */
     async clearAllPackagesStatus(siteId: string): Promise<void> {
-        this.logger.debug('Clear all packages status for site ' + siteId);
+        this.logger.debug(`Clear all packages status for site ${siteId}`);
 
         // Get all the packages to be able to "notify" the change in the status.
         const entries = await this.packagesTables[siteId].getMany();
@@ -1567,7 +1567,7 @@ export class CoreFilepoolProvider {
      * @returns File download ID.
      */
     protected getFileDownloadId(fileUrl: string, filePath: string): string {
-        return Md5.hashAsciiStr(fileUrl + '###' + filePath);
+        return Md5.hashAsciiStr(`${fileUrl}###${filePath}`);
     }
 
     /**
@@ -1578,7 +1578,7 @@ export class CoreFilepoolProvider {
      * @returns Event name.
      */
     protected getFileEventName(siteId: string, fileId: string): string {
-        return 'CoreFilepoolFile:' + siteId + ':' + fileId;
+        return `CoreFilepoolFile:${siteId}:${fileId}`;
     }
 
     /**
@@ -1698,7 +1698,7 @@ export class CoreFilepoolProvider {
      * @returns The path to the file relative to storage root.
      */
     protected async getFilePath(siteId: string, fileId: string, extension?: string, fileUrl?: string): Promise<string> {
-        let path = this.getFilepoolFolderPath(siteId) + '/' + fileId;
+        let path = `${this.getFilepoolFolderPath(siteId)}/${fileId}`;
 
         if (extension === undefined) {
             // We need the extension to be able to open files properly.
@@ -1706,13 +1706,13 @@ export class CoreFilepoolProvider {
                 const entry = await this.getFileInPool(siteId, fileId, fileUrl);
 
                 if (entry.extension) {
-                    path += '.' + entry.extension;
+                    path += `.${entry.extension}`;
                 }
             } catch (error) {
                 // If file not found, use the path without extension.
             }
         } else if (extension) {
-            path += '.' + extension;
+            path += `.${extension}`;
         }
 
         return path;
@@ -1752,7 +1752,7 @@ export class CoreFilepoolProvider {
      * @returns The root path to the filepool of the site.
      */
     getFilepoolFolderPath(siteId: string): string {
-        return CoreFile.getSiteFolder(siteId) + '/' + CoreFilepoolProvider.FOLDER;
+        return `${CoreFile.getSiteFolder(siteId)}/${CoreFilepoolProvider.FOLDER}`;
     }
 
     /**
@@ -1953,7 +1953,7 @@ export class CoreFilepoolProvider {
         } catch {
             // The file is not on disk.
             // We could not retrieve the file, delete the entries associated with that ID.
-            this.logger.debug('File ' + fileId + ' not found on disk');
+            this.logger.debug(`File ${fileId} not found on disk`);
             this.removeFileById(siteId, fileId);
             addToQueue(fileUrl);
 
@@ -2070,11 +2070,11 @@ export class CoreFilepoolProvider {
             // Guess the extension of the URL. This is for backwards compatibility.
             const candidate = CoreMimetypeUtils.guessExtensionFromUrl(url);
             if (candidate && candidate !== 'php') {
-                extension = '.' + candidate;
+                extension = `.${candidate}`;
             }
         }
 
-        return Md5.hashAsciiStr('url:' + url) + extension;
+        return Md5.hashAsciiStr(`url:${url}`) + extension;
     }
 
     /**
@@ -2144,7 +2144,7 @@ export class CoreFilepoolProvider {
      * @returns Package ID.
      */
     getPackageId(component: string, componentId?: string | number): string {
-        return Md5.hashAsciiStr(component + '#' + this.fixComponentId(componentId));
+        return Md5.hashAsciiStr(`${component}#${this.fixComponentId(componentId)}`);
     }
 
     /**
@@ -2356,7 +2356,7 @@ export class CoreFilepoolProvider {
             }
         } else if (CoreUrl.isGravatarUrl(fileUrl)) {
             // Extract gravatar ID.
-            filename = 'gravatar_' + CoreUrl.getLastFileWithoutParams(fileUrl);
+            filename = `gravatar_${CoreUrl.getLastFileWithoutParams(fileUrl)}`;
         } else if (CoreUrl.isThemeImageUrl(fileUrl)) {
             // Extract user ID.
             const matches = fileUrl.match(/\/core\/([^/]*)\//);
@@ -2364,7 +2364,7 @@ export class CoreFilepoolProvider {
                 filename = matches[1];
             }
             // Attach a constant and the image type.
-            filename = 'default_' + filename + '_' + CoreUrl.getLastFileWithoutParams(fileUrl);
+            filename = `default_${filename}_${CoreUrl.getLastFileWithoutParams(fileUrl)}`;
         } else {
             // Another URL. Just get what's after the last /.
             filename = CoreUrl.getLastFileWithoutParams(fileUrl);
@@ -2388,7 +2388,7 @@ export class CoreFilepoolProvider {
 
         if (hashes) {
             // Add hashes to the name.
-            filename += '_' + hashes.join('_');
+            filename += `_${hashes.join('_')}`;
         }
 
         return CoreText.removeSpecialCharactersForFiles(filename);
@@ -2787,7 +2787,7 @@ export class CoreFilepoolProvider {
         const filePath = item.path || undefined;
         const links = item.linksUnserialized || [];
 
-        this.logger.debug('Processing queue item: ' + siteId + ', ' + fileId);
+        this.logger.debug(`Processing queue item: ${siteId}, ${fileId}`);
 
         let entry: CoreFilepoolFileEntry | undefined;
 
@@ -2875,7 +2875,7 @@ export class CoreFilepoolProvider {
             }
 
             if (dropFromQueue) {
-                this.logger.debug('Item dropped from queue due to error: ' + fileUrl, errorObject);
+                this.logger.debug(`Item dropped from queue due to error: ${fileUrl}`, errorObject);
 
                 await CorePromiseUtils.ignoreErrors(this.queue.remove(siteId, fileId));
                 this.queue.treatDeferred(siteId, fileId, false, error);
@@ -2901,7 +2901,7 @@ export class CoreFilepoolProvider {
     protected async removeFileById(siteId: string, fileId: string): Promise<void> {
         // Get the path to the file first since it relies on the file object stored in the pool.
         // Don't use getFilePath to prevent performing 2 DB requests.
-        let path = this.getFilepoolFolderPath(siteId) + '/' + fileId;
+        let path = `${this.getFilepoolFolderPath(siteId)}/${fileId}`;
         let fileUrl: string | undefined;
 
         try {
@@ -2909,7 +2909,7 @@ export class CoreFilepoolProvider {
 
             fileUrl = entry.url;
             if (entry.extension) {
-                path += '.' + entry.extension;
+                path += `.${entry.extension}`;
             }
         } catch (error) {
             // If file not found, use the path without extension.

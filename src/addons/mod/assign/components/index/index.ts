@@ -341,7 +341,7 @@ export class AddonModAssignIndexComponent extends CoreCourseModuleMainActivityCo
         }
 
         CoreNavigator.navigateToSitePath(
-            ADDON_MOD_ASSIGN_PAGE_NAME + `/${this.courseId}/${this.module.id}/submission`,
+            `${ADDON_MOD_ASSIGN_PAGE_NAME}/${this.courseId}/${this.module.id}/submission`,
             {
                 params,
             },

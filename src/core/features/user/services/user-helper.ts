@@ -41,7 +41,7 @@ export class CoreUserHelperProvider {
 
         values = values.filter((value) => value && value.length > 0);
 
-        return values.join(separator + ' ');
+        return values.join(`${separator} `);
     }
 
     /**
@@ -58,10 +58,10 @@ export class CoreUserHelperProvider {
         const separator = Translate.instant('core.listsep');
 
         return roles.map((value) => {
-            const translation = Translate.instant('core.user.' + value.shortname);
+            const translation = Translate.instant(`core.user.${value.shortname}`);
 
             return translation.indexOf('core.user.') < 0 ? translation : value.shortname;
-        }).join(separator + ' ');
+        }).join(`${separator} `);
     }
 
     /**

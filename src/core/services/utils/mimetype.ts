@@ -301,10 +301,10 @@ export class CoreMimetypeUtilsProvider {
      */
     getFileIconForType(type: string): string {
         if (CoreSites.getCurrentSite() === undefined || CoreSites.getCurrentSite()?.isVersionGreaterEqualThan('4.0')) {
-            return 'assets/img/files/' + type + '.svg';
+            return `assets/img/files/${type}.svg`;
         }
 
-        return 'assets/img/files_legacy/' + type + '-64.png';
+        return `assets/img/files_legacy/${type}-64.png`;
     }
 
     /**
@@ -328,7 +328,7 @@ export class CoreMimetypeUtilsProvider {
 
         // Check extension corresponds to a mimetype to know if it's valid.
         if (extension && this.getMimeType(extension) === undefined) {
-            this.logger.warn('Guess file extension: Not valid extension ' + extension);
+            this.logger.warn(`Guess file extension: Not valid extension ${extension}`);
 
             return;
         }
@@ -353,7 +353,7 @@ export class CoreMimetypeUtilsProvider {
 
             // Check extension corresponds to a mimetype to know if it's valid.
             if (this.getMimeType(ext) === undefined) {
-                this.logger.warn('Get file extension: Not valid extension ' + ext);
+                this.logger.warn(`Get file extension: Not valid extension ${ext}`);
 
                 return;
             }
@@ -477,14 +477,14 @@ export class CoreMimetypeUtilsProvider {
         const safeMimetypeStr = mimetypeStr.replace(/\+/g, '_');
         const safeMimetypeTrns = Translate.instant(langPrefix + safeMimetype, { $a: translateParams });
         const safeMimetypeStrTrns = Translate.instant(langPrefix + safeMimetypeStr, { $a: translateParams });
-        const defaultTrns = Translate.instant(langPrefix + 'default', { $a: translateParams });
+        const defaultTrns = Translate.instant(`${langPrefix}default`, { $a: translateParams });
         let result = mimetype;
 
         if (safeMimetypeTrns != langPrefix + safeMimetype) {
             result = safeMimetypeTrns;
         } else if (safeMimetypeStrTrns != langPrefix + safeMimetypeStr) {
             result = safeMimetypeStrTrns;
-        } else if (defaultTrns != langPrefix + 'default') {
+        } else if (defaultTrns != `${langPrefix}default`) {
             result = defaultTrns;
         }
 
@@ -572,7 +572,7 @@ export class CoreMimetypeUtilsProvider {
      * @returns Translated name.
      */
     getTranslatedGroupName(name: string): string {
-        const key = 'assets.mimetypes.group:' + name;
+        const key = `assets.mimetypes.group:${name}`;
         const translated = Translate.instant(key);
 
         return translated != key ? translated : name;

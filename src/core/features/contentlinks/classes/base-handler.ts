@@ -92,7 +92,7 @@ export class CoreContentLinksHandlerBase implements CoreContentLinksHandler {
         if (pattern && this.patternMatchStart) {
             let patternString = pattern.toString();
             patternString = patternString.substring(1, patternString.length - 1); // Remove slashes from beginning and end.
-            pattern = new RegExp('^' + patternString);
+            pattern = new RegExp(`^${patternString}`);
         }
 
         return !!pattern && url.search(pattern) >= 0;

@@ -34,6 +34,7 @@ import {
 import { CoreCacheUpdateFrequency } from '@/core/constants';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreTextFormat } from '@singletons/text';
+import { CoreCourseModuleHelper } from '@features/course/services/course-module-helper';
 
 /**
  * Service that provides some features for wikis.
@@ -155,7 +156,7 @@ export class AddonModWikiProvider {
      * @returns Cache key.
      */
     protected getPageContentsCacheKey(pageId: number): string {
-        return AddonModWikiProvider.ROOT_CACHE_KEY + 'page:' + pageId;
+        return `${AddonModWikiProvider.ROOT_CACHE_KEY}page:${pageId}`;
     }
 
     /**
@@ -230,7 +231,7 @@ export class AddonModWikiProvider {
      * @returns Cache key.
      */
     protected getSubwikiFilesCacheKey(wikiId: number, groupId: number, userId: number): string {
-        return this.getSubwikiFilesCacheKeyPrefix(wikiId) + ':' + groupId + ':' + userId;
+        return `${this.getSubwikiFilesCacheKeyPrefix(wikiId)}:${groupId}:${userId}`;
     }
 
     /**
@@ -240,7 +241,7 @@ export class AddonModWikiProvider {
      * @returns Cache key.
      */
     protected getSubwikiFilesCacheKeyPrefix(wikiId: number): string {
-        return AddonModWikiProvider.ROOT_CACHE_KEY + 'subwikifiles:' + wikiId;
+        return `${AddonModWikiProvider.ROOT_CACHE_KEY}subwikifiles:${wikiId}`;
     }
 
     /**
@@ -300,7 +301,7 @@ export class AddonModWikiProvider {
      * @returns Cache key.
      */
     protected getSubwikiPagesCacheKey(wikiId: number, groupId: number, userId: number): string {
-        return this.getSubwikiPagesCacheKeyPrefix(wikiId) + ':' + groupId + ':' + userId;
+        return `${this.getSubwikiPagesCacheKeyPrefix(wikiId)}:${groupId}:${userId}`;
     }
 
     /**
@@ -310,7 +311,7 @@ export class AddonModWikiProvider {
      * @returns Cache key.
      */
     protected getSubwikiPagesCacheKeyPrefix(wikiId: number): string {
-        return AddonModWikiProvider.ROOT_CACHE_KEY + 'subwikipages:' + wikiId;
+        return `${AddonModWikiProvider.ROOT_CACHE_KEY}subwikipages:${wikiId}`;
     }
 
     /**
@@ -349,7 +350,7 @@ export class AddonModWikiProvider {
      * @returns Cache key.
      */
     protected getSubwikisCacheKey(wikiId: number): string {
-        return AddonModWikiProvider.ROOT_CACHE_KEY + 'subwikis:' + wikiId;
+        return `${AddonModWikiProvider.ROOT_CACHE_KEY}subwikis:${wikiId}`;
     }
 
     /**
@@ -360,25 +361,7 @@ export class AddonModWikiProvider {
      * @param options Other options.
      * @returns Promise resolved when the wiki is retrieved.
      */
-    getWiki(courseId: number, cmId: number, options: CoreSitesCommonWSOptions = {}): Promise<AddonModWikiWiki> {
-        return this.getWikiByField(courseId, 'coursemodule', cmId, options);
-    }
-
-    /**
-     * Get a wiki with key=value. If more than one is found, only the first will be returned.
-     *
-     * @param courseId Course ID.
-     * @param key Name of the property to check.
-     * @param value Value to search.
-     * @param options Other options.
-     * @returns Promise resolved when the wiki is retrieved.
-     */
-    protected async getWikiByField(
-        courseId: number,
-        key: string,
-        value: unknown,
-        options: CoreSitesCommonWSOptions = {},
-    ): Promise<AddonModWikiWiki> {
+    async getWiki(courseId: number, cmId: number, options: CoreSitesCommonWSOptions = {}): Promise<AddonModWikiWiki> {
         const site = await CoreSites.getSite(options.siteId);
 
         const params: AddonModWikiGetWikisByCoursesWSParams = {
@@ -393,24 +376,7 @@ export class AddonModWikiProvider {
 
         const response = await site.read<AddonModWikiGetWikisByCoursesWSResponse>('mod_wiki_get_wikis_by_courses', params, preSets);
 
-        const currentWiki = response.wikis.find((wiki) => wiki[key] == value);
-        if (currentWiki) {
-            return currentWiki;
-        }
-
-        throw new CoreError(Translate.instant('core.course.modulenotfound'));
-    }
-
-    /**
-     * Get a wiki by wiki ID.
-     *
-     * @param courseId Course ID.
-     * @param id Wiki ID.
-     * @param options Other options.
-     * @returns Promise resolved when the wiki is retrieved.
-     */
-    getWikiById(courseId: number, id: number, options: CoreSitesCommonWSOptions = {}): Promise<AddonModWikiWiki> {
-        return this.getWikiByField(courseId, 'id', id, options);
+        return CoreCourseModuleHelper.getActivityByCmId(response.wikis, cmId);
     }
 
     /**
@@ -420,7 +386,7 @@ export class AddonModWikiProvider {
      * @returns Cache key.
      */
     protected getWikiDataCacheKey(courseId: number): string {
-        return AddonModWikiProvider.ROOT_CACHE_KEY + 'wiki:' + courseId;
+        return `${AddonModWikiProvider.ROOT_CACHE_KEY}wiki:${courseId}`;
     }
 
     /**

@@ -55,7 +55,7 @@ export class AddonModFeedbackAnalysisLinkHandlerService extends CoreContentLinks
                     );
 
                     await CoreNavigator.navigateToSitePath(
-                        ADDON_MOD_FEEDBACK_PAGE_NAME + `/${module.course}/${module.id}`,
+                        `${ADDON_MOD_FEEDBACK_PAGE_NAME}/${module.course}/${module.id}`,
                         {
                             params: {
                                 module,

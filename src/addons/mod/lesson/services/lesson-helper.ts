@@ -558,7 +558,7 @@ export class AddonModLessonHelperProvider {
             }
         }
 
-        return Translate.instant('addon.mod_lesson.retakelabel' + (includeDuration ? 'full' : 'short'), data);
+        return Translate.instant(`addon.mod_lesson.retakelabel${includeDuration ? 'full' : 'short'}`, data);
     }
 
     /**

@@ -179,7 +179,7 @@ export class CoreH5PHelper {
         // Notify that the unzip is starting.
         options.onProgress && options.onProgress({ message: 'core.unzipping' });
 
-        const queueId = siteId + ':saveH5P:' + fileUrl;
+        const queueId = `${siteId}:saveH5P:${fileUrl}`;
 
         await CoreH5P.queueRunner.run(queueId, () => CoreH5PHelper.performSave(fileUrl, file, { ...options, siteId }));
     }
@@ -199,7 +199,7 @@ export class CoreH5PHelper {
     ): Promise<void> {
 
         const folderName = CoreMimetypeUtils.removeExtension(file.name);
-        const destFolder = CorePath.concatenatePaths(CoreFileProvider.TMPFOLDER, 'h5p/' + folderName);
+        const destFolder = CorePath.concatenatePaths(CoreFileProvider.TMPFOLDER, `h5p/${folderName}`);
 
         // Unzip the file.
         await CoreFile.unzipFile(CoreFile.getFileEntryURL(file), destFolder, options.onProgress);

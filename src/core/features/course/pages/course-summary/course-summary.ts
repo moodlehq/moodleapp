@@ -144,8 +144,8 @@ export default class CoreCourseSummaryPage implements OnInit, OnDestroy {
         }
 
         const currentSiteUrl = CoreSites.getRequiredCurrentSite().getURL();
-        this.enrolUrl = CorePath.concatenatePaths(currentSiteUrl, 'enrol/index.php?id=' + this.courseId);
-        this.courseUrl = CorePath.concatenatePaths(currentSiteUrl, 'course/view.php?id=' + this.courseId);
+        this.enrolUrl = CorePath.concatenatePaths(currentSiteUrl, `enrol/index.php?id=${this.courseId}`);
+        this.courseUrl = CorePath.concatenatePaths(currentSiteUrl, `course/view.php?id=${this.courseId}`);
         this.displayOpenInBrowser = CoreSites.getRequiredCurrentSite().shouldDisplayInformativeLinks();
 
         await this.getCourse();
@@ -513,7 +513,7 @@ export default class CoreCourseSummaryPage implements OnInit, OnDestroy {
             const tint = CoreColors.lighter(this.course.color, 50);
             this.courseThumb.nativeElement.style.setProperty('--course-color-tint', tint);
         } else if(this.course.colorNumber !== undefined) {
-            this.courseThumb.nativeElement.classList.add('course-color-' + this.course.colorNumber);
+            this.courseThumb.nativeElement.classList.add(`course-color-${this.course.colorNumber}`);
         }
     }
 

@@ -13,7 +13,6 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
-import { CoreError } from '@classes/errors/error';
 import { CoreSite } from '@classes/sites/site';
 import { CoreCourseCommonModWSOptions } from '@features/course/services/course';
 import { CoreCourseLogHelper } from '@features/course/services/log-helper';
@@ -54,6 +53,7 @@ import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreWSError } from '@classes/errors/wserror';
 import { CoreObject } from '@singletons/object';
 import { CoreTextFormat } from '@singletons/text';
+import { CoreCourseModuleHelper } from '@features/course/services/course-module-helper';
 
 declare module '@singletons/events' {
 
@@ -98,7 +98,7 @@ export class AddonModForumProvider {
      * @returns Cache key.
      */
     protected getCommonCanAddDiscussionCacheKey(forumId: number): string {
-        return AddonModForumProvider.ROOT_CACHE_KEY + 'canadddiscussion:' + forumId + ':';
+        return `${AddonModForumProvider.ROOT_CACHE_KEY}canadddiscussion:${forumId}:`;
     }
 
     /**
@@ -120,7 +120,7 @@ export class AddonModForumProvider {
      * @returns Cache key.
      */
     protected getDiscussionPostDataCacheKey(forumId: number, discussionId: number, postId: number): string {
-        return this.getForumDiscussionDataCacheKey(forumId, discussionId) + ':post:' + postId;
+        return `${this.getForumDiscussionDataCacheKey(forumId, discussionId)}:post:${postId}`;
     }
 
     /**
@@ -131,7 +131,7 @@ export class AddonModForumProvider {
      * @returns Cache key.
      */
     protected getForumDiscussionDataCacheKey(forumId: number, discussionId: number): string {
-        return this.getForumDataPrefixCacheKey(forumId) + ':discussion:' + discussionId;
+        return `${this.getForumDataPrefixCacheKey(forumId)}:discussion:${discussionId}`;
     }
 
     /**
@@ -141,7 +141,7 @@ export class AddonModForumProvider {
      * @returns Cache key.
      */
     protected getForumDataCacheKey(courseId: number): string {
-        return AddonModForumProvider.ROOT_CACHE_KEY + 'forum:' + courseId;
+        return `${AddonModForumProvider.ROOT_CACHE_KEY}forum:${courseId}`;
     }
 
     /**
@@ -152,7 +152,7 @@ export class AddonModForumProvider {
      * @returns Cache key.
      */
     protected getAccessInformationCacheKey(forumId: number): string {
-        return AddonModForumProvider.ROOT_CACHE_KEY + 'accessInformation:' + forumId;
+        return `${AddonModForumProvider.ROOT_CACHE_KEY}accessInformation:${forumId}`;
     }
 
     /**
@@ -163,7 +163,7 @@ export class AddonModForumProvider {
      * @returns Cache key.
      */
     protected getDiscussionPostsCacheKey(discussionId: number): string {
-        return AddonModForumProvider.ROOT_CACHE_KEY + 'discussion:' + discussionId;
+        return `${AddonModForumProvider.ROOT_CACHE_KEY}discussion:${discussionId}`;
     }
 
     /**
@@ -173,7 +173,7 @@ export class AddonModForumProvider {
      * @returns Cache key.
      */
     protected getDiscussionsListCommonCacheKey(forumId: number): string {
-        return AddonModForumProvider.ROOT_CACHE_KEY + 'discussions:' + forumId;
+        return `${AddonModForumProvider.ROOT_CACHE_KEY}discussions:${forumId}`;
     }
 
     /**
@@ -188,7 +188,7 @@ export class AddonModForumProvider {
         let key = this.getDiscussionsListCommonCacheKey(forumId);
 
         if (sortOrder !== AddonModForumSortorder.LASTPOST_DESC) {
-            key += ':' + sortOrder;
+            key += `:${sortOrder}`;
         }
         if (groupId) {
             key += `:group${groupId}`;
@@ -492,13 +492,8 @@ export class AddonModForumProvider {
      */
     async getForum(courseId: number, cmId: number, options: CoreSitesCommonWSOptions = {}): Promise<AddonModForumData> {
         const forums = await this.getCourseForums(courseId, options);
-        const forum = forums.find(forum => forum.cmid === cmId);
 
-        if (!forum) {
-            throw new CoreError(Translate.instant('core.course.modulenotfound'));
-        }
-
-        return forum;
+        return CoreCourseModuleHelper.getActivityByField(forums, 'cmid', cmId);
     }
 
     /**
@@ -511,13 +506,8 @@ export class AddonModForumProvider {
      */
     async getForumById(courseId: number, forumId: number, options: CoreSitesCommonWSOptions = {}): Promise<AddonModForumData> {
         const forums = await this.getCourseForums(courseId, options);
-        const forum = forums.find(forum => forum.id === forumId);
 
-        if (!forum) {
-            throw new Error(`Forum with id ${forumId} not found`);
-        }
-
-        return forum;
+        return CoreCourseModuleHelper.getActivityByField(forums, 'id', forumId);
     }
 
     /**

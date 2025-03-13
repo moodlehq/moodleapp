@@ -125,7 +125,7 @@ export class CoreUrlUtilsProvider {
      * @deprecated since 4.5. You can use CoreAuthenticatedSite.getDocsUrl but is also deprecated.
      */
     async getDocsUrl(release?: string, page: string = 'Mobile_app'): Promise<string> {
-        return 'https://docs.moodle.org/en/' + page;
+        return `https://docs.moodle.org/en/${page}`;
     }
 
     /**

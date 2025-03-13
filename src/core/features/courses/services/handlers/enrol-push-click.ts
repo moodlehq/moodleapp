@@ -60,7 +60,7 @@ export class CoreCoursesEnrolPushClickHandlerService implements CorePushNotifica
             const params: Params = {
                 course: result.course,
             };
-            let page = 'course/' + courseId;
+            let page = `course/${courseId}`;
 
             if (notification.contexturl?.indexOf('user/index.php') != -1) {
                 // Open the participants tab.

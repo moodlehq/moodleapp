@@ -63,7 +63,7 @@ export class AddonCompetencyHelperProvider {
                 return String(status);
         }
 
-        return Translate.instant('addon.competency.usercompetencystatus_' + statusTranslateName);
+        return Translate.instant(`addon.competency.usercompetencystatus_${statusTranslateName}`);
     }
 
     /**
@@ -96,7 +96,7 @@ export class AddonCompetencyHelperProvider {
                 return String(status);
         }
 
-        return Translate.instant('addon.competency.planstatus' + statusTranslateName);
+        return Translate.instant(`addon.competency.planstatus${statusTranslateName}`);
     }
 
 }

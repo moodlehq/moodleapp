@@ -62,13 +62,13 @@ export class CoreMarkRequiredComponent implements AfterViewInit {
             const ariaLabel = this.hostElement.getAttribute('aria-label') ||
                 CoreText.cleanTags(this.hostElement.innerHTML, { singleLine: true });
             if (ariaLabel) {
-                this.hostElement.setAttribute('aria-label', ariaLabel + '. ' + this.requiredLabel);
+                this.hostElement.setAttribute('aria-label', `${ariaLabel}. ${this.requiredLabel}`);
             }
         } else {
             // Remove the "required" from the aria-label.
             const ariaLabel = this.hostElement.getAttribute('aria-label');
             if (ariaLabel) {
-                this.hostElement.setAttribute('aria-label', ariaLabel.replace('. ' + this.requiredLabel, ''));
+                this.hostElement.setAttribute('aria-label', ariaLabel.replace(`. ${this.requiredLabel}`, ''));
             }
         }
 

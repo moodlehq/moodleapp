@@ -631,7 +631,7 @@ export class AddonModWorkshopOfflineProvider {
         const site = await CoreSites.getSite(siteId);
 
         const siteFolderPath = CoreFile.getSiteFolder(site.getId());
-        const workshopFolderPath = 'offlineworkshop/' + workshopId + '/';
+        const workshopFolderPath = `offlineworkshop/${workshopId}/`;
 
         return CorePath.concatenatePaths(siteFolderPath, workshopFolderPath);
     }

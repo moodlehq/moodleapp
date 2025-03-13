@@ -324,7 +324,7 @@ export class AddonNotesProvider {
 
         const offlineNotes = await AddonNotesOffline.getNotesForCourseAndUser(courseId, userId, siteId);
         offlineNotes.forEach((note: AddonNotesNote) => {
-            const fieldName = note.publishstate + 'notes';
+            const fieldName = `${note.publishstate}notes`;
             if (!notes[fieldName]) {
                 notes[fieldName] = [];
             }

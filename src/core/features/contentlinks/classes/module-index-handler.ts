@@ -45,8 +45,8 @@ export class CoreContentLinksModuleIndexHandler extends CoreContentLinksHandlerB
 
         // Match the view.php URL with an id or instance id param.
         const pattern = instanceIdParam ?
-            '/mod/' + modName + '/view.php.*([&?](' + instanceIdParam + '|id)=\\d+)' :
-            '/mod/' + modName + '/view.php.*([&?]id=\\d+)';
+            `/mod/${modName}/view.php.*([&?](${instanceIdParam}|id)=\\d+)` :
+            `/mod/${modName}/view.php.*([&?]id=\\d+)`;
 
         this.pattern = new RegExp(pattern);
         this.featureName = CORE_COURSE_MODULE_FEATURE_PREFIX + addon;

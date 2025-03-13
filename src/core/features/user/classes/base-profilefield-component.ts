@@ -81,7 +81,7 @@ export abstract class CoreUserProfileFieldBaseComponent<T = string> implements O
      * @param field Field to render.
      */
     protected initForEdit(field: AuthEmailSignupProfileField): void {
-        this.modelName = 'profile_field_' + field.shortname;
+        this.modelName = `profile_field_${field.shortname}`;
         this.required = !!field.required;
 
         this.control = this.createFormControl(field);

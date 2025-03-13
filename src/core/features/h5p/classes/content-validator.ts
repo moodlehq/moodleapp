@@ -60,7 +60,7 @@ export class CoreH5PContentValidator {
      * @returns Promise resolved when done.
      */
     async addon(library: CoreH5PLibraryAddonData): Promise<void> {
-        const depKey = 'preloaded-' + library.machineName;
+        const depKey = `preloaded-${library.machineName}`;
 
         this.dependencies[depKey] = {
             library: library,
@@ -591,7 +591,7 @@ export class CoreH5PContentValidator {
         }
 
         // Find all dependencies for this library.
-        const depKey = 'preloaded-' + library.machineName;
+        const depKey = `preloaded-${library.machineName}`;
         if (!this.dependencies[depKey]) {
             this.dependencies[depKey] = {
                 library: library,
@@ -718,7 +718,7 @@ export class CoreH5PContentValidator {
         }
 
         if (slash != '') {
-            return '</' + elem + '>';
+            return `</${elem}>`;
         }
 
         // Is there a closing XHTML slash at the end of the attributes?
@@ -731,9 +731,9 @@ export class CoreH5PContentValidator {
             ALLOWED_STYLEABLE_TAGS.indexOf(elem) != -1 ? this.allowedStyles : undefined,
         ).join(' ');
         attr2 = attr2.replace(/[<>]/g, '');
-        attr2 = attr2.length ? ' ' + attr2 : '';
+        attr2 = attr2.length ? ` ${attr2}` : '';
 
-        return '<' + elem + attr2 + xhtmlSlash + '>';
+        return `<${elem}${attr2}${xhtmlSlash}>`;
     }
 
     /**
@@ -812,14 +812,14 @@ export class CoreH5PContentValidator {
                                 }
                             }
 
-                            attrArray.push('style="' + validatedStyles.join(';') + ';"');
+                            attrArray.push(`style="${validatedStyles.join(';')};"`);
                             break;
                         }
 
                         thisVal = this.filterXssBadProtocol(matches[1]);
 
                         if (!skip) {
-                            attrArray.push(attrName + '="' + thisVal + '"');
+                            attrArray.push(`${attrName}="${thisVal}"`);
                         }
                         working = 1;
                         mode = 0;
@@ -832,7 +832,7 @@ export class CoreH5PContentValidator {
                         thisVal = this.filterXssBadProtocol(matches[1]);
 
                         if (!skip) {
-                            attrArray.push(attrName + '="' + thisVal + '"');
+                            attrArray.push(`${attrName}="${thisVal}"`);
                         }
                         working = 1;
                         mode = 0;
@@ -845,7 +845,7 @@ export class CoreH5PContentValidator {
                         thisVal = this.filterXssBadProtocol(matches[1]);
 
                         if (!skip) {
-                            attrArray.push(attrName + '="' + thisVal + '"');
+                            attrArray.push(`${attrName}="${thisVal}"`);
                         }
                         working = 1;
                         mode = 0;

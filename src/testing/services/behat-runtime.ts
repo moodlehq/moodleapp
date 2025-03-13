@@ -94,7 +94,7 @@ export class TestingBehatRuntimeService {
 
         if (options.configOverrides) {
             // Set the cookie so it's maintained between reloads.
-            document.cookie = 'MoodleAppConfig=' + JSON.stringify(options.configOverrides);
+            document.cookie = `MoodleAppConfig=${JSON.stringify(options.configOverrides)}`;
             CoreConfig.patchEnvironment(options.configOverrides, { patchDefault: true });
         }
 
@@ -165,7 +165,7 @@ export class TestingBehatRuntimeService {
 
             return 'OK';
         } catch (error) {
-            return 'ERROR: ' + error.message;
+            return `ERROR: ${error.message}`;
         } finally {
             blockKey && TestingBehatBlocking.unblock(blockKey);
             window.clearInterval(interval);
@@ -229,7 +229,7 @@ export class TestingBehatRuntimeService {
      * @returns OK if successful, or ERROR: followed by message.
      */
     async pressStandard(button: string): Promise<string> {
-        this.log('Action - Click standard button: ' + button);
+        this.log(`Action - Click standard button: ${button}`);
 
         // @deprecated usage, use goBack instead.
         if (button === 'back') {
@@ -370,7 +370,7 @@ export class TestingBehatRuntimeService {
         }
 
         if (backdrops.length > 1) {
-            return 'ERROR: Found too many backdrops ('+backdrops.length+')';
+            return `ERROR: Found too many backdrops (${backdrops.length})`;
         }
 
         backdrops[0]?.click();
@@ -405,7 +405,7 @@ export class TestingBehatRuntimeService {
 
             return 'OK';
         } catch (error) {
-            return 'ERROR: ' + error.message;
+            return `ERROR: ${error.message}`;
         }
     }
 
@@ -433,7 +433,7 @@ export class TestingBehatRuntimeService {
 
             return 'OK';
         } catch (error) {
-            return 'ERROR: ' + error.message;
+            return `ERROR: ${error.message}`;
         }
     }
 
@@ -518,7 +518,7 @@ export class TestingBehatRuntimeService {
 
             return (isLoading() || isCompleted() || hasMoved()) ? 'OK' : 'ERROR: Couldn\'t load more items.';
         } catch (error) {
-            return 'ERROR: ' + error.message;
+            return `ERROR: ${error.message}`;
         }
     }
 
@@ -540,7 +540,7 @@ export class TestingBehatRuntimeService {
 
             return TestingBehatDomUtils.isElementSelected(element) ? 'YES' : 'NO';
         } catch (error) {
-            return 'ERROR: ' + error.message;
+            return `ERROR: ${error.message}`;
         }
     }
 
@@ -575,7 +575,7 @@ export class TestingBehatRuntimeService {
 
             return 'OK';
         } catch (error) {
-            return 'ERROR: ' + error.message;
+            return `ERROR: ${error.message}`;
         }
     }
 
@@ -609,7 +609,7 @@ export class TestingBehatRuntimeService {
 
             return input.getAttribute('id') ?? '';
         } catch (error) {
-            return 'ERROR: ' + error.message;
+            return `ERROR: ${error.message}`;
         }
     }
 
@@ -632,7 +632,7 @@ export class TestingBehatRuntimeService {
 
             return 'OK';
         } catch (error) {
-            return 'ERROR: ' + error.message;
+            return `ERROR: ${error.message}`;
         }
     }
 
@@ -677,7 +677,7 @@ export class TestingBehatRuntimeService {
      * @returns OK or ERROR: followed by message
      */
     async setField(field: string, value: string): Promise<string> {
-        this.log('Action - Set field ' + field + ' to: ' + value);
+        this.log(`Action - Set field ${field} to: ${value}`);
 
         const input = TestingBehatDomUtils.findField(field);
 
@@ -720,7 +720,7 @@ export class TestingBehatRuntimeService {
      * @returns OK or ERROR: followed by message
      */
     async fieldMatches(field: string, value: string): Promise<string> {
-        this.log('Action - Field ' + field + ' matches value: ' + value);
+        this.log(`Action - Field ${field} matches value: ${value}`);
 
         const found = TestingBehatDomUtils.findField(field);
 
@@ -802,7 +802,7 @@ export class TestingBehatRuntimeService {
                 String(now.getSeconds()).padStart(2, '0') + '.' +
                 String(now.getMilliseconds()).padStart(2, '0');
 
-        console.log('BEHAT: ' + nowFormatted, ...args); // eslint-disable-line no-console
+        console.log(`BEHAT: ${nowFormatted}`, ...args); // eslint-disable-line no-console
     }
 
     /**

@@ -176,7 +176,7 @@ export class AddonPrivateFilesProvider {
      * @returns Cache key.
      */
     protected getPrivateFilesInfoCacheKey(userId: number): string {
-        return this.getPrivateFilesInfoCommonCacheKey() + ':' + userId;
+        return `${this.getPrivateFilesInfoCommonCacheKey()}:${userId}`;
     }
 
     /**

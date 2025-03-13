@@ -215,7 +215,7 @@ export default class AddonModWorkshopSubmissionPage implements OnInit, OnDestroy
             access: this.access,
         };
 
-        CoreNavigator.navigate(String(this.submissionId) + '/edit', params);
+        CoreNavigator.navigate(`${this.submissionId}/edit`, params);
     }
 
     /**

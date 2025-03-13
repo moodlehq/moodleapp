@@ -146,11 +146,7 @@ export type CorePrefetchStatusInfo = {
 export class CoreCourseHelperProvider {
 
     protected courseDwnPromises: { [s: string]: { [id: number]: Promise<void> } } = {};
-    protected logger: CoreLogger;
-
-    constructor() {
-        this.logger = CoreLogger.getInstance('CoreCourseHelperProvider');
-    }
+    protected logger = CoreLogger.getInstance('CoreCourseHelperProvider');
 
     /**
      * This function treats every module on the sections provided to load the handler data, treat completion
@@ -685,7 +681,7 @@ export class CoreCourseHelperProvider {
 
         /* In iOS, if we use the same URL in embedded browser and background download then the download only
         downloads a few bytes (cached ones). Add a hash to the URL so both URLs are different. */
-        result.path = result.path + '#moodlemobile-embedded';
+        result.path = `${result.path}#moodlemobile-embedded`;
 
         try {
             await CoreOpener.openOnlineFile(result.path);
@@ -1154,7 +1150,7 @@ export class CoreCourseHelperProvider {
 
         const prefetchOptions = {
             onProgress: (progress) => {
-                prefetch.badge = progress.count + ' / ' + progress.total;
+                prefetch.badge = `${progress.count} / ${progress.total}`;
                 prefetch.badgeA11yText = Translate.instant('core.course.downloadcoursesprogressdescription', progress);
                 prefetch.count = progress.count;
                 prefetch.total = progress.total;
@@ -1385,7 +1381,7 @@ export class CoreCourseHelperProvider {
      * @returns Section download ID.
      */
     getSectionDownloadId(section: {id: number}): string {
-        return 'Section-' + section.id;
+        return `Section-${section.id}`;
     }
 
     /**
