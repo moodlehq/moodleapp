@@ -40,7 +40,7 @@ export class AddonFilterMathJaxLoaderHandlerService extends CoreFilterDefaultHan
     /**
      * Initialize MathJax.
      */
-    async initialize(): Promise<void> {
+    initialize(): void {
         if (document.head.querySelector('#core-filter-mathjax-script')) {
             // Script already added, don't add it again.
             return;
@@ -111,8 +111,6 @@ export class AddonFilterMathJaxLoaderHandlerService extends CoreFilterDefaultHan
      * @inheritdoc
      */
     async handleHtml(container: HTMLElement): Promise<void> {
-        await this.waitForReady();
-
         // Make sure the element is in DOM, otherwise some equations don't work.
         // Automatically timeout the promise after a certain time, we don't want to wait forever.
         await CorePromiseUtils.ignoreErrors(CorePromiseUtils.timeoutPromise(CoreDom.waitToBeInDOM(container), 15000));
@@ -150,6 +148,12 @@ export class AddonFilterMathJaxLoaderHandlerService extends CoreFilterDefaultHan
      */
     protected async typeset(container: HTMLElement): Promise<void> {
         const equations = Array.from(container.getElementsByClassName('filter_mathjaxloader_equation'));
+        if (!equations.length) {
+            return;
+        }
+
+        this.initialize();
+        await this.waitForReady();
 
         await Promise.all(equations.map((node) => this.typesetNode(node)));
     }
@@ -186,12 +190,12 @@ export class AddonFilterMathJaxLoaderHandlerService extends CoreFilterDefaultHan
      * @returns Promise resolved when ready or if it took too long to load.
      */
     protected async waitForReady(retries: number = 0): Promise<void> {
-        if (this.window.MathJax?.typesetPromise || retries >= 20) {
+        if (this.window.MathJax?.typesetPromise || retries >= 25) {
             // Loaded or too many retries, stop.
             return;
         }
 
-        await CoreWait.wait(250);
+        await CoreWait.wait(20 + 10 * retries);
         await CorePromiseUtils.ignoreErrors(this.waitForReady(retries + 1));
     }
 
