@@ -26,6 +26,7 @@ import {
     CoreCourseGetContentsWSModule,
     sectionContentIsModule,
     CoreCourseAnyModuleData,
+    CoreCourseModuleOrSection,
 } from './course';
 import { CoreConstants, DownloadStatus, ContextLevel } from '@/core/constants';
 import { CoreLogger } from '@singletons/logger';
@@ -290,7 +291,7 @@ export class CoreCourseHelperProvider {
         }
 
         // Get the status of this section based on their modules.
-        const { modules, subsections } = CoreCourse.classifyContents(section.contents);
+        const { modules, subsections } = this.classifyContents(section.contents);
 
         const statusData = await CoreCourseModulePrefetchDelegate.getModulesStatus(
             modules,
@@ -470,7 +471,7 @@ export class CoreCourseHelperProvider {
                 return { size: 0, total: true };
             }
 
-            const { modules, subsections } = CoreCourse.classifyContents(section.contents);
+            const { modules, subsections } = this.classifyContents(section.contents);
 
             const [modulesSize, subsectionsSizes] = await Promise.all([
                 CoreCourseModulePrefetchDelegate.getDownloadSize(modules, courseId),
@@ -1732,7 +1733,7 @@ export class CoreCourseHelperProvider {
      * @returns Promise resolved when the section is prefetched.
      */
     protected async syncModulesAndPrefetchSection(section: CoreCourseSectionWithStatus, courseId: number): Promise<void> {
-        const { modules, subsections } = CoreCourse.classifyContents(section.contents);
+        const { modules, subsections } = this.classifyContents(section.contents);
 
         const syncAndPrefetchModules = async () => {
             // Sync the modules first.
@@ -2214,6 +2215,31 @@ export class CoreCourseHelperProvider {
             section.moduleCount + section.subsectionCount : undefined;
         section.total = section.moduleTotal !== undefined && section.subsectionTotal !== undefined ?
             section.moduleTotal + section.subsectionTotal : undefined;
+    }
+
+    /**
+     * Given section contents, classify them into modules and sections.
+     *
+     * @param contents Contents.
+     * @returns Classified contents.
+     */
+    protected classifyContents<
+        Contents extends CoreCourseModuleOrSection,
+        Module = Extract<Contents, CoreCourseModuleData>,
+        Section = Extract<Contents, CoreCourseWSSection>,
+    >(contents: Contents[]): { modules: Module[]; subsections: Section[] } {
+        const modules: Module[] = [];
+        const subsections: Section[] = [];
+
+        contents.forEach((content) => {
+            if (sectionContentIsModule(content)) {
+                modules.push(content as Module);
+            } else {
+                subsections.push(content as unknown as Section);
+            }
+        });
+
+        return { modules, subsections };
     }
 
 }

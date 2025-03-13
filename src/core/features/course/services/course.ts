@@ -1066,13 +1066,16 @@ export class CoreCourseProvider {
     async invalidateSections(courseId: number, siteId?: string, userId?: number): Promise<void> {
         const site = await CoreSites.getSite(siteId);
         const promises: Promise<void>[] = [];
-        const siteHomeId = site.getSiteHomeId();
-        userId = userId || site.getUserId();
+
         promises.push(site.invalidateWsCacheForKey(this.getSectionsCacheKey(courseId)));
-        promises.push(site.invalidateWsCacheForKey(this.getActivitiesCompletionCacheKey(courseId, userId)));
-        if (courseId == siteHomeId) {
+
+        if (courseId === site.getSiteHomeId()) {
+            // Homepage section is inside the site config.
             promises.push(site.invalidateConfig());
         }
+
+        userId = userId || site.getUserId();
+        promises.push(site.invalidateWsCacheForKey(this.getActivitiesCompletionCacheKey(courseId, userId)));
 
         await Promise.all(promises);
     }
@@ -1442,31 +1445,6 @@ export class CoreCourseProvider {
 
         // Remove "Show more" option in 4.2 or older sites.
         return CoreDomUtils.removeElementFromHtml(availabilityInfo, 'li[data-action="showmore"]');
-    }
-
-    /**
-     * Given section contents, classify them into modules and sections.
-     *
-     * @param contents Contents.
-     * @returns Classified contents.
-     */
-    classifyContents<
-        Contents extends CoreCourseModuleOrSection,
-        Module = Extract<Contents, CoreCourseModuleData>,
-        Section = Extract<Contents, CoreCourseWSSection>,
-    >(contents: Contents[]): { modules: Module[]; subsections: Section[] } {
-        const modules: Module[] = [];
-        const subsections: Section[] = [];
-
-        contents.forEach((content) => {
-            if (sectionContentIsModule(content)) {
-                modules.push(content as Module);
-            } else {
-                subsections.push(content as unknown as Section);
-            }
-        });
-
-        return { modules, subsections };
     }
 
 }

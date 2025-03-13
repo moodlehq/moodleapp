@@ -41,7 +41,7 @@ declare module '@singletons/events' {
 }
 
 /**
- * Service that course status features.
+ * Service that contains course status features.
  */
 @Injectable({ providedIn: 'root' })
 export class CoreCourseDownloadStatusHelperService {
