@@ -49,9 +49,7 @@ import { CoreCourseAccessDataType } from '@features/course/constants';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreArray } from '@singletons/array';
 import { CoreCourseModuleHelper } from '@features/course/services/course-module-helper';
-
-export const GRADES_PAGE_NAME = 'grades';
-export const GRADES_PARTICIPANTS_PAGE_NAME = 'participant-grades';
+import { GRADES_PAGE_NAME } from '../constants';
 
 /**
  * Service that provides some features regarding grades information.
@@ -59,11 +57,7 @@ export const GRADES_PARTICIPANTS_PAGE_NAME = 'participant-grades';
 @Injectable({ providedIn: 'root' })
 export class CoreGradesHelperProvider {
 
-    protected logger: CoreLogger;
-
-    constructor() {
-        this.logger = CoreLogger.getInstance('CoreGradesHelperProvider');
-    }
+    protected logger = CoreLogger.getInstance('CoreGradesHelperProvider');
 
     /**
      * Formats a row from the grades table to be rendered in one table.

@@ -30,18 +30,26 @@ import { CoreTextFormat } from '@singletons/text';
 @Injectable({ providedIn: 'root' })
 export class CoreGradesProvider {
 
+    /**
+     * @deprecated since 5.0. Use CoreGradeType.NONE instead.
+     */
     static readonly TYPE_NONE = CoreGradeType.NONE;
+    /**
+     * @deprecated since 5.0. Use CoreGradeType.VALUE instead.
+     */
     static readonly TYPE_VALUE = CoreGradeType.VALUE;
+    /**
+     * @deprecated since 5.0. Use CoreGradeType.SCALE instead.
+     */
     static readonly TYPE_SCALE = CoreGradeType.SCALE;
+    /**
+     * @deprecated since 5.0. Use CoreGradeType.TEXT instead.
+     */
     static readonly TYPE_TEXT = CoreGradeType.TEXT;
 
     protected static readonly ROOT_CACHE_KEY = 'mmGrades:';
 
-    protected logger: CoreLogger;
-
-    constructor() {
-        this.logger = CoreLogger.getInstance('CoreGradesProvider');
-    }
+    protected logger = CoreLogger.getInstance('CoreGradesProvider');
 
     /**
      * Get cache key for grade table data WS calls.
