@@ -10,9 +10,9 @@
     <ion-item>
         <ion-label>
             @if (course) {
-                <h3><ng-container *ngTemplateOutlet="date" /></h3>
-            } @else {
                 <h4><ng-container *ngTemplateOutlet="date" /></h4>
+            } @else {
+                <h3><ng-container *ngTemplateOutlet="date" /></h3>
             }
             <ng-template #date>
                 {{ dayEvents.dayTimestamp * 1000 | coreFormatDate:"strftimedaydate" }}
