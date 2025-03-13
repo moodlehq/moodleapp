@@ -141,7 +141,7 @@ export class CoreH5PPlayer {
 
         html += `<div class="h5p-iframe-wrapper">
         <iframe id="h5p-iframe-${id}" class="h5p-iframe" data-content-id="${id}"
-            style="height:1px; min-width: 100%" src="about:blank">
+            style="height:1px; min-width: 100%" src="about:blank" loading="lazy">
         </iframe></div></body>`;
 
         const fileEntry = await CoreFile.writeFile(indexPath, html);
@@ -366,7 +366,7 @@ export class CoreH5PPlayer {
             return '';
         }
 
-        return `<iframe src="${this.getEmbedUrl(siteUrl, h5pUrl)}" allowfullscreen="allowfullscreen"></iframe>`;
+        return `<iframe src="${this.getEmbedUrl(siteUrl, h5pUrl)}" allowfullscreen="allowfullscreen" loading="lazy"></iframe>`;
     }
 
     /**
