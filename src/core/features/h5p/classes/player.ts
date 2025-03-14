@@ -139,10 +139,10 @@ export class CoreH5PPlayer {
             html += '<script type="text/javascript" src="' + jsUrl + '"></script>';
         });
 
-        html += '<div class="h5p-iframe-wrapper">' +
-                '<iframe id="h5p-iframe-' + id + '" class="h5p-iframe" data-content-id="' + id + '"' +
-                    'style="height:1px; min-width: 100%" src="about:blank"></iframe>' +
-                '</div></body>';
+        html += `<div class="h5p-iframe-wrapper">
+        <iframe id="h5p-iframe-${id}" class="h5p-iframe" data-content-id="${id}"
+            style="height:1px; min-width: 100%" src="about:blank">
+        </iframe></div></body>`;
 
         const fileEntry = await CoreFile.writeFile(indexPath, html);
 
@@ -370,7 +370,7 @@ export class CoreH5PPlayer {
     }
 
     /**
-     * Get the encoded URL for embeding an H5P content.
+     * Get the encoded URL for embedding an H5P content.
      *
      * @param siteUrl The site URL.
      * @param h5pUrl The URL of the .h5p file.
