@@ -70,6 +70,7 @@ import { CoreRedirects } from '@singletons/redirects';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreOpener } from '@singletons/opener';
 import { CoreAlerts } from './overlays/alerts';
+import { CoreErrorLogs } from '@singletons/error-logs';
 
 export const CORE_SITE_SCHEMAS = new InjectionToken<CoreSiteSchema[]>('CORE_SITE_SCHEMAS');
 export const CORE_SITE_CURRENT_SITE_ID_CONFIG = 'current_site_id';
@@ -1177,9 +1178,22 @@ export class CoreSitesProvider {
         // Retrieve and create the site.
         let record: SiteDBEntry;
         try {
-            record = await this.loadSiteTokens(await this.sitesTable.getOneByPrimaryKey({ id: siteId }));
-        } catch {
-            throw new CoreError('SiteId not found.');
+            record = await this.sitesTable.getOneByPrimaryKey({ id: siteId });
+        } catch (error) {
+            throw new CoreError(`SiteId not found in the app database: ${siteId}. ` +
+                CoreErrorHelper.getErrorMessageFromError(error));
+        }
+
+        try {
+            record = await this.loadSiteTokens(record);
+        } catch (error) {
+            // Error loading site tokens from secure storage. User will be asked to enter the password again.
+            CoreErrorLogs.addErrorLog({
+                message: `Error loading tokens for site: ${siteId}. Error: ` + CoreErrorHelper.getErrorMessageFromError(error)
+                    + ' - ' + JSON.stringify(error),
+                time: Date.now(),
+                type: 'Error',
+            });
         }
 
         try {
