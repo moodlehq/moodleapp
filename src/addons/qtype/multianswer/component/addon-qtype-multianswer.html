@@ -1,6 +1,8 @@
-<ion-list class="addon-qtype-multianswer-container" *ngIf="question && (question.text || question.text === '')">
-    <div class="fake-ion-item ion-text-wrap">
-        <core-format-text [component]="component" [componentId]="componentId" [text]="question.text" [contextLevel]="contextLevel"
-            [contextInstanceId]="contextInstanceId" [courseId]="courseId" (afterRender)="questionRendered()" />
-    </div>
-</ion-list>
+@if (question && (question.text || question.text === '')) {
+    <ion-list class="addon-qtype-multianswer-container">
+        <div class="fake-ion-item ion-text-wrap">
+            <core-format-text [component]="component" [componentId]="componentId" [text]="question.text" [contextLevel]="contextLevel"
+                [contextInstanceId]="contextInstanceId" [courseId]="courseId" (afterRender)="questionRendered()" />
+        </div>
+    </ion-list>
+}

@@ -1,82 +1,106 @@
-<ion-list *ngIf="question && (question.text || question.text === '')">
-    <!-- Question text first. -->
-    <ion-item class="ion-text-wrap">
-        <ion-label>
-            <p>
-                <core-format-text [component]="component" [componentId]="componentId" [text]="question.text" [contextLevel]="contextLevel"
-                    [contextInstanceId]="contextInstanceId" [courseId]="courseId" />
-            </p>
-            <p *ngIf="question.prompt">
-                <core-format-text [component]="component" [componentId]="componentId" [text]="question.prompt" [contextLevel]="contextLevel"
-                    [contextInstanceId]="contextInstanceId" [courseId]="courseId" />
-            </p>
-        </ion-label>
-    </ion-item>
-
-    <!-- Checkbox for multiple choice. -->
-    <ng-container *ngIf="question.multi">
-        <ion-item class="ion-text-wrap answer" *ngFor="let option of question.options">
-            <div class="flex-column">
-                <ion-checkbox [attr.name]="option.name" [(ngModel)]="option.checked" [disabled]="option.disabled"
-                    [color]="option.correctColor">
-                    <div class="flex-grow ion-text-wrap">
-                        <div [class]="option.class">
-                            <core-format-text [component]="component" [componentId]="componentId" [text]="option.text"
-                                [contextLevel]="contextLevel" [contextInstanceId]="contextInstanceId" [courseId]="courseId" />
-                        </div>
-                    </div>
-
-                    <ion-icon *ngIf="option.correctClass === 'correct'" class="core-correct-icon" [name]="correctIcon" color="success"
-                        [attr.aria-label]="'core.question.correct' | translate" />
-                    <ion-icon *ngIf="option.correctClass === 'partiallycorrect'" class="core-correct-icon" [name]="partialCorrectIcon"
-                        color="warning" [attr.aria-label]="'core.question.partiallycorrect' | translate" />
-                    <ion-icon *ngIf="option.correctClass === 'incorrect'" class="core-correct-icon" [name]="incorrectIcon" color="danger"
-                        [attr.aria-label]="'core.question.incorrect' | translate" />
-                </ion-checkbox>
-                <div *ngIf="option.feedback" class="specificfeedback">
-                    <core-format-text [component]="component" [componentId]="componentId" [text]="option.feedback"
+@if (question && (question.text || question.text === '')) {
+    <ion-list>
+        <!-- Question text first. -->
+        <ion-item class="ion-text-wrap">
+            <ion-label>
+                <p>
+                    <core-format-text [component]="component" [componentId]="componentId" [text]="question.text"
                         [contextLevel]="contextLevel" [contextInstanceId]="contextInstanceId" [courseId]="courseId" />
-                </div>
-            </div>
-            <!-- ion-checkbox doesn't use an input. Create a hidden input to hold the value. -->
-            <!-- @TODO Check if this is still needed -->
-            <input type="hidden" [ngModel]="option.checked" [attr.name]="option.name">
+                </p>
+                @if (question.prompt) {
+                    <p>
+                        <core-format-text [component]="component" [componentId]="componentId" [text]="question.prompt"
+                            [contextLevel]="contextLevel" [contextInstanceId]="contextInstanceId" [courseId]="courseId" />
+                    </p>
+                }
+            </ion-label>
         </ion-item>
-    </ng-container>
 
-    <!-- Radio buttons for single choice. -->
-    <ion-radio-group *ngIf="!question.multi" [(ngModel)]="question.singleChoiceModel" [name]="question.optionsName">
-        <ion-item class="ion-text-wrap answer" *ngFor="let option of question.options">
-            <div class="flex-column">
-                <ion-radio [value]="option.value" [disabled]="option.disabled" [color]="option.correctColor">
-                    <div class="flex-grow ion-text-wrap">
-                        <div [class]="option.class">
-                            <core-format-text [component]="component" [componentId]="componentId" [text]="option.text"
-                                [contextLevel]="contextLevel" [contextInstanceId]="contextInstanceId" [courseId]="courseId" />
-                        </div>
+        @if (question.multi) {
+            <!-- Checkbox for multiple choice. -->
+            @for (option of question.options; track option.id) {
+                <ion-item class="ion-text-wrap answer">
+                    <div class="flex-column">
+                        <ion-checkbox [attr.name]="option.name" [(ngModel)]="option.checked" [disabled]="option.disabled"
+                            [color]="option.correctColor">
+                            <div class="flex-grow ion-text-wrap">
+                                <div [class]="option.class">
+                                    <core-format-text [component]="component" [componentId]="componentId" [text]="option.text"
+                                        [contextLevel]="contextLevel" [contextInstanceId]="contextInstanceId" [courseId]="courseId" />
+                                </div>
+                            </div>
+
+                            @if (option.correctClass === 'correct') {
+                                <ion-icon class="core-correct-icon" [name]="correctIcon" color="success"
+                                    [attr.aria-label]="'core.question.correct' | translate" />
+                            } @else if (option.correctClass === 'partiallycorrect') {
+                                <ion-icon class="core-correct-icon" [name]="partialCorrectIcon" color="warning"
+                                    [attr.aria-label]="'core.question.partiallycorrect' | translate" />
+                            } @else if (option.correctClass === 'incorrect') {
+                                <ion-icon class="core-correct-icon" [name]="incorrectIcon" color="danger"
+                                    [attr.aria-label]="'core.question.incorrect' | translate" />
+                            }
+                        </ion-checkbox>
+
+                        @if (option.feedback) {
+                            <div class="specificfeedback">
+                                <core-format-text [component]="component" [componentId]="componentId" [text]="option.feedback"
+                                    [contextLevel]="contextLevel" [contextInstanceId]="contextInstanceId" [courseId]="courseId" />
+                            </div>
+                        }
                     </div>
+                    <!-- ion-checkbox doesn't use an input. Create a hidden input to hold the value. -->
+                    <!-- @TODO Check if this is still needed -->
+                    <input type="hidden" [ngModel]="option.checked" [attr.name]="option.name">
+                </ion-item>
+            }
+        } @else {
+            <!-- Radio buttons for single choice. -->
+            <ion-radio-group [(ngModel)]="question.singleChoiceModel" [name]="question.optionsName">
+                @for (option of question.options; track option.id) {
+                    <ion-item class="ion-text-wrap answer">
+                        <div class="flex-column">
+                            <ion-radio [value]="option.value" [disabled]="option.disabled" [color]="option.correctColor">
+                                <div class="flex-grow ion-text-wrap">
+                                    <div [class]="option.class">
+                                        <core-format-text [component]="component" [componentId]="componentId" [text]="option.text"
+                                            [contextLevel]="contextLevel" [contextInstanceId]="contextInstanceId" [courseId]="courseId" />
+                                    </div>
+                                </div>
 
-                    <ion-icon *ngIf="option.correctClass === 'correct'" class="core-correct-icon" [name]="correctIcon" color="success"
-                        [attr.aria-label]="'core.question.correct' | translate" />
-                    <ion-icon *ngIf="option.correctClass === 'partiallycorrect'" class="core-correct-icon" [name]="partialCorrectIcon"
-                        color="warning" [attr.aria-label]="'core.question.partiallycorrect' | translate" />
-                    <ion-icon *ngIf="option.correctClass === 'incorrect'" class="core-correct-icon" [name]="incorrectIcon" color="danger"
-                        [attr.aria-label]="'core.question.incorrect' | translate" />
-                </ion-radio>
+                                @if (option.correctClass === 'correct') {
+                                    <ion-icon class="core-correct-icon" [name]="correctIcon" color="success"
+                                        [attr.aria-label]="'core.question.correct' | translate" />
+                                } @else if (option.correctClass === 'partiallycorrect') {
+                                    <ion-icon class="core-correct-icon" [name]="partialCorrectIcon" color="warning"
+                                        [attr.aria-label]="'core.question.partiallycorrect' | translate" />
+                                } @else if (option.correctClass === 'incorrect') {
+                                    <ion-icon class="core-correct-icon" [name]="incorrectIcon" color="danger"
+                                        [attr.aria-label]="'core.question.incorrect' | translate" />
+                                }
+                            </ion-radio>
 
-                <div *ngIf="option.feedback" class="specificfeedback">
-                    <core-format-text [component]="component" [componentId]="componentId" [text]="option.feedback"
-                        [contextLevel]="contextLevel" [contextInstanceId]="contextInstanceId" [courseId]="courseId" />
-                </div>
-            </div>
-        </ion-item>
-        <ion-button *ngIf="!question.disabled" class="ion-text-wrap ion-margin-top" expand="block" fill="outline"
-            [disabled]="!question.singleChoiceModel" (click)="clear()" type="button">
-            {{ 'addon.mod_quiz.clearchoice' | translate }}
-        </ion-button>
+                            @if (option.feedback) {
+                                <div class="specificfeedback">
+                                    <core-format-text [component]="component" [componentId]="componentId" [text]="option.feedback"
+                                        [contextLevel]="contextLevel" [contextInstanceId]="contextInstanceId" [courseId]="courseId" />
+                                </div>
+                            }
+                        </div>
+                    </ion-item>
+                }
 
-        <!-- ion-radio doesn't use an input. Create a hidden input to hold the selected value. -->
-        <!-- @TODO Check if this is still needed -->
-        <input type="hidden" [ngModel]="question.singleChoiceModel" [attr.name]="question.optionsName">
-    </ion-radio-group>
-</ion-list>
+                @if (!question.disabled) {
+                    <ion-button class="ion-text-wrap ion-margin-top" expand="block" fill="outline"
+                        [disabled]="!question.singleChoiceModel" (click)="clear()" type="button">
+                        {{ 'addon.mod_quiz.clearchoice' | translate }}
+                    </ion-button>
+                }
+
+                <!-- ion-radio doesn't use an input. Create a hidden input to hold the selected value. -->
+                <!-- @TODO Check if this is still needed -->
+                <input type="hidden" [ngModel]="question.singleChoiceModel" [attr.name]="question.optionsName">
+            </ion-radio-group>
+        }
+    </ion-list>
+}
