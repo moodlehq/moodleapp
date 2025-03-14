@@ -6,36 +6,39 @@
         </ion-label>
     </ion-item>
 
-    <!-- Display unit options before the answer input. -->
-    <ng-container *ngIf="question.options && question.options.length && question.optionsFirst">
-        <ng-container *ngTemplateOutlet="radioUnits" />
-    </ng-container>
+    @if (question.input && !question.input.isInline) {
+        <!-- Display unit options before the answer input. -->
+        <ng-container *ngIf="question.options && question.options.length && question.optionsFirst">
+            <ng-container *ngTemplateOutlet="radioUnits" />
+        </ng-container>
 
-    <ion-item *ngIf="question.input" class="ion-text-wrap core-{{question.input.correctIconColor}}-item">
-        <div class="flex-row ion-align-items-end">
-            <!-- Display unit select before the answer input. -->
-            <ng-container *ngIf="question.select && question.selectFirst">
-                <ng-container *ngTemplateOutlet="selectUnits" />
-            </ng-container>
+        <ion-item class="ion-text-wrap core-{{question.input.correctIconColor}}-item">
+            <div class="flex-row ion-align-items-end">
+                <!-- Display unit select before the answer input. -->
+                <ng-container *ngIf="question.select && question.selectFirst">
+                    <ng-container *ngTemplateOutlet="selectUnits" />
+                </ng-container>
 
-            <!-- Input to enter the answer. -->
-            <ion-input labelPlacement="stacked" type="text" [attr.name]="question.input.name"
-                [placeholder]="question.input.readOnly ? '' : 'core.question.answer' | translate" [value]="question.input.value"
-                [disabled]="question.input.readOnly" autocorrect="off" [label]="'addon.mod_quiz.answercolon' | translate" />
+                <!-- Input to enter the answer. -->
+                <ion-input labelPlacement="stacked" type="text" [attr.name]="question.input.name"
+                    [placeholder]="question.input.readOnly ? '' : 'core.question.answer' | translate" [value]="question.input.value"
+                    [disabled]="question.input.readOnly" autocorrect="off" [label]="'addon.mod_quiz.answercolon' | translate" />
 
-            <!-- Display unit select after the answer input. -->
-            <ng-container *ngIf="question.select && !question.selectFirst">
-                <ng-container *ngTemplateOutlet="selectUnits" />
-            </ng-container>
-        </div>
-        <ion-icon *ngIf="question.input.correctIcon" class="core-correct-icon ion-align-self-center" slot="end"
-            [name]="question.input.correctIcon" [color]="[question.input.correctIconColor]" [ariaLabel]="question.input.correctIconLabel" />
-    </ion-item>
+                <!-- Display unit select after the answer input. -->
+                <ng-container *ngIf="question.select && !question.selectFirst">
+                    <ng-container *ngTemplateOutlet="selectUnits" />
+                </ng-container>
+            </div>
+            <ion-icon *ngIf="question.input.correctIcon" class="core-correct-icon ion-align-self-center" slot="end"
+                [name]="question.input.correctIcon" [color]="[question.input.correctIconColor]"
+                [ariaLabel]="question.input.correctIconLabel" />
+        </ion-item>
 
-    <!-- Display unit options after the answer input. -->
-    <ng-container *ngIf="question.options && question.options.length && !question.optionsFirst">
-        <ng-container *ngTemplateOutlet="radioUnits" />
-    </ng-container>
+        <!-- Display unit options after the answer input. -->
+        <ng-container *ngIf="question.options && question.options.length && !question.optionsFirst">
+            <ng-container *ngTemplateOutlet="radioUnits" />
+        </ng-container>
+    }
 </ion-list>
 
 <!-- Template for units entered using a select. -->
