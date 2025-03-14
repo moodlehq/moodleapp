@@ -37,7 +37,7 @@ export class AddonFilterDisplayH5PHandlerService extends CoreFilterDefaultHandle
      */
     filter(
         text: string,
-    ): string | Promise<string> {
+    ): string {
         return CoreText.processHTML(text, (element) => {
             const h5pIframes = <HTMLIFrameElement[]> Array.from(element.querySelectorAll('iframe.h5p-iframe'));
 
@@ -83,25 +83,28 @@ export class AddonFilterDisplayH5PHandlerService extends CoreFilterDefaultHandle
         viewContainerRef: ViewContainerRef,
         component?: string,
         componentId?: string | number,
-    ): void | Promise<void> {
+    ): void {
 
         const placeholders = <HTMLElement[]> Array.from(container.querySelectorAll('div.core-h5p-tmp-placeholder'));
 
         placeholders.forEach((placeholder) => {
-            const url = placeholder.getAttribute('data-player-src') || '';
+            if (!placeholder.parentElement) {
+                return;
+            }
 
             // Create the component to display the player.
-            const componentRef = viewContainerRef.createComponent<CoreH5PPlayerComponent>(CoreH5PPlayerComponent);
+            const h5pInstance = viewContainerRef.createComponent<CoreH5PPlayerComponent>(CoreH5PPlayerComponent).instance;
 
-            componentRef.instance.src = url;
-            componentRef.instance.component = component;
-            componentRef.instance.componentId = componentId;
+            const url = placeholder.getAttribute('data-player-src') || '';
+            h5pInstance.src = url;
+            h5pInstance.component = component;
+            h5pInstance.componentId = componentId;
 
             // Check if auto-play was enabled when inserting the iframe using the TinyMCE editor.
-            componentRef.instance.autoPlay = CoreUtils.isTrueOrOne(placeholder.parentElement?.dataset.mobileappAutoplay);
+            h5pInstance.autoPlay = CoreUtils.isTrueOrOne(placeholder.parentElement.dataset.mobileappAutoplay);
 
             // Move the component to its right position.
-            placeholder.parentElement?.replaceChild(componentRef.instance.elementRef.nativeElement, placeholder);
+            placeholder.parentElement.replaceChild(h5pInstance.getElement(), placeholder);
         });
     }
 
