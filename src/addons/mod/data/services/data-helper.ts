@@ -222,12 +222,20 @@ export class AddonModDataHelperProvider {
             replace = replace.replace(/[-[\]/{}()*+?.\\^$|]/g, '\\$&');
             let replaceRegex = new RegExp(replace, 'gi');
 
-            // Replace field by a generic directive.
-            const render = `<addon-mod-data-field-plugin [field]="fields[${field.id}]" mode="${mode}" [database]="database" \
-                [value]="entries[${entry.id}].contents[${field.id}]" [recordHasOffline]="${entry.hasOffline ? 'true' : 'false'}" \
-                (gotoEntry)="gotoEntry($event)"></addon-mod-data-field-plugin>`;
+            const valuesInsideTags = new RegExp('>\\[\\[' + field.name + '\\]\\]<','gi');
 
-            template = template.replace(replaceRegex, render);
+            if (template.match(valuesInsideTags)?.length) {
+                // Replace field by a generic directive.
+                const hasOffline = entry.hasOffline ? 'true' : 'false';
+
+                const render = `><addon-mod-data-field-plugin [field]="fields[${field.id}]" mode="${mode}" [database]="database" \
+                    [value]="entries[${entry.id}].contents[${field.id}]" [recordHasOffline]="${hasOffline}" \
+                    (gotoEntry)="gotoEntry($event)"></addon-mod-data-field-plugin><`;
+
+                template = template
+                    .replace(valuesInsideTags, render)
+                    .replace(replaceRegex, entry.contents[field.id].content);
+            }
 
             // Replace the field name tag.
             replace = `[[${field.name}#name]]`;
