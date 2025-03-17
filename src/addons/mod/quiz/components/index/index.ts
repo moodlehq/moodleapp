@@ -93,11 +93,13 @@ export class AddonModQuizIndexComponent extends CoreCourseModuleMainActivityComp
     overallFeedback?: string; // The feedback for the grade.
     buttonText?: string; // Text to display in the start/continue button.
     preventMessages: string[] = []; // List of messages explaining why the quiz cannot be attempted.
+    preventMessagesColor = 'danger'; // Color for the prevent messages.
     showStatusSpinner = true; // Whether to show a spinner due to quiz status.
     gradeMethodReadable?: string; // Grade method in a readable format.
     showReviewColumn = false; // Whether to show the review column.
     attempts: QuizAttempt[] = []; // List of attempts the user has made.
     bestGrade?: AddonModQuizGetUserBestGradeWSResponse; // Best grade data.
+    hasQuestions = false; // Whether the quiz has questions.
 
     protected fetchContentDefaultError = 'addon.mod_quiz.errorgetquiz'; // Default error to show when loading contents.
     protected syncEventName = ADDON_MOD_QUIZ_AUTO_SYNCED;
@@ -244,6 +246,8 @@ export class AddonModQuizIndexComponent extends CoreCourseModuleMainActivityComp
         // Get question types in the quiz.
         const types = await AddonModQuiz.getQuizRequiredQtypes(quiz.id, { cmId: this.module.id });
 
+        // For closed quizzes we don't receive the hasquestions value (to be fixed in MDL-84360), so we need to check the types.
+        this.hasQuestions = quiz.hasquestions !== undefined ? quiz.hasquestions !== 0 : types.length > 0;
         this.unsupportedQuestions = AddonModQuiz.getUnsupportedQuestions(types);
         this.hasSupportedQuestions = !!types.find((type) => type != 'random' && this.unsupportedQuestions.indexOf(type) == -1);
 
@@ -281,20 +285,20 @@ export class AddonModQuizIndexComponent extends CoreCourseModuleMainActivityComp
             this.moreAttempts = !this.attemptAccessInfo.isfinished;
         }
 
-        this.getButtonText(quiz);
+        this.getButtonText();
 
         await this.getResultInfo(quiz);
     }
 
     /**
      * Get the text to show in the button. It also sets restriction messages if needed.
-     *
-     * @param quiz Quiz.
      */
-    protected getButtonText(quiz: AddonModQuizQuizData): void {
+    protected getButtonText(): void {
+        const canOnlyPreview = !!this.quizAccessInfo?.canpreview && !this.quizAccessInfo?.canattempt;
         this.buttonText = '';
+        this.preventMessagesColor = canOnlyPreview ? 'warning' : 'danger';
 
-        if (quiz.hasquestions !== 0) {
+        if (this.hasQuestions) {
             if (this.attempts.length && !AddonModQuiz.isAttemptCompleted(this.attempts[0].state)) {
                 // Last attempt is unfinished.
                 if (this.quizAccessInfo?.canattempt) {
@@ -327,7 +331,7 @@ export class AddonModQuizIndexComponent extends CoreCourseModuleMainActivityComp
         // So far we think a button should be printed, check if they will be allowed to access it.
         this.preventMessages = this.quizAccessInfo?.preventaccessreasons || [];
 
-        if (!this.moreAttempts) {
+        if (!this.moreAttempts && !canOnlyPreview) {
             this.buttonText = '';
         } else if (this.quizAccessInfo?.canattempt && this.preventMessages.length) {
             this.buttonText = '';
