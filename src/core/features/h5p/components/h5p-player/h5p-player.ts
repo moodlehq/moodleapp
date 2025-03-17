@@ -65,10 +65,12 @@ export class CoreH5PPlayerComponent implements OnInit, OnChanges, OnDestroy {
     protected siteCanDownload: boolean;
     protected observer?: CoreEventObserver;
     protected logger: CoreLogger;
+    protected nativeElement: HTMLElement;
 
     constructor(
-        public elementRef: ElementRef,
+        elementRef: ElementRef,
     ) {
+        this.nativeElement = elementRef.nativeElement;
 
         this.logger = CoreLogger.getInstance('CoreH5PPlayerComponent');
         this.site = CoreSites.getRequiredCurrentSite();
@@ -80,23 +82,34 @@ export class CoreH5PPlayerComponent implements OnInit, OnChanges, OnDestroy {
      * @inheritdoc
      */
     ngOnInit(): void {
-        this.checkCanDownload();
-        if (this.autoPlay) {
-            this.play();
-        }
+        this.playIfRequested();
     }
 
     /**
-     * Detect changes on input properties.
+     * @inheritdoc
      */
     ngOnChanges(changes: {[name: string]: SimpleChange}): void {
         // If it's already playing there's no need to check if it can be downloaded or auto-played.
         if (changes.src && !this.showPackage) {
-            this.checkCanDownload();
-            if (this.autoPlay) {
+            this.playIfRequested();
+        }
+    }
+
+    protected async playIfRequested(): Promise<void> {
+
+        if (!this.autoPlay) {
+            await this.checkCanDownload();
+
+            if (this.canDownload$.getValue() &&
+                (this.state === DownloadStatus.OUTDATED || this.state === DownloadStatus.DOWNLOADED)) {
+                // It will be played if it's downloaded.
                 this.play();
             }
+
+            return;
         }
+
+        this.play();
     }
 
     /**
@@ -166,8 +179,6 @@ export class CoreH5PPlayerComponent implements OnInit, OnChanges, OnDestroy {
 
     /**
      * Download the H5P in background if the size is low.
-     *
-     * @returns Promise resolved when done.
      */
     protected async attemptDownloadInBg(): Promise<void> {
         if (!this.urlParams || !this.src || !this.siteCanDownload || !CoreH5P.canGetTrustedH5PFileInSite() ||
@@ -192,15 +203,13 @@ export class CoreH5PPlayerComponent implements OnInit, OnChanges, OnDestroy {
 
     /**
      * Check if the package can be downloaded.
-     *
-     * @returns Promise resolved when done.
      */
     protected async checkCanDownload(): Promise<void> {
-        this.observer && this.observer.off();
+        this.observer?.off();
         this.urlParams = CoreUrl.extractUrlParams(this.src || '');
 
         if (this.src && this.siteCanDownload && CoreH5P.canGetTrustedH5PFileInSite() && this.site.containsUrl(this.src)) {
-            this.calculateState();
+            await this.calculateState();
 
             // Listen for changes in the state.
             try {
@@ -209,7 +218,7 @@ export class CoreH5PPlayerComponent implements OnInit, OnChanges, OnDestroy {
                 this.observer = CoreEvents.on(eventName, () => {
                     this.calculateState();
                 });
-            } catch (error) {
+            } catch {
                 // An error probably means the file cannot be downloaded or we cannot check it (offline).
             }
 
@@ -234,7 +243,7 @@ export class CoreH5PPlayerComponent implements OnInit, OnChanges, OnDestroy {
 
             this.canDownload$.next(true);
             this.state = state;
-        } catch (error) {
+        } catch {
             this.canDownload$.next(false);
         } finally {
             this.calculating$.next(false);
@@ -242,7 +251,16 @@ export class CoreH5PPlayerComponent implements OnInit, OnChanges, OnDestroy {
     }
 
     /**
-     * Component destroyed.
+     * Get the native element.
+     *
+     * @returns The native element.
+     */
+    getElement(): HTMLElement {
+        return this.nativeElement;
+    }
+
+    /**
+     * @inheritdoc
      */
     ngOnDestroy(): void {
         this.observer?.off();
