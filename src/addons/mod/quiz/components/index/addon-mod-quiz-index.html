@@ -174,14 +174,14 @@
     <!-- More data. -->
     <ng-container *ngIf="quiz">
         <!-- Error messages. -->
-        <ion-card class="core-danger-card addon-mod_quiz-prevent-messages">
+        <ion-card class="core-{{preventMessagesColor}}-card addon-mod_quiz-prevent-messages">
             <ion-item class="ion-text-wrap" *ngFor="let message of preventMessages">
                 <ion-label>
                     <p>{{ message }}</p>
                 </ion-label>
             </ion-item>
         </ion-card>
-        <ion-card class="core-danger-card addon-mod_quiz-no-questions" *ngIf="quiz.hasquestions === 0">
+        <ion-card class="core-danger-card addon-mod_quiz-no-questions" *ngIf="!hasQuestions">
             <ion-item class="ion-text-wrap">
                 <ion-label>
                     <p>{{ 'addon.mod_quiz.noquestions' | translate }}</p>
