@@ -93,7 +93,7 @@ export class CoreH5PIframeComponent implements OnChanges, OnDestroy {
     }
 
     /**
-     * Detect changes on input properties.
+     * @inheritdoc
      */
     ngOnChanges(changes: {[name: string]: SimpleChange}): void {
         // If it's already playing don't change it.
