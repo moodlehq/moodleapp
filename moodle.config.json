@@ -1,7 +1,7 @@
 {
     "app_id": "com.bitkea.scholarlms",
     "appname": "ScholarLMS Mobile",
-    "versioncode": 50000,
+    "versioncode": 50001,
     "versionname": "5.0.0",
     "cache_update_frequency_usually": 420000,
     "cache_update_frequency_often": 1200000,

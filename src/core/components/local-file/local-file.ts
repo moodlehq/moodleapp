@@ -104,7 +104,7 @@ export class CoreLocalFileComponent implements OnInit {
         this.isIOS = CorePlatform.isIOS();
         this.defaultIsOpenWithPicker = CoreFileHelper.defaultIsOpenWithPicker();
         this.openButtonIcon = this.defaultIsOpenWithPicker ? 'fas-file' : 'fas-share-from-square';
-        this.openButtonLabel = this.defaultIsOpenWithPicker ? 'core.openfile' : 'core.openwith';
+        this.openButtonLabel = this.defaultIsOpenWithPicker ? 'core.openfile' : 'core.share';
     }
 
     /**
