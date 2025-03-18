@@ -283,8 +283,12 @@ export class CoreText {
      * @returns Formatted text.
      */
     static formatHtmlLines(text: string): string {
+        if (!text) {
+            return '';
+        }
+
         const hasHTMLTags = CoreText.hasHTMLTags(text);
-        if (text.indexOf('<p>') == -1) {
+        if (text.indexOf('<p>') === -1) {
             // Wrap the text in <p> tags.
             text = `<p>${text}</p>`;
         }
