@@ -108,15 +108,24 @@ export class CoreUserHelperProvider {
      * @returns User initials.
      */
     async getUserInitialsFromParts(parts: CoreUserNameParts): Promise<string> {
+        const nameFields = ['firstname', 'lastname'];
+        const dummyUser = {
+            firstname: 'firstname',
+            lastname: 'lastname',
+        };
+        const nameFormat = Translate.instant('core.user.fullnamedisplay', { $a:dummyUser });
+        const availableFieldsSorted = nameFields
+            .filter((field) => nameFormat.indexOf(field) >= 0)
+            .sort((a, b) => nameFormat.indexOf(a) - nameFormat.indexOf(b));
+
         if (!parts.firstname && !parts.lastname) {
-            if (!parts.fullname && parts.userId) {
+            if (parts.userId) {
                 const user = await CoreUser.getProfile(parts.userId, undefined, true);
-                parts.fullname = user.fullname || '';
-            }
-
-            if (parts.fullname) {
+                parts.firstname = user.firstname || '';
+                parts.lastname = user.lastname || '';
+            } else if (parts.fullname) {
+                // It's a complete workaround.
                 const split = parts.fullname.split(' ');
-
                 parts.firstname = split[0];
                 if (split.length > 1) {
                     parts.lastname = split[split.length - 1];
@@ -124,11 +133,10 @@ export class CoreUserHelperProvider {
             }
         }
 
-        if (!parts.firstname && !parts.lastname) {
-            return 'UNK';
-        }
+        const initials = availableFieldsSorted.reduce((initials, fieldName) =>
+            initials + (parts[fieldName]?.charAt(0) ?? ''), '');
 
-        return (parts.firstname?.charAt(0) || '') + (parts.lastname?.charAt(0) || '');
+        return initials || 'UNK';
     }
 
     /**
