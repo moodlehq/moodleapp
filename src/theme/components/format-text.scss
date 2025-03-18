@@ -103,15 +103,17 @@ core-format-text {
         }
     }
 
-    // Disable clicks in links inside MathJax equations.
-    .filter_mathjaxloader_equation .MathJax_Preview a {
-        pointer-events: none;
-    }
-
-    .MathJax_SVG_Display {
+    .filter_mathjaxloader_equation mjx-container,
+    .filter_mathjaxloader_equation mjx-container[jax="CHTML"] { // Increase specificity.
         overflow-x: auto;
         margin: 0;
         padding: 10px 0;
+
+        // Disable clicks in links inside MathJax equations.
+        a {
+            pointer-events: none;
+        }
+
     }
 
 }
