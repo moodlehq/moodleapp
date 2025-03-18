@@ -51,7 +51,7 @@ ion-action-sheet {
 }
 
 // We need [class] to increase the specificity. See: https://ionicframework.com/docs/api/action-sheet#theming
-.action-sheet-button[class] {
+.action-sheet-button.select-interface-option[class] {
     &, &.ion-focused, &.ion-activated {
         color: var(--text-color);
     }
