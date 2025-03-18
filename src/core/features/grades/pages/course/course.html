@@ -20,7 +20,11 @@
                     <tr>
                         <th *ngFor="let column of columns" id="{{column.name}}" class="ion-text-start"
                             [class.ion-hide-md-down]="column.hiddenPhone" [attr.colspan]="column.colspan">
-                            {{ 'core.grades.' + column.name | translate }}
+                            @if (column.name === 'grade') {
+                                {{ 'core.gradenoun' | translate }}
+                            } @else {
+                                {{ 'core.grades.' + column.name | translate }}
+                            }
                         </th>
                     </tr>
                 </thead>
@@ -80,7 +84,7 @@
 
                                     <ion-item class="ion-text-wrap" *ngIf="row.grade">
                                         <ion-label>
-                                            <p class="item-heading">{{ 'core.grades.grade' | translate}}</p>
+                                            <p class="item-heading">{{ 'core.gradenoun' | translate}}</p>
                                             <p [innerHTML]="row.grade"></p>
                                         </ion-label>
                                     </ion-item>

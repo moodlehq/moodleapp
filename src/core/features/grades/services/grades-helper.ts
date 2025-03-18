@@ -201,7 +201,7 @@ export class CoreGradesHelperProvider {
         // Get a row with some info.
         let normalRow = formatted.rows.find(
             row =>
-                row.itemtype != 'leader' &&
+                row.itemtype !== 'leader' &&
                 (row.grade !== undefined || row.percentage !== undefined),
         );
 
@@ -211,7 +211,7 @@ export class CoreGradesHelperProvider {
         } else if (normalRow && normalRow.percentage !== undefined) {
             columns.percentage = true;
         } else {
-            normalRow = formatted.rows.find((e) => e.itemtype != 'leader');
+            normalRow = formatted.rows.find((e) => e.itemtype !== 'leader');
             columns.grade = true;
         }
 
@@ -219,7 +219,7 @@ export class CoreGradesHelperProvider {
             if (normalRow && normalRow[colName] !== undefined) {
                 formatted.columns.push({
                     name: colName,
-                    colspan: colName == 'gradeitem' ? maxDepth : 1,
+                    colspan: colName === 'gradeitem' ? maxDepth : 1,
                     hiddenPhone: !columns[colName],
                 });
             }

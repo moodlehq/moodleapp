@@ -789,7 +789,7 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy {
      */
     showAdvancedGrade(grade: string): void {
         CoreViewer.viewText(
-            Translate.instant('core.grades.grade'),
+            Translate.instant('core.gradenoun'),
             grade,
             {
                 component: ADDON_MOD_ASSIGN_COMPONENT_LEGACY,
