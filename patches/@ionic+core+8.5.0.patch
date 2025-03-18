@@ -1,5 +1,5 @@
 diff --git a/node_modules/@ionic/core/components/popover.js b/node_modules/@ionic/core/components/popover.js
-index 394d7e6..1f36f24 100644
+index df0b0f6..ffd1bac 100644
 --- a/node_modules/@ionic/core/components/popover.js
 +++ b/node_modules/@ionic/core/components/popover.js
 @@ -763,8 +763,10 @@ const iosEnterAnimation = (baseEl, opts) => {
@@ -29,7 +29,7 @@ index 394d7e6..1f36f24 100644
      const contentEl = root.querySelector('.popover-content');
      const referenceSizeEl = trigger || ((_a = ev === null || ev === void 0 ? void 0 : ev.detail) === null || _a === void 0 ? void 0 : _a.ionShadowTarget) || (ev === null || ev === void 0 ? void 0 : ev.target);
 diff --git a/node_modules/@ionic/core/dist/cjs/ion-popover.cjs.entry.js b/node_modules/@ionic/core/dist/cjs/ion-popover.cjs.entry.js
-index 004effa..84389bf 100644
+index c644264..175df2e 100644
 --- a/node_modules/@ionic/core/dist/cjs/ion-popover.cjs.entry.js
 +++ b/node_modules/@ionic/core/dist/cjs/ion-popover.cjs.entry.js
 @@ -769,8 +769,10 @@ const iosEnterAnimation = (baseEl, opts) => {
@@ -92,8 +92,55 @@ index 603923a..ff10a25 100644
      const root = getElementRoot(baseEl);
      const contentEl = root.querySelector('.popover-content');
      const referenceSizeEl = trigger || ((_a = ev === null || ev === void 0 ? void 0 : ev.detail) === null || _a === void 0 ? void 0 : _a.ionShadowTarget) || (ev === null || ev === void 0 ? void 0 : ev.target);
+diff --git a/node_modules/@ionic/core/dist/esm/input-shims-3070628a.js b/node_modules/@ionic/core/dist/esm/input-shims-3070628a.js
+index cc59b33..2c24dc3 100644
+--- a/node_modules/@ionic/core/dist/esm/input-shims-3070628a.js
++++ b/node_modules/@ionic/core/dist/esm/input-shims-3070628a.js
+@@ -340,7 +340,8 @@ const enableScrollAssist = (componentEl, inputEl, contentEl, footerEl, keyboardH
+     const focusOut = () => {
+         hasKeyboardBeenPresentedForTextField = false;
+         win === null || win === void 0 ? void 0 : win.removeEventListener('ionKeyboardDidShow', keyboardShow);
+-        componentEl.removeEventListener('focusout', focusOut);
++        // Patched: Attach focusin/focusout events to inputEl instead of componentEl to allow focusing buttons inside <ion-input>.
++        inputEl.removeEventListener('focusout', focusOut);
+     };
+     /**
+      * When the input is about to receive
+@@ -360,13 +361,15 @@ const enableScrollAssist = (componentEl, inputEl, contentEl, footerEl, keyboardH
+         }
+         jsSetFocus(componentEl, inputEl, contentEl, footerEl, keyboardHeight, addScrollPadding, disableClonedInput, platformHeight);
+         win === null || win === void 0 ? void 0 : win.addEventListener('ionKeyboardDidShow', keyboardShow);
+-        componentEl.addEventListener('focusout', focusOut);
++        // Patched: Attach focusin/focusout events to inputEl instead of componentEl to allow focusing buttons inside <ion-input>.
++        inputEl.addEventListener('focusout', focusOut);
+     };
+-    componentEl.addEventListener('focusin', focusIn);
++    // Patched: Attach focusin/focusout events to inputEl instead of componentEl to allow focusing buttons inside <ion-input>.
++    inputEl.addEventListener('focusin', focusIn);
+     return () => {
+-        componentEl.removeEventListener('focusin', focusIn);
++        inputEl.removeEventListener('focusin', focusIn);
+         win === null || win === void 0 ? void 0 : win.removeEventListener('ionKeyboardDidShow', keyboardShow);
+-        componentEl.removeEventListener('focusout', focusOut);
++        inputEl.removeEventListener('focusout', focusOut);
+     };
+ };
+ /**
+diff --git a/node_modules/@ionic/core/dist/esm/ion-item_8.entry.js b/node_modules/@ionic/core/dist/esm/ion-item_8.entry.js
+index 4b8d277..fc26329 100644
+--- a/node_modules/@ionic/core/dist/esm/ion-item_8.entry.js
++++ b/node_modules/@ionic/core/dist/esm/ion-item_8.entry.js
+@@ -109,7 +109,7 @@ const Item = class {
+     // inputs, then those need to individually get each click
+     hasCover() {
+         const inputs = this.el.querySelectorAll('ion-checkbox, ion-datetime, ion-select, ion-radio');
+-        return inputs.length === 1 && !this.multipleInputs;
++        return inputs.length === 1;
+     }
+     // If the item has an href or button property it will render a native
+     // anchor or button that is clickable
 diff --git a/node_modules/@ionic/core/dist/esm/ion-popover.entry.js b/node_modules/@ionic/core/dist/esm/ion-popover.entry.js
-index 9b06217..70b4015 100644
+index d32e60c..491c281 100644
 --- a/node_modules/@ionic/core/dist/esm/ion-popover.entry.js
 +++ b/node_modules/@ionic/core/dist/esm/ion-popover.entry.js
 @@ -765,8 +765,10 @@ const iosEnterAnimation = (baseEl, opts) => {
@@ -123,10 +170,10 @@ index 9b06217..70b4015 100644
      const contentEl = root.querySelector('.popover-content');
      const referenceSizeEl = trigger || ((_a = ev === null || ev === void 0 ? void 0 : ev.detail) === null || _a === void 0 ? void 0 : _a.ionShadowTarget) || (ev === null || ev === void 0 ? void 0 : ev.target);
 diff --git a/node_modules/@ionic/core/hydrate/index.js b/node_modules/@ionic/core/hydrate/index.js
-index c3d2d8e..bc40d4f 100644
+index 6de5db2..e9c8ecc 100644
 --- a/node_modules/@ionic/core/hydrate/index.js
 +++ b/node_modules/@ionic/core/hydrate/index.js
-@@ -23882,8 +23882,10 @@ const iosEnterAnimation$1 = (baseEl, opts) => {
+@@ -24183,8 +24183,10 @@ const iosEnterAnimation$1 = (baseEl, opts) => {
      const { event: ev, size, trigger, reference, side, align } = opts;
      const doc = baseEl.ownerDocument;
      const isRTL = doc.dir === 'rtl';
@@ -139,7 +186,7 @@ index c3d2d8e..bc40d4f 100644
      const root = getElementRoot(baseEl);
      const contentEl = root.querySelector('.popover-content');
      const arrowEl = root.querySelector('.popover-arrow');
-@@ -24003,8 +24005,10 @@ const mdEnterAnimation$1 = (baseEl, opts) => {
+@@ -24304,8 +24306,10 @@ const mdEnterAnimation$1 = (baseEl, opts) => {
      const { event: ev, size, trigger, reference, side, align } = opts;
      const doc = baseEl.ownerDocument;
      const isRTL = doc.dir === 'rtl';
@@ -152,48 +199,3 @@ index c3d2d8e..bc40d4f 100644
      const root = getElementRoot(baseEl);
      const contentEl = root.querySelector('.popover-content');
      const referenceSizeEl = trigger || ((_a = ev === null || ev === void 0 ? void 0 : ev.detail) === null || _a === void 0 ? void 0 : _a.ionShadowTarget) || (ev === null || ev === void 0 ? void 0 : ev.target);
-diff --git a/node_modules/@ionic/core/dist/esm/input-shims-0314bbe5.js b/node_modules/@ionic/core/dist/esm/input-shims-0314bbe5.js
-index dd9d410..846146f 100644
---- a/node_modules/@ionic/core/dist/esm/input-shims-0314bbe5.js
-+++ b/node_modules/@ionic/core/dist/esm/input-shims-0314bbe5.js
-@@ -338,7 +338,8 @@ const enableScrollAssist = (componentEl, inputEl, contentEl, footerEl, keyboardH
-     const focusOut = () => {
-         hasKeyboardBeenPresentedForTextField = false;
-         win === null || win === void 0 ? void 0 : win.removeEventListener('ionKeyboardDidShow', keyboardShow);
--        componentEl.removeEventListener('focusout', focusOut);
-+        // Patched: Attach focusin/focusout events to inputEl instead of componentEl to allow focusing buttons inside <ion-input>.
-+        inputEl.removeEventListener('focusout', focusOut);
-     };
-     /**
-      * When the input is about to receive
-@@ -358,13 +358,15 @@ const enableScrollAssist = (componentEl, inputEl, contentEl, footerEl, keyboardH
-         }
-         jsSetFocus(componentEl, inputEl, contentEl, footerEl, keyboardHeight, addScrollPadding, disableClonedInput, platformHeight);
-         win === null || win === void 0 ? void 0 : win.addEventListener('ionKeyboardDidShow', keyboardShow);
--        componentEl.addEventListener('focusout', focusOut);
-+        // Patched: Attach focusin/focusout events to inputEl instead of componentEl to allow focusing buttons inside <ion-input>.
-+        inputEl.addEventListener('focusout', focusOut);
-     };
--    componentEl.addEventListener('focusin', focusIn);
-+    // Patched: Attach focusin/focusout events to inputEl instead of componentEl to allow focusing buttons inside <ion-input>.
-+    inputEl.addEventListener('focusin', focusIn);
-     return () => {
--        componentEl.removeEventListener('focusin', focusIn);
-+        inputEl.removeEventListener('focusin', focusIn);
-         win === null || win === void 0 ? void 0 : win.removeEventListener('ionKeyboardDidShow', keyboardShow);
--        componentEl.removeEventListener('focusout', focusOut);
-+        inputEl.removeEventListener('focusout', focusOut);
-     };
- };
- /**
---- a/node_modules/@ionic/core/dist/esm/ion-item_8.entry.js
-+++ b/node_modules/@ionic/core/dist/esm/ion-item_8.entry.js
-@@ -109,7 +109,7 @@ const Item = class {
-     // inputs, then those need to individually get each click
-     hasCover() {
-         const inputs = this.el.querySelectorAll('ion-checkbox, ion-datetime, ion-select, ion-radio');
--        return inputs.length === 1 && !this.multipleInputs;
-+        return inputs.length === 1;
-     }
-     // If the item has an href or button property it will render a native
-     // anchor or button that is clickable
