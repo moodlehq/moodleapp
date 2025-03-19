@@ -101,6 +101,17 @@ export const MOODLE_RELEASES = {
 };
 
 /**
+ * Priority of the different back button actions in the app.
+ */
+export const enum BackButtonPriority {
+    IFRAME_FULLSCREEN = 150,
+    USER_TOURS = 100,
+    CORE_TABS = 40,
+    MAIN_MENU = -10, // Use a priority lower than 0 (navigation).
+    QUIT_APP = -100, // This should always be the lowest priority.
+}
+
+/**
  * Static class to contain all the core constants.
  */
 export class CoreConstants {
@@ -186,31 +197,31 @@ export class CoreConstants {
     static readonly ICON_SYNC = 'fas-rotate';
 
     /**
-     * @deprecated since 5.0. Use CoreCacheUpdateFrequency.AUTO instead.
+     * @deprecated since 5.0. Use ModResourceDisplay.AUTO instead.
      */
     static readonly RESOURCELIB_DISPLAY_AUTO = ModResourceDisplay.AUTO;
     /**
-     * @deprecated since 5.0. Use CoreCacheUpdateFrequency.EMBED instead.
+     * @deprecated since 5.0. Use ModResourceDisplay.EMBED instead.
      */
     static readonly RESOURCELIB_DISPLAY_EMBED = ModResourceDisplay.EMBED;
     /**
-     * @deprecated since 5.0. Use CoreCacheUpdateFrequency.FRAME instead.
+     * @deprecated since 5.0. Use ModResourceDisplay.FRAME instead.
      */
     static readonly RESOURCELIB_DISPLAY_FRAME = ModResourceDisplay.FRAME;
     /**
-     * @deprecated since 5.0. Use CoreCacheUpdateFrequency.NEW instead.
+     * @deprecated since 5.0. Use ModResourceDisplay.NEW instead.
      */
     static readonly RESOURCELIB_DISPLAY_NEW = ModResourceDisplay.NEW;
     /**
-     * @deprecated since 5.0. Use CoreCacheUpdateFrequency.DOWNLOAD instead.
+     * @deprecated since 5.0. Use ModResourceDisplay.DOWNLOAD instead.
      */
     static readonly RESOURCELIB_DISPLAY_DOWNLOAD = ModResourceDisplay.DOWNLOAD;
     /**
-     * @deprecated since 5.0. Use CoreCacheUpdateFrequency.OPEN instead.
+     * @deprecated since 5.0. Use ModResourceDisplay.OPEN instead.
      */
     static readonly RESOURCELIB_DISPLAY_OPEN = ModResourceDisplay.OPEN;
     /**
-     * @deprecated since 5.0. Use CoreCacheUpdateFrequency.POPUP instead.
+     * @deprecated since 5.0. Use ModResourceDisplay.POPUP instead.
      */
     static readonly RESOURCELIB_DISPLAY_POPUP = ModResourceDisplay.POPUP;
 

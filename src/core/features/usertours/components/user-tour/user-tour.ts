@@ -36,10 +36,7 @@ import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { COLLAPSIBLE_HEADER_UPDATED } from '@directives/collapsible-header';
 import { MAIN_MENU_VISIBILITY_UPDATED_EVENT } from '@features/mainmenu/constants';
 import { CoreSharedModule } from '@/core/shared.module';
-
-const ANIMATION_DURATION = 200;
-const USER_TOURS_BACK_BUTTON_PRIORITY = 100;
-const BACKDROP_DISMISS_SAFETY_TRESHOLD = 1000;
+import { BackButtonPriority } from '@/core/constants';
 
 /**
  * User Tour wrapper component.
@@ -70,6 +67,9 @@ export class CoreUserToursUserTourComponent implements AfterViewInit, OnDestroy 
     @HostBinding('class.is-popover') popover = false;
     @HostBinding('class.backdrop') backdrop = true;
     @ViewChild('wrapper') wrapper?: ElementRef<HTMLElement>;
+
+    protected static readonly ANIMATION_DURATION = 200;
+    protected static readonly BACKDROP_DISMISS_SAFETY_TRESHOLD = 1000;
 
     focusStyles?: string;
     popoverWrapperStyles?: string;
@@ -202,10 +202,10 @@ export class CoreUserToursUserTourComponent implements AfterViewInit, OnDestroy 
         }
 
         const animations = [
-            this.element.animate({ opacity: ['0', '1'] }, { duration: ANIMATION_DURATION }),
+            this.element.animate({ opacity: ['0', '1'] }, { duration: CoreUserToursUserTourComponent.ANIMATION_DURATION }),
             this.wrapperElement.value?.animate(
                 { transform: [`scale(1.2) ${this.wrapperTransform}`, `scale(1) ${this.wrapperTransform}`] },
-                { duration: ANIMATION_DURATION },
+                { duration: CoreUserToursUserTourComponent.ANIMATION_DURATION },
             ),
         ];
 
@@ -222,10 +222,10 @@ export class CoreUserToursUserTourComponent implements AfterViewInit, OnDestroy 
         }
 
         const animations = [
-            this.element.animate({ opacity: ['1', '0'] }, { duration: ANIMATION_DURATION }),
+            this.element.animate({ opacity: ['1', '0'] }, { duration: CoreUserToursUserTourComponent.ANIMATION_DURATION }),
             this.wrapperElement.value?.animate(
                 { transform: [`scale(1) ${this.wrapperTransform}`, `scale(1.2) ${this.wrapperTransform}`] },
-                { duration: ANIMATION_DURATION },
+                { duration: CoreUserToursUserTourComponent.ANIMATION_DURATION },
             ),
         ];
 
@@ -254,7 +254,7 @@ export class CoreUserToursUserTourComponent implements AfterViewInit, OnDestroy 
             document.addEventListener(
                 'ionBackButton',
                 this.backButtonListener = ({ detail }) => detail.register(
-                    USER_TOURS_BACK_BUTTON_PRIORITY,
+                    BackButtonPriority.USER_TOURS,
                     () => {
                         this.dismissOnBackOrBackdrop();
                     },
@@ -312,7 +312,7 @@ export class CoreUserToursUserTourComponent implements AfterViewInit, OnDestroy 
      * @param target Element clicked (if any).
      */
     protected dismissOnBackOrBackdrop(target?: HTMLElement): void {
-        if (!this.active || Date.now() - this.lastActivatedTime < BACKDROP_DISMISS_SAFETY_TRESHOLD) {
+        if (!this.active || Date.now() - this.lastActivatedTime < CoreUserToursUserTourComponent.BACKDROP_DISMISS_SAFETY_TRESHOLD) {
             // Not active or was recently activated, ignore.
             return;
         }

@@ -36,6 +36,8 @@ import { CoreLoadingComponent } from '@components/loading/loading';
 import { CoreNavBarButtonsComponent } from '@components/navbar-buttons/navbar-buttons';
 import { CoreFaIconDirective } from '@directives/fa-icon';
 import { CoreUpdateNonReactiveAttributesDirective } from '@directives/update-non-reactive-attributes';
+import { BackButtonEvent } from '@ionic/angular';
+import { BackButtonPriority } from '@/core/constants';
 
 @Component({
     selector: 'core-iframe',
@@ -84,6 +86,7 @@ export class CoreIframeComponent implements OnChanges, OnDestroy {
     protected orientationObs?: CoreEventObserver;
     protected navSubscription?: Subscription;
     protected messageListenerFunction: (event: MessageEvent) => Promise<void>;
+    protected backButtonListener?: (event: BackButtonEvent) => void;
 
     constructor(protected elementRef: ElementRef<HTMLElement>) {
         this.loaded = new EventEmitter<HTMLIFrameElement>();
@@ -121,9 +124,11 @@ export class CoreIframeComponent implements OnChanges, OnDestroy {
             this.navSubscription?.unsubscribe();
             this.orientationObs?.off();
             this.style?.remove();
+            this.backButtonListener && document.removeEventListener('ionBackButton', this.backButtonListener);
             this.navSubscription = undefined;
             this.orientationObs = undefined;
             this.style = undefined;
+            this.backButtonListener = undefined;
             this.fullScreenInitialized = true;
 
             return;
@@ -138,6 +143,20 @@ export class CoreIframeComponent implements OnChanges, OnDestroy {
                         this.toggleFullscreen(false);
                     }
                 });
+        }
+
+        if (!this.backButtonListener) {
+            // Exit fullscreen when back button is clicked.
+            document.addEventListener('ionBackButton', this.backButtonListener = ({ detail }) => detail.register(
+                BackButtonPriority.IFRAME_FULLSCREEN,
+                (processNextHandler) => {
+                    if (this.fullscreen) {
+                        this.toggleFullscreen(false);
+                    } else {
+                        processNextHandler();
+                    }
+                },
+            ));
         }
 
         if (!this.style) {
