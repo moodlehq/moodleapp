@@ -28,6 +28,7 @@ import { CorePromisedValue } from '@classes/promised-value';
 import { register } from 'swiper/element/bundle';
 import { CoreWait } from '@singletons/wait';
 import { CoreOpener } from '@singletons/opener';
+import { BackButtonPriority } from '@/core/constants';
 
 register();
 
@@ -72,8 +73,7 @@ export class AppComponent implements OnInit, AfterViewInit {
 
         // Quit app with back button.
         document.addEventListener('ionBackButton', (event: BackButtonEvent) => {
-            // This callback should have the lowest priority in the app.
-            event.detail.register(-100, async () => {
+            event.detail.register(BackButtonPriority.QUIT_APP, async () => {
                 const initialPath = CoreNavigator.getCurrentPath();
                 if (initialPath.startsWith('/main/')) {
                     // Main menu has its own callback to handle back. If this callback is called it means we should exit app.
