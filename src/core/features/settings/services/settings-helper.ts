@@ -24,7 +24,7 @@ import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreConstants } from '@/core/constants';
 import { CoreConfig } from '@services/config';
 import { CoreFilter } from '@features/filter/services/filter';
-import { CoreCourse } from '@features/course/services/course';
+import { CoreCourseDownloadStatusHelper } from '@features/course/services/course-download-status-helper';
 import { makeSingleton, Translate } from '@singletons';
 import { CoreError } from '@classes/errors/error';
 import { Observable, Subject } from 'rxjs';
@@ -139,7 +139,7 @@ export class CoreSettingsHelperProvider {
         promises.push(site.deleteFolder().then(() => {
             CoreFilepool.clearAllPackagesStatus(siteId);
             CoreFilepool.clearFilepool(siteId);
-            CoreCourse.clearAllCoursesStatus(siteId);
+            CoreCourseDownloadStatusHelper.clearAllCoursesStatus(siteId);
 
             siteInfo.spaceUsage = 0;
 

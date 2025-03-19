@@ -28,7 +28,7 @@ import { CoreNavigator } from '@services/navigator';
 import { CoreSites } from '@services/sites';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { makeSingleton } from '@singletons';
-import { GRADES_PAGE_NAME } from '../grades-helper';
+import { GRADES_PAGE_NAME } from '../../constants';
 
 /**
  * Profile grades handler.
@@ -83,7 +83,7 @@ export class CoreGradesUserHandlerService implements CoreUserProfileHandler {
         }
 
         // All course grades only available for the current user.
-        return user.id == CoreSites.getCurrentSiteUserId();
+        return user.id === CoreSites.getCurrentSiteUserId();
     }
 
     /**

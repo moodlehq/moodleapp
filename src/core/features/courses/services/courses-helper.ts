@@ -68,16 +68,14 @@ export class CoreCoursesHelperProvider {
         let categoryId: number | undefined;
         if (courseId) {
             // Search the course to get the category.
-            const course = courses.find((course) => course.id == courseId);
+            const course = courses.find((course) => course.id === courseId);
 
-            if (course) {
-                categoryId = course.categoryid;
-            }
+            categoryId = course?.categoryid;
         }
 
         return {
-            courses: courses,
-            categoryId: categoryId,
+            courses,
+            categoryId,
         };
     }
 
@@ -108,12 +106,9 @@ export class CoreCoursesHelperProvider {
      *
      * @param courses List of courses.
      * @returns Promise resolved when done.
+     * @deprecated since 5.0. Use loadCourseColorAndImage instead.
      */
     async loadCoursesColorAndImage(courses: CoreCourseSearchedData[]): Promise<void> {
-        if (!courses.length) {
-            return;
-        }
-
         await Promise.all(courses.map((course) => this.loadCourseColorAndImage(course)));
     }
 

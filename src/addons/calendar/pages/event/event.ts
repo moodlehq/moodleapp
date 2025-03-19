@@ -24,7 +24,7 @@ import { CoreNetwork } from '@services/network';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { CoreText } from '@singletons/text';
 import { CoreSites } from '@services/sites';
-import { CoreCourse } from '@features/course/services/course';
+import { CoreCourseModuleHelper } from '@features/course/services/course-module-helper';
 import { CoreTime } from '@singletons/time';
 import { DomSanitizer, NgZone, Translate } from '@singletons';
 import { Subscription } from 'rxjs';
@@ -269,7 +269,7 @@ export default class AddonCalendarEventPage implements OnInit, OnDestroy {
 
             if (this.event.moduleIcon) {
                 // It's a module event, translate the module name to the current language.
-                const name = CoreCourse.translateModuleName(this.event.modulename || '');
+                const name = CoreCourseModuleHelper.translateModuleName(this.event.modulename || '');
                 if (name.indexOf('core.mod_') === -1) {
                     this.event.modulename = name;
                 }

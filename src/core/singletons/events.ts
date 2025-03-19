@@ -22,6 +22,7 @@ import { CoreCourseModuleCompletionData } from '@features/course/services/course
 import { CoreScreenOrientation } from '@services/screen';
 import { CoreSiteInfoResponse, CoreSitePublicConfigResponse } from '@classes/sites/unauthenticated-site';
 import { DownloadStatus } from '../constants';
+import { COURSE_STATUS_CHANGED_EVENT } from '@features/course/constants';
 
 /**
  * Observer instance to stop listening to an event.
@@ -41,7 +42,6 @@ export interface CoreEventsData {
     [CoreEvents.SITE_ADDED]: CoreEventSiteAddedData;
     [CoreEvents.SITE_DELETED]: CoreSite;
     [CoreEvents.SESSION_EXPIRED]: CoreEventSessionExpiredData;
-    [CoreEvents.COURSE_STATUS_CHANGED]: CoreEventCourseStatusChanged;
     [CoreEvents.PACKAGE_STATUS_CHANGED]: CoreEventPackageStatusChanged;
     [CoreEvents.USER_DELETED]: CoreEventUserDeletedData;
     [CoreEvents.USER_SUSPENDED]: CoreEventUserSuspendedData;
@@ -91,7 +91,10 @@ export class CoreEvents {
     static readonly USER_SUSPENDED = 'user_suspended';
     static readonly USER_NO_LOGIN = 'user_no_login';
     static readonly PACKAGE_STATUS_CHANGED = 'package_status_changed';
-    static readonly COURSE_STATUS_CHANGED = 'course_status_changed';
+    /**
+     * @deprecated since 5.0. Use COURSE_STATUS_CHANGED_EVENT instead.
+     */
+    static readonly COURSE_STATUS_CHANGED = COURSE_STATUS_CHANGED_EVENT;
     static readonly SECTION_STATUS_CHANGED = 'section_status_changed';
     static readonly COMPONENT_FILE_ACTION = 'component_file_action';
     static readonly SITE_PLUGINS_LOADED = 'site_plugins_loaded';
@@ -326,14 +329,6 @@ export type CoreEventSessionExpiredData = CoreRedirectPayload;
 export type CoreEventLoadingChangedData = {
     loaded: boolean;
     uniqueId: string;
-};
-
-/**
- * Data passed to COURSE_STATUS_CHANGED event.
- */
-export type CoreEventCourseStatusChanged = {
-    courseId: number; // Course Id.
-    status: DownloadStatus;
 };
 
 /**

@@ -26,6 +26,7 @@ import {
     CoreCourseGetContentsWSModule,
     sectionContentIsModule,
     CoreCourseAnyModuleData,
+    CoreCourseModuleOrSection,
 } from './course';
 import { CoreConstants, DownloadStatus, ContextLevel } from '@/core/constants';
 import { CoreLogger } from '@singletons/logger';
@@ -83,6 +84,7 @@ import {
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreOpener, CoreOpenerOpenFileOptions } from '@singletons/opener';
 import { CoreAlerts } from '@services/overlays/alerts';
+import { CoreCourseDownloadStatusHelper } from './course-download-status-helper';
 
 /**
  * Prefetch info of a module.
@@ -289,7 +291,7 @@ export class CoreCourseHelperProvider {
         }
 
         // Get the status of this section based on their modules.
-        const { modules, subsections } = CoreCourse.classifyContents(section.contents);
+        const { modules, subsections } = this.classifyContents(section.contents);
 
         const statusData = await CoreCourseModulePrefetchDelegate.getModulesStatus(
             modules,
@@ -334,7 +336,7 @@ export class CoreCourseHelperProvider {
     /**
      * Show a confirm and prefetch a course. It will retrieve the sections and the course options if not provided.
      * This function will set the icon to "spinner" when starting and it will also set it back to the initial icon if the
-     * user cancels. All the other updates of the icon should be made when CoreEvents.COURSE_STATUS_CHANGED is received.
+     * user cancels. All the other updates of the icon should be made when COURSE_STATUS_CHANGED_EVENT is received.
      *
      * @param data An object where to store the course icon and title: "prefetchCourseIcon", "title" and "downloadSucceeded".
      * @param course Course to prefetch.
@@ -469,7 +471,7 @@ export class CoreCourseHelperProvider {
                 return { size: 0, total: true };
             }
 
-            const { modules, subsections } = CoreCourse.classifyContents(section.contents);
+            const { modules, subsections } = this.classifyContents(section.contents);
 
             const [modulesSize, subsectionsSizes] = await Promise.all([
                 CoreCourseModulePrefetchDelegate.getDownloadSize(modules, courseId),
@@ -598,13 +600,13 @@ export class CoreCourseHelperProvider {
      * @param courses Courses
      * @returns Promise resolved with the status.
      */
-    async determineCoursesStatus(courses: CoreCourseBasicData[]): Promise<DownloadStatus> {
+    protected async determineCoursesStatus(courses: CoreCourseBasicData[]): Promise<DownloadStatus> {
         // Get the status of each course.
         const promises: Promise<DownloadStatus>[] = [];
         const siteId = CoreSites.getCurrentSiteId();
 
         courses.forEach((course) => {
-            promises.push(CoreCourse.getCourseStatus(course.id, siteId));
+            promises.push(CoreCourseDownloadStatusHelper.getCourseStatus(course.id, siteId));
         });
 
         const statuses = await Promise.all(promises);
@@ -1187,7 +1189,7 @@ export class CoreCourseHelperProvider {
      * @returns Promise resolved with the icon name and the title key.
      */
     async getCourseStatusIconAndTitle(courseId: number, siteId?: string): Promise<CorePrefetchStatusInfo> {
-        const status = await CoreCourse.getCourseStatus(courseId, siteId);
+        const status = await CoreCourseDownloadStatusHelper.getCourseStatus(courseId, siteId);
 
         return this.getCoursePrefetchStatusInfo(status);
     }
@@ -1225,7 +1227,7 @@ export class CoreCourseHelperProvider {
      * @param status Courses status.
      * @returns Prefetch status info.
      */
-    getCoursesPrefetchStatusInfo(status: DownloadStatus): CorePrefetchStatusInfo {
+    protected getCoursesPrefetchStatusInfo(status: DownloadStatus): CorePrefetchStatusInfo {
         const prefetchStatus: CorePrefetchStatusInfo = {
             status: status,
             icon: this.getPrefetchStatusIcon(status, false),
@@ -1253,7 +1255,7 @@ export class CoreCourseHelperProvider {
      * @param trustDownload True to show download success, false to show an outdated status when downloaded.
      * @returns Icon name.
      */
-    getPrefetchStatusIcon(status: DownloadStatus, trustDownload: boolean = false): string {
+    protected getPrefetchStatusIcon(status: DownloadStatus, trustDownload: boolean = false): string {
         if (status === DownloadStatus.DOWNLOADABLE_NOT_DOWNLOADED) {
             return CoreConstants.ICON_NOT_DOWNLOADED;
         }
@@ -1556,7 +1558,7 @@ export class CoreCourseHelperProvider {
         }
 
         // First of all, mark the course as being downloaded.
-        this.courseDwnPromises[requiredSiteId][course.id] = CoreCourse.setCourseStatus(
+        this.courseDwnPromises[requiredSiteId][course.id] = CoreCourseDownloadStatusHelper.setCourseStatus(
             course.id,
             DownloadStatus.DOWNLOADING,
             requiredSiteId,
@@ -1591,10 +1593,10 @@ export class CoreCourseHelperProvider {
             await CorePromiseUtils.allPromises(promises);
 
             // Download success, mark the course as downloaded.
-            return CoreCourse.setCourseStatus(course.id, DownloadStatus.DOWNLOADED, requiredSiteId);
+            return CoreCourseDownloadStatusHelper.setCourseStatus(course.id, DownloadStatus.DOWNLOADED, requiredSiteId);
         }).catch(async (error) => {
             // Error, restore previous status.
-            await CoreCourse.setCoursePreviousStatus(course.id, requiredSiteId);
+            await CoreCourseDownloadStatusHelper.setCoursePreviousStatus(course.id, requiredSiteId);
 
             throw error;
         }).finally(() => {
@@ -1731,7 +1733,7 @@ export class CoreCourseHelperProvider {
      * @returns Promise resolved when the section is prefetched.
      */
     protected async syncModulesAndPrefetchSection(section: CoreCourseSectionWithStatus, courseId: number): Promise<void> {
-        const { modules, subsections } = CoreCourse.classifyContents(section.contents);
+        const { modules, subsections } = this.classifyContents(section.contents);
 
         const syncAndPrefetchModules = async () => {
             // Sync the modules first.
@@ -1876,7 +1878,7 @@ export class CoreCourseHelperProvider {
             siteId && CoreFilepool.removeFilesByComponent(siteId, CORE_COURSE_COMPONENT, courseId),
         ]);
 
-        await CoreCourse.setCourseStatus(courseId, DownloadStatus.DOWNLOADABLE_NOT_DOWNLOADED);
+        await CoreCourseDownloadStatusHelper.setCourseStatus(courseId, DownloadStatus.DOWNLOADABLE_NOT_DOWNLOADED);
     }
 
     /**
@@ -2213,6 +2215,31 @@ export class CoreCourseHelperProvider {
             section.moduleCount + section.subsectionCount : undefined;
         section.total = section.moduleTotal !== undefined && section.subsectionTotal !== undefined ?
             section.moduleTotal + section.subsectionTotal : undefined;
+    }
+
+    /**
+     * Given section contents, classify them into modules and sections.
+     *
+     * @param contents Contents.
+     * @returns Classified contents.
+     */
+    protected classifyContents<
+        Contents extends CoreCourseModuleOrSection,
+        Module = Extract<Contents, CoreCourseModuleData>,
+        Section = Extract<Contents, CoreCourseWSSection>,
+    >(contents: Contents[]): { modules: Module[]; subsections: Section[] } {
+        const modules: Module[] = [];
+        const subsections: Section[] = [];
+
+        contents.forEach((content) => {
+            if (sectionContentIsModule(content)) {
+                modules.push(content as Module);
+            } else {
+                subsections.push(content as unknown as Section);
+            }
+        });
+
+        return { modules, subsections };
     }
 
 }

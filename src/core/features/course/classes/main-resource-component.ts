@@ -483,7 +483,7 @@ export class CoreCourseModuleMainResourceComponent implements OnInit, OnDestroy,
      * @returns Promise resolved when done.
      */
     protected async storeModuleViewed(): Promise<void> {
-        await CoreCourse.storeModuleViewed(this.courseId, this.module.id, { sectionId: this.module.section });
+        await CoreCourseModuleHelper.storeModuleViewed(this.courseId, this.module.id, { sectionId: this.module.section });
     }
 
     /**

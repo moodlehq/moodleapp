@@ -27,6 +27,7 @@ import { CorePromiseUtils } from '@singletons/promise-utils';
 import { ADDON_MOD_RESOURCE_PAGE_NAME } from '../../constants';
 import { DownloadStatus } from '@/core/constants';
 import { ModFeature, ModArchetype, ModPurpose } from '@addons/mod/constants';
+import { CoreCourseModuleHelper } from '@features/course/services/course-module-helper';
 
 /**
  * Handler to support resource modules.
@@ -87,7 +88,7 @@ export class AddonModResourceModuleHandlerService extends CoreModuleHandlerBase 
                 if (!hide) {
                     AddonModResourceHelper.openModuleFile(module, courseId);
 
-                    CoreCourse.storeModuleViewed(courseId, module.id);
+                    CoreCourseModuleHelper.storeModuleViewed(courseId, module.id);
                 }
             },
         };
@@ -159,7 +160,7 @@ export class AddonModResourceModuleHandlerService extends CoreModuleHandlerBase 
             mimetypeIcon = CoreMimetypeUtils.getFileIcon(file.filename || '');
         }
 
-        return CoreCourse.getModuleIconSrc(module.modname, module.modicon, mimetypeIcon);
+        return CoreCourseModuleHelper.getModuleIconSrc(module.modname, module.modicon, mimetypeIcon);
     }
 
     /**

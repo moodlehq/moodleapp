@@ -8,7 +8,6 @@
     "contributiontocoursetotal": "Contribution to course total",
     "fail": "Fail",
     "feedback": "Feedback",
-    "grade": "Grade",
     "gradebook": "Gradebook",
     "gradeitem": "Grade item",
     "gradelong": "{{$a.grade}} / {{$a.max}}",

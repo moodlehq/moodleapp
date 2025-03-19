@@ -13,66 +13,66 @@
 </ion-item>
 
 @if (isFinished) {
-<ion-item class="ion-text-wrap addon-mod_quiz-attempt-completedon">
-    <ion-label>
-        <p class="item-heading">{{ 'addon.mod_quiz.completedon' | translate }}</p>
-        <p>{{ attempt.timefinish! * 1000 | coreFormatDate }}</p>
-    </ion-label>
-</ion-item>
+    <ion-item class="ion-text-wrap addon-mod_quiz-attempt-completedon">
+        <ion-label>
+            <p class="item-heading">{{ 'addon.mod_quiz.completedon' | translate }}</p>
+            <p>{{ attempt.timefinish! * 1000 | coreFormatDate }}</p>
+        </ion-label>
+    </ion-item>
 
-@if (timeTaken) {
-<ion-item class="ion-text-wrap addon-mod_quiz-attempt-duration">
-    <ion-label>
-        <p class="item-heading">{{ 'addon.mod_quiz.attemptduration' | translate }}</p>
-        <p>{{ timeTaken }}</p>
-    </ion-label>
-</ion-item>
-}
+    @if (timeTaken) {
+        <ion-item class="ion-text-wrap addon-mod_quiz-attempt-duration">
+            <ion-label>
+                <p class="item-heading">{{ 'addon.mod_quiz.attemptduration' | translate }}</p>
+                <p>{{ timeTaken }}</p>
+            </ion-label>
+        </ion-item>
+    }
 
-@if (overTime) {
-<ion-item class="ion-text-wrap addon-mod_quiz-attempt-overdue">
-    <ion-label>
-        <p class="item-heading">{{ 'addon.mod_quiz.overdue' | translate }}</p>
-        <p>{{ overTime }}</p>
-    </ion-label>
-</ion-item>
-}
+    @if (overTime) {
+        <ion-item class="ion-text-wrap addon-mod_quiz-attempt-overdue">
+            <ion-label>
+                <p class="item-heading">{{ 'addon.mod_quiz.overdue' | translate }}</p>
+                <p>{{ overTime }}</p>
+            </ion-label>
+        </ion-item>
+    }
 
-@for (gradeItemMark of gradeItemMarks; track $index) {
-<ion-item class="ion-text-wrap addon-mod_quiz-attempt-gradeitemmark">
-    <ion-label>
-        <p class="item-heading">{{ gradeItemMark.name }}</p>
-        <p [innerHTML]="gradeItemMark.grade"></p>
-    </ion-label>
-</ion-item>
-}
+    @for (gradeItemMark of gradeItemMarks; track $index) {
+        <ion-item class="ion-text-wrap addon-mod_quiz-attempt-gradeitemmark">
+            <ion-label>
+                <p class="item-heading">{{ gradeItemMark.name }}</p>
+                <p [innerHTML]="gradeItemMark.grade"></p>
+            </ion-label>
+        </ion-item>
+    }
 
-@if (quiz.showAttemptsMarks && readableMark && attempt?.sumgrades !== null) {
-<ion-item class="ion-text-wrap addon-mod_quiz-attempt-mark">
-    <ion-label>
-        <p class="item-heading">{{ 'addon.mod_quiz.marks' | translate }}</p>
-        <p>{{ readableMark }}</p>
-    </ion-label>
-</ion-item>
-}
+    @if (quiz.showAttemptsMarks && readableMark && attempt?.sumgrades !== null) {
+        <ion-item class="ion-text-wrap addon-mod_quiz-attempt-mark">
+            <ion-label>
+                <p class="item-heading">{{ 'addon.mod_quiz.marks' | translate }}</p>
+                <p>{{ readableMark }}</p>
+            </ion-label>
+        </ion-item>
+    }
 
-@if (readableGrade) {
-<ion-item class="ion-text-wrap addon-mod_quiz-attempt-grade">
-    <ion-label>
-        <p class="item-heading">{{ 'addon.mod_quiz.grade' | translate }}</p>
-        <p [innerHTML]="readableGrade"></p>
-    </ion-label>
-</ion-item>
-}
+    @if (readableGrade) {
+        <ion-item class="ion-text-wrap addon-mod_quiz-attempt-grade">
+            <ion-label>
+                <p class="item-heading">{{ 'core.gradenoun' | translate }}</p>
+                <p [innerHTML]="readableGrade"></p>
+            </ion-label>
+        </ion-item>
+    }
 
-@for (data of additionalData; track data.id) {
-<ion-item class="ion-text-wrap addon-mod_quiz-attempt-{{data.id}}">
-    <ion-label>
-        <p class="item-heading">{{ data.title }}</p>
-        <core-format-text [component]="component" [componentId]="quiz.coursemodule" [text]="data.content" contextLevel="module"
-            [contextInstanceId]="quiz.coursemodule" [courseId]="quiz.course" />
-    </ion-label>
-</ion-item>
-}
+    @for (data of additionalData; track data.id) {
+        <ion-item class="ion-text-wrap addon-mod_quiz-attempt-{{data.id}}">
+            <ion-label>
+                <p class="item-heading">{{ data.title }}</p>
+                <core-format-text [component]="component" [componentId]="quiz.coursemodule" [text]="data.content" contextLevel="module"
+                    [contextInstanceId]="quiz.coursemodule" [courseId]="quiz.course" />
+            </ion-label>
+        </ion-item>
+    }
 
 }

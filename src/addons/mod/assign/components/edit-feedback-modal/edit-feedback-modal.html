@@ -1,7 +1,7 @@
 <ion-header>
     <ion-toolbar>
         <ion-title>
-            <h1>{{'addon.mod_assign.grade' | translate}}</h1>
+            <h1>{{'core.gradenoun' | translate}}</h1>
         </ion-title>
         <ion-buttons slot="end">
             <ion-button fill="clear" (click)="closeModal()" [ariaLabel]="'core.close' | translate">
@@ -25,8 +25,8 @@
                 <!-- Grade using a scale. -->
                 <ion-item class="ion-text-wrap" *ngIf="grade.method === 'simple' && grade.scale">
                     <ion-select name="grade" [(ngModel)]="grade.grade" interface="action-sheet" [disabled]="grade.disabled"
-                        [cancelText]="'core.cancel' | translate" [interfaceOptions]="{header: 'addon.mod_assign.grade' | translate}">
-                        <p class="item-heading" slot="label">{{ 'addon.mod_assign.grade' | translate }}</p>
+                        [cancelText]="'core.cancel' | translate" [interfaceOptions]="{header: 'core.gradenoun' | translate}">
+                        <p class="item-heading" slot="label">{{ 'core.gradenoun' | translate }}</p>
                         <ion-select-option *ngFor="let grade of grade.scale" [value]="grade.value">
                             {{grade.label}}
                         </ion-select-option>

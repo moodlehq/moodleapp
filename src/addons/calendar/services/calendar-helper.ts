@@ -26,7 +26,7 @@ import {
 } from './calendar';
 import { CoreConfig } from '@services/config';
 import { CoreObject } from '@singletons/object';
-import { CoreCourse } from '@features/course/services/course';
+import { CoreCourseModuleHelper } from '@features/course/services/course-module-helper';
 import { ContextLevel, CoreConstants } from '@/core/constants';
 import dayjs, { Dayjs } from 'dayjs';
 import { makeSingleton } from '@singletons';
@@ -184,7 +184,7 @@ export class AddonCalendarHelperProvider {
                 'icon' in event ? event.icon.iconurl : undefined,
             );
             eventFormatted.moduleIcon = eventFormatted.eventIcon;
-            eventFormatted.iconTitle = CoreCourse.translateModuleName(event.modulename);
+            eventFormatted.iconTitle = CoreCourseModuleHelper.translateModuleName(event.modulename);
         }
 
         eventFormatted.formattedType = AddonCalendar.getEventType(event);

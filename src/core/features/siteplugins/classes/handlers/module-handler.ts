@@ -14,7 +14,7 @@
 
 import { Type } from '@angular/core';
 
-import { CoreCourse } from '@features/course/services/course';
+import { CoreCourseModuleHelper } from '@features/course/services/course-module-helper';
 import { CoreCourseHelper, CoreCourseModuleData } from '@features/course/services/course-helper';
 import { CoreCourseModuleHandler, CoreCourseModuleHandlerData } from '@features/course/services/module-delegate';
 import {
@@ -75,7 +75,7 @@ export class CoreSitePluginsModuleHandler extends CoreSitePluginsBaseHandler imp
             module.description = '';
 
             return {
-                icon: CoreCourse.getModuleIconSrc(module.modname, icon),
+                icon: CoreCourseModuleHelper.getModuleIconSrc(module.modname, icon),
                 title: title || '',
                 a11yTitle: '',
                 class: this.handlerSchema.displaydata?.class,
@@ -86,7 +86,7 @@ export class CoreSitePluginsModuleHandler extends CoreSitePluginsBaseHandler imp
         const showDowloadButton = this.handlerSchema.downloadbutton;
         const handlerData: CoreCourseModuleHandlerData = {
             title: module.name,
-            icon: CoreCourse.getModuleIconSrc(module.modname, icon),
+            icon: CoreCourseModuleHelper.getModuleIconSrc(module.modname, icon),
             class: this.handlerSchema.displaydata?.class,
             showDownloadButton: showDowloadButton !== undefined ? showDowloadButton : hasOffline,
             hasCustomCmListItem: this.handlerSchema.hascustomcmlistitem ?? false,
@@ -230,7 +230,7 @@ export class CoreSitePluginsModuleHandler extends CoreSitePluginsBaseHandler imp
      * @inheritdoc
      */
     async openActivityPage(module: CoreCourseModuleData, courseId: number, options?: CoreNavigationOptions): Promise<void> {
-        if (!CoreCourse.moduleHasView(module)) {
+        if (!CoreCourseModuleHelper.moduleHasView(module)) {
             return;
         }
 
