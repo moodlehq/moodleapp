@@ -25,6 +25,7 @@ import { CorePromiseUtils } from '@singletons/promise-utils';
 import { Translate } from '@singletons';
 import { CoreAlerts } from '@services/overlays/alerts';
 import { CoreSharedModule } from '@/core/shared.module';
+import { CoreGradesGradeOverviewWithCourseData } from '@features/grades/services/grades-helper';
 
 /**
  * Page that displays courses grades (main menu option).
@@ -93,7 +94,7 @@ export default class CoreGradesCoursesPage implements OnDestroy, AfterViewInit {
 /**
  * Helper class to manage courses.
  */
-class CoreGradesCoursesManager extends CoreListItemsManager {
+class CoreGradesCoursesManager extends CoreListItemsManager<CoreGradesGradeOverviewWithCourseData> {
 
     /**
      * @inheritdoc
