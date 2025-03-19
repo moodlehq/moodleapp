@@ -24,7 +24,7 @@ import {
     SimpleChange,
     signal,
 } from '@angular/core';
-import { CoreCourse } from '@features/course/services/course';
+import { CoreCourseModuleHelper } from '@features/course/services/course-module-helper';
 import { CoreCourseModuleDelegate } from '@features/course/services/module-delegate';
 import { CoreSites } from '@services/sites';
 import { CoreText } from '@singletons/text';
@@ -104,7 +104,7 @@ export class CoreModIconComponent implements OnInit, OnChanges {
             this.modname = this.getComponentNameFromIconUrl(this.modicon);
         }
 
-        this.modNameTranslated.set(CoreCourse.translateModuleName(this.modname, this.fallbackTranslation));
+        this.modNameTranslated.set(CoreCourseModuleHelper.translateModuleName(this.modname, this.fallbackTranslation));
 
         this.setPurposeClass();
 
@@ -225,11 +225,11 @@ export class CoreModIconComponent implements OnInit, OnChanges {
         this.isLocalUrl.set(true);
         this.linkIconWithComponent.set(false);
 
-        const moduleName = !this.modname || !CoreCourse.isCoreModule(this.modname)
+        const moduleName = !this.modname || !CoreCourseModuleHelper.isCoreModule(this.modname)
             ? fallbackModName
             : this.modname;
 
-        const path = CoreCourse.getModuleIconsPath();
+        const path = CoreCourseModuleHelper.getModuleIconsPath();
 
         this.iconUrl.set(`${path + moduleName  }.svg`);
     }

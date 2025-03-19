@@ -66,6 +66,7 @@ import { CoreInfiniteLoadingComponent } from '@components/infinite-loading/infin
 import { CoreSite } from '@classes/sites/site';
 import { CoreCourseSectionComponent, CoreCourseSectionToDisplay } from '../course-section/course-section';
 import { CoreAlerts } from '@services/overlays/alerts';
+import { CoreCourseModuleHelper } from '@features/course/services/course-module-helper';
 
 /**
  * Component to display course contents using a certain format. If the format isn't found, use default one.
@@ -398,7 +399,7 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
             return;
         }
 
-        const viewedModules = await CoreCourse.getViewedModules(this.course.id);
+        const viewedModules = await CoreCourseModuleHelper.getViewedModules(this.course.id);
 
         this.viewedModulesInitialized = true;
         this.lastModuleViewed = viewedModules[0];

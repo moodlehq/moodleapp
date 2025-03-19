@@ -18,7 +18,7 @@ import { CoreContentLinksAction } from '@features/contentlinks/services/contentl
 import { CoreNavigator } from '@services/navigator';
 import { makeSingleton } from '@singletons';
 import { CoreGrades } from '../grades';
-import { GRADES_PAGE_NAME } from '../grades-helper';
+import { GRADES_PAGE_NAME } from '../../constants';
 
 /**
  * Handler to treat links to overview courses grades.

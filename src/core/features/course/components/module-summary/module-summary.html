@@ -73,7 +73,7 @@
                                 <core-format-text [text]="grade.gradeitem" contextLevel="course" [contextInstanceId]="courseId" />
                             </p>
                             <p class="item-heading" *ngIf="grade.itemmodule">
-                                {{ 'core.grades.grade' | translate }}
+                                {{ 'core.gradenoun' | translate }}
                             </p>
                             <p *ngIf="grade.grade && grade.grade !== '-'" [innerHTML]="grade.grade"></p>
                             <ion-badge *ngIf="!grade.grade || grade.grade === '-'" color="light">

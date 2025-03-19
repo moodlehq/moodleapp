@@ -25,6 +25,7 @@ import { CoreAlerts } from '@services/overlays/alerts';
 import { CoreCourseModuleComponent } from '../../components/module/module';
 import { CoreSharedModule } from '@/core/shared.module';
 import { ModFeature, ModArchetype } from '@addons/mod/constants';
+import { CoreCourseModuleHelper } from '@features/course/services/course-module-helper';
 
 /**
  * Page that displays all modules of a certain type in a course.
@@ -143,7 +144,7 @@ export default class CoreCourseListModTypePage implements OnInit {
                 }
 
                 if (!CoreCourseHelper.canUserViewModule(modOrSubsection, section) ||
-                    !CoreCourse.moduleHasView(modOrSubsection) ||
+                    !CoreCourseModuleHelper.moduleHasView(modOrSubsection) ||
                     modOrSubsection.visibleoncoursepage === 0) {
                     // Ignore this module.
                     return false;

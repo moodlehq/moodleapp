@@ -14,7 +14,7 @@
 
 import { AddonBlockTimeline } from '@addons/block/timeline/services/timeline';
 import { AddonCalendarEvent } from '@addons/calendar/services/calendar';
-import { CoreCourse } from '@features/course/services/course';
+import { CoreCourseModuleHelper } from '@features/course/services/course-module-helper';
 import { CoreCourseModuleDelegate } from '@features/course/services/module-delegate';
 import { CoreEnrolledCourseDataWithOptions } from '@features/courses/services/courses-helper';
 import { CoreTime } from '@singletons/time';
@@ -171,7 +171,7 @@ export class AddonBlockTimelineSection {
             modulename,
             overdue: event.timesort < now,
             iconUrl: await CoreCourseModuleDelegate.getModuleIconSrc(event.icon.component, event.icon.iconurl),
-            iconTitle: CoreCourse.translateModuleName(modulename),
+            iconTitle: CoreCourseModuleHelper.translateModuleName(modulename),
         } as AddonBlockTimelineEvent;
     }
 

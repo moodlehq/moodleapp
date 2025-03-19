@@ -15,7 +15,7 @@
 import { Component, OnDestroy, ViewChild, ChangeDetectorRef, OnInit, Type } from '@angular/core';
 import { CoreCommentsCommentsComponent } from '@features/comments/components/comments/comments';
 import { CoreComments } from '@features/comments/services/comments';
-import { CoreCourse } from '@features/course/services/course';
+import { CoreCourseModuleHelper } from '@features/course/services/course-module-helper';
 import { CoreRatingInfo } from '@features/rating/services/rating';
 import { IonContent } from '@ionic/angular';
 import { CoreGroups, CoreGroupInfo } from '@services/groups';
@@ -117,7 +117,7 @@ export default class AddonModDataEntryPage implements OnInit, OnDestroy {
     constructor(
         private cdr: ChangeDetectorRef,
     ) {
-        this.moduleName = CoreCourse.translateModuleName('data');
+        this.moduleName = CoreCourseModuleHelper.translateModuleName('data');
         this.siteId = CoreSites.getCurrentSiteId();
 
         // Refresh data if this discussion is synchronized automatically.
@@ -450,7 +450,7 @@ export default class AddonModDataEntryPage implements OnInit, OnDestroy {
         await CorePromiseUtils.ignoreErrors(AddonModData.logView(this.database.id));
 
         // Store module viewed because this page also updates recent accessed items block.
-        CoreCourse.storeModuleViewed(this.courseId, this.moduleId);
+        CoreCourseModuleHelper.storeModuleViewed(this.courseId, this.moduleId);
 
         CoreAnalytics.logEvent({
             type: CoreAnalyticsEventType.VIEW_ITEM,

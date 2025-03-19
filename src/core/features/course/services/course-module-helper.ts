@@ -13,15 +13,55 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
+
 import { CoreAnyError, CoreError } from '@classes/errors/error';
 import { CoreErrorHelper } from '@services/error-helper';
+import { CoreEvents } from '@singletons/events';
+import { CoreSites } from '@services/sites';
 import { makeSingleton, Translate } from '@singletons';
+import {
+    CoreCourseViewedModulesDBPrimaryKeys,
+    CoreCourseViewedModulesDBRecord,
+    COURSE_VIEWED_MODULES_PRIMARY_KEYS,
+    COURSE_VIEWED_MODULES_TABLE,
+} from './database/course';
+import { lazyMap, LazyMap } from '@/core/utils/lazy-map';
+import { asyncInstance, AsyncInstance } from '@/core/utils/async-instance';
+import { CoreDatabaseTable } from '@classes/database/database-table';
+import { CoreDatabaseCachingStrategy } from '@classes/database/database-table-proxy';
+import { CoreArray } from '@singletons/array';
+import { CORE_COURSE_CORE_MODULES } from '../constants';
+import { ModFeature } from '@addons/mod/constants';
+import { CoreCourseModuleSummary } from './course';
+import { CoreCourseModuleData } from './course-helper';
+import { CoreCourseModuleDelegate } from './module-delegate';
 
 /**
- * Service that provides some features regarding modules in a course.
+ * Service that provides some features regarding a course.
  */
 @Injectable({ providedIn: 'root' })
 export class CoreCourseModuleHelperService {
+
+    protected viewedModulesTables: LazyMap<
+        AsyncInstance<CoreDatabaseTable<CoreCourseViewedModulesDBRecord, CoreCourseViewedModulesDBPrimaryKeys, never>>
+    >;
+
+    constructor() {
+        this.viewedModulesTables = lazyMap(
+            siteId => asyncInstance(
+                () => CoreSites.getSiteTable<CoreCourseViewedModulesDBRecord, CoreCourseViewedModulesDBPrimaryKeys, never>(
+                    COURSE_VIEWED_MODULES_TABLE,
+                    {
+                        siteId,
+                        config: { cachingStrategy: CoreDatabaseCachingStrategy.None },
+                        primaryKeyColumns: [...COURSE_VIEWED_MODULES_PRIMARY_KEYS],
+                        rowIdColumn: null,
+                        onDestroy: () => delete this.viewedModulesTables[siteId],
+                    },
+                ),
+            ),
+        );
+    }
 
     /**
      * Get an activity by course module ID. Will throw an error if not found.
@@ -73,5 +113,184 @@ export class CoreCourseModuleHelperService {
         return CoreErrorHelper.getErrorMessageFromError(error) === Translate.instant('core.course.modulenotfound');
     }
 
+    /**
+     * Get certain module viewed records in the app.
+     *
+     * @param ids Module IDs.
+     * @param siteId Site ID. If not defined, current site.
+     * @returns Promise resolved with map of last module viewed data.
+     */
+    async getCertainModulesViewed(ids: number[] = [], siteId?: string): Promise<Record<number, CoreCourseViewedModulesDBRecord>> {
+        if (!ids.length) {
+            return {};
+        }
+
+        const site = await CoreSites.getSite(siteId);
+        const entries = await this.viewedModulesTables[site.getId()].getManyWhere({
+            sql: `cmId IN (${ids.map(() => '?').join(', ')})`,
+            sqlParams: ids,
+            js: (record) => ids.includes(record.cmId),
+        });
+
+        return CoreArray.toObject(entries, 'cmId');
+    }
+
+    /**
+     * Get all viewed modules in a course, ordered by timeaccess in descending order.
+     *
+     * @param courseId Course ID.
+     * @param siteId Site ID. If not defined, current site.
+     * @returns Promise resolved with the list of viewed modules.
+     */
+    async getViewedModules(courseId: number, siteId?: string): Promise<CoreCourseViewedModulesDBRecord[]> {
+        const site = await CoreSites.getSite(siteId);
+
+        return this.viewedModulesTables[site.getId()].getMany({ courseId }, {
+            sorting: [
+                { timeaccess: 'desc' },
+            ],
+        });
+    }
+
+    /**
+     * Store activity as viewed.
+     *
+     * @param courseId Chapter ID.
+     * @param cmId Module ID.
+     * @param options Other options.
+     * @returns Promise resolved with last chapter viewed, undefined if none.
+     */
+    async storeModuleViewed(courseId: number, cmId: number, options: CoreCourseStoreModuleViewedOptions = {}): Promise<void> {
+        const site = await CoreSites.getSite(options.siteId);
+
+        const timeaccess = options.timeaccess ?? Date.now();
+
+        await this.viewedModulesTables[site.getId()].insert({
+            courseId,
+            cmId,
+            sectionId: options.sectionId,
+            timeaccess,
+        });
+
+        CoreEvents.trigger(CoreEvents.COURSE_MODULE_VIEWED, {
+            courseId,
+            cmId,
+            timeaccess,
+            sectionId: options.sectionId,
+        }, site.getId());
+    }
+
+    /**
+     * Get last module viewed in the app for a course.
+     *
+     * @param id Course ID.
+     * @param siteId Site ID. If not defined, current site.
+     * @returns Promise resolved with last module viewed data, undefined if none.
+     */
+    async getLastModuleViewed(id: number, siteId?: string): Promise<CoreCourseViewedModulesDBRecord | undefined> {
+        const viewedModules = await this.getViewedModules(id, siteId);
+
+        return viewedModules[0];
+    }
+
+    /**
+     * Check if the module is a core module.
+     *
+     * @param moduleName The module name.
+     * @returns Whether it's a core module.
+     */
+    isCoreModule(moduleName: string): boolean {
+        // If core modules are removed for a certain version we should check the version of the site.
+        return CORE_COURSE_CORE_MODULES.includes(moduleName);
+    }
+
+    /**
+     * Returns the source to a module icon.
+     *
+     * @param moduleName The module name.
+     * @param modicon The mod icon string to use in case we are not using a core activity.
+     * @returns The IMG src.
+     */
+    getModuleIconSrc(moduleName: string, modicon?: string, mimetypeIcon = ''): string {
+        if (mimetypeIcon) {
+            return mimetypeIcon;
+        }
+
+        if (!this.isCoreModule(moduleName)) {
+            if (modicon) {
+                return modicon;
+            }
+
+            moduleName = 'external-tool';
+        }
+
+        const path = this.getModuleIconsPath();
+
+        // Use default icon on core modules.
+        return `${path + moduleName  }.svg`;
+    }
+
+    /**
+     * Get the path where the module icons are stored.
+     *
+     * @returns Path.
+     */
+    getModuleIconsPath(): string {
+        if (!CoreSites.getCurrentSite()?.isVersionGreaterEqualThan('4.0')) {
+            // @deprecatedonmoodle since 3.11.
+            return 'assets/img/mod_legacy/';
+        }
+
+        if (!CoreSites.getCurrentSite()?.isVersionGreaterEqualThan('4.4')) {
+            // @deprecatedonmoodle since 4.3.
+            return 'assets/img/mod_40/';
+        }
+
+        return 'assets/img/mod/';
+    }
+
+    /**
+     * Check if a module has a view page. E.g. labels don't have a view page.
+     *
+     * @param module The module object.
+     * @returns Whether the module has a view page.
+     */
+    moduleHasView(module: CoreCourseModuleSummary | CoreCourseModuleData): boolean {
+        if ('modname' in module) {
+            // noviewlink was introduced in 3.8.5, use supports feature as a fallback.
+            if (module.noviewlink ||
+                CoreCourseModuleDelegate.supportsFeature(module.modname, ModFeature.NO_VIEW_LINK, false)) {
+                return false;
+            }
+        }
+
+        return !!module.url;
+    }
+
+    /**
+     * Translate a module name to current language.
+     *
+     * @param moduleName The module name.
+     * @param fallback Fallback text to use if not translated. Will use moduleName otherwise.
+     * @returns Translated name.
+     */
+    translateModuleName(moduleName: string, fallback?: string): string {
+        const langKey = `core.mod_${moduleName}`;
+        const translated = Translate.instant(langKey);
+
+        return translated !== langKey ?
+            translated :
+            (fallback || moduleName);
+    }
+
 }
 export const CoreCourseModuleHelper = makeSingleton(CoreCourseModuleHelperService);
+
+/**
+ * Options for storeModuleViewed.
+ */
+export type CoreCourseStoreModuleViewedOptions = {
+    sectionId?: number;
+    timeaccess?: number;
+    siteId?: string;
+};
