@@ -835,6 +835,10 @@ export class AddonModDataHelperProvider {
             (match, attributes) => `<a core-link capture="true" ${attributes}>`,
         );
 
+        // Escape { and } so Angular doesn't treat them as expressions.
+        // They're converted to {{ '{' }} or similar, as suggested by the Angular error message.
+        template = template.replace(/([{}]+)/g, '{{ \'$1\' }}');
+
         return template;
     }
 
