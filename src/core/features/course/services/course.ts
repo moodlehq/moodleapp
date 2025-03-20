@@ -1476,34 +1476,6 @@ export type CoreCourseCommonModWSOptions = CoreSitesCommonWSOptions & {
 export type CoreCourseCommonModWSOptionsWithFilter = CoreCourseCommonModWSOptions & CoreSitesWSOptionsWithFilter;
 
 /**
- * Data returned by course_summary_exporter.
- */
-export type CoreCourseSummary = {
-    id: number; // Id.
-    fullname: string; // Fullname.
-    shortname: string; // Shortname.
-    idnumber: string; // Idnumber.
-    summary: string; // Summary.
-    summaryformat: CoreTextFormat; // Summary format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
-    startdate: number; // Startdate.
-    enddate: number; // Enddate.
-    visible: boolean; // @since 3.8. Visible.
-    fullnamedisplay: string; // Fullnamedisplay.
-    viewurl: string; // Viewurl.
-    courseimage: string; // @since 3.6. Courseimage.
-    progress?: number; // @since 3.6. Progress.
-    hasprogress: boolean; // @since 3.6. Hasprogress.
-    isfavourite: boolean; // @since 3.6. Isfavourite.
-    hidden: boolean; // @since 3.6. Hidden.
-    timeaccess?: number; // @since 3.6. Timeaccess.
-    showshortname: boolean; // @since 3.6. Showshortname.
-    coursecategory: string; // @since 3.7. Coursecategory.
-    showactivitydates: boolean | null; // @since 3.11. Whether the activity dates are shown or not.
-    showcompletionconditions: boolean | null; // @since 3.11. Whether the activity completion conditions are shown or not.
-    timemodified?: number; // @since 4.0. Last time course settings were updated (timestamp).
-};
-
-/**
  * Data returned by course_module_summary_exporter.
  */
 export type CoreCourseModuleSummary = {
