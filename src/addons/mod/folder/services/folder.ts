@@ -18,12 +18,11 @@ import { CoreCourse } from '@features/course/services/course';
 import { CoreCourseLogHelper } from '@features/course/services/log-helper';
 import { CoreSites, CoreSitesCommonWSOptions } from '@services/sites';
 import { CorePromiseUtils } from '@singletons/promise-utils';
-import { CoreWSExternalFile, CoreWSExternalWarning } from '@services/ws';
+import { CoreWSExternalWarning } from '@services/ws';
 import { makeSingleton } from '@singletons';
 import { ADDON_MOD_FOLDER_COMPONENT_LEGACY } from '../constants';
 import { CoreCacheUpdateFrequency } from '@/core/constants';
-import { CoreTextFormat } from '@singletons/text';
-import { CoreCourseModuleHelper } from '@features/course/services/course-module-helper';
+import { CoreCourseModuleHelper, CoreCourseModuleStandardElements } from '@features/course/services/course-module-helper';
 
 /**
  * Service that provides some features for folder.
@@ -126,23 +125,12 @@ export const AddonModFolder = makeSingleton(AddonModFolderProvider);
 /**
  * Folder returned by mod_folder_get_folders_by_courses.
  */
-export type AddonModFolderFolder = {
-    id: number; // Module id.
-    coursemodule: number; // Course module id.
-    course: number; // Course id.
-    name: string; // Page name.
-    intro: string; // Summary.
-    introformat?: CoreTextFormat; // Intro format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
-    introfiles: CoreWSExternalFile[];
+export type AddonModFolderFolder = CoreCourseModuleStandardElements & {
     revision: number; // Incremented when after each file changes, to avoid cache.
     timemodified: number; // Last time the folder was modified.
     display: number; // Display type of folder contents on a separate page or inline.
     showexpanded: number; // 1 = expanded, 0 = collapsed for sub-folders.
     showdownloadfolder: number; // Whether to show the download folder button.
-    section: number; // Course section id.
-    visible: number; // Module visibility.
-    groupmode: number; // Group mode.
-    groupingid: number; // Grouping id.
 };
 
 /**

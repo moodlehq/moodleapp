@@ -1648,6 +1648,16 @@ export type CoreCourseGetContentsWSModule = {
     indent: number; // Number of identation in the site.
     onclick?: string; // Onclick action.
     afterlink?: string; // After link info to be displayed.
+    activitybadge?: { // @since 4.3. Activity badge to display near the name.
+        badgecontent?: string; // The content to be displayed in the activity badge.
+        badgestyle?: string; // The style for the activity badge.
+        badgeurl?: string; // An optional URL to redirect the user when the activity badge is clicked.
+        badgeelementid?: string; // An optional id in case the module wants to add some code for the activity badge.
+        badgeextraattributes?: { // An optional array of extra HTML attributes to add to the badge element.
+            name?: string; // The attribute name.
+            value?: string; // The attribute value.
+        }[];
+    };
     customdata?: string; // Custom data (JSON encoded).
     noviewlink?: boolean; // Whether the module has no view page.
     completion?: CoreCourseModuleCompletionTracking; // Type of completion tracking: 0 means none, 1 manual, 2 automatic.
@@ -1655,10 +1665,12 @@ export type CoreCourseGetContentsWSModule = {
     contents?: CoreCourseModuleContentFile[];
     groupmode?: number; // @since 4.3. Group mode value
     downloadcontent?: number; // @since 4.0 The download content value.
-    dates?: {
-        label: string;
-        timestamp: number;
-    }[]; // @since 3.11. Activity dates.
+    dates?: { // @since 3.11. Course dates.
+        label: string; // Date label.
+        timestamp: number; // Date timestamp.
+        relativeto?: number; // @since 4.1. Relative date timestamp.
+        dataid?: string; // @since 4.1. Cm data id.
+    }[];
     contentsinfo?: { // @since v3.7.6 Contents summary information.
         filescount: number; // Total number of files.
         filessize: number; // Total files size.

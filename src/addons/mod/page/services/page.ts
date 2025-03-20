@@ -24,7 +24,7 @@ import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
 import { ADDON_MOD_PAGE_COMPONENT_LEGACY } from '../constants';
 import { CoreCacheUpdateFrequency } from '@/core/constants';
 import { CoreTextFormat } from '@singletons/text';
-import { CoreCourseModuleHelper } from '@features/course/services/course-module-helper';
+import { CoreCourseModuleHelper, CoreCourseModuleStandardElements } from '@features/course/services/course-module-helper';
 
 /**
  * Service that provides some features for page.
@@ -142,14 +142,7 @@ export const AddonModPage = makeSingleton(AddonModPageProvider);
 /**
  * Page returned by mod_page_get_pages_by_courses.
  */
-export type AddonModPagePage = {
-    id: number; // Module id.
-    coursemodule: number; // Course module id.
-    course: number; // Course id.
-    name: string; // Page name.
-    intro: string; // Summary.
-    introformat: CoreTextFormat; // Intro format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
-    introfiles: CoreWSExternalFile[];
+export type AddonModPagePage = CoreCourseModuleStandardElements & {
     content: string; // Page content.
     contentformat: CoreTextFormat; // Content format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
     contentfiles: CoreWSExternalFile[];
@@ -159,10 +152,6 @@ export type AddonModPagePage = {
     displayoptions: string; // Display options (width, height).
     revision: number; // Incremented when after each file changes, to avoid cache.
     timemodified: number; // Last time the page was modified.
-    section: number; // Course section id.
-    visible: number; // Module visibility.
-    groupmode: number; // Group mode.
-    groupingid: number; // Grouping id.
 };
 
 /**

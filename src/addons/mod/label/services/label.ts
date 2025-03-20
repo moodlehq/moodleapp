@@ -17,12 +17,11 @@ import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
 import { CoreFilepool } from '@services/filepool';
 import { CoreSites, CoreSitesCommonWSOptions } from '@services/sites';
 import { CorePromiseUtils } from '@singletons/promise-utils';
-import { CoreWSExternalFile, CoreWSExternalWarning } from '@services/ws';
+import { CoreWSExternalWarning } from '@services/ws';
 import { makeSingleton } from '@singletons';
 import { ADDON_MOD_LABEL_COMPONENT_LEGACY } from '../constants';
 import { CoreCacheUpdateFrequency } from '@/core/constants';
-import { CoreTextFormat } from '@singletons/text';
-import { CoreCourseModuleHelper } from '@features/course/services/course-module-helper';
+import { CoreCourseModuleHelper, CoreCourseModuleStandardElements } from '@features/course/services/course-module-helper';
 
 /**
  * Service that provides some features for labels.
@@ -107,19 +106,8 @@ export const AddonModLabel = makeSingleton(AddonModLabelProvider);
 /**
  * Label returned by mod_label_get_labels_by_courses.
  */
-export type AddonModLabelLabel = {
-    id: number; // Module id.
-    coursemodule: number; // Course module id.
-    course: number; // Course id.
-    name: string; // Label name.
-    intro: string; // Label contents.
-    introformat?: CoreTextFormat; // Intro format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
-    introfiles: CoreWSExternalFile[];
+export type AddonModLabelLabel = CoreCourseModuleStandardElements & {
     timemodified: number; // Last time the label was modified.
-    section: number; // Course section id.
-    visible: number; // Module visibility.
-    groupmode: number; // Group mode.
-    groupingid: number; // Grouping id.
 };
 
 /**

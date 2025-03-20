@@ -3662,6 +3662,7 @@ export type AddonModLessonLessonWSData = {
     name: string; // Lesson name.
     intro?: string; // Lesson introduction text.
     introformat?: CoreTextFormat; // Intro format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
+    lang: string; // Forced activity language.
     practice?: boolean; // Practice lesson?.
     modattempts?: boolean; // Allow student review?.
     usepassword?: boolean; // Password protected lesson?.
@@ -3699,26 +3700,8 @@ export type AddonModLessonLessonWSData = {
     completionendreached?: number; // Require end reached for completion?.
     completiontimespent?: number; // Student must do this activity at least for.
     allowofflineattempts: boolean; // Whether to allow the lesson to be attempted offline in the mobile app.
-    introfiles?: { // Introfiles.
-        filename?: string; // File name.
-        filepath?: string; // File path.
-        filesize?: number; // File size.
-        fileurl: string; // Downloadable file url.
-        timemodified?: number; // Time modified.
-        mimetype?: string; // File mime type.
-        isexternalfile?: number; // Whether is an external file.
-        repositorytype?: string; // The repository type for the external files.
-    }[];
-    mediafiles?: { // Mediafiles.
-        filename?: string; // File name.
-        filepath?: string; // File path.
-        filesize?: number; // File size.
-        fileurl: string; // Downloadable file url.
-        timemodified?: number; // Time modified.
-        mimetype?: string; // File mime type.
-        isexternalfile?: number; // Whether is an external file.
-        repositorytype?: string; // The repository type for the external files.
-    }[];
+    introfiles?: CoreWSExternalFile[]; // Introfiles.
+    mediafiles?: CoreWSExternalFile[]; // Mediafiles.
 };
 
 /**

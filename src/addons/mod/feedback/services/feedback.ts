@@ -1453,6 +1453,7 @@ export type AddonModFeedbackWSFeedback = {
     name: string; // Feedback name.
     intro: string; // Feedback introduction text.
     introformat?: CoreTextFormat; // Intro format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
+    lang: string; // Forced activity language.
     anonymous: number; // Whether the feedback is anonymous.
     // eslint-disable-next-line @typescript-eslint/naming-convention
     email_notification?: boolean; // Whether email notifications will be sent to teachers.
