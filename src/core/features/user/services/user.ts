@@ -25,13 +25,14 @@ import { makeSingleton, Translate } from '@singletons';
 import { CoreEvents, CoreEventSiteData, CoreEventUserDeletedData, CoreEventUserSuspendedData } from '@singletons/events';
 import { CoreStatusWithWarningsWSResponse, CoreWSExternalWarning } from '@services/ws';
 import { CoreError } from '@classes/errors/error';
-import { USERS_TABLE_NAME, CoreUserDBRecord } from './database/user';
+import { USERS_CACHE_TABLE_NAME, CoreUserDBRecord } from './database/user';
 import { CoreUrl } from '@singletons/url';
 import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
 import { CoreCacheUpdateFrequency, CoreConstants } from '@/core/constants';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreTextFormat } from '@singletons/text';
 import { CORE_USER_PROFILE_REFRESHED, CORE_USER_PROFILE_PICTURE_UPDATED, CORE_USER_PARTICIPANTS_LIST_LIMIT } from '../constants';
+import { CoreStoredCache } from '@classes/stored-cache';
 
 declare module '@singletons/events' {
 
@@ -61,6 +62,7 @@ export class CoreUserProvider {
     static readonly PARTICIPANTS_LIST_LIMIT = CORE_USER_PARTICIPANTS_LIST_LIMIT;
 
     protected logger: CoreLogger;
+    protected userCache = new CoreStoredCache(USERS_CACHE_TABLE_NAME);
 
     constructor() {
         this.logger = CoreLogger.getInstance('CoreUserProvider');
@@ -160,7 +162,7 @@ export class CoreUserProvider {
 
         await Promise.all([
             this.invalidateUserCache(userId, site.getId()),
-            site.getDb().deleteRecords(USERS_TABLE_NAME, { id: userId }),
+            this.userCache.deleteEntry(userId, site.getId()),
         ]);
     }
 
@@ -303,9 +305,7 @@ export class CoreUserProvider {
      * @returns Promise resolve when the user is retrieved.
      */
     protected async getUserFromLocalDb(userId: number, siteId?: string): Promise<CoreUserDBRecord> {
-        const site = await CoreSites.getSite(siteId);
-
-        return site.getDb().getRecord(USERS_TABLE_NAME, { id: userId });
+        return await this.userCache.getEntry(userId, siteId);
     }
 
     /**
@@ -382,7 +382,8 @@ export class CoreUserProvider {
         if ('country' in user && user.country) {
             user.country = CoreCountries.getCountryName(user.country);
         }
-        this.storeUser(user.id, user.fullname, user.profileimageurl);
+
+        this.storeUser(user);
 
         return user;
     }
@@ -706,25 +707,26 @@ export class CoreUserProvider {
     /**
      * Store user basic information in local DB to be retrieved if the WS call fails.
      *
-     * @param userId User ID.
-     * @param fullname User full name.
-     * @param avatar User avatar URL.
+     * @param user User to store.
      * @param siteId ID of the site. If not defined, use current site.
      */
-    protected async storeUser(userId: number, fullname: string, avatar?: string, siteId?: string): Promise<void> {
-        if (!userId) {
+    protected async storeUser(user: CoreUserBasicData, siteId?: string): Promise<void> {
+        if (!user.id) {
             return;
         }
 
-        const site = await CoreSites.getSite(siteId);
-
+        // Filter and map data to store.
         const userRecord: CoreUserDBRecord = {
-            id: userId,
-            fullname: fullname,
-            profileimageurl: avatar,
+            id: user.id,
+            fullname: user.fullname,
+            profileimageurl: user.profileimageurl,
+            firstname: user.firstname,
+            lastname: user.lastname,
+            initials: user.initials,
         };
 
-        await site.getDb().insertRecord(USERS_TABLE_NAME, userRecord);
+
+        await this.userCache.setEntry(user.id, userRecord, siteId);
     }
 
     /**
@@ -733,9 +735,8 @@ export class CoreUserProvider {
      * @param users Users to store.
      * @param siteId ID of the site. If not defined, use current site.
      */
-    async storeUsers(users: CoreUserBasicData[], siteId?: string): Promise<void> {
-        await Promise.all(users.map((user) =>
-            this.storeUser(Number(user.id), user.fullname, user.profileimageurl, siteId)));
+    async storeUsers(users: CoreUserDBRecord[], siteId?: string): Promise<void> {
+        await Promise.all(users.map((user) => this.storeUser(user, siteId)));
     }
 
     /**
@@ -853,7 +854,11 @@ export type CoreUserProfilePictureUpdatedData = {
 export type CoreUserBasicData = {
     id: number; // ID of the user.
     fullname: string; // The fullname of the user.
-    profileimageurl?: string; // User image profile URL - big version.
+    profileimageurl: string; // User image profile URL - big version.
+    firstname?: string; // The first name(s) of the user.
+    lastname?: string; // The family name of the user.
+    lastaccess?: number;
+    initials?: string; // Initials.
 };
 
 /**
