@@ -47,6 +47,7 @@ import {
 } from '../constants';
 import { CoreTextFormat } from '@singletons/text';
 import { CoreCourseModuleHelper } from '@features/course/services/course-module-helper';
+import { CoreUserDescriptionExporter } from '@features/user/services/user';
 
 declare module '@singletons/events' {
 
@@ -1641,46 +1642,11 @@ type AddonModAssignListParticipantsWSResponse = AddonModAssignParticipant[];
 /**
  * Participant returned by mod_assign_list_participants.
  */
-export type AddonModAssignParticipant = {
-    id: number; // ID of the user.
-    username?: string; // The username.
-    firstname?: string; // The first name(s) of the user.
-    lastname?: string; // The family name of the user.
-    fullname: string; // The fullname of the user.
-    email?: string; // Email address.
-    address?: string; // Postal address.
-    phone1?: string; // Phone 1.
-    phone2?: string; // Phone 2.
-    icq?: string; // Icq number.
-    skype?: string; // Skype id.
-    yahoo?: string; // Yahoo id.
-    aim?: string; // Aim id.
-    msn?: string; // Msn number.
-    department?: string; // Department.
-    institution?: string; // Institution.
-    idnumber?: string; // The idnumber of the user.
-    interests?: string; // User interests (separated by commas).
-    firstaccess?: number; // First access to the site (0 if never).
-    lastaccess?: number; // Last access to the site (0 if never).
-    suspended?: boolean; // Suspend user account, either false to enable user login or true to disable it.
-    description?: string; // User profile description.
-    descriptionformat?: CoreTextFormat; // Int format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
-    city?: string; // Home city of the user.
-    url?: string; // URL of the user.
-    country?: string; // Home country code of the user, such as AU or CZ.
+export type AddonModAssignParticipant = Omit<CoreUserDescriptionExporter,
+    'auth'|'confirmed'|'lang'|'calendartype'|'theme'|'timezone'|'mailformat'|'profileimageurlsmall'|'profileimageurl'> & {
     profileimageurlsmall?: string; // User image profile URL - small version.
     profileimageurl?: string; // User image profile URL - big version.
-    customfields?: { // User custom fields (also known as user profile fields).
-        type: string; // The type of the custom field - text field, checkbox...
-        value: string; // The value of the custom field.
-        displayvalue: string; // @since 4.2.Formatted value of the custom field.
-        name: string; // The name of the custom field.
-        shortname: string; // The shortname of the custom field - to be able to build the field class in the code.
-    }[];
-    preferences?: { // Users preferences.
-        name: string; // The name of the preferences.
-        value: string; // The value of the preference.
-    }[];
+
     recordid?: number; // @since 3.7. Record id.
     groups?: { // User groups.
         id: number; // Group id.

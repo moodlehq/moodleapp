@@ -33,7 +33,11 @@ import { CoreTime } from '@singletons/time';
 import { CoreAlerts } from '@services/overlays/alerts';
 import { CoreSharedModule } from '@/core/shared.module';
 import { CoreUserProfileFieldComponent } from '../../components/user-profile-field/user-profile-field';
-import { CORE_USER_PROFILE_REFRESHED, CORE_USER_PROFILE_PICTURE_UPDATED, CORE_USER_PROFILE_SERVER_TIMEZONE } from '@features/user/constants';
+import {
+    CORE_USER_PROFILE_REFRESHED,
+    CORE_USER_PROFILE_PICTURE_UPDATED,
+    CORE_USER_PROFILE_SERVER_TIMEZONE,
+} from '@features/user/constants';
 
 /**
  * Page that displays info about a user.
@@ -118,7 +122,7 @@ export default class CoreUserAboutPage implements OnInit, OnDestroy {
                 undefined;
 
             this.hasContact = !!(user.email || user.phone1 || user.phone2 || user.city || user.country || user.address);
-            this.hasDetails = !!(user.url || user.interests || (user.customfields && user.customfields.length > 0));
+            this.hasDetails = !!(user.interests || (user.customfields && user.customfields.length > 0));
 
             this.user = user;
             this.title = user.fullname;
