@@ -19,13 +19,13 @@ import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
 import { CoreCourseCommonModWSOptions } from '@features/course/services/course';
 import { CoreCourseLogHelper } from '@features/course/services/log-helper';
 import { CoreSites, CoreSitesCommonWSOptions } from '@services/sites';
-import { CoreText, CoreTextFormat } from '@singletons/text';
+import { CoreText } from '@singletons/text';
 import { CoreObject } from '@singletons/object';
 import { CoreWSExternalFile, CoreWSExternalWarning } from '@services/ws';
 import { makeSingleton, Translate } from '@singletons';
 import { ADDON_MOD_BBB_COMPONENT_LEGACY } from '../constants';
 import { CoreCacheUpdateFrequency } from '@/core/constants';
-import { CoreCourseModuleHelper } from '@features/course/services/course-module-helper';
+import { CoreCourseModuleHelper, CoreCourseModuleStandardElements } from '@features/course/services/course-module-helper';
 
 /**
  * Service that provides some features for Big Blue Button activity.
@@ -390,20 +390,9 @@ export type AddonModBBBGetBigBlueButtonBNsByCoursesWSResponse = {
 /**
  * BBB data returned by mod_bigbluebuttonbn_get_bigbluebuttonbns_by_courses.
  */
-export type AddonModBBBData = {
-    id: number; // Module id.
-    coursemodule: number; // Course module id.
-    course: number; // Course id.
-    name: string; // Name.
-    intro: string; // Description.
+export type AddonModBBBData = CoreCourseModuleStandardElements & {
     meetingid: string; // Meeting id.
-    introformat?: CoreTextFormat; // Intro format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
-    introfiles: CoreWSExternalFile[];
     timemodified: number; // Last time the instance was modified.
-    section: number; // Course section id.
-    visible: number; // Module visibility.
-    groupmode: number; // Group mode.
-    groupingid: number; // Grouping id.
 };
 
 /**

@@ -41,7 +41,7 @@ import { CoreCacheUpdateFrequency } from '@/core/constants';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreWSError } from '@classes/errors/wserror';
 import { CoreTextFormat, DEFAULT_TEXT_FORMAT } from '@singletons/text';
-import { CoreCourseModuleHelper } from '@features/course/services/course-module-helper';
+import { CoreCourseModuleHelper, CoreCourseModuleStandardElements } from '@features/course/services/course-module-helper';
 
 /**
  * Service that provides some features for glossaries.
@@ -1182,14 +1182,7 @@ export type AddonModGlossaryGetGlossariesByCoursesWSResponse = {
 /**
  * Data returned by mod_glossary_get_glossaries_by_courses WS.
  */
-export type AddonModGlossaryGlossary = {
-    id: number; // Glossary id.
-    coursemodule: number; // Course module id.
-    course: number; // Course id.
-    name: string; // Glossary name.
-    intro: string; // The Glossary intro.
-    introformat: CoreTextFormat; // Intro format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
-    introfiles?: CoreWSExternalFile[];
+export type AddonModGlossaryGlossary = CoreCourseModuleStandardElements & {
     allowduplicatedentries: number; // If enabled, multiple entries can have the same concept name.
     displayformat: string; // Display format type.
     mainglossary: number; // If enabled this glossary is a main glossary.
@@ -1213,10 +1206,6 @@ export type AddonModGlossaryGlossary = {
     timecreated: number; // Time created.
     timemodified: number; // Time modified.
     completionentries: number; // Number of entries to complete.
-    section: number; // Section.
-    visible: number; // Visible.
-    groupmode: number; // Group mode.
-    groupingid: number; // Grouping ID.
     browsemodes: string[];
     canaddentry?: number; // Whether the user can add a new entry.
 };

@@ -19,15 +19,15 @@ import { CoreCourseLogHelper } from '@features/course/services/log-helper';
 import { CoreNetwork } from '@services/network';
 import { CoreFilepool } from '@services/filepool';
 import { CoreSitesCommonWSOptions, CoreSites } from '@services/sites';
-import { CoreText, CoreTextFormat } from '@singletons/text';
+import { CoreText } from '@singletons/text';
 import { CorePromiseUtils } from '@singletons/promise-utils';
-import { CoreWSExternalFile, CoreWSExternalWarning } from '@services/ws';
+import { CoreWSExternalWarning } from '@services/ws';
 import { makeSingleton } from '@singletons';
 import { CorePath } from '@singletons/path';
 import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
 import { ADDON_MOD_IMSCP_COMPONENT_LEGACY } from '../constants';
 import { CoreCacheUpdateFrequency } from '@/core/constants';
-import { CoreCourseModuleHelper } from '@features/course/services/course-module-helper';
+import { CoreCourseModuleHelper, CoreCourseModuleStandardElements } from '@features/course/services/course-module-helper';
 
 /**
  * Service that provides some features for IMSCP.
@@ -292,22 +292,11 @@ type AddonModImscpViewImscpWSParams = {
 /**
  * IMSCP returned by mod_imscp_get_imscps_by_courses.
  */
-export type AddonModImscpImscp = {
-    id: number; // IMSCP id.
-    coursemodule: number; // Course module id.
-    course: number; // Course id.
-    name: string; // Activity name.
-    intro?: string; // The IMSCP intro.
-    introformat?: CoreTextFormat; // Intro format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
-    introfiles?: CoreWSExternalFile[];
+export type AddonModImscpImscp = CoreCourseModuleStandardElements & {
     revision?: number; // Revision.
     keepold?: number; // Number of old IMSCP to keep.
     structure?: string; // IMSCP structure.
     timemodified?: string; // Time of last modification.
-    section?: number; // Course section id.
-    visible?: boolean; // If visible.
-    groupmode?: number; // Group mode.
-    groupingid?: number; // Group id.
 };
 
 /**

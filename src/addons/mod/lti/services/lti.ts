@@ -20,14 +20,14 @@ import { CoreCourseLogHelper } from '@features/course/services/log-helper';
 import { CoreFile } from '@services/file';
 import { CorePlatform } from '@services/platform';
 import { CoreSites, CoreSitesCommonWSOptions } from '@services/sites';
-import { CoreText, CoreTextFormat } from '@singletons/text';
+import { CoreText } from '@singletons/text';
 import { CoreUrl } from '@singletons/url';
 import { CoreOpener } from '@singletons/opener';
-import { CoreWSExternalFile, CoreWSExternalWarning } from '@services/ws';
+import { CoreWSExternalWarning } from '@services/ws';
 import { makeSingleton, Translate } from '@singletons';
 import { ADDON_MOD_LTI_COMPONENT_LEGACY, ADDON_MOD_LTI_FEATURE_NAME } from '../constants';
 import { CoreCacheUpdateFrequency } from '@/core/constants';
-import { CoreCourseModuleHelper } from '@features/course/services/course-module-helper';
+import { CoreCourseModuleHelper, CoreCourseModuleStandardElements } from '@features/course/services/course-module-helper';
 
 /**
  * Service that provides some features for LTI.
@@ -311,14 +311,7 @@ export type AddonModLtiGetLtisByCoursesWSResponse = {
 /**
  * LTI returned by mod_lti_get_ltis_by_courses.
  */
-export type AddonModLtiLti = {
-    id: number; // External tool id.
-    coursemodule: number; // Course module id.
-    course: number; // Course id.
-    name: string; // LTI name.
-    intro?: string; // The LTI intro.
-    introformat?: CoreTextFormat; // Intro format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
-    introfiles?: CoreWSExternalFile[];
+export type AddonModLtiLti = CoreCourseModuleStandardElements & {
     timecreated?: number; // Time of creation.
     timemodified?: number; // Time of last modification.
     typeid?: number; // Type id.
@@ -340,10 +333,6 @@ export type AddonModLtiLti = {
     servicesalt?: string; // Service salt.
     icon?: string; // Alternative icon URL.
     secureicon?: string; // Secure icon URL.
-    section?: number; // Course section id.
-    visible?: number; // Visible.
-    groupmode?: number; // Group mode.
-    groupingid?: number; // Group id.
 };
 
 /**

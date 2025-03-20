@@ -20,15 +20,14 @@ import { CoreNetwork } from '@services/network';
 import { CoreFilepool } from '@services/filepool';
 import { CoreSites, CoreSitesCommonWSOptions } from '@services/sites';
 import { CoreWSError } from '@classes/errors/wserror';
-import { CoreStatusWithWarningsWSResponse, CoreWSExternalFile, CoreWSExternalWarning } from '@services/ws';
+import { CoreStatusWithWarningsWSResponse, CoreWSExternalWarning } from '@services/ws';
 import { makeSingleton } from '@singletons';
 import { AddonModSurveyOffline } from './survey-offline';
 import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
 import { ADDON_MOD_SURVEY_COMPONENT_LEGACY } from '../constants';
 import { CoreCacheUpdateFrequency } from '@/core/constants';
 import { CorePromiseUtils } from '@singletons/promise-utils';
-import { CoreTextFormat } from '@singletons/text';
-import { CoreCourseModuleHelper } from '@features/course/services/course-module-helper';
+import { CoreCourseModuleHelper, CoreCourseModuleStandardElements } from '@features/course/services/course-module-helper';
 
 /**
  * Service that provides some features for surveys.
@@ -276,24 +275,13 @@ type AddonModSurveyViewSurveyWSParams = {
 /**
  * Survey returned by WS mod_survey_get_surveys_by_courses.
  */
-export type AddonModSurveySurvey = {
-    id: number; // Survey id.
-    coursemodule: number; // Course module id.
-    course: number; // Course id.
-    name: string; // Survey name.
-    intro?: string; // The Survey intro.
-    introformat?: CoreTextFormat; // Intro format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
-    introfiles?: CoreWSExternalFile[];
+export type AddonModSurveySurvey = CoreCourseModuleStandardElements & {
     template?: number; // Survey type.
     days?: number; // Days.
     questions?: string; // Question ids.
     surveydone?: number; // Did I finish the survey?.
     timecreated?: number; // Time of creation.
     timemodified?: number; // Time of last modification.
-    section?: number; // Course section id.
-    visible?: number; // Visible.
-    groupmode?: number; // Group mode.
-    groupingid?: number; // Group id.
 };
 
 /**
