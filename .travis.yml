@@ -1,8 +1,8 @@
 os: linux
-dist: jammy
-node_js: 18
+dist: noble
+node_js: 20
 jdk:
-  - openjdk17
+  - openjdk23
 
 git:
   depth: 3
