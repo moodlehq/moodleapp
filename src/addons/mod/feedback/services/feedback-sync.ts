@@ -26,7 +26,12 @@ import { makeSingleton, Translate } from '@singletons';
 import { CoreEvents } from '@singletons/events';
 import { AddonModFeedback, AddonModFeedbackWSFeedback } from './feedback';
 import { AddonModFeedbackOffline, AddonModFeedbackOfflineResponse } from './feedback-offline';
-import { ADDON_MOD_FEEDBACK_AUTO_SYNCED, ADDON_MOD_FEEDBACK_COMPONENT, ADDON_MOD_FEEDBACK_COMPONENT_LEGACY } from '../constants';
+import {
+    ADDON_MOD_FEEDBACK_AUTO_SYNCED,
+    ADDON_MOD_FEEDBACK_COMPONENT,
+    ADDON_MOD_FEEDBACK_COMPONENT_LEGACY,
+    ADDON_MOD_FEEDBACK_MODNAME,
+} from '../constants';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 
 /**
@@ -223,7 +228,7 @@ export class AddonModFeedbackSyncProvider extends CoreCourseActivitySyncBaseProv
         if (result.updated) {
             // Data has been sent to server, update data.
             try {
-                const module = await CoreCourse.getModuleBasicInfoByInstance(feedbackId, 'feedback', { siteId });
+                const module = await CoreCourse.getModuleBasicInfoByInstance(feedbackId, ADDON_MOD_FEEDBACK_MODNAME, { siteId });
 
                 await this.prefetchModuleAfterUpdate(module, courseId, undefined, siteId);
             } catch {

@@ -32,7 +32,7 @@ import {
 import { AddonModWorkshopHelper } from '../workshop-helper';
 import { AddonModWorkshopSync } from '../workshop-sync';
 import { AddonModWorkshopPrefetchHandlerService } from '@addons/mod/workshop/services/handlers/prefetch';
-import { AddonModWorkshopPhase } from '../../constants';
+import { ADDON_MOD_WORKSHOP_MODNAME, AddonModWorkshopPhase } from '../../constants';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 
 /**
@@ -390,7 +390,7 @@ export class AddonModWorkshopPrefetchHandlerLazyService extends AddonModWorkshop
         }));
 
         // Add Basic Info to manage links.
-        promises.push(CoreCourse.getModuleBasicInfoByInstance(workshop.id, 'workshop', { siteId }));
+        promises.push(CoreCourse.getModuleBasicInfoByInstance(workshop.id, ADDON_MOD_WORKSHOP_MODNAME, { siteId }));
         promises.push(CoreCourse.getModuleBasicGradeInfo(module.id, siteId));
 
         // Get course data, needed to determine upload max size if it's configured to be course limit.

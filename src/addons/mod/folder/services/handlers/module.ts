@@ -19,7 +19,7 @@ import { CoreCourseModuleHandler, CoreCourseModuleHandlerData } from '@features/
 import { CoreNavigator } from '@services/navigator';
 import { convertTextToHTMLElement } from '@/core/utils/create-html-element';
 import { makeSingleton } from '@singletons';
-import { ADDON_MOD_FOLDER_PAGE_NAME } from '../../constants';
+import { ADDON_MOD_FOLDER_MODNAME, ADDON_MOD_FOLDER_PAGE_NAME } from '../../constants';
 import { ModFeature, ModArchetype, ModPurpose } from '@addons/mod/constants';
 
 /**
@@ -29,7 +29,7 @@ import { ModFeature, ModArchetype, ModPurpose } from '@addons/mod/constants';
 export class AddonModFolderModuleHandlerService extends CoreModuleHandlerBase implements CoreCourseModuleHandler {
 
     name = 'AddonModFolder';
-    modName = 'folder';
+    modName = ADDON_MOD_FOLDER_MODNAME;
     protected pageName = ADDON_MOD_FOLDER_PAGE_NAME;
 
     supportedFeatures = {

@@ -30,7 +30,12 @@ import { CoreEvents } from '@singletons/events';
 import { AddonModLessonRetakeFinishedInSyncDBRecord, RETAKES_FINISHED_SYNC_TABLE_NAME } from './database/lesson';
 import { AddonModLesson, AddonModLessonLessonWSData } from './lesson';
 import { AddonModLessonOffline, AddonModLessonPageAttemptRecord } from './lesson-offline';
-import { ADDON_MOD_LESSON_AUTO_SYNCED, ADDON_MOD_LESSON_COMPONENT, ADDON_MOD_LESSON_COMPONENT_LEGACY } from '../constants';
+import {
+    ADDON_MOD_LESSON_AUTO_SYNCED,
+    ADDON_MOD_LESSON_COMPONENT,
+    ADDON_MOD_LESSON_COMPONENT_LEGACY,
+    ADDON_MOD_LESSON_MODNAME,
+} from '../constants';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { AddonModLessonGetPasswordResult, AddonModLessonHelper } from './lesson-helper';
 
@@ -243,7 +248,7 @@ export class AddonModLessonSyncProvider extends CoreCourseActivitySyncBaseProvid
         if (result.updated && result.courseId) {
             try {
                 // Data has been sent to server, update data.
-                const module = await CoreCourse.getModuleBasicInfoByInstance(lessonId, 'lesson', { siteId });
+                const module = await CoreCourse.getModuleBasicInfoByInstance(lessonId, ADDON_MOD_LESSON_MODNAME, { siteId });
                 await this.prefetchModuleAfterUpdate(module, result.courseId, undefined, siteId);
             } catch {
                 // Ignore errors.

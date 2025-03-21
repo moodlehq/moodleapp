@@ -23,7 +23,7 @@ import { CoreWSFile } from '@services/ws';
 import { makeSingleton } from '@singletons';
 import { AddonModChoice } from '../choice';
 import { AddonModChoiceSync, AddonModChoiceSyncResult } from '../choice-sync';
-import { ADDON_MOD_CHOICE_COMPONENT_LEGACY } from '../../constants';
+import { ADDON_MOD_CHOICE_COMPONENT_LEGACY, ADDON_MOD_CHOICE_MODNAME } from '../../constants';
 import { CoreGroups } from '@services/groups';
 
 /**
@@ -33,7 +33,7 @@ import { CoreGroups } from '@services/groups';
 export class AddonModChoicePrefetchHandlerService extends CoreCourseActivityPrefetchHandlerBase {
 
     name = 'AddonModChoice';
-    modName = 'choice';
+    modName = ADDON_MOD_CHOICE_MODNAME;
     component = ADDON_MOD_CHOICE_COMPONENT_LEGACY;
     updatesNames = /^configuration$|^.*files$|^answers$/;
 
