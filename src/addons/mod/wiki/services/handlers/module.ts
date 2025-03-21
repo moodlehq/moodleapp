@@ -16,7 +16,7 @@ import { Injectable, Type } from '@angular/core';
 import { CoreModuleHandlerBase } from '@features/course/classes/module-base-handler';
 import { CoreCourseModuleHandler } from '@features/course/services/module-delegate';
 import { makeSingleton } from '@singletons';
-import { ADDON_MOD_WIKI_PAGE_NAME } from '../../constants';
+import { ADDON_MOD_WIKI_MODNAME, ADDON_MOD_WIKI_PAGE_NAME } from '../../constants';
 import { ModFeature, ModPurpose } from '@addons/mod/constants';
 
 /**
@@ -26,7 +26,7 @@ import { ModFeature, ModPurpose } from '@addons/mod/constants';
 export class AddonModWikiModuleHandlerService extends CoreModuleHandlerBase implements CoreCourseModuleHandler {
 
     name = 'AddonModWiki';
-    modName = 'wiki';
+    modName = ADDON_MOD_WIKI_MODNAME;
     protected pageName = ADDON_MOD_WIKI_PAGE_NAME;
 
     supportedFeatures = {

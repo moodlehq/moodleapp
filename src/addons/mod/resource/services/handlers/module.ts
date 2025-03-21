@@ -24,7 +24,7 @@ import { makeSingleton, Translate } from '@singletons';
 import { AddonModResource } from '../resource';
 import { AddonModResourceHelper } from '../resource-helper';
 import { CorePromiseUtils } from '@singletons/promise-utils';
-import { ADDON_MOD_RESOURCE_PAGE_NAME } from '../../constants';
+import { ADDON_MOD_RESOURCE_MODNAME, ADDON_MOD_RESOURCE_PAGE_NAME } from '../../constants';
 import { DownloadStatus } from '@/core/constants';
 import { ModFeature, ModArchetype, ModPurpose } from '@addons/mod/constants';
 import { CoreCourseModuleHelper } from '@features/course/services/course-module-helper';
@@ -36,7 +36,7 @@ import { CoreCourseModuleHelper } from '@features/course/services/course-module-
 export class AddonModResourceModuleHandlerService extends CoreModuleHandlerBase implements CoreCourseModuleHandler {
 
     name = 'AddonModResource';
-    modName = 'resource';
+    modName = ADDON_MOD_RESOURCE_MODNAME;
     protected pageName = ADDON_MOD_RESOURCE_PAGE_NAME;
 
     supportedFeatures = {
