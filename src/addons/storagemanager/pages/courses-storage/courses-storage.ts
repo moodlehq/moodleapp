@@ -31,6 +31,7 @@ import { CoreAlerts } from '@services/overlays/alerts';
 import { CoreErrorHelper } from '@services/error-helper';
 import { CoreSharedModule } from '@/core/shared.module';
 import { CoreCourseDownloadStatusHelper } from '@features/course/services/course-download-status-helper';
+import { ADDON_STORAGE_MANAGER_PAGE_NAME } from '@addons/storagemanager/constants';
 
 /**
  * Page that displays downloaded courses and allows the user to delete them.
@@ -255,7 +256,7 @@ export default class AddonStorageManagerCoursesStoragePage implements OnInit, On
      * @param courseId Course Id.
      */
     openCourse(courseId: number, title: string): void {
-        CoreNavigator.navigateToSitePath(`/storage/${courseId}`, { params: { title } });
+        CoreNavigator.navigateToSitePath(`/${ADDON_STORAGE_MANAGER_PAGE_NAME}/${courseId}`, { params: { title } });
     }
 
     /**

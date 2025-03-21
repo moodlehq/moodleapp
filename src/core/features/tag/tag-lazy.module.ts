@@ -18,7 +18,7 @@ import { Route, ROUTES, Routes } from '@angular/router';
 
 import { buildTabMainRoutes } from '@features/mainmenu/mainmenu-tab-routing.module';
 import { CoreScreen } from '@services/screen';
-import { CoreTagMainMenuHandlerService } from './services/handlers/mainmenu';
+import { CORE_TAG_MAIN_MENU_PAGE_NAME } from './constants';
 
 const indexAreaRoute: Route = {
     path: 'index-area',
@@ -58,7 +58,7 @@ function buildRoutes(injector: Injector): Routes {
         ...conditionalRoutes(tabletRoutes, () => CoreScreen.isTablet),
         {
             path: 'search',
-            data: { mainMenuTabRoot: CoreTagMainMenuHandlerService.PAGE_NAME },
+            data: { mainMenuTabRoot: CORE_TAG_MAIN_MENU_PAGE_NAME },
             loadComponent: () => import('@features/tag/pages/search/search'),
         },
         indexAreaRoute,

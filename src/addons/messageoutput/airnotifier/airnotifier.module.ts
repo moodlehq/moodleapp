@@ -19,13 +19,13 @@ import { CoreMainMenuTabRoutingModule } from '@features/mainmenu/mainmenu-tab-ro
 import { AddonMessageOutputDelegate } from '@addons/messageoutput/services/messageoutput-delegate';
 import {
     AddonMessageOutputAirnotifierHandler,
-    AddonMessageOutputAirnotifierHandlerService,
 } from './services/handlers/messageoutput';
 import { AddonMessageOutputAirnotifier } from './services/airnotifier';
+import { ADDON_MESSAGEOUTPUT_AIRNOTIFIER_PAGE_NAME } from './constants';
 
 const routes: Routes = [
     {
-        path: AddonMessageOutputAirnotifierHandlerService.PAGE_NAME,
+        path: ADDON_MESSAGEOUTPUT_AIRNOTIFIER_PAGE_NAME,
         loadComponent: () => import('./pages/devices/devices'),
     },
 ];

@@ -15,10 +15,11 @@
 import { Injectable } from '@angular/core';
 import { CoreContentLinksHandlerBase } from '@features/contentlinks/classes/base-handler';
 import { CoreContentLinksAction } from '@features/contentlinks/services/contentlinks-delegate';
-import { CoreMainMenuHomeHandlerService } from '@features/mainmenu/services/handlers/mainmenu';
 import { CoreNavigator } from '@services/navigator';
 import { makeSingleton } from '@singletons';
-import { CoreDashboardHomeHandler, CoreDashboardHomeHandlerService } from './dashboard-home';
+import { CoreDashboardHomeHandler } from './dashboard-home';
+import { MAIN_MENU_HOME_PAGE_NAME } from '@features/mainmenu/constants';
+import { CORE_COURSES_DASHBOARD_PAGE_NAME } from '@features/courses/constants';
 
 /**
  * Handler to treat links to dashboard.
@@ -39,7 +40,7 @@ export class CoreCoursesDashboardLinkHandlerService extends CoreContentLinksHand
             action: async (siteId): Promise<void> => {
                 // Use redirect to select the tab.
                 await CoreNavigator.navigateToSitePath(
-                    `/${CoreMainMenuHomeHandlerService.PAGE_NAME}/${CoreDashboardHomeHandlerService.PAGE_NAME}`,
+                    `/${MAIN_MENU_HOME_PAGE_NAME}/${CORE_COURSES_DASHBOARD_PAGE_NAME}`,
                     {
                         siteId,
                         preferCurrentTab: false,

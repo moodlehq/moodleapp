@@ -18,16 +18,16 @@ import { CoreMainMenuTabRoutingModule } from '@features/mainmenu/mainmenu-tab-ro
 import { CoreSitePreferencesRoutingModule } from '@features/settings/settings-site-routing.module';
 import { CoreSettingsDelegate } from '@features/settings/services/settings-delegate';
 import { AddonStorageManagerSettingsHandler } from './services/handlers/settings';
+import { ADDON_STORAGE_MANAGER_PAGE_NAME } from './constants';
 
 const routes: Routes = [
     {
-        path: 'storage',
+        path: ADDON_STORAGE_MANAGER_PAGE_NAME,
         loadComponent: () => import('./pages/courses-storage/courses-storage'),
     },
     {
-        path: 'storage/:courseId',
+        path: `${ADDON_STORAGE_MANAGER_PAGE_NAME}/:courseId`,
         loadComponent: () => import('./pages/course-storage/course-storage'),
-
     },
 ];
 
