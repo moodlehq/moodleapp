@@ -67,6 +67,7 @@ import { CoreSite } from '@classes/sites/site';
 import { CoreCourseSectionComponent, CoreCourseSectionToDisplay } from '../course-section/course-section';
 import { CoreAlerts } from '@services/overlays/alerts';
 import { CoreCourseModuleHelper } from '@features/course/services/course-module-helper';
+import { ADDON_STORAGE_MANAGER_PAGE_NAME } from '@addons/storagemanager/constants';
 
 /**
  * Component to display course contents using a certain format. If the format isn't found, use default one.
@@ -549,7 +550,7 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
         const sectionId = this.selectedSection?.id !== this.allSectionsId ? this.selectedSection?.id : undefined;
 
         CoreNavigator.navigateToSitePath(
-            `storage/${this.course.id}`,
+            `${ADDON_STORAGE_MANAGER_PAGE_NAME}/${this.course.id}`,
             {
                 params: {
                     title: this.course.fullname,

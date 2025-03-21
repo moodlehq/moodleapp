@@ -16,14 +16,13 @@ import { Injectable } from '@angular/core';
 import { makeSingleton } from '@singletons';
 import { CoreMainMenuHomeDelegate } from '../home-delegate';
 import { CoreMainMenuHandler, CoreMainMenuHandlerData } from '../mainmenu-delegate';
+import { MAIN_MENU_HOME_PAGE_NAME } from '@features/mainmenu/constants';
 
 /**
  * Handler to add Home into main menu.
  */
 @Injectable({ providedIn: 'root' })
 export class CoreMainMenuHomeHandlerService implements CoreMainMenuHandler {
-
-    static readonly PAGE_NAME = 'home';
 
     name = 'CoreHome';
     priority = 1000;
@@ -44,7 +43,7 @@ export class CoreMainMenuHomeHandlerService implements CoreMainMenuHandler {
         return {
             icon: 'fas-gauge-high',
             title: 'core.mainmenu.home',
-            page: CoreMainMenuHomeHandlerService.PAGE_NAME,
+            page: MAIN_MENU_HOME_PAGE_NAME,
             class: 'core-home-handler',
         };
     }

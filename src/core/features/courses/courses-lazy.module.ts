@@ -16,7 +16,7 @@ import { Injector, NgModule } from '@angular/core';
 import { ROUTES, Routes } from '@angular/router';
 import { buildTabMainRoutes } from '@features/mainmenu/mainmenu-tab-routing.module';
 import { CoreCoursesHelper } from './services/courses-helper';
-import { CoreCoursesMyCoursesMainMenuHandlerService } from './services/handlers/my-courses-mainmenu';
+import { CORE_COURSES_MYCOURSES_PAGE_NAME } from './constants';
 
 /**
  * Build module routes.
@@ -29,7 +29,7 @@ function buildRoutes(injector: Injector): Routes {
         {
             path: 'my',
             data: {
-                mainMenuTabRoot: CoreCoursesMyCoursesMainMenuHandlerService.PAGE_NAME,
+                mainMenuTabRoot: CORE_COURSES_MYCOURSES_PAGE_NAME,
             },
             loadComponent: () => CoreCoursesHelper.getMyPage(),
         },

@@ -67,6 +67,8 @@ import { CoreObject } from '@singletons/object';
 import { CoreAlerts } from '@services/overlays/alerts';
 import { CoreCourseModuleHelper, CoreCourseStoreModuleViewedOptions } from './course-module-helper';
 import { CoreCourseDownloadStatusHelper } from './course-download-status-helper';
+import { MAIN_MENU_HOME_PAGE_NAME } from '@features/mainmenu/constants';
+import { CORE_SITEHOME_PAGE_NAME } from '@features/sitehome/constants';
 
 export type CoreCourseProgressUpdated = { progress: number; courseId: number };
 
@@ -1310,7 +1312,7 @@ export class CoreCourseProvider {
     ): Promise<void> {
         if (course.id === CoreSites.getCurrentSite()?.getSiteHomeId()) {
             // Open site home.
-            await CoreNavigator.navigate('/main/home/site', navOptions);
+            await CoreNavigator.navigate(`/main/${MAIN_MENU_HOME_PAGE_NAME}/${CORE_SITEHOME_PAGE_NAME}`, navOptions);
 
             return;
         }

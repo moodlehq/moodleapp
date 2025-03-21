@@ -20,10 +20,10 @@ import { CoreEventObserver } from '@singletons/events';
 import { CoreTabsOutletComponent, CoreTabsOutletTab } from '@components/tabs-outlet/tabs-outlet';
 import { CoreMainMenuHomeDelegate, CoreMainMenuHomeHandlerToDisplay } from '../../services/home-delegate';
 import { CoreArray } from '@singletons/array';
-import { CoreMainMenuHomeHandlerService } from '@features/mainmenu/services/handlers/mainmenu';
 import { CoreSharedModule } from '@/core/shared.module';
 import { CoreSiteLogoComponent } from '../../../../components/site-logo/site-logo';
 import { CoreMainMenuUserButtonComponent } from '../../components/user-menu-button/user-menu-button';
+import { MAIN_MENU_HOME_PAGE_NAME } from '@features/mainmenu/constants';
 
 /**
  * Page that displays the Home.
@@ -74,7 +74,7 @@ export default class CoreMainMenuHomePage implements OnInit {
             }
 
             return {
-                page: `/main/${CoreMainMenuHomeHandlerService.PAGE_NAME}/${handler.page}`,
+                page: `/main/${MAIN_MENU_HOME_PAGE_NAME}/${handler.page}`,
                 pageParams: handler.pageParams,
                 title: handler.title,
                 class: handler.class,
