@@ -1755,10 +1755,10 @@ export type CoreCourseModuleContentFile = {
     filename: string; // Filename.
     filepath: string; // Filepath.
     filesize: number; // Filesize.
-    fileurl: string; // Downloadable file url.
+    fileurl: string; // Downloadable file url. Required field.
     timemodified: number; // Time modified.
     mimetype?: string; // File mime type.
-    isexternalfile?: number; // Whether is an external file.
+    isexternalfile?: boolean; // Whether is an external file.
     repositorytype?: string; // The repository type for external files.
 
     type: string; // A file or a folder or external link.

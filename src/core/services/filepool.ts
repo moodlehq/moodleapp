@@ -733,7 +733,7 @@ export class CoreFilepoolProvider {
             newData.path = filePath;
         }
         if (entry.isexternalfile !== options.isexternalfile && (entry.isexternalfile || options.isexternalfile)) {
-            newData.isexternalfile = options.isexternalfile;
+            newData.isexternalfile = options.isexternalfile ? 1 : 0;
         }
         if (entry.repositorytype !== options.repositorytype && (entry.repositorytype || options.repositorytype)) {
             newData.repositorytype = options.repositorytype;
@@ -2778,10 +2778,10 @@ export class CoreFilepoolProvider {
         const siteId = item.siteId;
         const fileId = item.fileId;
         const fileUrl = item.url;
-        const options = {
+        const options: DownloadForPoolOptions = {
             revision: item.revision ?? 0,
             timemodified: item.timemodified ?? 0,
-            isexternalfile: item.isexternalfile ?? undefined,
+            isexternalfile: item.isexternalfile === undefined ? undefined : !!item.isexternalfile,
             repositorytype: item.repositorytype ?? undefined,
         };
         const filePath = item.path || undefined;
