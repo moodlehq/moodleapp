@@ -40,6 +40,7 @@ import { Swiper } from 'swiper';
 import { SwiperOptions } from 'swiper/types';
 import { CoreSwiper } from '@singletons/swiper';
 import { toBoolean } from '../transforms/boolean';
+import { BackButtonPriority } from '../constants';
 
 /**
  * Class to abstract some common code for tabs.
@@ -158,7 +159,7 @@ export class CoreTabsBaseComponent<T extends CoreTabBase> implements AfterViewIn
      * @param event Event.
      */
     protected backButtonClicked(event: BackButtonEvent): void {
-        event.detail.register(40, (processNextHandler: () => void) => {
+        event.detail.register(BackButtonPriority.CORE_TABS, (processNextHandler: () => void) => {
             if (this.selectHistory.length > 1) {
                 // The previous page in history is not the last one, we need the previous one.
                 const previousTabId = this.selectHistory[this.selectHistory.length - 2];
