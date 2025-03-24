@@ -2844,23 +2844,17 @@ export class CoreFilepoolProvider {
 
             if (errorObject && errorObject.source === fileUrl) {
                 // This is most likely a FileTransfer error.
-                if (errorObject.code === 1) { // FILE_NOT_FOUND_ERR.
-                    // The file was not found, most likely a 404, we remove from queue.
-                    dropFromQueue = true;
-                } else if (errorObject.code === 2) { // INVALID_URL_ERR.
-                    // The URL is invalid, we drop the file from the queue.
-                    dropFromQueue = true;
-                } else if (errorObject.code === 3) { // CONNECTION_ERR.
-                    // If there was an HTTP status, then let's remove from the queue.
-                    dropFromQueue = true;
-                } else if (errorObject.code === 4) { // ABORTED_ERR.
-                    // The transfer was aborted, we will keep the file in queue.
-                } else if (errorObject.code === 5) { // NOT_MODIFIED_ERR.
-                    // We have the latest version of the file, HTTP 304 status.
-                    dropFromQueue = true;
-                } else {
-                    // Any error, let's remove the file from the queue to avoi locking down the queue.
-                    dropFromQueue = true;
+                switch (errorObject.code) {
+                    case CoreFileTransferErrorCode.ABORT_ERR:
+                        // The transfer was aborted, we will keep the file in queue.
+                        break;
+                    case CoreFileTransferErrorCode.FILE_NOT_FOUND_ERR: // File wasn't found, most likely a 404, remove from queue.
+                    case CoreFileTransferErrorCode.INVALID_URL_ERR: // The URL is invalid, we drop the file from the queue.
+                    case CoreFileTransferErrorCode.CONNECTION_ERR: // If there was an HTTP status, then let's remove from the queue.
+                    case CoreFileTransferErrorCode.NOT_MODIFIED_ERR: // We have the latest version of the file, HTTP 304 status.
+                    default: // Any other error, let's remove the file from the queue to avoid locking down the queue.
+                        dropFromQueue = true;
+                        break;
                 }
             } else {
                 dropFromQueue = true;
@@ -3342,3 +3336,11 @@ type CoreFilepoolQueueItemOptions = Omit<CoreFilepoolFileOptions, 'priority'|'re
     filePath?: string; // Filepath to download the file to. If not defined, download to the filepool folder.
     link?: CoreFilepoolComponentLink; // The link to add for the file.
 };
+
+const enum CoreFileTransferErrorCode {
+    FILE_NOT_FOUND_ERR = 1,
+    INVALID_URL_ERR = 2,
+    CONNECTION_ERR = 3,
+    ABORT_ERR = 4,
+    NOT_MODIFIED_ERR = 5,
+}
