@@ -1373,7 +1373,7 @@ export type CoreWSExternalFile = {
     fileurl: string; // Downloadable file url.
     timemodified?: number; // Time modified.
     mimetype?: string; // File mime type.
-    isexternalfile?: number; // Whether is an external file.
+    isexternalfile?: boolean; // Whether is an external file.
     repositorytype?: string; // The repository type for the external files.
     icon?: string; // @since 4.4. Relative path to the relevant file type icon based on the file's mime type.
 };
