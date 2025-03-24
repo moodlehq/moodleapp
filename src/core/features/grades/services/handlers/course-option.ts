@@ -19,9 +19,10 @@ import {
     CoreCourseOptionsHandlerData,
 } from '@features/course/services/course-options-delegate';
 import { CoreCourseAnyCourseData, CoreCourses, CoreCourseUserAdminOrNavOptionIndexed } from '@features/courses/services/courses';
-import { CoreGradesHelper, GRADES_PAGE_NAME } from '@features/grades/services/grades-helper';
+import { GRADES_PAGE_NAME } from '../../constants';
 import { makeSingleton } from '@singletons';
 import { CoreGrades } from '../grades';
+import { CoreGradesHelper } from '../grades-helper';
 
 /**
  * Course nav handler.

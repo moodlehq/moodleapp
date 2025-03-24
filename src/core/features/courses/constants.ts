@@ -16,10 +16,17 @@ export const CORE_COURSES_ENROL_INVALID_KEY = 'CoreCoursesEnrolInvalidKey';
 
 export const CORE_COURSES_MY_COURSES_CHANGED_EVENT = 'courses_my_courses_changed'; // User course list changed while app is running.
 
+// Events.
 // A course was hidden/favourite, or user enroled in a course.
 export const CORE_COURSES_MY_COURSES_UPDATED_EVENT = 'courses_my_courses_updated';
 export const CORE_COURSES_MY_COURSES_REFRESHED_EVENT = 'courses_my_courses_refreshed';
 export const CORE_COURSES_DASHBOARD_DOWNLOAD_ENABLED_CHANGED_EVENT = 'dashboard_download_enabled_changed';
+
+// Features.
+export const CORE_COURSE_DOWNLOAD_FEATURE_NAME = 'NoDelegate_CoreCourseDownload';
+export const CORE_COURSES_DOWNLOAD_FEATURE_NAME = 'NoDelegate_CoreCoursesDownload';
+export const CORE_COURSES_MYCOURSES_MENU_FEATURE_NAME = 'CoreMainMenuDelegate_CoreCourses';
+export const CORE_COURSES_SEARCH_FEATURE_NAME = 'CoreCourseOptionsDelegate_search';
 
 // Actions for event CORE_COURSES_MY_COURSES_UPDATED_EVENT.
 export const CoreCoursesMyCoursesUpdatedEventAction = {

@@ -25,6 +25,7 @@ import { CoreCourseHelper } from '@features/course/services/course-helper';
 import { CoreUrl } from '@singletons/url';
 import { CoreSharedModule } from '@/core/shared.module';
 import { ModFeature, ModArchetype } from '@addons/mod/constants';
+import { CoreCourseModuleHelper } from '@features/course/services/course-module-helper';
 
 /**
  * Component to render an "activity modules" block.
@@ -73,7 +74,7 @@ export class AddonBlockActivityModulesComponent extends CoreBlockBaseComponent i
 
         const modules = CoreCourse.getSectionsModules(sections, {
             ignoreSection: section => !CoreCourseHelper.canUserViewSection(section),
-            ignoreModule: module => !CoreCourseHelper.canUserViewModule(module) || !CoreCourse.moduleHasView(module),
+            ignoreModule: module => !CoreCourseHelper.canUserViewModule(module) || !CoreCourseModuleHelper.moduleHasView(module),
         });
 
         modules.forEach((mod) => {

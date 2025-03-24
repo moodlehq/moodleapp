@@ -504,10 +504,10 @@ export class CoreUserDelegateService extends CoreDelegate<CoreUserProfileHandler
         const type = handler.type as string;
 
         // eslint-disable-next-line deprecation/deprecation
-        if (type == CoreUserDelegateService.TYPE_COMMUNICATION || type == CoreUserDelegateService.TYPE_ACTION) {
+        if (type === CoreUserDelegateService.TYPE_COMMUNICATION || type === CoreUserDelegateService.TYPE_ACTION) {
             handler.type = CoreUserProfileHandlerType.BUTTON;
         // eslint-disable-next-line deprecation/deprecation
-        } else if (type == CoreUserDelegateService.TYPE_NEW_PAGE) {
+        } else if (type === CoreUserDelegateService.TYPE_NEW_PAGE) {
             handler.type = CoreUserProfileHandlerType.LIST_ITEM;
 
         }
