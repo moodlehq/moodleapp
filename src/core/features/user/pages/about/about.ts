@@ -20,9 +20,6 @@ import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import {
     CoreUser,
     CoreUserProfile,
-    USER_PROFILE_PICTURE_UPDATED,
-    USER_PROFILE_REFRESHED,
-    USER_PROFILE_SERVER_TIMEZONE,
 } from '@features/user/services/user';
 import { CoreNavigator } from '@services/navigator';
 import { CoreIonLoadingElement } from '@classes/ion-loading';
@@ -36,6 +33,7 @@ import { CoreTime } from '@singletons/time';
 import { CoreAlerts } from '@services/overlays/alerts';
 import { CoreSharedModule } from '@/core/shared.module';
 import { CoreUserProfileFieldComponent } from '../../components/user-profile-field/user-profile-field';
+import { CORE_USER_PROFILE_REFRESHED, CORE_USER_PROFILE_PICTURE_UPDATED, CORE_USER_PROFILE_SERVER_TIMEZONE } from '@features/user/constants';
 
 /**
  * Page that displays info about a user.
@@ -77,7 +75,7 @@ export default class CoreUserAboutPage implements OnInit, OnDestroy {
             return;
         }
 
-        this.obsProfileRefreshed = CoreEvents.on(USER_PROFILE_REFRESHED, (data) => {
+        this.obsProfileRefreshed = CoreEvents.on(CORE_USER_PROFILE_REFRESHED, (data) => {
             if (!this.user || !data.user) {
                 return;
             }
@@ -154,7 +152,7 @@ export default class CoreUserAboutPage implements OnInit, OnDestroy {
             await CoreSites.updateSiteInfo(this.site.getId());
         } catch {
             // Cannot update site info. Assume the profile image is the right one.
-            CoreEvents.trigger(USER_PROFILE_PICTURE_UPDATED, {
+            CoreEvents.trigger(CORE_USER_PROFILE_PICTURE_UPDATED, {
                 userId: this.userId,
                 picture: this.user.profileimageurl,
             }, this.site.getId());
@@ -165,7 +163,7 @@ export default class CoreUserAboutPage implements OnInit, OnDestroy {
             await this.refreshUser();
         } else {
             // Now they're the same, send event to use the right avatar in the rest of the app.
-            CoreEvents.trigger(USER_PROFILE_PICTURE_UPDATED, {
+            CoreEvents.trigger(CORE_USER_PROFILE_PICTURE_UPDATED, {
                 userId: this.userId,
                 picture: this.user.profileimageurl,
             }, this.site.getId());
@@ -188,7 +186,7 @@ export default class CoreUserAboutPage implements OnInit, OnDestroy {
 
             const profileImageURL = await CoreUser.changeProfilePicture(result.itemid, this.userId, this.site.getId());
 
-            CoreEvents.trigger(USER_PROFILE_PICTURE_UPDATED, {
+            CoreEvents.trigger(CORE_USER_PROFILE_PICTURE_UPDATED, {
                 userId: this.userId,
                 picture: profileImageURL,
             }, this.site.getId());
@@ -217,7 +215,7 @@ export default class CoreUserAboutPage implements OnInit, OnDestroy {
         event?.complete();
 
         if (this.user) {
-            CoreEvents.trigger(USER_PROFILE_REFRESHED, {
+            CoreEvents.trigger(CORE_USER_PROFILE_REFRESHED, {
                 courseId: this.courseId,
                 userId: this.userId,
                 user: this.user,
@@ -277,7 +275,7 @@ export default class CoreUserAboutPage implements OnInit, OnDestroy {
             return;
         }
 
-        if (this.user.timezone === USER_PROFILE_SERVER_TIMEZONE) {
+        if (this.user.timezone === CORE_USER_PROFILE_SERVER_TIMEZONE) {
             this.user.timezone = serverTimezone;
         }
 

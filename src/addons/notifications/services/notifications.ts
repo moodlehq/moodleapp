@@ -18,7 +18,7 @@ import { CoreSites, CoreSitesCommonWSOptions } from '@services/sites';
 import { CoreWSExternalWarning } from '@services/ws';
 import { CoreText, CoreTextFormat, DEFAULT_TEXT_FORMAT } from '@singletons/text';
 import { CoreTime } from '@singletons/time';
-import { CoreUser, USER_NOREPLY_USER } from '@features/user/services/user';
+import { CoreUser } from '@features/user/services/user';
 import { CoreLogger } from '@singletons/logger';
 import { Translate, makeSingleton } from '@singletons';
 import { CoreCourseModuleDelegate } from '@features/course/services/module-delegate';
@@ -31,6 +31,7 @@ import {
     ADDONS_NOTIFICATIONS_PUSH_SIMULATION_COMPONENT,
     ADDONS_NOTIFICATIONS_LIST_LIMIT,
 } from '../constants';
+import { CORE_USER_NOREPLY_USER } from '@features/user/constants';
 
 declare module '@singletons/events' {
 
@@ -91,7 +92,7 @@ export class AddonNotificationsProvider {
 
         const notificationMessage: AddonNotificationsNotificationMessage = {
             id: notification.savedmessageid || notification.id || 0,
-            useridfrom: notification.userfromid ? Number(notification.userfromid) : USER_NOREPLY_USER,
+            useridfrom: notification.userfromid ? Number(notification.userfromid) : CORE_USER_NOREPLY_USER,
             userfromfullname: notification.userfromfullname ?? Translate.instant('core.noreplyname'),
             useridto: notification.usertoid ? Number(notification.usertoid) : (siteInfo?.userid ?? 0),
             usertofullname: siteInfo?.fullname ?? '',

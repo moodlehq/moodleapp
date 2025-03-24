@@ -15,7 +15,8 @@
 import { Params } from '@angular/router';
 import { CoreRoutedItemsManagerSource } from '@classes/items-management/routed-items-manager-source';
 
-import { CoreUser, CoreUserData, CoreUserParticipant, CoreUserProvider } from '../services/user';
+import { CoreUser, CoreUserData, CoreUserParticipant } from '../services/user';
+import { CORE_USER_PARTICIPANTS_LIST_LIMIT } from '../constants';
 
 /**
  * Provides a collection of course participants.
@@ -65,7 +66,7 @@ export class CoreUserParticipantsSource extends CoreRoutedItemsManagerSource<Cor
                 this.SEARCH_QUERY,
                 true,
                 page,
-                CoreUserProvider.PARTICIPANTS_LIST_LIMIT,
+                CORE_USER_PARTICIPANTS_LIST_LIMIT,
             );
 
             return {
@@ -76,8 +77,8 @@ export class CoreUserParticipantsSource extends CoreRoutedItemsManagerSource<Cor
 
         const { participants, canLoadMore } = await CoreUser.getParticipants(
             this.COURSE_ID,
-            page * CoreUserProvider.PARTICIPANTS_LIST_LIMIT,
-            CoreUserProvider.PARTICIPANTS_LIST_LIMIT,
+            page * CORE_USER_PARTICIPANTS_LIST_LIMIT,
+            CORE_USER_PARTICIPANTS_LIST_LIMIT,
         );
 
         return {
@@ -90,7 +91,7 @@ export class CoreUserParticipantsSource extends CoreRoutedItemsManagerSource<Cor
      * @inheritdoc
      */
     protected getPageLength(): number {
-        return CoreUserProvider.PARTICIPANTS_LIST_LIMIT;
+        return CORE_USER_PARTICIPANTS_LIST_LIMIT;
     }
 
 }

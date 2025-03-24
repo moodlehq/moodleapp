@@ -31,6 +31,7 @@ import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
 import { CoreCacheUpdateFrequency, CoreConstants } from '@/core/constants';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreTextFormat } from '@singletons/text';
+import { CORE_USER_PROFILE_REFRESHED, CORE_USER_PROFILE_PICTURE_UPDATED, CORE_USER_PARTICIPANTS_LIST_LIMIT } from '../constants';
 
 declare module '@singletons/events' {
 
@@ -40,31 +41,11 @@ declare module '@singletons/events' {
      * @see https://www.typescriptlang.org/docs/handbook/declaration-merging.html#module-augmentation
      */
     export interface CoreEventsData {
-        [USER_PROFILE_REFRESHED]: CoreUserProfileRefreshedData;
-        [USER_PROFILE_PICTURE_UPDATED]: CoreUserProfilePictureUpdatedData;
+        [CORE_USER_PROFILE_REFRESHED]: CoreUserProfileRefreshedData;
+        [CORE_USER_PROFILE_PICTURE_UPDATED]: CoreUserProfilePictureUpdatedData;
     }
 
 }
-
-/**
- * Profile picture updated event.
- */
-export const USER_PROFILE_REFRESHED = 'CoreUserProfileRefreshed';
-
-/**
- * Profile picture updated event.
- */
-export const USER_PROFILE_PICTURE_UPDATED = 'CoreUserProfilePictureUpdated';
-
-/**
- * Value set in timezone when using the server's timezone.
- */
-export const USER_PROFILE_SERVER_TIMEZONE = '99';
-
-/**
- * Fake ID for a "no reply" user.
- */
-export const USER_NOREPLY_USER = -10;
 
 /**
  * Service to provide user functionalities.
@@ -74,7 +55,10 @@ export class CoreUserProvider {
 
     protected static readonly ROOT_CACHE_KEY = 'mmUser:';
 
-    static readonly PARTICIPANTS_LIST_LIMIT = 50; // Max of participants to retrieve in each WS call.
+    /**
+     * @deprecated since 5.0. Use CORE_USER_PARTICIPANTS_LIST_LIMIT.
+     */
+    static readonly PARTICIPANTS_LIST_LIMIT = CORE_USER_PARTICIPANTS_LIST_LIMIT;
 
     protected logger: CoreLogger;
 
@@ -197,7 +181,7 @@ export class CoreUserProvider {
     async getParticipants(
         courseId: number,
         limitFrom: number = 0,
-        limitNumber: number = CoreUserProvider.PARTICIPANTS_LIST_LIMIT,
+        limitNumber: number = CORE_USER_PARTICIPANTS_LIST_LIMIT,
         siteId?: string,
         ignoreCache?: boolean,
     ): Promise<{participants: CoreUserParticipant[]; canLoadMore: boolean}> {
@@ -701,7 +685,7 @@ export class CoreUserProvider {
         search: string,
         searchAnywhere: boolean = true,
         page: number = 0,
-        perPage: number = CoreUserProvider.PARTICIPANTS_LIST_LIMIT,
+        perPage: number = CORE_USER_PARTICIPANTS_LIST_LIMIT,
         siteId?: string,
     ): Promise<{participants: CoreUserData[]; canLoadMore: boolean}> {
         const site = await CoreSites.getSite(siteId);
