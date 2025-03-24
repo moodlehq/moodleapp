@@ -17,7 +17,7 @@ import { Injectable } from '@angular/core';
 import { CoreSites } from '@services/sites';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { makeSingleton } from '@singletons';
-import { PREFERENCES_TABLE_NAME, CoreUserPreferenceDBRecord } from './database/user';
+import { USER_PREFERENCES_TABLE_NAME, CoreUserPreferenceDBRecord } from './database/user';
 
 /**
  * Service to handle offline user preferences.
@@ -35,7 +35,7 @@ export class CoreUserOfflineProvider {
         const site = await CoreSites.getSite(siteId);
 
         return site.getDb().getRecordsSelect(
-            PREFERENCES_TABLE_NAME,
+            USER_PREFERENCES_TABLE_NAME,
             'value != onlinevalue OR onlinevalue IS NULL',
         );
     }
@@ -50,7 +50,7 @@ export class CoreUserOfflineProvider {
     async getPreference(name: string, siteId?: string): Promise<CoreUserPreferenceDBRecord> {
         const site = await CoreSites.getSite(siteId);
 
-        return site.getDb().getRecord(PREFERENCES_TABLE_NAME, { name });
+        return site.getDb().getRecord(USER_PREFERENCES_TABLE_NAME, { name });
     }
 
     /**
@@ -74,14 +74,14 @@ export class CoreUserOfflineProvider {
         if (onlineValue === undefined) {
             // Keep online value already stored (if any).
             const entry = await CorePromiseUtils.ignoreErrors(
-                site.getDb().getRecord<CoreUserPreferenceDBRecord>(PREFERENCES_TABLE_NAME, { name }),
+                site.getDb().getRecord<CoreUserPreferenceDBRecord>(USER_PREFERENCES_TABLE_NAME, { name }),
                 null,
             );
 
             record.onlinevalue = entry?.onlinevalue;
         }
 
-        await site.getDb().insertRecord(PREFERENCES_TABLE_NAME, record);
+        await site.getDb().insertRecord(USER_PREFERENCES_TABLE_NAME, record);
     }
 
 }
