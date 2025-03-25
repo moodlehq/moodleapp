@@ -15,7 +15,7 @@
 import { ChangeDetectorRef, Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 
 import { CoreSites, CoreSitesReadingStrategy } from '@services/sites';
-import { CoreMimetypeUtils } from '@services/utils/mimetype';
+import { CoreMimetype } from '@singletons/mimetype';
 import { CoreSite } from '@classes/sites/site';
 import { CoreNavigator } from '@services/navigator';
 import { CoreEvents } from '@singletons/events';
@@ -145,9 +145,9 @@ export default class CorePolicySitePolicyPage implements OnInit, OnDestroy {
 
         // Try to get the mime type.
         try {
-            const mimeType = await CoreMimetypeUtils.getMimeTypeFromUrl(this.sitePoliciesURL);
+            const mimeType = await CoreMimetype.getMimeTypeFromUrl(this.sitePoliciesURL);
 
-            const extension = CoreMimetypeUtils.getExtension(mimeType, this.sitePoliciesURL);
+            const extension = CoreMimetype.getExtension(mimeType, this.sitePoliciesURL);
             this.showInline = extension == 'html' || extension == 'htm';
         } catch {
             // Unable to get mime type, assume it's not supported.

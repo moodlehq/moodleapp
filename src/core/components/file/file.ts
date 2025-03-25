@@ -18,7 +18,7 @@ import { CoreFilepool } from '@services/filepool';
 import { CoreFileHelper } from '@services/file-helper';
 import { CorePluginFileDelegate } from '@services/plugin-file-delegate';
 import { CoreSites } from '@services/sites';
-import { CoreMimetypeUtils } from '@services/utils/mimetype';
+import { CoreMimetype } from '@singletons/mimetype';
 import { CoreUrl } from '@singletons/url';
 import { CoreText } from '@singletons/text';
 import { DownloadStatus } from '@/core/constants';
@@ -117,8 +117,11 @@ export class CoreFileComponent implements OnInit, OnDestroy {
             this.alwaysDownload = true; // Always show the download button in external files.
         }
 
-        this.fileIcon = 'mimetype' in this.file && this.file.mimetype ?
-            CoreMimetypeUtils.getMimetypeIcon(this.file.mimetype) : CoreMimetypeUtils.getFileIcon(this.fileName);
+        const site = CoreSites.getCurrentSite();
+
+        this.fileIcon = 'mimetype' in this.file && this.file.mimetype
+            ? CoreMimetype.getMimetypeIcon(this.file.mimetype, site)
+            : CoreMimetype.getFileIcon(this.fileName, site);
 
         if (this.canDownload) {
             this.calculateState();

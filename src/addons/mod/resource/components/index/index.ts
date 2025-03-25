@@ -22,7 +22,7 @@ import { CoreCourseModulePrefetchDelegate } from '@features/course/services/modu
 import { CoreNetwork } from '@services/network';
 import { CoreFileHelper } from '@services/file-helper';
 import { CoreSites } from '@services/sites';
-import { CoreMimetypeUtils } from '@services/utils/mimetype';
+import { CoreMimetype } from '@singletons/mimetype';
 import { CoreText } from '@singletons/text';
 import { NgZone, Translate } from '@singletons';
 import { Subscription } from 'rxjs';
@@ -185,15 +185,15 @@ export class AddonModResourceIndexComponent extends CoreCourseModuleMainResource
                 this.readableSize = CoreText.bytesToSize(this.module.contentsinfo.filessize, 1);
                 this.timemodified = this.module.contentsinfo.lastmodified * 1000;
             } else {
-                mimetype = await CoreMimetypeUtils.getMimeTypeFromUrl(CoreFileHelper.getFileUrl(contents[0]));
+                mimetype = await CoreMimetype.getMimeTypeFromUrl(CoreFileHelper.getFileUrl(contents[0]));
                 this.readableSize = CoreText.bytesToSize(contents[0].filesize, 1);
                 this.timemodified = contents[0].timemodified * 1000;
             }
 
             this.timecreated = contents[0].timecreated * 1000;
             this.isExternalFile = !!contents[0].isexternalfile;
-            this.type = CoreMimetypeUtils.getMimetypeDescription(mimetype);
-            this.isStreamedFile = CoreMimetypeUtils.isStreamedMimetype(mimetype);
+            this.type = CoreMimetype.getMimetypeDescription(mimetype);
+            this.isStreamedFile = CoreMimetype.isStreamedMimetype(mimetype);
         }
     }
 

@@ -40,10 +40,8 @@ export async function getCoreServices(): Promise<Type<unknown>[]> {
     const { CoreFileProvider } = await import('@services/file');
     const { CoreFileSessionProvider } = await import('@services/file-session');
     const { CoreGroupsProvider } = await import('@services/groups');
-    const { CoreIframeUtilsProvider } = await import('@services/utils/iframe');
     const { CoreLangProvider } = await import('@services/lang');
     const { CoreLocalNotificationsProvider } = await import('@services/local-notifications');
-    const { CoreMimetypeUtilsProvider } = await import('@services/utils/mimetype');
     const { CoreNavigatorService } = await import('@services/navigator');
     const { CorePluginFileDelegateService } = await import('@services/plugin-file-delegate');
     const { CoreScreenService } = await import('@services/screen');
@@ -72,6 +70,10 @@ export async function getCoreServices(): Promise<Type<unknown>[]> {
     const { CoreUrlUtilsProvider } = await import('@services/utils/url');
     // eslint-disable-next-line deprecation/deprecation
     const { CoreUtilsProvider } = await import('@services/utils/utils');
+    // eslint-disable-next-line deprecation/deprecation
+    const { CoreMimetypeUtilsProvider } = await import('@services/utils/mimetype');
+    // eslint-disable-next-line deprecation/deprecation
+    const { CoreIframeUtilsProvider } = await import('@services/utils/iframe');
 
     return [
         CoreAppProvider,

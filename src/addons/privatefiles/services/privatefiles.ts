@@ -15,7 +15,7 @@
 import { Injectable } from '@angular/core';
 
 import { CoreSites } from '@services/sites';
-import { CoreMimetypeUtils } from '@services/utils/mimetype';
+import { CoreMimetype } from '@singletons/mimetype';
 import { CoreWSExternalWarning } from '@services/ws';
 import { CoreSite } from '@classes/sites/site';
 import { makeSingleton } from '@singletons';
@@ -97,9 +97,9 @@ export class AddonPrivateFilesProvider {
             entry.fileurl = entry.url;
 
             if (entry.isdir) {
-                entry.imgPath = CoreMimetypeUtils.getFolderIcon();
+                entry.imgPath = CoreMimetype.getFileIconForType('folder', site);
             } else {
-                entry.imgPath = CoreMimetypeUtils.getFileIcon(entry.filename);
+                entry.imgPath = CoreMimetype.getFileIcon(entry.filename, site);
             }
 
             return entry;
