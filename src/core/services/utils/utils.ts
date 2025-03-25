@@ -36,6 +36,8 @@ import { CoreWSError } from '@classes/errors/wserror';
 
 /**
  * "Utils" service with helper functions.
+ *
+ * @deprecated since 5.0. See deprecation notice of each for help.
  */
 @Injectable({ providedIn: 'root' })
 export class CoreUtilsProvider {
@@ -538,7 +540,7 @@ export class CoreUtilsProvider {
      *
      * @param value Value to check.
      * @returns True if not null and not undefined.
-     * @deprecated since 5.0. Use ?? instead.
+     * @deprecated since 5.0. Will be removed in future versions.
      */
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     notNullOrUndefined(value: any): boolean {
@@ -944,12 +946,8 @@ export class CoreUtilsProvider {
     }
 
 }
-
-export const CoreUtils = makeSingleton(CoreUtilsProvider);
-
 /**
- * Options for waiting.
- *
- * @deprecated since 4.5. Use CoreWaitOptions instead.
+ * @deprecated since 5.0. Use CoreUtils on singleton instead.
  */
-export type CoreUtilsWaitOptions = CoreWaitOptions;
+// eslint-disable-next-line deprecation/deprecation
+export const CoreUtils = makeSingleton(CoreUtilsProvider);
