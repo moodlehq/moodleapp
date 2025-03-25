@@ -16,7 +16,7 @@ import { Injectable } from '@angular/core';
 import { CameraOptions } from '@awesome-cordova-plugins/camera/ngx';
 import { CaptureImageOptions, CaptureVideoOptions, MediaFile } from '@awesome-cordova-plugins/media-capture/ngx';
 
-import { CoreMimetypeUtils } from '@services/utils/mimetype';
+import { CoreMimetype } from '@singletons/mimetype';
 import { makeSingleton, ModalController } from '@singletons';
 import { CaptureMediaComponentInputs, CoreEmulatorCaptureMediaComponent } from '../components/capture-media/capture-media';
 
@@ -128,7 +128,7 @@ export class CoreEmulatorCaptureHelperProvider {
 
         if (result.mimetype) {
             // Found a supported mimetype in the mimetypes array, get the extension.
-            result.extension = CoreMimetypeUtils.getExtension(result.mimetype);
+            result.extension = CoreMimetype.getExtension(result.mimetype);
         } else if (type === 'video' && this.videoMimeType) {
             // No mimetype found, use default extension.
             result.mimetype = this.videoMimeType;

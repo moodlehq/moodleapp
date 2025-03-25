@@ -26,10 +26,11 @@ import { AddonModUrl } from '../url';
 import { AddonModUrlHelper } from '../url-helper';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 import { CoreUrl } from '@singletons/url';
-import { CoreMimetypeUtils } from '@services/utils/mimetype';
+import { CoreMimetype } from '@singletons/mimetype';
 import { ADDON_MOD_URL_COMPONENT, ADDON_MOD_URL_MODNAME, ADDON_MOD_URL_PAGE_NAME } from '../../constants';
 import { ModFeature, ModArchetype, ModPurpose, ModResourceDisplay } from '@addons/mod/constants';
 import { CoreCourseModuleHelper } from '@features/course/services/course-module-helper';
+import { CoreSites } from '@services/sites';
 
 /**
  * Handler to support url modules.
@@ -136,13 +137,13 @@ export class AddonModUrlModuleHandlerService extends CoreModuleHandlerBase imple
             image = image.substring(2).replace(/-[0-9]+$/, '');
 
             // In case we get an extension, try to get the type.
-            image = CoreMimetypeUtils.getExtensionType(image) ?? image;
+            image = CoreMimetype.getExtensionType(image) ?? image;
 
-            icon = CoreMimetypeUtils.getFileIconForType(image);
+            icon = CoreMimetype.getFileIconForType(image, CoreSites.getCurrentSite());
         } else {
             const mainFile = await this.getModuleMainFile(module);
 
-            icon = mainFile? AddonModUrl.guessIcon(mainFile.fileurl) : undefined;
+            icon = mainFile ? AddonModUrl.guessIcon(mainFile.fileurl) : undefined;
         }
 
         // Calculate the icon to use.

@@ -41,7 +41,7 @@ import { CorePromisedValue } from '@classes/promised-value';
 import { CorePlatform } from '@services/platform';
 import { CoreText } from '@singletons/text';
 import { CoreArray } from '@singletons/array';
-import { CoreMimetypeUtils } from '@services/utils/mimetype';
+import { CoreMimetype } from '@singletons/mimetype';
 import { FileEntry } from '@awesome-cordova-plugins/file/ngx';
 import { CoreWS } from '@services/ws';
 
@@ -428,7 +428,7 @@ export class CoreExternalContentDirective implements AfterViewInit, OnChanges, O
         }
 
         const fileId = CoreFilepool.getFileIdByUrl(url);
-        const extension = CoreMimetypeUtils.guessExtensionFromUrl(url);
+        const extension = CoreMimetype.guessExtensionFromUrl(url);
 
         const filePath = `${CoreFileProvider.NO_SITE_FOLDER}/${fileId}${extension ? `.${extension}` : ''}`;
         let fileEntry: FileEntry;

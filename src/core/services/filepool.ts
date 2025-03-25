@@ -23,7 +23,7 @@ import { CorePluginFileDelegate } from '@services/plugin-file-delegate';
 import { CoreSites } from '@services/sites';
 import { CoreWS, CoreWSExternalFile, CoreWSFile } from '@services/ws';
 import { CoreDom } from '@singletons/dom';
-import { CoreMimetypeUtils } from '@services/utils/mimetype';
+import { CoreMimetype } from '@singletons/mimetype';
 import { CoreText } from '@singletons/text';
 import { CoreTime } from '@singletons/time';
 import { CoreUrl, CoreUrlPartNames } from '@singletons/url';
@@ -1043,7 +1043,7 @@ export class CoreFilepoolProvider {
             fileUrl = fileUrl.replace(anchor, '');
         }
 
-        const extension = CoreMimetypeUtils.guessExtensionFromUrl(fileUrl);
+        const extension = CoreMimetype.guessExtensionFromUrl(fileUrl);
         const addExtension = options.filePath === undefined;
         const path = options.filePath || (await this.getFilePath(siteId, fileId, extension, fileUrl));
 
@@ -1847,7 +1847,7 @@ export class CoreFilepoolProvider {
         }
 
         // Check if the file is being downloaded right now.
-        const extension = CoreMimetypeUtils.guessExtensionFromUrl(fileUrl);
+        const extension = CoreMimetype.guessExtensionFromUrl(fileUrl);
         filePath = filePath || (await this.getFilePath(siteId, fileId, extension, fileUrl));
 
         const downloadId = this.getFileDownloadId(fileUrl, filePath);
@@ -2068,7 +2068,7 @@ export class CoreFilepoolProvider {
             });
 
             // Guess the extension of the URL. This is for backwards compatibility.
-            const candidate = CoreMimetypeUtils.guessExtensionFromUrl(url);
+            const candidate = CoreMimetype.guessExtensionFromUrl(url);
             if (candidate && candidate !== 'php') {
                 extension = `.${candidate}`;
             }
@@ -2384,7 +2384,7 @@ export class CoreFilepoolProvider {
         }
 
         // Remove the extension from the filename.
-        filename = CoreMimetypeUtils.removeExtension(filename);
+        filename = CoreMimetype.removeExtension(filename);
 
         if (hashes) {
             // Add hashes to the name.
@@ -3056,10 +3056,10 @@ export class CoreFilepoolProvider {
             return true;
         }
 
-        const mimetype = await CoreMimetypeUtils.getMimeTypeFromUrl(url);
+        const mimetype = await CoreMimetype.getMimeTypeFromUrl(url);
 
         // If the file is streaming (audio or video), return false.
-        return !CoreMimetypeUtils.isStreamedMimetype(mimetype);
+        return !CoreMimetype.isStreamedMimetype(mimetype);
     }
 
     /**

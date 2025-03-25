@@ -17,7 +17,7 @@ import { InAppBrowserObject } from '@awesome-cordova-plugins/in-app-browser';
 import { FileEntry } from '@awesome-cordova-plugins/file/ngx';
 import { CoreFileUtils } from '@singletons/file-utils';
 import { CoreRedirects } from '@singletons/redirects';
-import { CoreMimetypeUtils } from '@services/utils/mimetype';
+import { CoreMimetype } from '@singletons/mimetype';
 import { makeSingleton } from '@singletons';
 import { CoreFileEntry } from '@services/file-helper';
 import { CoreCancellablePromise } from '@classes/cancellable-promise';
@@ -381,10 +381,10 @@ export class CoreUtilsProvider {
      *
      * @param url The URL of the file.
      * @returns Promise resolved with the mimetype.
-     * @deprecated since 5.0. Use CoreMimetypeUtils.getMimeTypeFromUrl instead.
+     * @deprecated since 5.0. Use CoreMimetype.getMimeTypeFromUrl instead.
      */
     async getMimeTypeFromUrl(url: string): Promise<string> {
-        return CoreMimetypeUtils.getMimeTypeFromUrl(url);
+        return CoreMimetype.getMimeTypeFromUrl(url);
     }
 
     /**
