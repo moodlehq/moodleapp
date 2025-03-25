@@ -101,7 +101,7 @@ class behat_app extends behat_app_helper {
      * @throws dml_exception Problem with Moodle setup
      * @throws ExpectationException Problem with resizing window
      */
-    public function i_enter_the_app(string $username = null) {
+    public function i_enter_the_app(?string $username = null) {
         $this->i_launch_the_app();
 
         if (!is_null($username)) {
