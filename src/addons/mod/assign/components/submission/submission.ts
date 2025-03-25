@@ -680,6 +680,7 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy {
                     this.feedback = {
                         gradefordisplay: gradeForDisplay,
                         gradeddate: gradeModified,
+                        plugins: AddonModAssignHelper.getPluginsEnabled(assign, 'assignfeedback'),
                     };
                 } else {
                     this.feedback.gradefordisplay = gradeForDisplay;
