@@ -34,6 +34,7 @@ import { CoreLoadings } from '@services/overlays/loadings';
 import { CoreSharedModule } from '@/core/shared.module';
 import { CoreMainMenuUserButtonComponent } from '../../../mainmenu/components/user-menu-button/user-menu-button';
 import { CoreSearchGlobalSearchResultComponent } from '../../components/global-search-result/global-search-result';
+import { CoreContentLinksHelper } from '@features/contentlinks/services/contentlinks-helper';
 
 @Component({
     selector: 'page-core-search-global-search',
@@ -170,7 +171,7 @@ export default class CoreSearchGlobalSearchPage implements OnInit, OnDestroy, Af
      * @param result Result to visit.
      */
     async visitResult(result: CoreSearchGlobalSearchResult): Promise<void> {
-        await CoreSites.visitLink(result.url);
+        await CoreContentLinksHelper.visitLink(result.url);
     }
 
     /**
