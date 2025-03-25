@@ -22,7 +22,7 @@ import { CoreFile } from '@services/file';
 import { CorePluginFileDelegate } from '@services/plugin-file-delegate';
 import { CoreSites } from '@services/sites';
 import { CoreWS, CoreWSExternalFile, CoreWSFile } from '@services/ws';
-import { CoreDomUtils } from '@services/utils/dom';
+import { CoreDom } from '@singletons/dom';
 import { CoreMimetypeUtils } from '@services/utils/mimetype';
 import { CoreText } from '@singletons/text';
 import { CoreTime } from '@singletons/time';
@@ -3152,7 +3152,7 @@ export class CoreFilepoolProvider {
         componentId?: string | number,
         revision?: number,
     ): Promise<string> {
-        const urls = CoreDomUtils.extractUrlsFromCSS(cssCode);
+        const urls = CoreDom.extractUrlsFromCSS(cssCode);
         let updated = false;
 
         // Get the path of the CSS file. If it's a local file, assume it's the path where to write the file.

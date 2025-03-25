@@ -14,7 +14,7 @@
 
 import { Injectable } from '@angular/core';
 import { CoreSites } from '@services/sites';
-import { CoreDomUtils } from '@services/utils/dom';
+import { CoreDom } from '@singletons/dom';
 import { CoreCourseModuleHelper } from '@features/course/services/course-module-helper';
 import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
 import { makeSingleton } from '@singletons';
@@ -67,10 +67,10 @@ export class AddonBlockRecentlyAccessedItemsProvider {
         const cmIds: number[] = [];
 
         const itemsToDisplay = await Promise.all(items.map(async (item: AddonBlockRecentlyAccessedItemsItemCalculatedData) => {
-            const modicon = item.icon && CoreDomUtils.getHTMLElementAttribute(item.icon, 'src');
+            const modicon = item.icon && CoreDom.getHTMLElementAttribute(item.icon, 'src');
 
             item.iconUrl = await CoreCourseModuleDelegate.getModuleIconSrc(item.modname, modicon || undefined);
-            item.iconTitle = item.icon && CoreDomUtils.getHTMLElementAttribute(item.icon, 'title');
+            item.iconTitle = item.icon && CoreDom.getHTMLElementAttribute(item.icon, 'title');
             cmIds.push(item.cmid);
 
             return item;

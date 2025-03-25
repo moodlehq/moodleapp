@@ -34,7 +34,7 @@ import { CoreSites } from '@services/sites';
 import { CoreMenuItem, CoreUtils as CoreUtilsSingleton, TreeNode } from '@singletons/utils';
 import { CoreWSError } from '@classes/errors/wserror';
 
-/*
+/**
  * "Utils" service with helper functions.
  */
 @Injectable({ providedIn: 'root' })

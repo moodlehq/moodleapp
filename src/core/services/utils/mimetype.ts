@@ -45,7 +45,7 @@ interface MimeTypeGroupInfo {
 
 const EXTENSION_REGEX = /^[a-z0-9]+$/;
 
-/*
+/**
  * "Utils" service with helper functions for mimetypes and extensions.
  */
 @Injectable({ providedIn: 'root' })

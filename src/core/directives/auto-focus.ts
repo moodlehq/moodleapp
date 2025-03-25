@@ -14,7 +14,6 @@
 
 import { Directive, Input, ElementRef, AfterViewInit } from '@angular/core';
 
-import { CoreDomUtils } from '@services/utils/dom';
 import { CoreDom } from '@singletons/dom';
 import { CoreWait } from '@singletons/wait';
 import { toBoolean } from '../transforms/boolean';
@@ -55,7 +54,7 @@ export class CoreAutoFocusDirective implements AfterViewInit {
         // between the keyboard appearing and the animation causes a visual glitch.
         await CoreWait.wait(540);
 
-        CoreDomUtils.focusElement(this.element);
+        CoreDom.focusElement(this.element);
 
     }
 

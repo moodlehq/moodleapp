@@ -19,7 +19,7 @@ import { CoreFileUploader, CoreFileUploaderStoreFilesResult } from '@features/fi
 import { CoreRatingOffline } from '@features/rating/services/rating-offline';
 import { FileEntry } from '@awesome-cordova-plugins/file/ngx';
 import { CoreSites, CoreSitesReadingStrategy } from '@services/sites';
-import { CoreDomUtils } from '@services/utils/dom';
+import { CoreDom } from '@singletons/dom';
 import { CoreFormFields } from '@singletons/form';
 import { CoreText } from '@singletons/text';
 import { CorePromiseUtils } from '@singletons/promise-utils';
@@ -826,7 +826,7 @@ export class AddonModDataHelperProvider {
 
         if (type != AddonModDataTemplateType.LIST_HEADER && type != AddonModDataTemplateType.LIST_FOOTER) {
             // Try to fix syntax errors so the template can be parsed by Angular.
-            template = CoreDomUtils.fixHtml(template);
+            template = CoreDom.fixHtml(template);
         }
 
         // Add core-link directive to links.

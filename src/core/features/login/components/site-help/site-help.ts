@@ -17,7 +17,6 @@ import { AfterViewInit, Component, ElementRef, HostBinding, OnDestroy } from '@a
 import { CoreQRScan } from '@services/qrscan';
 import { ModalController, Translate } from '@singletons';
 import { FAQ_QRCODE_IMAGE_HTML, FAQ_URL_IMAGE_HTML, GET_STARTED_URL } from '@features/login/constants';
-import { CoreDomUtils } from '@services/utils/dom';
 import { CoreCancellablePromise } from '@classes/cancellable-promise';
 import { SubPartial } from '@/core/utils/types';
 import { CoreSharedModule } from '@/core/shared.module';
@@ -120,7 +119,7 @@ export class CoreLoginSiteHelpComponent implements AfterViewInit, OnDestroy {
 
         await Promise.all(answers.map(async answer => {
             await this.track(CoreWait.waitFor(() => answer.clientHeight !== 0));
-            await this.track(CoreDomUtils.waitForImages(answer));
+            await this.track(CoreWait.waitForImages(answer));
 
             answer.style.setProperty('--height', `${answer.clientHeight}px`);
         }));

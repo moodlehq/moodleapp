@@ -33,7 +33,6 @@ import {
     CoreCourseAnyCourseData,
     CoreCourses,
 } from '../../courses/services/courses';
-import { CoreDomUtils } from '@services/utils/dom';
 import { CoreWSError } from '@classes/errors/wserror';
 import { CoreCourseHelper, CoreCourseModuleData, CoreCourseModuleCompletionData } from './course-helper';
 import { CoreCourseFormatDelegate } from './format-delegate';
@@ -69,6 +68,7 @@ import { CoreCourseModuleHelper, CoreCourseStoreModuleViewedOptions } from './co
 import { CoreCourseDownloadStatusHelper } from './course-download-status-helper';
 import { MAIN_MENU_HOME_PAGE_NAME } from '@features/mainmenu/constants';
 import { CORE_SITEHOME_PAGE_NAME } from '@features/sitehome/constants';
+import { CoreDom } from '@singletons/dom';
 
 export type CoreCourseProgressUpdated = { progress: number; courseId: number };
 
@@ -1446,7 +1446,7 @@ export class CoreCourseProvider {
         }
 
         // Remove "Show more" option in 4.2 or older sites.
-        return CoreDomUtils.removeElementFromHtml(availabilityInfo, 'li[data-action="showmore"]');
+        return CoreDom.removeElementFromHtml(availabilityInfo, 'li[data-action="showmore"]');
     }
 
 }

@@ -15,7 +15,7 @@
 import { Component, ElementRef } from '@angular/core';
 import { AddonModQuizQuestionBasicData, CoreQuestionBaseComponent } from '@features/question/classes/base-question-component';
 import { CoreQuestionHelper } from '@features/question/services/question-helper';
-import { CoreDomUtils } from '@services/utils/dom';
+import { CoreDom } from '@singletons/dom';
 import { ItemReorderEventDetail } from '@ionic/angular';
 import { Translate } from '@singletons';
 import { CoreWait } from '@singletons/wait';
@@ -108,7 +108,7 @@ export class AddonQtypeOrderingComponent extends CoreQuestionBaseComponent<Addon
         // Re-calculate the text of the question, removing the elements that the app already renders.
         questionElement.querySelector('.ablock')?.remove();
         inputEl?.remove();
-        this.question.text = CoreDomUtils.getContentsOfElement(questionElement, '.qtext');
+        this.question.text = CoreDom.getContentsOfElement(questionElement, '.qtext');
         this.onReadyPromise.resolve();
     }
 
@@ -180,14 +180,14 @@ export class AddonQtypeOrderingComponent extends CoreQuestionBaseComponent<Addon
             elementToFocus = movedCard.querySelector<HTMLElement>('[data-action="move-backward"]') ?? target;
         }
 
-        CoreDomUtils.focusElement(elementToFocus);
+        CoreDom.focusElement(elementToFocus);
 
         if (CorePlatform.isIOS()) {
             // In iOS, when the focus is lost VoiceOver automatically focus the element in the same position where the focus was.
             // If that happens, make sure the focus stays in the button we want to focus.
             const reFocus = () => {
                 elementToFocus.removeEventListener('blur', reFocus);
-                CoreDomUtils.focusElement(elementToFocus);
+                CoreDom.focusElement(elementToFocus);
             };
             elementToFocus.addEventListener('blur', reFocus);
             setTimeout(() => {

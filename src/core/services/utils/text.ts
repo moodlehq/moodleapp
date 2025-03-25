@@ -620,5 +620,8 @@ export class CoreTextUtilsProvider {
     }
 
 }
+/**
+ * @deprecated since 4.5. Use CoreText instead.
+ */
 // eslint-disable-next-line deprecation/deprecation
 export const CoreTextUtils = makeSingleton(CoreTextUtilsProvider);
