@@ -20,7 +20,7 @@ import { CoreCourseLogHelper } from '@features/course/services/log-helper';
 import { CoreNetwork } from '@services/network';
 import { CoreFilepool } from '@services/filepool';
 import { CoreSites, CoreSitesCommonWSOptions } from '@services/sites';
-import { CoreStatusWithWarningsWSResponse, CoreWSExternalFile, CoreWSExternalWarning } from '@services/ws';
+import { CoreStatusWithWarningsWSResponse, CoreWSExternalWarning } from '@services/ws';
 import { makeSingleton } from '@singletons';
 import { AddonModChoiceOffline } from './choice-offline';
 import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
@@ -28,8 +28,7 @@ import { ADDON_MOD_CHOICE_COMPONENT_LEGACY, AddonModChoiceShowResults } from '..
 import { CoreCacheUpdateFrequency } from '@/core/constants';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreSite } from '@classes/sites/site';
-import { CoreTextFormat } from '@singletons/text';
-import { CoreCourseModuleHelper } from '@features/course/services/course-module-helper';
+import { CoreCourseModuleHelper, CoreCourseModuleStandardElements } from '@features/course/services/course-module-helper';
 
 /**
  * Service that provides some features for choices.
@@ -481,14 +480,7 @@ export type AddonModChoiceGetChoicesByCoursesWSResponse = {
 /**
  * Choice returned by mod_choice_get_choices_by_courses.
  */
-export type AddonModChoiceChoice = {
-    id: number; // Choice instance id.
-    coursemodule: number; // Course module id.
-    course: number; // Course id.
-    name: string; // Choice name.
-    intro: string; // The choice intro.
-    introformat: CoreTextFormat; // Intro format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
-    introfiles?: CoreWSExternalFile[];
+export type AddonModChoiceChoice = CoreCourseModuleStandardElements & {
     publish?: boolean; // If choice is published.
     showresults?: AddonModChoiceShowResults; // 0 never, 1 after answer, 2 after close, 3 always.
     display?: number; // Display mode (vertical, horizontal).
@@ -503,10 +495,6 @@ export type AddonModChoiceChoice = {
     timemodified?: number; // Time of last modification.
     completionsubmit?: boolean; // Completion on user submission.
     showavailable?: boolean; // Show available spaces. @since 3.10
-    section?: number; // Course section id.
-    visible?: boolean; // Visible.
-    groupmode?: number; // Group mode.
-    groupingid?: number; // Group id.
 };
 
 /**

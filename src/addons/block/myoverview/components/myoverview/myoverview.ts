@@ -19,7 +19,7 @@ import { CoreSites, CoreSitesReadingStrategy } from '@services/sites';
 import {
     CoreCourses,
     CoreCoursesMyCoursesUpdatedEventData,
-    CoreCourseSummaryData,
+    CoreCourseSummaryExporterData,
 } from '@features/courses/services/courses';
 import { CoreCoursesHelper, CoreEnrolledCourseDataWithExtraInfoAndOptions } from '@features/courses/services/courses-helper';
 import { CoreCourseHelper, CorePrefetchStatusInfo } from '@features/course/services/course-helper';
@@ -774,8 +774,8 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
      * @returns Whether it has meaningful changes.
      */
     protected async customFilterCoursesHaveMeaningfulChanges(
-        previousCourses: CoreCourseSummaryData[],
-        newCourses: CoreCourseSummaryData[],
+        previousCourses: CoreCourseSummaryExporterData[],
+        newCourses: CoreCourseSummaryExporterData[],
     ): Promise<boolean> {
         if (previousCourses.length !== newCourses.length) {
             return true;

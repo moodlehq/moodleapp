@@ -31,7 +31,12 @@ import {
     AddonModLessonPasswordOptions,
 } from '../lesson';
 import { AddonModLessonSync, AddonModLessonSyncResult } from '../lesson-sync';
-import { ADDON_MOD_LESSON_COMPONENT_LEGACY, AddonModLessonJumpTo, AddonModLessonPageSubtype } from '../../constants';
+import {
+    ADDON_MOD_LESSON_COMPONENT_LEGACY,
+    ADDON_MOD_LESSON_MODNAME,
+    AddonModLessonJumpTo,
+    AddonModLessonPageSubtype,
+} from '../../constants';
 import { AddonModLessonHelper } from '../lesson-helper';
 
 /**
@@ -41,7 +46,7 @@ import { AddonModLessonHelper } from '../lesson-helper';
 export class AddonModLessonPrefetchHandlerService extends CoreCourseActivityPrefetchHandlerBase {
 
     name = 'AddonModLesson';
-    modName = 'lesson';
+    modName = ADDON_MOD_LESSON_MODNAME;
     component = ADDON_MOD_LESSON_COMPONENT_LEGACY;
     // Don't check timers to decrease positives. If a user performs some action it will be reflected in other items.
     updatesNames = /^configuration$|^.*files$|^grades$|^gradeitems$|^pages$|^answers$|^questionattempts$|^pagesviewed$/;

@@ -1165,7 +1165,7 @@ type AddonModDataGetDatabasesByCoursesWSResponse = {
 };
 
 /**
- * Database data returned by mod_assign_get_assignments.
+ * Database data returned by mod_data_get_databases_by_courses.
  */
 export type AddonModDataData = {
     id: number; // Database id.
@@ -1173,6 +1173,7 @@ export type AddonModDataData = {
     name: string; // Database name.
     intro: string; // The Database intro.
     introformat?: CoreTextFormat; // Intro format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
+    lang: string; // Forced activity language.
     comments: boolean; // Comments enabled.
     timeavailablefrom: number; // Timeavailablefrom field.
     timeavailableto: number; // Timeavailableto field.

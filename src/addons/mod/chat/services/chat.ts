@@ -18,12 +18,11 @@ import { CoreCourseCommonModWSOptions } from '@features/course/services/course';
 import { CoreCourseLogHelper } from '@features/course/services/log-helper';
 import { CoreUser } from '@features/user/services/user';
 import { CoreSites, CoreSitesCommonWSOptions, CoreSitesReadingStrategy } from '@services/sites';
-import { CoreWSExternalFile, CoreWSExternalWarning } from '@services/ws';
+import { CoreWSExternalWarning } from '@services/ws';
 import { makeSingleton, Translate } from '@singletons';
 import { ADDON_MOD_CHAT_COMPONENT_LEGACY } from '../constants';
 import { CoreCacheUpdateFrequency } from '@/core/constants';
-import { CoreTextFormat } from '@singletons/text';
-import { CoreCourseModuleHelper } from '@features/course/services/course-module-helper';
+import { CoreCourseModuleHelper, CoreCourseModuleStandardElements } from '@features/course/services/course-module-helper';
 
 /**
  * Service that provides some features for chats.
@@ -451,24 +450,13 @@ export type AddonModChatGetChatsByCoursesWSResponse = {
 /**
  * Chat returned by mod_chat_get_chats_by_courses.
  */
-export type AddonModChatChat = {
-    id: number; // Chat id.
-    coursemodule: number; // Course module id.
-    course: number; // Course id.
-    name: string; // Chat name.
-    intro: string; // The Chat intro.
-    introformat: CoreTextFormat; // Intro format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
-    introfiles?: CoreWSExternalFile[];
+export type AddonModChatChat = CoreCourseModuleStandardElements & {
     chatmethod?: string; // Chat method (sockets, ajax, header_js).
     keepdays?: number; // Keep days.
     studentlogs?: number; // Student logs visible to everyone.
     chattime?: number; // Chat time.
     schedule?: number; // Schedule type.
     timemodified?: number; // Time of last modification.
-    section?: number; // Course section id.
-    visible?: boolean; // Visible.
-    groupmode?: number; // Group mode.
-    groupingid?: number; // Group id.
 };
 
 /**

@@ -20,7 +20,7 @@ import { makeSingleton } from '@singletons';
 import { AddonModLtiHelper } from '../lti-helper';
 import { CoreModuleHandlerBase } from '@features/course/classes/module-base-handler';
 import { CoreCourseModuleHelper } from '@features/course/services/course-module-helper';
-import { ADDON_MOD_LTI_PAGE_NAME } from '../../constants';
+import { ADDON_MOD_LTI_MODNAME, ADDON_MOD_LTI_PAGE_NAME } from '../../constants';
 import { ModFeature, ModPurpose } from '@addons/mod/constants';
 
 /**
@@ -30,7 +30,7 @@ import { ModFeature, ModPurpose } from '@addons/mod/constants';
 export class AddonModLtiModuleHandlerService extends CoreModuleHandlerBase implements CoreCourseModuleHandler {
 
     name = 'AddonModLti';
-    modName = 'lti';
+    modName = ADDON_MOD_LTI_MODNAME;
     protected pageName = ADDON_MOD_LTI_PAGE_NAME;
 
     supportedFeatures = {

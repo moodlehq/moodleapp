@@ -57,7 +57,7 @@ import { CoreCacheUpdateFrequency } from '@/core/constants';
 import { CoreObject } from '@singletons/object';
 import { CoreArray } from '@singletons/array';
 import { CoreTextFormat } from '@singletons/text';
-import { CoreCourseModuleHelper } from '@features/course/services/course-module-helper';
+import { CoreCourseModuleHelper, CoreCourseModuleStandardElements } from '@features/course/services/course-module-helper';
 
 declare module '@singletons/events' {
 
@@ -2234,14 +2234,7 @@ export type AddonModQuizGetQuizzesByCoursesWSResponse = {
 /**
  * Quiz data returned by mod_quiz_get_quizzes_by_courses WS.
  */
-export type AddonModQuizQuizWSData = {
-    id: number; // Standard Moodle primary key.
-    course: number; // Foreign key reference to the course this quiz is part of.
-    coursemodule: number; // Course module id.
-    name: string; // Quiz name.
-    intro?: string; // Quiz introduction text.
-    introformat?: CoreTextFormat; // Intro format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
-    introfiles?: CoreWSExternalFile[];
+export type AddonModQuizQuizWSData = CoreCourseModuleStandardElements & {
     timeopen?: number; // The time when this quiz opens. (0 = no restriction.).
     timeclose?: number; // The time when this quiz closes. (0 = no restriction.).
     timelimit?: number; // The time limit for quiz attempts, in seconds.
@@ -2282,10 +2275,6 @@ export type AddonModQuizQuizWSData = {
     autosaveperiod?: number; // Auto-save delay.
     hasfeedback?: number; // Whether the quiz has any non-blank feedback text.
     hasquestions?: number; // Whether the quiz has questions.
-    section?: number; // Course section id.
-    visible?: number; // Module visibility.
-    groupmode?: number; // Group mode.
-    groupingid?: number; // Grouping id.
 };
 
 /**

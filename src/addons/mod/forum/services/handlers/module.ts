@@ -22,7 +22,7 @@ import { CoreModuleHandlerBase } from '@features/course/classes/module-base-hand
 import { CoreCourseModuleData } from '@features/course/services/course-helper';
 import { CoreText } from '@singletons/text';
 import { CoreUser } from '@features/user/services/user';
-import { ADDON_MOD_FORUM_MARK_READ_EVENT, ADDON_MOD_FORUM_PAGE_NAME } from '../../constants';
+import { ADDON_MOD_FORUM_MARK_READ_EVENT, ADDON_MOD_FORUM_MODNAME, ADDON_MOD_FORUM_PAGE_NAME } from '../../constants';
 import { ModFeature, ModPurpose } from '@addons/mod/constants';
 
 /**
@@ -32,7 +32,7 @@ import { ModFeature, ModPurpose } from '@addons/mod/constants';
 export class AddonModForumModuleHandlerService extends CoreModuleHandlerBase implements CoreCourseModuleHandler {
 
     name = 'AddonModForum';
-    modName = 'forum';
+    modName = ADDON_MOD_FORUM_MODNAME;
     protected pageName = ADDON_MOD_FORUM_PAGE_NAME;
 
     supportedFeatures = {

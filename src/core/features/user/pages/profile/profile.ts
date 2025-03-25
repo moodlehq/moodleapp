@@ -19,7 +19,7 @@ import { Subscription } from 'rxjs';
 import { CoreSite } from '@classes/sites/site';
 import { CoreSites } from '@services/sites';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
-import { CoreUser, CoreUserProfile, USER_PROFILE_REFRESHED } from '@features/user/services/user';
+import { CoreUser, CoreUserProfile } from '@features/user/services/user';
 import { CoreUserHelper } from '@features/user/services/user-helper';
 import {
     CoreUserDelegate,
@@ -38,6 +38,7 @@ import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 import { Translate } from '@singletons';
 import { CoreAlerts } from '@services/overlays/alerts';
 import { CoreSharedModule } from '@/core/shared.module';
+import { CORE_USER_PROFILE_REFRESHED } from '@features/user/constants';
 
 @Component({
     selector: 'page-core-user-profile',
@@ -70,7 +71,7 @@ export default class CoreUserProfilePage implements OnInit, OnDestroy {
     users?: CoreUserSwipeItemsManager;
 
     constructor(private route: ActivatedRoute) {
-        this.obsProfileRefreshed = CoreEvents.on(USER_PROFILE_REFRESHED, (data) => {
+        this.obsProfileRefreshed = CoreEvents.on(CORE_USER_PROFILE_REFRESHED, (data) => {
             if (!this.user || !data.user) {
                 return;
             }
@@ -202,7 +203,7 @@ export default class CoreUserProfilePage implements OnInit, OnDestroy {
         event?.complete();
 
         if (this.user) {
-            CoreEvents.trigger(USER_PROFILE_REFRESHED, {
+            CoreEvents.trigger(CORE_USER_PROFILE_REFRESHED, {
                 courseId: this.courseId,
                 userId: this.userId,
                 user: this.user,

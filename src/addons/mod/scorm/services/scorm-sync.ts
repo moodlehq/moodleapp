@@ -30,7 +30,12 @@ import {
     AddonModScormUserDataMap,
 } from './scorm';
 import { AddonModScormOffline } from './scorm-offline';
-import { ADDON_MOD_SCORM_COMPONENT, ADDON_MOD_SCORM_COMPONENT_LEGACY, ADDON_MOD_SCORM_DATA_AUTO_SYNCED } from '../constants';
+import {
+    ADDON_MOD_SCORM_COMPONENT,
+    ADDON_MOD_SCORM_COMPONENT_LEGACY,
+    ADDON_MOD_SCORM_DATA_AUTO_SYNCED,
+    ADDON_MOD_SCORM_MODNAME,
+} from '../constants';
 
 /**
  * Service to sync SCORMs.
@@ -195,7 +200,7 @@ export class AddonModScormSyncProvider extends CoreCourseActivitySyncBaseProvide
         if (updated) {
             try {
                 // Update downloaded data.
-                const module = await CoreCourse.getModuleBasicInfoByInstance(scorm.id, 'scorm', { siteId });
+                const module = await CoreCourse.getModuleBasicInfoByInstance(scorm.id, ADDON_MOD_SCORM_MODNAME, { siteId });
 
                 await this.prefetchModuleAfterUpdate(module, scorm.course, undefined, siteId);
             } catch {

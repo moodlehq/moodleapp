@@ -1491,6 +1491,7 @@ export type AddonModWorkshopData = {
     name: string; // Workshop name.
     intro: string; // Workshop introduction text.
     introformat?: CoreTextFormat; // Intro format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
+    lang: string; // Forced activity language.
     instructauthors?: string; // Instructions for the submission phase.
     instructauthorsformat?: CoreTextFormat; // Instructauthors format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
     instructreviewers?: string; // Instructions for the assessment phase.

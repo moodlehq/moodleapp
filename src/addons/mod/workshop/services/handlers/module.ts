@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { ModFeature, ModPurpose } from '@addons/mod/constants';
-import { ADDON_MOD_WORKSHOP_PAGE_NAME } from '@addons/mod/workshop/constants';
+import { ADDON_MOD_WORKSHOP_MODNAME, ADDON_MOD_WORKSHOP_PAGE_NAME } from '@addons/mod/workshop/constants';
 import { Injectable, Type } from '@angular/core';
 import { CoreModuleHandlerBase } from '@features/course/classes/module-base-handler';
 import { CoreCourseModuleHandler } from '@features/course/services/module-delegate';
@@ -26,7 +26,7 @@ import { makeSingleton } from '@singletons';
 export class AddonModWorkshopModuleHandlerService extends CoreModuleHandlerBase implements CoreCourseModuleHandler {
 
     name = 'AddonModWorkshop';
-    modName = 'workshop';
+    modName = ADDON_MOD_WORKSHOP_MODNAME;
     protected pageName = ADDON_MOD_WORKSHOP_PAGE_NAME;
 
     supportedFeatures = {

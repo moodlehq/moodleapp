@@ -17,7 +17,7 @@ import { Routes } from '@angular/router';
 
 import { CoreMainMenuTabRoutingModule } from '@features/mainmenu/mainmenu-tab-routing.module';
 import { CORE_SITE_SCHEMAS } from '@services/sites';
-import { SITE_SCHEMA, OFFLINE_SITE_SCHEMA } from './services/database/user';
+import { CORE_USER_OFFLINE_SITE_SCHEMA, CORE_USER_CACHE_SITE_SCHEMA } from './services/database/user';
 import { CoreUserDelegate } from './services/user-delegate';
 import { CoreUserProfileMailHandler } from './services/handlers/profile-mail';
 import { CoreContentLinksDelegate } from '@features/contentlinks/services/contentlinks-delegate';
@@ -133,8 +133,8 @@ const courseIndexRoutes: Routes = [
         {
             provide: CORE_SITE_SCHEMAS,
             useValue: [
-                SITE_SCHEMA,
-                OFFLINE_SITE_SCHEMA,
+                CORE_USER_CACHE_SITE_SCHEMA,
+                CORE_USER_OFFLINE_SITE_SCHEMA,
             ],
             multi: true,
         },

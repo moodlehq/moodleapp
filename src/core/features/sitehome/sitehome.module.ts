@@ -17,9 +17,10 @@ import { Routes } from '@angular/router';
 
 import { CoreSiteHomeIndexLinkHandler } from './services/handlers/index-link';
 import { CoreContentLinksDelegate } from '@features/contentlinks/services/contentlinks-delegate';
-import { CoreSiteHomeHomeHandler, CoreSiteHomeHomeHandlerService } from './services/handlers/sitehome-home';
+import { CoreSiteHomeHomeHandler } from './services/handlers/sitehome-home';
 import { CoreMainMenuHomeDelegate } from '@features/mainmenu/services/home-delegate';
 import { CoreMainMenuHomeRoutingModule } from '@features/mainmenu/mainmenu-home-routing.module';
+import { CORE_SITEHOME_PAGE_NAME } from './constants';
 
 /**
  * Get site home services.
@@ -36,7 +37,7 @@ export async function getSiteHomeServices(): Promise<Type<unknown>[]> {
 
 const mainMenuHomeRoutes: Routes = [
     {
-        path: CoreSiteHomeHomeHandlerService.PAGE_NAME,
+        path: CORE_SITEHOME_PAGE_NAME,
         loadComponent: () => import('@features/sitehome/pages/index/index'),
     },
 ];

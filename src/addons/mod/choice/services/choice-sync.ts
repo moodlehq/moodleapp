@@ -25,7 +25,7 @@ import { makeSingleton } from '@singletons';
 import { CoreEvents } from '@singletons/events';
 import { AddonModChoice } from './choice';
 import { AddonModChoiceOffline } from './choice-offline';
-import { ADDON_MOD_CHOICE_AUTO_SYNCED, ADDON_MOD_CHOICE_COMPONENT_LEGACY } from '../constants';
+import { ADDON_MOD_CHOICE_AUTO_SYNCED, ADDON_MOD_CHOICE_COMPONENT_LEGACY, ADDON_MOD_CHOICE_MODNAME } from '../constants';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 
 declare module '@singletons/events' {
@@ -210,7 +210,7 @@ export class AddonModChoiceSyncProvider extends CoreCourseActivitySyncBaseProvid
 
         // Data has been sent to server, prefetch choice if needed.
         try {
-            const module = await CoreCourse.getModuleBasicInfoByInstance(choiceId, 'choice', { siteId });
+            const module = await CoreCourse.getModuleBasicInfoByInstance(choiceId, ADDON_MOD_CHOICE_MODNAME, { siteId });
 
             await this.prefetchModuleAfterUpdate(module, courseId, undefined, siteId);
         } catch {

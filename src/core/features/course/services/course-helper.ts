@@ -64,7 +64,6 @@ import { CoreFilterHelper } from '@features/filter/services/filter-helper';
 import { CoreNetworkError } from '@classes/errors/network-error';
 import { CoreSiteHome } from '@features/sitehome/services/sitehome';
 import { CoreNavigationOptions, CoreNavigator } from '@services/navigator';
-import { CoreSiteHomeHomeHandlerService } from '@features/sitehome/services/handlers/sitehome-home';
 import { CoreStatusWithWarningsWSResponse } from '@services/ws';
 import { CoreCourseWithImageAndColor } from '@features/courses/services/courses-helper';
 import { CoreRemindersPushNotificationData } from '@features/reminders/services/reminders';
@@ -85,6 +84,7 @@ import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreOpener, CoreOpenerOpenFileOptions } from '@singletons/opener';
 import { CoreAlerts } from '@services/overlays/alerts';
 import { CoreCourseDownloadStatusHelper } from './course-download-status-helper';
+import { CORE_SITEHOME_PAGE_NAME } from '@features/sitehome/constants';
 
 /**
  * Prefetch info of a module.
@@ -1484,7 +1484,7 @@ export class CoreCourseHelperProvider {
                 const isAvailable = await CoreSiteHome.isAvailable();
 
                 if (isAvailable) {
-                    await CoreNavigator.navigateToSitePath(CoreSiteHomeHomeHandlerService.PAGE_NAME, { params, siteId });
+                    await CoreNavigator.navigateToSitePath(CORE_SITEHOME_PAGE_NAME, { params, siteId });
 
                     return;
                 }

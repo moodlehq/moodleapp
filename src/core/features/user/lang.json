@@ -38,6 +38,5 @@
     "supportsubject": "[App] {{subject}}",
     "teacher": "Non-editing teacher",
     "useraccount": "User account",
-    "userwithid": "User with ID {{id}}",
-    "webpage": "Web page"
+    "userwithid": "User with ID {{id}}"
 }

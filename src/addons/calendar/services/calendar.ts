@@ -28,7 +28,7 @@ import { CoreUser } from '@features/user/services/user';
 import { CoreWSExternalWarning, CoreWSDate } from '@services/ws';
 import dayjs from 'dayjs';
 import { AddonCalendarEventDBRecord } from './database/calendar';
-import { CoreCourses } from '@features/courses/services/courses';
+import { CoreCourses, CoreCourseSummaryExporterData } from '@features/courses/services/courses';
 import { ContextLevel, CoreCacheUpdateFrequency, CoreConstants } from '@/core/constants';
 import { CoreWSError } from '@classes/errors/wserror';
 import { ApplicationInit, makeSingleton, Translate } from '@singletons';
@@ -1661,27 +1661,7 @@ export type AddonCalendarEventBase = {
         nestedname: string; // Nestedname.
         url: string; // Url.
     };
-    course?: {
-        id: number; // Id.
-        fullname: string; // Fullname.
-        shortname: string; // Shortname.
-        idnumber: string; // Idnumber.
-        summary: string; // Summary.
-        summaryformat: CoreTextFormat; // Summary format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
-        startdate: number; // Startdate.
-        enddate: number; // Enddate.
-        visible: boolean; // @since 3.8. Visible.
-        fullnamedisplay: string; // Fullnamedisplay.
-        viewurl: string; // Viewurl.
-        courseimage: string; // @since 3.6. Courseimage.
-        progress?: number; // @since 3.6. Progress.
-        hasprogress: boolean; // @since 3.6. Hasprogress.
-        isfavourite: boolean; // @since 3.6. Isfavourite.
-        hidden: boolean; // @since 3.6. Hidden.
-        timeaccess?: number; // @since 3.6. Timeaccess.
-        showshortname: boolean; // @since 3.6. Showshortname.
-        coursecategory: string; // @since 3.7. Coursecategory.
-    };
+    course?: CoreCourseSummaryExporterData;
     subscription?: {
         displayeventsource: boolean; // Displayeventsource.
         subscriptionname?: string; // Subscriptionname.
