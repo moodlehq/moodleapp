@@ -17,8 +17,9 @@ import { Injectable } from '@angular/core';
 import { makeSingleton } from '@singletons';
 import { CoreUrl, CoreUrlParams as CoreUrlParamsNew, CoreUrlPartNames } from '@singletons/url';
 
-/*
+/**
  * "Utils" service with helper functions for URLs.
+ *
  * @deprecated since 4.5. Use CoreUrl instead.
  */
 @Injectable({ providedIn: 'root' })
@@ -335,6 +336,10 @@ export class CoreUrlUtilsProvider {
     }
 
 }
+/**
+ * @deprecated since 4.5. Use CoreUrl instead.
+ */
+// eslint-disable-next-line deprecation/deprecation
 export const CoreUrlUtils = makeSingleton(CoreUrlUtilsProvider);
 
 /**

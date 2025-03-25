@@ -18,7 +18,7 @@ import { AddonModQuiz, AddonModQuizWSAdditionalData } from '../../services/quiz'
 import { ADDON_MOD_QUIZ_COMPONENT_LEGACY, AddonModQuizAttemptStates } from '../../constants';
 import { CoreTime } from '@singletons/time';
 import { Translate } from '@singletons';
-import { CoreDomUtils } from '@services/utils/dom';
+import { CoreDom } from '@singletons/dom';
 import { isSafeNumber } from '@/core/utils/types';
 import { AddonModQuizAttemptStateComponent } from '../attempt-state/attempt-state';
 import { CoreSharedModule } from '@/core/shared.module';
@@ -56,7 +56,7 @@ export class AddonModQuizAttemptInfoComponent implements OnChanges {
         if (changes.additionalData) {
             this.additionalData?.forEach((data) => {
                 // Remove help links from additional data.
-                data.content = CoreDomUtils.removeElementFromHtml(data.content, '.helptooltip');
+                data.content = CoreDom.removeElementFromHtml(data.content, '.helptooltip');
             });
         }
 

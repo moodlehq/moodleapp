@@ -29,7 +29,6 @@ import {
 } from '@angular/core';
 
 import { CoreSites } from '@services/sites';
-import { CoreDomUtils } from '@services/utils/dom';
 import { CoreIframeUtils, CoreIframeUtilsProvider } from '@services/utils/iframe';
 import { CoreText } from '@singletons/text';
 import { CoreErrorHelper } from '@services/error-helper';
@@ -262,7 +261,7 @@ export class CoreFormatTextDirective implements OnChanges, OnDestroy, AsyncDirec
             container.classList.add('atto_image_button_text-bottom');
         }
 
-        CoreDomUtils.wrapElement(img, container);
+        CoreDom.wrapElement(img, container);
     }
 
     /**
@@ -396,7 +395,7 @@ export class CoreFormatTextDirective implements OnChanges, OnDestroy, AsyncDirec
         this.element.innerHTML = ''; // Remove current contents.
 
         // Move the children to the current element to be able to calculate the height.
-        CoreDomUtils.moveChildren(result.div, this.element);
+        CoreDom.moveChildren(result.div, this.element);
 
         this.elementControllers.forEach(controller => controller.destroy());
         this.elementControllers = result.elementControllers;
@@ -751,8 +750,8 @@ export class CoreFormatTextDirective implements OnChanges, OnDestroy, AsyncDirec
             element = element.parentElement;
             const computedStyle = getComputedStyle(element);
 
-            const padding = CoreDomUtils.getComputedStyleMeasure(computedStyle, 'paddingLeft') +
-                    CoreDomUtils.getComputedStyleMeasure(computedStyle, 'paddingRight');
+            const padding = CoreDom.getComputedStyleMeasure(computedStyle, 'paddingLeft') +
+                    CoreDom.getComputedStyleMeasure(computedStyle, 'paddingRight');
 
             // Use parent width as an aproximation.
             width = element.getBoundingClientRect().width - padding;

@@ -19,7 +19,6 @@ import { WKWebViewCookiesWindow } from 'cordova-plugin-wkwebview-cookies';
 import { CoreNetwork } from '@services/network';
 import { CoreFile } from '@services/file';
 import { CoreSites } from '@services/sites';
-import { CoreDomUtils } from '@services/utils/dom';
 import { CoreUrl } from '@singletons/url';
 import { CoreOpener } from '@singletons/opener';
 
@@ -39,13 +38,14 @@ import { CoreLoadings } from '@services/overlays/loadings';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreFileUtils } from '@singletons/file-utils';
 import { CoreAlerts } from '@services/overlays/alerts';
+import { CoreDom } from '@singletons/dom';
 
 type CoreFrameElement = FrameElement & {
     window?: Window;
     getWindow?(): Window;
 };
 
-/*
+/**
  * "Utils" service with helper functions for iframes, embed and similar.
  */
 @Injectable({ providedIn: 'root' })
@@ -103,7 +103,7 @@ export class CoreIframeUtilsProvider {
             }
 
             // Remove the warning and show the iframe
-            CoreDomUtils.removeElement(element.parentElement, 'div.core-iframe-offline-warning');
+            CoreDom.removeElement(element.parentElement, 'div.core-iframe-offline-warning');
             element.classList.remove('core-iframe-offline-disabled');
 
             if (isSubframe) {

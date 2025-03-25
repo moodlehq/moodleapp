@@ -22,7 +22,6 @@ import {
     ViewChild,
 } from '@angular/core';
 import { CoreLogger } from '@singletons/logger';
-import { CoreDomUtils } from '@services/utils/dom';
 import { CoreContextMenuComponent } from '../context-menu/context-menu';
 import { CoreDirectivesRegistry } from '@singletons/directives-registry';
 import { CoreDom } from '@singletons/dom';
@@ -110,7 +109,7 @@ export class CoreNavBarButtonsComponent implements OnInit, OnDestroy {
 
                     const prepend = this.element.hasAttribute('prepend');
 
-                    this.movedChildren = CoreDomUtils.moveChildren(this.element, buttonsContainer, prepend);
+                    this.movedChildren = CoreDom.moveChildren(this.element, buttonsContainer, prepend);
                     this.showHideAllElements();
 
                     // Make sure that context-menu is always at the end of buttons if any.

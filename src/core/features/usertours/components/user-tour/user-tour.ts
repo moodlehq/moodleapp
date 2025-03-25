@@ -28,7 +28,7 @@ import { CorePromisedValue } from '@classes/promised-value';
 import { CoreUserToursFocusLayout } from '@features/usertours/classes/focus-layout';
 import { CoreUserToursPopoverLayout } from '@features/usertours/classes/popover-layout';
 import { CoreUserTours, CoreUserToursAlignment, CoreUserToursSide } from '@features/usertours/services/user-tours';
-import { CoreDomUtils } from '@services/utils/dom';
+import { CoreWait } from '@singletons/wait';
 import { AngularFrameworkDelegate } from '@singletons';
 import { CoreDirectivesRegistry } from '@singletons/directives-registry';
 import { CoreDom } from '@singletons/dom';
@@ -118,7 +118,7 @@ export class CoreUserToursUserTourComponent implements AfterViewInit, OnDestroy 
             return;
         }
 
-        await CoreDomUtils.waitForImages(this.tour);
+        await CoreWait.waitForImages(this.tour);
 
         // Calculate focus styles or dismiss if the element is gone.
         if (this.focus && !CoreDom.isElementVisible(this.focus)) {

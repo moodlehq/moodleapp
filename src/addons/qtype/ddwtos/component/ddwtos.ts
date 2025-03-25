@@ -16,7 +16,7 @@ import { Component, OnDestroy, ElementRef, ViewChild } from '@angular/core';
 
 import { AddonModQuizQuestionBasicData, CoreQuestionBaseComponent } from '@features/question/classes/base-question-component';
 import { CoreQuestionHelper } from '@features/question/services/question-helper';
-import { CoreDomUtils } from '@services/utils/dom';
+import { CoreWait } from '@singletons/wait';
 import { AddonQtypeDdwtosQuestion } from '../classes/ddwtos';
 import { CoreText } from '@singletons/text';
 import { CoreSharedModule } from '@/core/shared.module';
@@ -140,7 +140,7 @@ export class AddonQtypeDdwtosComponent extends CoreQuestionBaseComponent<AddonMo
         }
 
         if (this.questionTextEl) {
-            await CoreDomUtils.waitForImages(this.questionTextEl.nativeElement);
+            await CoreWait.waitForImages(this.questionTextEl.nativeElement);
         }
 
         // Create the instance.

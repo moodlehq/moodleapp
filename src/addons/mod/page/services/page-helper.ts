@@ -18,7 +18,7 @@ import { CoreUrl } from '@singletons/url';
 import { CoreSites } from '@services/sites';
 import { CoreFilepool } from '@services/filepool';
 import { CoreWS } from '@services/ws';
-import { CoreDomUtils } from '@services/utils/dom';
+import { CoreDom } from '@singletons/dom';
 import { makeSingleton } from '@singletons';
 import { CoreCourseModuleContentFile } from '@features/course/services/course';
 import { ADDON_MOD_PAGE_COMPONENT_LEGACY } from '../constants';
@@ -74,7 +74,7 @@ export class AddonModPageHelperProvider {
 
         // Now that we have the content, we update the SRC to point back to the external resource.
         // That will be caught by core-format-text.
-        return CoreDomUtils.restoreSourcesInHtml(content, paths);
+        return CoreDom.restoreSourcesInHtml(content, paths);
     }
 
     /**

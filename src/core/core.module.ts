@@ -34,6 +34,7 @@ export async function getCoreServices(): Promise<Type<unknown>[]> {
     const { CoreCronDelegateService } = await import('@services/cron');
     const { CoreCustomURLSchemesProvider } = await import('@services/urlschemes');
     const { CoreDbProvider } = await import('@services/db');
+    // eslint-disable-next-line deprecation/deprecation
     const { CoreDomUtilsProvider } = await import('@services/utils/dom');
     const { CoreErrorHelperService } = await import('@services/error-helper');
     const { CoreFileHelperProvider } = await import('@services/file-helper');
@@ -57,6 +58,7 @@ export async function getCoreServices(): Promise<Type<unknown>[]> {
     // eslint-disable-next-line deprecation/deprecation
     const { CoreTimeUtilsProvider } = await import('@services/utils/time');
     const { CoreUpdateManagerProvider } = await import('@services/update-manager');
+    // eslint-disable-next-line deprecation/deprecation
     const { CoreUrlUtilsProvider } = await import('@services/utils/url');
     const { CoreUtilsProvider } = await import('@services/utils/utils');
     const { CoreWSProvider } = await import('@services/ws');
