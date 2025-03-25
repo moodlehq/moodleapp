@@ -120,7 +120,6 @@ export class CoreIframeUtilsProvider {
      * @param element The frame to check (iframe, embed, ...).
      * @param src Frame src.
      * @param isSubframe Whether it's a frame inside another frame.
-     * @returns Promise resolved when done.
      */
     protected async addOfflineWarning(element: HTMLElement, src: string, isSubframe?: boolean): Promise<void> {
         const site = CoreSites.getCurrentSite();
@@ -140,7 +139,7 @@ export class CoreIframeUtilsProvider {
 
         if (!canHandleLink) {
             div.innerHTML = (isSubframe ? '' : '<div class="core-iframe-network-error"></div>') +
-                '<p>' + Translate.instant('core.networkerroriframemsg') + '</p>';
+                `<p>${Translate.instant('core.networkerroriframemsg')}</p>`;
 
             element.parentElement?.insertBefore(div, element);
 
@@ -283,7 +282,7 @@ export class CoreIframeUtilsProvider {
      * @param event Message event.
      */
     handleIframeMessage(event: MessageEvent): void {
-        if (!event.data || event.data.environment != 'moodleapp' || event.data.context != 'iframe') {
+        if (!event.data || event.data.environment !== 'moodleapp' || event.data.context !== 'iframe') {
             return;
         }
 

@@ -56,7 +56,6 @@ import { CoreNetwork } from '@services/network';
 import { CoreUserGuestSupportConfig } from '@features/user/classes/support/guest-support-config';
 import { CoreLang, CoreLangFormat } from '@services/lang';
 import { CoreNative } from '@features/native/services/native';
-import { CoreContentLinksHelper } from '@features/contentlinks/services/contentlinks-helper';
 import { CoreAutoLogoutType, CoreAutoLogout } from '@features/autologout/services/autologout';
 import { CoreCacheManager } from '@services/cache-manager';
 import { CoreSiteInfo, CoreSiteInfoResponse, CoreSitePublicConfigResponse } from '@classes/sites/unauthenticated-site';
@@ -963,6 +962,7 @@ export class CoreSitesProvider {
      *                 the username 'myuser'. Don't use it if you don't want to filter by username.
      * @param options.checkRoot Whether to check if the URL is the root URL of a site.
      * @param options.openBrowserRoot Whether to open in browser if it's root URL and it belongs to current site.
+     * @deprecated since 5.0. Use CoreContentLinksHelper.visitLink instead.
      */
     async visitLink(
         url: string,
@@ -973,17 +973,9 @@ export class CoreSitesProvider {
             openBrowserRoot?: boolean;
         } = {},
     ): Promise<void> {
-        const treated = await CoreContentLinksHelper.handleLink(url, options.username, options.checkRoot, options.openBrowserRoot);
+        const { CoreContentLinksHelper } = await import('@features/contentlinks/services/contentlinks-helper');
 
-        if (treated) {
-            return;
-        }
-
-        const site = options.siteId
-            ? await CoreSites.getSite(options.siteId)
-            : CoreSites.getCurrentSite();
-
-        await site?.openInBrowserWithAutoLogin(url);
+        await CoreContentLinksHelper.visitLink(url, options);
     }
 
     /**
@@ -1287,11 +1279,7 @@ export class CoreSitesProvider {
      * @returns Current site home ID.
      */
     getCurrentSiteHomeId(): number {
-        if (this.currentSite) {
-            return this.currentSite.getSiteHomeId();
-        } else {
-            return 1;
-        }
+        return this.currentSite?.getSiteHomeId() ?? 1;
     }
 
     /**
@@ -1300,11 +1288,7 @@ export class CoreSitesProvider {
      * @returns Current site ID.
      */
     getCurrentSiteId(): string {
-        if (this.currentSite) {
-            return this.currentSite.getId();
-        } else {
-            return '';
-        }
+        return this.currentSite?.getId() || '';
     }
 
     /**
@@ -1382,7 +1366,7 @@ export class CoreSitesProvider {
             throw new CoreError('No current site found.');
         }
 
-        if (this.currentSite && this.currentSite.getId() === siteId) {
+        if (this.currentSite?.getId() === siteId) {
             return this.currentSite;
         }
 
@@ -1424,11 +1408,9 @@ export class CoreSitesProvider {
      * @param siteId Site id.
      * @returns Site.
      */
-    async getSiteFromDB(siteId: string): Promise<CoreSite> {
-        const db = CoreAppDB.getDB();
-
+    protected async getSiteFromDB(siteId: string): Promise<CoreSite> {
         try {
-            const record = await db.getRecord<SiteDBEntry>(SITES_TABLE_NAME, { id: siteId });
+            const record = await this.sitesTable.getOneByPrimaryKey({ id: siteId });
 
             return this.makeSiteFromSiteListEntry(record);
         } catch {
@@ -1466,7 +1448,7 @@ export class CoreSitesProvider {
      * @param entry Site list entry.
      * @returns Promised resolved with the created site.
      */
-    async addSiteFromSiteListEntry(entry: SiteDBEntry): Promise<CoreSite> {
+    protected async addSiteFromSiteListEntry(entry: SiteDBEntry): Promise<CoreSite> {
         if (this.sites[entry.id] !== undefined) {
             return this.sites[entry.id];
         }
@@ -1488,7 +1470,7 @@ export class CoreSitesProvider {
      * @param entry Site database entry.
      * @returns Site.
      */
-    makeSiteFromSiteListEntry(entry: SiteDBEntry): CoreSite {
+    protected makeSiteFromSiteListEntry(entry: SiteDBEntry): CoreSite {
         const info = entry.info ? CoreText.parseJSON<CoreSiteInfo>(entry.info) : undefined;
         const config = entry.config ? CoreText.parseJSON<CoreSiteConfig>(entry.config) : undefined;
 
@@ -1806,13 +1788,6 @@ export class CoreSitesProvider {
         site.setLoggedOut(isLoggedOut);
 
         await this.sitesTable.update({ loggedOut: isLoggedOut ? 1 : 0 }, { id: siteId });
-    }
-
-    /**
-     * Unset current site.
-     */
-    unsetCurrentSite(): void {
-        this.currentSite = undefined;
     }
 
     /**
