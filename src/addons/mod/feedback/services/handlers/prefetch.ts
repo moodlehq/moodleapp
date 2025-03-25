@@ -28,7 +28,7 @@ import {
     AddonModFeedbackWSFeedback,
 } from '../feedback';
 import { AddonModFeedbackSync, AddonModFeedbackSyncResult } from '../feedback-sync';
-import { ADDON_MOD_FEEDBACK_COMPONENT_LEGACY } from '../../constants';
+import { ADDON_MOD_FEEDBACK_COMPONENT_LEGACY, ADDON_MOD_FEEDBACK_MODNAME } from '../../constants';
 
 /**
  * Handler to prefetch feedbacks.
@@ -37,7 +37,7 @@ import { ADDON_MOD_FEEDBACK_COMPONENT_LEGACY } from '../../constants';
 export class AddonModFeedbackPrefetchHandlerService extends CoreCourseActivityPrefetchHandlerBase {
 
     name = 'AddonModFeedback';
-    modName = 'feedback';
+    modName = ADDON_MOD_FEEDBACK_MODNAME;
     component = ADDON_MOD_FEEDBACK_COMPONENT_LEGACY;
     updatesNames = /^configuration$|^.*files$|^attemptsfinished|^attemptsunfinished$/;
 

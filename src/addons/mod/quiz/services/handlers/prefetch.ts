@@ -35,7 +35,7 @@ import {
 } from '../quiz';
 import { AddonModQuizHelper } from '../quiz-helper';
 import { AddonModQuizSync, AddonModQuizSyncResult } from '../quiz-sync';
-import { AddonModQuizAttemptStates, ADDON_MOD_QUIZ_COMPONENT_LEGACY } from '../../constants';
+import { AddonModQuizAttemptStates, ADDON_MOD_QUIZ_COMPONENT_LEGACY, ADDON_MOD_QUIZ_MODNAME } from '../../constants';
 
 /**
  * Handler to prefetch quizzes.
@@ -44,7 +44,7 @@ import { AddonModQuizAttemptStates, ADDON_MOD_QUIZ_COMPONENT_LEGACY } from '../.
 export class AddonModQuizPrefetchHandlerService extends CoreCourseActivityPrefetchHandlerBase {
 
     name = 'AddonModQuiz';
-    modName = 'quiz';
+    modName = ADDON_MOD_QUIZ_MODNAME;
     component = ADDON_MOD_QUIZ_COMPONENT_LEGACY;
     updatesNames = /^configuration$|^.*files$|^grades$|^gradeitems$|^questions$|^attempts$/;
 

@@ -31,7 +31,12 @@ import { AddonModQuizAttemptDBRecord } from './database/quiz';
 import { type AddonModQuizPrefetchHandlerService } from './handlers/prefetch';
 import { AddonModQuiz, AddonModQuizAttemptWSData, AddonModQuizQuizWSData } from './quiz';
 import { AddonModQuizOffline, AddonModQuizQuestionsWithAnswers } from './quiz-offline';
-import { ADDON_MOD_QUIZ_AUTO_SYNCED, ADDON_MOD_QUIZ_COMPONENT, ADDON_MOD_QUIZ_COMPONENT_LEGACY } from '../constants';
+import {
+    ADDON_MOD_QUIZ_AUTO_SYNCED,
+    ADDON_MOD_QUIZ_COMPONENT,
+    ADDON_MOD_QUIZ_COMPONENT_LEGACY,
+    ADDON_MOD_QUIZ_MODNAME,
+} from '../constants';
 import { AddonModQuizHelper } from './quiz-helper';
 
 /**
@@ -92,7 +97,7 @@ export class AddonModQuizSyncProvider extends CoreCourseActivitySyncBaseProvider
         if (options.updated) {
             try {
                 // Data has been sent. Update prefetched data.
-                const module = await CoreCourse.getModuleBasicInfoByInstance(quiz.id, 'quiz', { siteId });
+                const module = await CoreCourse.getModuleBasicInfoByInstance(quiz.id, ADDON_MOD_QUIZ_MODNAME, { siteId });
 
                 await this.prefetchAfterUpdateQuiz(module, quiz, courseId, siteId);
             } catch {

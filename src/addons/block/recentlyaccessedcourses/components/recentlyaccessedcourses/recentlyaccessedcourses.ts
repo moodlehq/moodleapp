@@ -18,7 +18,7 @@ import { CoreSites } from '@services/sites';
 import {
     CoreCoursesMyCoursesUpdatedEventData,
     CoreCourses,
-    CoreCourseSummaryData,
+    CoreCourseSummaryExporterData,
 } from '@features/courses/services/courses';
 import {
     CoreCourseSearchedDataWithExtraInfoAndOptions,
@@ -141,7 +141,7 @@ export class AddonBlockRecentlyAccessedCoursesComponent extends CoreBlockBaseCom
         const showCategories = this.block.configsRecord && this.block.configsRecord.displaycategories &&
             this.block.configsRecord.displaycategories.value == '1';
 
-        let recentCourses: CoreCourseSummaryData[] = [];
+        let recentCourses: CoreCourseSummaryExporterData[] = [];
         try {
             recentCourses = await CoreCourses.getRecentCourses();
         } catch {
@@ -219,7 +219,7 @@ export class AddonBlockRecentlyAccessedCoursesComponent extends CoreBlockBaseCom
 }
 
 type AddonBlockRecentlyAccessedCourse =
-    (Omit<CoreCourseSummaryData, 'visible'> & CoreCourseSearchedDataWithExtraInfoAndOptions) |
+    (Omit<CoreCourseSummaryExporterData, 'visible'> & CoreCourseSearchedDataWithExtraInfoAndOptions) |
     (CoreEnrolledCourseDataWithOptions & {
         categoryname?: string; // Category name,
     });

@@ -24,6 +24,7 @@ import { makeSingleton } from '@singletons';
 import { AddonModWiki, AddonModWikiSubwikiPage } from '../wiki';
 import { AddonModWikiSync, AddonModWikiSyncWikiResult } from '../wiki-sync';
 import { AddonModWikiPrefetchHandlerService } from '@addons/mod/wiki/services/handlers/prefetch';
+import { ADDON_MOD_WIKI_MODNAME } from '../../constants';
 
 /**
  * Handler to prefetch wikis.
@@ -184,7 +185,7 @@ export class AddonModWikiPrefetchHandlerLazyService extends AddonModWikiPrefetch
 
         // Fetch info to provide wiki links.
         promises.push(AddonModWiki.getWiki(courseId, module.id, { siteId }).then((wiki) =>
-            CoreCourse.getModuleBasicInfoByInstance(wiki.id, 'wiki', { siteId })));
+            CoreCourse.getModuleBasicInfoByInstance(wiki.id, ADDON_MOD_WIKI_MODNAME, { siteId })));
 
         // Get related page files and fetch them.
         promises.push(this.getFiles(module, courseId, single, siteId).then((files) =>

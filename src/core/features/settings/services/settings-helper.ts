@@ -183,8 +183,8 @@ export class CoreSettingsHelperProvider {
             spaceUsage: 0,
         };
 
-        siteInfo.cacheEntries = await this.calcSiteClearRows(site);
-        siteInfo.spaceUsage = await site.getTotalUsage();
+        siteInfo.cacheEntries = await CorePromiseUtils.ignoreErrors(this.calcSiteClearRows(site), 0);
+        siteInfo.spaceUsage = await CorePromiseUtils.ignoreErrors(site.getTotalUsage(), 0);
 
         return siteInfo;
     }

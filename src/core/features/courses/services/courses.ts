@@ -598,7 +598,7 @@ export class CoreCoursesProvider {
         customFieldName: string,
         customFieldValue: string,
         siteId?: string,
-    ): Promise<CoreCourseSummaryData[]> {
+    ): Promise<CoreCourseSummaryExporterData[]> {
         return await firstValueFrom(this.getEnrolledCoursesByCustomFieldObservable(customFieldName, customFieldValue, {
             readingStrategy: CoreSitesReadingStrategy.PREFER_NETWORK,
             siteId,
@@ -618,7 +618,7 @@ export class CoreCoursesProvider {
         customFieldName: string,
         customFieldValue: string,
         options: CoreSitesCommonWSOptions,
-    ): WSObservable<CoreCourseSummaryData[]> {
+    ): WSObservable<CoreCourseSummaryExporterData[]> {
         return asyncObservable(async () => {
             const site = await CoreSites.getSite(options. siteId);
 
@@ -707,7 +707,7 @@ export class CoreCoursesProvider {
      * @returns Promise resolved with courses.
      * @since 3.6
      */
-    async getRecentCourses(options: CoreCourseGetRecentCoursesOptions = {}): Promise<CoreCourseSummaryData[]> {
+    async getRecentCourses(options: CoreCourseGetRecentCoursesOptions = {}): Promise<CoreCourseSummaryExporterData[]> {
         const site = await CoreSites.getSite(options.siteId);
 
         const userId = options.userId || site.getUserId();
@@ -721,7 +721,7 @@ export class CoreCoursesProvider {
             cacheKey: this.getRecentCoursesCacheKey(userId),
         };
 
-        return site.read<CoreCourseSummaryData[]>('core_course_get_recent_courses', params, preSets);
+        return site.read<CoreCourseGetRecentCoursesWSResponse>('core_course_get_recent_courses', params, preSets);
     }
 
     /**
@@ -1371,7 +1371,7 @@ export type CoreCourseBasicData = {
     displayname?: string; // Course display name.
     shortname: string; // Course short name.
     summary: string; // Summary.
-    summaryformat: CoreTextFormat; // Summary format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
+    summaryformat?: CoreTextFormat; // Summary format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
     categoryid?: number; // Course category id.
 };
 
@@ -1590,25 +1590,32 @@ type CoreCourseGetCoursesWSParams = {
 export type CoreCourseGetCoursesWSResponse = CoreCourseGetCoursesData[];
 
 /**
- * Course data exported by course_summary_exporter;
+ * Type for exporting a course summary.
+ * This relates to LMS course_summary_exporter, do not modify unless the exporter changes.
  */
-export type CoreCourseSummaryData = CoreCourseBasicData & { // Course.
+export type CoreCourseSummaryExporterData = {
+    id: number; // Id.
+    fullname: string; // Fullname.
+    shortname: string; // Shortname.
     idnumber: string; // Idnumber.
+    summary: string; // Summary.
+    summaryformat?: CoreTextFormat; // Summary format (1 = HTML, 0 = MOODLE, 2 = PLAIN, or 4 = MARKDOWN).
     startdate: number; // Startdate.
     enddate: number; // Enddate.
-    visible: boolean; // Visible.
-    showactivitydates: boolean; // Showactivitydates.
-    showcompletionconditions: boolean; // Showcompletionconditions.
+    visible: boolean; // @since 3.8. Visible.
+    showactivitydates: boolean | null; // @since 3.11. Whether the activity dates are shown or not.
+    showcompletionconditions: boolean | null; // @since 3.11. Whether the activity completion conditions are shown or not.
+    pdfexportfont: string; // Pdfexportfont.
     fullnamedisplay: string; // Fullnamedisplay.
     viewurl: string; // Viewurl.
-    courseimage: string; // Courseimage.
-    progress?: number; // Progress.
-    hasprogress: boolean; // Hasprogress.
-    isfavourite: boolean; // Isfavourite.
-    hidden: boolean; // Hidden.
-    timeaccess?: number; // Timeaccess.
-    showshortname: boolean; // Showshortname.
-    coursecategory: string; // Coursecategory.
+    courseimage: string; // @since 3.6. Courseimage.
+    progress?: number; // @since 3.6. Progress.
+    hasprogress: boolean; // @since 3.6. Hasprogress.
+    isfavourite: boolean; // @since 3.6. Isfavourite.
+    hidden: boolean; // @since 3.6. Hidden.
+    timeaccess?: number; // @since 3.6. Timeaccess.
+    showshortname: boolean; // @since 3.6. Showshortname.
+    coursecategory: string; // @since 3.7. Coursecategory.
 };
 
 /**
@@ -1627,7 +1634,7 @@ type CoreCourseGetEnrolledCoursesByTimelineClassificationWSParams = {
  * Data returned by core_course_get_enrolled_courses_by_timeline_classification WS.
  */
 export type CoreCourseGetEnrolledCoursesByTimelineClassificationWSResponse = {
-    courses: CoreCourseSummaryData[];
+    courses: CoreCourseSummaryExporterData[];
     nextoffset: number; // Offset for the next request.
 };
 
@@ -1741,6 +1748,13 @@ export type CoreCourseGetRecentCoursesWSParams = {
     offset?: number; // Result set offset.
     sort?: string; // Sort string.
 };
+
+/**
+ * Data returned by core_course_get_recent_courses WS.
+ *
+ * WS Description: List of courses a user has accessed most recently.
+ */
+export type CoreCourseGetRecentCoursesWSResponse = CoreCourseSummaryExporterData[];
 
 /**
  * Options for getRecentCourses.

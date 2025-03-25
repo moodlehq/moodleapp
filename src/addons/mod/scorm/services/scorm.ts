@@ -19,11 +19,11 @@ import { CoreCourseLogHelper } from '@features/course/services/log-helper';
 import { CoreFilepool } from '@services/filepool';
 import { CoreSites, CoreSitesCommonWSOptions, CoreSitesReadingStrategy } from '@services/sites';
 import { CoreSync } from '@services/sync';
-import { CoreText, CoreTextFormat } from '@singletons/text';
+import { CoreText } from '@singletons/text';
 import { CoreTime } from '@singletons/time';
 import { CoreUrl } from '@singletons/url';
 import { CoreObject } from '@singletons/object';
-import { CoreWS, CoreWSExternalFile, CoreWSExternalWarning, CoreWSFile, CoreWSPreSets } from '@services/ws';
+import { CoreWS, CoreWSExternalWarning, CoreWSFile, CoreWSPreSets } from '@services/ws';
 import { makeSingleton, Translate } from '@singletons';
 import { CoreEvents } from '@singletons/events';
 import { CorePath } from '@singletons/path';
@@ -43,7 +43,7 @@ import {
     ADDON_MOD_SCORM_COMPONENT,
 } from '../constants';
 import { CorePromiseUtils } from '@singletons/promise-utils';
-import { CoreCourseModuleHelper } from '@features/course/services/course-module-helper';
+import { CoreCourseModuleHelper, CoreCourseModuleStandardElements } from '@features/course/services/course-module-helper';
 
 // Private constants.
 const VALID_STATUSES = ['notattempted', 'passed', 'completed', 'failed', 'incomplete', 'browsed', 'suspend'];
@@ -1889,14 +1889,7 @@ export type AddonModScormOptions = {
 /**
  * Scorm data returned by mod_scorm_get_scorms_by_courses WS.
  */
-export type AddonModScormScormWSData = {
-    id: number; // SCORM id.
-    coursemodule: number; // Course module id.
-    course: number; // Course id.
-    name: string; // SCORM name.
-    intro: string; // The SCORM intro.
-    introformat: CoreTextFormat; // Intro format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
-    introfiles?: CoreWSExternalFile[];
+export type AddonModScormScormWSData = CoreCourseModuleStandardElements & {
     packagesize?: number; // SCORM zip package size.
     packageurl?: string; // SCORM zip package URL.
     version?: string; // SCORM version (SCORM_12, SCORM_13, SCORM_AICC).
@@ -1936,10 +1929,6 @@ export type AddonModScormScormWSData = {
     completionstatusallscos?: number; // Require all scos to return completion status.
     autocommit?: boolean; // Save track data automatically?.
     timemodified?: number; // Time of last modification.
-    section?: number; // Course section id.
-    visible?: boolean; // Visible.
-    groupmode?: number; // Group mode.
-    groupingid?: number; // Group id.
 };
 
 /**

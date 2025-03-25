@@ -16,7 +16,7 @@ import { Injectable } from '@angular/core';
 import { CoreSites } from '@services/sites';
 import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
 import { makeSingleton } from '@singletons';
-import { CoreTextFormat } from '@singletons/text';
+import { CoreCourseSummaryExporterData } from '@features/courses/services/courses';
 
 /**
  * Service that provides some features regarding starred courses.
@@ -76,26 +76,4 @@ export type AddonBlockStarredCoursesGetStarredCoursesWSParams = {
 /**
  * Data returned by block_starredcourses_get_starred_courses WS.
  */
-export type AddonBlockStarredCourse = {
-    id: number; // Id.
-    fullname: string; // Fullname.
-    shortname: string; // Shortname.
-    idnumber: string; // Idnumber.
-    summary: string; // Summary.
-    summaryformat: CoreTextFormat; // Summary format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
-    startdate: number; // Startdate.
-    enddate: number; // Enddate.
-    visible: boolean; // Visible.
-    showactivitydates: boolean; // Showactivitydates.
-    showcompletionconditions: boolean; // Showcompletionconditions.
-    fullnamedisplay: string; // Fullnamedisplay.
-    viewurl: string; // Viewurl.
-    courseimage: string; // Courseimage.
-    progress?: number; // Progress.
-    hasprogress: boolean; // Hasprogress.
-    isfavourite: boolean; // Isfavourite.
-    hidden: boolean; // Hidden.
-    timeaccess?: number; // Timeaccess.
-    showshortname: boolean; // Showshortname.
-    coursecategory: string; // Coursecategory.
-};
+export type AddonBlockStarredCourse = CoreCourseSummaryExporterData;

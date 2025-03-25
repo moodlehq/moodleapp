@@ -26,7 +26,7 @@ import { makeSingleton } from '@singletons';
 import { AddonModGlossary, AddonModGlossaryEntry, AddonModGlossaryGlossary } from '../glossary';
 import { AddonModGlossarySync, AddonModGlossarySyncResult } from '../glossary-sync';
 import { ContextLevel } from '@/core/constants';
-import { ADDON_MOD_GLOSSARY_COMPONENT_LEGACY } from '../../constants';
+import { ADDON_MOD_GLOSSARY_COMPONENT_LEGACY, ADDON_MOD_GLOSSARY_MODNAME } from '../../constants';
 
 /**
  * Handler to prefetch forums.
@@ -35,7 +35,7 @@ import { ADDON_MOD_GLOSSARY_COMPONENT_LEGACY } from '../../constants';
 export class AddonModGlossaryPrefetchHandlerService extends CoreCourseActivityPrefetchHandlerBase {
 
     name = 'AddonModGlossary';
-    modName = 'glossary';
+    modName = ADDON_MOD_GLOSSARY_MODNAME;
     component = ADDON_MOD_GLOSSARY_COMPONENT_LEGACY;
     updatesNames = /^configuration$|^.*files$|^entries$/;
 

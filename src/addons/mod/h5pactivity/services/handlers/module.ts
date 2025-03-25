@@ -17,7 +17,7 @@ import { CoreModuleHandlerBase } from '@features/course/classes/module-base-hand
 import { CoreCourseModuleHandler } from '@features/course/services/module-delegate';
 import { makeSingleton } from '@singletons';
 import { AddonModH5PActivity } from '../h5pactivity';
-import { ADDON_MOD_H5PACTIVITY_PAGE_NAME } from '../../constants';
+import { ADDON_MOD_H5PACTIVITY_MODNAME, ADDON_MOD_H5PACTIVITY_PAGE_NAME } from '../../constants';
 import { ModFeature, ModPurpose } from '@addons/mod/constants';
 
 /**
@@ -27,7 +27,7 @@ import { ModFeature, ModPurpose } from '@addons/mod/constants';
 export class AddonModH5PActivityModuleHandlerService extends CoreModuleHandlerBase implements CoreCourseModuleHandler {
 
     name = 'AddonModH5PActivity';
-    modName = 'h5pactivity';
+    modName = ADDON_MOD_H5PACTIVITY_MODNAME;
     protected pageName = ADDON_MOD_H5PACTIVITY_PAGE_NAME;
 
     supportedFeatures = {

@@ -20,14 +20,13 @@ import { CoreSites } from '@services/sites';
 import { makeSingleton } from '@singletons';
 import { CoreCourses } from '../courses';
 import { CoreDashboardHomeHandler } from './dashboard-home';
+import { CORE_COURSES_MYCOURSES_PAGE_NAME } from '@features/courses/constants';
 
 /**
  * Handler to add my courses into main menu.
  */
 @Injectable({ providedIn: 'root' })
 export class CoreCoursesMyCoursesMainMenuHandlerService implements CoreMainMenuHandler {
-
-    static readonly PAGE_NAME = 'courses';
 
     name = 'CoreCoursesMyCourses';
     priority = 900;
@@ -68,7 +67,7 @@ export class CoreCoursesMyCoursesMainMenuHandlerService implements CoreMainMenuH
 
         return {
             title: 'core.courses.mycourses',
-            page: CoreCoursesMyCoursesMainMenuHandlerService.PAGE_NAME,
+            page: CORE_COURSES_MYCOURSES_PAGE_NAME,
             class: 'core-courses-my-courses-handler',
             icon: 'fas-graduation-cap',
             priority: displayMyCourses ? this.priority + 200 : this.priority,

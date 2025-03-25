@@ -34,7 +34,7 @@ import {
 import { CoreCacheUpdateFrequency } from '@/core/constants';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreTextFormat } from '@singletons/text';
-import { CoreCourseModuleHelper } from '@features/course/services/course-module-helper';
+import { CoreCourseModuleHelper, CoreCourseModuleStandardElements } from '@features/course/services/course-module-helper';
 
 /**
  * Service that provides some features for wikis.
@@ -1107,14 +1107,7 @@ export type AddonModWikiGetWikisByCoursesWSResponse = {
 /**
  * Wiki data returned by mod_wiki_get_wikis_by_courses WS.
  */
-export type AddonModWikiWiki = {
-    id: number; // Wiki ID.
-    coursemodule: number; // Course module ID.
-    course: number; // Course ID.
-    name: string; // Wiki name.
-    intro?: string; // Wiki intro.
-    introformat?: CoreTextFormat; // Wiki intro format. format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
-    introfiles?: CoreWSExternalFile[];
+export type AddonModWikiWiki = CoreCourseModuleStandardElements & {
     timecreated?: number; // Time of creation.
     timemodified?: number; // Time of last modification.
     firstpagetitle?: string; // First page title.
@@ -1123,10 +1116,6 @@ export type AddonModWikiWiki = {
     forceformat?: number; // 1 if format is forced, 0 otherwise.
     editbegin?: number; // Edit begin.
     editend?: number; // Edit end.
-    section?: number; // Course section ID.
-    visible?: number; // 1 if visible, 0 otherwise.
-    groupmode?: number; // Group mode.
-    groupingid?: number; // Group ID.
     cancreatepages: boolean; // True if user can create pages.
 };
 

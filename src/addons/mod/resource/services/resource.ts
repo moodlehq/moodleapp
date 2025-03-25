@@ -23,9 +23,8 @@ import { CoreWSExternalFile, CoreWSExternalWarning } from '@services/ws';
 import { makeSingleton } from '@singletons';
 import { ADDON_MOD_RESOURCE_COMPONENT_LEGACY } from '../constants';
 import { CoreCacheUpdateFrequency } from '@/core/constants';
-import { CoreTextFormat } from '@singletons/text';
 import { ModResourceDisplay } from '@addons/mod/constants';
-import { CoreCourseModuleHelper } from '@features/course/services/course-module-helper';
+import { CoreCourseModuleHelper, CoreCourseModuleStandardElements } from '@features/course/services/course-module-helper';
 
 /**
  * Service that provides some features for resources.
@@ -157,14 +156,7 @@ type AddonModResourceViewResourceWSParams = {
 /**
  * Resource returned by mod_resource_get_resources_by_courses.
  */
-export type AddonModResourceResource = {
-    id: number; // Module id.
-    coursemodule: number; // Course module id.
-    course: number; // Course id.
-    name: string; // Page name.
-    intro: string; // Summary.
-    introformat: CoreTextFormat; // Intro format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
-    introfiles: CoreWSExternalFile[];
+export type AddonModResourceResource = CoreCourseModuleStandardElements & {
     contentfiles: CoreWSExternalFile[];
     tobemigrated: number; // Whether this resource was migrated.
     legacyfiles: number; // Legacy files flag.
@@ -174,10 +166,6 @@ export type AddonModResourceResource = {
     filterfiles: number; // If filters should be applied to the resource content.
     revision: number; // Incremented when after each file changes, to avoid cache.
     timemodified: number; // Last time the resource was modified.
-    section: number; // Course section id.
-    visible: number; // Module visibility.
-    groupmode: number; // Group mode.
-    groupingid: number; // Grouping id.
 };
 
 export type AddonModResourceCustomData = {
