@@ -32,7 +32,6 @@ import { TranslateModule, TranslateService, TranslateStore } from '@ngx-translat
 import { CoreIonLoadingElement } from '@classes/ion-loading';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { DefaultUrlSerializer, UrlSerializer } from '@angular/router';
-import { CoreUtils, CoreUtilsProvider } from '@services/utils/utils';
 import { Equal } from '@/core/utils/types';
 
 abstract class WrapperComponent<U> {
@@ -72,9 +71,6 @@ const DEFAULT_SERVICE_SINGLETON_MOCKS: [CoreSingletonProxy, unknown][] = [
     })],
     [CoreLoadings, mock({
         show: () => Promise.resolve(mock<CoreIonLoadingElement>({ dismiss: jest.fn() })),
-    })],
-    [CoreUtils, mock(new CoreUtilsProvider(), {
-        nextTick: () => Promise.resolve(),
     })],
 ];
 
