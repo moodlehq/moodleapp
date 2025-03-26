@@ -2,7 +2,7 @@ os: linux
 dist: noble
 node_js: 20
 jdk:
-  - openjdk23
+  - openjdk17
 
 git:
   depth: 3
