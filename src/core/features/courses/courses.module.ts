@@ -29,16 +29,14 @@ import { ApplicationInit } from '@singletons';
 import { CoreCoursesCourseLinkHandler } from './services/handlers/course-link';
 import { CoreCoursesIndexLinkHandler } from './services/handlers/courses-index-link';
 
-import { CoreDashboardHomeHandler, CoreDashboardHomeHandlerService } from './services/handlers/dashboard-home';
+import { CoreDashboardHomeHandler } from './services/handlers/dashboard-home';
 import { CoreCoursesDashboardLinkHandler } from './services/handlers/dashboard-link';
 import { CoreCoursesEnrolPushClickHandler } from './services/handlers/enrol-push-click';
-import {
-    CoreCoursesMyCoursesHomeHandler,
-    CoreCoursesMyCoursesMainMenuHandlerService,
-} from './services/handlers/my-courses-mainmenu';
+import { CoreCoursesMyCoursesHomeHandler } from './services/handlers/my-courses-mainmenu';
 import { CoreCoursesRequestPushClickHandler } from './services/handlers/request-push-click';
 import { CoreCoursesMyCoursesLinkHandler } from './services/handlers/my-courses-link';
 import { CoreCoursesSectionLinkHandler } from '@features/courses/services/handlers/section-link';
+import { CORE_COURSES_DASHBOARD_PAGE_NAME, CORE_COURSES_MYCOURSES_PAGE_NAME } from '@features/courses/constants';
 
 /**
  * Get courses services.
@@ -103,14 +101,14 @@ export async function getCoursesExportedDirectives(): Promise<Type<unknown>[]> {
 
 const mainMenuHomeChildrenRoutes: Routes = [
     {
-        path: CoreDashboardHomeHandlerService.PAGE_NAME,
+        path: CORE_COURSES_DASHBOARD_PAGE_NAME,
         loadComponent: () => import('@features/courses/pages/dashboard/dashboard'),
     },
 ];
 
 const routes: Routes = [
     {
-        path: CoreCoursesMyCoursesMainMenuHandlerService.PAGE_NAME,
+        path: CORE_COURSES_MYCOURSES_PAGE_NAME,
         loadChildren: () => import('./courses-lazy.module'),
     },
 ];

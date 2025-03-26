@@ -29,7 +29,7 @@ import { Translate } from '@singletons';
 import { CoreSwipeNavigationItemsManager } from '@classes/items-management/swipe-navigation-items-manager';
 import { CoreRoutedItemsManagerSourcesTracker } from '@classes/items-management/routed-items-manager-sources-tracker';
 import { CoreUserParticipantsSource } from '@features/user/classes/participants-source';
-import { CoreUserData, CoreUserParticipant } from '@features/user/services/user';
+import { CoreUserDescriptionExporter, CoreUserParticipant } from '@features/user/services/user';
 import { CoreGradesCoursesSource } from '@features/grades/classes/grades-courses-source';
 import { CoreDom } from '@singletons/dom';
 import { CoreTime } from '@singletons/time';
@@ -314,7 +314,8 @@ class CoreGradesCourseCoursesSwipeManager extends CoreSwipeNavigationItemsManage
 /**
  * Swipe manager for participants grades.
  */
-class CoreGradesCourseParticipantsSwipeManager extends CoreSwipeNavigationItemsManager<CoreUserParticipant | CoreUserData>
+class CoreGradesCourseParticipantsSwipeManager
+    extends CoreSwipeNavigationItemsManager<CoreUserParticipant | CoreUserDescriptionExporter>
     implements CoreGradesCourseSwipeManager {
 
     constructor(source: CoreUserParticipantsSource) {

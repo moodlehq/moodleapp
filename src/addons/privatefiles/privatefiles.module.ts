@@ -16,7 +16,8 @@ import { APP_INITIALIZER, NgModule, Type } from '@angular/core';
 import { Routes } from '@angular/router';
 import { CoreMainMenuTabRoutingModule } from '@features/mainmenu/mainmenu-tab-routing.module';
 import { CoreUserDelegate } from '@features/user/services/user-delegate';
-import { AddonPrivateFilesUserHandler, AddonPrivateFilesUserHandlerService } from './services/handlers/user';
+import { AddonPrivateFilesUserHandler } from './services/handlers/user';
+import { ADDON_PRIVATE_FILES_PAGE_NAME } from './constants';
 
 /**
  * Get private files services.
@@ -35,7 +36,7 @@ export async function getPrivateFilesServices(): Promise<Type<unknown>[]> {
 
 const routes: Routes = [
     {
-        path: AddonPrivateFilesUserHandlerService.PAGE_NAME,
+        path: ADDON_PRIVATE_FILES_PAGE_NAME,
         loadChildren: () => [
             {
                 path: '',

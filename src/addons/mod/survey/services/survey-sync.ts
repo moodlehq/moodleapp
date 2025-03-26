@@ -25,7 +25,7 @@ import { makeSingleton } from '@singletons';
 import { CoreEvents } from '@singletons/events';
 import { AddonModSurvey } from './survey';
 import { AddonModSurveyAnswersDBRecordFormatted, AddonModSurveyOffline } from './survey-offline';
-import { ADDON_MOD_SURVEY_AUTO_SYNCED, ADDON_MOD_SURVEY_COMPONENT_LEGACY } from '../constants';
+import { ADDON_MOD_SURVEY_AUTO_SYNCED, ADDON_MOD_SURVEY_COMPONENT_LEGACY, ADDON_MOD_SURVEY_MODNAME } from '../constants';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 
 /**
@@ -202,7 +202,7 @@ export class AddonModSurveySyncProvider extends CoreCourseActivitySyncBaseProvid
                 await AddonModSurvey.invalidateSurveyData(result.courseId, siteId);
 
                 // Data has been sent to server, update survey data.
-                const module = await CoreCourse.getModuleBasicInfoByInstance(surveyId, 'survey', { siteId });
+                const module = await CoreCourse.getModuleBasicInfoByInstance(surveyId, ADDON_MOD_SURVEY_MODNAME, { siteId });
 
                 CorePromiseUtils.ignoreErrors(
                     this.prefetchModuleAfterUpdate(module, result.courseId, undefined, siteId),

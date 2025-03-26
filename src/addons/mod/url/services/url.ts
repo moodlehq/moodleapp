@@ -14,7 +14,7 @@
 
 import { Injectable } from '@angular/core';
 import { CoreSites, CoreSitesCommonWSOptions } from '@services/sites';
-import { CoreWSExternalWarning, CoreWSExternalFile } from '@services/ws';
+import { CoreWSExternalWarning } from '@services/ws';
 import { makeSingleton } from '@singletons';
 import { CoreCacheUpdateFrequency } from '@/core/constants';
 import { CoreMimetypeUtils } from '@services/utils/mimetype';
@@ -23,9 +23,8 @@ import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreCourseLogHelper } from '@features/course/services/log-helper';
 import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
 import { ADDON_MOD_URL_COMPONENT_LEGACY } from '../constants';
-import { CoreTextFormat } from '@singletons/text';
 import { ModResourceDisplay } from '@addons/mod/constants';
-import { CoreCourseModuleHelper } from '@features/course/services/course-module-helper';
+import { CoreCourseModuleHelper, CoreCourseModuleStandardElements } from '@features/course/services/course-module-helper';
 
 /**
  * Service that provides some features for urls.
@@ -223,23 +222,12 @@ type AddonModUrlViewUrlWSParams = {
 /**
  * URL returnd by mod_url_get_urls_by_courses.
  */
-export type AddonModUrlUrl = {
-    id: number; // Module id.
-    coursemodule: number; // Course module id.
-    course: number; // Course id.
-    name: string; // URL name.
-    intro: string; // Summary.
-    introformat: CoreTextFormat; // Intro format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
-    introfiles: CoreWSExternalFile[];
+export type AddonModUrlUrl = CoreCourseModuleStandardElements & {
     externalurl: string; // External URL.
     display: ModResourceDisplay; // How to display the url.
     displayoptions: string; // Display options (width, height).
     parameters: string; // Parameters to append to the URL.
     timemodified: number; // Last time the url was modified.
-    section: number; // Course section id.
-    visible: number; // Module visibility.
-    groupmode: number; // Group mode.
-    groupingid: number; // Grouping id.
 };
 
 /**

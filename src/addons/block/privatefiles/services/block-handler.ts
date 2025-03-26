@@ -15,8 +15,8 @@
 import { Injectable } from '@angular/core';
 import { CoreBlockHandlerData } from '@features/block/services/block-delegate';
 import { CoreBlockBaseHandler } from '@features/block/classes/base-block-handler';
-import { AddonPrivateFilesUserHandlerService } from '@addons/privatefiles/services/handlers/user';
 import { makeSingleton } from '@singletons';
+import { ADDON_PRIVATE_FILES_PAGE_NAME } from '@addons/privatefiles/constants';
 
 /**
  * Block handler.
@@ -37,7 +37,7 @@ export class AddonBlockPrivateFilesHandlerService extends CoreBlockBaseHandler {
             title: 'addon.block_privatefiles.pluginname',
             class: 'addon-block-private-files',
             component: CoreBlockOnlyTitleComponent,
-            link: AddonPrivateFilesUserHandlerService.PAGE_NAME,
+            link: ADDON_PRIVATE_FILES_PAGE_NAME,
             linkParams: { root: 'my' },
             navOptions: {
                 preferCurrentTab: false,

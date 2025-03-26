@@ -35,6 +35,7 @@ import {
 } from '../h5pactivity';
 import {
     ADDON_MOD_H5PACTIVITY_COMPONENT_LEGACY,
+    ADDON_MOD_H5PACTIVITY_MODNAME,
     ADDON_MOD_H5PACTIVITY_STATE_ID,
     ADDON_MOD_H5PACTIVITY_TRACK_COMPONENT,
 } from '../../constants';
@@ -46,7 +47,7 @@ import {
 export class AddonModH5PActivityPrefetchHandlerService extends CoreCourseActivityPrefetchHandlerBase {
 
     name = 'AddonModH5PActivity';
-    modName = 'h5pactivity';
+    modName = ADDON_MOD_H5PACTIVITY_MODNAME;
     component = ADDON_MOD_H5PACTIVITY_COMPONENT_LEGACY;
     updatesNames = /^configuration$|^.*files$|^tracks$|^usertracks$/;
 

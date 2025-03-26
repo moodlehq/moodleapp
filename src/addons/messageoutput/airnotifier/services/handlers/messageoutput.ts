@@ -16,14 +16,13 @@ import { Injectable } from '@angular/core';
 
 import { AddonMessageOutputHandler, AddonMessageOutputHandlerData } from '@addons/messageoutput/services/messageoutput-delegate';
 import { makeSingleton } from '@singletons';
+import { ADDON_MESSAGEOUTPUT_AIRNOTIFIER_PAGE_NAME } from '../../constants';
 
 /**
  * Airnotifier message output handler.
  */
 @Injectable({ providedIn: 'root' })
 export class AddonMessageOutputAirnotifierHandlerService implements AddonMessageOutputHandler {
-
-    static readonly PAGE_NAME = 'messageoutput-airnotifier';
 
     name = 'AddonMessageOutputAirnotifier';
     processorName = 'airnotifier';
@@ -49,7 +48,7 @@ export class AddonMessageOutputAirnotifierHandlerService implements AddonMessage
             priority: 600,
             label: 'addon.messageoutput_airnotifier.processorsettingsdesc',
             icon: 'fas-gear',
-            page: AddonMessageOutputAirnotifierHandlerService.PAGE_NAME,
+            page: ADDON_MESSAGEOUTPUT_AIRNOTIFIER_PAGE_NAME,
         };
     }
 

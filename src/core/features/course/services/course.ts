@@ -67,6 +67,8 @@ import { CoreObject } from '@singletons/object';
 import { CoreAlerts } from '@services/overlays/alerts';
 import { CoreCourseModuleHelper, CoreCourseStoreModuleViewedOptions } from './course-module-helper';
 import { CoreCourseDownloadStatusHelper } from './course-download-status-helper';
+import { MAIN_MENU_HOME_PAGE_NAME } from '@features/mainmenu/constants';
+import { CORE_SITEHOME_PAGE_NAME } from '@features/sitehome/constants';
 
 export type CoreCourseProgressUpdated = { progress: number; courseId: number };
 
@@ -1310,7 +1312,7 @@ export class CoreCourseProvider {
     ): Promise<void> {
         if (course.id === CoreSites.getCurrentSite()?.getSiteHomeId()) {
             // Open site home.
-            await CoreNavigator.navigate('/main/home/site', navOptions);
+            await CoreNavigator.navigate(`/main/${MAIN_MENU_HOME_PAGE_NAME}/${CORE_SITEHOME_PAGE_NAME}`, navOptions);
 
             return;
         }
@@ -1474,34 +1476,6 @@ export type CoreCourseCommonModWSOptions = CoreSitesCommonWSOptions & {
  * Common options used by modules when calling a WS through CoreSite, including an option to determine if text should be filtered.
  */
 export type CoreCourseCommonModWSOptionsWithFilter = CoreCourseCommonModWSOptions & CoreSitesWSOptionsWithFilter;
-
-/**
- * Data returned by course_summary_exporter.
- */
-export type CoreCourseSummary = {
-    id: number; // Id.
-    fullname: string; // Fullname.
-    shortname: string; // Shortname.
-    idnumber: string; // Idnumber.
-    summary: string; // Summary.
-    summaryformat: CoreTextFormat; // Summary format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
-    startdate: number; // Startdate.
-    enddate: number; // Enddate.
-    visible: boolean; // @since 3.8. Visible.
-    fullnamedisplay: string; // Fullnamedisplay.
-    viewurl: string; // Viewurl.
-    courseimage: string; // @since 3.6. Courseimage.
-    progress?: number; // @since 3.6. Progress.
-    hasprogress: boolean; // @since 3.6. Hasprogress.
-    isfavourite: boolean; // @since 3.6. Isfavourite.
-    hidden: boolean; // @since 3.6. Hidden.
-    timeaccess?: number; // @since 3.6. Timeaccess.
-    showshortname: boolean; // @since 3.6. Showshortname.
-    coursecategory: string; // @since 3.7. Coursecategory.
-    showactivitydates: boolean | null; // @since 3.11. Whether the activity dates are shown or not.
-    showcompletionconditions: boolean | null; // @since 3.11. Whether the activity completion conditions are shown or not.
-    timemodified?: number; // @since 4.0. Last time course settings were updated (timestamp).
-};
 
 /**
  * Data returned by course_module_summary_exporter.
@@ -1674,6 +1648,16 @@ export type CoreCourseGetContentsWSModule = {
     indent: number; // Number of identation in the site.
     onclick?: string; // Onclick action.
     afterlink?: string; // After link info to be displayed.
+    activitybadge?: { // @since 4.3. Activity badge to display near the name.
+        badgecontent?: string; // The content to be displayed in the activity badge.
+        badgestyle?: string; // The style for the activity badge.
+        badgeurl?: string; // An optional URL to redirect the user when the activity badge is clicked.
+        badgeelementid?: string; // An optional id in case the module wants to add some code for the activity badge.
+        badgeextraattributes?: { // An optional array of extra HTML attributes to add to the badge element.
+            name?: string; // The attribute name.
+            value?: string; // The attribute value.
+        }[];
+    };
     customdata?: string; // Custom data (JSON encoded).
     noviewlink?: boolean; // Whether the module has no view page.
     completion?: CoreCourseModuleCompletionTracking; // Type of completion tracking: 0 means none, 1 manual, 2 automatic.
@@ -1681,10 +1665,12 @@ export type CoreCourseGetContentsWSModule = {
     contents?: CoreCourseModuleContentFile[];
     groupmode?: number; // @since 4.3. Group mode value
     downloadcontent?: number; // @since 4.0 The download content value.
-    dates?: {
-        label: string;
-        timestamp: number;
-    }[]; // @since 3.11. Activity dates.
+    dates?: { // @since 3.11. Course dates.
+        label: string; // Date label.
+        timestamp: number; // Date timestamp.
+        relativeto?: number; // @since 4.1. Relative date timestamp.
+        dataid?: string; // @since 4.1. Cm data id.
+    }[];
     contentsinfo?: { // @since v3.7.6 Contents summary information.
         filescount: number; // Total number of files.
         filessize: number; // Total files size.

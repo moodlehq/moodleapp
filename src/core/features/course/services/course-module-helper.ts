@@ -35,6 +35,7 @@ import { ModFeature } from '@addons/mod/constants';
 import { CoreCourseModuleSummary } from './course';
 import { CoreCourseModuleData } from './course-helper';
 import { CoreCourseModuleDelegate } from './module-delegate';
+import { CoreWSExternalFile } from '@services/ws';
 
 /**
  * Service that provides some features regarding a course.
@@ -293,4 +294,25 @@ export type CoreCourseStoreModuleViewedOptions = {
     sectionId?: number;
     timeaccess?: number;
     siteId?: string;
+};
+
+/**
+ * Common data returned by get modules by course function.
+ * This relates to LMS helper_for_get_mods_by_courses::standard_coursemodule_elements_returns,
+ * do not modify unless the exporter changes.
+ * This is not implemented as an exporter in LMS right now.
+ */
+export type CoreCourseModuleStandardElements = {
+    id: number; // Activity instance id.
+    coursemodule: number; // Course module id.
+    course: number; // Course id.
+    name: string; // Activity name.
+    intro?: string; // Activity introduction.
+    introformat?: number; // Intro format (1 = HTML, 0 = MOODLE, 2 = PLAIN, or 4 = MARKDOWN).
+    introfiles?: CoreWSExternalFile[];
+    section?: number; // Course section id.
+    visible?: boolean; // Visible.
+    groupmode?: number; // Group mode.
+    groupingid?: number; // Group id.
+    lang?: string; // @since 4.1. Forced activity language.
 };

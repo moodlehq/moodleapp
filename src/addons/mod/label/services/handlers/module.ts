@@ -18,6 +18,7 @@ import { CoreModuleHandlerBase } from '@features/course/classes/module-base-hand
 import { CoreCourseModuleData } from '@features/course/services/course-helper';
 import { CoreCourseModuleHandler, CoreCourseModuleHandlerData } from '@features/course/services/module-delegate';
 import { makeSingleton } from '@singletons';
+import { ADDON_MOD_LABEL_MODNAME } from '../../constants';
 
 /**
  * Handler to support label modules.
@@ -26,7 +27,7 @@ import { makeSingleton } from '@singletons';
 export class AddonModLabelModuleHandlerService extends CoreModuleHandlerBase implements CoreCourseModuleHandler {
 
     name = 'AddonModLabel';
-    modName = 'label';
+    modName = ADDON_MOD_LABEL_MODNAME;
 
     supportedFeatures = {
         [ModFeature.MOD_ARCHETYPE]: ModArchetype.RESOURCE,

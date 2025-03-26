@@ -439,4 +439,5 @@ export type CoreTagItem = {
     itemid: number; // Id of the record tagged.
     ordering: number; // Tag ordering.
     flag: number; // Whether the tag is flagged as inappropriate.
+    viewurl?: string; // @since 4.4. The url to view the tag.
 };

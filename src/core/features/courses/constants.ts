@@ -16,6 +16,9 @@ export const CORE_COURSES_ENROL_INVALID_KEY = 'CoreCoursesEnrolInvalidKey';
 
 export const CORE_COURSES_MY_COURSES_CHANGED_EVENT = 'courses_my_courses_changed'; // User course list changed while app is running.
 
+export const CORE_COURSES_DASHBOARD_PAGE_NAME = 'dashboard';
+export const CORE_COURSES_MYCOURSES_PAGE_NAME = 'courses';
+
 // Events.
 // A course was hidden/favourite, or user enroled in a course.
 export const CORE_COURSES_MY_COURSES_UPDATED_EVENT = 'courses_my_courses_updated';

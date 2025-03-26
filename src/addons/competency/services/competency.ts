@@ -17,13 +17,13 @@ import { Injectable } from '@angular/core';
 import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
 import { CoreSite } from '@classes/sites/site';
 import { CoreCommentsArea } from '@features/comments/services/comments';
-import { CoreCourseSummary } from '@features/course/services/course';
 import { CoreUserSummary } from '@features/user/services/user';
 import { CoreSites } from '@services/sites';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { makeSingleton } from '@singletons';
 import { CoreTextFormat } from '@singletons/text';
 import { AddonCompetencyLearningPlanStatus, AddonCompetencyReviewStatus } from '../constants';
+import { CoreCourseSummaryExporterData } from '@features/courses/services/courses';
 
 /**
  * Service to handle caompetency learning plans.
@@ -795,7 +795,7 @@ export type AddonCompetencyDataForUserCompetencySummaryWSResponse = {
  * Data returned by competency's competency_summary_exporter.
  */
 export type AddonCompetencySummary = {
-    linkedcourses: CoreCourseSummary; // Linkedcourses.
+    linkedcourses: CoreCourseSummaryExporterData[]; // Linkedcourses.
     relatedcompetencies: AddonCompetencyCompetency[]; // Relatedcompetencies.
     competency: AddonCompetencyCompetency;
     framework: AddonCompetencyFramework;
@@ -889,7 +889,7 @@ type AddonCompetencyDataForUserCompetencySummaryInCourseWSParams = {
  */
 export type AddonCompetencyDataForUserCompetencySummaryInCourseWSResponse = {
     usercompetencysummary: AddonCompetencyDataForUserCompetencySummaryWSResponse;
-    course: CoreCourseSummary;
+    course: CoreCourseSummaryExporterData;
     coursemodules: AddonCompetencyCourseModuleInfo[]; // Coursemodules.
     plans: AddonCompetencyPlan[]; // @since 3.7. Plans.
     pluginbaseurl: string; // @since 3.7. Pluginbaseurl.

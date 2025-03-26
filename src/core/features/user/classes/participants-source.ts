@@ -15,12 +15,13 @@
 import { Params } from '@angular/router';
 import { CoreRoutedItemsManagerSource } from '@classes/items-management/routed-items-manager-source';
 
-import { CoreUser, CoreUserData, CoreUserParticipant, CoreUserProvider } from '../services/user';
+import { CoreUser, CoreUserDescriptionExporter, CoreUserParticipant } from '../services/user';
+import { CORE_USER_PARTICIPANTS_LIST_LIMIT } from '../constants';
 
 /**
  * Provides a collection of course participants.
  */
-export class CoreUserParticipantsSource extends CoreRoutedItemsManagerSource<CoreUserParticipant | CoreUserData> {
+export class CoreUserParticipantsSource extends CoreRoutedItemsManagerSource<CoreUserParticipant | CoreUserDescriptionExporter> {
 
     /**
      * @inheritdoc
@@ -44,7 +45,7 @@ export class CoreUserParticipantsSource extends CoreRoutedItemsManagerSource<Cor
     /**
      * @inheritdoc
      */
-    getItemPath(user: CoreUserParticipant | CoreUserData): string {
+    getItemPath(user: CoreUserParticipant | CoreUserDescriptionExporter): string {
         return user.id.toString();
     }
 
@@ -58,14 +59,16 @@ export class CoreUserParticipantsSource extends CoreRoutedItemsManagerSource<Cor
     /**
      * @inheritdoc
      */
-    protected async loadPageItems(page: number): Promise<{ items: (CoreUserParticipant | CoreUserData)[]; hasMoreItems: boolean }> {
+    protected async loadPageItems(
+        page: number,
+    ): Promise<{ items: (CoreUserParticipant | CoreUserDescriptionExporter)[]; hasMoreItems: boolean }> {
         if (this.SEARCH_QUERY) {
             const { participants, canLoadMore } = await CoreUser.searchParticipants(
                 this.COURSE_ID,
                 this.SEARCH_QUERY,
                 true,
                 page,
-                CoreUserProvider.PARTICIPANTS_LIST_LIMIT,
+                CORE_USER_PARTICIPANTS_LIST_LIMIT,
             );
 
             return {
@@ -76,8 +79,8 @@ export class CoreUserParticipantsSource extends CoreRoutedItemsManagerSource<Cor
 
         const { participants, canLoadMore } = await CoreUser.getParticipants(
             this.COURSE_ID,
-            page * CoreUserProvider.PARTICIPANTS_LIST_LIMIT,
-            CoreUserProvider.PARTICIPANTS_LIST_LIMIT,
+            page * CORE_USER_PARTICIPANTS_LIST_LIMIT,
+            CORE_USER_PARTICIPANTS_LIST_LIMIT,
         );
 
         return {
@@ -90,7 +93,7 @@ export class CoreUserParticipantsSource extends CoreRoutedItemsManagerSource<Cor
      * @inheritdoc
      */
     protected getPageLength(): number {
-        return CoreUserProvider.PARTICIPANTS_LIST_LIMIT;
+        return CORE_USER_PARTICIPANTS_LIST_LIMIT;
     }
 
 }

@@ -98,14 +98,11 @@ export class AddonModAssignFeedbackCommentsHandlerService implements AddonModAss
             undefined,
         );
 
-        if (offlineData?.plugindata?.assignfeedbackcomments_editor) {
-            const pluginData = <AddonModAssignFeedbackCommentsPluginData>offlineData.plugindata;
+        // Get the initial text from the offline data, or from the plugin data if no offline data.
+        const initialText = offlineData?.plugindata?.assignfeedbackcomments_editor ?
+            (<AddonModAssignFeedbackCommentsPluginData> offlineData.plugindata).assignfeedbackcomments_editor.text :
+            AddonModAssign.getSubmissionPluginText(plugin);
 
-            return !!pluginData.assignfeedbackcomments_editor.text;
-        }
-
-        // No offline data found, get text from plugin.
-        const initialText = AddonModAssign.getSubmissionPluginText(plugin);
         const newText = AddonModAssignFeedbackCommentsHandler.getTextFromInputData(plugin, inputData);
 
         if (newText === undefined) {
