@@ -40,7 +40,6 @@ export class AddonBlockRecentlyAccessedItemsComponent extends CoreBlockBaseCompo
 
     items: AddonBlockRecentlyAccessedItemsItemCalculatedData[] = [];
     scrollElementId!: string;
-    colorizeIcons = false;
 
     protected fetchContentDefaultError = 'Error getting recently accessed items data.';
 
@@ -56,9 +55,6 @@ export class AddonBlockRecentlyAccessedItemsComponent extends CoreBlockBaseCompo
         const scrollId = CoreUtils.getUniqueId('AddonBlockRecentlyAccessedItemsComponent-Scroll');
 
         this.scrollElementId = `addon-block-recentlyaccesseditems-scroll-${scrollId}`;
-
-        // Only colorize icons on 4.0 to 4.3 sites.
-        this.colorizeIcons = !CoreSites.getCurrentSite()?.isVersionGreaterEqualThan('4.4');
 
         super.ngOnInit();
     }
