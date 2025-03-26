@@ -24,7 +24,12 @@
                         <ion-col class="ion-text-center" size="4">{{ 'core.user' | translate }}</ion-col>
                         <ion-col class="ion-text-center" size="4">{{ 'core.date' | translate }}</ion-col>
                         <ion-col class="ion-text-center" size="2">{{ 'addon.mod_h5pactivity.score' | translate }}</ion-col>
-                        <ion-col class="ion-text-center" size="2">{{ 'addon.mod_h5pactivity.attempts' | translate }}</ion-col>
+                        <ion-col class="ion-text-center" size="2">
+                            {{ 'addon.mod_h5pactivity.attempts' | translate }}
+                            @if (totalAttempts) {
+                                ({{ totalAttempts }})
+                            }
+                        </ion-col>
                     </ion-row>
                 </ion-label>
             </ion-item>
