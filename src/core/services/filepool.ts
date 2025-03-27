@@ -22,8 +22,8 @@ import { CoreFile } from '@services/file';
 import { CorePluginFileDelegate } from '@services/plugin-file-delegate';
 import { CoreSites } from '@services/sites';
 import { CoreWS, CoreWSExternalFile, CoreWSFile } from '@services/ws';
-import { CoreDomUtils } from '@services/utils/dom';
-import { CoreMimetypeUtils } from '@services/utils/mimetype';
+import { CoreDom } from '@singletons/dom';
+import { CoreMimetype } from '@singletons/mimetype';
 import { CoreText } from '@singletons/text';
 import { CoreTime } from '@singletons/time';
 import { CoreUrl, CoreUrlPartNames } from '@singletons/url';
@@ -733,7 +733,7 @@ export class CoreFilepoolProvider {
             newData.path = filePath;
         }
         if (entry.isexternalfile !== options.isexternalfile && (entry.isexternalfile || options.isexternalfile)) {
-            newData.isexternalfile = options.isexternalfile;
+            newData.isexternalfile = options.isexternalfile ? 1 : 0;
         }
         if (entry.repositorytype !== options.repositorytype && (entry.repositorytype || options.repositorytype)) {
             newData.repositorytype = options.repositorytype;
@@ -1043,7 +1043,7 @@ export class CoreFilepoolProvider {
             fileUrl = fileUrl.replace(anchor, '');
         }
 
-        const extension = CoreMimetypeUtils.guessExtensionFromUrl(fileUrl);
+        const extension = CoreMimetype.guessExtensionFromUrl(fileUrl);
         const addExtension = options.filePath === undefined;
         const path = options.filePath || (await this.getFilePath(siteId, fileId, extension, fileUrl));
 
@@ -1847,7 +1847,7 @@ export class CoreFilepoolProvider {
         }
 
         // Check if the file is being downloaded right now.
-        const extension = CoreMimetypeUtils.guessExtensionFromUrl(fileUrl);
+        const extension = CoreMimetype.guessExtensionFromUrl(fileUrl);
         filePath = filePath || (await this.getFilePath(siteId, fileId, extension, fileUrl));
 
         const downloadId = this.getFileDownloadId(fileUrl, filePath);
@@ -2068,7 +2068,7 @@ export class CoreFilepoolProvider {
             });
 
             // Guess the extension of the URL. This is for backwards compatibility.
-            const candidate = CoreMimetypeUtils.guessExtensionFromUrl(url);
+            const candidate = CoreMimetype.guessExtensionFromUrl(url);
             if (candidate && candidate !== 'php') {
                 extension = `.${candidate}`;
             }
@@ -2384,7 +2384,7 @@ export class CoreFilepoolProvider {
         }
 
         // Remove the extension from the filename.
-        filename = CoreMimetypeUtils.removeExtension(filename);
+        filename = CoreMimetype.removeExtension(filename);
 
         if (hashes) {
             // Add hashes to the name.
@@ -2778,10 +2778,10 @@ export class CoreFilepoolProvider {
         const siteId = item.siteId;
         const fileId = item.fileId;
         const fileUrl = item.url;
-        const options = {
+        const options: DownloadForPoolOptions = {
             revision: item.revision ?? 0,
             timemodified: item.timemodified ?? 0,
-            isexternalfile: item.isexternalfile ?? undefined,
+            isexternalfile: item.isexternalfile === undefined ? undefined : !!item.isexternalfile,
             repositorytype: item.repositorytype ?? undefined,
         };
         const filePath = item.path || undefined;
@@ -2844,23 +2844,17 @@ export class CoreFilepoolProvider {
 
             if (errorObject && errorObject.source === fileUrl) {
                 // This is most likely a FileTransfer error.
-                if (errorObject.code === 1) { // FILE_NOT_FOUND_ERR.
-                    // The file was not found, most likely a 404, we remove from queue.
-                    dropFromQueue = true;
-                } else if (errorObject.code === 2) { // INVALID_URL_ERR.
-                    // The URL is invalid, we drop the file from the queue.
-                    dropFromQueue = true;
-                } else if (errorObject.code === 3) { // CONNECTION_ERR.
-                    // If there was an HTTP status, then let's remove from the queue.
-                    dropFromQueue = true;
-                } else if (errorObject.code === 4) { // ABORTED_ERR.
-                    // The transfer was aborted, we will keep the file in queue.
-                } else if (errorObject.code === 5) { // NOT_MODIFIED_ERR.
-                    // We have the latest version of the file, HTTP 304 status.
-                    dropFromQueue = true;
-                } else {
-                    // Any error, let's remove the file from the queue to avoi locking down the queue.
-                    dropFromQueue = true;
+                switch (errorObject.code) {
+                    case CoreFileTransferErrorCode.ABORT_ERR:
+                        // The transfer was aborted, we will keep the file in queue.
+                        break;
+                    case CoreFileTransferErrorCode.FILE_NOT_FOUND_ERR: // File wasn't found, most likely a 404, remove from queue.
+                    case CoreFileTransferErrorCode.INVALID_URL_ERR: // The URL is invalid, we drop the file from the queue.
+                    case CoreFileTransferErrorCode.CONNECTION_ERR: // If there was an HTTP status, then let's remove from the queue.
+                    case CoreFileTransferErrorCode.NOT_MODIFIED_ERR: // We have the latest version of the file, HTTP 304 status.
+                    default: // Any other error, let's remove the file from the queue to avoid locking down the queue.
+                        dropFromQueue = true;
+                        break;
                 }
             } else {
                 dropFromQueue = true;
@@ -3062,10 +3056,10 @@ export class CoreFilepoolProvider {
             return true;
         }
 
-        const mimetype = await CoreMimetypeUtils.getMimeTypeFromUrl(url);
+        const mimetype = await CoreMimetype.getMimeTypeFromUrl(url);
 
         // If the file is streaming (audio or video), return false.
-        return !CoreMimetypeUtils.isStreamedMimetype(mimetype);
+        return !CoreMimetype.isStreamedMimetype(mimetype);
     }
 
     /**
@@ -3158,7 +3152,7 @@ export class CoreFilepoolProvider {
         componentId?: string | number,
         revision?: number,
     ): Promise<string> {
-        const urls = CoreDomUtils.extractUrlsFromCSS(cssCode);
+        const urls = CoreDom.extractUrlsFromCSS(cssCode);
         let updated = false;
 
         // Get the path of the CSS file. If it's a local file, assume it's the path where to write the file.
@@ -3342,3 +3336,11 @@ type CoreFilepoolQueueItemOptions = Omit<CoreFilepoolFileOptions, 'priority'|'re
     filePath?: string; // Filepath to download the file to. If not defined, download to the filepool folder.
     link?: CoreFilepoolComponentLink; // The link to add for the file.
 };
+
+const enum CoreFileTransferErrorCode {
+    FILE_NOT_FOUND_ERR = 1,
+    INVALID_URL_ERR = 2,
+    CONNECTION_ERR = 3,
+    ABORT_ERR = 4,
+    NOT_MODIFIED_ERR = 5,
+}

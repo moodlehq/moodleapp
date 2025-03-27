@@ -29,8 +29,7 @@ import {
 } from '@angular/core';
 
 import { CoreSites } from '@services/sites';
-import { CoreDomUtils } from '@services/utils/dom';
-import { CoreIframeUtils, CoreIframeUtilsProvider } from '@services/utils/iframe';
+import { CoreIframe } from '@singletons/iframe';
 import { CoreText } from '@singletons/text';
 import { CoreErrorHelper } from '@services/error-helper';
 import { CoreSite } from '@classes/sites/site';
@@ -262,7 +261,7 @@ export class CoreFormatTextDirective implements OnChanges, OnDestroy, AsyncDirec
             container.classList.add('atto_image_button_text-bottom');
         }
 
-        CoreDomUtils.wrapElement(img, container);
+        CoreDom.wrapElement(img, container);
     }
 
     /**
@@ -396,7 +395,7 @@ export class CoreFormatTextDirective implements OnChanges, OnDestroy, AsyncDirec
         this.element.innerHTML = ''; // Remove current contents.
 
         // Move the children to the current element to be able to calculate the height.
-        CoreDomUtils.moveChildren(result.div, this.element);
+        CoreDom.moveChildren(result.div, this.element);
 
         this.elementControllers.forEach(controller => controller.destroy());
         this.elementControllers = result.elementControllers;
@@ -510,7 +509,7 @@ export class CoreFormatTextDirective implements OnChanges, OnDestroy, AsyncDirec
         const elementsWithInlineStyles = Array.from(div.querySelectorAll<HTMLElement>('*[style]'));
         const stopClicksElements = Array.from(div.querySelectorAll<HTMLElement>('button,input,select,textarea'));
         const frames = Array.from(
-            div.querySelectorAll<FrameElement>(CoreIframeUtilsProvider.FRAME_TAGS.join(',').replace(/iframe,?/, '')),
+            div.querySelectorAll<FrameElement>(CoreIframe.FRAME_TAGS.join(',').replace(/iframe,?/, '')),
         );
         const svgImages = Array.from(div.querySelectorAll('image'));
         const promises: Promise<void>[] = [];
@@ -565,7 +564,7 @@ export class CoreFormatTextDirective implements OnChanges, OnDestroy, AsyncDirec
         });
 
         const iframeControllers = iframes.map(iframe => {
-            const { launchExternal, label } = CoreIframeUtils.frameShouldLaunchExternal(iframe);
+            const { launchExternal, label } = CoreIframe.frameShouldLaunchExternal(iframe);
             if (launchExternal && this.replaceFrameWithButton(iframe, site, label)) {
                 return;
             }
@@ -611,12 +610,12 @@ export class CoreFormatTextDirective implements OnChanges, OnDestroy, AsyncDirec
 
         // Handle all kind of frames.
         const frameControllers = frames.map((frame) => {
-            const { launchExternal, label } = CoreIframeUtils.frameShouldLaunchExternal(frame);
+            const { launchExternal, label } = CoreIframe.frameShouldLaunchExternal(frame);
             if (launchExternal && this.replaceFrameWithButton(frame, site, label)) {
                 return;
             }
 
-            CoreIframeUtils.treatFrame(frame, false);
+            CoreIframe.treatFrame(frame, false);
 
             return new FrameElementController(frame, !this.disabled);
         }).filter((controller): controller is FrameElementController => controller !== undefined);
@@ -751,8 +750,8 @@ export class CoreFormatTextDirective implements OnChanges, OnDestroy, AsyncDirec
             element = element.parentElement;
             const computedStyle = getComputedStyle(element);
 
-            const padding = CoreDomUtils.getComputedStyleMeasure(computedStyle, 'paddingLeft') +
-                    CoreDomUtils.getComputedStyleMeasure(computedStyle, 'paddingRight');
+            const padding = CoreDom.getComputedStyleMeasure(computedStyle, 'paddingLeft') +
+                    CoreDom.getComputedStyleMeasure(computedStyle, 'paddingRight');
 
             // Use parent width as an aproximation.
             width = element.getBoundingClientRect().width - padding;
@@ -840,7 +839,7 @@ export class CoreFormatTextDirective implements OnChanges, OnDestroy, AsyncDirec
 
         this.addMediaAdaptClass(iframe);
 
-        if (CoreIframeUtils.shouldDisplayHelpForUrl(src)) {
+        if (CoreIframe.shouldDisplayHelpForUrl(src)) {
             this.addIframeHelp(iframe);
         }
 
@@ -849,22 +848,22 @@ export class CoreFormatTextDirective implements OnChanges, OnDestroy, AsyncDirec
             // Remove iframe src, otherwise it can cause auto-login issues if there are several iframes with auto-login.
             iframe.src = '';
 
-            let finalUrl = await CoreIframeUtils.getAutoLoginUrlForIframe(iframe, src);
+            let finalUrl = await CoreIframe.getAutoLoginUrlForIframe(iframe, src);
 
             const lang = await CoreLang.getCurrentLanguage(CoreLangFormat.LMS);
             finalUrl = CoreUrl.addParamsToUrl(finalUrl, { lang }, {
                 checkAutoLoginUrl: src !== finalUrl,
             });
 
-            await CoreIframeUtils.fixIframeCookies(finalUrl);
+            await CoreIframe.fixIframeCookies(finalUrl);
 
             iframe.src = finalUrl;
-            CoreIframeUtils.treatFrame(iframe, false);
+            CoreIframe.treatFrame(iframe, false);
 
             return;
         }
 
-        await CoreIframeUtils.fixIframeCookies(src);
+        await CoreIframe.fixIframeCookies(src);
 
         if (src !== iframe.src) {
             // URL was converted, update it in the iframe.
@@ -906,7 +905,7 @@ export class CoreFormatTextDirective implements OnChanges, OnDestroy, AsyncDirec
                     vimeoUrl += `&width=${width}&height=${height}`;
                 }
 
-                await CoreIframeUtils.fixIframeCookies(vimeoUrl);
+                await CoreIframe.fixIframeCookies(vimeoUrl);
 
                 iframe.src = vimeoUrl;
 
@@ -931,7 +930,7 @@ export class CoreFormatTextDirective implements OnChanges, OnDestroy, AsyncDirec
             }
         }
 
-        CoreIframeUtils.treatFrame(iframe, false);
+        CoreIframe.treatFrame(iframe, false);
     }
 
     /**
@@ -978,7 +977,7 @@ export class CoreFormatTextDirective implements OnChanges, OnDestroy, AsyncDirec
         button.innerHTML = label;
 
         button.addEventListener('click', () => {
-            CoreIframeUtils.frameLaunchExternal(url, {
+            CoreIframe.frameLaunchExternal(url, {
                 site,
                 component: this.component,
                 componentId: this.componentId,
@@ -1007,7 +1006,7 @@ export class CoreFormatTextDirective implements OnChanges, OnDestroy, AsyncDirec
         button.innerHTML = Translate.instant('core.iframehelp');
 
         button.addEventListener('click', () => {
-            CoreIframeUtils.openIframeHelpModal();
+            CoreIframe.openIframeHelpModal();
         });
 
         helpDiv.appendChild(button);

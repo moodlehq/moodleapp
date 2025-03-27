@@ -16,7 +16,7 @@ import { toBoolean } from '@/core/transforms/boolean';
 import { Component, Input, OnInit, DoCheck, KeyValueDiffers } from '@angular/core';
 import { CoreFileEntry } from '@services/file-helper';
 
-import { CoreMimetypeUtils } from '@services/utils/mimetype';
+import { CoreMimetype } from '@singletons/mimetype';
 import { CoreBaseModule } from '@/core/base.module';
 import { CoreFileComponent } from '../file/file';
 import { CoreLocalFileComponent } from '../local-file/local-file';
@@ -87,7 +87,7 @@ export class CoreFilesComponent implements OnInit, DoCheck {
      */
     protected renderInlineFiles(): void {
         this.contentText = this.files.reduce((previous, file) => {
-            const text = CoreMimetypeUtils.getEmbeddedHtml(file);
+            const text = CoreMimetype.getEmbeddedHtml(file);
 
             return text ? `${previous}<br>${text}` : previous;
         }, '');

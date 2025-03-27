@@ -18,6 +18,7 @@ For more information about upgrading, read the official documentation: https://m
  - Location permissions have been removed from the app. Geolocation and CoreGeolocation services are now deprecated and no longer allow obtaining the location.
  - chart.js has been updated to 4.4.8 some breaking changes may occur when using CoreChartComponent.
  - Assign submission plugins now should implement canContainFiltersWhenEditing instead of canEditOffline.
+ - On CoreSitesProvider, functions addSiteFromSiteListEntry, makeSiteFromSiteListEntry and getSiteFromDB are now protected and unsetCurrentSite removed.
 
 === 4.5.0 ===
 

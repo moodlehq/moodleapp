@@ -19,7 +19,7 @@ import { CoreIonLoadingElement } from '@classes/ion-loading';
 import { CoreFile } from '@services/file';
 import { CoreFileHelper } from '@services/file-helper';
 import { CoreSites } from '@services/sites';
-import { CoreMimetypeUtils } from '@services/utils/mimetype';
+import { CoreMimetype } from '@singletons/mimetype';
 import { CoreText } from '@singletons/text';
 import { CoreTime } from '@singletons/time';
 import { CoreOpener, CoreOpenerOpenFileOptions, OpenFileAction } from '@singletons/opener';
@@ -112,8 +112,9 @@ export class CoreLocalFileComponent implements OnInit {
      */
     protected loadFileBasicData(file: FileEntry): void {
         this.fileName = file.name;
-        this.fileIcon = CoreMimetypeUtils.getFileIcon(file.name);
-        this.fileExtension = CoreMimetypeUtils.getFileExtension(file.name);
+
+        this.fileIcon = CoreMimetype.getFileIcon(file.name, CoreSites.getCurrentSite());
+        this.fileExtension = CoreMimetype.getFileExtension(file.name);
 
         // Let's calculate the relative path for the file.
         this.relativePath = CoreFile.removeBasePath(CoreFile.getFileEntryURL(file));

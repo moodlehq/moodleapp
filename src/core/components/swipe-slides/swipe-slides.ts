@@ -30,10 +30,9 @@ import { AsyncDirective } from '@classes/async-directive';
 import { CoreSwipeSlidesItemsManager } from '@classes/items-management/swipe-slides-items-manager';
 import { CorePromisedValue } from '@classes/promised-value';
 import { IonContent } from '@ionic/angular';
-import { CoreDomUtils, VerticalPoint } from '@services/utils/dom';
 import { CoreWait } from '@singletons/wait';
 import { NgZone } from '@singletons';
-import { CoreDom } from '@singletons/dom';
+import { CoreDom, VerticalPoint } from '@singletons/dom';
 import { CoreEventObserver } from '@singletons/events';
 import { CoreMath } from '@singletons/math';
 import { CoreSwiper } from '@singletons/swiper';
@@ -321,7 +320,7 @@ export class CoreSwipeSlidesComponent<Item = unknown> implements OnChanges, OnDe
         // Scroll top. This can be improved in the future to keep the scroll for each slide.
         const scrollElement = await this.content?.getScrollElement();
 
-        if (!scrollElement || CoreDomUtils.isElementOutsideOfScreen(scrollElement, this.hostElement, VerticalPoint.TOP)) {
+        if (!scrollElement || CoreDom.isElementOutsideOfScreen(scrollElement, this.hostElement, VerticalPoint.TOP)) {
             // Scroll to top.
             this.hostElement.scrollIntoView({ behavior: 'smooth' });
         }

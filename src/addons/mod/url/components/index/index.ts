@@ -17,7 +17,7 @@ import { CoreError } from '@classes/errors/error';
 import { CoreCourseModuleMainResourceComponent } from '@features/course/classes/main-resource-component';
 import CoreCourseContentsPage from '@features/course/pages/contents/contents';
 import { CoreCourse } from '@features/course/services/course';
-import { CoreMimetypeUtils } from '@services/utils/mimetype';
+import { CoreMimetype } from '@singletons/mimetype';
 import { CoreText } from '@singletons/text';
 import { AddonModUrl, AddonModUrlDisplayOptions, AddonModUrlUrl } from '../../services/url';
 import { AddonModUrlHelper } from '../../services/url-helper';
@@ -152,12 +152,12 @@ export class AddonModUrlIndexComponent extends CoreCourseModuleMainResourceCompo
             return;
         }
 
-        const extension = CoreMimetypeUtils.guessExtensionFromUrl(url.externalurl);
+        const extension = CoreMimetype.guessExtensionFromUrl(url.externalurl);
 
-        this.mimetype = CoreMimetypeUtils.getMimeType(extension);
-        this.isImage = CoreMimetypeUtils.isExtensionInGroup(extension, ['web_image']);
-        this.isAudio = CoreMimetypeUtils.isExtensionInGroup(extension, ['web_audio']);
-        this.isVideo = CoreMimetypeUtils.isExtensionInGroup(extension, ['web_video']);
+        this.mimetype = CoreMimetype.getMimeType(extension);
+        this.isImage = CoreMimetype.isExtensionInGroup(extension, ['web_image']);
+        this.isAudio = CoreMimetype.isExtensionInGroup(extension, ['web_audio']);
+        this.isVideo = CoreMimetype.isExtensionInGroup(extension, ['web_video']);
         this.isOther = !this.isImage && !this.isAudio && !this.isVideo;
 
         // Fix the URL if it uses pluginfile endpoint.

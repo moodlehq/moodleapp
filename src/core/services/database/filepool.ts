@@ -202,14 +202,14 @@ export const SITE_SCHEMA: CoreSiteSchema = {
 export type CoreFilepoolFileOptions = {
     revision?: number; // File's revision.
     timemodified?: number; // File's timemodified.
-    isexternalfile?: number; // 1 if it's a external file (from an external repository), 0 otherwise.
+    isexternalfile?: boolean; // True if it's a external file (from an external repository), false otherwise.
     repositorytype?: string; // Type of the repository this file belongs to.
 };
 
 /**
  * Entry from filepool.
  */
-export type CoreFilepoolFileEntry = CoreFilepoolFileOptions & {
+export type CoreFilepoolFileEntry = Omit<CoreFilepoolFileOptions, 'isexternalfile'> & {
     /**
      * The fileId to identify the file.
      */
@@ -239,12 +239,17 @@ export type CoreFilepoolFileEntry = CoreFilepoolFileOptions & {
      * File's extension.
      */
     extension: string;
+
+    /**
+     * 1 if it's a external file (from an external repository), 0 otherwise.
+     */
+    isexternalfile?: number;
 };
 
 /**
  * DB data for entry from file's queue.
  */
-export type CoreFilepoolQueueDBRecord = CoreFilepoolFileOptions & {
+export type CoreFilepoolQueueDBRecord = Omit<CoreFilepoolFileOptions, 'isexternalfile'> & {
     /**
      * The site the file belongs to.
      */
@@ -279,6 +284,8 @@ export type CoreFilepoolQueueDBRecord = CoreFilepoolFileOptions & {
      * File links (to link the file to components and componentIds). Serialized to store on DB.
      */
     links: string;
+
+    isexternalfile?: number;
 };
 
 export type CoreFilepoolQueueDBPrimaryKeys = typeof QUEUE_TABLE_PRIMARY_KEYS[number];

@@ -22,7 +22,7 @@ import { CoreCourse, CoreCourseModuleContentFile } from '@features/course/servic
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreFilepool } from '@services/filepool';
 import { CoreText } from '@singletons/text';
-import { CoreDomUtils } from '@services/utils/dom';
+import { CoreDom } from '@singletons/dom';
 import { CoreError } from '@classes/errors/error';
 import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
 import { ADDON_MOD_BOOK_COMPONENT } from '../constants';
@@ -96,7 +96,7 @@ export class AddonModBookProvider {
         const content = await CoreWS.getText(url);
 
         // Now that we have the content, we update the SRC to point back to the external resource.
-        return CoreDomUtils.restoreSourcesInHtml(content, contentsMap[chapterId].paths);
+        return CoreDom.restoreSourcesInHtml(content, contentsMap[chapterId].paths);
     }
 
     /**

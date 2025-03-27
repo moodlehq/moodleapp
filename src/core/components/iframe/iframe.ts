@@ -19,7 +19,7 @@ import { SafeResourceUrl } from '@angular/platform-browser';
 
 import { CoreFile } from '@services/file';
 import { CoreUrl } from '@singletons/url';
-import { CoreIframeUtils } from '@services/utils/iframe';
+import { CoreIframe } from '@singletons/iframe';
 import { DomSanitizer, Router, StatusBar, Translate } from '@singletons';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { CoreScreen, CoreScreenOrientation } from '@services/screen';
@@ -205,7 +205,7 @@ export class CoreIframeComponent implements OnChanges, OnDestroy {
             return;
         }
 
-        CoreIframeUtils.treatFrame(this.iframe, false);
+        CoreIframe.treatFrame(this.iframe, false);
 
         this.iframe.addEventListener('load', () => {
             this.loading = false;
@@ -250,7 +250,7 @@ export class CoreIframeComponent implements OnChanges, OnDestroy {
         let url = this.src;
 
         if (url) {
-            const { launchExternal, label } = CoreIframeUtils.frameShouldLaunchExternal(url);
+            const { launchExternal, label } = CoreIframe.frameShouldLaunchExternal(url);
 
             if (launchExternal) {
                 this.launchExternalLabel = label;
@@ -264,7 +264,7 @@ export class CoreIframeComponent implements OnChanges, OnDestroy {
 
         if (url && !CoreUrl.isLocalFileUrl(url)) {
             url = CoreUrl.getYoutubeEmbedUrl(url) || url;
-            this.displayHelp = CoreIframeUtils.shouldDisplayHelpForUrl(url);
+            this.displayHelp = CoreIframe.shouldDisplayHelpForUrl(url);
 
             const currentSite = CoreSites.getCurrentSite();
             if (currentSite?.containsUrl(url)) {
@@ -285,7 +285,7 @@ export class CoreIframeComponent implements OnChanges, OnDestroy {
                 url = CoreUrl.getVimeoPlayerUrl(url, currentSite) ?? url;
             }
 
-            await CoreIframeUtils.fixIframeCookies(url);
+            await CoreIframe.fixIframeCookies(url);
         }
 
         this.safeUrl = url ? DomSanitizer.bypassSecurityTrustResourceUrl(CoreFile.convertFileSrc(url)) : undefined;
@@ -303,7 +303,7 @@ export class CoreIframeComponent implements OnChanges, OnDestroy {
      * Open help modal for iframes.
      */
     openIframeHelpModal(): void {
-        CoreIframeUtils.openIframeHelpModal();
+        CoreIframe.openIframeHelpModal();
     }
 
     /**
@@ -373,7 +373,7 @@ export class CoreIframeComponent implements OnChanges, OnDestroy {
             return;
         }
 
-        CoreIframeUtils.frameLaunchExternal(this.src, {
+        CoreIframe.frameLaunchExternal(this.src, {
             site: CoreSites.getCurrentSite(),
         });
     }

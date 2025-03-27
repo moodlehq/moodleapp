@@ -15,7 +15,7 @@
 import { Injectable } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
 
-import { CoreDomUtils } from '@services/utils/dom';
+import { CoreDom } from '@singletons/dom';
 import { CoreFormFields } from '@singletons/form';
 import { CoreText } from '@singletons/text';
 import { CoreTime } from '@singletons/time';
@@ -598,7 +598,7 @@ export class AddonModLessonHelperProvider {
         const element = convertTextToHTMLElement(html);
 
         // Remove the question text.
-        CoreDomUtils.removeElement(element, '.generalbox:not(.feedback):not(.correctanswer)');
+        CoreDom.removeElement(element, '.generalbox:not(.feedback):not(.correctanswer)');
 
         return element.innerHTML.trim();
     }

@@ -13,7 +13,6 @@
 // limitations under the License.
 
 import { Component, OnInit } from '@angular/core';
-import { CoreSites } from '@services/sites';
 import { CoreBlockBaseComponent } from '@features/block/classes/base-block-component';
 import {
     AddonBlockRecentlyAccessedItems,
@@ -23,6 +22,7 @@ import { CoreText } from '@singletons/text';
 import { CoreLoadings } from '@services/overlays/loadings';
 import { CoreUtils } from '@singletons/utils';
 import { CoreSharedModule } from '@/core/shared.module';
+import { CoreContentLinksHelper } from '@features/contentlinks/services/contentlinks-helper';
 
 /**
  * Component to render a recently accessed items block.
@@ -82,7 +82,6 @@ export class AddonBlockRecentlyAccessedItemsComponent extends CoreBlockBaseCompo
      *
      * @param e Click event.
      * @param item Activity item info.
-     * @returns Promise resolved when done.
      */
     async action(e: Event, item: AddonBlockRecentlyAccessedItemsItemCalculatedData): Promise<void> {
         e.preventDefault();
@@ -92,7 +91,7 @@ export class AddonBlockRecentlyAccessedItemsComponent extends CoreBlockBaseCompo
         const modal = await CoreLoadings.show();
 
         try {
-            await CoreSites.visitLink(url);
+            await CoreContentLinksHelper.visitLink(url);
         } finally {
             modal.dismiss();
         }
