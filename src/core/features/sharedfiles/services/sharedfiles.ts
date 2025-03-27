@@ -20,7 +20,7 @@ import { CoreLogger } from '@singletons/logger';
 import { CoreAppDB } from '@services/app-db';
 import { CoreFile } from '@services/file';
 import { CorePromiseUtils } from '@singletons/promise-utils';
-import { CoreMimetypeUtils } from '@services/utils/mimetype';
+import { CoreMimetype } from '@singletons/mimetype';
 import { CoreSites } from '@services/sites';
 import { CoreEvents } from '@singletons/events';
 import { makeSingleton } from '@singletons';
@@ -170,8 +170,8 @@ export class CoreSharedFilesProvider {
             if (mimetypes) {
                 // Get only files with the right mimetype and the ones we cannot determine the mimetype.
                 entries = entries.filter((entry) => {
-                    const extension = CoreMimetypeUtils.getFileExtension(entry.name);
-                    const mimetype = CoreMimetypeUtils.getMimeType(extension);
+                    const extension = CoreMimetype.getFileExtension(entry.name);
+                    const mimetype = CoreMimetype.getMimeType(extension);
 
                     return !mimetype || mimetypes.indexOf(mimetype) > -1;
                 });

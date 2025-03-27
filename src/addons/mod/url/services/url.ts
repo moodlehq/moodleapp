@@ -17,7 +17,7 @@ import { CoreSites, CoreSitesCommonWSOptions } from '@services/sites';
 import { CoreWSExternalWarning } from '@services/ws';
 import { makeSingleton } from '@singletons';
 import { CoreCacheUpdateFrequency } from '@/core/constants';
-import { CoreMimetypeUtils } from '@services/utils/mimetype';
+import { CoreMimetype } from '@singletons/mimetype';
 import { CoreCourse } from '@features/course/services/course';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreCourseLogHelper } from '@features/course/services/log-helper';
@@ -45,7 +45,7 @@ export class AddonModUrlProvider {
             return -1;
         }
 
-        const extension = CoreMimetypeUtils.guessExtensionFromUrl(url.externalurl);
+        const extension = CoreMimetype.guessExtensionFromUrl(url.externalurl);
 
         // PDFs can be embedded in web, but not in the Mobile app.
         if (url.display === ModResourceDisplay.EMBED && extension === 'pdf') {
@@ -66,7 +66,7 @@ export class AddonModUrlProvider {
         }
 
         const download = ['application/zip', 'application/x-tar', 'application/g-zip', 'application/pdf', 'text/html'];
-        let mimetype = CoreMimetypeUtils.getMimeType(extension);
+        let mimetype = CoreMimetype.getMimeType(extension);
 
         if (url.externalurl.indexOf('.php') != -1 || url.externalurl.slice(-1) === '/' ||
                 (url.externalurl.indexOf('//') != -1 && url.externalurl.match(/\//g)?.length == 2)) {
@@ -78,7 +78,7 @@ export class AddonModUrlProvider {
             return ModResourceDisplay.DOWNLOAD;
         }
 
-        if (extension && CoreMimetypeUtils.canBeEmbedded(extension)) {
+        if (extension && CoreMimetype.canBeEmbedded(extension)) {
             return ModResourceDisplay.EMBED;
         }
 
@@ -133,18 +133,20 @@ export class AddonModUrlProvider {
         url = url || '';
 
         const matches = url.match(/\//g);
-        const extension = CoreMimetypeUtils.guessExtensionFromUrl(url);
+        const extension = CoreMimetype.guessExtensionFromUrl(url);
 
-        if (!matches || matches.length < 3 || url.slice(-1) === '/' || extension == 'php') {
+        if (!matches || matches.length < 3 || url.slice(-1) === '/' || extension === 'php') {
             // Use default icon.
             return '';
         }
 
-        const icon = CoreMimetypeUtils.getExtensionIcon(extension ?? '');
+        const site = CoreSites.getCurrentSite();
+
+        const icon = CoreMimetype.getExtensionIcon(extension ?? '', site);
 
         // We do not want to return those icon types, the module icon is more appropriate.
-        if (icon === CoreMimetypeUtils.getFileIconForType('unknown') ||
-            icon === CoreMimetypeUtils.getFileIconForType('html')) {
+        if (icon === CoreMimetype.getFileIconForType('unknown', site) ||
+            icon === CoreMimetype.getFileIconForType('html', site)) {
             return '';
         }
 

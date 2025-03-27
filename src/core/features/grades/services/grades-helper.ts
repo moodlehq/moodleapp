@@ -36,7 +36,7 @@ import {
 import { CoreText } from '@singletons/text';
 import { CoreUrl } from '@singletons/url';
 import { CoreMenuItem, CoreUtils } from '@singletons/utils';
-import { CoreDomUtils } from '@services/utils/dom';
+import { CoreDom } from '@singletons/dom';
 import { CoreNavigator } from '@services/navigator';
 import { makeSingleton, Translate } from '@singletons';
 import { CoreError } from '@classes/errors/error';
@@ -384,7 +384,7 @@ export class CoreGradesHelperProvider {
      * @returns URL linking to the module.
      */
     protected getModuleLink(text: string): string | false {
-        const el = CoreDomUtils.toDom(text)[0];
+        const el = CoreDom.toDom(text)[0];
         const link = el.attributes['href'] ? el.attributes['href'].value : false;
 
         if (!link || link.indexOf('/mod/') < 0) {

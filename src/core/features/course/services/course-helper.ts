@@ -1434,26 +1434,24 @@ export class CoreCourseHelperProvider {
     ): Promise<void> {
         const siteId = options.siteId || CoreSites.getCurrentSiteId();
         let courseId = options.courseId;
-        let sectionId = options.sectionId;
 
         const modal = await CoreLoadings.show();
 
         try {
-            if (!courseId || !sectionId) {
+            if (!courseId) {
                 const module = await CoreCourse.getModuleBasicInfo(
                     moduleId,
                     { siteId, readingStrategy: CoreSitesReadingStrategy.PREFER_CACHE },
                 );
 
                 courseId = module.course;
-                sectionId = module.section;
             }
 
             // Get the site.
             const site = await CoreSites.getSite(siteId);
 
             // Get the module.
-            const module = await CoreCourse.getModule(moduleId, courseId, sectionId, false, false, siteId, options.modName);
+            const module = await CoreCourse.getModule(moduleId, courseId, undefined, false, false, siteId, options.modName);
 
             if (CoreSites.getCurrentSiteId() === site.getId()) {
                 // Try to use the module's handler to navigate cleanly.
@@ -1461,7 +1459,7 @@ export class CoreCourseHelperProvider {
                     module.modname,
                     module,
                     courseId,
-                    sectionId,
+                    module.section,
                     false,
                 );
 
@@ -1475,7 +1473,6 @@ export class CoreCourseHelperProvider {
             const params: Params = {
                 course: { id: courseId },
                 module,
-                sectionId,
                 modNavOptions: options.modNavOptions,
             };
 
@@ -1491,6 +1488,8 @@ export class CoreCourseHelperProvider {
             }
 
             modal.dismiss();
+
+            params.sectionId = module.section;
 
             await this.getAndOpenCourse(courseId, params, siteId);
         } catch (error) {

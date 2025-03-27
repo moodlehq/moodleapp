@@ -19,7 +19,7 @@ import { CoreCourseModuleData } from '@features/course/services/course-helper';
 import { CoreCourseModuleHandler, CoreCourseModuleHandlerData } from '@features/course/services/module-delegate';
 import { CoreCourseModulePrefetchDelegate } from '@features/course/services/module-prefetch-delegate';
 import { CoreFileHelper } from '@services/file-helper';
-import { CoreMimetypeUtils } from '@services/utils/mimetype';
+import { CoreMimetype } from '@singletons/mimetype';
 import { makeSingleton, Translate } from '@singletons';
 import { AddonModResource } from '../resource';
 import { AddonModResourceHelper } from '../resource-helper';
@@ -28,6 +28,7 @@ import { ADDON_MOD_RESOURCE_MODNAME, ADDON_MOD_RESOURCE_PAGE_NAME } from '../../
 import { DownloadStatus } from '@/core/constants';
 import { ModFeature, ModArchetype, ModPurpose } from '@addons/mod/constants';
 import { CoreCourseModuleHelper } from '@features/course/services/course-module-helper';
+import { CoreSites } from '@services/sites';
 
 /**
  * Handler to support resource modules.
@@ -150,14 +151,14 @@ export class AddonModResourceModuleHandlerService extends CoreModuleHandlerBase 
             // No need to use the list of files.
             const mimetype = module.contentsinfo.mimetypes[0];
             if (mimetype) {
-                mimetypeIcon = CoreMimetypeUtils.getMimetypeIcon(mimetype);
+                mimetypeIcon = CoreMimetype.getMimetypeIcon(mimetype, CoreSites.getCurrentSite());
             }
 
         } else if (module.contents && module.contents[0]) {
             const files = module.contents;
             const file = files[0];
 
-            mimetypeIcon = CoreMimetypeUtils.getFileIcon(file.filename || '');
+            mimetypeIcon = CoreMimetype.getFileIcon(file.filename || '', CoreSites.getCurrentSite());
         }
 
         return CoreCourseModuleHelper.getModuleIconSrc(module.modname, module.modicon, mimetypeIcon);

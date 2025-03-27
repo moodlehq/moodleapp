@@ -16,7 +16,7 @@ import { FileEntry } from '@awesome-cordova-plugins/file/ngx';
 
 import { CoreFile, CoreFileProvider } from '@services/file';
 import { CoreSites } from '@services/sites';
-import { CoreMimetypeUtils } from '@services/utils/mimetype';
+import { CoreMimetype } from '@singletons/mimetype';
 import { CoreH5P } from '../services/h5p';
 import { CoreH5PCore, CoreH5PDisplayOptions, CoreH5PLocalization } from './core';
 import { CoreError } from '@classes/errors/error';
@@ -198,7 +198,7 @@ export class CoreH5PHelper {
         options: CorePluginFileTreatDownloadedFileOptions<ProgressEvent | { message: string }> = {},
     ): Promise<void> {
 
-        const folderName = CoreMimetypeUtils.removeExtension(file.name);
+        const folderName = CoreMimetype.removeExtension(file.name);
         const destFolder = CorePath.concatenatePaths(CoreFileProvider.TMPFOLDER, `h5p/${folderName}`);
 
         // Unzip the file.

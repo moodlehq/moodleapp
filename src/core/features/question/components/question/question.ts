@@ -20,7 +20,7 @@ import { CoreQuestionBehaviourDelegate } from '@features/question/services/behav
 import { CoreQuestionDelegate } from '@features/question/services/question-delegate';
 
 import { CoreQuestionBehaviourButton, CoreQuestionHelper, CoreQuestionQuestion } from '@features/question/services/question-helper';
-import { CoreDomUtils } from '@services/utils/dom';
+import { CoreDom } from '@singletons/dom';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { Translate } from '@singletons';
 import { CoreDirectivesRegistry } from '@singletons/directives-registry';
@@ -188,7 +188,7 @@ export class CoreQuestionComponent implements OnInit, AsyncDirective {
                 this.question,
             );
         } finally {
-            this.question.html = CoreDomUtils.removeElementFromHtml(this.question.html, '.im-controls');
+            this.question.html = CoreDom.removeElementFromHtml(this.question.html, '.im-controls');
             this.showQuestionPromise.resolve();
             await this.loadValidationError();
         }

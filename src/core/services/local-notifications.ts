@@ -29,7 +29,7 @@ import {
     APP_SCHEMA,
     TRIGGERED_TABLE_NAME,
     COMPONENTS_TABLE_NAME,
-    SITES_TABLE_NAME,
+    LOCAL_NOTIFICATIONS_SITES_TABLE_NAME,
     CodeRequestsQueueItem,
     CoreLocalNotificationsTriggeredDBRecord,
     CoreLocalNotificationsComponentsDBRecord,
@@ -191,7 +191,7 @@ export class CoreLocalNotificationsProvider {
         const sitesTable = new CoreDatabaseTableProxy<CoreLocalNotificationsSitesDBRecord, 'id', never>(
             { cachingStrategy: CoreDatabaseCachingStrategy.None },
             database,
-            SITES_TABLE_NAME,
+            LOCAL_NOTIFICATIONS_SITES_TABLE_NAME,
             ['id'],
             null,
         );
@@ -407,7 +407,7 @@ export class CoreLocalNotificationsProvider {
      * @returns Promise resolved when the site code is retrieved.
      */
     protected getSiteCode(siteId: string): Promise<number> {
-        return this.requestCode(SITES_TABLE_NAME, siteId);
+        return this.requestCode(LOCAL_NOTIFICATIONS_SITES_TABLE_NAME, siteId);
     }
 
     /**
@@ -570,7 +570,7 @@ export class CoreLocalNotificationsProvider {
             // Get the code and resolve/reject all the promises of this request.
             const getCodeFromTable = async () => {
                 switch (request.table) {
-                    case SITES_TABLE_NAME:
+                    case LOCAL_NOTIFICATIONS_SITES_TABLE_NAME:
                         return this.getCode(this.sitesTable, request.id);
                     case COMPONENTS_TABLE_NAME:
                         return this.getCode(this.componentsTable, request.id);
@@ -656,7 +656,10 @@ export class CoreLocalNotificationsProvider {
      * @param id ID of the element to get its code.
      * @returns Promise resolved when the code is retrieved.
      */
-    protected requestCode(table: typeof SITES_TABLE_NAME | typeof COMPONENTS_TABLE_NAME, id: string): Promise<number> {
+    protected requestCode(
+        table: typeof LOCAL_NOTIFICATIONS_SITES_TABLE_NAME | typeof COMPONENTS_TABLE_NAME,
+        id: string,
+    ): Promise<number> {
         const deferred = new CorePromisedValue<number>();
         const key = `${table}#${id}`;
         const isQueueEmpty = Object.keys(this.codeRequestsQueue).length == 0;

@@ -15,7 +15,7 @@
 import { CoreFile } from '@services/file';
 import { CoreFilepool } from '@services/filepool';
 import { CoreSites } from '@services/sites';
-import { CoreMimetypeUtils } from '@services/utils/mimetype';
+import { CoreMimetype } from '@singletons/mimetype';
 import { CoreText } from '@singletons/text';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CorePath } from '@singletons/path';
@@ -303,7 +303,7 @@ export class CoreH5PFileStorage {
 
         const fileAndDir = CoreFileUtils.getFileAndDirectoryFromPath(path);
 
-        return CoreMimetypeUtils.removeExtension(fileAndDir.name);
+        return CoreMimetype.removeExtension(fileAndDir.name);
     }
 
     /**

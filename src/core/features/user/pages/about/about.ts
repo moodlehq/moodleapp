@@ -25,7 +25,7 @@ import { CoreNavigator } from '@services/navigator';
 import { CoreIonLoadingElement } from '@classes/ion-loading';
 import { CoreSite } from '@classes/sites/site';
 import { CoreFileUploaderHelper } from '@features/fileuploader/services/fileuploader-helper';
-import { CoreMimetypeUtils } from '@services/utils/mimetype';
+import { CoreMimetype } from '@singletons/mimetype';
 import { Translate } from '@singletons';
 import { CoreUrl } from '@singletons/url';
 import { CoreLoadings } from '@services/overlays/loadings';
@@ -180,7 +180,7 @@ export default class CoreUserAboutPage implements OnInit, OnDestroy {
     async changeProfilePicture(): Promise<void> {
         const maxSize = -1;
         const title = Translate.instant('core.user.newpicture');
-        const mimetypes = CoreMimetypeUtils.getGroupMimeInfo('image', 'mimetypes');
+        const mimetypes = CoreMimetype.getGroupMimeInfo('image', 'mimetypes');
         let modal: CoreIonLoadingElement | undefined;
 
         try {
