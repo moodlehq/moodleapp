@@ -19,7 +19,7 @@
     <ion-refresher slot="fixed" [disabled]="!preferencesLoaded" (ionRefresh)="refreshPreferences($event.target)">
         <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}" />
     </ion-refresher>
-    <core-loading [hideUntil]="preferencesLoaded">
+    <core-loading [hideUntil]="preferencesLoaded" placeholderType="column" placeholderHeight="48px">
         @if (warningMessage()) {
             <ion-card class="core-warning-card ion-margin-top">
                 <ion-item>

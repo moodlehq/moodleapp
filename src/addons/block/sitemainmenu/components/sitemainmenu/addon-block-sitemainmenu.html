@@ -3,7 +3,7 @@
         <h2>{{ 'addon.block_sitemainmenu.pluginname' | translate }}</h2>
     </ion-label>
 </ion-item-divider>
-<core-loading [hideUntil]="loaded">
+<core-loading [hideUntil]="loaded" placeholderType="column" placeholderHeight="48px" [placeholderLimit]="8">
     <ion-list *ngIf="mainMenuBlock" class="core-course-module-list-wrapper list-item-limited-width">
         <ion-item class="ion-text-wrap" *ngIf="mainMenuBlock.summary">
             <ion-label>
