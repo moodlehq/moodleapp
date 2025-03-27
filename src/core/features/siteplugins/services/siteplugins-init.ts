@@ -89,6 +89,7 @@ import { CoreEnrolAction, CoreEnrolDelegate } from '@features/enrol/services/enr
 import { CoreSitePluginsEnrolHandler } from '../classes/handlers/enrol-handler';
 import { CORE_SITE_PLUGINS_COMPONENT } from '../constants';
 import { CORE_COURSES_MY_COURSES_CHANGED_EVENT } from '@features/courses/constants';
+import { CorePromisedValue } from '@classes/promised-value';
 
 /**
  * Helper service to provide functionalities regarding site plugins. It basically has the features to load and register site
@@ -154,68 +155,110 @@ export class CoreSitePluginsInitService {
      * @param handlerName Name of the handler in the plugin.
      * @param handlerSchema Data about the handler.
      * @param siteId Site ID. If not provided, current site.
-     * @returns Promise resolved with the CSS code.
      */
     protected async downloadStyles(
         plugin: CoreSitePluginsPlugin,
         handlerName: string,
         handlerSchema: CoreSitePluginsHandlerData,
-        siteId?: string,
-    ): Promise<string> {
-        const site = await CoreSites.getSite(siteId);
+        siteId: string,
+    ): Promise<void> {
+        try {
+            if (handlerSchema.styles?.downloadedStyles) {
+                return;
+            }
 
-        // Make sure it's an absolute URL. Do not use toAbsoluteURL because it can change the behaviour and break plugin styles.
-        let url = handlerSchema.styles?.url;
-        if (url && !CoreUrl.isAbsoluteURL(url)) {
-            url = CorePath.concatenatePaths(site.getURL(), url);
+            if (url && handlerSchema.styles?.version) {
+                // Add the version to the URL to prevent getting a cached file.
+                url += `${url.indexOf('?') != -1 ? '&' : '?'}version=${handlerSchema.styles.version}`;
+            }
+
+            const uniqueName = CoreSitePlugins.getHandlerUniqueName(plugin, handlerName);
+            const componentId = `${uniqueName}#main`;
+
+            if (!handlerSchema.styles?.url) {
+                // No styles. Clear previous styles if any.
+                await this.clearPreviousStyles(componentId, siteId);
+
+                if (handlerSchema.styles) {
+                    handlerSchema.styles = undefined;
+                }
+
+                return;
+            }
+
+            const site = await CoreSites.getSite(siteId);
+            siteId = site.getId();
+
+            // Make sure it's an absolute URL. Do not use toAbsoluteURL because it can change the behaviour and break plugin styles.
+            let fileUrl = handlerSchema.styles.url;
+            const version = handlerSchema.styles.version;
+
+            if (!CoreUrl.isAbsoluteURL(fileUrl)) {
+                fileUrl = CorePath.concatenatePaths(site.getURL(), fileUrl);
+            }
+
+            if (version) {
+                // Add the version to the URL to prevent getting a cached file.
+                fileUrl = CoreUrl.addParamsToUrl(fileUrl, { version });
+            }
+
+            await this.clearPreviousStyles(componentId, siteId, fileUrl);
+
+            handlerSchema.styles.downloadedStyles = new CorePromisedValue<string>();
+            // Download the file if not downloaded or the version changed.
+            const path = await CoreFilepool.downloadUrl(
+                siteId,
+                fileUrl,
+                false,
+                CORE_SITE_PLUGINS_COMPONENT,
+                componentId,
+                0,
+                undefined,
+                undefined,
+                undefined,
+                handlerSchema.styles.version,
+            );
+
+            const cssCode = await CoreWS.getText(path);
+
+            await CorePromiseUtils.ignoreErrors(
+                CoreFilepool.treatCSSCode(siteId, fileUrl, cssCode, CORE_SITE_PLUGINS_COMPONENT, uniqueName, version),
+            );
+
+            handlerSchema.styles.downloadedStyles.resolve(path);
+        } catch (error) {
+            this.logger.error('Error getting styles for plugin', handlerName, handlerSchema, error);
+
+            if (handlerSchema.styles?.downloadedStyles) {
+                handlerSchema.styles.downloadedStyles.reject(error);
+            }
         }
+    }
 
-        if (url && handlerSchema.styles?.version) {
-            // Add the version to the URL to prevent getting a cached file.
-            url += `${url.indexOf('?') != -1 ? '&' : '?'}version=${handlerSchema.styles.version}`;
-        }
-
-        const uniqueName = CoreSitePlugins.getHandlerUniqueName(plugin, handlerName);
-        const componentId = `${uniqueName}#main`;
-
+    /**
+     * Clear previous styles for a handler.
+     * This function will remove all the CSS files for the handler that aren't used anymore.
+     *
+     * @param componentId Component ID.
+     * @param siteId Site ID.
+     * @param url URL of the current CSS file. If not provided, all the CSS files for the handler will be removed.
+     */
+    protected async clearPreviousStyles(
+        componentId: string,
+        siteId: string,
+        url?: string,
+    ): Promise<void> {
         // Remove the CSS files for this handler that aren't used anymore. Don't block the call for this.
         const files = await CorePromiseUtils.ignoreErrors(
-            CoreFilepool.getFilesByComponent(site.getId(), CORE_SITE_PLUGINS_COMPONENT, componentId),
+            CoreFilepool.getFilesByComponent(siteId, CORE_SITE_PLUGINS_COMPONENT, componentId),
         );
 
         files?.forEach((file) => {
             if (file.url !== url) {
                 // It's not the current file, delete it.
-                CorePromiseUtils.ignoreErrors(CoreFilepool.removeFileByUrl(site.getId(), file.url));
+                CorePromiseUtils.ignoreErrors(CoreFilepool.removeFileByUrl(siteId, file.url));
             }
         });
-
-        if (!url) {
-            // No styles.
-            return '';
-        }
-
-        // Update the schema with the final CSS URL.
-        if (handlerSchema.styles) {
-            handlerSchema.styles.url = url;
-        }
-
-        // Download the file if not downloaded or the version changed.
-        const path = await CoreFilepool.downloadUrl(
-            site.getId(),
-            url,
-            false,
-            CORE_SITE_PLUGINS_COMPONENT,
-            componentId,
-            0,
-            undefined,
-            undefined,
-            undefined,
-            handlerSchema.styles?.version,
-        );
-
-        // File is downloaded, get the contents.
-        return CoreWS.getText(path);
     }
 
     /**
@@ -390,20 +433,27 @@ export class CoreSitePluginsInitService {
      *
      * @param plugin Data of the plugin.
      * @param handlerName Name of the handler in the plugin.
-     * @param fileUrl CSS file URL.
-     * @param cssCode CSS code.
-     * @param version Styles version.
+     * @param handlerSchema Data about the handler.
      * @param siteId Site ID. If not provided, current site.
      */
-    protected loadStyles(
+    protected async loadStyles(
         plugin: CoreSitePluginsPlugin,
         handlerName: string,
-        fileUrl: string,
-        cssCode: string,
-        version?: number,
+        handlerSchema: CoreSitePluginsHandlerData,
         siteId?: string,
-    ): void {
+    ): Promise<void> {
         siteId = siteId || CoreSites.getCurrentSiteId();
+
+        this.downloadStyles(plugin, handlerName, handlerSchema, siteId);
+
+        const path = await CoreSitePlugins.getHandlerDownloadedStyles(handlerName);
+        if (!path || !handlerSchema.styles?.url) {
+            return;
+        }
+        const fileUrl = handlerSchema.styles.url;
+        const version = handlerSchema.styles.version;
+
+        const cssCode = await CoreWS.getText(path);
 
         // Create the style and add it to the header.
         const styleEl = document.createElement('style');
@@ -450,12 +500,7 @@ export class CoreSitePluginsInitService {
         const siteId = CoreSites.getCurrentSiteId();
 
         try {
-            const [initResult, cssCode] = await Promise.all([
-                this.executeHandlerInit(plugin, handlerSchema),
-                this.downloadStyles(plugin, handlerName, handlerSchema, siteId).catch((error) => {
-                    this.logger.error('Error getting styles for plugin', handlerName, handlerSchema, error);
-                }),
-            ]);
+            const initResult = await this.executeHandlerInit(plugin, handlerSchema);
 
             if (initResult?.disabled) {
                 // This handler is disabled for the current user, stop.
@@ -464,10 +509,7 @@ export class CoreSitePluginsInitService {
                 return;
             }
 
-            if (cssCode && handlerSchema.styles?.url) {
-                // Load the styles.
-                this.loadStyles(plugin, handlerName, handlerSchema.styles.url, cssCode, handlerSchema.styles.version, siteId);
-            }
+            let loadStyles = true;
 
             let uniqueName: string | undefined;
 
@@ -541,7 +583,16 @@ export class CoreSitePluginsInitService {
                     break;
 
                 default:
+                    loadStyles = false;
                     // Nothing to do.
+                    this.loadStyles(plugin, handlerName, handlerSchema, siteId);
+            }
+
+            if (loadStyles) {
+                // Load the styles without waiting for them to be downloaded.
+                this.downloadStyles(plugin, handlerName, handlerSchema, siteId);
+            } else {
+                handlerSchema.styles = undefined;
             }
 
             if (uniqueName) {

@@ -55,11 +55,12 @@ export class CoreSitePluginsCourseFormatComponent implements OnChanges {
     args?: Record<string, unknown>;
     initResult?: CoreSitePluginsContent | null;
     data?: Record<string, unknown>;
+    stylesPath?: string; // Styles to apply to the component.
 
     /**
      * @inheritdoc
      */
-    ngOnChanges(): void {
+    async ngOnChanges(): Promise<void> {
         if (!this.course || !this.course.format) {
             return;
         }
@@ -76,6 +77,8 @@ export class CoreSitePluginsCourseFormatComponent implements OnChanges {
                     courseid: this.course.id,
                 };
                 this.initResult = handler.initResult;
+
+                this.stylesPath = await CoreSitePlugins.getHandlerDownloadedStyles(handlerName);
             }
         }
 
