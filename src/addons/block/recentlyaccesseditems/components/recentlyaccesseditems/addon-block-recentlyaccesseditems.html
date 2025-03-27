@@ -15,8 +15,7 @@
                 <ion-card>
                     <ion-item class="core-course-module-handler ion-text-wrap" [detail]="false" (click)="action($event, item)" button>
                         <core-mod-icon slot="start" *ngIf="item.iconUrl" [modicon]="item.iconUrl" [modname]="item.modname"
-                            [componentId]="item.cmid" [showAlt]="false" [purpose]="item.purpose" [colorize]="colorizeIcons"
-                            [isBranded]="item.branded" />
+                            [componentId]="item.cmid" [showAlt]="false" [purpose]="item.purpose" [isBranded]="item.branded" />
                         <ion-label>
                             <!-- Add the icon title so accessibility tools read it. -->
                             <span class="sr-only" *ngIf="item.iconTitle">{{ item.iconTitle }}</span>
