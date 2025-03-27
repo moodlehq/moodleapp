@@ -19,7 +19,7 @@ import { CoreNavigator } from '@services/navigator';
 import { CoreSitesReadingStrategy } from '@services/sites';
 import { makeSingleton, Translate } from '@singletons';
 import { AddonModWiki } from '../wiki';
-import { ADDON_MOD_WIKI_PAGE_NAME } from '../../constants';
+import { ADDON_MOD_WIKI_MODNAME, ADDON_MOD_WIKI_PAGE_NAME } from '../../constants';
 import { AddonModWikiCreateLinkHandlerService } from '@addons/mod/wiki/services/handlers/create-link';
 import { CoreLoadings } from '@services/overlays/loadings';
 import { CoreAlerts } from '@services/overlays/alerts';
@@ -110,7 +110,7 @@ export class AddonModWikiCreateLinkHandlerLazyService extends AddonModWikiCreate
                 // The URL specifies which wiki it belongs to. Get the module.
                 const module = await CoreCourse.getModuleBasicInfoByInstance(
                     wikiId,
-                    'wiki',
+                    ADDON_MOD_WIKI_MODNAME,
                     { siteId, readingStrategy: CoreSitesReadingStrategy.PREFER_CACHE },
                 );
 

@@ -188,7 +188,7 @@ export class AddonModGlossaryPrefetchHandlerService extends CoreCourseActivityPr
 
         // Prefetch data for link handlers.
         promises.push(CoreCourse.getModuleBasicInfo(module.id, { siteId }));
-        promises.push(CoreCourse.getModuleBasicInfoByInstance(glossary.id, 'glossary', { siteId }));
+        promises.push(CoreCourse.getModuleBasicInfoByInstance(glossary.id, ADDON_MOD_GLOSSARY_MODNAME, { siteId }));
 
         // Get course data, needed to determine upload max size if it's configured to be course limit.
         promises.push(CorePromiseUtils.ignoreErrors(CoreCourses.getCourseByField('id', courseId, siteId)));
