@@ -46,6 +46,7 @@ import {
     AddonModDataAction,
     AddonModDataTemplateType,
     AddonModDataTemplateMode,
+    ADDON_MOD_DATA_MODNAME,
 } from '../constants';
 import { CoreToasts, ToastDuration } from '@services/overlays/toasts';
 import { CoreLoadings } from '@services/overlays/loadings';
@@ -528,7 +529,7 @@ export class AddonModDataHelperProvider {
 
         const module = await CoreCourse.getModuleBasicInfoByInstance(
             dataId,
-            'data',
+            ADDON_MOD_DATA_MODNAME,
             { siteId, readingStrategy: CoreSitesReadingStrategy.PREFER_CACHE },
         );
 

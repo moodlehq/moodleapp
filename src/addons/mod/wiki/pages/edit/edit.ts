@@ -33,6 +33,7 @@ import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 import {
     ADDON_MOD_WIKI_COMPONENT,
     ADDON_MOD_WIKI_COMPONENT_LEGACY,
+    ADDON_MOD_WIKI_MODNAME,
     ADDON_MOD_WIKI_PAGE_CREATED_EVENT,
     ADDON_MOD_WIKI_RENEW_LOCK_TIME,
 } from '../../constants';
@@ -287,7 +288,7 @@ export default class AddonModWikiEditPage implements OnInit, OnDestroy, CanLeave
 
         const module = await CoreCourse.getModuleBasicInfoByInstance(
             this.wikiId,
-            'wiki',
+            ADDON_MOD_WIKI_MODNAME,
             { readingStrategy: CoreSitesReadingStrategy.PREFER_CACHE },
         );
 
