@@ -142,7 +142,7 @@ export class AddonModLessonReportLinkHandlerService extends CoreContentLinksHand
                 { siteId, readingStrategy: CoreSitesReadingStrategy.PREFER_CACHE },
             );
             const params = {
-                retake: retake || 0,
+                retake: retake ?? 0,
             };
 
             CoreNavigator.navigateToSitePath(

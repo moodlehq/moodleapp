@@ -18,7 +18,7 @@ import { Routes } from '@angular/router';
 import { CoreMainMenuTabRoutingModule } from '@features/mainmenu/mainmenu-tab-routing.module';
 import { CORE_SITE_SCHEMAS } from '@services/sites';
 import { CoreCourseFormatModule } from '@features/course/format/formats.module';
-import { SITE_SCHEMA, OFFLINE_SITE_SCHEMA } from './services/database/course';
+import { COURSE_SITE_SCHEMA, COURSE_OFFLINE_SITE_SCHEMA } from './services/database/course';
 import { SITE_SCHEMA as LOG_SITE_SCHEMA } from './services/database/log';
 import { SITE_SCHEMA as PREFETCH_SITE_SCHEMA } from './services/database/module-prefetch';
 import { CoreCourseModulePrefetchDelegate } from './services/module-prefetch-delegate';
@@ -170,7 +170,7 @@ const courseIndexRoutes: Routes = [
     providers: [
         {
             provide: CORE_SITE_SCHEMAS,
-            useValue: [SITE_SCHEMA, OFFLINE_SITE_SCHEMA, LOG_SITE_SCHEMA, PREFETCH_SITE_SCHEMA],
+            useValue: [COURSE_SITE_SCHEMA, COURSE_OFFLINE_SITE_SCHEMA, LOG_SITE_SCHEMA, PREFETCH_SITE_SCHEMA],
             multi: true,
         },
         {
