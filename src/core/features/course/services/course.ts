@@ -462,7 +462,7 @@ export class CoreCourseProvider {
      *
      * @param moduleId The module ID.
      * @param courseId The course ID. Recommended to speed up the process and minimize data usage.
-     * @param sectionId The section ID.
+     * @param sectionId Not used since 5.0
      * @param preferCache True if shouldn't call WS if data is cached, false otherwise.
      * @param ignoreCache True if it should ignore cached data (it will always fail in offline or server down).
      * @param siteId Site ID. If not defined, current site.
@@ -554,7 +554,6 @@ export class CoreCourseProvider {
                 { siteId, readingStrategy: CoreSitesReadingStrategy.PREFER_CACHE },
             );
             courseId = module.course;
-            sectionId = module.section;
         }
 
         const site = await CoreSites.getSite(siteId);
@@ -585,14 +584,7 @@ export class CoreCourseProvider {
         let foundModule: CoreCourseGetContentsWSModule | undefined;
 
         const foundSection = sections.find((section) => {
-            if (section.id != CORE_COURSE_STEALTH_MODULES_SECTION_ID &&
-                sectionId !== undefined &&
-                sectionId != section.id
-            ) {
-                return false;
-            }
-
-            foundModule = section.modules.find((module) => module.id == moduleId);
+            foundModule = section.modules.find((module) => module.id === moduleId);
 
             return !!foundModule;
         });
@@ -641,7 +633,7 @@ export class CoreCourseProvider {
      * Gets a module basic info by module ID.
      *
      * @param moduleId Module ID.
-     * @param options Comon site WS options.
+     * @param options Common site WS options.
      * @returns Promise resolved with the module's info.
      */
     async getModuleBasicInfo(moduleId: number, options: CoreSitesCommonWSOptions = {}): Promise<CoreCourseModuleBasicInfo> {
@@ -666,12 +658,12 @@ export class CoreCourseProvider {
     /**
      * Gets a module basic grade info by module ID.
      *
-     * @param moduleId Module ID.
+     * @param cmId Module ID.
      * @param siteId Site ID. If not defined, current site.
      * @returns Promise resolved with the module's grade info.
      */
-    async getModuleBasicGradeInfo(moduleId: number, siteId?: string): Promise<CoreCourseModuleGradeInfo | undefined> {
-        const info = await this.getModuleBasicInfo(moduleId, { siteId });
+    async getModuleBasicGradeInfo(cmId: number, siteId?: string): Promise<CoreCourseModuleGradeInfo | undefined> {
+        const info = await this.getModuleBasicInfo(cmId, { siteId });
 
         if (
             info.grade !== undefined ||
@@ -719,13 +711,14 @@ export class CoreCourseProvider {
         const response: CoreCourseGetCourseModuleWSResponse =
             await site.read('core_course_get_course_module_by_instance', params, preSets);
 
-        if (response.warnings && response.warnings.length) {
+        if (response.warnings?.length) {
             throw new CoreWSError(response.warnings[0]);
-        } else if (response.cm) {
-            return response.cm;
+        }
+        if (!response.cm) {
+            throw Error('WS core_course_get_course_module_by_instance failed');
         }
 
-        throw Error('WS core_course_get_course_module_by_instance failed');
+        return response.cm;
     }
 
     /**
@@ -1087,7 +1080,7 @@ export class CoreCourseProvider {
      *
      * @param module Module to load the contents.
      * @param courseId Not used since 4.0.
-     * @param sectionId The section ID.
+     * @param sectionId Not used since 5.0
      * @param preferCache True if shouldn't call WS if data is cached, false otherwise.
      * @param ignoreCache True if it should ignore cached data (it will always fail in offline or server down).
      * @param siteId Site ID. If not defined, current site.
@@ -1143,7 +1136,7 @@ export class CoreCourseProvider {
         modName?: string,
     ): Promise<CoreCourseModuleContentFile[]> {
         // Make sure contents are loaded.
-        await this.loadModuleContents(module, undefined, sectionId, preferCache, ignoreCache, siteId, modName);
+        await this.loadModuleContents(module, module.course, undefined, preferCache, ignoreCache, siteId, modName);
 
         if (!module.contents) {
             throw new CoreError(Translate.instant('core.course.modulenotfound'));
