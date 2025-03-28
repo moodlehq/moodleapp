@@ -1,15 +1,99 @@
 @use "theme/globals" as *;
 
 :host {
-    .addon-mod_h5pactivity-table-header {
-        font-weight: bold;
 
-        ion-col {
-            @include ellipsis();
+    .addon-mod_h5pactivity-user-card {
+        @include tablet-viewport() {
+            max-width: var(--list-item-max-width);
         }
     }
 
-    .addon-mod_h5pactivity-table-row .addon-mod_h5pactivity-table-success-col {
-        font-size: 1.2em;
+    .addon-mod_h5pactivity-attempts-card {
+        ion-card-header {
+            padding-bottom: 8px;
+            margin-bottom: 8px;
+            border-bottom: 1px solid var(--border-color);
+        }
+    }
+
+    .addon-mod_h5pactivity-attempts-item {
+        &:nth-child(odd) {
+            background-color: var(--light);
+        }
+        [slot=header] {
+            --background: transparent;
+            h4 {
+                font-size: 1rem;
+                flex-grow: 1;
+            }
+            ::ng-deep [slot=start] {
+                background-color: transparent;
+            }
+            [slot=end] {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                gap: 4px;
+                justify-content: end;
+                font-size: var(--mdl-typography-body-fontSize-sm);
+                &[aria-hidden=true] {
+                    visibility: hidden;
+                }
+            }
+        }
+
+        [slot=content] {
+            padding: 0 16px 8px 16px;
+            font-size: 1rem;
+            addon-mod-h5pactivity-attempt-summary {
+                padding: 8px 0;
+                margin-bottom: 8px;
+                border-bottom: 1px solid var(--gray-300);
+            }
+            ion-button {
+                margin: 0;
+                &::part(native) {
+                    background: none;
+                }
+                ion-icon {
+                    @include margin-horizontal(0, 8px);
+                }
+            }
+        }
+    }
+
+    .addon-mod_h5pactivity-attempts-grid {
+        --ion-grid-padding: 0;
+        --ion-grid-column-padding: 8px;
+        ion-row {
+            @include padding-horizontal(8px);
+            &:not(:first-child) {
+                min-height: var(--a11y-sizing-minTargetSize);
+            }
+            &:nth-child(even) {
+                background-color: var(--light);
+            }
+        }
+        ion-col[role=columnheader] {
+            font-weight: bold;
+            @include ellipsis();
+        }
+        ion-col[role=gridcell] {
+            display: flex;
+            overflow-wrap: anywhere;
+            align-items: center;
+        }
+        [role=button] {
+            // Override minimum size for buttons, it's already applied for rows.
+            min-height: 0;
+            min-width: 0;
+        }
+    }
+
+    .ripple-parent {
+        position: relative;
+        ion-ripple-effect {
+            z-index: 1;
+        }
     }
 }

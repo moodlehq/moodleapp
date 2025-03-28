@@ -1,0 +1,14 @@
+@if (attempt.success === null) {
+    <span aria-hidden="true">&ndash;</span>
+    <span class="sr-only">{{ 'addon.mod_h5pactivity.attempt_success_unknown' | translate }}</span>
+} @else if (attempt.success) {
+    <ion-badge color="success">
+        <ion-icon name="fas-check" aria-hidden="true" />
+        {{ 'addon.mod_h5pactivity.attempt_success_pass' | translate }}
+    </ion-badge>
+} @else {
+    <ion-badge color="danger">
+        <ion-icon name="fas-xmark" aria-hidden="true" />
+        {{ 'addon.mod_h5pactivity.attempt_success_fail' | translate }}
+    </ion-badge>
+}
