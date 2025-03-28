@@ -1,0 +1,7 @@
+@use "theme/globals" as *;
+
+:host {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25em;
+}

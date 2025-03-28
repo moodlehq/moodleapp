@@ -1,0 +1,13 @@
+@if (attempt.completion) {
+    <img src="assets/img/completion/completion-auto-y.svg" [alt]="'addon.mod_h5pactivity.attempt_completion_yes' | translate"
+        [attr.aria-hidden]="showLabel">
+    @if (showLabel) {
+        {{ 'addon.mod_h5pactivity.attempt_completion_yes' | translate }}
+    }
+} @else {
+    <img src="assets/img/completion/completion-auto-n.svg" [alt]="'addon.mod_h5pactivity.attempt_completion_no' | translate"
+        [attr.aria-hidden]="showLabel">
+    @if (showLabel) {
+        {{ 'addon.mod_h5pactivity.attempt_completion_no' | translate }}
+    }
+}

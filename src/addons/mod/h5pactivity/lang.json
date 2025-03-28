@@ -25,6 +25,7 @@
     "myattempts": "My attempts",
     "no_compatible_track": "This interaction ({{$a}}) does not provide tracking information or the tracking\n        provided is not compatible with the current activity version.",
     "noparticipants": "No participants to display",
+    "numberofattempts": "{{$a}} attempts",
     "offlinedisabledwarning": "You need to be online to view the H5P package.",
     "outcome": "Outcome",
     "previewmode": "You are in preview mode.",
@@ -35,5 +36,6 @@
     "score_out_of": "{{$a.rawscore}} out of {{$a.maxscore}}",
     "startdate": "Start date",
     "totalscore": "Total score",
-    "viewattempt": "View attempt {{$a}}"
+    "viewattempt": "View attempt {{$a}}",
+    "view_report": "View report"
 }

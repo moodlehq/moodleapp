@@ -1,0 +1,21 @@
+@use "theme/globals" as *;
+
+:host {
+    display: block;
+
+    [role=listitem]:not(:last-child) {
+        margin-bottom: 8px;
+    }
+
+    h5 {
+        margin: 0;
+        font-size: var(--mdl-typography-body-fontSize-md);
+        font-weight: 500;
+        color: var(--gray-700);
+    }
+
+    p {
+        margin-top: 4px;
+        margin-bottom: 0;
+    }
+}

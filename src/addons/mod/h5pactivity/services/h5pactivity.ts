@@ -246,13 +246,13 @@ export class AddonModH5PActivityProvider {
      *
      * @param id H5P Activity ID.
      * @param options Options.
-     * @returns Promise resolved with list of users and whether can load more attempts.
+     * @returns Promise resolved with list of users, whether can load more attempts, and total number of attempts.
      * @since 3.11
      */
     async getUsersAttempts(
         id: number,
         options?: AddonModH5PActivityGetUsersAttemptsOptions,
-    ): Promise<{users: AddonModH5PActivityUserAttempts[]; canLoadMore: boolean}> {
+    ): Promise<{users: AddonModH5PActivityUserAttempts[]; canLoadMore: boolean; totalAttempts?: number}> {
         options = options || {};
         options.page = options.page || 0;
         options.perPage = options.perPage ?? ADDON_MOD_H5PACTIVITY_USERS_PER_PAGE;
@@ -294,6 +294,7 @@ export class AddonModH5PActivityProvider {
         return {
             canLoadMore: canLoadMore,
             users: response.usersattempts.map(userAttempts => this.formatUserAttempts(userAttempts)),
+            totalAttempts: response.totalattempts,
         };
     }
 
@@ -1165,6 +1166,7 @@ export type AddonModH5pactivityGetUserAttemptsWSParams = {
 export type AddonModH5pactivityGetUserAttemptsWSResponse = {
     activityid: number; // Activity course module ID.
     usersattempts: AddonModH5PActivityWSUserAttempts[]; // The complete users attempts list.
+    totalattempts?: number; // @since 4.5. Total number of attempts.
     warnings?: CoreWSExternalWarning[];
 };
 

@@ -1,0 +1,22 @@
+<div role="list">
+    <div role="listitem">
+        <h5>{{ 'addon.mod_h5pactivity.startdate' | translate }}</h5>
+        <p>{{ attempt.timemodified | coreFormatDate:'strftimedaydatetime' }}</p>
+    </div>
+    <div role="listitem">
+        <h5>{{ 'addon.mod_h5pactivity.score' | translate }}</h5>
+        <p>{{ 'addon.mod_h5pactivity.score_out_of' | translate:{$a: attempt} }}</p>
+    </div>
+    <div role="listitem">
+        <h5>{{ 'addon.mod_h5pactivity.duration' | translate }}</h5>
+        <p>{{ attempt.durationReadable }}</p>
+    </div>
+    <div role="listitem">
+        <h5>{{ 'addon.mod_h5pactivity.completion' | translate }}</h5>
+        <p><addon-mod-h5pactivity-attempt-completion [attempt]="attempt" [showLabel]="true" /></p>
+    </div>
+    <div role="listitem">
+        <h5>{{ 'core.success' | translate }}</h5>
+        <p><addon-mod-h5pactivity-attempt-success [attempt]="attempt" /></p>
+    </div>
+</div>
