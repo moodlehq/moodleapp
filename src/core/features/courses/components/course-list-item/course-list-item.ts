@@ -95,6 +95,7 @@ export class CoreCoursesCourseListItemComponent implements OnInit, OnDestroy, On
 
     protected element: HTMLElement;
     protected progressObserver: CoreEventObserver;
+    protected isPrefetched = false;
 
     @HostBinding('attr.data-course-id') protected get courseId(): number {
         return this.course.id;
@@ -111,6 +112,13 @@ export class CoreCoursesCourseListItemComponent implements OnInit, OnDestroy, On
             this.course.progress = data.progress;
             this.progress = this.course.progress ?? undefined;
         }, siteId);
+
+        // Listen for status change in course.
+        this.courseStatusObserver = CoreEvents.on(COURSE_STATUS_CHANGED_EVENT, (data: CoreEventCourseStatusChanged) => {
+            if (data.courseId == this.course.id || data.courseId === CORE_COURSE_ALL_COURSES_CLEARED) {
+                this.updateCourseStatus(data.status);
+            }
+        }, CoreSites.getCurrentSiteId());
     }
 
     /**
@@ -214,17 +222,12 @@ export class CoreCoursesCourseListItemComponent implements OnInit, OnDestroy, On
             return;
         }
 
-        if (this.courseStatusObserver !== undefined) {
+        if (this.isPrefetched) {
             // Already initialized.
             return;
         }
 
-        // Listen for status change in course.
-        this.courseStatusObserver = CoreEvents.on(COURSE_STATUS_CHANGED_EVENT, (data: CoreEventCourseStatusChanged) => {
-            if (data.courseId == this.course.id || data.courseId === CORE_COURSE_ALL_COURSES_CLEARED) {
-                this.updateCourseStatus(data.status);
-            }
-        }, CoreSites.getCurrentSiteId());
+        this.isPrefetched = true;
 
         // Determine course prefetch icon.
         const status = await CoreCourseDownloadStatusHelper.getCourseStatus(this.course.id);
