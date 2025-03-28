@@ -24,7 +24,7 @@ import { timeout } from 'rxjs/operators';
 import { CoreNativeToAngularHttpResponse } from '@classes/native-to-angular-http';
 import { CoreNetwork } from '@services/network';
 import { CoreFile, CoreFileFormat } from '@services/file';
-import { CoreMimetypeUtils } from '@services/utils/mimetype';
+import { CoreMimetype } from '@singletons/mimetype';
 import { CoreText } from '@singletons/text';
 import { CoreConstants, MINIMUM_MOODLE_VERSION } from '@/core/constants';
 import { CoreError } from '@classes/errors/error';
@@ -286,7 +286,7 @@ export class CoreWSProvider {
             let extension = '';
 
             if (addExtension) {
-                extension = CoreMimetypeUtils.getFileExtension(path) || '';
+                extension = CoreMimetype.getFileExtension(path) || '';
 
                 // Google Drive extensions will be considered invalid since Moodle usually converts them.
                 if (!extension || ['gdoc', 'gsheet', 'gslides', 'gdraw', 'php'].includes(extension)) {
@@ -296,12 +296,12 @@ export class CoreWSProvider {
                     const mimetype = requestContentType ?? await this.getRemoteFileMimeType(url);
 
                     if (mimetype) {
-                        const remoteExtension = CoreMimetypeUtils.getExtension(mimetype, url);
+                        const remoteExtension = CoreMimetype.getExtension(mimetype, url);
                         // If the file is from Google Drive, ignore mimetype application/json.
                         if (remoteExtension && (!extension || mimetype != 'application/json')) {
                             if (extension) {
                                 // Remove existing extension since we will use another one.
-                                path = CoreMimetypeUtils.removeExtension(path);
+                                path = CoreMimetype.removeExtension(path);
                             }
                             path += `.${remoteExtension}`;
 
@@ -1373,7 +1373,7 @@ export type CoreWSExternalFile = {
     fileurl: string; // Downloadable file url.
     timemodified?: number; // Time modified.
     mimetype?: string; // File mime type.
-    isexternalfile?: number; // Whether is an external file.
+    isexternalfile?: boolean; // Whether is an external file.
     repositorytype?: string; // The repository type for the external files.
     icon?: string; // @since 4.4. Relative path to the relevant file type icon based on the file's mime type.
 };

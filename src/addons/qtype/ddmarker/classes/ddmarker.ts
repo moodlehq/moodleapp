@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { CoreDomUtils } from '@services/utils/dom';
 import { CoreText } from '@singletons/text';
 import { CoreCoordinates, CoreDom } from '@singletons/dom';
 import { CoreEventObserver } from '@singletons/events';
@@ -292,16 +291,16 @@ export class AddonQtypeDdMarkerQuestion {
 
         const computedStyle = getComputedStyle(markerSpan);
         const width = markerSpan.getBoundingClientRect().width +
-            CoreDomUtils.getComputedStyleMeasure(computedStyle, 'borderLeftWidth') +
-            CoreDomUtils.getComputedStyleMeasure(computedStyle, 'borderRightWidth') +
-            CoreDomUtils.getComputedStyleMeasure(computedStyle, 'paddingLeft') +
-            CoreDomUtils.getComputedStyleMeasure(computedStyle, 'paddingRight');
+            CoreDom.getComputedStyleMeasure(computedStyle, 'borderLeftWidth') +
+            CoreDom.getComputedStyleMeasure(computedStyle, 'borderRightWidth') +
+            CoreDom.getComputedStyleMeasure(computedStyle, 'paddingLeft') +
+            CoreDom.getComputedStyleMeasure(computedStyle, 'paddingRight');
 
         const height =  markerSpan.getBoundingClientRect().height +
-            CoreDomUtils.getComputedStyleMeasure(computedStyle, 'borderTopWidth') +
-            CoreDomUtils.getComputedStyleMeasure(computedStyle, 'borderBottomWidth') +
-            CoreDomUtils.getComputedStyleMeasure(computedStyle, 'paddingTop') +
-            CoreDomUtils.getComputedStyleMeasure(computedStyle, 'paddingBottom');
+            CoreDom.getComputedStyleMeasure(computedStyle, 'borderTopWidth') +
+            CoreDom.getComputedStyleMeasure(computedStyle, 'borderBottomWidth') +
+            CoreDom.getComputedStyleMeasure(computedStyle, 'paddingTop') +
+            CoreDom.getComputedStyleMeasure(computedStyle, 'paddingBottom');
         markerSpan.style.opacity = '0.6';
         markerSpan.style.left = `${xyForText.x - (width / 2)}px`;
         markerSpan.style.top = `${xyForText.y - (height / 2)}px`;
@@ -779,8 +778,8 @@ export class AddonQtypeDdMarkerQuestion {
                     dragItem.classList.add('placed');
 
                     const computedStyle = getComputedStyle(dragItem);
-                    const left = coords[i][0] - CoreDomUtils.getComputedStyleMeasure(computedStyle, 'marginLeft');
-                    const top = coords[i][1] - CoreDomUtils.getComputedStyleMeasure(computedStyle, 'marginTop');
+                    const left = coords[i][0] - CoreDom.getComputedStyleMeasure(computedStyle, 'marginLeft');
+                    const top = coords[i][1] - CoreDom.getComputedStyleMeasure(computedStyle, 'marginTop');
 
                     dragItem.style.left = `${left}px`;
                     dragItem.style.top = `${top}px`;

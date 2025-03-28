@@ -16,7 +16,7 @@ import { Component, OnInit, OnDestroy, ViewChild, ElementRef, ChangeDetectorRef,
 import { MediaFile } from '@awesome-cordova-plugins/media-capture/ngx';
 
 import { CoreFile, CoreFileProvider } from '@services/file';
-import { CoreMimetypeUtils } from '@services/utils/mimetype';
+import { CoreMimetype } from '@singletons/mimetype';
 import { CoreTime } from '@singletons/time';
 import { ModalController } from '@singletons';
 import { CoreError } from '@classes/errors/error';
@@ -338,7 +338,7 @@ export class CoreEmulatorCaptureMediaComponent implements OnInit, OnDestroy {
 
                 let mimetype: string | undefined;
                 if (this.extension) {
-                    mimetype = CoreMimetypeUtils.getMimeType(this.extension);
+                    mimetype = CoreMimetype.getMimeType(this.extension);
                 }
 
                 const mediaFile: MediaFile = {

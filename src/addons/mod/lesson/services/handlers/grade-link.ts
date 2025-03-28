@@ -77,9 +77,8 @@ export class AddonModLessonGradeLinkHandlerService extends CoreContentLinksModul
                 );
             } else {
                 // User cannot view the report, go to lesson index.
-                CoreCourseHelper.navigateToModule(moduleId, {
+                CoreCourseHelper.navigateToModule(module.id, {
                     courseId: module.course,
-                    sectionId: module.section,
                     siteId,
                 });
             }

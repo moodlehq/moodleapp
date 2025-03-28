@@ -16,7 +16,7 @@ import { Injectable } from '@angular/core';
 
 import { FileEntry, DirectoryEntry, Entry, Metadata, IFile } from '@awesome-cordova-plugins/file/ngx';
 
-import { CoreMimetypeUtils } from '@services/utils/mimetype';
+import { CoreMimetype } from '@singletons/mimetype';
 import { CoreFileUtils } from '@singletons/file-utils';
 import { CoreConstants } from '@/core/constants';
 import { CoreError } from '@classes/errors/error';
@@ -598,8 +598,8 @@ export class CoreFileProvider {
 
         if (this.isHTMLAPI && (typeof data == 'string' || data.toString() == '[object ArrayBuffer]')) {
             // We need to write Blobs.
-            const extension = CoreMimetypeUtils.getFileExtension(path);
-            const type = extension ? CoreMimetypeUtils.getMimeType(extension) : '';
+            const extension = CoreMimetype.getFileExtension(path);
+            const type = extension ? CoreMimetype.getMimeType(extension) : '';
             data = new Blob([data], { type: type || 'text/plain' });
         }
 
@@ -975,7 +975,7 @@ export class CoreFileProvider {
         }
 
         // If destFolder is not set, use same location as ZIP file. We need to use absolute paths (including basePath).
-        destFolder = this.addBasePathIfNeeded(destFolder || CoreMimetypeUtils.removeExtension(path));
+        destFolder = this.addBasePathIfNeeded(destFolder || CoreMimetype.removeExtension(path));
 
         const result = await Zip.unzip(this.getFileEntryURL(fileEntry), destFolder, onProgress);
 
@@ -1098,8 +1098,8 @@ export class CoreFileProvider {
             const entries = await this.getDirectoryContents(dirPath);
 
             const files = {};
-            let fileNameWithoutExtension = CoreMimetypeUtils.removeExtension(fileName);
-            let extension = CoreMimetypeUtils.getFileExtension(fileName) || defaultExt;
+            let fileNameWithoutExtension = CoreMimetype.removeExtension(fileName);
+            let extension = CoreMimetype.getFileExtension(fileName) || defaultExt;
 
             // Clean the file name.
             fileNameWithoutExtension = CoreText.removeSpecialCharactersForFiles(
@@ -1139,8 +1139,8 @@ export class CoreFileProvider {
         }
 
         // Repeated name. Add a number until we find a free name.
-        const nameWithoutExtension = CoreMimetypeUtils.removeExtension(name);
-        let extension = CoreMimetypeUtils.getFileExtension(name);
+        const nameWithoutExtension = CoreMimetype.removeExtension(name);
+        let extension = CoreMimetype.getFileExtension(name);
         let num = 1;
         extension = extension ? `.${extension}` : '';
 

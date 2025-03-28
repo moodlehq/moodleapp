@@ -1087,7 +1087,7 @@ export class CoreAuthenticatedSite extends CoreUnauthenticatedSite {
             } else {
                 if (entries.length > 1) {
                     // More than one entry found. Search the one with same ID as this call.
-                    entry = entries.find((entry) => entry.id == id);
+                    entry = entries.find((entry) => entry.id === id);
                 }
 
                 if (!entry) {

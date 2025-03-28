@@ -19,7 +19,7 @@ import { CoreFile } from '@services/file';
 import { CoreFileHelper } from '@services/file-helper';
 import { CoreFilepool } from '@services/filepool';
 import { CoreSites } from '@services/sites';
-import { CoreDomUtils } from '@services/utils/dom';
+import { CoreDom } from '@singletons/dom';
 import { CoreText } from '@singletons/text';
 import { CoreUtils } from '@singletons/utils';
 import { CoreWSFile } from '@services/ws';
@@ -431,7 +431,7 @@ export class CoreQuestionHelperProvider {
         const element = convertTextToHTMLElement(html);
 
         // Remove the filemanager (area to attach files to a question).
-        CoreDomUtils.removeElement(element, 'div[id*=filemanager]');
+        CoreDom.removeElement(element, 'div[id*=filemanager]');
 
         // Search the anchors.
         const anchors = Array.from(element.querySelectorAll('a'));
@@ -540,7 +540,7 @@ export class CoreQuestionHelperProvider {
     getValidationErrorFromHtml(html: string): string | undefined {
         const element = convertTextToHTMLElement(html);
 
-        return CoreDomUtils.getContentsOfElement(element, '.validationerror');
+        return CoreDom.getContentsOfElement(element, '.validationerror');
     }
 
     /**
@@ -737,7 +737,7 @@ export class CoreQuestionHelperProvider {
      * @param element DOM element.
      */
     replaceCorrectnessClasses(element: HTMLElement): void {
-        CoreDomUtils.replaceClassesInElement(element, {
+        CoreDom.replaceClassesInElement(element, {
             correct: 'core-question-answer-correct',
             incorrect: 'core-question-answer-incorrect',
             partiallycorrect: 'core-question-answer-partiallycorrect',
@@ -750,7 +750,7 @@ export class CoreQuestionHelperProvider {
      * @param element DOM element.
      */
     replaceFeedbackClasses(element: HTMLElement): void {
-        CoreDomUtils.replaceClassesInElement(element, {
+        CoreDom.replaceClassesInElement(element, {
             outcome: 'core-question-feedback-container core-question-feedback-padding',
             specificfeedback: 'core-question-feedback-container core-question-feedback-inline',
         });

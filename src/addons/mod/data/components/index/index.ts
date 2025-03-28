@@ -24,7 +24,7 @@ import { IonContent } from '@ionic/angular';
 import { CoreGroupInfo, CoreGroups } from '@services/groups';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSites } from '@services/sites';
-import { CoreDomUtils } from '@services/utils/dom';
+import { CoreDom } from '@singletons/dom';
 import { CoreTime } from '@singletons/time';
 import { CoreArray } from '@singletons/array';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
@@ -358,7 +358,7 @@ export class AddonModDataIndexComponent extends CoreCourseModuleMainActivityComp
                 this.fieldsArray,
             );
 
-            headerAndFooter = CoreDomUtils.fixHtml(headerAndFooter);
+            headerAndFooter = CoreDom.fixHtml(headerAndFooter);
 
             // Get first entry from the whole list.
             if (!this.search.searching || !this.firstEntry) {

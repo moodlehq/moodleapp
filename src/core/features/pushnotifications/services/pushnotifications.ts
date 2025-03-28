@@ -480,7 +480,7 @@ export class CorePushNotificationsProvider {
         const data: CorePushNotificationsNotificationBasicData = Object.assign(rawData, {
             title: notification.title,
             message: notification.message,
-            customdata: typeof rawData.customdata == 'string' ?
+            customdata: typeof rawData.customdata === 'string' ?
                 CoreText.parseJSON<Record<string, string|number>>(rawData.customdata, {}) : rawData.customdata,
         });
 

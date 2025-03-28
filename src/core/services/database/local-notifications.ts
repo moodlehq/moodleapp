@@ -18,7 +18,7 @@ import { CoreAppSchema } from '@services/app-db';
 /**
  * Database variables for CoreLocalNotifications service.
  */
-export const SITES_TABLE_NAME = 'notification_sites'; // Store to asigne unique codes to each site.
+export const LOCAL_NOTIFICATIONS_SITES_TABLE_NAME = 'notification_sites'; // Store to asigne unique codes to each site.
 export const COMPONENTS_TABLE_NAME = 'notification_components'; // Store to asigne unique codes to each component.
 export const TRIGGERED_TABLE_NAME = 'notifications_triggered'; // Store to prevent re-triggering notifications.
 export const APP_SCHEMA: CoreAppSchema = {
@@ -26,7 +26,7 @@ export const APP_SCHEMA: CoreAppSchema = {
     version: 1,
     tables: [
         {
-            name: SITES_TABLE_NAME,
+            name: LOCAL_NOTIFICATIONS_SITES_TABLE_NAME,
             columns: [
                 {
                     name: 'id',
@@ -74,7 +74,7 @@ export const APP_SCHEMA: CoreAppSchema = {
 };
 
 export type CodeRequestsQueueItem = {
-    table: typeof SITES_TABLE_NAME | typeof COMPONENTS_TABLE_NAME;
+    table: typeof LOCAL_NOTIFICATIONS_SITES_TABLE_NAME | typeof COMPONENTS_TABLE_NAME;
     id: string;
     deferreds: CorePromisedValue<number>[];
 };

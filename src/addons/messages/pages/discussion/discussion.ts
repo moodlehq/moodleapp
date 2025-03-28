@@ -649,7 +649,7 @@ export default class AddonMessagesDiscussionPage implements OnInit, OnDestroy, A
 
         pagesToLoad--;
 
-        // Treat members. Don't use CoreUtilsProvider.arrayToObject because we don't want to override the existing object.
+        // Treat members. Don't use CoreArray.toObject because we don't want to override the existing object.
         if (result.members) {
             result.members.forEach((member) => {
                 this.members[member.id] = member;

@@ -42,7 +42,7 @@ import {
 import { CorePromisedValue } from '@classes/promised-value';
 
 import { CoreCompile } from '@features/compile/services/compile';
-import { CoreDomUtils } from '@services/utils/dom';
+import { CoreAngular } from '@singletons/angular';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreWS } from '@services/ws';
 import { CoreDom } from '@singletons/dom';
@@ -123,7 +123,7 @@ export class CoreCompileHtmlComponent implements OnChanges, OnDestroy, DoCheck {
         this.setInputData();
 
         if (this.componentInstance.ngOnChanges) {
-            this.componentInstance.ngOnChanges(CoreDomUtils.createChangesFromKeyValueDiff(changes));
+            this.componentInstance.ngOnChanges(CoreAngular.createChangesFromKeyValueDiff(changes));
         }
     }
 

@@ -21,7 +21,7 @@ import { MediaFile } from '@awesome-cordova-plugins/media-capture/ngx';
 
 import { CoreNetwork } from '@services/network';
 import { CoreFile, CoreFileProvider, CoreFileProgressEvent } from '@services/file';
-import { CoreMimetypeUtils } from '@services/utils/mimetype';
+import { CoreMimetype } from '@singletons/mimetype';
 import { CoreText } from '@singletons/text';
 import { CoreArray } from '@singletons/array';
 import { makeSingleton, Translate, Camera, ActionSheetController } from '@singletons';
@@ -288,11 +288,11 @@ export class CoreFileUploaderHelperProvider {
             return;
         }
 
-        let extension = CoreMimetypeUtils.getFileExtension(nameAndDir.name);
+        let extension = CoreMimetype.getFileExtension(nameAndDir.name);
 
         if (!extension) {
             // The URI doesn't have an extension, add it now.
-            extension = CoreMimetypeUtils.getExtension(result.mediaType);
+            extension = CoreMimetype.getExtension(result.mediaType);
 
             if (extension) {
                 nameAndDir.name += `.${extension}`;

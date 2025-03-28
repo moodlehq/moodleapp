@@ -19,7 +19,7 @@ import { CoreError } from '@classes/errors/error';
 import { CoreCourse } from '@features/course/services/course';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSites, CoreSitesReadingStrategy } from '@services/sites';
-import { CoreDomUtils } from '@services/utils/dom';
+import { CoreDom } from '@singletons/dom';
 import { CoreWSError } from '@classes/errors/wserror';
 import { makeSingleton, Translate } from '@singletons';
 import { AddonModQuizAccessRuleDelegate } from './access-rules-delegate';
@@ -33,6 +33,7 @@ import {
 import { AddonModQuizOffline } from './quiz-offline';
 import {
     ADDON_MOD_QUIZ_IMMEDIATELY_AFTER_PERIOD,
+    ADDON_MOD_QUIZ_MODNAME,
     ADDON_MOD_QUIZ_PAGE_NAME,
     AddonModQuizAttemptStates,
     AddonModQuizDisplayOptionsAttemptStates,
@@ -311,7 +312,7 @@ export class AddonModQuizHelperProvider {
     getQuestionMarkFromHtml(html: string): string | undefined {
         const element = convertTextToHTMLElement(html);
 
-        return CoreDomUtils.getContentsOfElement(element, '.grade');
+        return CoreDom.getContentsOfElement(element, '.grade');
     }
 
     /**
@@ -352,7 +353,7 @@ export class AddonModQuizHelperProvider {
 
             const module = await CoreCourse.getModuleBasicInfoByInstance(
                 quizId,
-                'quiz',
+                ADDON_MOD_QUIZ_MODNAME,
                 { siteId, readingStrategy: CoreSitesReadingStrategy.PREFER_CACHE },
             );
 

@@ -18,7 +18,7 @@ import { CoreConfig } from '@services/config';
 import { CoreEvents } from '@singletons/events';
 import { CoreLang } from '@services/lang';
 import { CoreSettingsHelper, CoreColorScheme, CoreZoomLevel } from '../../services/settings-helper';
-import { CoreIframeUtils } from '@services/utils/iframe';
+import { CoreIframe } from '@singletons/iframe';
 import { Translate } from '@singletons';
 import { CoreSites } from '@services/sites';
 import { CorePromiseUtils } from '@singletons/promise-utils';
@@ -115,7 +115,7 @@ export default class CoreSettingsGeneralPage {
             this.analyticsEnabled = await CoreConfig.get(CoreConstants.SETTINGS_ANALYTICS_ENABLED, true);
         }
 
-        this.displayIframeHelp = CoreIframeUtils.shouldDisplayHelp();
+        this.displayIframeHelp = CoreIframe.shouldDisplayHelp();
     }
 
     /**

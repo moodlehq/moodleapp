@@ -21,7 +21,7 @@ import { CoreNetwork } from '@services/network';
 import { CoreFileHelper } from '@services/file-helper';
 import { CoreFilepool } from '@services/filepool';
 import { CoreSites } from '@services/sites';
-import { CoreMimetypeUtils } from '@services/utils/mimetype';
+import { CoreMimetype } from '@singletons/mimetype';
 import { makeSingleton, Translate } from '@singletons';
 import { CorePath } from '@singletons/path';
 import { AddonModResource, AddonModResourceCustomData } from './resource';
@@ -57,7 +57,7 @@ export class AddonModResourceHelperProvider {
             contents,
         );
 
-        return CoreMimetypeUtils.getEmbeddedHtml(contents[0], result.path);
+        return CoreMimetype.getEmbeddedHtml(contents[0], result.path);
     }
 
     /**
@@ -110,15 +110,15 @@ export class AddonModResourceHelperProvider {
 
         let ext: string | undefined;
         if (module.contentsinfo) {
-            ext = CoreMimetypeUtils.getExtension(module.contentsinfo.mimetypes[0]);
+            ext = CoreMimetype.getExtension(module.contentsinfo.mimetypes[0]);
         } else if (module.contents?.length) {
-            ext = CoreMimetypeUtils.getFileExtension(module.contents[0].filename);
+            ext = CoreMimetype.getFileExtension(module.contents[0].filename);
         } else {
             return false;
         }
 
         return (display === ModResourceDisplay.EMBED || display === ModResourceDisplay.AUTO) &&
-            CoreMimetypeUtils.canBeEmbedded(ext);
+            CoreMimetype.canBeEmbedded(ext);
     }
 
     /**
@@ -133,8 +133,8 @@ export class AddonModResourceHelperProvider {
         if (module.contentsinfo) {
             mimetype = module.contentsinfo.mimetypes[0];
         } else if (module.contents) {
-            const ext = CoreMimetypeUtils.getFileExtension(module.contents[0].filename);
-            mimetype = CoreMimetypeUtils.getMimeType(ext);
+            const ext = CoreMimetype.getFileExtension(module.contents[0].filename);
+            mimetype = CoreMimetype.getMimeType(ext);
         } else {
             return false;
         }
@@ -258,7 +258,7 @@ export class AddonModResourceHelperProvider {
         }
 
         if (options.showtype) {
-            options.filedetails.type = CoreMimetypeUtils.getMimetypeDescription(mainFile);
+            options.filedetails.type = CoreMimetype.getMimetypeDescription(mainFile);
         }
 
         if (options.showdate) {
@@ -308,7 +308,7 @@ export class AddonModResourceHelperProvider {
                 extra.push(details.extension);
             } else if (details.mimetype) {
                 // Mostly used from 3.7 to 4.2.
-                extra.push(CoreMimetypeUtils.getMimetypeDescription(details.mimetype));
+                extra.push(CoreMimetype.getMimetypeDescription(details.mimetype));
             } else if (details.type) {
                 // Used on 3.5 and 3.6 where mimetype populated on getModuleOptions using main file.
                 extra.push(details.type); // Already translated.

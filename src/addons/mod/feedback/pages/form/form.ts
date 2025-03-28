@@ -48,6 +48,7 @@ import { CoreWSError } from '@classes/errors/wserror';
 import { CoreObject } from '@singletons/object';
 import { CoreAlerts } from '@services/overlays/alerts';
 import { CoreSharedModule } from '@/core/shared.module';
+import { CoreContentLinksHelper } from '@features/contentlinks/services/contentlinks-helper';
 
 /**
  * Page that displays feedback form.
@@ -458,7 +459,7 @@ export default class AddonModFeedbackFormPage implements OnInit, OnDestroy, CanL
         const modal = await CoreLoadings.show();
 
         try {
-            await CoreSites.visitLink(this.siteAfterSubmit, { siteId: this.currentSite.id });
+            await CoreContentLinksHelper.visitLink(this.siteAfterSubmit, { siteId: this.currentSite.id });
         } finally {
             modal.dismiss();
         }
