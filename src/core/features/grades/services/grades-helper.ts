@@ -357,7 +357,7 @@ export class CoreGradesHelperProvider {
     ): Promise<CoreGradesFormattedItem[]> {
         const grades = await CoreGrades.getGradeItems(courseId, userId, groupId, siteId, ignoreCache);
 
-        return grades.filter((item) => item.cmid == moduleId).map((item) => this.formatGradeItem(item));
+        return grades.filter((item) => item.cmid === moduleId).map((item) => this.formatGradeItem(item));
     }
 
     /**
@@ -477,7 +477,7 @@ export class CoreGradesHelperProvider {
             const items = await CoreGrades.getGradeItems(courseId, userId, undefined, siteId);
 
             // Find the item of the module.
-            const item = Array.isArray(items) && items.find((item) => moduleId == item.cmid);
+            const item = Array.isArray(items) && items.find((item) => moduleId === item.cmid);
 
             if (!item) {
                 throw new CoreError('Grade item not found.');
