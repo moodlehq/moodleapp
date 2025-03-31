@@ -205,12 +205,9 @@ export class CoreCoursesCourseListItemComponent implements OnInit, OnDestroy, On
 
     /**
      * Initialize prefetch course.
-     *
-     * @param forceInit Force initialization of prefetch course info.
      */
-    async initPrefetchCourse(forceInit = false): Promise<void> {
-        if (!this.isEnrolled || !this.showDownload ||
-            (this.courseOptionMenuEnabled && !forceInit)) {
+    async initPrefetchCourse(): Promise<void> {
+        if (!this.isEnrolled || !this.showDownload) {
             return;
         }
 
@@ -319,7 +316,7 @@ export class CoreCoursesCourseListItemComponent implements OnInit, OnDestroy, On
         event.preventDefault();
         event.stopPropagation();
 
-        this.initPrefetchCourse(true);
+        this.initPrefetchCourse();
 
         const { CoreCoursesCourseOptionsMenuComponent } = await import('../course-options-menu/course-options-menu');
 
