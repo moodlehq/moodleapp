@@ -12,8 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit } from '@angular/core';
-
+import { Component, effect, OnInit, Signal } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { AccordionGroupCustomEvent } from '@ionic/angular';
 import { CoreUser, CoreUserProfile } from '@features/user/services/user';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSites } from '@services/sites';
@@ -28,6 +29,12 @@ import { CoreTime } from '@singletons/time';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 import { CoreAlerts } from '@services/overlays/alerts';
 import { CoreSharedModule } from '@/core/shared.module';
+import { CoreScreen } from '@services/screen';
+import { map } from 'rxjs';
+import { Translate } from '@singletons';
+import { AddonModH5PActivityAttemptCompletionComponent } from '../../components/attempt-completion/attempt-completion';
+import { AddonModH5PActivityAttemptSuccessComponent } from '../../components/attempt-success/attempt-success';
+import { AddonModH5PActivityAttemptSummaryComponent } from '../../components/attempt-summary/attempt-summary';
 
 /**
  * Page that displays user attempts of a certain user.
@@ -39,6 +46,9 @@ import { CoreSharedModule } from '@/core/shared.module';
     standalone: true,
     imports: [
         CoreSharedModule,
+        AddonModH5PActivityAttemptCompletionComponent,
+        AddonModH5PActivityAttemptSuccessComponent,
+        AddonModH5PActivityAttemptSummaryComponent,
     ],
 })
 export default class AddonModH5PActivityUserAttemptsPage implements OnInit {
@@ -50,6 +60,9 @@ export default class AddonModH5PActivityUserAttemptsPage implements OnInit {
     attemptsData?: AddonModH5PActivityUserAttempts;
     user?: CoreUserProfile;
     isCurrentUser = false;
+    isTablet: Signal<boolean>;
+    allAttemptsTitle = Translate.instant('addon.mod_h5pactivity.all_attempts');
+    expandedAttemptId = '';
 
     protected userId!: number;
     protected logView: () => void;
@@ -72,6 +85,15 @@ export default class AddonModH5PActivityUserAttemptsPage implements OnInit {
                 data: { id: this.h5pActivity.id, userid: this.userId, category: 'h5pactivity' },
                 url: `/mod/h5pactivity/report.php?a=${this.h5pActivity.id}&userid=${this.userId}`,
             });
+        });
+
+        this.isTablet = toSignal(CoreScreen.layoutObservable.pipe(map(() => CoreScreen.isTablet)), { requireSync: true });
+
+        // Reset expanded attempt when switching to tablet view.
+        effect(() => {
+            if (this.isTablet()) {
+                this.expandedAttemptId = '';
+            }
         });
     }
 
@@ -183,6 +205,13 @@ export default class AddonModH5PActivityUserAttemptsPage implements OnInit {
      */
     openAttempt(attempt: AddonModH5PActivityAttempt): void {
         CoreNavigator.navigate(`../../attemptresults/${attempt.id}`);
+    }
+
+    /**
+     * Function called when an attempt accordion is toggled.
+     */
+    onAttemptAccordionGroupChanged(event: AccordionGroupCustomEvent<string>): void {
+        this.expandedAttemptId = event.detail.value;
     }
 
 }
