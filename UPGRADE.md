@@ -2,7 +2,8 @@ This file describes API changes in the Moodle App that affect site plugins, info
 
 For more information about upgrading, read the official documentation: https://moodledev.io/general/app/upgrading/
 
-=== 5.0.0 ===
+5.0.0
+=====
 
  - The logout process has been refactored, now it uses a logout page to trigger Angular guards. CoreSites.logout now uses this process, and CoreSites.logoutForRedirect is deprecated and shouldn't be used anymore.
  - The parameters of treatDownloadedFile of plugin file handlers have changed. Now the third parameter is an object with all the optional parameters.
@@ -20,13 +21,15 @@ For more information about upgrading, read the official documentation: https://m
  - Assign submission plugins now should implement canContainFiltersWhenEditing instead of canEditOffline.
  - On CoreSitesProvider, functions addSiteFromSiteListEntry, makeSiteFromSiteListEntry and getSiteFromDB are now protected and unsetCurrentSite removed.
 
-=== 4.5.0 ===
+4.5.0
+=====
 
  - Ionic has been upgraded to major version 8. See breaking changes and upgrade guide here: https://ionicframework.com/docs/updating/8-0
  - core-show-password has been deprecated in favor of ion-input-password-toggle
 
 
-=== 4.4.0 ===
+4.4.0
+=====
 
  - Ionic has been upgraded to major version 7. See breaking changes and upgrade guide here: https://ionicframework.com/docs/updating/7-0 and https://ionicframework.com/docs/updating/6-0
  - Starting with this release, this file will only document breaking changes for APIs exposed to site plugins. Internal changes will no longer be documented.
@@ -43,7 +46,8 @@ For more information about upgrading, read the official documentation: https://m
  - Activity modules services that do not admit plugins are not available for site plugins anymore.
  - CoreUserDelegate type available values changed from newpage and communication to listitem and button.
 
-=== 4.3.0 ===
+4.3.0
+=====
 
  - CoreSiteBasicInfo fullName attribute has changed to fullname and avatar to userpictureurl to match user fields.
  - Font Awesome icon library has been updated to 6.4.0. But nothing has changed, only version number.
@@ -51,14 +55,16 @@ For more information about upgrading, read the official documentation: https://m
  - Due to the analytics refactor, the parameters of most log functions have changed.
  - CoreCourseModuleHandlerData.buttons has been deprecated, now only one button in attribute button will be shown.
 
-=== 4.2.0 ===
+4.2.0
+=====
 
 - CoreIconComponent has been removed after deprecation period: Use CoreFaIconDirective instead.
 - The courseSummaryComponent property has been removed from the CoreCourseFormatComponent component, and the getCourseSummaryComponent method from the CoreCourseFormatHandler interface.
 - Font Awesome icon library has been updated to 6.3.0.
 - Some methods in glossary addon services have changed.
 
-=== 4.1.0 ===
+4.1.0
+=====
 
 - Zoom levels changed from "normal / low / high" to " none / medium / high".
 - --addon-messages-* CSS3 variables have been renamed to --core-messages-*
@@ -67,7 +73,8 @@ For more information about upgrading, read the official documentation: https://m
 - CSS variable declarations have been moved to the `html` selector instead of using `body` and `:root`.
 - The second argument of `CoreTextUtilsProvider.cleanTags` has been converted into an object with boolean flags.
 
-=== 4.0.0 ===
+4.0.0
+=====
 
 - The versioncode in moodle.config.json has changed from 4 digits to 5 digits to match the actual value for the stores: the 4.0.0 version's versioncode is now 40000 instead of 4000. If you maintain a Moodle plugin with mobile support and you use the versioncode that is sent in every request, you might need to check if this change will affect your code.
 - The parameters of the functions confirmAndPrefetchCourse and confirmAndPrefetchCourses have changed, they now accept an object with options.
@@ -94,39 +101,47 @@ For more information about upgrading, read the official documentation: https://m
 - The function CoreLoginHelper.setWaitingForBrowser has been removed, use CoreLoginHelper.waitForBrowser and CoreLoginHelper.stopWaitingForBrowser instead.
 
 
-=== 3.9.5 ===
+3.9.5
+=====
 
 - Several functions inside AddonNotificationsProvider have been modified to accept an "options" parameter instead of having several optional parameters.
 - Schemas are now registered using Angular providers with the CORE_SITE_SCHEMAS injection token instead of CoreSitesProvider.registerSiteSchema.
 
-=== 3.9.3 ===
+3.9.3
+=====
 
 - In the core-attachments component, passing a -1 as maxSize or maxSubmissions used to mean "unknown limit". Now -1 means unlimited. Also, passing a 0 to maxSize used to mean "unknown" too, now 0 means user max size.
 - Most functions that call a WebService in addons/mod have been modified to accept an "options" parameter instead of having several optional parameters.
 
-=== 3.8.3 ===
+3.8.3
+=====
 
 - CoreFileProvider.writeFileDataInFile has been deprecated. Please use CoreFileHelperProvider.writeFileDataInFile instead.
 
-=== 3.8.0 ===
+3.8.0
+=====
 
 - CoreDomUtilsProvider.extractDownloadableFilesFromHtml and CoreDomUtilsProvider.extractDownloadableFilesFromHtmlAsFakeFileObjects have been deprecated. Please use CoreFilepoolProvider.extractDownloadableFilesFromHtml and CoreFilepoolProvider.extractDownloadableFilesFromHtmlAsFakeFileObjects. We had to move them to prevent a circular dependency.
 
-=== 3.7.1 ===
+3.7.1
+=====
 
 - CoreGroupsProvider.getActivityAllowedGroups and CoreGroupsProvider.getActivityAllowedGroupsIfEnabled now return the full response of core_group_get_activity_allowed_groups instead of just the groups.
 
-=== 3.7.0 ===
+3.7.0
+=====
 
 - The pushnotifications addon has been moved to core. All imports of that addon need to be fixed to use the right path and name.
 - Now the expirationTime of cache entries contains the time the entry was modified, not the expiration time. This is to allow calculating dynamic expiration times. We decided to reuse the same field to prevent modifying the database table.
 
-=== 3.6.1 ===
+3.6.1
+=====
 
 - The local notifications plugin was updated to its latest version. The new API has some breaking changes, so please check its documentation if you're using local notifications. Also, you need to run "npm install" to update the ionic-native library.
 - New method CoreSitesProvider.registerSiteSchema allows to register table schemas and migration functions for site databases. Prefer this method over CoreSitesProvider.createTablesFromSchema: it supports schema migrations and it tracks the installed version of the schema, so it does not try to create the tables on every app boot.
 
-=== 3.6.0 ===
+3.6.0
+=====
 
 - gulp was updated to v4. In order for gulp to work, you need to install gulp-cli: npm install -g gulp-cli
   It's also recommended to update ionic cli to v4, otherwise some errors could be raised while building: npm install -g ionic
@@ -142,6 +157,7 @@ For more information about upgrading, read the official documentation: https://m
     core.dfmediumdate. Please use core.strftimedaydatetime instead.
     core.dftimedate. Please use core.strftimetime instead.
 
-=== 3.5.2 ===
+3.5.2
+=====
 
 - CoreChartDirective changed from directive to component (CoreChartComponent) and the selector to use it changed from canvas[core-chart] to core-chart.
