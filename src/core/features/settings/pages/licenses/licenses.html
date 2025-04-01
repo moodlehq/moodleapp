@@ -10,7 +10,7 @@
     </ion-toolbar>
 </ion-header>
 <ion-content class="limited-width">
-    <core-loading [hideUntil]="loaded">
+    <core-loading [hideUntil]="loaded" placeholderType="column" placeholderHeight="48px">
         <ion-searchbar [(ngModel)]="textFilter" (ionInput)="filterChanged($event.target)" (ionCancel)="filterChanged($event.target)"
             [placeholder]="'core.filter' | translate" class="ion-margin-vertical" />
         <ion-list>

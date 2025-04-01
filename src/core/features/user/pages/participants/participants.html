@@ -7,7 +7,7 @@
         <core-search-box [disabled]="searchInProgress" [spellcheck]="false" [lengthCheck]="1" autocorrect="off"
             searchArea="CoreUserParticipants" (onSubmit)="search($event)" (onClear)="clearSearch()" />
 
-        <core-loading [hideUntil]="participants.loaded">
+        <core-loading [hideUntil]="participants.loaded" placeholderType="listwithavatar" placeholderHeight="44px" placeholderWidth="44px">
             <core-empty-box *ngIf="participants.empty && !searchInProgress && !searchQuery" icon="far-user"
                 [message]="'core.user.noparticipants' | translate" />
 

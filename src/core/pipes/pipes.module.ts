@@ -23,6 +23,7 @@ import { CoreNoTagsPipe } from './no-tags';
 import { CoreSecondsToHMSPipe } from './seconds-to-hms';
 import { CoreTimeAgoPipe } from './time-ago';
 import { CoreNoPeriodPipe } from './no-period';
+import { CoreTimesPipe } from './times';
 
 @NgModule({
     imports: [
@@ -35,6 +36,7 @@ import { CoreNoPeriodPipe } from './no-period';
         CoreNoTagsPipe,
         CoreSecondsToHMSPipe,
         CoreTimeAgoPipe,
+        CoreTimesPipe,
     ],
     exports: [
         CoreBytesToSizePipe,
@@ -46,6 +48,7 @@ import { CoreNoPeriodPipe } from './no-period';
         CoreNoPeriodPipe,
         CoreSecondsToHMSPipe,
         CoreTimeAgoPipe,
+        CoreTimesPipe,
     ],
 })
 export class CorePipesModule {}

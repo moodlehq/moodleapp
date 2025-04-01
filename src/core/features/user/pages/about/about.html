@@ -12,7 +12,7 @@
     <ion-refresher slot="fixed" [disabled]="!userLoaded" (ionRefresh)="refreshUser($event.target)">
         <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}" />
     </ion-refresher>
-    <core-loading [hideUntil]="userLoaded">
+    <core-loading [hideUntil]="userLoaded" placeholderType="column" placeholderHeight="48px">
         <ion-list *ngIf="user">
             <ion-item class="ion-text-center core-user-profile-maininfo ion-text-wrap" [lines]="user.description ? 'none' : 'full'">
                 <ion-label>

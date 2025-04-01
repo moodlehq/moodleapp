@@ -3,7 +3,7 @@
         <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}" />
     </ion-refresher>
 
-    <core-loading [hideUntil]="dataLoaded && !updatingData">
+    <core-loading [hideUntil]="dataLoaded && !updatingData" placeholderType="column" placeholderHeight="128px">
         <core-course-format [course]="course" [sections]="sections" [initialSectionId]="sectionId" [initialSectionNumber]="sectionNumber"
             [initialBlockInstanceId]="blockInstanceId" [moduleId]="moduleId" class="core-course-format-{{course.format}}"
             *ngIf="dataLoaded && sections" [isGuest]="isGuest" />
