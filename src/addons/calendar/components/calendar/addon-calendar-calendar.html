@@ -19,15 +19,15 @@
         </ion-grid>
         <ion-grid class="addon-calendar-months">
             <ion-row class="addon-calendar-week">
-                @for (k of [].constructor(7); track k) {
+                @for (k of 7 | coreTimes; track k) {
                     <ion-col class="ion-text-center addon-calendar-weekday" style="width: 60px;">
                         <ion-skeleton-text [animated]="true" class="icon" />
                     </ion-col>
                 }
             </ion-row>
-            @for (j of [].constructor(5); track j) {
+            @for (j of 5 | coreTimes; track j) {
                 <ion-row class="addon-calendar-week">
-                    @for (k of [].constructor(7); track k) {
+                    @for (k of 7 | coreTimes; track k) {
                         <ion-col class="ion-text-center dayblank addon-calendar-day" style="width: 60px;">
                             <p class="addon-calendar-day-number">
                                 <ion-skeleton-text [animated]="true" class="icon" />

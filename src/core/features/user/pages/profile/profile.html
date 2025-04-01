@@ -39,7 +39,7 @@
                     <ion-skeleton-text [animated]="true" style="width: 100%; height: 44px;" class="ion-margin" />
                 </ion-label>
             </ion-item>
-            @for (i of [].constructor(15); track i) {
+            @for (i of 15 | coreTimes; track i) {
                 <ion-item>
                     <ion-label>
                         <h3>
