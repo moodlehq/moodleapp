@@ -12,7 +12,46 @@
     <ion-refresher slot="fixed" [disabled]="!userLoaded" (ionRefresh)="refreshUser($event.target)">
         <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}" />
     </ion-refresher>
-    <core-loading [hideUntil]="userLoaded">
+    <core-loading [hideUntil]="userLoaded" placeholderType="free">
+        <ion-list placeholder class="ion-padding">
+            <ion-item>
+                <ion-avatar slot="start" style="width: 80px; height: 80px;">
+                    <ion-skeleton-text [animated]="true" />
+                </ion-avatar>
+                <ion-label>
+                    <h1>
+                        <ion-skeleton-text [animated]="true" style="width: 80%;" />
+                    </h1>
+                    <p>
+                        <ion-skeleton-text [animated]="true" style="width: 70%;" />
+                    </p>
+                    <p>
+                        <ion-skeleton-text [animated]="true" style="width: 30%;" />
+                    </p>
+                    <p>
+                        <ion-skeleton-text [animated]="true" style="width: 60%;" />
+                    </p>
+                </ion-label>
+            </ion-item>
+            <ion-item>
+                <ion-label>
+                    <ion-skeleton-text [animated]="true" style="width: 100%; height: 44px;" class="ion-margin" />
+                    <ion-skeleton-text [animated]="true" style="width: 100%; height: 44px;" class="ion-margin" />
+                </ion-label>
+            </ion-item>
+            @for (i of 15 | coreTimes; track i) {
+                <ion-item>
+                    <ion-label>
+                        <h3>
+                            <ion-skeleton-text [animated]="true" style="width: 100%;" />
+                        </h3>
+                        <p>
+                            <ion-skeleton-text [animated]="true" style="width: 60%;" />
+                        </p>
+                    </ion-label>
+                </ion-item>
+            }
+        </ion-list>
         <ion-list *ngIf="user && !isDeleted && isEnrolled">
             <ion-item class="core-user-profile-maininfo ion-text-wrap" collapsible>
                 <core-user-avatar [user]="user" [userId]="user.id" [linkProfile]="false" [checkOnline]="true" slot="start" />
