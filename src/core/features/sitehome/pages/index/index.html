@@ -7,7 +7,7 @@
     <ion-refresher slot="fixed" [disabled]="!dataLoaded" (ionRefresh)="doRefresh($event.target)">
         <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}" />
     </ion-refresher>
-    <core-loading [hideUntil]="dataLoaded">
+    <core-loading [hideUntil]="dataLoaded" placeholderType="column" placeholderHeight="48px">
         <ion-list class="list-item-limited-width">
             <!-- Site home main contents. -->
             <section *ngIf="section && section.hasContent" class="core-course-module-list-wrapper">

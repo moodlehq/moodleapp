@@ -13,7 +13,7 @@
         <ion-refresher slot="fixed" [disabled]="!badges.loaded" (ionRefresh)="refreshBadges($event.target)">
             <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}" />
         </ion-refresher>
-        <core-loading [hideUntil]="badges.loaded">
+        <core-loading [hideUntil]="badges.loaded" placeholderType="listwithavatar">
             <core-empty-box *ngIf="badges.empty" icon="fas-trophy" [message]="'addon.badges.nobadges' | translate" />
 
             <ion-list *ngIf="!badges.empty" class="ion-no-margin">

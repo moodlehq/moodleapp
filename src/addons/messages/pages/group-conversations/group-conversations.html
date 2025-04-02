@@ -25,7 +25,7 @@
             <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}" />
         </ion-refresher>
 
-        <core-loading [hideUntil]="loaded" [message]="loadingMessage">
+        <core-loading [hideUntil]="loaded" [message]="loadingMessage" placeholderType="listwithavatar">
             <ion-list>
                 <ion-item class="ion-text-wrap" (click)="gotoContacts()" [detail]="true" button>
                     <ion-icon name="fas-address-book" slot="start" aria-hidden="true" />

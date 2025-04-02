@@ -1,0 +1,11 @@
+@use "theme/globals" as *;
+
+:host {
+    display: contents;
+
+    ion-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.25em;
+    }
+}

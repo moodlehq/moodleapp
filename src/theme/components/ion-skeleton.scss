@@ -1,0 +1,29 @@
+
+ion-skeleton-text {
+    border-radius: var(--mdl-shape-borderRadius-md);
+
+    &.large-avatar {
+        width: var(--core-large-avatar-size);
+        height: var(--core-large-avatar-size);
+        flex-shrink: 0;
+    }
+
+    &.round {
+        border-radius: var(--mdl-shape-borderRadius-round);
+    }
+
+    &.icon {
+        border-radius: var(--mdl-shape-borderRadius-round);
+        width: 24px;
+        height: 24px;
+    }
+}
+
+.ion-text-center ion-skeleton-text {
+    margin-left: auto;
+    margin-right: auto;
+}
+
+ion-avatar ion-skeleton-text {
+    border-radius: var(--mdl-shape-borderRadius-round);
+}

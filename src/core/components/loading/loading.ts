@@ -12,8 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, Input, OnInit, OnChanges, SimpleChange, ElementRef, AfterViewInit, OnDestroy } from '@angular/core';
-
+import {
+    Component,
+    Input,
+    OnInit,
+    OnChanges,
+    SimpleChange,
+    ElementRef,
+    AfterViewInit,
+    OnDestroy,
+    HostBinding,
+} from '@angular/core';
 import { CoreUtils } from '@singletons/utils';
 import { CoreAnimations } from '@components/animations';
 import { Translate } from '@singletons';
@@ -24,6 +33,7 @@ import { CorePlatform } from '@services/platform';
 import { CoreWait } from '@singletons/wait';
 import { toBoolean } from '@/core/transforms/boolean';
 import { CoreBaseModule } from '@/core/base.module';
+import { CoreTimesPipe } from '@pipes/times';
 
 /**
  * Component to show a loading spinner and message while data is being loaded.
@@ -51,13 +61,19 @@ import { CoreBaseModule } from '@/core/base.module';
     styleUrl: 'loading.scss',
     animations: [CoreAnimations.SHOW_HIDE],
     standalone: true,
-    imports: [CoreBaseModule],
+    imports: [CoreBaseModule, CoreTimesPipe],
 })
 export class CoreLoadingComponent implements OnInit, OnChanges, AfterViewInit, AsyncDirective, OnDestroy {
 
     @Input({ transform: toBoolean }) hideUntil = false; // Determine when should the contents be shown.
     @Input() message?: string; // Message to show while loading.
     @Input({ transform: toBoolean }) fullscreen = true; // Use the whole screen.
+    @Input() placeholderType?:
+        'row' | 'column' | 'rowwrap' | 'columnwrap' | 'listwithicon' | 'listwithavatar' | 'imageandboxes' | 'free';
+
+    @Input() placeholderWidth?: string;
+    @Input() placeholderHeight?: string;
+    @Input() placeholderLimit = 20;
 
     uniqueId: string;
     loaded = false;
@@ -66,6 +82,26 @@ export class CoreLoadingComponent implements OnInit, OnChanges, AfterViewInit, A
     protected lastScrollPosition = Promise.resolve<number | undefined>(undefined);
     protected onReadyPromise = new CorePromisedValue<void>();
     protected mutationObserver: MutationObserver;
+
+    @HostBinding('class.core-loading-inline')
+    get inlineClass(): boolean {
+        return !this.fullscreen;
+    }
+
+    @HostBinding('attr.aria-busy')
+    get ariaBusy(): string {
+        return this.loaded ? 'false' : 'true';
+    }
+
+    @HostBinding('style.--loading-inline-min-height')
+    get minHeight(): string | undefined {
+        return this.placeholderHeight;
+    }
+
+    @HostBinding('class.core-loading-loaded')
+    get loadedClass(): boolean {
+        return this.loaded;
+    }
 
     constructor(element: ElementRef) {
         this.element = element.nativeElement;
@@ -105,7 +141,6 @@ export class CoreLoadingComponent implements OnInit, OnChanges, AfterViewInit, A
             // Default loading message.
             this.message = Translate.instant('core.loading');
         }
-        this.element.classList.toggle('core-loading-inline', !this.fullscreen);
     }
 
     /**
@@ -135,12 +170,8 @@ export class CoreLoadingComponent implements OnInit, OnChanges, AfterViewInit, A
      * Change loaded state.
      *
      * @param loaded True to load, false otherwise.
-     * @returns Promise resolved when done.
      */
     async changeState(loaded: boolean): Promise<void> {
-        this.element.classList.toggle('core-loading-loaded', loaded);
-        this.element.setAttribute('aria-busy', loaded ?  'false' : 'true');
-
         if (this.loaded === loaded) {
             return;
         }

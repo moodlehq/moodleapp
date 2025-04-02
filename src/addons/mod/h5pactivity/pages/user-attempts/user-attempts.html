@@ -5,8 +5,10 @@
         </ion-buttons>
         <ion-title>
             <h1>
-                <core-format-text *ngIf="h5pActivity" [text]="h5pActivity.name" contextLevel="module"
-                    [contextInstanceId]="h5pActivity.coursemodule" [courseId]="courseId" />
+                @if (h5pActivity) {
+                    <core-format-text [text]="h5pActivity.name" contextLevel="module" [contextInstanceId]="h5pActivity.coursemodule"
+                        [courseId]="courseId" />
+                }
             </h1>
         </ion-title>
     </ion-toolbar>
@@ -16,96 +18,149 @@
         <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}" />
     </ion-refresher>
     <core-loading [hideUntil]="loaded">
-        <!-- User viewed. -->
-        <ion-item class="ion-text-wrap" *ngIf="user && !isCurrentUser" core-user-link [userId]="user.id" [courseId]="courseId"
-            [attr.aria-label]="user.fullname" button [detail]="true">
-            <core-user-avatar [user]="user" slot="start" [courseId]="courseId" [linkProfile]="false" />
-            <ion-label>
-                <h2>{{ user.fullname }}</h2>
-            </ion-label>
-        </ion-item>
-        <ion-item class="ion-text-wrap" *ngIf="user && isCurrentUser">
-            <core-user-avatar [user]="user" slot="start" [courseId]="courseId" />
-            <ion-label>
-                <h2>{{ 'addon.mod_h5pactivity.myattempts' | translate }}</h2>
-            </ion-label>
-        </ion-item>
+        <h2 class="ion-margin">
+            @if (user && isCurrentUser) {
+                {{ 'addon.mod_h5pactivity.myattempts' | translate }}
+            } @else {
+                {{ 'addon.mod_h5pactivity.attempts' | translate }}
+            }
+        </h2>
 
-        <ion-list *ngIf="attemptsData">
+        <!-- User viewed. -->
+        @if (user && !isCurrentUser) {
+            <ion-card class="addon-mod_h5pactivity-user-card">
+                <ion-item core-user-link [userId]="user.id" [courseId]="courseId" button [detail]="true">
+                    <core-user-avatar [user]="user" slot="start" [courseId]="courseId" [linkProfile]="false" />
+                    <ion-label>{{ user.fullname }}</ion-label>
+                </ion-item>
+            </ion-card>
+        }
+
+        @if (attemptsData) {
+
             <!-- Attempts used to calculate the score. -->
-            <ng-container *ngIf="attemptsData.scored">
-                <ion-item-divider>
-                    <ion-label>
-                        <h3 class="item-heading">{{ attemptsData.scored.title }}</h3>
-                    </ion-label>
-                </ion-item-divider>
-                <ng-container *ngTemplateOutlet="attemptsTemplate; context: {attempts: attemptsData.scored.attempts}" />
-            </ng-container>
+            @if (attemptsData.scored) {
+                <ng-container *ngTemplateOutlet="attemptsTemplate; context: {
+                    title: attemptsData.scored.title,
+                    attempts: attemptsData.scored.attempts,
+                    type: 'scored'
+                }" />
+            }
 
             <!-- All attempts. -->
-            <ng-container *ngIf="attemptsData.attempts && attemptsData.attempts.length">
-                <ion-item-divider>
-                    <ion-label>
-                        <h3 class="item-heading">{{ 'addon.mod_h5pactivity.all_attempts' | translate }}</h3>
-                    </ion-label>
-                </ion-item-divider>
-                <ng-container *ngTemplateOutlet="attemptsTemplate; context: {attempts: attemptsData.attempts}" />
-            </ng-container>
-        </ion-list>
+            @if (attemptsData.attempts && attemptsData.attempts.length) {
+                <ng-container *ngTemplateOutlet="attemptsTemplate; context: {
+                    title: allAttemptsTitle,
+                    attempts: attemptsData.attempts,
+                    type: 'all'
+                }" />
+            }
+        }
 
         <!-- No attempts. -->
-        <core-empty-box *ngIf="attemptsData && (!attemptsData.attempts || !attemptsData.attempts.length)" icon="fas-chart-bar"
-            [message]="'addon.mod_h5pactivity.attempts_none' | translate" />
+        @if (attemptsData && (!attemptsData.attempts || !attemptsData.attempts.length)) {
+            <core-empty-box icon="fas-chart-bar" [message]="'addon.mod_h5pactivity.attempts_none' | translate" />
+        }
     </core-loading>
 </ion-content>
 
-<!-- Template to render a list of conversations. -->
-<ng-template #attemptsTemplate let-attempts="attempts">
-    <!-- "Header" of the table -->
-    <ion-item class="addon-mod_h5pactivity-table-header hide-detail" [detail]="true">
-        <ion-label>
-            <ion-row class="ion-align-items-center">
-                <ion-col class="ion-text-center">#</ion-col>
-                <ion-col class="ion-text-center" size="5" size-md="2">{{ 'core.date' | translate }}</ion-col>
-                <ion-col class="ion-text-center">{{ 'addon.mod_h5pactivity.score' | translate }}</ion-col>
-                <ion-col class="ion-text-center ion-hide-md-down">{{ 'addon.mod_h5pactivity.maxscore' | translate }}</ion-col>
-                <ion-col class="ion-text-center ion-hide-md-down">{{ 'addon.mod_h5pactivity.duration' | translate }}</ion-col>
-                <ion-col class="ion-text-center ion-hide-md-down">{{ 'addon.mod_h5pactivity.completion' | translate }}</ion-col>
-                <ion-col class="ion-text-center">{{ 'core.success' | translate }}</ion-col>
-            </ion-row>
-        </ion-label>
-    </ion-item>
+<ng-template #attemptsTemplate let-title="title" let-attempts="attempts" let-type="type">
+    @if (isTablet()) {
+        <ng-container *ngTemplateOutlet="attemptsGridTemplate; context: { title, attempts, type }" />
+    } @else {
+        <ng-container *ngTemplateOutlet="attemptsCardTemplate; context: { title, attempts, type }" />
+    }
+</ng-template>
 
-    <!-- List of attempts. -->
-    <ion-item class="ion-text-wrap addon-mod_h5pactivity-table-row" *ngFor="let attempt of attempts" button [detail]="true"
-        [attr.aria-label]="'addon.mod_h5pactivity.viewattempt' | translate:{$a: attempt.attempt}" (click)="openAttempt(attempt)">
 
-        <ion-label>
-            <ion-row class="ion-align-items-center">
-                <ion-col class="ion-text-center">{{ attempt.attempt }}</ion-col>
-                <ion-col class="ion-text-center" size="5" size-md="2">
+<ng-template #attemptsCardTemplate let-title="title" let-attempts="attempts" let-type="type">
+    <ion-card class="addon-mod_h5pactivity-attempts-card">
+        <ion-card-header>
+            <ion-card-title aria-level="3">{{title}}</ion-card-title>
+        </ion-card-header>
+
+        <ion-card-content role="list" class="ion-no-padding">
+            <ion-accordion-group [value]="expandedAttemptId" (ionChange)="onAttemptAccordionGroupChanged($event)">
+                @for (attempt of attempts; track attempt.attempt) {
+                    <ng-container *ngTemplateOutlet="attemptItemTemplate; context: {
+                        attempt,
+                        id: 'addon-mod-h5pactivity-user-attempts-' + type + '-' + attempt.attempt
+                    }" />
+                }
+            </ion-accordion-group>
+        </ion-card-content>
+    </ion-card>
+</ng-template>
+
+<ng-template #attemptItemTemplate let-attempt="attempt" let-id="id">
+    <ion-accordion role="item" [value]="id" toggle-icon-slot="start" class="addon-mod_h5pactivity-attempts-item">
+        <ion-item slot="header">
+            <h4>
+                {{ 'addon.mod_h5pactivity.attempt' | translate }} {{ attempt.attempt }}
+            </h4>
+            <div slot="end" [attr.aria-hidden]="expandedAttemptId === id">
+                @if (attempt.success !== null) {
+                    <addon-mod-h5pactivity-attempt-success [attempt]="attempt" />
+                }
+                <span>{{ 'addon.mod_h5pactivity.score_out_of' | translate:{$a: attempt} }}</span>
+            </div>
+        </ion-item>
+        <div slot="content">
+            <addon-mod-h5pactivity-attempt-summary [attempt]="attempt" />
+            <ion-button fill="outline" expand="block" (click)="openAttempt(attempt)">
+                <ion-icon slot="icon-only" name="fas-search" aria-hidden="true" />
+                {{ 'addon.mod_h5pactivity.view_report' | translate }}
+            </ion-button>
+        </div>
+    </ion-accordion>
+</ng-template>
+
+<ng-template #attemptsGridTemplate let-title="title" let-attempts="attempts">
+    <h3 class="ion-padding ion-no-margin ion-margin-top">{{ title }}</h3>
+
+    <ion-grid role="grid" class="addon-mod_h5pactivity-attempts-grid">
+
+        <!-- Header of the table -->
+        <ion-row role="row">
+            <ion-col role="columnheader" size="1">#</ion-col>
+            <ion-col role="columnheader" size="3">{{ 'addon.mod_h5pactivity.startdate' | translate }}</ion-col>
+            <ion-col role="columnheader" class="ion-text-center">{{ 'addon.mod_h5pactivity.score' | translate }}</ion-col>
+            <ion-col role="columnheader" class="ion-text-center">{{ 'addon.mod_h5pactivity.duration' | translate }}</ion-col>
+            <ion-col role="columnheader" class="ion-text-center">{{ 'addon.mod_h5pactivity.completion' | translate }}</ion-col>
+            <ion-col role="columnheader" class="ion-text-center">{{ 'core.success' | translate }}</ion-col>
+            <ion-col role="columnheader" size="auto">
+                <!-- Placeholder -->
+                <ion-icon name="fas-chevron-right" aria-hidden="true" class="invisible" />
+            </ion-col>
+        </ion-row>
+
+        <!-- List of attempts -->
+        @for (attempt of attempts; track attempt.attempt) {
+            <ion-row role="row" tappable (click)="openAttempt(attempt)" class="ion-activatable ripple-parent">
+                <ion-col role="gridcell" size="1">
+                    {{ attempt.attempt }}
+                </ion-col>
+                <ion-col role="gridcell" size="3">
                     {{ attempt.timemodified | coreFormatDate:'strftimedatetimeshort' }}
                 </ion-col>
-                <ion-col class="ion-text-center">
-                    {{ attempt.rawscore }}<span class="ion-hide-md-up"> / {{ attempt.maxscore }}</span>
+                <ion-col role="gridcell" class="ion-justify-content-center">
+                    {{ 'addon.mod_h5pactivity.score_out_of' | translate:{$a: attempt} }}
                 </ion-col>
-                <ion-col class="ion-text-center ion-hide-md-down">{{ attempt.maxscore }}</ion-col>
-                <ion-col class="ion-text-center ion-hide-md-down">{{ attempt.durationReadable }}</ion-col>
-                <ion-col class="ion-text-center ion-hide-md-down">
-                    <img *ngIf="attempt.completion" src="assets/img/completion/completion-auto-y.svg"
-                        [alt]="'addon.mod_h5pactivity.attempt_completion_yes' | translate">
-                    <img *ngIf="!attempt.completion" src="assets/img/completion/completion-auto-n.svg"
-                        [alt]="'addon.mod_h5pactivity.attempt_completion_no' | translate">
+                <ion-col role="gridcell" class="ion-justify-content-center">{{ attempt.durationReadable }}</ion-col>
+                <ion-col role="gridcell" class="ion-justify-content-center">
+                    <addon-mod-h5pactivity-attempt-completion [attempt]="attempt" />
                 </ion-col>
-                <ion-col class="ion-text-center addon-mod_h5pactivity-table-success-col">
-                    <ion-icon *ngIf="attempt.success !== null && attempt.success" name="fas-circle-check"
-                        [attr.aria-label]="'addon.mod_h5pactivity.attempt_success_pass' | translate" />
-                    <ion-icon *ngIf="attempt.success !== null && !attempt.success" name="far-circle"
-                        [attr.aria-label]="'addon.mod_h5pactivity.attempt_success_fail' | translate" />
-                    <img *ngIf="attempt.success === null" src="assets/img/icons/empty.svg"
-                        [alt]="'addon.mod_h5pactivity.attempt_success_unknown' | translate">
+                <ion-col role="gridcell" class="ion-justify-content-center">
+                    <addon-mod-h5pactivity-attempt-success [attempt]="attempt" />
                 </ion-col>
+                <ion-col role="gridcell" size="auto">
+                    <span (ariaButtonClick)="openAttempt(attempt)">
+                        <ion-icon name="fas-chevron-right" [attr.aria-label]="'addon.mod_h5pactivity.view_report' | translate" />
+                    </span>
+                </ion-col>
+                <ion-ripple-effect />
             </ion-row>
-        </ion-label>
-    </ion-item>
+        }
+
+    </ion-grid>
 </ng-template>

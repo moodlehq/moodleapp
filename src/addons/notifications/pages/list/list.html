@@ -16,7 +16,7 @@
         <ion-refresher slot="fixed" [disabled]="!notifications.loaded" (ionRefresh)="refreshNotifications($event.target)">
             <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}" />
         </ion-refresher>
-        <core-loading [hideUntil]="notifications.loaded">
+        <core-loading [hideUntil]="notifications.loaded" placeholderType="listwithicon" placeholderHeight="32px" placeholderWidth="32px">
             <ion-card class="core-warning-card core-card-with-buttons" *ngIf="!hasNotificationsPermission && !permissionWarningHidden">
                 <ion-item class="ion-text-wrap">
                     <ion-icon name="fas-circle-info" slot="start" aria-hidden="true" />
