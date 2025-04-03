@@ -6,7 +6,7 @@ Feature: Test creation of calendar events in app
 
   Background:
     Given the following config values are set as admin:
-      | nofixday | 1 |
+      | nofixday  | 1 |
       | nofixhour | 1 |
     And the following "users" exist:
       | username | firstname  | lastname  | email                |
