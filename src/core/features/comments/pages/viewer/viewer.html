@@ -5,8 +5,13 @@
         </ion-buttons>
         <ion-title>
             <h1>
-                <core-format-text [text]="title" [contextLevel]="contextLevel" [contextInstanceId]="instanceId" [courseId]="courseId" />
+                {{ 'core.comments.comments' | translate }}
             </h1>
+            @if (title) {
+                <p class="subheading">
+                    <core-format-text [text]="title" [contextLevel]="contextLevel" [contextInstanceId]="instanceId" [courseId]="courseId" />
+                </p>
+            }
         </ion-title>
         <ion-buttons slot="end">
             <ion-button *ngIf="canDeleteComments" slot="end" fill="clear" (click)="toggleDelete()"
