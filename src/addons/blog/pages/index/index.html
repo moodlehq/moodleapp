@@ -138,7 +138,7 @@
 
                 @if (getEntryId(entry) && commentsEnabled) {
                     <core-comments [component]="this.component" [itemId]="getEntryId(entry)" area="format_blog" [instanceId]="entry.userid"
-                        contextLevel="user" [showItem]="true" [courseId]="entry.courseid" />
+                        contextLevel="user" [showItem]="true" [courseId]="entry.courseid" [title]="entry.subject" />
                 }
 
             </div>
