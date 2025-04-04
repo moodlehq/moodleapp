@@ -89,7 +89,7 @@
                 </ion-item>
                 <core-comments *ngIf="glossary && glossary.allowcomments && onlineEntry && onlineEntry.id > 0 && commentsEnabled"
                     contextLevel="module" [instanceId]="glossary.coursemodule" component="mod_glossary" [itemId]="onlineEntry.id"
-                    area="glossary_entry" [courseId]="glossary.course" [showItem]="true" />
+                    area="glossary_entry" [courseId]="glossary.course" [showItem]="true" [title]="entry.concept" />
                 <core-rating-rate *ngIf="glossary && ratingInfo && onlineEntry" [ratingInfo]="ratingInfo" contextLevel="module"
                     [instanceId]="glossary.coursemodule" [itemId]="onlineEntry.id" [itemSetId]="0" [courseId]="glossary.course"
                     [aggregateMethod]="glossary.assessed" [scaleId]="glossary.scale" [userId]="entry.userid" (onUpdate)="ratingUpdated()" />

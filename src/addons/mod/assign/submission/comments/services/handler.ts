@@ -20,6 +20,7 @@ import { CoreComments } from '@features/comments/services/comments';
 import { makeSingleton } from '@singletons';
 import { AddonModAssignSubmissionCommentsComponent } from '../component/comments';
 import { ContextLevel } from '@/core/constants';
+import { ADDON_MOD_ASSIGN_COMMENTS_AREA, ADDON_MOD_ASSIGN_COMMENTS_COMPONENT_NAME } from '../constants';
 
 /**
  * Handler for comments submission plugin.
@@ -71,9 +72,9 @@ export class AddonModAssignSubmissionCommentsHandlerService implements AddonModA
         await CoreComments.getComments(
             ContextLevel.MODULE,
             assign.cmid,
-            'assignsubmission_comments',
+            ADDON_MOD_ASSIGN_COMMENTS_COMPONENT_NAME,
             submission.id,
-            'submission_comments',
+            ADDON_MOD_ASSIGN_COMMENTS_AREA,
             0,
             siteId,
         );
