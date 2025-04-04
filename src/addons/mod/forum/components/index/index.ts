@@ -28,7 +28,7 @@ import { AddonModForumOffline } from '@addons/mod/forum/services/forum-offline';
 import { Translate } from '@singletons';
 import CoreCourseContentsPage from '@features/course/pages/contents/contents';
 import { AddonModForumHelper } from '@addons/mod/forum/services/forum-helper';
-import { CoreGroupInfo } from '@services/groups';
+import { CoreGroup, CoreGroupInfo, CoreGroups } from '@services/groups';
 import { CoreEvents, CoreEventObserver } from '@singletons/events';
 import {
     AddonModForumAutoSyncData,
@@ -70,6 +70,7 @@ import { CoreAlerts } from '@services/overlays/alerts';
 import { CoreSharedModule } from '@/core/shared.module';
 import { CoreCourseModuleNavigationComponent } from '@features/course/components/module-navigation/module-navigation';
 import { CoreCourseModuleInfoComponent } from '@features/course/components/module-info/module-info';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 
 /**
  * Component that displays a forum entry page.
@@ -104,6 +105,7 @@ export class AddonModForumIndexComponent extends CoreCourseModuleMainActivityCom
     showQAMessage = false;
     isSetPinAvailable = false;
     showSearch = false;
+    userGroups: CoreGroup[] = [];
 
     protected fetchContentDefaultError = 'addon.mod_forum.errorgetforum';
     protected syncEventName = ADDON_MOD_FORUM_AUTO_SYNCED;
@@ -171,6 +173,10 @@ export class AddonModForumIndexComponent extends CoreCourseModuleMainActivityCom
 
     get errorLoadingDiscussions(): boolean {
         return !!this.discussions?.getSource().errorLoadingDiscussions;
+    }
+
+    get hasBlockingEnabled(): boolean {
+        return !!(this.forum?.blockafter && this.forum.blockperiod);
     }
 
     /**
@@ -321,6 +327,7 @@ export class AddonModForumIndexComponent extends CoreCourseModuleMainActivityCom
 
         // Initialize search.
         this.showSearch = await this.isSearchEnabled();
+        this.userGroups = await CorePromiseUtils.ignoreErrors(this.getUserGroups()) ?? [];
     }
 
     async ngAfterViewInit(): Promise<void> {
@@ -707,6 +714,10 @@ export class AddonModForumIndexComponent extends CoreCourseModuleMainActivityCom
         const searchAreas = await CoreSearchGlobalSearch.getSearchAreas();
 
         return !!searchAreas.find(({ id }) => id === 'mod_forum-post');
+    }
+
+    protected async getUserGroups(): Promise<CoreGroup[]> {
+        return await CoreGroups.getUserGroupsInCourse(this.courseId, this.siteId);
     }
 
 }
