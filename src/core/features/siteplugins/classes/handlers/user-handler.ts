@@ -86,6 +86,7 @@ export class CoreSitePluginsUserProfileHandler extends CoreSitePluginsBaseHandle
      * @inheritdoc
      */
     getDisplayData(): CoreUserProfileHandlerData {
+
         return {
             title: this.title,
             icon: this.handlerSchema.displaydata?.icon,
@@ -93,6 +94,8 @@ export class CoreSitePluginsUserProfileHandler extends CoreSitePluginsBaseHandle
             action: (event, user, context, contextId): void => {
                 event.preventDefault();
                 event.stopPropagation();
+
+                const handlerName = CoreSitePlugins.getHandlerNameFromUniqueName(this.name, this.plugin.addon);
 
                 const args = {
                     courseid: contextId,
@@ -110,6 +113,7 @@ export class CoreSitePluginsUserProfileHandler extends CoreSitePluginsBaseHandle
                             ptrEnabled: this.handlerSchema.ptrenabled,
                             contextLevel: 'user',
                             contextInstanceId: user.id,
+                            handlerName,
                         },
                     },
                 );

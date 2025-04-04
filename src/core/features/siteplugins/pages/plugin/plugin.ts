@@ -14,7 +14,7 @@
 
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
-import { CoreSitePluginsContent } from '@features/siteplugins/services/siteplugins';
+import { CoreSitePlugins, CoreSitePluginsContent } from '@features/siteplugins/services/siteplugins';
 import { CanLeave } from '@guards/can-leave';
 import { CoreNavigator } from '@services/navigator';
 import { CoreUtils } from '@singletons/utils';
@@ -49,11 +49,12 @@ export default class CoreSitePluginsPluginPage implements OnInit, CanLeave {
     contextLevel?: ContextLevel; // The context level to filter text.
     contextInstanceId?: number; // The instance ID related to the context.
     courseId?: number; // Course ID the text belongs to. It can be used to improve performance with filters.
+    stylesPath?: string; // Styles to apply to the component.
 
     /**
      * @inheritdoc
      */
-    ngOnInit(): void {
+    async ngOnInit(): Promise<void> {
         this.title = CoreNavigator.getRouteParam('title');
         this.component = CoreNavigator.getRouteParam('component');
         this.method = CoreNavigator.getRouteParam('method');
@@ -65,6 +66,12 @@ export default class CoreSitePluginsPluginPage implements OnInit, CanLeave {
         this.contextLevel = CoreNavigator.getRouteParam('contextLevel');
         this.contextInstanceId = CoreNavigator.getRouteNumberParam('contextInstanceId');
         this.courseId = CoreNavigator.getRouteNumberParam('courseId');
+
+        this.stylesPath = CoreNavigator.getRouteParam('stylesPath');
+        if (!this.stylesPath) {
+            const handlerName = CoreNavigator.getRouteParam('handlerName');
+            this.stylesPath = await CoreSitePlugins.getHandlerDownloadedStyles(handlerName);
+        }
     }
 
     /**

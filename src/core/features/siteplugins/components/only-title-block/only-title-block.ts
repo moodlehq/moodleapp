@@ -73,6 +73,7 @@ export class CoreSitePluginsOnlyTitleBlockComponent extends CoreBlockBaseCompone
                     ptrEnabled: (<CoreSitePluginsUserHandlerData> handler.handlerSchema).ptrenabled,
                     contextLevel: 'block',
                     contextInstanceId: this.instanceId,
+                    handlerName,
                 },
             },
         );
