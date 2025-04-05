@@ -18,6 +18,7 @@
     "emailagain": "Email (again)",
     "errorloaduser": "Error loading user.",
     "firstname": "First name",
+    "fullnamedisplay": "{{$a.firstname}} {{$a.lastname}}",
     "idnumber": "ID number",
     "institution": "Institution",
     "interests": "Interests",
