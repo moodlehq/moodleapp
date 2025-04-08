@@ -37,7 +37,7 @@ export default class CoreSettingsAboutPage {
     appName: string;
     versionName: string;
     privacyPolicy: string;
-    feedbackFormUrl = CoreConstants.CONFIG.feedbackFormUrl ?? 'https://feedback.moodle.org/mobileapp';
+    feedbackFormUrl = CoreConstants.CONFIG.feedbackFormUrl ?? 'https://www.scholarlms.com/contact/';//<SLMS_CUSTOM_CHANGE_ANUP_08042025>
     a11yStatement = CoreConstants.CONFIG.a11yStatement ?? 'https://apps.moodle.com/admin/tool/policy/view.php?versionid=5';
     currentSite?: CoreSite;
     showSurvey: boolean | undefined = false;

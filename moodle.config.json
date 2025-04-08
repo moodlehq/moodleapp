@@ -81,7 +81,7 @@
     "sitefindersettings": {},
     "onlyallowlistedsites": false,
     "forcedefaultlanguage": false,
-    "privacypolicy": "https://moodle.net/moodle-app-privacy/",
+    "privacypolicy": "https://www.scholarlms.com/privacy-policy/",//<SLMS_CUSTOM_CHANGE_ANUP_08042025>
     "notificoncolor": "#f98012",
     "enableanalytics": false,
     "enableonboarding": true,

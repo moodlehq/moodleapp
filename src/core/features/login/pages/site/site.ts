@@ -83,6 +83,7 @@ export default class CoreLoginSitePage implements OnInit {
     enteredSiteUrl?: CoreLoginSiteInfoExtended;
     siteFinderSettings!: CoreLoginSiteFinderSettings;
     appName = CoreConstants.CONFIG.appname;
+    needHelp = '';//<SLMS_CUSTOM_CHANGE_ANUP_08042025>
 
     constructor(protected formBuilder: FormBuilder) {}
 
@@ -91,6 +92,7 @@ export default class CoreLoginSitePage implements OnInit {
      */
     async ngOnInit(): Promise<void> {
         let url = '';
+        this.needHelp = 'https://www.scholarlms.com/contact/';//<SLMS_CUSTOM_CHANGE_ANUP_08042025>
         this.siteSelector = CoreConstants.CONFIG.multisitesdisplay;
 
         const siteFinderSettings: Partial<CoreLoginSiteFinderSettings> = CoreConstants.CONFIG.sitefindersettings || {};

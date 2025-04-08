@@ -22,11 +22,14 @@
             <ion-icon name="fas-user-shield" slot="start" aria-hidden="true" />
             <ion-label>{{ 'core.settings.privacypolicy' | translate }}</ion-label>
         </ion-item>
+        <!-- 
+        <SLMS_CUSTOM_CHANGE_ANUP_08042025_FROM25_TO32>
         <ion-item *ngIf="a11yStatement" class="ion-text-wrap" button core-link [autoLogin]="false" [href]="a11yStatement" [detail]="true"
             detailIcon="open-outline">
             <ion-icon name="fas-universal-access" slot="start" aria-hidden="true" />
             <ion-label>{{ 'core.settings.accessstatement' | translate }}</ion-label>
-        </ion-item>
+        </ion-item> 
+        -->
         <ion-item *ngIf="currentSite && feedbackFormUrl && showSurvey" class="ion-text-wrap" button core-link [href]="feedbackFormUrl"
             [detail]="true" detailIcon="open-outline">
             <ion-icon name="fas-bullhorn" slot="start" aria-hidden="true" />
@@ -41,7 +44,7 @@
 </ion-content>
 
 <ion-footer class="ion-no-border">
-    <ion-item button class="ion-text-wrap ion-text-center core-about-deviceinfo" [detail]="false" (click)="openPage('deviceinfo')">
+    <ion-item button class="ion-text-wrap ion-text-center core-about-deviceinfo" [detail]="false"><!-- Remove click event <SLMS_CUSTOM_CHANGE_ANUP_08042025> -->
         <ion-label>
             <p class="item-heading">{{ appName }} {{ versionName }}</p>
         </ion-label>
