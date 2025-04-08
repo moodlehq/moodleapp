@@ -57,15 +57,42 @@
         </ion-card>
 
         <!-- Cannot add discussion to group messages. -->
-        <ion-card class="core-info-card" *ngIf="usesGroups && canAddDiscussion && !canAddDiscussionToGroup">
+        <ion-card class="core-warning-card" *ngIf="usesGroups && canAddDiscussion && !canAddDiscussionToGroup">
             <ion-item>
-                <ion-icon name="fas-circle-info" slot="start" aria-hidden="true" />
+                <ion-icon name="fas-triangle-exclamation" slot="start" aria-hidden="true" />
                 <ion-label>
                     <span *ngIf="groupId <= 0">{{ 'addon.mod_forum.cannotadddiscussionall' | translate }}</span>
                     <span *ngIf="groupId > 0">{{ 'addon.mod_forum.cannotadddiscussion' | translate }}</span>
                 </ion-label>
             </ion-item>
         </ion-card>
+
+        @if (forum?.type === 'eachuser') {
+            <ion-card class="core-info-card">
+                <ion-item>
+                    <ion-icon name="fas-circle-info" slot="start" aria-hidden="true" />
+                    <ion-label>
+                        <span>{{ 'addon.mod_forum.allowsdiscussions' | translate }}</span>
+                    </ion-label>
+                </ion-item>
+            </ion-card>
+        }
+
+        @if (hasBlockingEnabled && forum) {
+            <ion-card class="core-info-card">
+                <ion-item>
+                    <ion-icon name="fas-circle-info" slot="start" aria-hidden="true" />
+                    <ion-label>
+                        <span>{{ 'addon.mod_forum.thisforumisthrottled' | translate: {
+                            $a: {
+                                blockafter: forum.blockafter,
+                                blockperiod: ('core.secondstotime' + forum.blockperiod | translate)
+                            }
+                        } }}</span>
+                    </ion-label>
+                </ion-item>
+            </ion-card>
+        }
 
         <ng-container *ngIf="forum">
             <div *ngIf="discussions && sortingAvailable && selectedSortOrder" class="ion-text-wrap">
