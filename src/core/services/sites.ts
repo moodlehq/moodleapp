@@ -1404,13 +1404,18 @@ export class CoreSitesProvider {
 
     /**
      * Get a site directly from the database, without using any optimizations.
+     * This function is used to read the site from DB during the app initialization, to avoid deadlocks.
      *
      * @param siteId Site id.
      * @returns Site.
      */
     protected async getSiteFromDB(siteId: string): Promise<CoreSite> {
+        const db = CoreAppDB.getDB();
+
         try {
-            const record = await this.sitesTable.getOneByPrimaryKey({ id: siteId });
+            // Do not use sitesTable.getOneByPrimaryKey in here, it can cause a deadlock
+            // if this function is used during the app initialization.
+            const record = await db.getRecord<SiteDBEntry>(SITES_TABLE_NAME, { id: siteId });
 
             return this.makeSiteFromSiteListEntry(record);
         } catch {
