@@ -48,3 +48,14 @@ Feature: View the search forums block and check
     And I set the field "Search" to "Moodle" in the app
     And I press "Search" "button" in the app
     Then I should find "No results for" in the app
+
+  Scenario: Block is included in disabled features
+    # Add another block just to ensure there is something in the block region and the drawer is displayed.
+    Given the following "blocks" exist:
+      | blockname        | contextlevel | reference | pagetypepattern | defaultregion | configdata                                                                                                   |
+      | html             | Course       | C1        | course-view-*   | site-pre      | Tzo4OiJzdGRDbGFzcyI6Mjp7czo1OiJ0aXRsZSI7czoxNToiSFRNTCB0aXRsZSB0ZXN0IjtzOjQ6InRleHQiO3M6OToiYm9keSB0ZXN0Ijt9 |
+    And the following config values are set as admin:
+      | disabledfeatures | CoreBlockDelegate_AddonBlockSearchForums | tool_mobile |
+    And  I entered the course "Course 1" as "student1" in the app
+    When I press "Open block drawer" in the app
+    Then I should not find "Search forums" in the app
