@@ -36,3 +36,14 @@ Feature: View the self completion block and check
     When I press "Self completion" in the app
     Then the header should be "Course completion" in the app
     And I should find "Student 1" in the app
+
+  Scenario: Block is included in disabled features
+    # Add another block just to ensure there is something in the block region and the drawer is displayed.
+    Given the following "blocks" exist:
+      | blockname        | contextlevel | reference | pagetypepattern | defaultregion | configdata                                                                                                   |
+      | html             | Course       | C1        | course-view-*   | site-pre      | Tzo4OiJzdGRDbGFzcyI6Mjp7czo1OiJ0aXRsZSI7czoxNToiSFRNTCB0aXRsZSB0ZXN0IjtzOjQ6InRleHQiO3M6OToiYm9keSB0ZXN0Ijt9 |
+    And the following config values are set as admin:
+      | disabledfeatures | CoreBlockDelegate_AddonBlockSelfCompletion | tool_mobile |
+    And  I entered the course "Course 1" as "student1" in the app
+    When I press "Open block drawer" in the app
+    Then I should not find "Self completion" in the app

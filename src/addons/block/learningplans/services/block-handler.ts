@@ -24,7 +24,7 @@ import { ADDON_COMPETENCY_LEARNING_PLANS_PAGE } from '@addons/competency/constan
 @Injectable({ providedIn: 'root' })
 export class AddonBlockLearningPlansHandlerService extends CoreBlockBaseHandler {
 
-    name = 'AddonBlockLearningPlans';
+    name = 'AddonBlockLp';
     blockName = 'lp';
 
     /**
