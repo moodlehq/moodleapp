@@ -1,5 +1,5 @@
-@addon_block_calendar_month @app @block @block_calendar_month @javascript
-Feature: View the calendar block and check it links to the calendar page
+@addon_block_blog_recent @app @block @block_blog_recent @javascript
+Feature: Basic tests of blog recent block
 
   Background:
     Given the following "users" exist:
@@ -13,14 +13,13 @@ Feature: View the calendar block and check it links to the calendar page
       | student1 | C1 | student |
     And the following "blocks" exist:
       | blockname      | contextlevel | reference | pagetypepattern | defaultregion |
-      | calendar_month | Course       | C1        | course-view-*   | side-pre      |
+      | blog_recent    | Course       | C1        | course-view-*   | side-pre      |
 
-  Scenario: View and navigate the calendar block in a course
+  Scenario: View and navigate the blog recent block in a course
     Given I entered the course "Course 1" as "student1" in the app
     When I press "Open block drawer" in the app
-    Then I should find "Calendar" in the app
-    When I press "Calendar" in the app
-    Then the header should be "Calendar" in the app
+    Then I should find "Recent blog entries" in the app
+    And I should find "No recent entries" in the app
 
   Scenario: Block is included in disabled features
     # Add another block just to ensure there is something in the block region and the drawer is displayed.
@@ -28,7 +27,7 @@ Feature: View the calendar block and check it links to the calendar page
       | blockname        | contextlevel | reference | pagetypepattern | defaultregion | configdata                                                                                                   |
       | html             | Course       | C1        | course-view-*   | site-pre      | Tzo4OiJzdGRDbGFzcyI6Mjp7czo1OiJ0aXRsZSI7czoxNToiSFRNTCB0aXRsZSB0ZXN0IjtzOjQ6InRleHQiO3M6OToiYm9keSB0ZXN0Ijt9 |
     And the following config values are set as admin:
-      | disabledfeatures | CoreBlockDelegate_AddonBlockCalendarMonth | tool_mobile |
+      | disabledfeatures | CoreBlockDelegate_AddonBlockBlogRecent | tool_mobile |
     And  I entered the course "Course 1" as "student1" in the app
     When I press "Open block drawer" in the app
-    Then I should not find "Calendar" in the app
+    Then I should not find "Recent blog entries" in the app

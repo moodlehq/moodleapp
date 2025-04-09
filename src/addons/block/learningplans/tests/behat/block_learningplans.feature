@@ -19,3 +19,9 @@ Feature: View the learning plans block and check
     When I press "Learning plans" in the app
     Then the header should be "Learning plans" in the app
     And I should find "Test-Plan1" in the app
+
+  Scenario: Block is included in disabled features
+    Given the following config values are set as admin:
+      | disabledfeatures | CoreBlockDelegate_AddonBlockLp | tool_mobile |
+    And I entered the app as "student1"
+    Then I should not find "Learning plans" in the app

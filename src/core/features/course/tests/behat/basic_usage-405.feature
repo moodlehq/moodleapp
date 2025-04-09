@@ -460,6 +460,7 @@ Feature: Test basic usage of one course in app (LMS 4.5)
       | \core\event\course_viewed | Course 1 | {"coursesectionnumber":5} |
 
   Scenario: View blocks on drawer
+    # Add another block just to ensure there is something in the block region and the drawer is displayed.
     Given the following "blocks" exist:
       | blockname        | contextlevel | reference | pagetypepattern | defaultregion | configdata                                                                                                   |
       | html             | Course       | C1        | course-view-*   | site-pre      | Tzo4OiJzdGRDbGFzcyI6Mjp7czo1OiJ0aXRsZSI7czoxNToiSFRNTCB0aXRsZSB0ZXN0IjtzOjQ6InRleHQiO3M6OToiYm9keSB0ZXN0Ijt9 |
