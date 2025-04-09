@@ -111,6 +111,7 @@ ion-tabs {
         core-loading {
             --loading-placeholder-align-content: flex-start;
             --loading-placeholder-justify: center;
+            --loading-placeholder-max-height: 52px;
         }
 
         ion-tab-button {
