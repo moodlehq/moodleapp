@@ -463,8 +463,8 @@ Feature: Test basic usage of one course in app (LMS 4.5)
     # Add another block just to ensure there is something in the block region and the drawer is displayed.
     Given the following "blocks" exist:
       | blockname        | contextlevel | reference | pagetypepattern | defaultregion | configdata                                                                                                   |
-      | html             | Course       | C1        | course-view-*   | site-pre      | Tzo4OiJzdGRDbGFzcyI6Mjp7czo1OiJ0aXRsZSI7czoxNToiSFRNTCB0aXRsZSB0ZXN0IjtzOjQ6InRleHQiO3M6OToiYm9keSB0ZXN0Ijt9 |
-      | activity_modules | Course       | C1        | course-view-*   | site-pre      |                                                                                                              |
+      | html             | Course       | C1        | course-view-*   | side-pre      | Tzo4OiJzdGRDbGFzcyI6Mjp7czo1OiJ0aXRsZSI7czoxNToiSFRNTCB0aXRsZSB0ZXN0IjtzOjQ6InRleHQiO3M6OToiYm9keSB0ZXN0Ijt9 |
+      | activity_modules | Course       | C1        | course-view-*   | side-pre      |                                                                                                              |
     And I entered the course "Course 1" as "student1" in the app
     Then the header should be "Course 1" in the app
     And I should find "Test forum name" in the app
