@@ -42,7 +42,7 @@ Feature: View the my courses block and check it links to the my page
     # Add another block just to ensure there is something in the block region and the drawer is displayed.
     Given the following "blocks" exist:
       | blockname        | contextlevel | reference | pagetypepattern | defaultregion | configdata                                                                                                   |
-      | html             | Course       | C1        | course-view-*   | site-pre      | Tzo4OiJzdGRDbGFzcyI6Mjp7czo1OiJ0aXRsZSI7czoxNToiSFRNTCB0aXRsZSB0ZXN0IjtzOjQ6InRleHQiO3M6OToiYm9keSB0ZXN0Ijt9 |
+      | html             | Course       | C1        | course-view-*   | side-pre      | Tzo4OiJzdGRDbGFzcyI6Mjp7czo1OiJ0aXRsZSI7czoxNToiSFRNTCB0aXRsZSB0ZXN0IjtzOjQ6InRleHQiO3M6OToiYm9keSB0ZXN0Ijt9 |
     And the following config values are set as admin:
       | disabledfeatures | CoreBlockDelegate_AddonBlockCourseList | tool_mobile |
     And  I entered the course "Course 1" as "teacher1" in the app
