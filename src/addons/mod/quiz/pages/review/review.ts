@@ -101,8 +101,7 @@ export default class AddonModQuizReviewPage implements OnInit {
             this.cmId = CoreNavigator.getRequiredRouteNumberParam('cmId');
             this.courseId = CoreNavigator.getRequiredRouteNumberParam('courseId');
             this.attemptId = CoreNavigator.getRequiredRouteNumberParam('attemptId');
-            this.currentPage = CoreNavigator.getRouteNumberParam('page') || -1;
-            this.showAll = this.currentPage == -1;
+            this.currentPage = CoreNavigator.getRouteNumberParam('page') || 0;
         } catch (error) {
             CoreAlerts.showError(error);
             CoreNavigator.back();
