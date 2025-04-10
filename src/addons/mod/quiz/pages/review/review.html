@@ -39,6 +39,8 @@
                         [contextInstanceId]="cmId" [courseId]="courseId" [review]="true" [preferredBehaviour]="quiz?.preferredbehaviour" />
                 </addon-mod-quiz-question-card>
             </ng-container>
+
+            <core-infinite-loading *ngIf="showAll" [enabled]="canLoadMore" (action)="loadMore($event)" />
         </ng-container>
 
         <div collapsible-footer appearOnBottom *ngIf="loaded && numPages > 1" slot="fixed">
