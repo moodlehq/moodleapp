@@ -52,6 +52,8 @@ Feature: Test basic usage of login in app
     And I press "Log in" near "Lost password?" in the app
     Then the header should be "Acceptance test site" in the app
     And the UI should match the snapshot
+    When I restart the app
+    Then the header should be "Acceptance test site" in the app
 
   Scenario: Add a non existing account
     When I launch the app
