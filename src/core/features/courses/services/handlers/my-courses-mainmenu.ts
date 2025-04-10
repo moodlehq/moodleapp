@@ -20,7 +20,9 @@ import { CoreSites } from '@services/sites';
 import { makeSingleton } from '@singletons';
 import { CoreCourses } from '../courses';
 import { CoreDashboardHomeHandler } from './dashboard-home';
-import { CORE_COURSES_MYCOURSES_PAGE_NAME } from '@features/courses/constants';
+import { CORE_COURSES_MYCOURSES_PAGE_NAME, CoreCoursesMyPageName } from '@features/courses/constants';
+import { CoreCoursesDashboard } from '../dashboard';
+import { CoreBlockDelegate } from '@features/block/services/block-delegate';
 
 /**
  * Handler to add my courses into main menu.
@@ -43,11 +45,18 @@ export class CoreCoursesMyCoursesMainMenuHandlerService implements CoreMainMenuH
             return false;
         }
 
-        if (site.isVersionGreaterEqualThan('4.0')) {
-            return true;
-        }
-
         const siteId = site.getId();
+
+        if (site.isVersionGreaterEqualThan('4.0')) {
+            const blocks = await CoreCoursesDashboard.getDashboardBlocks(
+                undefined,
+                siteId,
+                CoreCoursesMyPageName.COURSES,
+            );
+
+            return CoreBlockDelegate.hasSupportedBlock(blocks.mainBlocks) ||
+                CoreBlockDelegate.hasSupportedBlock(blocks.sideBlocks);
+        }
 
         // Dashboard cannot be disabled on 3.5 or 3.6 so it will never show this tab.
         const dashboardEnabled = await CoreDashboardHomeHandler.isEnabledForSite(siteId);

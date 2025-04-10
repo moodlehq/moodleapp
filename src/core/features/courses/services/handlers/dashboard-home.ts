@@ -37,9 +37,7 @@ export class CoreDashboardHomeHandlerService implements CoreMainMenuHomeHandler 
     }
 
     /**
-     * Check if the handler is enabled on a site level.
-     *
-     * @returns Whether or not the handler is enabled on a site level.
+     * @inheritdoc
      */
     isEnabled(): Promise<boolean> {
         return this.isEnabledForSite();
