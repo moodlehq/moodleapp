@@ -101,7 +101,7 @@ function load_langpacks {
 
         git pull
         if [ $? -ne 0 ]; then
-            echo "Cannot update language repository"
+            echo "Cannot pull language repository"
             exit 1
         fi
 

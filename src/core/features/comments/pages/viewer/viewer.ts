@@ -47,6 +47,8 @@ import { CoreAlerts } from '@services/overlays/alerts';
 import { CoreWait } from '@singletons/wait';
 import { CoreDom } from '@singletons/dom';
 import { CoreSharedModule } from '@/core/shared.module';
+import { ADDON_MOD_ASSIGN_COMMENTS_COMPONENT_NAME } from '@addons/mod/assign/submission/comments/constants';
+import { CoreCourses } from '@features/courses/services/courses';
 
 /**
  * Page that displays comments.
@@ -73,7 +75,7 @@ export default class CoreCommentsViewerPage implements OnInit, OnDestroy, AfterV
     itemId = 0;
     area = '';
     page = 0;
-    title = '';
+    title?: string;
     courseId?: number;
     canLoadMore = false;
     loadMoreError = false;
@@ -104,8 +106,8 @@ export default class CoreCommentsViewerPage implements OnInit, OnDestroy, AfterV
 
         // Refresh data if comments are synchronized automatically.
         this.syncObserver = CoreEvents.on(CORE_COMMENTS_AUTO_SYNCED, (data) => {
-            if (data.contextLevel == this.contextLevel && data.instanceId == this.instanceId &&
-                    data.componentName == this.componentName && data.itemId == this.itemId && data.area == this.area) {
+            if (data.contextLevel === this.contextLevel && data.instanceId === this.instanceId &&
+                    data.componentName === this.componentName && data.itemId === this.itemId && data.area === this.area) {
                 // Show the sync warnings.
                 this.showSyncWarnings(data.warnings);
 
@@ -144,8 +146,7 @@ export default class CoreCommentsViewerPage implements OnInit, OnDestroy, AfterV
             this.componentName = CoreNavigator.getRequiredRouteParam<string>('componentName');
             this.itemId = CoreNavigator.getRequiredRouteNumberParam('itemId');
             this.area = CoreNavigator.getRouteParam('area') || '';
-            this.title = CoreNavigator.getRouteParam('title') ||
-                Translate.instant('core.comments.comments');
+            this.title = CoreNavigator.getRouteParam('title');
             this.courseId = CoreNavigator.getRouteNumberParam('courseId');
         } catch (error) {
             CoreAlerts.showError(error);
@@ -165,7 +166,7 @@ export default class CoreCommentsViewerPage implements OnInit, OnDestroy, AfterV
     }
 
     /**
-     * View has been initialized.
+     * @inheritdoc
      */
     async ngAfterViewInit(): Promise<void> {
         this.scrollElement = await this.content?.getScrollElement();
@@ -183,6 +184,19 @@ export default class CoreCommentsViewerPage implements OnInit, OnDestroy, AfterV
 
         if (sync) {
             await CorePromiseUtils.ignoreErrors(this.syncComments(showErrors));
+        }
+
+        if (!this.title) {
+            try {
+                if (this.contextLevel === ContextLevel.SYSTEM) {
+                    this.title = await CoreSites.getRequiredCurrentSite().getSiteName();
+                } else if (this.contextLevel === ContextLevel.COURSE) {
+                    const course = await CoreCourses.getCourseByField('id', this.instanceId);
+                    this.title = course.fullname;
+                }
+            } catch {
+                // Ignore errors.
+            }
         }
 
         this.scrollBottom = CoreDom.scrollIsBottom(this.scrollElement, 5);
@@ -220,7 +234,7 @@ export default class CoreCommentsViewerPage implements OnInit, OnDestroy, AfterV
             await this.loadOfflineData();
         } catch (error) {
             this.loadMoreError = true; // Set to prevent infinite calls with infinite-loading.
-            if (error && this.componentName == 'assignsubmission_comments') {
+            if (error && this.componentName === ADDON_MOD_ASSIGN_COMMENTS_COMPONENT_NAME) {
                 CoreAlerts.show({
                     header: Translate.instant('core.notice'),
                     message: Translate.instant('core.comments.commentsnotworking'),

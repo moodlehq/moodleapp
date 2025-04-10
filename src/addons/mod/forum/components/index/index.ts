@@ -173,6 +173,10 @@ export class AddonModForumIndexComponent extends CoreCourseModuleMainActivityCom
         return !!this.discussions?.getSource().errorLoadingDiscussions;
     }
 
+    get hasBlockingEnabled(): boolean {
+        return !!(this.forum?.blockafter && this.forum.blockperiod);
+    }
+
     /**
      * Check whether a discussion is online.
      *

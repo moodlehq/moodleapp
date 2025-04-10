@@ -39,6 +39,7 @@
 
     --loading-placeholder-padding: 16px;
     --loading-placeholder-margin: 0px;
+    --loading-placeholder-max-height: none;
     --loading-placeholder-element-radius: var(--mdl-shape-borderRadius-md);
     --loading-placeholder-element-width: 100px;
     --loading-placeholder-element-height: 100px;
@@ -47,7 +48,6 @@
 
     --placeholder-color: var(--gray-500);
     --placeholder-highlight: var(--loading-background);
-
 
     @include core-transition(all, 200ms);
     display: var(--contents-display);
@@ -65,7 +65,8 @@
     }
 
     .core-loading-container {
-        pointer-events: none;
+        user-select: none;
+        pointer-events: all; // Block clicks
         position: absolute;
         @include position(0, 0, 0, 0);
         height: 100%;
@@ -106,6 +107,7 @@
             justify-content: var(--loading-placeholder-justify);
             align-items: var(--loading-placeholder-align-items);
             align-content: var(--loading-placeholder-align-content);
+            max-height: var(--loading-placeholder-max-height);
 
             &.row,
             &.rowwrap {

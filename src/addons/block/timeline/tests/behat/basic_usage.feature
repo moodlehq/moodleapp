@@ -113,3 +113,9 @@ Feature: Timeline block.
     Then I should find "No activities require action" in the app
     But I should not find "Course 1" in the app
     And I should not find "Assignment 02" within "Timeline" "ion-card" in the app
+
+  Scenario: Block is included in disabled features
+    Given the following config values are set as admin:
+      | disabledfeatures | CoreBlockDelegate_AddonBlockTimeline | tool_mobile |
+    And I entered the app as "student1"
+    Then I should not find "Timeline" in the app
