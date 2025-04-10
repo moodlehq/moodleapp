@@ -46,3 +46,8 @@ export type CoreCoursesMyCoursesUpdatedEventAction =
 // Possible states changed.
 export const CORE_COURSES_STATE_HIDDEN = 'hidden';
 export const CORE_COURSES_STATE_FAVOURITE = 'favourite';
+
+export const enum CoreCoursesMyPageName {
+    DEFAULT = '__default',
+    COURSES = '__courses'
+}
