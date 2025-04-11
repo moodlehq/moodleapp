@@ -181,6 +181,9 @@ class behat_app_helper extends behat_base {
             $service->enabled = 1;
             $webservicemanager->update_external_service($service);
         }
+
+        // The default window size for LMS tests is 1366x768.
+        $this->getSession()->getDriver()->resizeWindow(1366, 768);
     }
 
     /**
