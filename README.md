@@ -1,4 +1,4 @@
-Moodle App for AMEP Developed by SkillsLeapAustralia
+Moodle App for AMEP Developed by SkillsLeapAustralia.
 =================
 
 This is the primary repository of source code for the official mobile app for Moodle.
