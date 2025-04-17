@@ -15,7 +15,7 @@
 import { Component, OnDestroy, ViewChild, ChangeDetectorRef, OnInit, Type } from '@angular/core';
 import { CoreCommentsCommentsComponent } from '@features/comments/components/comments/comments';
 import { CoreComments } from '@features/comments/services/comments';
-import { CoreCourseModuleHelper } from '@features/course/services/course-module-helper';
+import { CoreCourse } from '@features/course/services/course';
 import { CoreRatingInfo } from '@features/rating/services/rating';
 import { IonContent } from '@ionic/angular';
 import { CoreGroups, CoreGroupInfo } from '@services/groups';
@@ -36,7 +36,7 @@ import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 import { CoreTime } from '@singletons/time';
 import {
     ADDON_MOD_DATA_AUTO_SYNCED,
-    ADDON_MOD_DATA_COMPONENT_LEGACY,
+    ADDON_MOD_DATA_COMPONENT,
     ADDON_MOD_DATA_ENTRIES_PER_PAGE,
     ADDON_MOD_DATA_ENTRY_CHANGED,
     AddonModDataTemplateType,
@@ -85,7 +85,7 @@ export default class AddonModDataEntryPage implements OnInit, OnDestroy {
     offset?: number;
     title = '';
     moduleName = 'data';
-    component = ADDON_MOD_DATA_COMPONENT_LEGACY;
+    component = ADDON_MOD_DATA_COMPONENT;
     entryLoaded = false;
     renderingEntry = false;
     loadingComments = false;
@@ -117,7 +117,7 @@ export default class AddonModDataEntryPage implements OnInit, OnDestroy {
     constructor(
         private cdr: ChangeDetectorRef,
     ) {
-        this.moduleName = CoreCourseModuleHelper.translateModuleName('data');
+        this.moduleName = CoreCourse.translateModuleName('data');
         this.siteId = CoreSites.getCurrentSiteId();
 
         // Refresh data if this discussion is synchronized automatically.
@@ -450,7 +450,7 @@ export default class AddonModDataEntryPage implements OnInit, OnDestroy {
         await CorePromiseUtils.ignoreErrors(AddonModData.logView(this.database.id));
 
         // Store module viewed because this page also updates recent accessed items block.
-        CoreCourseModuleHelper.storeModuleViewed(this.courseId, this.moduleId);
+        CoreCourse.storeModuleViewed(this.courseId, this.moduleId);
 
         CoreAnalytics.logEvent({
             type: CoreAnalyticsEventType.VIEW_ITEM,

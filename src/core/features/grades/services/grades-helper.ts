@@ -36,7 +36,7 @@ import {
 import { CoreText } from '@singletons/text';
 import { CoreUrl } from '@singletons/url';
 import { CoreMenuItem, CoreUtils } from '@singletons/utils';
-import { CoreDom } from '@singletons/dom';
+import { CoreDomUtils } from '@services/utils/dom';
 import { CoreNavigator } from '@services/navigator';
 import { makeSingleton, Translate } from '@singletons';
 import { CoreError } from '@classes/errors/error';
@@ -48,8 +48,9 @@ import { convertTextToHTMLElement } from '@/core/utils/create-html-element';
 import { CoreCourseAccessDataType } from '@features/course/constants';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreArray } from '@singletons/array';
-import { CoreCourseModuleHelper } from '@features/course/services/course-module-helper';
-import { GRADES_PAGE_NAME } from '../constants';
+
+export const GRADES_PAGE_NAME = 'grades';
+export const GRADES_PARTICIPANTS_PAGE_NAME = 'participant-grades';
 
 /**
  * Service that provides some features regarding grades information.
@@ -57,7 +58,11 @@ import { GRADES_PAGE_NAME } from '../constants';
 @Injectable({ providedIn: 'root' })
 export class CoreGradesHelperProvider {
 
-    protected logger = CoreLogger.getInstance('CoreGradesHelperProvider');
+    protected logger: CoreLogger;
+
+    constructor() {
+        this.logger = CoreLogger.getInstance('CoreGradesHelperProvider');
+    }
 
     /**
      * Formats a row from the grades table to be rendered in one table.
@@ -201,7 +206,7 @@ export class CoreGradesHelperProvider {
         // Get a row with some info.
         let normalRow = formatted.rows.find(
             row =>
-                row.itemtype !== 'leader' &&
+                row.itemtype != 'leader' &&
                 (row.grade !== undefined || row.percentage !== undefined),
         );
 
@@ -211,7 +216,7 @@ export class CoreGradesHelperProvider {
         } else if (normalRow && normalRow.percentage !== undefined) {
             columns.percentage = true;
         } else {
-            normalRow = formatted.rows.find((e) => e.itemtype !== 'leader');
+            normalRow = formatted.rows.find((e) => e.itemtype != 'leader');
             columns.grade = true;
         }
 
@@ -219,7 +224,7 @@ export class CoreGradesHelperProvider {
             if (normalRow && normalRow[colName] !== undefined) {
                 formatted.columns.push({
                     name: colName,
-                    colspan: colName === 'gradeitem' ? maxDepth : 1,
+                    colspan: colName == 'gradeitem' ? maxDepth : 1,
                     hiddenPhone: !columns[colName],
                 });
             }
@@ -384,7 +389,7 @@ export class CoreGradesHelperProvider {
      * @returns URL linking to the module.
      */
     protected getModuleLink(text: string): string | false {
-        const el = CoreDom.toDom(text)[0];
+        const el = CoreDomUtils.toDom(text)[0];
         const link = el.attributes['href'] ? el.attributes['href'].value : false;
 
         if (!link || link.indexOf('/mod/') < 0) {
@@ -585,7 +590,7 @@ export class CoreGradesHelperProvider {
 
                 row.itemtype = 'mod';
                 row.itemmodule = modname;
-                row.iconAlt = CoreCourseModuleHelper.translateModuleName(row.itemmodule) || '';
+                row.iconAlt = CoreCourse.translateModuleName(row.itemmodule) || '';
                 row.image = await CoreCourseModuleDelegate.getModuleIconSrc(modname, modicon);
             }
         } else {
@@ -660,7 +665,7 @@ export class CoreGradesHelperProvider {
 
             for (let i = gradingType; i >= 0; i--) {
                 grades.push({
-                    label: `${i} / ${gradingType}`,
+                    label: i + ' / ' + gradingType,
                     value: i,
                 });
             }

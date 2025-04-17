@@ -48,7 +48,7 @@ export class CoreSettingsSectionsSource extends CoreRoutedItemsManagerSource<Cor
         if (CorePlatform.isIOS()) {
             sections.push({
                 name: 'core.sharedfiles.sharedfiles',
-                path: `${SHAREDFILES_PAGE_NAME}/list/root`,
+                path: SHAREDFILES_PAGE_NAME + '/list/root',
                 icon: 'fas-folder',
                 params: { manage: true },
             });

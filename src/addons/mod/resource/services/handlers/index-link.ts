@@ -16,7 +16,6 @@ import { Injectable } from '@angular/core';
 import { CoreContentLinksModuleIndexHandler } from '@features/contentlinks/classes/module-index-handler';
 import { makeSingleton } from '@singletons';
 import { AddonModResource } from '../resource';
-import { ADDON_MOD_RESOURCE_COMPONENT, ADDON_MOD_RESOURCE_MODNAME } from '../../constants';
 
 /**
  * Handler to treat links to resource.
@@ -27,7 +26,7 @@ export class AddonModResourceIndexLinkHandlerService extends CoreContentLinksMod
     name = 'AddonModResourceLinkHandler';
 
     constructor() {
-        super(ADDON_MOD_RESOURCE_COMPONENT, ADDON_MOD_RESOURCE_MODNAME, 'r');
+        super('AddonModResource', 'resource', 'r');
     }
 
     /**

@@ -1,9 +1,11 @@
 <ion-content>
+    <h1>Course->pages->contents</h1>
     <ion-refresher slot="fixed" [disabled]="!dataLoaded || updatingData || !displayRefresher" (ionRefresh)="doRefresh($event.target)">
         <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}" />
     </ion-refresher>
 
-    <core-loading [hideUntil]="dataLoaded && !updatingData" placeholderType="column" placeholderHeight="128px">
+
+    <core-loading [hideUntil]="dataLoaded && !updatingData">
         <core-course-format [course]="course" [sections]="sections" [initialSectionId]="sectionId" [initialSectionNumber]="sectionNumber"
             [initialBlockInstanceId]="blockInstanceId" [moduleId]="moduleId" class="core-course-format-{{course.format}}"
             *ngIf="dataLoaded && sections" [isGuest]="isGuest" />

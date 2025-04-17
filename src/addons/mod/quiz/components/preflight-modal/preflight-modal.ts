@@ -93,7 +93,7 @@ export class AddonModQuizPreflightModalComponent implements OnInit {
                 }
 
                 this.accessRulesData.push({
-                    component,
+                    component: component,
                     data: {
                         rule: rule,
                         quiz: this.quiz,

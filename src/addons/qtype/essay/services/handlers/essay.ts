@@ -357,7 +357,7 @@ export class AddonQtypeEssayHandlerService implements CoreQuestionHandler {
             const result = await CoreFileUploader.storeFilesToUpload(folderPath, attachments);
 
             // Store the files in the answers.
-            answers[`${attachmentsInput.name}_offline`] = JSON.stringify(result);
+            answers[attachmentsInput.name + '_offline'] = JSON.stringify(result);
         } else {
             // Check if any attachment was deleted.
             const originalAttachments = CoreQuestionHelper.getResponseFileAreaFiles(question, 'attachments');

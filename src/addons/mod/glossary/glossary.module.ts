@@ -35,7 +35,7 @@ import { AddonModGlossaryModuleHandler } from './services/handlers/module';
 import { AddonModGlossaryPrefetchHandler } from './services/handlers/prefetch';
 import { AddonModGlossarySyncCronHandler } from './services/handlers/sync-cron';
 import { AddonModGlossaryTagAreaHandler } from './services/handlers/tag-area';
-import { ADDON_MOD_GLOSSARY_COMPONENT_LEGACY, ADDON_MOD_GLOSSARY_PAGE_NAME } from './constants';
+import { ADDON_MOD_GLOSSARY_COMPONENT, ADDON_MOD_GLOSSARY_PAGE_NAME } from './constants';
 import { canLeaveGuard } from '@guards/can-leave';
 
 const mobileRoutes: Routes = [
@@ -53,7 +53,7 @@ const tabletRoutes: Routes = [
     {
         path: ':courseId/:cmId',
         loadComponent: () => import('./pages/index/index'),
-        loadChildren: () => [
+        children: [
             {
                 path: 'entry/:entrySlug',
                 loadComponent: () => import('./pages/entry/entry'),
@@ -77,7 +77,7 @@ const mainMenuRoutes: Routes = [
     // Course activity navigation.
     {
         path: ADDON_MOD_GLOSSARY_PAGE_NAME,
-        loadChildren: () => [
+        children: [
             {
                 path: ':courseId/:cmId/entry/new',
                 ...editRoute,
@@ -146,7 +146,7 @@ const courseContentsRoutes: Routes = conditionalRoutes(
                 CoreContentLinksDelegate.registerHandler(AddonModGlossaryEntryLinkHandler.instance);
                 CoreTagAreaDelegate.registerHandler(AddonModGlossaryTagAreaHandler.instance);
 
-                CoreCourseHelper.registerModuleReminderClick(ADDON_MOD_GLOSSARY_COMPONENT_LEGACY);
+                CoreCourseHelper.registerModuleReminderClick(ADDON_MOD_GLOSSARY_COMPONENT);
             },
         },
     ],

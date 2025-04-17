@@ -15,7 +15,6 @@
 import { Injectable } from '@angular/core';
 import { CoreContentLinksModuleIndexHandler } from '@features/contentlinks/classes/module-index-handler';
 import { makeSingleton } from '@singletons';
-import { ADDON_MOD_FOLDER_COMPONENT, ADDON_MOD_FOLDER_MODNAME } from '../../constants';
 
 /**
  * Handler to treat links to resource.
@@ -26,7 +25,7 @@ export class AddonModFolderIndexLinkHandlerService extends CoreContentLinksModul
     name = 'AddonModFolderLinkHandler';
 
     constructor() {
-        super(ADDON_MOD_FOLDER_COMPONENT, ADDON_MOD_FOLDER_MODNAME, 'f');
+        super('AddonModFolder', 'folder', 'f');
     }
 
 }

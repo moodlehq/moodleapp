@@ -270,7 +270,7 @@ export class CoreQuestionDelegateService extends CoreDelegate<CoreQuestionHandle
      * @returns Type full name.
      */
     protected getFullTypeName(type: string): string {
-        return `qtype_${type}`;
+        return 'qtype_' + type;
     }
 
     /**

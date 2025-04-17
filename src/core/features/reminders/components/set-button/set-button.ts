@@ -16,7 +16,7 @@ import { CoreReminderData, CoreReminders } from '@features/reminders/services/re
 import { Component, Input, OnInit } from '@angular/core';
 import { CorePopovers } from '@services/overlays/popovers';
 import { Translate } from '@singletons';
-import { CoreTime } from '@singletons/time';
+import { CoreTimeUtils } from '@services/utils/time';
 import { CoreToasts } from '@services/overlays/toasts';
 import { REMINDERS_DISABLED } from '@features/reminders/constants';
 import { CoreSharedModule } from '@/core/shared.module';
@@ -109,7 +109,7 @@ export class CoreRemindersSetButtonComponent implements OnInit {
             const reminderTime = this.time - this.timebefore;
 
             this.reminderMessage = Translate.instant('core.reminders.reminderset', {
-                $a: CoreTime.userDate(reminderTime * 1000),
+                $a: CoreTimeUtils.userDate(reminderTime * 1000),
             });
         } else {
             this.reminderMessage = undefined;
@@ -151,7 +151,7 @@ export class CoreRemindersSetButtonComponent implements OnInit {
             component: this.component,
             instanceId: this.instanceId,
             type: this.type,
-            title: `${this.label} ${this.title}`,
+            title: this.label + ' ' + this.title,
             url: this.url,
             time: this.time,
         };
@@ -160,7 +160,7 @@ export class CoreRemindersSetButtonComponent implements OnInit {
         await CoreReminders.addReminder(reminder);
 
         const time = this.time - timebefore;
-        const message = Translate.instant('core.reminders.reminderset', { $a: CoreTime.userDate(time * 1000) });
+        const message = Translate.instant('core.reminders.reminderset', { $a: CoreTimeUtils.userDate(time * 1000) });
         CoreToasts.show({ message });
     }
 

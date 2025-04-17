@@ -70,7 +70,7 @@ export class CoreSitePluginsQuestionComponent extends CoreSitePluginsCompileInit
         this.jsData.onAbort = this.onAbort;
 
         if (this.question) {
-            this.getHandlerData(CoreQuestionDelegate.getHandlerName(`qtype_${this.question.type}`));
+            this.getHandlerData(CoreQuestionDelegate.getHandlerName('qtype_' + this.question.type));
         }
     }
 

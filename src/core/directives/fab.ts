@@ -70,7 +70,7 @@ export class CoreFabDirective implements OnInit, OnDestroy {
         }
 
         const initialHeight = this.element.getBoundingClientRect().height || 56;
-        this.content.style.setProperty('--padding-bottom', `${this.initialPaddingBottom + initialHeight}px`);
+        this.content.style.setProperty('--padding-bottom', this.initialPaddingBottom + initialHeight + 'px');
     }
 
     /**
@@ -80,7 +80,7 @@ export class CoreFabDirective implements OnInit, OnDestroy {
         this.element.remove();
 
         if (this.content) {
-            this.content.style.setProperty('--padding-bottom', `${this.initialPaddingBottom}px`);
+            this.content.style.setProperty('--padding-bottom', this.initialPaddingBottom + 'px');
         }
         this.slotPromise?.cancel();
     }

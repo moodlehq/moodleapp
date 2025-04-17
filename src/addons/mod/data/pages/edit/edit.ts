@@ -42,7 +42,7 @@ import { AddonModDataEntryFieldInitialized } from '../../classes/base-field-plug
 import { CoreText } from '@singletons/text';
 import { CoreTime } from '@singletons/time';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
-import { ADDON_MOD_DATA_COMPONENT_LEGACY, ADDON_MOD_DATA_ENTRY_CHANGED, AddonModDataTemplateType } from '../../constants';
+import { ADDON_MOD_DATA_COMPONENT, ADDON_MOD_DATA_ENTRY_CHANGED, AddonModDataTemplateType } from '../../constants';
 import { CoreLoadings } from '@services/overlays/loadings';
 import { CoreWSError } from '@classes/errors/wserror';
 import { CoreArray } from '@singletons/array';
@@ -84,7 +84,7 @@ export default class AddonModDataEditPage implements OnInit {
     moduleId = 0;
     database?: AddonModDataData;
     title = '';
-    component = ADDON_MOD_DATA_COMPONENT_LEGACY;
+    component = ADDON_MOD_DATA_COMPONENT;
     loaded = false;
     selectedGroup = 0;
     cssClass = '';
@@ -187,7 +187,7 @@ export default class AddonModDataEditPage implements OnInit {
         try {
             this.database = await AddonModData.getDatabase(this.courseId, this.moduleId);
             this.title = this.database.name || this.title;
-            this.cssClass = `addon-data-entries-${this.database.id}`;
+            this.cssClass = 'addon-data-entries-' + this.database.id;
 
             this.fieldsArray = await AddonModData.getFields(this.database.id, { cmId: this.moduleId });
             this.fields = CoreArray.toObject(this.fieldsArray, 'id');
@@ -450,33 +450,32 @@ export default class AddonModDataEditPage implements OnInit {
 
         // Replace the fields found on template.
         this.fieldsArray.forEach((field) => {
-            let replace = `[[${field.name}]]`;
+            let replace = '[[' + field.name + ']]';
             replace = replace.replace(/[-[\]/{}()*+?.\\^$|]/g, '\\$&');
             let replaceRegEx = new RegExp(replace, 'gi');
 
             // Replace field by a generic directive.
-            const render = `<addon-mod-data-field-plugin [class.has-errors]="!!errors[${field.id}]" mode="edit" \
-                [field]="fields[${field.id}]" [value]="contents[${field.id}]" [form]="form" [database]="database" \
-                [error]="errors[${field.id}]" [recordHasOffline]="${this.entry?.hasOffline ? 'true' : 'false'}" \
-                (onFieldInit)="onFieldInit($event)"></addon-mod-data-field-plugin>`;
+            const render = '<addon-mod-data-field-plugin [class.has-errors]="!!errors[' + field.id + ']" mode="edit" \
+                [field]="fields[' + field.id + ']" [value]="contents[' + field.id + ']" [form]="form" [database]="database" \
+                [error]="errors[' + field.id + ']" (onFieldInit)="onFieldInit($event)"></addon-mod-data-field-plugin>';
             template = template.replace(replaceRegEx, render);
 
             // Replace the field id tag.
-            replace = `[[${field.name}#id]]`;
+            replace = '[[' + field.name + '#id]]';
             replace = replace.replace(/[-[\]/{}()*+?.\\^$|]/g, '\\$&');
             replaceRegEx = new RegExp(replace, 'gi');
 
-            template = template.replace(replaceRegEx, `field_${field.id}`);
+            template = template.replace(replaceRegEx, 'field_' + field.id);
 
             // Replace the field name tag.
-            replace = `[[${field.name}#name]]`;
+            replace = '[[' + field.name + '#name]]';
             replace = replace.replace(/[-[\]/{}()*+?.\\^$|]/g, '\\$&');
             replaceRegEx = new RegExp(replace, 'gi');
 
             template = template.replace(replaceRegEx, field.name);
 
             // Replace the field description tag.
-            replace = `[[${field.name}#description]]`;
+            replace = '[[' + field.name + '#description]]';
             replace = replace.replace(/[-[\]/{}()*+?.\\^$|]/g, '\\$&');
             replaceRegEx = new RegExp(replace, 'gi');
 

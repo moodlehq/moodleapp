@@ -15,20 +15,20 @@
 import { Injectable } from '@angular/core';
 import { CoreSites, CoreSitesCommonWSOptions } from '@services/sites';
 import { CoreTagItem } from '@features/tag/services/tag';
-import { CoreWSExternalWarning, CoreWS } from '@services/ws';
-import { makeSingleton } from '@singletons';
+import { CoreWSExternalWarning, CoreWSExternalFile, CoreWS } from '@services/ws';
+import { makeSingleton, Translate } from '@singletons';
 import { CoreCourseLogHelper } from '@features/course/services/log-helper';
 import { CoreCourse, CoreCourseModuleContentFile } from '@features/course/services/course';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreFilepool } from '@services/filepool';
 import { CoreText } from '@singletons/text';
-import { CoreDom } from '@singletons/dom';
+import { CoreDomUtils } from '@services/utils/dom';
+import { CoreFile } from '@services/file';
 import { CoreError } from '@classes/errors/error';
 import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
 import { ADDON_MOD_BOOK_COMPONENT } from '../constants';
 import { CoreUrl } from '@singletons/url';
 import { CoreCacheUpdateFrequency } from '@/core/constants';
-import { CoreCourseModuleHelper, CoreCourseModuleStandardElements } from '@features/course/services/course-module-helper';
 
 /**
  * Service that provides some features for books.
@@ -46,7 +46,26 @@ export class AddonModBookProvider {
      * @param options Other options.
      * @returns Promise resolved when the book is retrieved.
      */
-    async getBook(courseId: number, cmId: number, options: CoreSitesCommonWSOptions = {}): Promise<AddonModBookBookWSData> {
+    getBook(courseId: number, cmId: number, options: CoreSitesCommonWSOptions = {}): Promise<AddonModBookBookWSData> {
+        return this.getBookByField(courseId, 'coursemodule', cmId, options);
+    }
+
+    /**
+     * Get a book with key=value. If more than one is found, only the first will be returned.
+     *
+     * @param courseId Course ID.
+     * @param key Name of the property to check.
+     * @param value Value to search.
+     * @param options Common WS options.
+     * @returns Promise resolved when the book is retrieved.
+     */
+    protected async getBookByField(
+        courseId: number,
+        key: string,
+        value: number,
+        options: CoreSitesCommonWSOptions = {},
+    ): Promise<AddonModBookBookWSData> {
+
         const site = await CoreSites.getSite(options.siteId);
         const params: AddonModBookGetBooksByCoursesWSParams = {
             courseids: [courseId],
@@ -60,7 +79,13 @@ export class AddonModBookProvider {
 
         const response: AddonModBookGetBooksByCoursesWSResponse = await site.read('mod_book_get_books_by_courses', params, preSets);
 
-        return CoreCourseModuleHelper.getActivityByCmId(response.books, cmId);
+        // Search the book.
+        const book = response.books.find((book) => book[key] == value);
+        if (book) {
+            return book;
+        }
+
+        throw new CoreError(Translate.instant('core.course.modulenotfound'));
     }
 
     /**
@@ -70,7 +95,7 @@ export class AddonModBookProvider {
      * @returns Cache key.
      */
     protected getBookDataCacheKey(courseId: number): string {
-        return `${AddonModBookProvider.ROOT_CACHE_KEY}book:${courseId}`;
+        return AddonModBookProvider.ROOT_CACHE_KEY + 'book:' + courseId;
     }
 
     /**
@@ -89,6 +114,11 @@ export class AddonModBookProvider {
             throw new CoreError('Could not locate the index chapter.');
         }
 
+        if (!CoreFile.isAvailable()) {
+            // We return the live URL.
+            return CoreSites.getRequiredCurrentSite().checkAndFixPluginfileURL(indexUrl);
+        }
+
         const siteId = CoreSites.getCurrentSiteId();
 
         const url = await CoreFilepool.downloadUrl(siteId, indexUrl, false, ADDON_MOD_BOOK_COMPONENT, moduleId);
@@ -96,7 +126,7 @@ export class AddonModBookProvider {
         const content = await CoreWS.getText(url);
 
         // Now that we have the content, we update the SRC to point back to the external resource.
-        return CoreDom.restoreSourcesInHtml(content, contentsMap[chapterId].paths);
+        return CoreDomUtils.restoreSourcesInHtml(content, contentsMap[chapterId].paths);
     }
 
     /**
@@ -125,7 +155,7 @@ export class AddonModBookProvider {
             }
             let key: string;
             const chapter: string = matches[1];
-            const filepathIsChapter = content.filepath == `/${chapter}/`;
+            const filepathIsChapter = content.filepath == '/' + chapter + '/';
 
             // Init the chapter if it's not defined yet.
             map[chapter] = map[chapter] || { paths: {} };
@@ -141,11 +171,11 @@ export class AddonModBookProvider {
             if (filepathIsChapter) {
                 // It's a file in the root folder OR the WS isn't returning the filepath as it should (MDL-53671).
                 // Try to get the path to the file from the URL.
-                const split = content.fileurl.split(`mod_book/chapter${content.filepath}`);
+                const split = content.fileurl.split('mod_book/chapter' + content.filepath);
                 key = split[1] || content.filename; // Use filename if we couldn't find the path.
             } else {
                 // Remove the chapter folder from the path and add the filename.
-                key = content.filepath.replace(`/${chapter}/`, '') + content.filename;
+                key = content.filepath.replace('/' + chapter + '/', '') + content.filename;
             }
 
             map[chapter].paths[CoreUrl.decodeURIComponent(key)] = content.fileurl;
@@ -213,7 +243,7 @@ export class AddonModBookProvider {
         ): AddonModBookTocChapter => {
             const hidden = !!parseInt(chapter.hidden, 10);
 
-            const fullChapterNumber = previousNumber + (hidden ? 'x.' : `${chapterNumber}.`);
+            const fullChapterNumber = previousNumber + (hidden ? 'x.' : chapterNumber + '.');
 
             return {
                 id: parseInt(chapter.href.replace('/index.html', ''), 10),
@@ -256,6 +286,7 @@ export class AddonModBookProvider {
      *
      * @param courseId Course ID.
      * @param siteId Site ID. If not defined, current site.
+     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateBookData(courseId: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -269,8 +300,9 @@ export class AddonModBookProvider {
      * @param moduleId The module ID.
      * @param courseId Course ID of the module.
      * @param siteId Site ID. If not defined, current site.
+     * @returns Promise resolved when the data is invalidated.
      */
-    async invalidateContent(moduleId: number, courseId: number, siteId?: string): Promise<void> {
+    invalidateContent(moduleId: number, courseId: number, siteId?: string): Promise<void> {
         siteId = siteId || CoreSites.getCurrentSiteId();
 
         const promises: Promise<void>[] = [];
@@ -279,7 +311,7 @@ export class AddonModBookProvider {
         promises.push(CoreFilepool.invalidateFilesByComponent(siteId, ADDON_MOD_BOOK_COMPONENT, moduleId));
         promises.push(CoreCourse.invalidateModule(moduleId, siteId));
 
-        await CorePromiseUtils.allPromises(promises);
+        return CorePromiseUtils.allPromises(promises);
     }
 
     /**
@@ -383,13 +415,24 @@ export type AddonModBookContentsMap = {
 /**
  * Book returned by mod_book_get_books_by_courses.
  */
-export type AddonModBookBookWSData = CoreCourseModuleStandardElements & {
+export type AddonModBookBookWSData = {
+    id: number; // Book id.
+    coursemodule: number; // Course module id.
+    course: number; // Course id.
+    name: string; // Book name.
+    intro: string; // The Book intro.
+    introformat: number; // Intro format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
+    introfiles?: CoreWSExternalFile[];
     numbering: number; // Book numbering configuration.
     navstyle: number; // Book navigation style configuration.
     customtitles: number; // Book custom titles type.
     revision?: number; // Book revision.
     timecreated?: number; // Time of creation.
     timemodified?: number; // Time of last modification.
+    section?: number; // Course section id.
+    visible?: boolean; // Visible.
+    groupmode?: number; // Group mode.
+    groupingid?: number; // Group id.
 };
 
 /**

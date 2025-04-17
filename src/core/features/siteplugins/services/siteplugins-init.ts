@@ -172,11 +172,11 @@ export class CoreSitePluginsInitService {
 
         if (url && handlerSchema.styles?.version) {
             // Add the version to the URL to prevent getting a cached file.
-            url += `${url.indexOf('?') != -1 ? '&' : '?'}version=${handlerSchema.styles.version}`;
+            url += (url.indexOf('?') != -1 ? '&' : '?') + 'version=' + handlerSchema.styles.version;
         }
 
         const uniqueName = CoreSitePlugins.getHandlerUniqueName(plugin, handlerName);
-        const componentId = `${uniqueName}#main`;
+        const componentId = uniqueName + '#main';
 
         // Remove the CSS files for this handler that aren't used anymore. Don't block the call for this.
         const files = await CorePromiseUtils.ignoreErrors(
@@ -297,7 +297,7 @@ export class CoreSitePluginsInitService {
      */
     protected getPrefixForStrings(addon: string): string {
         if (addon) {
-            return `plugin.${addon}.`;
+            return 'plugin.' + addon + '.';
         }
 
         return '';
@@ -409,7 +409,7 @@ export class CoreSitePluginsInitService {
         const styleEl = document.createElement('style');
         const uniqueName = CoreSitePlugins.getHandlerUniqueName(plugin, handlerName);
 
-        styleEl.setAttribute('id', `siteplugin-${uniqueName}`);
+        styleEl.setAttribute('id', 'siteplugin-' + uniqueName);
         styleEl.innerHTML = cssCode;
 
         // To ensure consistency, insert in alphabetical order among other site plugin styles.
@@ -554,7 +554,7 @@ export class CoreSitePluginsInitService {
                 });
             }
         } catch (error) {
-            throw new CoreError(`Error executing init method ${handlerSchema.init}: ${error.message}`);
+            throw new CoreError('Error executing init method ' + handlerSchema.init + ': ' + error.message);
         }
     }
 
@@ -953,12 +953,12 @@ export class CoreSitePluginsInitService {
         // Create default link handlers if needed.
         if (!moduleHandler.supportsNoViewLink() && handlerSchema.method && !handlerSchema.nolinkhandlers) {
             const indexLinkHandler = new CoreContentLinksModuleIndexHandler(uniqueName, modName);
-            indexLinkHandler.name = `${uniqueName}_indexlink`;
+            indexLinkHandler.name = uniqueName + '_indexlink';
             indexLinkHandler.priority = -1; // Use -1 to give more priority to the plugins link handlers if any.
             CoreContentLinksDelegate.registerHandler(indexLinkHandler);
 
             const listLinkHandler = new CoreContentLinksModuleListHandler(uniqueName, modName);
-            listLinkHandler.name = `${uniqueName}_listlink`;
+            listLinkHandler.name = uniqueName + '_listlink';
             listLinkHandler.priority = -1; // Use -1 to give more priority to the plugins link handlers if any.
             CoreContentLinksDelegate.registerHandler(listLinkHandler);
         }

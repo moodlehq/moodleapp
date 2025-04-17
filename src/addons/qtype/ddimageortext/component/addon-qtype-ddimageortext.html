@@ -1,29 +1,23 @@
-@if (question && (question.text || question.text === '')) {
-    <div class="addon-qtype-ddimageortext-container">
-        <!-- Content is outside the core-loading to let the script calculate drag items position -->
-        <core-loading [hideUntil]="question.loaded" />
+<div *ngIf="question && (question.text || question.text === '')" class="addon-qtype-ddimageortext-container">
+    <!-- Content is outside the core-loading to let the script calculate drag items position -->
+    <core-loading [hideUntil]="question.loaded" />
 
-        <ion-item class="ion-text-wrap" [hidden]="!question.loaded">
-            <ion-label>
-                @if (!question.readOnly) {
-                    <ion-card class="core-info-card">
-                        <ion-item>
-                            <ion-icon name="fas-circle-info" slot="start" aria-hidden="true" />
-                            <ion-label>{{ 'core.question.howtodraganddrop' | translate }}</ion-label>
-                        </ion-item>
-                    </ion-card>
-                }
+    <ion-item class="ion-text-wrap" [hidden]="!question.loaded">
+        <ion-label>
+            <ion-card *ngIf="!question.readOnly" class="core-info-card">
+                <ion-item>
+                    <ion-icon name="fas-circle-info" slot="start" aria-hidden="true" />
+                    <ion-label>{{ 'core.question.howtodraganddrop' | translate }}</ion-label>
+                </ion-item>
+            </ion-card>
 
-                <core-format-text [component]="component" [componentId]="componentId" [text]="question.text" [contextLevel]="contextLevel"
-                    [contextInstanceId]="contextInstanceId" [courseId]="courseId" (afterRender)="textRendered()" />
-            </ion-label>
-        </ion-item>
-        <div class="fake-ion-item ion-text-wrap" [class.readonly]="question.readOnly" [hidden]="!question.loaded">
-            @if (question.ddArea) {
-                <core-format-text [adaptImg]="false" [component]="component" [componentId]="componentId" [text]="question.ddArea"
-                    [contextLevel]="contextLevel" [contextInstanceId]="contextInstanceId" [courseId]="courseId"
-                    (filterContentRenderingComplete)="ddAreaRendered()" />
-            }
-        </div>
+            <core-format-text [component]="component" [componentId]="componentId" [text]="question.text" [contextLevel]="contextLevel"
+                [contextInstanceId]="contextInstanceId" [courseId]="courseId" (afterRender)="textRendered()" />
+        </ion-label>
+    </ion-item>
+    <div class="fake-ion-item ion-text-wrap" [class.readonly]="question.readOnly" [hidden]="!question.loaded">
+        <core-format-text *ngIf="question.ddArea" [adaptImg]="false" [component]="component" [componentId]="componentId"
+            [text]="question.ddArea" [contextLevel]="contextLevel" [contextInstanceId]="contextInstanceId" [courseId]="courseId"
+            (filterContentRenderingComplete)="ddAreaRendered()" />
     </div>
-}
+</div>

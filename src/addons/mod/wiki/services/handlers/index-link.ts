@@ -16,7 +16,6 @@ import { Injectable } from '@angular/core';
 import { Params } from '@angular/router';
 import { CoreContentLinksModuleIndexHandler } from '@features/contentlinks/classes/module-index-handler';
 import { makeSingleton } from '@singletons';
-import { ADDON_MOD_WIKI_COMPONENT, ADDON_MOD_WIKI_MODNAME } from '../../constants';
 
 /**
  * Handler to treat links to wiki index.
@@ -27,7 +26,7 @@ export class AddonModWikiIndexLinkHandlerService extends CoreContentLinksModuleI
     name = 'AddonModWikiIndexLinkHandler';
 
     constructor() {
-        super(ADDON_MOD_WIKI_COMPONENT, ADDON_MOD_WIKI_MODNAME, 'wid');
+        super('AddonModWiki', 'wiki', 'wid');
     }
 
     /**

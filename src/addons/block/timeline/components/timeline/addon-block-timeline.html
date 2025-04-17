@@ -3,7 +3,7 @@
         <h2>{{ 'addon.block_timeline.pluginname' | translate }}</h2>
     </ion-label>
 </ion-item-divider>
-<core-loading [hideUntil]="loaded" placeholderType="column" placeholderHeight="120px" [placeholderLimit]="1">
+<core-loading [hideUntil]="loaded">
     <ion-row class="ion-hide-md-up addon-block-timeline-filter" *ngIf="(search$ | async) !== null">
         <ion-col>
             <!-- Filter courses. -->

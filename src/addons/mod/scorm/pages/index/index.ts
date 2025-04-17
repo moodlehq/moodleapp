@@ -35,6 +35,7 @@ export default class AddonModScormIndexPage extends CoreCourseModuleMainActivity
 
     @ViewChild(AddonModScormIndexComponent) activityComponent?: AddonModScormIndexComponent;
 
+
     autoPlayData?: AddonModScormAutoPlayData; // Data to auto-play the SCORM.
 
     /**

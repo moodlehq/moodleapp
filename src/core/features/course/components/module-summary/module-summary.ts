@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { DownloadStatus } from '@/core/constants';
+import { CoreConstants, DownloadStatus } from '@/core/constants';
 import { AddonBlog } from '@addons/blog/services/blog';
 import { ADDON_BLOG_MAINMENU_PAGE_NAME } from '@addons/blog/constants';
 import { Component, Input, OnDestroy, OnInit } from '@angular/core';
@@ -36,8 +36,6 @@ import { CoreSharedModule } from '@/core/shared.module';
 import { toBoolean } from '@/core/transforms/boolean';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreAlerts } from '@services/overlays/alerts';
-import { ModFeature } from '@addons/mod/constants';
-import { CoreCourseModuleHelper } from '@features/course/services/course-module-helper';
 
 /**
  * Component to display a module summary modal.
@@ -121,10 +119,10 @@ export class CoreCourseModuleSummaryComponent implements OnInit, OnDestroy {
         }, this.displayOptions);
 
         this.displayOptions.displayGrades = this.displayOptions.displayGrades &&
-            CoreCourseModuleDelegate.supportsFeature(this.module.modname, ModFeature.GRADE_HAS_GRADE, true);
+            CoreCourseModuleDelegate.supportsFeature(this.module.modname, CoreConstants.FEATURE_GRADE_HAS_GRADE, true);
 
         this.displayOptions.displayDescription = this.displayOptions.displayDescription &&
-            CoreCourseModuleDelegate.supportsFeature(this.module.modname, ModFeature.SHOW_DESCRIPTION, true);
+            CoreCourseModuleDelegate.supportsFeature(this.module.modname, CoreConstants.FEATURE_SHOW_DESCRIPTION, true);
 
         this.fetchContent();
 
@@ -180,7 +178,7 @@ export class CoreCourseModuleSummaryComponent implements OnInit, OnDestroy {
         this.componentId = this.module.id;
         this.externalUrl = this.module.url;
         this.courseId = this.courseId || this.module.course;
-        this.moduleNameTranslated = CoreCourseModuleHelper.translateModuleName(this.module.modname, this.module.modplural);
+        this.moduleNameTranslated = CoreCourse.translateModuleName(this.module.modname, this.module.modplural);
 
         this.blog = !CoreSites.getCurrentSite()?.isFeatureDisabled('CoreCourseOptionsDelegate_AddonBlog') &&
             await AddonBlog.isPluginEnabled();

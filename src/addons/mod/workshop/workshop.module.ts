@@ -68,7 +68,7 @@ export async function getModWorkshopComponentModules(): Promise<Type<unknown>[]>
 const routes: Routes = [
     {
         path: ADDON_MOD_WORKSHOP_PAGE_NAME,
-        loadChildren: () => [
+        children: [
             {
                 path: ':courseId/:cmId',
                 loadComponent: () => import('./pages/index/index'),

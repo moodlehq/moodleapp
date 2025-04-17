@@ -16,7 +16,7 @@ import { Injectable } from '@angular/core';
 
 import { CoreBlockHandlerData } from '@features/block/services/block-delegate';
 import { CoreBlockBaseHandler } from '@features/block/classes/base-block-handler';
-import {  } from '../components/newsitems/newsitems';
+import { AddonBlockNewsItemsComponent } from '../components/newsitems/newsitems';
 import { makeSingleton } from '@singletons';
 
 /**
@@ -29,10 +29,11 @@ export class AddonBlockNewsItemsHandlerService extends CoreBlockBaseHandler {
     blockName = 'news_items';
 
     /**
-     * @inheritdoc
+     * Returns the data needed to render the block.
+     *
+     * @returns Data or promise resolved with the data.
      */
-    async getDisplayData(): Promise<CoreBlockHandlerData> {
-        const { AddonBlockNewsItemsComponent } = await import('../components/newsitems/newsitems');
+    getDisplayData(): CoreBlockHandlerData {
 
         return {
             title: 'addon.block_newsitems.pluginname',

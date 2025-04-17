@@ -19,7 +19,7 @@ import { CorePlatform } from '@services/platform';
 import { CoreSites } from '@services/sites';
 import { makeSingleton } from '@singletons';
 import { CoreEvents } from '@singletons/events';
-import { ADDONS_NOTIFICATIONS_READ_CRON_EVENT } from '@addons/notifications/constants';
+import { AddonNotificationsProvider } from '../notifications';
 
 /**
  * Notifications cron handler.
@@ -30,30 +30,43 @@ export class AddonNotificationsCronHandlerService implements CoreCronHandler {
     name = 'AddonNotificationsCronHandler';
 
     /**
-     * @inheritdoc
+     * Get the time between consecutive executions.
+     *
+     * @returns Time between consecutive executions (in ms).
      */
     getInterval(): number {
-        return CorePlatform.isMobile() ? 600000 : 240000; // 4 or 10 minutes.
+        return CorePlatform.isMobile() ? 600000 : 60000; // 1 or 10 minutes.
     }
 
     /**
-     * @inheritdoc
+     * Check whether it's a synchronization process or not. True if not defined.
+     *
+     * @returns Whether it's a synchronization process or not.
      */
     isSync(): boolean {
         return false;
     }
 
     /**
-     * @inheritdoc
+     * Check whether the sync can be executed manually. Call isSync if not defined.
+     *
+     * @returns Whether the sync can be executed manually.
      */
     canManualSync(): boolean {
         return true;
     }
 
     /**
-     * @inheritdoc
+     * Execute the process.
+     * Receives the ID of the site affected, undefined for all sites.
+     *
+     * @param siteId ID of the site affected, undefined for all sites.
+     * @param force Wether the execution is forced (manual sync).
+     * @returns Promise resolved when done, rejected if failure. If the promise is rejected, this function
+     *         will be called again often, it shouldn't be abused.
      */
-    async execute(siteId?: string): Promise<void> {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    async execute(siteId?: string, force?: boolean): Promise<void> {
         const site = CoreSites.getCurrentSite();
 
         if (
@@ -64,7 +77,7 @@ export class AddonNotificationsCronHandlerService implements CoreCronHandler {
             return;
         }
 
-        CoreEvents.trigger(ADDONS_NOTIFICATIONS_READ_CRON_EVENT, {}, CoreSites.getCurrentSiteId());
+        CoreEvents.trigger(AddonNotificationsProvider.READ_CRON_EVENT, {}, CoreSites.getCurrentSiteId());
     }
 
 }

@@ -14,7 +14,8 @@
 
 import { Type } from '@angular/core';
 
-import { CoreCourseModuleHelper } from '@features/course/services/course-module-helper';
+import { CoreConstants } from '@/core/constants';
+import { CoreCourse } from '@features/course/services/course';
 import { CoreCourseHelper, CoreCourseModuleData } from '@features/course/services/course-helper';
 import { CoreCourseModuleHandler, CoreCourseModuleHandlerData } from '@features/course/services/module-delegate';
 import {
@@ -29,15 +30,14 @@ import { CoreSitePluginsBaseHandler } from './base-handler';
 import { CoreEvents } from '@singletons/events';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CORE_SITE_PLUGINS_UPDATE_COURSE_CONTENT } from '@features/siteplugins/constants';
-import { ModFeature } from '@addons/mod/constants';
 
 /**
  * Handler to support a module using a site plugin.
  */
 export class CoreSitePluginsModuleHandler extends CoreSitePluginsBaseHandler implements CoreCourseModuleHandler {
 
-    supportedFeatures?: Record<ModFeature, unknown>;
-    supportsFeature?: (feature: ModFeature) => unknown;
+    supportedFeatures?: Record<string, unknown>;
+    supportsFeature?: (feature: string) => unknown;
 
     protected logger: CoreLogger;
 
@@ -75,7 +75,7 @@ export class CoreSitePluginsModuleHandler extends CoreSitePluginsBaseHandler imp
             module.description = '';
 
             return {
-                icon: CoreCourseModuleHelper.getModuleIconSrc(module.modname, icon),
+                icon: CoreCourse.getModuleIconSrc(module.modname, icon),
                 title: title || '',
                 a11yTitle: '',
                 class: this.handlerSchema.displaydata?.class,
@@ -86,7 +86,7 @@ export class CoreSitePluginsModuleHandler extends CoreSitePluginsBaseHandler imp
         const showDowloadButton = this.handlerSchema.downloadbutton;
         const handlerData: CoreCourseModuleHandlerData = {
             title: module.name,
-            icon: CoreCourseModuleHelper.getModuleIconSrc(module.modname, icon),
+            icon: CoreCourse.getModuleIconSrc(module.modname, icon),
             class: this.handlerSchema.displaydata?.class,
             showDownloadButton: showDowloadButton !== undefined ? showDowloadButton : hasOffline,
             hasCustomCmListItem: this.handlerSchema.hascustomcmlistitem ?? false,
@@ -154,8 +154,8 @@ export class CoreSitePluginsModuleHandler extends CoreSitePluginsBaseHandler imp
      */
     supportsNoViewLink(): boolean | undefined {
         return <boolean | undefined> (this.supportsFeature ?
-            this.supportsFeature(ModFeature.NO_VIEW_LINK) :
-            this.supportedFeatures?.[ModFeature.NO_VIEW_LINK]);
+            this.supportsFeature(CoreConstants.FEATURE_NO_VIEW_LINK) :
+            this.supportedFeatures?.[CoreConstants.FEATURE_NO_VIEW_LINK]);
     }
 
     /**
@@ -205,7 +205,7 @@ export class CoreSitePluginsModuleHandler extends CoreSitePluginsBaseHandler imp
      */
     async getMainComponent(): Promise<Type<unknown>> {
         const { CoreSitePluginsModuleIndexComponent } =
-            await import('@features/siteplugins/components/module-index/module-index');
+         await import('@features/siteplugins/components/module-index/module-index');
 
         return CoreSitePluginsModuleIndexComponent;
     }
@@ -230,7 +230,7 @@ export class CoreSitePluginsModuleHandler extends CoreSitePluginsBaseHandler imp
      * @inheritdoc
      */
     async openActivityPage(module: CoreCourseModuleData, courseId: number, options?: CoreNavigationOptions): Promise<void> {
-        if (!CoreCourseModuleHelper.moduleHasView(module)) {
+        if (!CoreCourse.moduleHasView(module)) {
             return;
         }
 

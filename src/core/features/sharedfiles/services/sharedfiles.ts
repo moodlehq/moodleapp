@@ -20,7 +20,7 @@ import { CoreLogger } from '@singletons/logger';
 import { CoreAppDB } from '@services/app-db';
 import { CoreFile } from '@services/file';
 import { CorePromiseUtils } from '@singletons/promise-utils';
-import { CoreMimetype } from '@singletons/mimetype';
+import { CoreMimetypeUtils } from '@services/utils/mimetype';
 import { CoreSites } from '@services/sites';
 import { CoreEvents } from '@singletons/events';
 import { makeSingleton } from '@singletons';
@@ -125,7 +125,7 @@ export class CoreSharedFilesProvider {
      * @returns Promise resolved when done, rejected otherwise.
      */
     async deleteInboxFile(entry: FileEntry): Promise<void> {
-        this.logger.debug(`Delete inbox file: ${entry.name}`);
+        this.logger.debug('Delete inbox file: ' + entry.name);
 
         await CorePromiseUtils.ignoreErrors(CoreFile.removeFileByFileEntry(entry));
 
@@ -170,8 +170,8 @@ export class CoreSharedFilesProvider {
             if (mimetypes) {
                 // Get only files with the right mimetype and the ones we cannot determine the mimetype.
                 entries = entries.filter((entry) => {
-                    const extension = CoreMimetype.getFileExtension(entry.name);
-                    const mimetype = CoreMimetype.getMimeType(extension);
+                    const extension = CoreMimetypeUtils.getFileExtension(entry.name);
+                    const mimetype = CoreMimetypeUtils.getMimeType(extension);
 
                     return !mimetype || mimetypes.indexOf(mimetype) > -1;
                 });
@@ -193,7 +193,7 @@ export class CoreSharedFilesProvider {
     getSiteSharedFilesDirPath(siteId?: string): string {
         siteId = siteId || CoreSites.getCurrentSiteId();
 
-        return `${CoreFile.getSiteFolder(siteId)}/${CoreSharedFilesProvider.SHARED_FILES_FOLDER}`;
+        return CoreFile.getSiteFolder(siteId) + '/' + CoreSharedFilesProvider.SHARED_FILES_FOLDER;
     }
 
     /**

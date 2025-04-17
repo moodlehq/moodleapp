@@ -50,8 +50,8 @@ export class AddonModDataFieldCheckboxHandlerService implements AddonModDataFiel
         inputData: CoreFormFields<string[]>,
     ): AddonModDataSearchEntriesAdvancedFieldFormatted[] {
 
-        const fieldName = `f_${field.id}`;
-        const reqName = `f_${field.id}_allreq`;
+        const fieldName = 'f_' + field.id;
+        const reqName = 'f_' + field.id + '_allreq';
 
         if (inputData[fieldName]) {
             const values: AddonModDataSearchEntriesAdvancedFieldFormatted[] = [];
@@ -78,7 +78,7 @@ export class AddonModDataFieldCheckboxHandlerService implements AddonModDataFiel
      * @inheritdoc
      */
     getFieldEditData(field: AddonModDataField, inputData: CoreFormFields<string[]>): AddonModDataSubfieldData[] {
-        const fieldName = `f_${field.id}`;
+        const fieldName = 'f_' + field.id;
 
         return [{
             fieldid: field.id,
@@ -94,7 +94,7 @@ export class AddonModDataFieldCheckboxHandlerService implements AddonModDataFiel
         inputData: CoreFormFields<string[]>,
         originalFieldData: AddonModDataEntryField,
     ): boolean {
-        const fieldName = `f_${field.id}`;
+        const fieldName = 'f_' + field.id;
 
         const content = originalFieldData?.content || '';
 

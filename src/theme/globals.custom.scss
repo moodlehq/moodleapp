@@ -3,3 +3,98 @@
  * ----------------------------------------------------------------------------
  * Place here all custom app variables.
  */
+
+.trace {
+    border: 3px solid red !important;
+}
+
+.amep-home {
+    height: 100vh;
+}
+.amep-nav-bg {
+    background-color: #21344C;
+}
+.toolbar-background {
+    background-color: #21344C !important;
+}
+
+.dfa-logo {
+    background-image: url("../assets/img/dfa_logo.jpeg");
+    min-height: 100px !important;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: contain;
+}
+
+.amep-phase-banner {
+    color: #fff;
+    background: #0f6cbf;
+    padding: 10px 20px;
+}
+
+h1.amep {
+    font-size: 32px;
+    font-weight: bold;
+}
+
+.amep-subheader {
+    font-size: 24px !important;
+}
+.amep-subheader-course-category-level {
+    font-weight: bolder !important;
+}
+
+.amep-course-list-course-name {
+    font-weight: bolder !important;
+    text-align: center !important;
+}
+
+.amep-category-card {
+    background-color: #21344C !important;
+    min-height: 250px !important;
+    background-repeat: no-repeat !important;
+    background-position: center !important;
+    background-size: cover !important;
+}
+.amep-course-launch-box {
+ height: 175px !important;
+}
+
+.amep-course-background-image {
+
+}
+.amep-course-summary-course-name{
+    font-weight: bolder !important;
+    text-align: center;
+    padding: 2em;
+    font-size: 20px;
+}
+.amep-course-name {
+    border: none !important;
+}
+.amep-course-summary-start-button-item {
+    width: 100% !important;
+}
+
+.amep-start-button {
+    width: 100% !important;
+    height: 2.7em;
+    background-color: #0f6cbf !important;
+    color: #fff !important;
+    font-weight: bolder !important;
+    font-size: 18px !important;
+    box-sizing: border-box;
+    border-radius: 8px !important;
+}
+.amep-start-button .button-native:after {
+    border: 6px solid red !important;
+}
+.amep-button-text{
+    background-color: #0f6cbf !important;
+    width: 100vw !important;
+    height: 2.7em !important;
+    margin: 0 !important;
+    padding: 14px !important;
+    box-sizing: border-box;
+    border-radius: 8px !important;
+}

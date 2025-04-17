@@ -15,7 +15,6 @@
 import { Injectable } from '@angular/core';
 import { CoreContentLinksModuleGradeHandler } from '@features/contentlinks/classes/module-grade-handler';
 import { makeSingleton } from '@singletons';
-import { ADDON_MOD_SCORM_COMPONENT, ADDON_MOD_SCORM_MODNAME } from '../../constants';
 
 /**
  * Handler to treat links to SCORM grade.
@@ -27,7 +26,7 @@ export class AddonModScormGradeLinkHandlerService extends CoreContentLinksModule
     canReview = false;
 
     constructor() {
-        super(ADDON_MOD_SCORM_COMPONENT, ADDON_MOD_SCORM_MODNAME);
+        super('AddonModScorm', 'scorm');
     }
 
 }

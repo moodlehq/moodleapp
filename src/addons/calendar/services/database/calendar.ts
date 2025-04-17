@@ -196,7 +196,7 @@ export const CALENDAR_SITE_SCHEMA: CoreSiteSchema = {
  */
 const migrateDefaultTime = async (siteId: string, convertToSeconds = false): Promise<void> => {
 
-    const key = `mmaCalendarDefaultNotifTime#${siteId}`;
+    const key = 'mmaCalendarDefaultNotifTime#' + siteId;
     try {
         let defaultTime = await CoreConfig.get<number>(key);
         await CorePromiseUtils.ignoreErrors(CoreConfig.delete(key));

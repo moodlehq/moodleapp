@@ -36,6 +36,7 @@
                 </h2>
             </ion-label>
         </ion-item-divider>
+        <h1>list-mod-type</h1>
         <ng-container *ngFor="let modOrSubsection of section.contents">
             @if (isModule(modOrSubsection)) {
                 <core-course-module [module]="modOrSubsection" [section]="section" [showActivityDates]="false" [showAvailability]="false"

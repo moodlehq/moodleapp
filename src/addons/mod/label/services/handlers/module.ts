@@ -12,13 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { ModFeature, ModArchetype, ModPurpose } from '@addons/mod/constants';
+import { CoreConstants, ModPurpose } from '@/core/constants';
 import { Injectable } from '@angular/core';
 import { CoreModuleHandlerBase } from '@features/course/classes/module-base-handler';
 import { CoreCourseModuleData } from '@features/course/services/course-helper';
 import { CoreCourseModuleHandler, CoreCourseModuleHandlerData } from '@features/course/services/module-delegate';
 import { makeSingleton } from '@singletons';
-import { ADDON_MOD_LABEL_MODNAME } from '../../constants';
 
 /**
  * Handler to support label modules.
@@ -27,21 +26,21 @@ import { ADDON_MOD_LABEL_MODNAME } from '../../constants';
 export class AddonModLabelModuleHandlerService extends CoreModuleHandlerBase implements CoreCourseModuleHandler {
 
     name = 'AddonModLabel';
-    modName = ADDON_MOD_LABEL_MODNAME;
+    modName = 'label';
 
     supportedFeatures = {
-        [ModFeature.MOD_ARCHETYPE]: ModArchetype.RESOURCE,
-        [ModFeature.IDNUMBER]: true,
-        [ModFeature.GROUPS]: false,
-        [ModFeature.GROUPINGS]: false,
-        [ModFeature.MOD_INTRO]: true,
-        [ModFeature.COMPLETION_TRACKS_VIEWS]: false,
-        [ModFeature.GRADE_HAS_GRADE]: false,
-        [ModFeature.GRADE_OUTCOMES]: false,
-        [ModFeature.BACKUP_MOODLE2]: true,
-        [ModFeature.SHOW_DESCRIPTION]: true,
-        [ModFeature.NO_VIEW_LINK]: true,
-        [ModFeature.MOD_PURPOSE]: ModPurpose.CONTENT,
+        [CoreConstants.FEATURE_MOD_ARCHETYPE]: CoreConstants.MOD_ARCHETYPE_RESOURCE,
+        [CoreConstants.FEATURE_IDNUMBER]: true,
+        [CoreConstants.FEATURE_GROUPS]: false,
+        [CoreConstants.FEATURE_GROUPINGS]: false,
+        [CoreConstants.FEATURE_MOD_INTRO]: true,
+        [CoreConstants.FEATURE_COMPLETION_TRACKS_VIEWS]: false,
+        [CoreConstants.FEATURE_GRADE_HAS_GRADE]: false,
+        [CoreConstants.FEATURE_GRADE_OUTCOMES]: false,
+        [CoreConstants.FEATURE_BACKUP_MOODLE2]: true,
+        [CoreConstants.FEATURE_SHOW_DESCRIPTION]: true,
+        [CoreConstants.FEATURE_NO_VIEW_LINK]: true,
+        [CoreConstants.FEATURE_MOD_PURPOSE]: ModPurpose.MOD_PURPOSE_CONTENT,
     };
 
     /**

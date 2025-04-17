@@ -15,7 +15,7 @@
 import { Injectable } from '@angular/core';
 import { CoreContentLinksModuleListHandler } from '@features/contentlinks/classes/module-list-handler';
 import { makeSingleton } from '@singletons';
-import { ADDON_MOD_URL_COMPONENT, ADDON_MOD_URL_MODNAME } from '../../constants';
+import { ADDON_MOD_URL_ADDON_NAME, ADDON_MOD_URL_MODNAME } from '../../constants';
 
 /**
  * Handler to treat links to URL list page.
@@ -26,7 +26,7 @@ export class AddonModUrlListLinkHandlerService extends CoreContentLinksModuleLis
     name = 'AddonModUrlListLinkHandler';
 
     constructor() {
-        super(ADDON_MOD_URL_COMPONENT, ADDON_MOD_URL_MODNAME);
+        super(ADDON_MOD_URL_ADDON_NAME, ADDON_MOD_URL_MODNAME);
     }
 
 }

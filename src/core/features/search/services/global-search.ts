@@ -20,7 +20,6 @@ import { CoreCourseListItem, CoreCourses } from '@features/courses/services/cour
 import { CoreUserWithAvatar } from '@components/user-avatar/user-avatar';
 import { CoreUser } from '@features/user/services/user';
 import { CoreCacheUpdateFrequency } from '@/core/constants';
-import { CoreTextFormat } from '@singletons/text';
 
 declare module '@singletons/events' {
 
@@ -359,7 +358,7 @@ type CoreSearchWSResult = { // Search results.
     userid?: number; // User id.
     userurl?: string; // User url.
     userfullname?: string; // User fullname.
-    textformat: CoreTextFormat; // Text fields format, it is the same for all of them.
+    textformat: number; // Text fields format, it is the same for all of them.
 };
 
 /**

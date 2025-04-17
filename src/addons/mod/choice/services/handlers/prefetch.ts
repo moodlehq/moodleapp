@@ -23,8 +23,7 @@ import { CoreWSFile } from '@services/ws';
 import { makeSingleton } from '@singletons';
 import { AddonModChoice } from '../choice';
 import { AddonModChoiceSync, AddonModChoiceSyncResult } from '../choice-sync';
-import { ADDON_MOD_CHOICE_COMPONENT_LEGACY, ADDON_MOD_CHOICE_MODNAME } from '../../constants';
-import { CoreGroups } from '@services/groups';
+import { ADDON_MOD_CHOICE_COMPONENT } from '../../constants';
 
 /**
  * Handler to prefetch choices.
@@ -33,8 +32,8 @@ import { CoreGroups } from '@services/groups';
 export class AddonModChoicePrefetchHandlerService extends CoreCourseActivityPrefetchHandlerBase {
 
     name = 'AddonModChoice';
-    modName = ADDON_MOD_CHOICE_MODNAME;
-    component = ADDON_MOD_CHOICE_COMPONENT_LEGACY;
+    modName = 'choice';
+    component = ADDON_MOD_CHOICE_COMPONENT;
     updatesNames = /^configuration$|^.*files$|^answers$/;
 
     /**
@@ -75,62 +74,25 @@ export class AddonModChoicePrefetchHandlerService extends CoreCourseActivityPref
 
         await Promise.all([
             AddonModChoice.getOptions(choice.id, modOptions),
-            this.prefetchResults(module.id, choice.id, courseId, modOptions),
-            CoreFilepool.addFilesToQueue(siteId, introFiles, ADDON_MOD_CHOICE_COMPONENT_LEGACY, module.id),
+            this.prefetchResults(choice.id, courseId, modOptions),
+            CoreFilepool.addFilesToQueue(siteId, introFiles, ADDON_MOD_CHOICE_COMPONENT, module.id),
         ]);
     }
 
     /**
      * Prefetch choice results.
      *
-     * @param cmId Module ID.
      * @param choiceId Choice Id.
      * @param courseId Course Id.
      * @param modOptions Options.
      * @returns Promise resolved when done.
      */
     protected async prefetchResults(
-        cmId: number,
         choiceId: number,
         courseId: number,
         modOptions: CoreCourseCommonModWSOptions,
     ): Promise<void> {
-        const groupsSupported = await AddonModChoice.areGroupsSupported();
-        if (!groupsSupported) {
-            await this.prefetchResultsForGroup(choiceId, courseId, 0, modOptions);
-
-            return;
-        }
-
-        const groupInfo = await CoreGroups.getActivityGroupInfo(cmId, false);
-        if (!groupInfo.separateGroups && !groupInfo.visibleGroups) {
-            await this.prefetchResultsForGroup(choiceId, courseId, 0, modOptions);
-
-            return;
-        }
-
-        await Promise.all(groupInfo.groups.map(group => this.prefetchResultsForGroup(choiceId, courseId, group.id, modOptions)));
-    }
-
-    /**
-     * Prefetch choice results.
-     *
-     * @param choiceId Choice Id.
-     * @param courseId Course Id.
-     * @param groupId Group Id.
-     * @param modOptions Options.
-     * @returns Promise resolved when done.
-     */
-    protected async prefetchResultsForGroup(
-        choiceId: number,
-        courseId: number,
-        groupId: number,
-        modOptions: CoreCourseCommonModWSOptions,
-    ): Promise<void> {
-        const options = await AddonModChoice.getResults(choiceId, {
-            ...modOptions,
-            groupId,
-        });
+        const options = await AddonModChoice.getResults(choiceId, modOptions);
 
         // If we can see the users that answered, prefetch their profile and avatar.
         const promises: Promise<unknown>[] = [];

@@ -19,7 +19,7 @@ import { CoreCourses } from '@features/courses/services/courses';
 import { CoreFilepool } from '@services/filepool';
 import { CoreGroup, CoreGroups } from '@services/groups';
 import { CoreSitesCommonWSOptions, CoreSites, CoreSitesReadingStrategy } from '@services/sites';
-import { CoreTime } from '@singletons/time';
+import { CoreTimeUtils } from '@services/utils/time';
 import { CoreObject } from '@singletons/object';
 import { CoreWSFile } from '@services/ws';
 import { makeSingleton } from '@singletons';
@@ -28,7 +28,6 @@ import { AddonModDataSync, AddonModDataSyncResult } from '../data-sync';
 import { ContextLevel } from '@/core/constants';
 import { AddonModDataPrefetchHandlerService } from '@addons/mod/data/services/handlers/prefetch';
 import { CorePromiseUtils } from '@singletons/promise-utils';
-import { ADDON_MOD_DATA_MODNAME } from '../../constants';
 
 /**
  * Handler to prefetch databases.
@@ -187,7 +186,7 @@ export class AddonModDataPrefetchHandlerLazyService extends AddonModDataPrefetch
         const accessData = await AddonModData.getDatabaseAccessInformation(database.id, { cmId: module.id });
         // Check if database is restricted by time.
         if (!accessData.timeavailable) {
-            const time = CoreTime.timestamp();
+            const time = CoreTimeUtils.timestamp();
 
             // It is restricted, checking times.
             if (database.timeavailablefrom && time < database.timeavailablefrom) {
@@ -259,7 +258,7 @@ export class AddonModDataPrefetchHandlerLazyService extends AddonModDataPrefetch
         });
 
         // Add Basic Info to manage links.
-        promises.push(CoreCourse.getModuleBasicInfoByInstance(database.id, ADDON_MOD_DATA_MODNAME, { siteId }));
+        promises.push(CoreCourse.getModuleBasicInfoByInstance(database.id, 'data', { siteId }));
 
         // Get course data, needed to determine upload max size if it's configured to be course limit.
         promises.push(CorePromiseUtils.ignoreErrors(CoreCourses.getCourseByField('id', courseId, siteId)));

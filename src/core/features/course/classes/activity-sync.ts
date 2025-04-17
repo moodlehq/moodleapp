@@ -13,9 +13,8 @@
 // limitations under the License.
 
 import { CoreSyncBaseProvider } from '@classes/base-sync';
-import { CoreCourseAnyModuleData } from '../services/course';
+import { CoreCourse, CoreCourseAnyModuleData } from '../services/course';
 import { CoreCourseModulePrefetchDelegate, CoreCourseModulePrefetchHandler } from '../services/module-prefetch-delegate';
-import { CoreCourseModuleHelper } from '../services/course-module-helper';
 
 /**
  * Base class to create activity sync providers. It provides some common functions.
@@ -25,32 +24,22 @@ export class CoreCourseActivitySyncBaseProvider<T = void> extends CoreSyncBasePr
     protected componentTranslatableString = 'activity';
 
     /**
-     * Convenience function to prefetch data after an update.
+     * Conveniece function to prefetch data after an update.
      *
-     * @param prefetchHandler Prefetch Handler. It's not recommended to use this parameter, use module.modname instead.
+     * @param prefetchHandler Prefetch Handler.
      * @param module Module.
      * @param courseId Course ID.
      * @param preventDownloadRegex If regex matches, don't download the data. Defaults to check files.
      * @param siteId Site ID. If not defined, current site.
      * @returns Promise resolved with boolean: true if prefetched, false if no need to prefetch.
-     *
-     * @deprecated since 5.0. Use CoreCourseModulePrefetchDelegate.prefetchModuleAfterUpdate instead.
      */
     async prefetchAfterUpdate(
-        prefetchHandler: CoreCourseModulePrefetchHandler | undefined,
+        prefetchHandler: CoreCourseModulePrefetchHandler,
         module: CoreCourseAnyModuleData,
         courseId: number,
         preventDownloadRegex?: RegExp,
         siteId?: string,
     ): Promise<boolean> {
-        if (prefetchHandler === undefined) {
-            prefetchHandler = CoreCourseModulePrefetchDelegate.getPrefetchHandlerFor(module.modname);
-        }
-
-        if (!prefetchHandler) {
-            return false;
-        }
-
         // Get the module updates to check if the data was updated or not.
         const result = await CoreCourseModulePrefetchDelegate.getModuleUpdates(module, courseId, true, siteId);
 
@@ -72,30 +61,11 @@ export class CoreCourseActivitySyncBaseProvider<T = void> extends CoreSyncBasePr
     }
 
     /**
-     * Convenience function to prefetch data after an update.
-     *
-     * @param module Module.
-     * @param courseId Course ID.
-     * @param preventDownloadRegex If regex matches, don't download the data. Defaults to check files.
-     * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved with boolean: true if prefetched, false if no need to prefetch.
-     */
-    async prefetchModuleAfterUpdate(
-        module: CoreCourseAnyModuleData,
-        courseId: number,
-        preventDownloadRegex?: RegExp,
-        siteId?: string,
-    ): Promise<boolean> {
-        // eslint-disable-next-line deprecation/deprecation
-        return this.prefetchAfterUpdate(undefined, module, courseId, preventDownloadRegex, siteId);
-    }
-
-    /**
      * @inheritdoc
      */
     protected get componentTranslate(): string {
         if (!this.componentTranslateInternal) {
-            this.componentTranslateInternal = CoreCourseModuleHelper.translateModuleName(this.componentTranslatableString);
+            this.componentTranslateInternal = CoreCourse.translateModuleName(this.componentTranslatableString);
         }
 
         return this.componentTranslateInternal;

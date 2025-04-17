@@ -22,6 +22,7 @@ import { CoreSites } from '@services/sites';
 import { CoreText } from '@singletons/text';
 import { Translate } from '@singletons';
 import { CoreEvents } from '@singletons/events';
+import { getPrefetchHandlerInstance } from '../../services/handlers/prefetch';
 import {
     AddonModSurveySurvey,
     AddonModSurvey,
@@ -35,7 +36,7 @@ import {
     AddonModSurveySyncResult,
 } from '../../services/survey-sync';
 import { CorePromiseUtils } from '@singletons/promise-utils';
-import { ADDON_MOD_SURVEY_AUTO_SYNCED, ADDON_MOD_SURVEY_COMPONENT_LEGACY } from '../../constants';
+import { ADDON_MOD_SURVEY_AUTO_SYNCED, ADDON_MOD_SURVEY_COMPONENT } from '../../constants';
 import { CoreLoadings } from '@services/overlays/loadings';
 import { CoreAlerts } from '@services/overlays/alerts';
 import { CoreCourseModuleNavigationComponent } from '@features/course/components/module-navigation/module-navigation';
@@ -58,7 +59,7 @@ import { CoreSharedModule } from '@/core/shared.module';
 })
 export class AddonModSurveyIndexComponent extends CoreCourseModuleMainActivityComponent implements OnInit {
 
-    component = ADDON_MOD_SURVEY_COMPONENT_LEGACY;
+    component = ADDON_MOD_SURVEY_COMPONENT;
     pluginName = 'survey';
 
     survey?: AddonModSurveySurvey;
@@ -222,7 +223,8 @@ export class AddonModSurveyIndexComponent extends CoreCourseModuleMainActivityCo
             if (online && this.isPrefetched()) {
                 // The survey is downloaded, update the data.
                 try {
-                    const prefetched = await AddonModSurveySync.prefetchModuleAfterUpdate(
+                    const prefetched = await AddonModSurveySync.prefetchAfterUpdate(
+                        getPrefetchHandlerInstance(),
                         this.module,
                         this.courseId,
                     );

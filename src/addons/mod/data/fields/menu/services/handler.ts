@@ -49,7 +49,7 @@ export class AddonModDataFieldMenuHandlerService implements AddonModDataFieldHan
         field: AddonModDataField,
         inputData: CoreFormFields<string>,
     ): AddonModDataSearchEntriesAdvancedFieldFormatted[] {
-        const fieldName = `f_${field.id}`;
+        const fieldName = 'f_' + field.id;
         if (inputData[fieldName]) {
             return [{
                 name: fieldName,
@@ -65,7 +65,7 @@ export class AddonModDataFieldMenuHandlerService implements AddonModDataFieldHan
      */
     getFieldEditData(field: AddonModDataField, inputData: CoreFormFields<string>): AddonModDataSubfieldData[] {
 
-        const fieldName = `f_${field.id}`;
+        const fieldName = 'f_' + field.id;
 
         if (inputData[fieldName]) {
             return [{
@@ -82,7 +82,7 @@ export class AddonModDataFieldMenuHandlerService implements AddonModDataFieldHan
         inputData: CoreFormFields<string>,
         originalFieldData: AddonModDataEntryField,
     ): boolean {
-        const fieldName = `f_${field.id}`;
+        const fieldName = 'f_' + field.id;
         const input = inputData[fieldName] || '';
         const content = originalFieldData?.content || '';
 

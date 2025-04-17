@@ -13,6 +13,7 @@
 // limitations under the License.
 
 import { Component, OnDestroy, OnInit } from '@angular/core';
+import { CoreTimeUtils } from '@services/utils/time';
 import { CoreSites } from '@services/sites';
 import { CoreUser } from '@features/user/services/user';
 import { AddonBadges, AddonBadgesUserBadge } from '../../services/badges';
@@ -34,7 +35,6 @@ import { CoreAlerts } from '@services/overlays/alerts';
 @Component({
     selector: 'page-addon-badges-issued-badge',
     templateUrl: 'issued-badge.html',
-    styleUrl: 'issued-badge.scss',
     standalone: true,
     imports: [
         CoreSharedModule,
@@ -48,7 +48,6 @@ export default class AddonBadgesIssuedBadgePage implements OnInit, OnDestroy {
 
     courseId = 0;
     badge?: AddonBadgesUserBadge;
-    issuerWithMail = '';
     badges?: CoreSwipeNavigationItemsManager;
     badgeLoaded = false;
     currentTime = 0;
@@ -80,7 +79,7 @@ export default class AddonBadgesIssuedBadgePage implements OnInit, OnDestroy {
     }
 
     /**
-     * @inheritdoc
+     * View loaded.
      */
     ngOnInit(): void {
         this.fetchIssuedBadge().finally(() => {
@@ -104,7 +103,7 @@ export default class AddonBadgesIssuedBadgePage implements OnInit, OnDestroy {
      */
     async fetchIssuedBadge(): Promise<void> {
         const site = CoreSites.getRequiredCurrentSite();
-        this.currentTime = CoreTime.timestamp();
+        this.currentTime = CoreTimeUtils.timestamp();
 
         try {
             // Search the badge in the user badges.
@@ -137,10 +136,6 @@ export default class AddonBadgesIssuedBadgePage implements OnInit, OnDestroy {
                     // User is not enrolled in the course.
                 }
             }
-
-            this.issuerWithMail = badge.issuercontact ?
-                '<a href="mailto:' + badge.issuercontact + '">' + badge.issuername + '</a>'
-                : badge.issuername;
 
             this.badge = badge;
 

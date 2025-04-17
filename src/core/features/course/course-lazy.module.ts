@@ -30,14 +30,14 @@ function buildRoutes(injector: Injector): Routes {
     return [
         {
             path: CORE_COURSE_INDEX_PATH,
-            loadChildren: () => [
+            children: [
                 {
                     path: '',
                     loadComponent: () => import('@features/course/pages/index/index'),
                     data: {
                         isCourseIndex: true,
                     },
-                    loadChildren: () => indexRoutes.children,
+                    children: indexRoutes.children,
                 },
                 ...indexRoutes.siblings,
             ],

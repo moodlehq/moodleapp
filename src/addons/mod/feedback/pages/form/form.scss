@@ -8,18 +8,4 @@
         padding-top: 5px;
         padding-bottom: 8px;
     }
-
-    .addon-mod_feedback-item {
-        p {
-            --color: initial;
-        }
-
-        ion-input ::ng-deep {
-            .label-text-wrapper {
-                font-size: var(--text-size);
-                transform: none;
-                -webkit-transform: none;
-            }
-        }
-    }
 }

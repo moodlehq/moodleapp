@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import { CoreConstants, ModPurpose } from '@/core/constants';
 import { toBoolean } from '@/core/transforms/boolean';
 import {
     ChangeDetectionStrategy,
@@ -24,14 +25,13 @@ import {
     SimpleChange,
     signal,
 } from '@angular/core';
-import { CoreCourseModuleHelper } from '@features/course/services/course-module-helper';
+import { CoreCourse } from '@features/course/services/course';
 import { CoreCourseModuleDelegate } from '@features/course/services/module-delegate';
 import { CoreSites } from '@services/sites';
 import { CoreText } from '@singletons/text';
 import { CoreUrl } from '@singletons/url';
 import { CoreBaseModule } from '@/core/base.module';
 import { CoreExternalContentDirective } from '@directives/external-content';
-import { ModFeature, ModPurpose } from '@addons/mod/constants';
 
 const assetsPath = 'assets/img/';
 const fallbackModName = 'external-tool';
@@ -63,7 +63,7 @@ export class CoreModIconComponent implements OnInit, OnChanges {
     @Input() componentId?: number; // Component Id for external icons.
     @Input() modicon?: string; // Module icon url or local url.
     @Input({ transform: toBoolean }) showAlt = true; // Show alt otherwise it's only presentation icon.
-    @Input() purpose: ModPurpose = ModPurpose.OTHER; // Purpose of the module.
+    @Input() purpose: ModPurpose = ModPurpose.MOD_PURPOSE_OTHER; // Purpose of the module.
     @Input({ transform: toBoolean }) @HostBinding('class.colorize') colorize = true; // Colorize the icon. Only applies on 4.0+.
     @Input({ transform: toBoolean }) isBranded = false; // If icon is branded and no colorize will be applied.
 
@@ -104,7 +104,7 @@ export class CoreModIconComponent implements OnInit, OnChanges {
             this.modname = this.getComponentNameFromIconUrl(this.modicon);
         }
 
-        this.modNameTranslated.set(CoreCourseModuleHelper.translateModuleName(this.modname, this.fallbackTranslation));
+        this.modNameTranslated.set(CoreCourse.translateModuleName(this.modname, this.fallbackTranslation));
 
         this.setPurposeClass();
 
@@ -225,13 +225,13 @@ export class CoreModIconComponent implements OnInit, OnChanges {
         this.isLocalUrl.set(true);
         this.linkIconWithComponent.set(false);
 
-        const moduleName = !this.modname || !CoreCourseModuleHelper.isCoreModule(this.modname)
+        const moduleName = !this.modname || !CoreCourse.isCoreModule(this.modname)
             ? fallbackModName
             : this.modname;
 
-        const path = CoreCourseModuleHelper.getModuleIconsPath();
+        const path = CoreCourse.getModuleIconsPath();
 
-        this.iconUrl.set(`${path + moduleName  }.svg`);
+        this.iconUrl.set(path + moduleName + '.svg');
     }
 
     /**
@@ -266,19 +266,19 @@ export class CoreModIconComponent implements OnInit, OnChanges {
         this.purposeClass =
             CoreCourseModuleDelegate.supportsFeature<ModPurpose>(
                 this.modname || '',
-                ModFeature.MOD_PURPOSE,
+                CoreConstants.FEATURE_MOD_PURPOSE,
                 this.purpose,
             );
 
         if (this.iconVersion === IconVersion.VERSION_4_0) {
-            if (this.purposeClass === ModPurpose.INTERACTIVECONTENT) {
+            if (this.purposeClass === ModPurpose.MOD_PURPOSE_INTERACTIVECONTENT) {
                 // Interactive content was introduced on 4.4, on previous versions CONTENT is used instead.
-                this.purposeClass = ModPurpose.CONTENT;
+                this.purposeClass = ModPurpose.MOD_PURPOSE_CONTENT;
             }
 
             if (this.modname === 'lti') {
                 // LTI had content purpose with 4.0 icons.
-                this.purposeClass = ModPurpose.CONTENT;
+                this.purposeClass = ModPurpose.MOD_PURPOSE_CONTENT;
             }
         }
 

@@ -21,13 +21,13 @@ import { CoreError } from '@classes/errors/error';
 import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
 import { CoreCacheUpdateFrequency } from '@/core/constants';
 
+const ROOT_CACHE_KEY = 'CoreTag:';
+
 /**
  * Service to handle tags.
  */
 @Injectable({ providedIn: 'root' })
 export class CoreTagProvider {
-
-    protected static readonly ROOT_CACHE_KEY = 'CoreTag:';
 
     static readonly SEARCH_LIMIT = 150;
 
@@ -206,6 +206,7 @@ export class CoreTagProvider {
      * @param fromContextId Context ID where this tag cloud is displayed.
      * @param contextId Only retrieve tag instances in this context.
      * @param recursive Retrieve tag instances in the context and its children.
+     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateTagCloud(
         collectionId: number = 0,
@@ -220,18 +221,19 @@ export class CoreTagProvider {
         const site = await CoreSites.getSite(siteId);
         const key = this.getTagCloudKey(collectionId, isStandard, sort, search, fromContextId, contextId, recursive);
 
-        await site.invalidateWsCacheForKey(key);
+        return site.invalidateWsCacheForKey(key);
     }
 
     /**
      * Invalidate tag collections.
      *
+     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateTagCollections(siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
         const key = this.getTagCollectionsKey();
 
-        await site.invalidateWsCacheForKey(key);
+        return site.invalidateWsCacheForKey(key);
     }
 
     /**
@@ -244,6 +246,7 @@ export class CoreTagProvider {
      * @param fromContextId Context ID where the link was displayed.
      * @param contextId Context ID where to search for items.
      * @param recursive Search in the context and its children.
+     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateTagIndexPerArea(
         id: number,
@@ -258,7 +261,7 @@ export class CoreTagProvider {
         const site = await CoreSites.getSite(siteId);
         const key = this.getTagIndexPerAreaKey(id, name, collectionId, areaId, fromContextId, contextId, recursive);
 
-        await site.invalidateWsCacheForKey(key);
+        return site.invalidateWsCacheForKey(key);
     }
 
     /**
@@ -282,7 +285,7 @@ export class CoreTagProvider {
         contextId: number,
         recursive: boolean,
     ): string {
-        return CoreTagProvider.ROOT_CACHE_KEY +
+        return ROOT_CACHE_KEY +
             'cloud:' +
             collectionId + ':' +
             (isStandard ? 1 : 0) + ':' +
@@ -298,7 +301,7 @@ export class CoreTagProvider {
      * @returns Cache key.
      */
     protected getTagCollectionsKey(): string {
-        return `${CoreTagProvider.ROOT_CACHE_KEY}collections`;
+        return ROOT_CACHE_KEY + 'collections';
     }
 
     /**
@@ -322,7 +325,7 @@ export class CoreTagProvider {
         contextId: number,
         recursive: boolean,
     ): string {
-        return CoreTagProvider.ROOT_CACHE_KEY +
+        return ROOT_CACHE_KEY +
             'index:' + id + ':' +
             name + ':' + collectionId + ':' +
             areaId + ':' + fromContextId + ':' +
@@ -439,5 +442,4 @@ export type CoreTagItem = {
     itemid: number; // Id of the record tagged.
     ordering: number; // Tag ordering.
     flag: number; // Whether the tag is flagged as inappropriate.
-    viewurl?: string; // @since 4.4. The url to view the tag.
 };

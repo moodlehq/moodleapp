@@ -25,19 +25,6 @@ Feature: Test basic usage of login in app
     Then I should not find "Skip" in the app
     And I should find "Connect to Moodle" in the app
 
-  Scenario: Complete on boarding
-    When I launch the app runtime
-    Then I should find "Welcome to the Moodle App!" in the app
-
-    When I press "I'm an educator" in the app
-    And I press "I need a Moodle site" in the app
-    And I press "Get started with Moodle" in the app
-    And I switch to the browser tab opened by the app
-    And I close the browser tab opened by the app
-    Then I should find "Connect to Moodle" in the app
-    When I restart the app
-    Then I should find "Connect to Moodle" in the app
-
   Scenario: Add a new account in the app & Site name in displayed when adding a new account
     When I launch the app
     And I set the field "Your site" to "$WWWROOT" in the app

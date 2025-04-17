@@ -18,7 +18,7 @@ import { CoreContentLinksHandlerBase } from '@features/contentlinks/classes/base
 import { CoreContentLinksAction } from '@features/contentlinks/services/contentlinks-delegate';
 import { CoreNavigator } from '@services/navigator';
 import { makeSingleton } from '@singletons';
-import { CORE_COURSES_MYCOURSES_PAGE_NAME } from '@features/courses/constants';
+import { CoreCoursesMyCoursesMainMenuHandlerService } from './my-courses-mainmenu';
 
 /**
  * Handler to treat links to course index (list of courses).
@@ -36,11 +36,11 @@ export class CoreCoursesIndexLinkHandlerService extends CoreContentLinksHandlerB
     getActions(siteIds: string[], url: string, params: Record<string, string>): CoreContentLinksAction[] {
         return [{
             action: async (siteId): Promise<void> => {
-                let pageName = CORE_COURSES_MYCOURSES_PAGE_NAME;
+                let pageName = CoreCoursesMyCoursesMainMenuHandlerService.PAGE_NAME;
                 const pageParams: Params = {};
 
                 if (params.categoryid) {
-                    pageName += `/categories/${params.categoryid}`;
+                    pageName += '/categories/' + params.categoryid;
                 } else {
                     pageName += '/list';
                     pageParams.mode = 'all';

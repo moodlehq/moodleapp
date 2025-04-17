@@ -45,7 +45,7 @@ export class AddonModDataFieldNumberHandlerService extends AddonModDataFieldText
         inputData: CoreFormFields,
         originalFieldData: AddonModDataEntryField,
     ): boolean {
-        const fieldName = `f_${field.id}`;
+        const fieldName = 'f_' + field.id;
         const input = inputData[fieldName] ?? '';
         const content = originalFieldData?.content ?? '';
 

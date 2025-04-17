@@ -26,14 +26,13 @@ import {
 import { makeSingleton, Translate } from '@singletons';
 import { CoreWSExternalFile } from '@services/ws';
 import { AddonCourseCompletion } from '@addons/coursecompletion/services/coursecompletion';
-import dayjs from 'dayjs';
+import moment from 'moment-timezone';
 import { of, firstValueFrom } from 'rxjs';
 import { zipIncludingComplete } from '@/core/utils/rxjs';
 import { catchError, map } from 'rxjs/operators';
 import { chainRequests, WSObservable } from '@classes/sites/authenticated-site';
 import { CoreSite } from '@classes/sites/site';
 import { LazyDefaultStandaloneComponent } from '@/app/app-routing.module';
-import { DEFAULT_TEXT_FORMAT } from '@singletons/text';
 
 // Id for a course item representing all courses (for example, for course filters).
 export const ALL_COURSES_ID = -1;
@@ -62,20 +61,22 @@ export class CoreCoursesHelperProvider {
             shortname: Translate.instant('core.fulllistofcourses'),
             categoryid: -1,
             summary: '',
-            summaryformat: DEFAULT_TEXT_FORMAT,
+            summaryformat: 1,
         });
 
         let categoryId: number | undefined;
         if (courseId) {
             // Search the course to get the category.
-            const course = courses.find((course) => course.id === courseId);
+            const course = courses.find((course) => course.id == courseId);
 
-            categoryId = course?.categoryid;
+            if (course) {
+                categoryId = course.categoryid;
+            }
         }
 
         return {
-            courses,
-            categoryId,
+            courses: courses,
+            categoryId: categoryId,
         };
     }
 
@@ -106,9 +107,12 @@ export class CoreCoursesHelperProvider {
      *
      * @param courses List of courses.
      * @returns Promise resolved when done.
-     * @deprecated since 5.0. Use loadCourseColorAndImage instead.
      */
     async loadCoursesColorAndImage(courses: CoreCourseSearchedData[]): Promise<void> {
+        if (!courses.length) {
+            return;
+        }
+
         await Promise.all(courses.map((course) => this.loadCourseColorAndImage(course)));
     }
 
@@ -120,11 +124,11 @@ export class CoreCoursesHelperProvider {
      * @param loadCategoryNames Whether load category names or not.
      * @returns Promise resolved when done.
      */
-    async loadCoursesExtraInfo(
+    loadCoursesExtraInfo(
         courses: CoreEnrolledCourseDataWithExtraInfo[],
         loadCategoryNames: boolean = false,
     ): Promise<CoreEnrolledCourseDataWithExtraInfo[]> {
-        return await firstValueFrom(this.loadCoursesExtraInfoObservable(courses, loadCategoryNames));
+        return firstValueFrom(this.loadCoursesExtraInfoObservable(courses, loadCategoryNames));
     }
 
     /**
@@ -187,7 +191,7 @@ export class CoreCoursesHelperProvider {
         try {
             const configs = await site.getConfig();
             for (let x = 0; x < 10; x++) {
-                colors[x] = configs[`core_admin_coursecolor${x + 1}`] || undefined;
+                colors[x] = configs['core_admin_coursecolor' + (x + 1)] || undefined;
             }
 
             this.courseSiteColors[siteId] = colors;
@@ -238,14 +242,14 @@ export class CoreCoursesHelperProvider {
      * @param options Options.
      * @returns Courses filled with options.
      */
-    async getUserCoursesWithOptions(
+    getUserCoursesWithOptions(
         sort: string = 'fullname',
         slice: number = 0,
         filter?: string,
         loadCategoryNames: boolean = false,
         options: CoreSitesCommonWSOptions = {},
     ): Promise<CoreEnrolledCourseDataWithExtraInfoAndOptions[]> {
-        return await firstValueFrom(this.getUserCoursesWithOptionsObservable({
+        return firstValueFrom(this.getUserCoursesWithOptionsObservable({
             sort,
             slice,
             filter,
@@ -398,7 +402,7 @@ export class CoreCoursesHelperProvider {
         }
 
         // Calculate the end date to use for display classification purposes, incorporating the grace period, if any.
-        const endDate = dayjs.tz(course.enddate * 1000).add(gradePeriodAfter, 'days').valueOf();
+        const endDate = moment(course.enddate * 1000).add(gradePeriodAfter, 'days').valueOf();
 
         return endDate < Date.now();
     }
@@ -421,7 +425,7 @@ export class CoreCoursesHelperProvider {
         }
 
         // Calculate the start date to use for display classification purposes, incorporating the grace period, if any.
-        const startDate = dayjs.tz(course.startdate * 1000).subtract(gradePeriodBefore, 'days').valueOf();
+        const startDate = moment(course.startdate * 1000).subtract(gradePeriodBefore, 'days').valueOf();
 
         return startDate > Date.now();
     }

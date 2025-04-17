@@ -17,7 +17,7 @@ import { Component, OnInit, OnDestroy, Input, ViewChild, HostBinding, Optional }
 import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
 import { CoreCourseModuleSummaryResult } from '@features/course/components/module-summary/module-summary';
 import CoreCourseContentsPage from '@features/course/pages/contents/contents';
-import { CoreCourseModuleHelper } from '@features/course/services/course-module-helper';
+import { CoreCourse } from '@features/course/services/course';
 import { CoreCourseModuleData } from '@features/course/services/course-helper';
 import {
     CoreCourseModuleDelegate,
@@ -146,7 +146,7 @@ export class CoreSitePluginsModuleIndexComponent implements OnInit, OnDestroy, C
     contentLoaded(data: CoreSitePluginsPluginContentLoadedData): void {
         this.addDefaultModuleInfo = !data.content.includes('<core-course-module-info');
         if (data.success) {
-            CoreCourseModuleHelper.storeModuleViewed(this.courseId, this.module.id, {
+            CoreCourse.storeModuleViewed(this.courseId, this.module.id, {
                 sectionId: this.module.section,
             });
         }

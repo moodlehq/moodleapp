@@ -19,7 +19,7 @@ import { SafeResourceUrl } from '@angular/platform-browser';
 
 import { CoreFile } from '@services/file';
 import { CoreUrl } from '@singletons/url';
-import { CoreIframe } from '@singletons/iframe';
+import { CoreIframeUtils } from '@services/utils/iframe';
 import { DomSanitizer, Router, StatusBar, Translate } from '@singletons';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { CoreScreen, CoreScreenOrientation } from '@services/screen';
@@ -36,8 +36,6 @@ import { CoreLoadingComponent } from '@components/loading/loading';
 import { CoreNavBarButtonsComponent } from '@components/navbar-buttons/navbar-buttons';
 import { CoreFaIconDirective } from '@directives/fa-icon';
 import { CoreUpdateNonReactiveAttributesDirective } from '@directives/update-non-reactive-attributes';
-import { BackButtonEvent } from '@ionic/angular';
-import { BackButtonPriority } from '@/core/constants';
 
 @Component({
     selector: 'core-iframe',
@@ -86,7 +84,6 @@ export class CoreIframeComponent implements OnChanges, OnDestroy {
     protected orientationObs?: CoreEventObserver;
     protected navSubscription?: Subscription;
     protected messageListenerFunction: (event: MessageEvent) => Promise<void>;
-    protected backButtonListener?: (event: BackButtonEvent) => void;
 
     constructor(protected elementRef: ElementRef<HTMLElement>) {
         this.loaded = new EventEmitter<HTMLIFrameElement>();
@@ -124,11 +121,9 @@ export class CoreIframeComponent implements OnChanges, OnDestroy {
             this.navSubscription?.unsubscribe();
             this.orientationObs?.off();
             this.style?.remove();
-            this.backButtonListener && document.removeEventListener('ionBackButton', this.backButtonListener);
             this.navSubscription = undefined;
             this.orientationObs = undefined;
             this.style = undefined;
-            this.backButtonListener = undefined;
             this.fullScreenInitialized = true;
 
             return;
@@ -143,20 +138,6 @@ export class CoreIframeComponent implements OnChanges, OnDestroy {
                         this.toggleFullscreen(false);
                     }
                 });
-        }
-
-        if (!this.backButtonListener) {
-            // Exit fullscreen when back button is clicked.
-            document.addEventListener('ionBackButton', this.backButtonListener = ({ detail }) => detail.register(
-                BackButtonPriority.IFRAME_FULLSCREEN,
-                (processNextHandler) => {
-                    if (this.fullscreen) {
-                        this.toggleFullscreen(false);
-                    } else {
-                        processNextHandler();
-                    }
-                },
-            ));
         }
 
         if (!this.style) {
@@ -205,7 +186,7 @@ export class CoreIframeComponent implements OnChanges, OnDestroy {
             return;
         }
 
-        CoreIframe.treatFrame(this.iframe, false);
+        CoreIframeUtils.treatFrame(this.iframe, false);
 
         this.iframe.addEventListener('load', () => {
             this.loading = false;
@@ -250,7 +231,7 @@ export class CoreIframeComponent implements OnChanges, OnDestroy {
         let url = this.src;
 
         if (url) {
-            const { launchExternal, label } = CoreIframe.frameShouldLaunchExternal(url);
+            const { launchExternal, label } = CoreIframeUtils.frameShouldLaunchExternal(url);
 
             if (launchExternal) {
                 this.launchExternalLabel = label;
@@ -264,7 +245,7 @@ export class CoreIframeComponent implements OnChanges, OnDestroy {
 
         if (url && !CoreUrl.isLocalFileUrl(url)) {
             url = CoreUrl.getYoutubeEmbedUrl(url) || url;
-            this.displayHelp = CoreIframe.shouldDisplayHelpForUrl(url);
+            this.displayHelp = CoreIframeUtils.shouldDisplayHelpForUrl(url);
 
             const currentSite = CoreSites.getCurrentSite();
             if (currentSite?.containsUrl(url)) {
@@ -285,7 +266,7 @@ export class CoreIframeComponent implements OnChanges, OnDestroy {
                 url = CoreUrl.getVimeoPlayerUrl(url, currentSite) ?? url;
             }
 
-            await CoreIframe.fixIframeCookies(url);
+            await CoreIframeUtils.fixIframeCookies(url);
         }
 
         this.safeUrl = url ? DomSanitizer.bypassSecurityTrustResourceUrl(CoreFile.convertFileSrc(url)) : undefined;
@@ -303,7 +284,7 @@ export class CoreIframeComponent implements OnChanges, OnDestroy {
      * Open help modal for iframes.
      */
     openIframeHelpModal(): void {
-        CoreIframe.openIframeHelpModal();
+        CoreIframeUtils.openIframeHelpModal();
     }
 
     /**
@@ -373,7 +354,7 @@ export class CoreIframeComponent implements OnChanges, OnDestroy {
             return;
         }
 
-        CoreIframe.frameLaunchExternal(this.src, {
+        CoreIframeUtils.frameLaunchExternal(this.src, {
             site: CoreSites.getCurrentSite(),
         });
     }

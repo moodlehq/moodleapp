@@ -338,7 +338,7 @@ export class CorePushNotificationsProvider {
             appid:      CoreConstants.CONFIG.app_id,
             name:       Device.manufacturer || '',
             model:      Device.model,
-            platform:   `${Device.platform}-fcm`,
+            platform:   Device.platform + '-fcm',
             version:    Device.version,
             pushid:     this.pushID,
             uuid:       Device.uuid,
@@ -480,7 +480,7 @@ export class CorePushNotificationsProvider {
         const data: CorePushNotificationsNotificationBasicData = Object.assign(rawData, {
             title: notification.title,
             message: notification.message,
-            customdata: typeof rawData.customdata === 'string' ?
+            customdata: typeof rawData.customdata == 'string' ?
                 CoreText.parseJSON<Record<string, string|number>>(rawData.customdata, {}) : rawData.customdata,
         });
 

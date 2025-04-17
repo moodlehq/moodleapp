@@ -17,7 +17,6 @@ import { CoreContentLinksHandlerBase } from '@features/contentlinks/classes/base
 import { CoreContentLinksAction } from '@features/contentlinks/services/contentlinks-delegate';
 import { makeSingleton } from '@singletons';
 import { AddonModFeedbackHelper } from '../feedback-helper';
-import { ADDON_MOD_FEEDBACK_FEATURE_NAME } from '../../constants';
 
 /**
  * Content links handler for feedback show entries questions.
@@ -27,7 +26,7 @@ import { ADDON_MOD_FEEDBACK_FEATURE_NAME } from '../../constants';
 export class AddonModFeedbackShowEntriesLinkHandlerService extends CoreContentLinksHandlerBase {
 
     name = 'AddonModFeedbackShowEntriesLinkHandler';
-    featureName = ADDON_MOD_FEEDBACK_FEATURE_NAME;
+    featureName = 'CoreCourseModuleDelegate_AddonModFeedback';
     pattern = /\/mod\/feedback\/show_entries\.php.*([?&](id|showcompleted)=\d+)/;
 
     /**

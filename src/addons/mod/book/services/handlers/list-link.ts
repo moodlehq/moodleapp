@@ -16,7 +16,6 @@ import { Injectable } from '@angular/core';
 import { CoreContentLinksModuleListHandler } from '@features/contentlinks/classes/module-list-handler';
 import { makeSingleton } from '@singletons';
 import { AddonModBook } from '../book';
-import { ADDON_MOD_BOOK_COMPONENT, ADDON_MOD_BOOK_MODNAME } from '../../constants';
 
 /**
  * Handler to treat links to book list page.
@@ -27,7 +26,7 @@ export class AddonModBookListLinkHandlerService extends CoreContentLinksModuleLi
     name = 'AddonModBookListLinkHandler';
 
     constructor() {
-        super(ADDON_MOD_BOOK_COMPONENT, ADDON_MOD_BOOK_MODNAME);
+        super('AddonModBook', 'book');
     }
 
     /**

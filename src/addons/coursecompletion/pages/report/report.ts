@@ -87,6 +87,8 @@ export default class AddonCourseCompletionReportPage implements OnInit {
 
     /**
      * Fetch compleiton data.
+     *
+     * @returns Promise resolved when done.
      */
     protected async fetchCompletion(): Promise<void> {
         try {
@@ -126,25 +128,16 @@ export default class AddonCourseCompletionReportPage implements OnInit {
      * Mark course as completed.
      */
     async completeCourse(): Promise<void> {
+        const modal = await CoreLoadings.show('core.sending', true);
+
         try {
-            await CoreAlerts.confirm(Translate.instant('addon.coursecompletion.confirmselfcompletion'), {
-                okText: Translate.instant('core.yes'),
-                cancelText: Translate.instant('core.no'),
-            });
+            await AddonCourseCompletion.markCourseAsSelfCompleted(this.courseId);
 
-            const modal = await CoreLoadings.show('core.sending', true);
-
-            try {
-                await AddonCourseCompletion.markCourseAsSelfCompleted(this.courseId);
-
-                await this.refreshCompletion();
-            } catch (error) {
-                CoreAlerts.showError(error);
-            } finally {
-                modal.dismiss();
-            }
-        } catch {
-            // User cancelled.
+            await this.refreshCompletion();
+        } catch (error) {
+            CoreAlerts.showError(error);
+        } finally {
+            modal.dismiss();
         }
     }
 

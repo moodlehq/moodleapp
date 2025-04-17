@@ -62,7 +62,7 @@ export function getSharedFilesRoutes(): Routes {
 const routes: Routes = [
     {
         path: SHAREDFILES_PAGE_NAME,
-        loadChildren: () => getSharedFilesRoutes(),
+        children: getSharedFilesRoutes(),
     },
 ];
 

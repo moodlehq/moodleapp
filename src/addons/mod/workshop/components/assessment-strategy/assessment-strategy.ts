@@ -19,7 +19,7 @@ import { CoreFileUploader, CoreFileUploaderStoreFilesResult } from '@features/fi
 import { CoreFile } from '@services/file';
 import { CoreFileEntry, CoreFileHelper } from '@services/file-helper';
 import { CoreFileSession } from '@services/file-session';
-import { CoreSites, CoreSitesReadingStrategy } from '@services/sites';
+import { CoreSites } from '@services/sites';
 import { CoreSync } from '@services/sync';
 import { CoreUtils } from '@singletons/utils';
 import { Translate } from '@singletons';
@@ -175,8 +175,6 @@ export class AddonModWorkshopAssessmentStrategyComponent implements OnInit, OnDe
         this.data.assessment = await AddonModWorkshopHelper.getReviewerAssessmentById(this.workshop.id, this.assessmentId, {
             userId: this.userId,
             cmId: this.workshop.coursemodule,
-            filter: this.edit ? false : undefined,
-            readingStrategy: this.edit ? CoreSitesReadingStrategy.PREFER_NETWORK : undefined,
         });
 
         if (!this.data.assessment.form) {
@@ -250,7 +248,7 @@ export class AddonModWorkshopAssessmentStrategyComponent implements OnInit, OnDe
             if (this.edit) {
                 CoreFileSession.setFiles(
                     ADDON_MOD_WORKSHOP_COMPONENT,
-                    `${this.workshop.id}_${this.assessmentId}`,
+                    this.workshop.id + '_' + this.assessmentId,
                     this.data.assessment.feedbackattachmentfiles,
                 );
                 if (this.access.canallocate) {
@@ -283,7 +281,7 @@ export class AddonModWorkshopAssessmentStrategyComponent implements OnInit, OnDe
         // Compare feedback files.
         const files = CoreFileSession.getFiles(
             ADDON_MOD_WORKSHOP_COMPONENT,
-            `${this.workshop.id}_${this.assessmentId}`,
+            this.workshop.id + '_' + this.assessmentId,
         ) || [];
         if (CoreFileUploader.areFileListDifferent(files, this.originalData.files)) {
             return true;
@@ -308,7 +306,7 @@ export class AddonModWorkshopAssessmentStrategyComponent implements OnInit, OnDe
 
         const files = CoreFileSession.getFiles(
             ADDON_MOD_WORKSHOP_COMPONENT,
-            `${this.workshop.id}_${this.assessmentId}`,
+            this.workshop.id + '_' + this.assessmentId,
         ) || [];
 
         let saveOffline = false;

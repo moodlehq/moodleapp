@@ -13,6 +13,7 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
+import { CoreError } from '@classes/errors/error';
 import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
 import { CoreCourse } from '@features/course/services/course';
 import { CoreCourseLogHelper } from '@features/course/services/log-helper';
@@ -20,11 +21,9 @@ import { CoreFilepool } from '@services/filepool';
 import { CoreSites, CoreSitesCommonWSOptions } from '@services/sites';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreWSExternalFile, CoreWSExternalWarning } from '@services/ws';
-import { makeSingleton } from '@singletons';
-import { ADDON_MOD_RESOURCE_COMPONENT_LEGACY } from '../constants';
+import { makeSingleton, Translate } from '@singletons';
+import { ADDON_MOD_RESOURCE_COMPONENT } from '../constants';
 import { CoreCacheUpdateFrequency } from '@/core/constants';
-import { ModResourceDisplay } from '@addons/mod/constants';
-import { CoreCourseModuleHelper, CoreCourseModuleStandardElements } from '@features/course/services/course-module-helper';
 
 /**
  * Service that provides some features for resources.
@@ -41,20 +40,22 @@ export class AddonModResourceProvider {
      * @returns Cache key.
      */
     protected getResourceCacheKey(courseId: number): string {
-        return `${AddonModResourceProvider.ROOT_CACHE_KEY}resource:${courseId}`;
+        return AddonModResourceProvider.ROOT_CACHE_KEY + 'resource:' + courseId;
     }
 
     /**
-     * Get a resource by course module ID.
+     * Get a resource data.
      *
      * @param courseId Course ID.
-     * @param cmId Course module ID.
+     * @param key Name of the property to check.
+     * @param value Value to search.
      * @param options Other options.
      * @returns Promise resolved when the resource is retrieved.
      */
-    async getResourceData(
+    protected async getResourceDataByKey(
         courseId: number,
-        cmId: number,
+        key: string,
+        value: number,
         options: CoreSitesCommonWSOptions = {},
     ): Promise<AddonModResourceResource> {
         const site = await CoreSites.getSite(options.siteId);
@@ -66,7 +67,7 @@ export class AddonModResourceProvider {
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getResourceCacheKey(courseId),
             updateFrequency: CoreCacheUpdateFrequency.RARELY,
-            component: ADDON_MOD_RESOURCE_COMPONENT_LEGACY,
+            component: ADDON_MOD_RESOURCE_COMPONENT,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy),
         };
 
@@ -76,7 +77,24 @@ export class AddonModResourceProvider {
             preSets,
         );
 
-        return CoreCourseModuleHelper.getActivityByCmId(response.resources, cmId);
+        const currentResource = response.resources.find((resource) => resource[key] == value);
+        if (currentResource) {
+            return currentResource;
+        }
+
+        throw new CoreError(Translate.instant('core.course.modulenotfound'));
+    }
+
+    /**
+     * Get a resource by course module ID.
+     *
+     * @param courseId Course ID.
+     * @param cmId Course module ID.
+     * @param options Other options.
+     * @returns Promise resolved when the resource is retrieved.
+     */
+    getResourceData(courseId: number, cmId: number, options: CoreSitesCommonWSOptions = {}): Promise<AddonModResourceResource> {
+        return this.getResourceDataByKey(courseId, 'coursemodule', cmId, options);
     }
 
     /**
@@ -85,6 +103,7 @@ export class AddonModResourceProvider {
      * @param moduleId The module ID.
      * @param courseId Course ID of the module.
      * @param siteId Site ID. If not defined, current site.
+     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateContent(moduleId: number, courseId: number, siteId?: string): Promise<void> {
         siteId = siteId || CoreSites.getCurrentSiteId();
@@ -92,7 +111,7 @@ export class AddonModResourceProvider {
         const promises: Promise<void>[] = [];
 
         promises.push(this.invalidateResourceData(courseId, siteId));
-        promises.push(CoreFilepool.invalidateFilesByComponent(siteId, ADDON_MOD_RESOURCE_COMPONENT_LEGACY, moduleId));
+        promises.push(CoreFilepool.invalidateFilesByComponent(siteId, ADDON_MOD_RESOURCE_COMPONENT, moduleId));
         promises.push(CoreCourse.invalidateModule(moduleId, siteId, 'resource'));
 
         await CorePromiseUtils.allPromises(promises);
@@ -103,6 +122,7 @@ export class AddonModResourceProvider {
      *
      * @param courseId Course ID.
      * @param siteId Site ID. If not defined, current site.
+     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateResourceData(courseId: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -137,7 +157,7 @@ export class AddonModResourceProvider {
         await CoreCourseLogHelper.log(
             'mod_resource_view_resource',
             params,
-            ADDON_MOD_RESOURCE_COMPONENT_LEGACY,
+            ADDON_MOD_RESOURCE_COMPONENT,
             id,
             siteId,
         );
@@ -156,16 +176,27 @@ type AddonModResourceViewResourceWSParams = {
 /**
  * Resource returned by mod_resource_get_resources_by_courses.
  */
-export type AddonModResourceResource = CoreCourseModuleStandardElements & {
+export type AddonModResourceResource = {
+    id: number; // Module id.
+    coursemodule: number; // Course module id.
+    course: number; // Course id.
+    name: string; // Page name.
+    intro: string; // Summary.
+    introformat: number; // Intro format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
+    introfiles: CoreWSExternalFile[];
     contentfiles: CoreWSExternalFile[];
     tobemigrated: number; // Whether this resource was migrated.
     legacyfiles: number; // Legacy files flag.
     legacyfileslast: number; // Legacy files last control flag.
-    display: ModResourceDisplay; // How to display the resource.
+    display: number; // How to display the resource.
     displayoptions: string; // Display options (width, height).
     filterfiles: number; // If filters should be applied to the resource content.
     revision: number; // Incremented when after each file changes, to avoid cache.
     timemodified: number; // Last time the resource was modified.
+    section: number; // Course section id.
+    visible: number; // Module visibility.
+    groupmode: number; // Group mode.
+    groupingid: number; // Grouping id.
 };
 
 export type AddonModResourceCustomData = {

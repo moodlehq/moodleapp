@@ -12,20 +12,20 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { CORE_COURSE_MODULE_FEATURE_PREFIX } from '@features/course/constants';
+export const ADDON_MOD_DATA_FEATURE_NAME = 'CoreCourseModuleDelegate_AddonModData';
 
-export const ADDON_MOD_DATA_COMPONENT = 'AddonModData';
-export const ADDON_MOD_DATA_COMPONENT_LEGACY = 'mmaModData';
+export const ADDON_MOD_DATA_COMPONENT = 'mmaModData';
 export const ADDON_MOD_DATA_PAGE_NAME = 'mod_data';
-export const ADDON_MOD_DATA_MODNAME = 'data';
 
-export const ADDON_MOD_DATA_FEATURE_NAME = CORE_COURSE_MODULE_FEATURE_PREFIX + ADDON_MOD_DATA_COMPONENT;
+export const ADDON_MOD_DATA_ENTRIES_PER_PAGE = 25;
 
-// Events.
 export const ADDON_MOD_DATA_ENTRY_CHANGED = 'addon_mod_data_entry_changed';
 export const ADDON_MOD_DATA_AUTO_SYNCED = 'addon_mod_data_autom_synced';
 
-export const ADDON_MOD_DATA_ENTRIES_PER_PAGE = 25;
+// Handlers.
+export const ADDON_MOD_DATA_PREFETCH_NAME = 'AddonModData';
+export const ADDON_MOD_DATA_PREFETCH_MODNAME = 'data';
+export const ADDON_MOD_DATA_PREFETCH_COMPONENT = ADDON_MOD_DATA_COMPONENT;
 
 export enum AddonModDataAction {
     ADD = 'add',

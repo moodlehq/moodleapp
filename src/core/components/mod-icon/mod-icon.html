@@ -1,6 +1,6 @@
 @if (isLocalUrl()) {
-    <img [src]="iconUrl()" (error)="loadFallbackIcon()" alt="" aria-hidden="true">
+    <img [src]="iconUrl()" (error)="loadFallbackIcon()" alt="">
 } @else {
-    <img [url]="iconUrl()" core-external-content alt="" aria-hidden="true" [component]="linkIconWithComponent() ? modname : null"
+    <img [url]="iconUrl()" core-external-content alt="" [component]="linkIconWithComponent() ? modname : null"
         [componentId]="linkIconWithComponent() ? componentId : null" (error)="loadFallbackIcon()">
 }

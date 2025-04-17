@@ -25,13 +25,14 @@ import {
 import { CoreUserProfile } from '@features/user/services/user';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSites } from '@services/sites';
-import { ADDON_PRIVATE_FILES_PAGE_NAME } from '@addons/privatefiles/constants';
 
 /**
  * Handler to inject an option into user menu.
  */
 @Injectable({ providedIn: 'root' })
 export class AddonPrivateFilesUserHandlerService implements CoreUserProfileHandler {
+
+    static readonly PAGE_NAME = 'private';
 
     name = 'AddonPrivateFiles';
     priority = 400;
@@ -83,7 +84,7 @@ export class AddonPrivateFilesUserHandlerService implements CoreUserProfileHandl
             action: (event): void => {
                 event.preventDefault();
                 event.stopPropagation();
-                CoreNavigator.navigateToSitePath(ADDON_PRIVATE_FILES_PAGE_NAME);
+                CoreNavigator.navigateToSitePath(AddonPrivateFilesUserHandlerService.PAGE_NAME);
             },
         };
     }

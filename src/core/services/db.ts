@@ -166,7 +166,7 @@ export class CoreDbProvider {
             .replace(':table', tableName)
             .replace(':statement', statementName)
             .replace(':count', String(statementsSummary[dbName][tableName][statementName].count))
-            .replace(':duration', `${statementsSummary[dbName][tableName][statementName].duration.toFixed(2)}ms`)
+            .replace(':duration', statementsSummary[dbName][tableName][statementName].duration.toFixed(2) + 'ms')
             .replace(':errors', String(statementsSummary[dbName][tableName][statementName].errors));
 
         // eslint-disable-next-line no-console

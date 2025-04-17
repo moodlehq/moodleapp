@@ -42,7 +42,6 @@ import {
 } from '@features/mainmenu/constants';
 import { CoreSharedModule } from '@/core/shared.module';
 import { CoreMainMenuUserButtonComponent } from '../../components/user-menu-button/user-menu-button';
-import { BackButtonPriority } from '@/core/constants';
 
 const ANIMATION_DURATION = 500;
 
@@ -193,7 +192,7 @@ export default class CoreMainMenuPage implements OnInit, OnDestroy {
 
             tab ? tab.hide = false : null;
             handler.hide = false;
-            handler.id = handler.id || `core-mainmenu-${CoreUtils.getUniqueId('CoreMainMenuPage')}`;
+            handler.id = handler.id || 'core-mainmenu-' + CoreUtils.getUniqueId('CoreMainMenuPage');
 
             newTabs.push(tab || handler);
         }
@@ -323,7 +322,8 @@ export default class CoreMainMenuPage implements OnInit, OnDestroy {
      * @param event Event.
      */
     protected backButtonClicked(event: BackButtonEvent): void {
-        event.detail.register(BackButtonPriority.MAIN_MENU, async (processNextHandler: () => void) => {
+        // Use a priority lower than 0 (navigation).
+        event.detail.register(-10, async (processNextHandler: () => void) => {
             // This callback can be called at the same time as Ionic's back navigation callback.
             // Check if user is already at the root of a tab.
             const isMainMenuRoot = await this.currentRouteIsMainMenuRoot();

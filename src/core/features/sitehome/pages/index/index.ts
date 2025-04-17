@@ -147,7 +147,7 @@ export default class CoreSiteHomeIndexPage implements OnInit, OnDestroy {
             const sections = await CoreCourse.getSections(this.siteHomeId, false, true);
 
             // Check "Include a topic section" setting from numsections.
-            this.section = config.numsections ? sections.find((section) => section.section === 1) : undefined;
+            this.section = config.numsections ? sections.find((section) => section.section == 1) : undefined;
             if (this.section) {
                 const result = await CoreCourseHelper.addHandlerDataForModules(
                     [this.section],

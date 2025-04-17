@@ -22,7 +22,6 @@ import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
 import { CoreError } from '@classes/errors/error';
 import { SafeNumber } from '@/core/utils/types';
 import { CoreGradeType } from '../constants';
-import { CoreTextFormat } from '@singletons/text';
 
 /**
  * Service to provide grade functionalities.
@@ -30,26 +29,18 @@ import { CoreTextFormat } from '@singletons/text';
 @Injectable({ providedIn: 'root' })
 export class CoreGradesProvider {
 
-    /**
-     * @deprecated since 5.0. Use CoreGradeType.NONE instead.
-     */
     static readonly TYPE_NONE = CoreGradeType.NONE;
-    /**
-     * @deprecated since 5.0. Use CoreGradeType.VALUE instead.
-     */
     static readonly TYPE_VALUE = CoreGradeType.VALUE;
-    /**
-     * @deprecated since 5.0. Use CoreGradeType.SCALE instead.
-     */
     static readonly TYPE_SCALE = CoreGradeType.SCALE;
-    /**
-     * @deprecated since 5.0. Use CoreGradeType.TEXT instead.
-     */
     static readonly TYPE_TEXT = CoreGradeType.TEXT;
 
     protected static readonly ROOT_CACHE_KEY = 'mmGrades:';
 
-    protected logger = CoreLogger.getInstance('CoreGradesProvider');
+    protected logger: CoreLogger;
+
+    constructor() {
+        this.logger = CoreLogger.getInstance('CoreGradesProvider');
+    }
 
     /**
      * Get cache key for grade table data WS calls.
@@ -73,7 +64,7 @@ export class CoreGradesProvider {
     protected getCourseGradesItemsCacheKey(courseId: number, userId: number, groupId?: number): string {
         groupId = groupId ?? 0;
 
-        return `${this.getCourseGradesPrefixCacheKey(courseId) + userId  }:${groupId}`;
+        return this.getCourseGradesPrefixCacheKey(courseId) + userId + ':' + groupId;
     }
 
     /**
@@ -83,7 +74,7 @@ export class CoreGradesProvider {
      * @returns Cache key.
      */
     protected getCourseGradesPrefixCacheKey(courseId: number): string {
-        return `${CoreGradesProvider.ROOT_CACHE_KEY}items:${courseId}:`;
+        return CoreGradesProvider.ROOT_CACHE_KEY + 'items:' + courseId + ':';
     }
 
     /**
@@ -93,7 +84,7 @@ export class CoreGradesProvider {
      * @returns Cache key.
      */
     protected getCourseGradesPermissionsCacheKey(courseId: number): string {
-        return `${this.getCourseGradesPrefixCacheKey(courseId)}:canviewallgrades`;
+        return this.getCourseGradesPrefixCacheKey(courseId) + ':canviewallgrades';
     }
 
     /**
@@ -102,7 +93,7 @@ export class CoreGradesProvider {
      * @returns Cache key.
      */
     protected getCoursesGradesCacheKey(): string {
-        return `${CoreGradesProvider.ROOT_CACHE_KEY}coursesgrades`;
+        return CoreGradesProvider.ROOT_CACHE_KEY + 'coursesgrades';
     }
 
     /**
@@ -259,6 +250,7 @@ export class CoreGradesProvider {
      *
      * @param courseId ID of the course to get the grades from.
      * @param siteId Site ID (empty for current site).
+     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateAllCourseGradesData(courseId: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -272,6 +264,7 @@ export class CoreGradesProvider {
      * @param courseId Course ID.
      * @param userId User ID.
      * @param siteId Site id (empty for current site).
+     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateCourseGradesData(courseId: number, userId?: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -284,6 +277,7 @@ export class CoreGradesProvider {
      * Invalidates courses grade data WS calls.
      *
      * @param siteId Site id (empty for current site).
+     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateCoursesGradesData(siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -298,6 +292,7 @@ export class CoreGradesProvider {
      * @param userId ID of the user to get the grades from.
      * @param groupId ID of the group to get the grades from. Default: 0.
      * @param siteId Site id (empty for current site).
+     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateCourseGradesItemsData(courseId: number, userId: number, groupId?: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -530,7 +525,7 @@ export type CoreGradesGradeItem = {
     numusers?: number; // Num users in course.
     averageformatted?: string; // Grade average.
     feedback?: string; // Grade feedback.
-    feedbackformat?: CoreTextFormat; // Feedback format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
+    feedbackformat?: number; // Feedback format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
 };
 
 /**

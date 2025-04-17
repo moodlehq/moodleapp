@@ -45,7 +45,7 @@ export class CoreSharedFilesSettingsHandlerService implements CoreSettingsHandle
         return {
             icon: 'fas-folder',
             title: 'core.sharedfiles.sharedfiles',
-            page: `${SHAREDFILES_PAGE_NAME}/list/root`,
+            page: SHAREDFILES_PAGE_NAME + '/list/root',
             params: { manage: true, hideSitePicker: true },
             class: 'core-sharedfiles-settings-handler',
         };

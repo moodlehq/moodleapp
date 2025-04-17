@@ -83,9 +83,9 @@ export class CoreUserTagAreaHandlerService implements CoreTagAreaHandler {
      * @inheritdoc
      */
     async getComponent(): Promise<Type<unknown>> {
-        const { CoreUserTagAreaComponent } = await import('../../components/tag-area/tag-area');
+        const { CoreTagFeedComponent } = await import('@features/tag/components/feed/feed');
 
-        return CoreUserTagAreaComponent;
+        return CoreTagFeedComponent;
     }
 
 }

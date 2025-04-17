@@ -22,7 +22,7 @@ import { CoreCourseModulePrefetchDelegate } from '@features/course/services/modu
 import { CoreNetwork } from '@services/network';
 import { CoreFileHelper } from '@services/file-helper';
 import { CoreSites } from '@services/sites';
-import { CoreMimetype } from '@singletons/mimetype';
+import { CoreMimetypeUtils } from '@services/utils/mimetype';
 import { CoreText } from '@singletons/text';
 import { NgZone, Translate } from '@singletons';
 import { Subscription } from 'rxjs';
@@ -32,7 +32,7 @@ import {
 } from '../../services/resource';
 import { AddonModResourceHelper } from '../../services/resource-helper';
 import { CorePlatform } from '@services/platform';
-import { ADDON_MOD_RESOURCE_COMPONENT_LEGACY } from '../../constants';
+import { ADDON_MOD_RESOURCE_COMPONENT } from '../../constants';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { OpenFileAction } from '@singletons/opener';
 import { CoreAlerts } from '@services/overlays/alerts';
@@ -56,7 +56,7 @@ import { CoreSharedModule } from '@/core/shared.module';
 })
 export class AddonModResourceIndexComponent extends CoreCourseModuleMainResourceComponent implements OnInit, OnDestroy {
 
-    component = ADDON_MOD_RESOURCE_COMPONENT_LEGACY;
+    component = ADDON_MOD_RESOURCE_COMPONENT;
     pluginName = 'resource';
 
     mode = '';
@@ -185,15 +185,15 @@ export class AddonModResourceIndexComponent extends CoreCourseModuleMainResource
                 this.readableSize = CoreText.bytesToSize(this.module.contentsinfo.filessize, 1);
                 this.timemodified = this.module.contentsinfo.lastmodified * 1000;
             } else {
-                mimetype = await CoreMimetype.getMimeTypeFromUrl(CoreFileHelper.getFileUrl(contents[0]));
+                mimetype = await CoreMimetypeUtils.getMimeTypeFromUrl(CoreFileHelper.getFileUrl(contents[0]));
                 this.readableSize = CoreText.bytesToSize(contents[0].filesize, 1);
                 this.timemodified = contents[0].timemodified * 1000;
             }
 
             this.timecreated = contents[0].timecreated * 1000;
             this.isExternalFile = !!contents[0].isexternalfile;
-            this.type = CoreMimetype.getMimetypeDescription(mimetype);
-            this.isStreamedFile = CoreMimetype.isStreamedMimetype(mimetype);
+            this.type = CoreMimetypeUtils.getMimetypeDescription(mimetype);
+            this.isStreamedFile = CoreMimetypeUtils.isStreamedMimetype(mimetype);
         }
     }
 

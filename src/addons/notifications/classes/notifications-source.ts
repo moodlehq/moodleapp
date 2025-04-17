@@ -16,9 +16,9 @@ import {
     AddonNotifications,
     AddonNotificationsGetReadType,
     AddonNotificationsNotificationMessageFormatted,
+    AddonNotificationsProvider,
 } from '@addons/notifications/services/notifications';
 import { CoreRoutedItemsManagerSource } from '@classes/items-management/routed-items-manager-source';
-import { ADDONS_NOTIFICATIONS_LIST_LIMIT } from '../constants';
 
 /**
  * Provides a list of notifications.
@@ -107,7 +107,7 @@ export class AddonNotificationsNotificationsSource
      * @inheritdoc
      */
     protected getPageLength(): number {
-        return ADDONS_NOTIFICATIONS_LIST_LIMIT;
+        return AddonNotificationsProvider.LIST_LIMIT;
     }
 
 }

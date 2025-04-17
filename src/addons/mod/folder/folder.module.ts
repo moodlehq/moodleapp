@@ -29,7 +29,7 @@ import { ADDON_MOD_FOLDER_PAGE_NAME } from './constants';
 const routes: Routes = [
     {
         path: ADDON_MOD_FOLDER_PAGE_NAME,
-        loadChildren: () => [
+        children: [
             {
                 path: ':courseId/:cmId/:hash',
                 loadComponent: () => import('./pages/index/index'),

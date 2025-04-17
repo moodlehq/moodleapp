@@ -33,7 +33,7 @@ import { AddonModQuizPrefetchHandler } from './services/handlers/prefetch';
 import { AddonModQuizPushClickHandler } from './services/handlers/push-click';
 import { AddonModQuizReviewLinkHandler } from './services/handlers/review-link';
 import { AddonModQuizSyncCronHandler } from './services/handlers/sync-cron';
-import { ADDON_MOD_QUIZ_COMPONENT_LEGACY, ADDON_MOD_QUIZ_PAGE_NAME } from './constants';
+import { ADDON_MOD_QUIZ_COMPONENT, ADDON_MOD_QUIZ_PAGE_NAME } from './constants';
 import { canLeaveGuard } from '@guards/can-leave';
 
 /**
@@ -60,7 +60,7 @@ export async function getModQuizServices(): Promise<Type<unknown>[]> {
 const routes: Routes = [
     {
         path: ADDON_MOD_QUIZ_PAGE_NAME,
-        loadChildren: () => [
+        children: [
             {
                 path: ':courseId/:cmId',
                 loadComponent: () => import('./pages/index/index'),
@@ -102,7 +102,7 @@ const routes: Routes = [
                 CorePushNotificationsDelegate.registerClickHandler(AddonModQuizPushClickHandler.instance);
                 CoreCronDelegate.register(AddonModQuizSyncCronHandler.instance);
 
-                CoreCourseHelper.registerModuleReminderClick(ADDON_MOD_QUIZ_COMPONENT_LEGACY);
+                CoreCourseHelper.registerModuleReminderClick(ADDON_MOD_QUIZ_COMPONENT);
             },
         },
     ],

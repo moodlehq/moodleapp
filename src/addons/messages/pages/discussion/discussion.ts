@@ -31,7 +31,7 @@ import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreLogger } from '@singletons/logger';
 import { CoreInfiniteLoadingComponent } from '@components/infinite-loading/infinite-loading';
 import { Md5 } from 'ts-md5/dist/md5';
-import dayjs from 'dayjs';
+import moment from 'moment-timezone';
 import { CoreError } from '@classes/errors/error';
 import { Translate } from '@singletons';
 import { CoreNavigator } from '@services/navigator';
@@ -649,7 +649,7 @@ export default class AddonMessagesDiscussionPage implements OnInit, OnDestroy, A
 
         pagesToLoad--;
 
-        // Treat members. Don't use CoreArray.toObject because we don't want to override the existing object.
+        // Treat members. Don't use CoreUtilsProvider.arrayToObject because we don't want to override the existing object.
         if (result.members) {
             result.members.forEach((member) => {
                 this.members[member.id] = member;
@@ -1215,7 +1215,7 @@ export default class AddonMessagesDiscussionPage implements OnInit, OnDestroy, A
         }
 
         // Check if day has changed.
-        return !dayjs.tz(message.timecreated).isSame(prevMessage.timecreated, 'day');
+        return !moment(message.timecreated).isSame(prevMessage.timecreated, 'day');
     }
 
     /**

@@ -14,7 +14,6 @@
 
 export const MAIN_MENU_NUM_MAIN_HANDLERS = 4;
 export const MAIN_MENU_ITEM_MIN_WIDTH = 72; // Min with of every item, based on 5 items on a 360 pixel wide screen.
-export const MAIN_MENU_HOME_PAGE_NAME = 'home';
 export const MAIN_MENU_MORE_PAGE_NAME = 'more';
 
 export const MAIN_MENU_HANDLER_BADGE_UPDATED_EVENT = 'main_menu_handler_badge_updated';

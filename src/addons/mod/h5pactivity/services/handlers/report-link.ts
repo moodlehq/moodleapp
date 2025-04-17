@@ -22,11 +22,7 @@ import { CoreSites, CoreSitesReadingStrategy } from '@services/sites';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { makeSingleton } from '@singletons';
 import { AddonModH5PActivity } from '../h5pactivity';
-import {
-    ADDON_MOD_H5PACTIVITY_FEATURE_NAME,
-    ADDON_MOD_H5PACTIVITY_MODNAME,
-    ADDON_MOD_H5PACTIVITY_PAGE_NAME,
-} from '../../constants';
+import { ADDON_MOD_H5PACTIVITY_PAGE_NAME } from '../../constants';
 import { CoreLoadings } from '@services/overlays/loadings';
 import { CoreAlerts } from '@services/overlays/alerts';
 
@@ -37,7 +33,7 @@ import { CoreAlerts } from '@services/overlays/alerts';
 export class AddonModH5PActivityReportLinkHandlerService extends CoreContentLinksHandlerBase {
 
     name = 'AddonModH5PActivityReportLinkHandler';
-    featureName = ADDON_MOD_H5PACTIVITY_FEATURE_NAME;
+    featureName = 'CoreCourseModuleDelegate_AddonModH5PActivity';
     pattern = /\/mod\/h5pactivity\/report\.php.*([&?]a=\d+)/;
 
     /**
@@ -57,7 +53,7 @@ export class AddonModH5PActivityReportLinkHandlerService extends CoreContentLink
 
                     const module = await CoreCourse.getModuleBasicInfoByInstance(
                         instanceId,
-                        ADDON_MOD_H5PACTIVITY_MODNAME,
+                        'h5pactivity',
                         { siteId, readingStrategy: CoreSitesReadingStrategy.PREFER_CACHE },
                     );
 
@@ -93,7 +89,7 @@ export class AddonModH5PActivityReportLinkHandlerService extends CoreContentLink
      * @param siteId Site ID.
      */
     protected async openAttemptResults(cmId: number, attemptId: number, courseId: number, siteId: string): Promise<void> {
-        const path = `${ADDON_MOD_H5PACTIVITY_PAGE_NAME}/${courseId}/${cmId}/attemptresults/${attemptId}`;
+        const path = ADDON_MOD_H5PACTIVITY_PAGE_NAME + `/${courseId}/${cmId}/attemptresults/${attemptId}`;
 
         await CoreNavigator.navigateToSitePath(path, {
             siteId,
@@ -108,6 +104,7 @@ export class AddonModH5PActivityReportLinkHandlerService extends CoreContentLink
      * @param id Instance ID.
      * @param siteId Site ID.
      * @param userId User ID. If not defined, current user in site.
+     * @returns Promise resolved when done.
      */
     protected async openUserAttempts(cmId: number, courseId: number, id: number, siteId: string, userId?: number): Promise<void> {
         let canViewAllAttempts = false;

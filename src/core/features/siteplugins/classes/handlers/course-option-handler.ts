@@ -99,8 +99,6 @@ export class CoreSitePluginsCourseOptionHandler extends CoreSitePluginsBaseHandl
                 args,
                 initResult: this.initResult,
                 ptrEnabled: this.handlerSchema.ptrenabled,
-                contextLevel: 'course',
-                contextInstanceId: course.id,
             },
         };
     }

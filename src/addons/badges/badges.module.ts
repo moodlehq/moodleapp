@@ -59,7 +59,7 @@ const tabletRoutes: Routes = [
     {
         path: '',
         loadComponent: () => import('./pages/user-badges/user-badges'),
-        loadChildren: () => [
+        children: [
             {
                 path: ':badgeHash',
                 loadComponent: () => import('./pages/issued-badge/issued-badge'),
@@ -82,7 +82,7 @@ const mainMenuRoutes: Routes = [
     },
     {
         path: 'badges',
-        loadChildren: () => routes,
+        children: routes,
     },
     {
         path: 'badgeclass/:badgeId',

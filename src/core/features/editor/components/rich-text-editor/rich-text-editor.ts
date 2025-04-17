@@ -31,6 +31,7 @@ import { Subscription } from 'rxjs';
 
 import { CoreSites } from '@services/sites';
 import { CoreFilepool } from '@services/filepool';
+import { CoreDomUtils } from '@services/utils/dom';
 import { CoreUrl } from '@singletons/url';
 import { CoreUtils } from '@singletons/utils';
 import { CoreEventFormActionData, CoreEventObserver, CoreEvents } from '@singletons/events';
@@ -49,7 +50,6 @@ import { CoreWait } from '@singletons/wait';
 import { toBoolean } from '@/core/transforms/boolean';
 import { CoreQRScan } from '@services/qrscan';
 import { CoreSharedModule } from '@/core/shared.module';
-import { CoreSettingsHelper } from '@features/settings/services/settings-helper';
 
 /**
  * Component to display a rich text editor if enabled.
@@ -182,7 +182,7 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterViewInit,
     ) {
         this.contentChanged = new EventEmitter<string>();
         this.element = elementRef.nativeElement;
-        this.pageInstance = `app_${Date.now()}`; // Generate a "unique" ID based on timestamp.
+        this.pageInstance = 'app_' + Date.now(); // Generate a "unique" ID based on timestamp.
     }
 
     /**
@@ -198,7 +198,7 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterViewInit,
      * @inheritdoc
      */
     async ngAfterViewInit(): Promise<void> {
-        this.rteEnabled = await CoreSettingsHelper.isRichTextEditorEnabled();
+        this.rteEnabled = await CoreDomUtils.isRichTextEditorEnabled();
 
         await this.waitLoadingsDone();
 
@@ -220,7 +220,7 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterViewInit,
 
         if (this.elementId) {
             // Prepend elementId with 'id_' like in web. Don't use a setter for this because the value shouldn't change.
-            this.elementId = `id_${this.elementId}`;
+            this.elementId = 'id_' + this.elementId;
             this.element.setAttribute('id', this.elementId);
         }
 
@@ -271,7 +271,7 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterViewInit,
 
         // Usually the label won't have an id, so we need to add one.
         if (!label.getAttribute('id')) {
-            label.setAttribute('id', `rte-${CoreUtils.getUniqueId('CoreEditorRichTextEditor')}`);
+            label.setAttribute('id', 'rte-'+CoreUtils.getUniqueId('CoreEditorRichTextEditor'));
         }
 
         updateArialabelledBy();
@@ -348,7 +348,7 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterViewInit,
         const newHeight = blankHeight + this.element.getBoundingClientRect().height;
 
         if (newHeight > this.minHeight) {
-            this.element.style.setProperty('--core-rte-height', `${newHeight - 1}px`);
+            this.element.style.setProperty('--core-rte-height', (newHeight - 1)  + 'px');
         } else {
             this.element.style.removeProperty('--core-rte-height');
         }
@@ -381,7 +381,7 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterViewInit,
         await CoreWait.nextTicks(5); // Ensure content is completely loaded in the DOM.
 
         let content: Element | null = this.element.closest('ion-content');
-        const contentHeight = await CoreDom.getContentHeight(this.content);
+        const contentHeight = await CoreDomUtils.getContentHeight(this.content);
 
         // Get first children with content, not fixed.
         let scrollContentHeight = 0;
@@ -651,7 +651,7 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterViewInit,
     protected executeCommand({ name: command, parameters }: EditorCommand): void {
         if (parameters === 'block') {
             // eslint-disable-next-line deprecation/deprecation
-            document.execCommand('formatBlock', false, `<${command}>`);
+            document.execCommand('formatBlock', false, '<' + command + '>');
 
             return;
         }

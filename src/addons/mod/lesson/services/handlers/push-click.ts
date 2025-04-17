@@ -21,7 +21,6 @@ import { CorePushNotificationsClickHandler } from '@features/pushnotifications/s
 import { CorePushNotificationsNotificationBasicData } from '@features/pushnotifications/services/pushnotifications';
 import { CoreUtils } from '@singletons/utils';
 import { makeSingleton } from '@singletons';
-import { ADDON_MOD_LESSON_FEATURE_NAME } from '../../constants';
 
 /**
  * Handler for lesson push notifications clicks.
@@ -31,7 +30,7 @@ export class AddonModLessonPushClickHandlerService implements CorePushNotificati
 
     name = 'AddonModLessonPushClickHandler';
     priority = 200;
-    featureName = ADDON_MOD_LESSON_FEATURE_NAME;
+    featureName = 'CoreCourseModuleDelegate_AddonModLesson';
 
     /**
      * Check if a notification click is handled by this handler.

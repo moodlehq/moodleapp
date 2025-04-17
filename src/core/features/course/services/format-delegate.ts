@@ -142,6 +142,7 @@ export interface CoreCourseFormatHandler extends CoreDelegateHandler {
      *
      * @param course The course to get the title.
      * @param sections List of sections.
+     * @returns Promise resolved when the data is invalidated.
      */
     invalidateData?(course: CoreCourseAnyCourseData, sections: CoreCourseWSSection[]): Promise<void>;
 
@@ -327,6 +328,7 @@ export class CoreCourseFormatDelegateService extends CoreDelegate<CoreCourseForm
      *
      * @param course The course to get the title.
      * @param sections List of sections.
+     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateData(course: CoreCourseAnyCourseData, sections: CoreCourseWSSection[]): Promise<void> {
         await this.executeFunctionOnEnabled(course.format || '', 'invalidateData', [course, sections]);

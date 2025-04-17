@@ -24,8 +24,8 @@ import { IonContent } from '@ionic/angular';
 import { CoreGroupInfo, CoreGroups } from '@services/groups';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSites } from '@services/sites';
-import { CoreDom } from '@singletons/dom';
-import { CoreTime } from '@singletons/time';
+import { CoreDomUtils } from '@services/utils/dom';
+import { CoreTimeUtils } from '@services/utils/time';
 import { CoreArray } from '@singletons/array';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import {
@@ -41,9 +41,10 @@ import { AddonModDataAutoSyncData, AddonModDataSyncResult } from '../../services
 import { AddonModDataPrefetchHandler } from '../../services/handlers/prefetch-lazy';
 
 import { CoreUrl } from '@singletons/url';
+import { CoreTime } from '@singletons/time';
 import {
     ADDON_MOD_DATA_AUTO_SYNCED,
-    ADDON_MOD_DATA_COMPONENT_LEGACY,
+    ADDON_MOD_DATA_COMPONENT,
     ADDON_MOD_DATA_ENTRIES_PER_PAGE,
     ADDON_MOD_DATA_ENTRY_CHANGED,
     ADDON_MOD_DATA_PAGE_NAME,
@@ -79,7 +80,7 @@ const contentToken = '<!-- CORE-DATABASE-CONTENT-GOES-HERE -->';
 })
 export class AddonModDataIndexComponent extends CoreCourseModuleMainActivityComponent implements OnInit, OnDestroy {
 
-    component = ADDON_MOD_DATA_COMPONENT_LEGACY;
+    component = ADDON_MOD_DATA_COMPONENT;
     pluginName = 'data';
 
     access?: AddonModDataGetDataAccessInformationWSResponse;
@@ -257,19 +258,19 @@ export class AddonModDataIndexComponent extends CoreCourseModuleMainActivityComp
         });
 
         if (!this.access.timeavailable) {
-            const time = CoreTime.timestamp();
+            const time = CoreTimeUtils.timestamp();
 
             this.timeAvailableFrom = this.database.timeavailablefrom && time < this.database.timeavailablefrom
                 ? this.database.timeavailablefrom * 1000
                 : undefined;
             this.timeAvailableFromReadable = this.timeAvailableFrom
-                ? CoreTime.userDate(this.timeAvailableFrom)
+                ? CoreTimeUtils.userDate(this.timeAvailableFrom)
                 : undefined;
             this.timeAvailableTo = this.database.timeavailableto && time > this.database.timeavailableto
                 ? this.database.timeavailableto * 1000
                 : undefined;
             this.timeAvailableToReadable = this.timeAvailableTo
-                ? CoreTime.userDate(this.timeAvailableTo)
+                ? CoreTimeUtils.userDate(this.timeAvailableTo)
                 : undefined;
 
             this.isEmpty = true;
@@ -358,7 +359,7 @@ export class AddonModDataIndexComponent extends CoreCourseModuleMainActivityComp
                 this.fieldsArray,
             );
 
-            headerAndFooter = CoreDom.fixHtml(headerAndFooter);
+            headerAndFooter = CoreDomUtils.fixHtml(headerAndFooter);
 
             // Get first entry from the whole list.
             if (!this.search.searching || !this.firstEntry) {

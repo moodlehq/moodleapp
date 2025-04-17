@@ -47,7 +47,7 @@ import { CoreError } from '@classes/errors/error';
 import { Translate } from '@singletons';
 import {
     ADDON_MOD_LESSON_AUTO_SYNCED,
-    ADDON_MOD_LESSON_COMPONENT_LEGACY,
+    ADDON_MOD_LESSON_COMPONENT,
     ADDON_MOD_LESSON_DATA_SENT_EVENT,
     ADDON_MOD_LESSON_PAGE_NAME,
 } from '../../constants';
@@ -77,7 +77,7 @@ export class AddonModLessonIndexComponent extends CoreCourseModuleMainActivityCo
     @Input() group = 0; // The group to display.
     @Input() action?: string; // The "action" to display first.
 
-    component = ADDON_MOD_LESSON_COMPONENT_LEGACY;
+    component = ADDON_MOD_LESSON_COMPONENT;
     pluginName = 'lesson';
 
     lesson?: AddonModLessonLessonWSData; // The lesson.
@@ -681,7 +681,8 @@ export class AddonModLessonIndexComponent extends CoreCourseModuleMainActivityCo
 
         if (!result.updated && this.dataSent && this.isPrefetched()) {
             // The user sent data to server, but not in the sync process. Check if we need to fetch data.
-            await CorePromiseUtils.ignoreErrors(AddonModLessonSync.prefetchModuleAfterUpdate(
+            await CorePromiseUtils.ignoreErrors(AddonModLessonSync.prefetchAfterUpdate(
+                AddonModLessonPrefetchHandler.instance,
                 this.module,
                 this.courseId,
             ));

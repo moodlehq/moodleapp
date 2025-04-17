@@ -15,7 +15,7 @@
 import { Injectable } from '@angular/core';
 import { CoreSites } from '@services/sites';
 import { CoreText } from '@singletons/text';
-import { CoreTime } from '@singletons/time';
+import { CoreTimeUtils } from '@services/utils/time';
 import { makeSingleton } from '@singletons';
 import { AddonModFeedbackResponseDBRecord, FEEDBACK_TABLE_NAME } from './database/feedback';
 import { AddonModFeedbackResponseValue } from './feedback';
@@ -144,7 +144,7 @@ export class AddonModFeedbackOfflineProvider {
             page: page,
             courseid: courseId,
             responses: JSON.stringify(responses),
-            timemodified: CoreTime.timestamp(),
+            timemodified: CoreTimeUtils.timestamp(),
         };
 
         await site.getDb().insertRecord(FEEDBACK_TABLE_NAME, entry);

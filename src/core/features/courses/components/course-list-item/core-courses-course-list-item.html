@@ -2,13 +2,13 @@
     [class.core-course-list-card]="layout === 'card' || layout === 'summarycard'" [class.item-dimmed]="course.hidden" (click)="openCourse()"
     tappable [attr.aria-label]="course.displayname || course.fullname">
 
-    <div *ngIf="layout === 'card' || layout === 'summarycard'" class="core-course-thumb" [class.core-course-color-img]="course.courseimage">
+    <div [class.core-course-color-img]="course.courseimage">
         <img *ngIf="course.courseimage" [url]="course.courseimage" core-external-content alt="" (error)="loadFallbackCourseIcon()" />
-        <ion-icon *ngIf="!course.courseimage" name="fas-graduation-cap" class="course-icon" aria-hidden="true" />
+        <!-- <ion-icon *ngIf="!course.courseimage" name="fas-graduation-cap" class="course-icon" aria-hidden="true" /> -->
     </div>
 
     <ion-item class="ion-text-wrap">
-
+        <!--
         <ng-container *ngIf="layout === 'list' || layout === 'listwithenrol'">
             <ion-icon *ngIf="!course.courseimage" name="fas-graduation-cap" slot="start" class="course-icon core-course-thumb"
                 aria-hidden="true" />
@@ -16,7 +16,7 @@
                 <img [url]="course.courseimage" core-external-content alt="" (error)="loadFallbackCourseIcon()" />
             </ion-avatar>
         </ng-container>
-
+        -->
         <ion-label>
             <div class="core-course-maininfo">
                 <p *ngIf="course.displayname && course.shortname && course.fullname !== course.displayname"
@@ -24,24 +24,28 @@
                     <core-format-text [text]="course.shortname" contextLevel="course" [contextInstanceId]="course.id" />
                 </p>
 
-                <p class="item-heading">
+                <p class="item-heading amep-course-list-course-name">
+                    <!--
                     <ion-icon name="fas-star" *ngIf="course.isfavourite" [attr.aria-label]="'core.courses.favourite' | translate" />
                     <span class="sr-only" *ngIf="course.isfavourite">{{ 'core.courses.aria:favourite' | translate }}</span>
+                    -->
 
                     <span (ariaButtonClick)="openCourse()">
                         <span class="sr-only">{{ 'core.courses.aria:coursename' | translate }}</span>
                         <core-format-text [text]="course.fullname" contextLevel="course" [contextInstanceId]="course.id" />
                     </span>
-
+                    <!--
                     <span *ngIf="(layout === 'list' || layout === 'listwithenrol') && !isEnrolled" class="core-course-enrol-icons">
                         <ion-icon *ngFor="let icon of enrolmentIcons" color="medium" [name]="icon.icon" [title]="icon.label | translate"
                             [attr.aria-label]="icon.label | translate" [ngClass]="[icon.className]" />
                     </span>
+                    -->
 
                     <ion-icon *ngIf="prefetchCourseData.downloadSucceeded" class="core-icon-downloaded" name="fam-cloud-done"
                         color="success" role="status" [attr.aria-label]="'core.downloaded' | translate" />
                 </p>
 
+                <!--
                 <ion-chip color="primary" *ngIf="course.categoryname"
                     class="core-course-category core-course-additional-info ion-text-nowrap">
                     <span class="sr-only">{{ 'core.courses.aria:coursecategory' | translate }}</span>
@@ -50,12 +54,14 @@
                     </ion-label>
                 </ion-chip>
 
+
                 <ion-chip color="info" *ngIf="course.visible === 0"
                     class="core-course-additional-info ion-text-wrap core-course-hidden-message">
                     <ion-label>
                         {{ 'core.course.hiddenfromstudents' | translate }}
                     </ion-label>
                 </ion-chip>
+                -->
             </div>
 
             <div *ngIf="layout !== 'summarycard' && isEnrolled && progress >= 0 && completionUserTracked !== false"

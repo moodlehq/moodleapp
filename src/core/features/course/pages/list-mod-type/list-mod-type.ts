@@ -18,14 +18,13 @@ import { CoreCourse, CoreCourseWSSection, sectionContentIsModule } from '@featur
 import { CoreCourseModuleDelegate } from '@features/course/services/module-delegate';
 import { CoreCourseHelper, CoreCourseSection } from '@features/course/services/course-helper';
 import { CoreNavigator } from '@services/navigator';
+import { CoreConstants } from '@/core/constants';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreTime } from '@singletons/time';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 import { CoreAlerts } from '@services/overlays/alerts';
 import { CoreCourseModuleComponent } from '../../components/module/module';
 import { CoreSharedModule } from '@/core/shared.module';
-import { ModFeature, ModArchetype } from '@addons/mod/constants';
-import { CoreCourseModuleHelper } from '@features/course/services/course-module-helper';
 
 /**
  * Page that displays all modules of a certain type in a course.
@@ -144,7 +143,7 @@ export default class CoreCourseListModTypePage implements OnInit {
                 }
 
                 if (!CoreCourseHelper.canUserViewModule(modOrSubsection, section) ||
-                    !CoreCourseModuleHelper.moduleHasView(modOrSubsection) ||
+                    !CoreCourse.moduleHasView(modOrSubsection) ||
                     modOrSubsection.visibleoncoursepage === 0) {
                     // Ignore this module.
                     return false;
@@ -155,12 +154,12 @@ export default class CoreCourseListModTypePage implements OnInit {
                     if (this.archetypes[modOrSubsection.modname] === undefined) {
                         this.archetypes[modOrSubsection.modname] = CoreCourseModuleDelegate.supportsFeature<number>(
                             modOrSubsection.modname,
-                            ModFeature.MOD_ARCHETYPE,
-                            ModArchetype.OTHER,
+                            CoreConstants.FEATURE_MOD_ARCHETYPE,
+                            CoreConstants.MOD_ARCHETYPE_OTHER,
                         );
                     }
 
-                    if (this.archetypes[modOrSubsection.modname] === ModArchetype.RESOURCE) {
+                    if (this.archetypes[modOrSubsection.modname] === CoreConstants.MOD_ARCHETYPE_RESOURCE) {
                         return true;
                     }
 

@@ -7,9 +7,10 @@
     <ion-refresher slot="fixed" [disabled]="!dataLoaded" (ionRefresh)="doRefresh($event.target)">
         <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}" />
     </ion-refresher>
-    <core-loading [hideUntil]="dataLoaded" placeholderType="column" placeholderHeight="48px">
+    <core-loading [hideUntil]="dataLoaded">
         <ion-list class="list-item-limited-width">
             <!-- Site home main contents. -->
+            <!--
             <section *ngIf="section && section.hasContent" class="core-course-module-list-wrapper">
                 <ion-item-divider class="course-section ion-text-wrap"
                     [class.item-dimmed]="section.visible === 0 || section.uservisible === false">
@@ -49,6 +50,9 @@
                     <core-course-module *ngIf="isModule(modOrSubsection)" [module]="modOrSubsection" [section]="section" />
                 </ng-container>
             </section>
+            -->
+
+
 
             <!-- Site home items: news, categories, courses, etc. -->
             <ng-container *ngIf="items.length > 0">

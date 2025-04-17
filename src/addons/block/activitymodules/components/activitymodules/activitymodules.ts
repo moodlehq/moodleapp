@@ -17,15 +17,13 @@ import { CoreCourse } from '@features/course/services/course';
 import { CoreCourseModuleDelegate } from '@features/course/services/module-delegate';
 import { CoreBlockBaseComponent } from '@features/block/classes/base-block-component';
 import { CoreSites } from '@services/sites';
-import { ContextLevel } from '@/core/constants';
+import { ContextLevel, CoreConstants } from '@/core/constants';
 import { Translate } from '@singletons';
 import { CoreObject } from '@singletons/object';
 import { CoreNavigator } from '@services/navigator';
 import { CoreCourseHelper } from '@features/course/services/course-helper';
 import { CoreUrl } from '@singletons/url';
 import { CoreSharedModule } from '@/core/shared.module';
-import { ModFeature, ModArchetype } from '@addons/mod/constants';
-import { CoreCourseModuleHelper } from '@features/course/services/course-module-helper';
 
 /**
  * Component to render an "activity modules" block.
@@ -74,7 +72,7 @@ export class AddonBlockActivityModulesComponent extends CoreBlockBaseComponent i
 
         const modules = CoreCourse.getSectionsModules(sections, {
             ignoreSection: section => !CoreCourseHelper.canUserViewSection(section),
-            ignoreModule: module => !CoreCourseHelper.canUserViewModule(module) || !CoreCourseModuleHelper.moduleHasView(module),
+            ignoreModule: module => !CoreCourseHelper.canUserViewModule(module) || !CoreCourse.moduleHasView(module),
         });
 
         modules.forEach((mod) => {
@@ -85,12 +83,12 @@ export class AddonBlockActivityModulesComponent extends CoreBlockBaseComponent i
             // Get the archetype of the module type.
             archetypes[mod.modname] = CoreCourseModuleDelegate.supportsFeature<number>(
                 mod.modname,
-                ModFeature.MOD_ARCHETYPE,
-                ModArchetype.OTHER,
+                CoreConstants.FEATURE_MOD_ARCHETYPE,
+                CoreConstants.MOD_ARCHETYPE_OTHER,
             );
 
             // Get the full name of the module type.
-            if (archetypes[mod.modname] === ModArchetype.RESOURCE) {
+            if (archetypes[mod.modname] === CoreConstants.MOD_ARCHETYPE_RESOURCE) {
                 // All resources are gathered in a single "Resources" option.
                 if (!modFullNames['resources']) {
                     modFullNames['resources'] = Translate.instant('core.resources');

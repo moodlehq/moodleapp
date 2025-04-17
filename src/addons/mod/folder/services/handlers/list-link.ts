@@ -15,7 +15,6 @@
 import { Injectable } from '@angular/core';
 import { CoreContentLinksModuleListHandler } from '@features/contentlinks/classes/module-list-handler';
 import { makeSingleton } from '@singletons';
-import { ADDON_MOD_FOLDER_COMPONENT, ADDON_MOD_FOLDER_MODNAME } from '../../constants';
 
 /**
  * Handler to treat links to folder list page.
@@ -26,7 +25,7 @@ export class AddonModFolderListLinkHandlerService extends CoreContentLinksModule
     name = 'AddonModFolderListLinkHandler';
 
     constructor() {
-        super(ADDON_MOD_FOLDER_COMPONENT, ADDON_MOD_FOLDER_MODNAME);
+        super('AddonModFolder', 'folder');
     }
 
 }

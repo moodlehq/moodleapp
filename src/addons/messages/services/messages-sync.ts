@@ -66,9 +66,9 @@ export class AddonMessagesSyncProvider extends CoreSyncBaseProvider<AddonMessage
      */
     protected getSyncId(conversationId?: number, userId?: number): string {
         if (conversationId) {
-            return `conversationid:${conversationId}`;
+            return 'conversationid:' + conversationId;
         } else if (userId) {
-            return `userid:${userId}`;
+            return 'userid:' + userId;
         } else {
             // Should not happen.
             throw new CoreError('Incorrect messages sync id.');
@@ -84,7 +84,7 @@ export class AddonMessagesSyncProvider extends CoreSyncBaseProvider<AddonMessage
      * @returns Promise resolved if sync is successful, rejected if sync fails.
      */
     syncAllDiscussions(siteId?: string, onlyDeviceOffline: boolean = false): Promise<void> {
-        const syncFunctionLog = `all discussions${onlyDeviceOffline ? ' (Only offline)' : ''}`;
+        const syncFunctionLog = 'all discussions' + (onlyDeviceOffline ? ' (Only offline)' : '');
 
         return this.syncOnSites(syncFunctionLog, (siteId) => this.syncAllDiscussionsFunc(onlyDeviceOffline, siteId), siteId);
     }
@@ -227,7 +227,7 @@ export class AddonMessagesSyncProvider extends CoreSyncBaseProvider<AddonMessage
 
             const text = ('text' in message ? message.text : message.smallmessage) || '';
             const textFieldName = conversationId ? 'text' : 'smallmessage';
-            const wrappedText = message[textFieldName][0] != '<' ? `<p>${text}</p>` : text;
+            const wrappedText = message[textFieldName][0] != '<' ? '<p>' + text + '</p>' : text;
 
             try {
                 if (onlineMessages.indexOf(wrappedText) != -1) {

@@ -127,7 +127,7 @@ export class CoreLinkDirective implements OnInit {
             // Look for id or name.
             href = href.substring(1);
             const container = this.element.closest<HTMLIonContentElement>('ion-content');
-            if (container && href.length > 0) {
+            if (container) {
                 CoreDom.scrollToElement(
                     container,
                     `#${href}, [name='${href}']`,

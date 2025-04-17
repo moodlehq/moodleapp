@@ -15,7 +15,7 @@
     <ion-refresher [disabled]="!loaded" (ionRefresh)="refreshData($event.target)" slot="fixed">
         <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}" />
     </ion-refresher>
-    <core-loading [hideUntil]="loaded" placeholderType="column" placeholderHeight="128px" [placeholderLimit]="8">
+    <core-loading [hideUntil]="loaded">
         <ion-list class="limited-width">
             <core-sites-list [accountsList]="accountsList">
                 <ng-template #siteLabel let-site="site">

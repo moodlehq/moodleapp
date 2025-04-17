@@ -35,7 +35,7 @@ import {
 } from '../../services/book';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 import { CoreUrl } from '@singletons/url';
-import { ADDON_MOD_BOOK_COMPONENT, ADDON_MOD_BOOK_MODNAME, AddonModBookNavStyle } from '../../constants';
+import { ADDON_MOD_BOOK_COMPONENT, AddonModBookNavStyle } from '../../constants';
 import { CoreModals } from '@services/overlays/modals';
 import { CoreAlerts } from '@services/overlays/alerts';
 import { CoreTagListComponent } from '@features/tag/components/list/list';
@@ -231,7 +231,7 @@ export default class AddonModBookContentsPage implements OnInit, OnDestroy {
             type: CoreAnalyticsEventType.VIEW_ITEM,
             ws: 'mod_book_view_book',
             name: this.module.name,
-            data: { id: this.module.instance, category: ADDON_MOD_BOOK_MODNAME, chapterid: chapterId },
+            data: { id: this.module.instance, category: 'book', chapterid: chapterId },
             url: CoreUrl.addParamsToUrl(`/mod/book/view.php?id=${this.module.id}`, { chapterid: chapterId }),
         });
 

@@ -18,7 +18,8 @@
         </div>
     </div>
 </ion-item-divider>
-<core-loading [hideUntil]="loaded" placeholderType="column" [placeholderLimit]="8">
+<core-loading [hideUntil]="loaded">
+
     <ion-row class="ion-hide-md-up addon-block-myoverview-filter" *ngIf="hasCourses">
         <ion-col>
             <!-- Filter courses. -->

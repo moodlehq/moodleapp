@@ -21,6 +21,7 @@ import { Clipboard } from '@awesome-cordova-plugins/clipboard/ngx';
 import { Device } from '@awesome-cordova-plugins/device/ngx';
 import { File } from '@awesome-cordova-plugins/file/ngx';
 import { FileOpener } from '@awesome-cordova-plugins/file-opener/ngx';
+import { Geolocation } from '@awesome-cordova-plugins/geolocation/ngx';
 import { HTTP } from '@awesome-cordova-plugins/http/ngx';
 import { InAppBrowser } from '@awesome-cordova-plugins/in-app-browser/ngx';
 import { Keyboard } from '@awesome-cordova-plugins/keyboard/ngx';
@@ -34,7 +35,6 @@ import { StatusBar } from '@awesome-cordova-plugins/status-bar/ngx';
 import { WebIntent } from '@awesome-cordova-plugins/web-intent/ngx';
 import { WebView } from '@awesome-cordova-plugins/ionic-webview/ngx';
 import { Zip } from '@features/native/plugins/zip';
-import { Geolocation } from '@features/emulator/services/geolocation';
 
 /**
  * Get native services.
@@ -50,7 +50,7 @@ export async function getNativeServices(): Promise<Type<unknown>[]> {
         Device,
         File,
         FileOpener,
-        Geolocation, // eslint-disable-line deprecation/deprecation
+        Geolocation,
         HTTP,
         InAppBrowser,
         Keyboard,
@@ -76,7 +76,7 @@ export async function getNativeServices(): Promise<Type<unknown>[]> {
         Device,
         File,
         FileOpener,
-        Geolocation, // eslint-disable-line deprecation/deprecation
+        Geolocation,
         HTTP,
         InAppBrowser,
         Keyboard,

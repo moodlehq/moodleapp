@@ -1,53 +1,42 @@
 @use "theme/globals" as *;
 
 :host {
-
-    ion-card {
-       margin-top: 0;
-    }
-
     .core-warning-item {
         --inner-border-width: 0px;
     }
 
-    .addon-mod_h5pactivity-result-grid {
-        --ion-grid-padding: 0;
-        --ion-grid-column-padding: 8px;
-        font-size: 1rem;
-        ion-row {
-            @include padding-horizontal(8px);
-            &:nth-child(even) {
-                background-color: var(--light);
-            }
+    .addon-mod_h5pactivity-attempt-result-summary {
+        img {
+            width: 16px;
+            height: 16px;
+            display: inline;
+            @include margin-horizontal(0, 4px);
         }
-        ion-col[role=columnheader] {
-            font-weight: bold;
+    }
+
+    .addon-mod_h5pactivity-attempt-result-summary,
+    .addon-mod_h5pactivity-result-table-header,
+    .addon-mod_h5pactivity-result-table-row {
+        ion-icon {
+            font-size: 1.2em;
         }
-        ion-col[role=gridcell] {
-            display: flex;
-            align-items: center;
-            gap: 4px;
-            overflow-wrap: anywhere;
-        }
+    }
+
+    .addon-mod_h5pactivity-result-table-header {
+        font-weight: bold;
+    }
+
+    .addon-mod_h5pactivity-result-table-row.item:nth-child(even) {
+        --background: var(--light);
     }
 
     .addon-mod_h5pactivity-result-score {
-        margin: 16px;
-        font-size: 1rem;
-        font-weight: bold;
-        text-align: end;
+        border-top: 1px solid black;
     }
+}
 
-    ion-item.addon-mod_h5pactivity-result-unsupported {
-        --color-tint: var(--ion-color-warning-tint);
-        --color-shade: var(--ion-color-warning-shade);
-        --background: var(--color-tint);
-        --color: var(--color-shade);
-        border-radius: var(--mdl-shape-borderRadius-xs);
-        @include margin(0, 16px, 16px, 16px);
-        > ion-icon[slot] {
-            color: var(--color-shade);
-            @include margin-horizontal(null, 16px);
-        }
+:host-context(:root.dark) {
+    .addon-mod_h5pactivity-result-table-row.item:nth-child(even) {
+        --background: var(--gray-900);
     }
 }

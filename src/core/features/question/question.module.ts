@@ -35,19 +35,6 @@ export async function getQuestionServices(): Promise<Type<unknown>[]> {
     ];
 }
 
-/**
- * Get directives and components for site plugins.
- *
- * @returns Returns directives and components.
- */
-export async function getQuestionExportedDirectives(): Promise<Type<unknown>[]> {
-    const { CoreQuestionComponent } = await import('@features/question/components/question/question');
-
-    return [
-        CoreQuestionComponent,
-    ];
-}
-
 @NgModule({
     providers: [
         {

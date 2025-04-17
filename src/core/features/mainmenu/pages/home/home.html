@@ -1,3 +1,4 @@
+<!--
 <ion-header>
     <ion-toolbar>
         <ion-buttons slot="start">
@@ -17,3 +18,21 @@
     <core-empty-box *ngIf="tabs.length === 0" icon="fas-house" [message]="'core.courses.nocourses' | translate" />
 </core-loading>
 <core-tabs-outlet *ngIf="tabs.length > 0" [hideUntil]="loaded" [tabs]="tabs" (ionChange)="tabSelected()" />
+-->
+<!--
+<ion-header class="amep-nav-bg">
+    <div class="dfa-logo"></div>
+    <div class="amep-phase-banner"></div>
+</ion-header>
+<core-loading [hideUntil]="loaded">
+    <core-empty-box *ngIf="tabs.length === 0" icon="fas-house" [message]="'core.courses.nocourses' | translate" />
+</core-loading>
+-->
+<!-- page-core-courses-categories / -->
+<page-core-courses-categories  class="amep-home"></page-core-courses-categories>
+
+<!--
+<core-tabs-outlet *ngIf="tabs.length > 0" [hideUntil]="loaded" [tabs]="tabs" (ionChange)="tabSelected()" />
+-->
+
+<h1> This is the tab container!</h1>

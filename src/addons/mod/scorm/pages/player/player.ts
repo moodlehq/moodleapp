@@ -17,7 +17,7 @@ import { CoreNavigationBarItem } from '@components/navigation-bar/navigation-bar
 import { CoreNavigator } from '@services/navigator';
 import { CoreSites, CoreSitesReadingStrategy } from '@services/sites';
 import { CoreSync } from '@services/sync';
-import { CoreTime } from '@singletons/time';
+import { CoreTimeUtils } from '@services/utils/time';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { AddonModScormDataModel12 } from '../../classes/data-model-12';
@@ -33,12 +33,12 @@ import { AddonModScormHelper, AddonModScormTOCScoWithIcon } from '../../services
 import { AddonModScormSync } from '../../services/scorm-sync';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 import {
+    ADDON_MOD_SCORM_COMPONENT,
     AddonModScormMode,
     ADDON_MOD_SCORM_GO_OFFLINE_EVENT,
     ADDON_MOD_SCORM_LAUNCH_NEXT_SCO_EVENT,
     ADDON_MOD_SCORM_LAUNCH_PREV_SCO_EVENT,
     ADDON_MOD_SCORM_UPDATE_TOC_EVENT,
-    ADDON_MOD_SCORM_COMPONENT,
 } from '../../constants';
 import { CoreWait } from '@singletons/wait';
 import { CoreModals } from '@services/overlays/modals';
@@ -559,7 +559,7 @@ export default class AddonModScormPlayerPage implements OnInit, OnDestroy {
 
         const tracks = [{
             element: 'x.start.time',
-            value: String(CoreTime.timestamp()),
+            value: String(CoreTimeUtils.timestamp()),
         }];
 
         await AddonModScorm.saveTracks(scoId, this.attempt, tracks, this.scorm, this.offline);

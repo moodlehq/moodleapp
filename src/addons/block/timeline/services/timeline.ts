@@ -17,7 +17,7 @@ import { CoreSites } from '@services/sites';
 import {
     AddonCalendarEvent,
 } from '@addons/calendar/services/calendar';
-import dayjs from 'dayjs';
+import moment from 'moment-timezone';
 import { makeSingleton } from '@singletons';
 import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
 
@@ -86,7 +86,7 @@ export class AddonBlockTimelineProvider {
      * @returns Cache key.
      */
     protected getActionEventsByCourseCacheKey(courseId: number): string {
-        return `${this.getActionEventsByCoursesCacheKey()}:${courseId}`;
+        return this.getActionEventsByCoursesCacheKey() + ':' + courseId;
     }
 
     /**
@@ -145,7 +145,7 @@ export class AddonBlockTimelineProvider {
      * @returns Cache key.
      */
     protected getActionEventsByCoursesCacheKey(): string {
-        return `${AddonBlockTimelineProvider.ROOT_CACHE_KEY}bycourse`;
+        return AddonBlockTimelineProvider.ROOT_CACHE_KEY + 'bycourse';
     }
 
     /**
@@ -184,7 +184,7 @@ export class AddonBlockTimelineProvider {
         if (searchValue != '') {
             data.searchvalue = searchValue;
             preSets.getFromCache = false;
-            preSets.cacheKey += `:${searchValue}`;
+            preSets.cacheKey += ':' + searchValue;
         }
 
         const result = await site.read<AddonBlockTimelineGetActionEventsByTimesortWSResponse>(
@@ -210,7 +210,7 @@ export class AddonBlockTimelineProvider {
      * @returns Cache key.
      */
     protected getActionEventsByTimesortPrefixCacheKey(): string {
-        return `${AddonBlockTimelineProvider.ROOT_CACHE_KEY}bytimesort:`;
+        return AddonBlockTimelineProvider.ROOT_CACHE_KEY + 'bytimesort:';
     }
 
     /**
@@ -224,13 +224,14 @@ export class AddonBlockTimelineProvider {
         afterEventId = afterEventId || 0;
         limit = limit || 0;
 
-        return `${this.getActionEventsByTimesortPrefixCacheKey() + afterEventId  }:${limit}`;
+        return this.getActionEventsByTimesortPrefixCacheKey() + afterEventId + ':' + limit;
     }
 
     /**
      * Invalidates get calendar action events for a given list of courses WS call.
      *
      * @param siteId Site ID to invalidate. If not defined, use current site.
+     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateActionEventsByCourses(siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -242,6 +243,7 @@ export class AddonBlockTimelineProvider {
      * Invalidates get calendar action events based on the timesort value WS call.
      *
      * @param siteId Site ID to invalidate. If not defined, use current site.
+     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateActionEventsByTimesort(siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -280,7 +282,7 @@ export class AddonBlockTimelineProvider {
      * @returns timestamp.
      */
     getDayStart(daysOffset = 0): number {
-        return dayjs.tz().startOf('day').add(daysOffset, 'days').unix();
+        return moment().startOf('day').add(daysOffset, 'days').unix();
     }
 
 }

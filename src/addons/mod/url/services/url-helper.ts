@@ -14,7 +14,7 @@
 
 import { Injectable } from '@angular/core';
 import { CoreLoadings } from '@services/overlays/loadings';
-import { CoreContentLinksHelper } from '@features/contentlinks/services/contentlinks-helper';
+import { CoreSites } from '@services/sites';
 import { makeSingleton } from '@singletons';
 
 /**
@@ -32,7 +32,7 @@ export class AddonModUrlHelperProvider {
         const modal = await CoreLoadings.show();
 
         try {
-            await CoreContentLinksHelper.visitLink(url, {
+            await CoreSites.visitLink(url, {
                 checkRoot: true,
                 openBrowserRoot: true,
             });

@@ -24,7 +24,7 @@ import { AddonModAssignHelper, AddonModAssignPluginConfig } from '../../services
 import { AddonModAssignSubmissionDelegate } from '../../services/submission-delegate';
 import { CoreFileEntry } from '@services/file-helper';
 import type { AddonModAssignSubmissionPluginBaseComponent } from '@addons/mod/assign/classes/base-submission-plugin-component';
-import { ADDON_MOD_ASSIGN_COMPONENT_LEGACY } from '../../constants';
+import { ADDON_MOD_ASSIGN_COMPONENT } from '../../constants';
 import { toBoolean } from '@/core/transforms/boolean';
 import { CoreSharedModule } from '@/core/shared.module';
 
@@ -53,7 +53,7 @@ export class AddonModAssignSubmissionPluginComponent implements OnChanges {
     data?: AddonModAssignSubmissionPluginData; // Data to pass to the component.
 
     // Data to render the plugin if it isn't supported.
-    component = ADDON_MOD_ASSIGN_COMPONENT_LEGACY;
+    component = ADDON_MOD_ASSIGN_COMPONENT;
     text = '';
     files: CoreFileEntry[] = [];
     notSupported = false;

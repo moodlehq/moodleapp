@@ -28,8 +28,7 @@
                     [attr.aria-current]="selectedTitle === page.title ? 'page' : 'false'" button [detail]="false">
                     <ion-icon name="fas-house" slot="start" *ngIf="page.firstpage" aria-hidden="true" />
                     <ion-label>
-                        <core-format-text [text]="page.title" contextLevel="module" [contextInstanceId]="moduleId" [courseId]="courseId"
-                            [sanitize]="!page.id" />
+                        <core-format-text [text]="page.title" contextLevel="module" [contextInstanceId]="moduleId" [courseId]="courseId" />
                     </ion-label>
                     <ion-note *ngIf="!page.id" slot="end">
                         <ion-icon name="fas-clock" aria-hidden="true" />

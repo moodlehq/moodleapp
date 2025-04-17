@@ -30,7 +30,6 @@ import { CoreErrorHelper, CoreErrorObject } from './error-helper';
 import { CoreUrl } from '@singletons/url';
 import { CoreLoadings } from './overlays/loadings';
 import { CoreAlerts } from './overlays/alerts';
-import { CorePlatform } from './platform';
 
 /*
  * Provider to handle custom URL schemes.
@@ -262,7 +261,7 @@ export class CoreCustomURLSchemesProvider {
         }
 
         // App opened using custom URL scheme.
-        this.logger.debug(`Treating custom URL scheme: ${url}`);
+        this.logger.debug('Treating custom URL scheme: ' + url);
 
         // Delete the sso scheme from the URL.
         url = this.removeCustomURLScheme(url);
@@ -270,7 +269,7 @@ export class CoreCustomURLSchemesProvider {
         // Detect if there's a user specified.
         const username = CoreUrl.getUsernameFromUrl(url);
         if (username) {
-            url = url.replace(`${username}@`, ''); // Remove the username from the URL.
+            url = url.replace(username + '@', ''); // Remove the username from the URL.
         }
 
         // Get the params of the URL.
@@ -315,7 +314,7 @@ export class CoreCustomURLSchemesProvider {
         }
 
         // App opened using custom URL scheme.
-        this.logger.debug(`Treating custom URL scheme with link param: ${url}`);
+        this.logger.debug('Treating custom URL scheme with link param: ' + url);
 
         // Delete the sso scheme from the URL.
         url = this.removeCustomURLLinkScheme(url);
@@ -323,7 +322,7 @@ export class CoreCustomURLSchemesProvider {
         // Detect if there's a user specified.
         const username = CoreUrl.getUsernameFromUrl(url);
         if (username) {
-            url = url.replace(`${username}@`, ''); // Remove the username from the URL.
+            url = url.replace(username + '@', ''); // Remove the username from the URL.
         }
 
         // First of all, check if it's the root URL of a site.
@@ -456,7 +455,7 @@ export class CoreCustomURLSchemesProvider {
             return false;
         }
 
-        return url.indexOf(`${CoreConstants.CONFIG.customurlscheme}://`) != -1;
+        return url.indexOf(CoreConstants.CONFIG.customurlscheme + '://') != -1;
     }
 
     /**
@@ -470,7 +469,7 @@ export class CoreCustomURLSchemesProvider {
             return false;
         }
 
-        return url.indexOf(`${CoreConstants.CONFIG.customurlscheme}://link=`) != -1;
+        return url.indexOf(CoreConstants.CONFIG.customurlscheme + '://link=') != -1;
     }
 
     /**
@@ -484,7 +483,7 @@ export class CoreCustomURLSchemesProvider {
             return false;
         }
 
-        return url.indexOf(`${CoreConstants.CONFIG.customurlscheme}://token=`) != -1;
+        return url.indexOf(CoreConstants.CONFIG.customurlscheme + '://token=') != -1;
     }
 
     /**
@@ -494,7 +493,7 @@ export class CoreCustomURLSchemesProvider {
      * @returns URL without scheme.
      */
     removeCustomURLScheme(url: string): string {
-        return url.replace(`${CoreConstants.CONFIG.customurlscheme}://`, '');
+        return url.replace(CoreConstants.CONFIG.customurlscheme + '://', '');
     }
 
     /**
@@ -504,7 +503,7 @@ export class CoreCustomURLSchemesProvider {
      * @returns URL without scheme and prefix.
      */
     removeCustomURLLinkScheme(url: string): string {
-        return url.replace(`${CoreConstants.CONFIG.customurlscheme}://link=`, '');
+        return url.replace(CoreConstants.CONFIG.customurlscheme + '://link=', '');
     }
 
     /**
@@ -514,7 +513,7 @@ export class CoreCustomURLSchemesProvider {
      * @returns URL without scheme and prefix.
      */
     removeCustomURLTokenScheme(url: string): string {
-        return url.replace(`${CoreConstants.CONFIG.customurlscheme}://token=`, '');
+        return url.replace(CoreConstants.CONFIG.customurlscheme + '://token=', '');
     }
 
     /**
@@ -545,11 +544,6 @@ export class CoreCustomURLSchemesProvider {
      * @returns URL.
      */
     getLastLaunchURL(): Promise<string | undefined> {
-        if (!CorePlatform.isAndroid()) {
-            // Last launch URL is only available in Android.
-            return Promise.resolve(undefined);
-        }
-
         return new Promise((resolve) => {
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             (<any> window).plugins.launchmyapp.getLastIntent(intent => resolve(intent), () => resolve(undefined));

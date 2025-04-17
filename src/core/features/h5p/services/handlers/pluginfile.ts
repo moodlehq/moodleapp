@@ -21,7 +21,7 @@ import {
     CorePluginFileTreatDownloadedFileOptions,
 } from '@services/plugin-file-delegate';
 import { CoreSites } from '@services/sites';
-import { CoreMimetype } from '@singletons/mimetype';
+import { CoreMimetypeUtils } from '@services/utils/mimetype';
 import { CoreUrl } from '@singletons/url';
 import { CoreWSError } from '@classes/errors/wserror';
 import { CoreWSFile } from '@services/ws';
@@ -127,7 +127,7 @@ export class CoreH5PPluginFileHandlerService implements CorePluginFileHandler {
      * @inheritdoc
      */
     shouldHandleFile(file: CoreWSFile): boolean {
-        return CoreMimetype.guessExtensionFromUrl(CoreFileHelper.getFileUrl(file)) == 'h5p';
+        return CoreMimetypeUtils.guessExtensionFromUrl(CoreFileHelper.getFileUrl(file)) == 'h5p';
     }
 
     /**

@@ -28,16 +28,12 @@ export const CORE_COURSE_PROGRESS_UPDATED_EVENT = 'progress_updated';
 
 export const CORE_COURSE_AUTO_SYNCED = 'core_course_autom_synced';
 
-export const COURSE_STATUS_CHANGED_EVENT = 'course_status_changed';
-
 export const CORE_COURSE_COMPONENT = 'CoreCourse';
 
 export const CORE_COURSE_CORE_MODULES = [
     'assign', 'bigbluebuttonbn', 'book', 'chat', 'choice', 'data', 'feedback', 'folder', 'forum', 'glossary', 'h5pactivity',
     'imscp', 'label', 'lesson', 'lti', 'page', 'quiz', 'resource', 'scorm', 'survey', 'url', 'wiki', 'workshop',
 ];
-
-export const CORE_COURSE_MODULE_FEATURE_PREFIX = 'CoreCourseModuleDelegate_';
 
 /**
  * Course Module completion status enumeration.

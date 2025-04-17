@@ -15,7 +15,6 @@
 import { Injectable } from '@angular/core';
 import { CoreContentLinksModuleListHandler } from '@features/contentlinks/classes/module-list-handler';
 import { makeSingleton } from '@singletons';
-import { ADDON_MOD_FORUM_COMPONENT, ADDON_MOD_FORUM_MODNAME } from '../../constants';
 
 /**
  * Handler to treat links to forum list page.
@@ -26,7 +25,7 @@ export class AddonModForumListLinkHandlerService extends CoreContentLinksModuleL
     name = 'AddonModForumListLinkHandler';
 
     constructor() {
-        super(ADDON_MOD_FORUM_COMPONENT, ADDON_MOD_FORUM_MODNAME);
+        super('AddonModForum', 'forum');
     }
 
 }

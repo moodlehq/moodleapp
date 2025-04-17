@@ -21,7 +21,7 @@ import { CoreNavigator } from '@services/navigator';
 import { CoreSitesReadingStrategy } from '@services/sites';
 import { makeSingleton, Translate } from '@singletons';
 import { AddonModLesson } from '../lesson';
-import { ADDON_MOD_LESSON_COMPONENT, ADDON_MOD_LESSON_MODNAME, ADDON_MOD_LESSON_PAGE_NAME } from '../../constants';
+import { ADDON_MOD_LESSON_PAGE_NAME } from '../../constants';
 import { CoreLoadings } from '@services/overlays/loadings';
 import { CoreAlerts } from '@services/overlays/alerts';
 
@@ -35,7 +35,7 @@ export class AddonModLessonGradeLinkHandlerService extends CoreContentLinksModul
     canReview = true;
 
     constructor() {
-        super(ADDON_MOD_LESSON_COMPONENT, ADDON_MOD_LESSON_MODNAME);
+        super('AddonModLesson', 'lesson');
     }
 
     /**
@@ -70,15 +70,16 @@ export class AddonModLessonGradeLinkHandlerService extends CoreContentLinksModul
             if (accessInfo.canviewreports) {
                 // User can view reports, go to view the report.
                 CoreNavigator.navigateToSitePath(
-                    `${ADDON_MOD_LESSON_PAGE_NAME}/${module.course}/${module.id}/user-retake/${userId}`,
+                    ADDON_MOD_LESSON_PAGE_NAME + `/${module.course}/${module.id}/user-retake/${userId}`,
                     {
                         siteId,
                     },
                 );
             } else {
                 // User cannot view the report, go to lesson index.
-                CoreCourseHelper.navigateToModule(module.id, {
+                CoreCourseHelper.navigateToModule(moduleId, {
                     courseId: module.course,
+                    sectionId: module.section,
                     siteId,
                 });
             }

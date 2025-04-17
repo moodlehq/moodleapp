@@ -1,3 +1,8 @@
+<div class="core-course-module-list-wrapper" [id]="section.id"
+     [attr.aria-labelledby]="section.name ? 'core-section-name-' + section.id : null">
+    <ng-container *ngTemplateOutlet="sectionContent" />
+</div>
+<!--
 @if (collapsible) {
     <ion-accordion class="core-course-module-list-wrapper" [id]="section.id"
         [attr.aria-labelledby]="section.name ? 'core-section-name-' + section.id : null" [value]="section.id" toggleIconSlot="start">
@@ -39,7 +44,7 @@
         <ion-badge *ngIf="section.highlighted && highlightedName" slot="end">{{highlightedName}}</ion-badge>
     </ion-item>
 </ng-template>
-
+-->
 <ng-template #sectionContent>
     <ion-item class="ion-text-wrap section-summary" *ngIf="section.availabilityinfo">
         <ion-label>
@@ -59,9 +64,11 @@
 
     <ng-container *ngFor="let modOrSubsection of section.contents">
         @if (!isModule(modOrSubsection)) {
+            <h3>Is NOT a module</h3>
             <core-course-section [course]="course" [section]="modOrSubsection" [lastModuleViewed]="lastModuleViewed"
                 [viewedModules]="viewedModules" [collapsible]="true" />
         } @else {
+            <h3>Is a module</h3>
             <core-course-module *ngIf="modOrSubsection.visibleoncoursepage !== 0" [module]="modOrSubsection" [section]="section"
                 [showActivityDates]="course.showactivitydates" [showCompletionConditions]="course.showcompletionconditions"
                 [isLastViewed]="lastModuleViewed && lastModuleViewed.cmId === modOrSubsection.id" [class.core-course-module-not-viewed]="

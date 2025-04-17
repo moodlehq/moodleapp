@@ -23,17 +23,14 @@ import { CoreEvents } from '@singletons/events';
 import {
     AddonModAssign,
     AddonModAssignAssign,
+    AddonModAssignGradingStates,
     AddonModAssignSubmission,
+    AddonModAssignSubmissionStatusValues,
 } from '../services/assign';
 import { AddonModAssignHelper, AddonModAssignSubmissionFormatted } from '../services/assign-helper';
 import { AddonModAssignOffline } from '../services/assign-offline';
 import { AddonModAssignSync } from '../services/assign-sync';
-import {
-    ADDON_MOD_ASSIGN_MANUAL_SYNCED,
-    AddonModAssignGradingStates,
-    AddonModAssignListFilterName,
-    AddonModAssignSubmissionStatusValues,
-} from '../constants';
+import { ADDON_MOD_ASSIGN_MANUAL_SYNCED } from '../constants';
 
 /**
  * Provides a collection of assignment submissions.
@@ -180,7 +177,7 @@ export class AddonModAssignSubmissionsSource extends CoreRoutedItemsManagerSourc
         if (this.SELECTED_STATUS == AddonModAssignListFilterName.NEED_GRADING) {
             const promises: Promise<void>[] = submissions.map(async (submission: AddonModAssignSubmissionForList) => {
                 // Only show the submissions that need to be graded.
-                submission.needsGrading = await AddonModAssign.needsSubmissionToBeGraded(submission, assign);
+                submission.needsGrading = await AddonModAssign.needsSubmissionToBeGraded(submission, assign.id);
             });
 
             await Promise.all(promises);
@@ -224,7 +221,7 @@ export class AddonModAssignSubmissionsSource extends CoreRoutedItemsManagerSourc
                 );
 
                 submission.statusTranslated = Translate.instant(
-                    `addon.mod_assign.submissionstatus_${submission.status}`,
+                    'addon.mod_assign.submissionstatus_' + submission.status,
                 );
 
                 if (notSynced) {
@@ -259,3 +256,13 @@ export type AddonModAssignSubmissionForList = AddonModAssignSubmissionFormatted 
     gradingStatusTranslationId?: string; // Calculated in the app. Key of the text of the submission grading status.
     needsGrading?: boolean; // Calculated in the app. If submission and grading status means that it needs grading.
 };
+
+/**
+ * List filter by status name.
+ */
+export enum AddonModAssignListFilterName {
+    ALL = '',
+    NEED_GRADING = 'needgrading',
+    DRAFT = 'draft',
+    SUBMITTED = 'submitted',
+}

@@ -18,7 +18,7 @@ import { CoreContentLinksAction } from '@features/contentlinks/services/contentl
 import { CoreCourse } from '@features/course/services/course';
 import { CoreNavigator } from '@services/navigator';
 import { makeSingleton } from '@singletons';
-import { ADDON_MOD_FEEDBACK_FEATURE_NAME, ADDON_MOD_FEEDBACK_PAGE_NAME, AddonModFeedbackIndexTabName } from '../../constants';
+import { ADDON_MOD_FEEDBACK_PAGE_NAME, AddonModFeedbackIndexTabName } from '../../constants';
 import { CoreLoadings } from '@services/overlays/loadings';
 import { CoreAlerts } from '@services/overlays/alerts';
 
@@ -30,7 +30,7 @@ import { CoreAlerts } from '@services/overlays/alerts';
 export class AddonModFeedbackAnalysisLinkHandlerService extends CoreContentLinksHandlerBase {
 
     name = 'AddonModFeedbackAnalysisLinkHandler';
-    featureName = ADDON_MOD_FEEDBACK_FEATURE_NAME;
+    featureName = 'CoreCourseModuleDelegate_AddonModFeedback';
     pattern = /\/mod\/feedback\/analysis\.php.*([&?]id=\d+)/;
 
     /**
@@ -55,7 +55,7 @@ export class AddonModFeedbackAnalysisLinkHandlerService extends CoreContentLinks
                     );
 
                     await CoreNavigator.navigateToSitePath(
-                        `${ADDON_MOD_FEEDBACK_PAGE_NAME}/${module.course}/${module.id}`,
+                        ADDON_MOD_FEEDBACK_PAGE_NAME + `/${module.course}/${module.id}`,
                         {
                             params: {
                                 module,

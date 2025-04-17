@@ -138,7 +138,7 @@ export class CoreColors {
             hex += CoreColors.componentToHex(Math.round(rgba[3] * 255));
         }
 
-        return `#${hex}`;
+        return '#' + hex;
     }
 
     /**
@@ -217,7 +217,7 @@ export class CoreColors {
      * @returns Hexadec of the color component.
      */
     protected static componentToHex(c: number): string {
-        return (`0${c.toString(16)}`).slice(-2);
+        return ('0' + c.toString(16)).slice(-2);
     }
 
     /**

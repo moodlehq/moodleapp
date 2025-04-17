@@ -110,14 +110,14 @@
 
             }
 
-            <ion-accordion-group class="striped">
+            <ion-accordion-group>
                 @for (attempt of attempts; track attempt.id) {
                     <ion-accordion [value]="attempt.id" toggleIconSlot="start">
                         <ion-item slot="header" class="ion-text-wrap addon-mod_quiz-attempt-title" lines="none">
                             <ion-label>
                                 <h3>{{ 'addon.mod_quiz.attempt' | translate:{ $a: attempt.attempt } }}</h3>
                             </ion-label>
-                            <div slot="end" class="addon-mod_quiz-attempt-title-info hide_on_expand">
+                            <div slot="end" class="addon-mod_quiz-attempt-title-info">
                                 <addon-mod-quiz-attempt-state [state]="attempt.state" [finishedOffline]="attempt.finishedOffline" />
                                 @if (attempt.finished && quiz.showAttemptsGrades) {
                                     @if (attempt.rescaledGrade !== undefined && attempt.rescaledGrade >= 0) {
@@ -174,14 +174,14 @@
     <!-- More data. -->
     <ng-container *ngIf="quiz">
         <!-- Error messages. -->
-        <ion-card class="core-{{preventMessagesColor}}-card addon-mod_quiz-prevent-messages">
+        <ion-card class="core-danger-card addon-mod_quiz-prevent-messages">
             <ion-item class="ion-text-wrap" *ngFor="let message of preventMessages">
                 <ion-label>
                     <p>{{ message }}</p>
                 </ion-label>
             </ion-item>
         </ion-card>
-        <ion-card class="core-danger-card addon-mod_quiz-no-questions" *ngIf="!hasQuestions">
+        <ion-card class="core-danger-card addon-mod_quiz-no-questions" *ngIf="quiz.hasquestions === 0">
             <ion-item class="ion-text-wrap">
                 <ion-label>
                     <p>{{ 'addon.mod_quiz.noquestions' | translate }}</p>

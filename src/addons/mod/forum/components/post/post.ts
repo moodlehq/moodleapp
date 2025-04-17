@@ -131,17 +131,14 @@ export class AddonModForumPostComponent implements OnInit, OnDestroy, OnChanges 
      */
     ngOnInit(): void {
         this.tagsEnabled = CoreTag.areTagsAvailableInSite();
-        this.uniqueId = this.post.id > 0 ? `reply${this.post.id}` : `edit${this.post.parentid}`;
+        this.uniqueId = this.post.id > 0 ? 'reply' + this.post.id : 'edit' + this.post.parentid;
 
-        // This re string is deprecated in Moodle from 5.0 (MDL-83230). This means we're not going to add this string anymore.
-        // In the future we should not check "Re: " or it's translation is included in the subject.
         const reTranslated = Translate.instant('addon.mod_forum.re');
-
         this.displaySubject = !this.parentSubject ||
-            (this.post.subject !== this.parentSubject && this.post.subject !== `Re: ${this.parentSubject}` &&
-                this.post.subject !== `${reTranslated} ${this.parentSubject}`);
-
-        this.defaultReplySubject = this.post.subject;
+            (this.post.subject != this.parentSubject && this.post.subject != `Re: ${this.parentSubject}` &&
+                this.post.subject != `${reTranslated} ${this.parentSubject}`);
+        this.defaultReplySubject = this.post.replysubject || ((this.post.subject.startsWith('Re: ') ||
+            this.post.subject.startsWith(reTranslated)) ? this.post.subject : `${reTranslated} ${this.post.subject}`);
 
         if (this.post.id < 0) {
             this.optionsMenuEnabled = true;
@@ -155,7 +152,7 @@ export class AddonModForumPostComponent implements OnInit, OnDestroy, OnChanges 
     }
 
     /**
-     * @inheritdoc
+     * Detect changes on input properties.
      */
     ngOnChanges(changes: {[name: string]: SimpleChange}): void {
         if (changes.leavingPage && this.leavingPage) {
@@ -602,22 +599,20 @@ export class AddonModForumPostComponent implements OnInit, OnDestroy, OnChanges 
      * Discard offline reply.
      */
     async discardOfflineReply(): Promise<void> {
-        if (this.post.parentid === undefined) {
-            return;
-        }
-
         try {
             await CoreAlerts.confirmDelete(Translate.instant('core.areyousure'));
 
             const promises: Promise<void>[] = [];
 
-            promises.push(AddonModForumOffline.deleteReply(this.post.parentid));
+            promises.push(AddonModForumOffline.deleteReply(this.post.parentid!));
 
             if (this.forum.id) {
-                promises.push(AddonModForumHelper.deleteReplyStoredFiles(this.forum.id, this.post.parentid));
+                promises.push(AddonModForumHelper.deleteReplyStoredFiles(this.forum.id, this.post.parentid!).catch(() => {
+                    // Ignore errors, maybe there are no files.
+                }));
             }
 
-            await CorePromiseUtils.allPromisesIgnoringErrors(promises);
+            await CorePromiseUtils.ignoreErrors(Promise.all(promises));
 
             // Reset data.
             this.setFormData();
@@ -625,7 +620,7 @@ export class AddonModForumPostComponent implements OnInit, OnDestroy, OnChanges 
             this.onPostChange.emit();
 
             this.unblockOperation();
-        } catch {
+        } catch (error) {
             // Cancelled.
         }
     }
@@ -653,6 +648,8 @@ export class AddonModForumPostComponent implements OnInit, OnDestroy, OnChanges 
 
     /**
      * Confirm discard changes if any.
+     *
+     * @returns Promise resolved if the user confirms or data was not changed and rejected otherwise.
      */
     protected async confirmDiscard(): Promise<void> {
         if (AddonModForumHelper.hasPostDataChanged(this.formData, this.originalData)) {
@@ -677,11 +674,13 @@ export class AddonModForumPostComponent implements OnInit, OnDestroy, OnChanges 
 
     /**
      * Scroll to reply/edit form.
+     *
+     * @returns Promise resolved when done.
      */
     protected async scrollToForm(): Promise<void> {
         await CoreDom.scrollToElement(
             this.elementRef.nativeElement,
-            `#addon-forum-reply-edit-form-${this.uniqueId}`,
+            '#addon-forum-reply-edit-form-' + this.uniqueId,
         );
     }
 

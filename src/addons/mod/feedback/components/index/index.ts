@@ -22,7 +22,7 @@ import { CoreGroupInfo, CoreGroups } from '@services/groups';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSites } from '@services/sites';
 import { CoreText } from '@singletons/text';
-import { CoreTime } from '@singletons/time';
+import { CoreTimeUtils } from '@services/utils/time';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import {
@@ -37,20 +37,17 @@ import {
     AddonModFeedbackSync,
     AddonModFeedbackSyncResult,
 } from '../../services/feedback-sync';
+import { AddonModFeedbackPrefetchHandler } from '../../services/handlers/prefetch';
 import {
     ADDON_MOD_FEEDBACK_AUTO_SYNCED,
-    ADDON_MOD_FEEDBACK_COMPONENT_LEGACY,
+    ADDON_MOD_FEEDBACK_COMPONENT,
     ADDON_MOD_FEEDBACK_FORM_SUBMITTED,
     ADDON_MOD_FEEDBACK_PAGE_NAME,
-    AddonModFeedbackAnalysisTemplateNames,
     AddonModFeedbackIndexTabName,
-    AddonModFeedbackMultichoiceSubtype,
-    AddonModFeedbackQuestionType,
 } from '../../constants';
 import { CoreCourseModuleNavigationComponent } from '@features/course/components/module-navigation/module-navigation';
 import { CoreCourseModuleInfoComponent } from '@features/course/components/module-info/module-info';
 import { CoreSharedModule } from '@/core/shared.module';
-import { CoreChartType } from '@components/chart/chart';
 
 /**
  * Component that displays a feedback index page.
@@ -72,7 +69,7 @@ export class AddonModFeedbackIndexComponent extends CoreCourseModuleMainActivity
     @Input() selectedTab: AddonModFeedbackIndexTabName = AddonModFeedbackIndexTabName.OVERVIEW;
     @Input() group = 0;
 
-    component = ADDON_MOD_FEEDBACK_COMPONENT_LEGACY;
+    component = ADDON_MOD_FEEDBACK_COMPONENT;
     pluginName = 'feedback';
     feedback?: AddonModFeedbackWSFeedback;
     goPage?: number;
@@ -120,7 +117,8 @@ export class AddonModFeedbackIndexComponent extends CoreCourseModuleMainActivity
 
             // Prefetch data if needed.
             if (!data.offline && this.isPrefetched()) {
-                await CorePromiseUtils.ignoreErrors(AddonModFeedbackSync.prefetchModuleAfterUpdate(
+                await CorePromiseUtils.ignoreErrors(AddonModFeedbackSync.prefetchAfterUpdate(
+                    AddonModFeedbackPrefetchHandler.instance,
                     this.module,
                     this.courseId,
                 ));
@@ -301,9 +299,9 @@ export class AddonModFeedbackIndexComponent extends CoreCourseModuleMainActivity
 
         if (this.access.canedititems) {
             this.overview.timeopen = (this.feedback.timeopen || 0) * 1000;
-            this.overview.openTimeReadable = this.overview.timeopen ? CoreTime.userDate(this.overview.timeopen) : '';
+            this.overview.openTimeReadable = this.overview.timeopen ? CoreTimeUtils.userDate(this.overview.timeopen) : '';
             this.overview.timeclose = (this.feedback.timeclose || 0) * 1000;
-            this.overview.closeTimeReadable = this.overview.timeclose ? CoreTime.userDate(this.overview.timeclose) : '';
+            this.overview.closeTimeReadable = this.overview.timeclose ? CoreTimeUtils.userDate(this.overview.timeclose) : '';
         }
         if (this.access.canviewanalysis) {
             // Get groups (only for teachers).
@@ -355,25 +353,25 @@ export class AddonModFeedbackIndexComponent extends CoreCourseModuleMainActivity
      */
     protected parseAnalysisInfo(item: AddonModFeedbackItem): AddonModFeedbackItem {
         switch (item.typ) {
-            case AddonModFeedbackQuestionType.NUMERIC:
+            case 'numeric':
                 item.average = item.data.reduce((prev, current) => prev + Number(current), 0) / item.data.length;
-                item.templateName = AddonModFeedbackAnalysisTemplateNames.NUMERIC;
+                item.templateName = 'numeric';
                 break;
 
-            case AddonModFeedbackQuestionType.INFO:
+            case 'info':
                 item.data = <string[]> item.data.map((dataItem) => {
                     const parsed = <Record<string, string>> CoreText.parseJSON(dataItem);
 
                     return parsed.show !== undefined ? parsed.show : false;
                 }).filter((dataItem) => dataItem); // Filter false entries.
 
-            case AddonModFeedbackQuestionType.TEXTFIELD:
-            case AddonModFeedbackQuestionType.TEXTAREA:
-                item.templateName = AddonModFeedbackAnalysisTemplateNames.LIST;
+            case 'textfield':
+            case 'textarea':
+                item.templateName = 'list';
                 break;
 
-            case AddonModFeedbackQuestionType.MULTICHOICERATED:
-            case AddonModFeedbackQuestionType.MULTICHOICE: {
+            case 'multichoicerated':
+            case 'multichoice': {
                 const parsedData = <Record<string, string | number>[]> item.data.map((dataItem) => {
                     const parsed = <Record<string, string | number>> CoreText.parseJSON(dataItem);
 
@@ -386,26 +384,26 @@ export class AddonModFeedbackIndexComponent extends CoreCourseModuleMainActivity
                     let label = '';
 
                     if (dataItem.value !== undefined) {
-                        label = `(${dataItem.value}) `;
+                        label = '(' + dataItem.value + ') ';
                     }
                     label += dataItem.answertext;
-                    label += Number(dataItem.quotient) > 0 ? ` (${dataItem.quotient}%)` : '';
+                    label += Number(dataItem.quotient) > 0 ? ' (' + dataItem.quotient + '%)' : '';
 
                     return label;
                 });
 
                 item.chartData = parsedData.map((dataItem) => Number(dataItem.answercount));
 
-                if (item.typ === AddonModFeedbackQuestionType.MULTICHOICERATED) {
+                if (item.typ === 'multichoicerated') {
                     item.average = parsedData.reduce((prev, current) => prev + Number(current.avg), 0.0);
                 }
 
-                const subtype = item.presentation.charAt(0) as AddonModFeedbackMultichoiceSubtype;
+                const subtype = item.presentation.charAt(0);
 
                 // Display bar chart if there are no answers to avoid division by 0 error.
-                const single = subtype !== AddonModFeedbackMultichoiceSubtype.CHECKBOX && item.chartData.some((count) => count > 0);
+                const single = subtype !== 'c' && item.chartData.some((count) => count > 0);
                 item.chartType = single ? 'doughnut' : 'bar';
-                item.templateName = AddonModFeedbackAnalysisTemplateNames.CHART;
+                item.templateName = 'chart';
                 break;
             }
 
@@ -423,7 +421,7 @@ export class AddonModFeedbackIndexComponent extends CoreCourseModuleMainActivity
      */
     gotoAnswerQuestions(preview: boolean = false): void {
         CoreNavigator.navigateToSitePath(
-            `${ADDON_MOD_FEEDBACK_PAGE_NAME}/${this.courseId}/${this.module.id}/form`,
+            ADDON_MOD_FEEDBACK_PAGE_NAME + `/${this.courseId}/${this.module.id}/form`,
             {
                 params: {
                     preview,
@@ -456,7 +454,7 @@ export class AddonModFeedbackIndexComponent extends CoreCourseModuleMainActivity
      */
     openNonRespondents(): void {
         CoreNavigator.navigateToSitePath(
-            `${ADDON_MOD_FEEDBACK_PAGE_NAME}/${this.courseId}/${this.module.id}/nonrespondents`,
+            ADDON_MOD_FEEDBACK_PAGE_NAME + `/${this.courseId}/${this.module.id}/nonrespondents`,
             {
                 params: {
                     group: this.group,
@@ -474,7 +472,7 @@ export class AddonModFeedbackIndexComponent extends CoreCourseModuleMainActivity
         }
 
         CoreNavigator.navigateToSitePath(
-            `${ADDON_MOD_FEEDBACK_PAGE_NAME}/${this.courseId}/${this.module.id}/attempts`,
+            ADDON_MOD_FEEDBACK_PAGE_NAME + `/${this.courseId}/${this.module.id}/attempts`,
             {
                 params: {
                     group: this.group,
@@ -567,9 +565,9 @@ export class AddonModFeedbackIndexComponent extends CoreCourseModuleMainActivity
 type AddonModFeedbackItem = AddonModFeedbackWSItem & {
     data: string[];
     num: number;
-    templateName?: AddonModFeedbackAnalysisTemplateNames;
+    templateName?: string;
     average?: number;
     labels?: string[];
     chartData?: number[];
-    chartType?: CoreChartType;
+    chartType?: string;
 };

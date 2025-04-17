@@ -13,9 +13,9 @@
 // limitations under the License.
 
 import { Pipe, PipeTransform } from '@angular/core';
-import dayjs from 'dayjs';
+import moment from 'moment-timezone';
 
-import { CoreTime } from '@singletons/time';
+import { CoreTimeUtils } from '@services/utils/time';
 import { Translate } from '@singletons';
 import { CoreLogger } from '@singletons/logger';
 
@@ -51,7 +51,7 @@ export class CoreDateDayOrTimePipe implements PipeTransform {
      * @returns Formatted time.
      */
     transform(timestamp: string | number): string {
-        if (typeof timestamp === 'string') {
+        if (typeof timestamp == 'string') {
             // Convert the value to a number.
             const numberTimestamp = parseInt(timestamp, 10);
             if (isNaN(numberTimestamp)) {
@@ -62,11 +62,11 @@ export class CoreDateDayOrTimePipe implements PipeTransform {
             timestamp = numberTimestamp;
         }
 
-        return dayjs.tz(timestamp * 1000).calendar(null, {
-            sameDay: CoreTime.convertPHPToJSDateFormat(Translate.instant('core.strftimetime')),
+        return moment(timestamp * 1000).calendar(null, {
+            sameDay: CoreTimeUtils.convertPHPToMoment(Translate.instant('core.strftimetime')),
             lastDay: Translate.instant('core.dflastweekdate'),
             lastWeek: Translate.instant('core.dflastweekdate'),
-            sameElse: CoreTime.convertPHPToJSDateFormat(Translate.instant('core.strftimedatefullshort')),
+            sameElse: CoreTimeUtils.convertPHPToMoment(Translate.instant('core.strftimedatefullshort')),
         });
     }
 

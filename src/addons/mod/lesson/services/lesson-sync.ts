@@ -22,22 +22,17 @@ import { CoreCourseLogHelper } from '@features/course/services/log-helper';
 import { CoreNetwork } from '@services/network';
 import { CoreSites, CoreSitesReadingStrategy } from '@services/sites';
 import { CoreSync, CoreSyncResult } from '@services/sync';
-import { CoreTime } from '@singletons/time';
+import { CoreTimeUtils } from '@services/utils/time';
 import { CoreUrl } from '@singletons/url';
 import { CoreWSError } from '@classes/errors/wserror';
 import { makeSingleton, Translate } from '@singletons';
 import { CoreEvents } from '@singletons/events';
 import { AddonModLessonRetakeFinishedInSyncDBRecord, RETAKES_FINISHED_SYNC_TABLE_NAME } from './database/lesson';
+import { AddonModLessonGetPasswordResult, AddonModLessonPrefetchHandler } from './handlers/prefetch';
 import { AddonModLesson, AddonModLessonLessonWSData } from './lesson';
 import { AddonModLessonOffline, AddonModLessonPageAttemptRecord } from './lesson-offline';
-import {
-    ADDON_MOD_LESSON_AUTO_SYNCED,
-    ADDON_MOD_LESSON_COMPONENT,
-    ADDON_MOD_LESSON_COMPONENT_LEGACY,
-    ADDON_MOD_LESSON_MODNAME,
-} from '../constants';
+import { ADDON_MOD_LESSON_AUTO_SYNCED, ADDON_MOD_LESSON_COMPONENT } from '../constants';
 import { CorePromiseUtils } from '@singletons/promise-utils';
-import { AddonModLessonGetPasswordResult, AddonModLessonHelper } from './lesson-helper';
 
 /**
  * Service to sync lesson.
@@ -115,7 +110,7 @@ export class AddonModLessonSyncProvider extends CoreCourseActivitySyncBaseProvid
             lessonid: lessonId,
             retake: Number(retake),
             pageid: Number(pageId),
-            timefinished: CoreTime.timestamp(),
+            timefinished: CoreTimeUtils.timestamp(),
         });
     }
 
@@ -202,12 +197,12 @@ export class AddonModLessonSyncProvider extends CoreCourseActivitySyncBaseProvid
 
         // Verify that lesson isn't blocked.
         if (!ignoreBlock && CoreSync.isBlocked(ADDON_MOD_LESSON_COMPONENT, lessonId, siteId)) {
-            this.logger.debug(`Cannot sync lesson ${lessonId} because it is blocked.`);
+            this.logger.debug('Cannot sync lesson ' + lessonId + ' because it is blocked.');
 
             throw new CoreSyncBlockedError(Translate.instant('core.errorsyncblocked', { $a: this.componentTranslate }));
         }
 
-        this.logger.debug(`Try to sync lesson ${lessonId} in site ${siteId}`);
+        this.logger.debug('Try to sync lesson ' + lessonId + ' in site ' + siteId);
 
         syncPromise = this.performSyncLesson(lessonId, askPassword, ignoreBlock, siteId);
 
@@ -231,7 +226,7 @@ export class AddonModLessonSyncProvider extends CoreCourseActivitySyncBaseProvid
     ): Promise<AddonModLessonSyncResult> {
         // Sync offline logs.
         await CorePromiseUtils.ignoreErrors(
-            CoreCourseLogHelper.syncActivity(ADDON_MOD_LESSON_COMPONENT_LEGACY, lessonId, siteId),
+            CoreCourseLogHelper.syncActivity(ADDON_MOD_LESSON_COMPONENT, lessonId, siteId),
         );
 
         const result: AddonModLessonSyncResult = {
@@ -248,8 +243,8 @@ export class AddonModLessonSyncProvider extends CoreCourseActivitySyncBaseProvid
         if (result.updated && result.courseId) {
             try {
                 // Data has been sent to server, update data.
-                const module = await CoreCourse.getModuleBasicInfoByInstance(lessonId, ADDON_MOD_LESSON_MODNAME, { siteId });
-                await this.prefetchModuleAfterUpdate(module, result.courseId, undefined, siteId);
+                const module = await CoreCourse.getModuleBasicInfoByInstance(lessonId, 'lesson', { siteId });
+                await this.prefetchAfterUpdate(AddonModLessonPrefetchHandler.instance, module, result.courseId, undefined, siteId);
             } catch {
                 // Ignore errors.
             }
@@ -292,7 +287,7 @@ export class AddonModLessonSyncProvider extends CoreCourseActivitySyncBaseProvid
         // Get the info, access info and the lesson password if needed.
         const lesson = await AddonModLesson.getLessonById(result.courseId, lessonId, { siteId });
 
-        const passwordData = await AddonModLessonHelper.getLessonPassword(lessonId, {
+        const passwordData = await AddonModLessonPrefetchHandler.getLessonPassword(lessonId, {
             readingStrategy: CoreSitesReadingStrategy.ONLY_NETWORK,
             askPassword,
             siteId,
@@ -436,7 +431,7 @@ export class AddonModLessonSyncProvider extends CoreCourseActivitySyncBaseProvid
         if (!passwordData?.lesson) {
             // Retrieve the needed data.
             const lesson = await AddonModLesson.getLessonById(result.courseId!, lessonId, { siteId });
-            passwordData = await AddonModLessonHelper.getLessonPassword(lessonId, {
+            passwordData = await AddonModLessonPrefetchHandler.getLessonPassword(lessonId, {
                 readingStrategy: CoreSitesReadingStrategy.ONLY_NETWORK,
                 askPassword,
                 siteId,

@@ -9,7 +9,7 @@
     </ion-toolbar>
 </ion-header>
 <ion-content class="limited-width">
-    <core-loading [hideUntil]="loaded" placeholderType="column" placeholderHeight="84px">
+    <core-loading [hideUntil]="loaded">
         <div class="ion-padding-horizontal ion-text-wrap" *ngIf="spaceUsage">
             <h2>{{ 'addon.storagemanager.alldata' | translate }}</h2>
         </div>

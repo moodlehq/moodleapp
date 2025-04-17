@@ -27,15 +27,19 @@ import { CoreSiteWSPreSets, WSObservable } from '@classes/sites/authenticated-si
 import { firstValueFrom } from 'rxjs';
 import { CoreCacheUpdateFrequency } from '@/core/constants';
 
+const ROOT_CACHE_KEY = 'mmaCourseCompletion:';
+
 /**
  * Service to handle course completion.
  */
 @Injectable({ providedIn: 'root' })
 export class AddonCourseCompletionProvider {
 
-    protected static readonly ROOT_CACHE_KEY = 'mmaCourseCompletion:';
+    protected logger: CoreLogger;
 
-    protected logger = CoreLogger.getInstance('AddonCourseCompletion');
+    constructor() {
+        this.logger = CoreLogger.getInstance('AddonCourseCompletion');
+    }
 
     /**
      * Check whether completion is available in a certain site.
@@ -132,13 +136,13 @@ export class AddonCourseCompletionProvider {
      * @param siteId Site ID. If not defined, use current site.
      * @returns Promise to be resolved when the completion is retrieved.
      */
-    async getCompletion(
+    getCompletion(
         courseId: number,
         userId?: number,
         preSets: CoreSiteWSPreSets = {},
         siteId?: string,
     ): Promise<AddonCourseCompletionCourseCompletionStatus> {
-        return await firstValueFrom(this.getCompletionObservable(courseId, {
+        return firstValueFrom(this.getCompletionObservable(courseId, {
             userId,
             preSets,
             siteId,
@@ -160,7 +164,7 @@ export class AddonCourseCompletionProvider {
             const site = await CoreSites.getSite(options.siteId);
 
             const userId = options.userId || site.getUserId();
-            this.logger.debug(`Get completion for course ${courseId} and user ${userId}`);
+            this.logger.debug('Get completion for course ' + courseId + ' and user ' + userId);
 
             const data: AddonCourseCompletionGetCourseCompletionStatusWSParams = {
                 courseid: courseId,
@@ -191,7 +195,7 @@ export class AddonCourseCompletionProvider {
      * @returns Cache key.
      */
     protected getCompletionCacheKey(courseId: number, userId: number): string {
-        return `${AddonCourseCompletionProvider.ROOT_CACHE_KEY}view:${courseId}:${userId}`;
+        return ROOT_CACHE_KEY + 'view:' + courseId + ':' + userId;
     }
 
     /**
@@ -200,6 +204,7 @@ export class AddonCourseCompletionProvider {
      * @param courseId Course ID.
      * @param userId User ID. If not defined, use current user.
      * @param siteId Site ID. If not defined, use current site.
+     * @returns Promise resolved when the list is invalidated.
      */
     async invalidateCourseCompletion(courseId: number, userId?: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);

@@ -17,7 +17,7 @@ import { AddonModDataFieldPluginBaseComponent } from '../../../classes/base-fiel
 import { AddonModDataEntryField } from '@addons/mod/data/services/data';
 import { CoreFileHelper } from '@services/file-helper';
 import { CoreWSFile } from '@services/ws';
-import { ADDON_MOD_DATA_COMPONENT_LEGACY } from '@addons/mod/data/constants';
+import { ADDON_MOD_DATA_COMPONENT } from '@addons/mod/data/constants';
 import { CoreEditorRichTextEditorComponent } from '@features/editor/components/rich-text-editor/rich-text-editor';
 import { CoreSharedModule } from '@/core/shared.module';
 
@@ -54,7 +54,7 @@ export class AddonModDataFieldTextareaComponent extends AddonModDataFieldPluginB
      * Initialize field.
      */
     protected init(): void {
-        this.component = ADDON_MOD_DATA_COMPONENT_LEGACY;
+        this.component = ADDON_MOD_DATA_COMPONENT;
         this.componentId = this.database?.coursemodule;
 
         if (this.displayMode) {
@@ -67,7 +67,7 @@ export class AddonModDataFieldTextareaComponent extends AddonModDataFieldPluginB
             text = this.format(this.value);
         }
 
-        this.addControl(`f_${this.field.id}`, text);
+        this.addControl('f_' + this.field.id, text);
     }
 
 }

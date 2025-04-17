@@ -16,7 +16,7 @@ import { Injectable } from '@angular/core';
 import { SafeUrl } from '@angular/platform-browser';
 
 import { CoreAnyError, CoreError } from '@classes/errors/error';
-import { DomSanitizer, makeSingleton } from '@singletons';
+import { makeSingleton } from '@singletons';
 import { CoreWSFile } from '@services/ws';
 import { CoreFileHelper } from '@services/file-helper';
 import { CoreUrl } from '@singletons/url';
@@ -80,11 +80,10 @@ export class CoreTextUtilsProvider {
      * @param address The address.
      * @returns URL to view the address.
      *
-     * @deprecated since 4.5. Use CoreUrl.buildMapsURL instead, and then use DomSanitizer.bypassSecurityTrustUrl to sanitize
-     * the URL if needed.
+     * @deprecated since 4.5. Use CoreUrl.buildAddressURL instead.
      */
     buildAddressURL(address: string): SafeUrl {
-        return DomSanitizer.bypassSecurityTrustUrl(CoreUrl.buildMapsURL({ query: address }));
+        return CoreUrl.buildAddressURL(address);
     }
 
     /**
@@ -620,8 +619,5 @@ export class CoreTextUtilsProvider {
     }
 
 }
-/**
- * @deprecated since 4.5. Use CoreText instead.
- */
 // eslint-disable-next-line deprecation/deprecation
 export const CoreTextUtils = makeSingleton(CoreTextUtilsProvider);

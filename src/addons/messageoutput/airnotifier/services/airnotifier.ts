@@ -26,13 +26,13 @@ import { CorePath } from '@singletons/path';
 import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
 import { CorePrompts } from '@services/overlays/prompts';
 
+const ROOT_CACHE_KEY = 'mmaMessageOutputAirnotifier:';
+
 /**
  * Service to handle Airnotifier message output.
  */
 @Injectable({ providedIn: 'root' })
 export class AddonMessageOutputAirnotifierProvider {
-
-    protected static readonly ROOT_CACHE_KEY = 'mmaMessageOutputAirnotifier:';
 
     /**
      * Initialize.
@@ -87,7 +87,7 @@ export class AddonMessageOutputAirnotifierProvider {
      * @returns Cache key.
      */
     protected getSystemConfiguredCacheKey(): string {
-        return `${AddonMessageOutputAirnotifierProvider.ROOT_CACHE_KEY}isAirnotifierConfigured`;
+        return ROOT_CACHE_KEY + 'isAirnotifierConfigured';
     }
 
     /**
@@ -116,7 +116,7 @@ export class AddonMessageOutputAirnotifierProvider {
      * @returns Cache key.
      */
     protected getUserDevicesCacheKey(): string {
-        return `${AddonMessageOutputAirnotifierProvider.ROOT_CACHE_KEY}userDevices`;
+        return ROOT_CACHE_KEY + 'userDevices';
     }
 
     /**

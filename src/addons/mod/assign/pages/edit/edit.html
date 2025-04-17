@@ -46,7 +46,7 @@
                 </ion-item>
 
                 <addon-mod-assign-submission-plugin *ngFor="let plugin of userSubmission.plugins" [assign]="assign"
-                    [submission]="userSubmission" [plugin]="plugin" [edit]="true" [allowOffline]="true" />
+                    [submission]="userSubmission" [plugin]="plugin" [edit]="true" [allowOffline]="allowOffline" />
             </form>
         </ion-list>
     </core-loading>

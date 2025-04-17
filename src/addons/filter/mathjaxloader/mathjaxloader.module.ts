@@ -28,6 +28,8 @@ import { AddonFilterMathJaxLoaderHandler } from './services/handlers/mathjaxload
             multi: true,
             useValue: async () => {
                 CoreFilterDelegate.registerHandler(AddonFilterMathJaxLoaderHandler.instance);
+
+                await AddonFilterMathJaxLoaderHandler.initialize();
             },
         },
     ],

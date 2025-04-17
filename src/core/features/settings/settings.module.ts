@@ -52,7 +52,7 @@ const sectionRoutes: Routes = [
     },
     {
         path: SHAREDFILES_PAGE_NAME,
-        loadChildren: () => getSharedFilesRoutes(),
+        children: getSharedFilesRoutes(),
     },
     {
         path: 'about',
@@ -72,7 +72,7 @@ const tabletRoutes: Routes = [
     {
         path: '',
         loadComponent: () => import('@features/settings/pages/index/index'),
-        loadChildren: () => [
+        children: [
             {
                 path: '',
                 pathMatch: 'full',
@@ -107,14 +107,14 @@ const settingsRoutes: Routes = [
 const appRoutes: Routes = [
     {
         path: 'settings',
-        loadChildren: () => settingsRoutes,
+        children: settingsRoutes,
     },
 ];
 
 const mainMenuMoreRoutes: Routes = [
     {
         path: 'settings',
-        loadChildren: () => settingsRoutes,
+        children: settingsRoutes,
     },
     {
         path: 'preferences',

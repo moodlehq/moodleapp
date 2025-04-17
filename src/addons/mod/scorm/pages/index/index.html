@@ -1,3 +1,4 @@
+
 <ion-header collapsible>
     <ion-toolbar>
         <ion-buttons slot="start">
@@ -15,6 +16,5 @@
     <ion-refresher slot="fixed" [disabled]="activityComponent?.showLoading" (ionRefresh)="activityComponent?.doRefresh($event.target)">
         <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}" />
     </ion-refresher>
-
-    <addon-mod-scorm-index [module]="module" [courseId]="courseId" [autoPlayData]="autoPlayData" (dataRetrieved)="updateData($event)" />
+    <addon-mod-scorm-index [module]="module" [courseId]="courseId" [autoPlayData]="autoPlayData" (dataRetrieved)="updateData($event)"  />
 </ion-content>

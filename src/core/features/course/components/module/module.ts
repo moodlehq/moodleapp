@@ -35,7 +35,6 @@ import { CoreRemindersDateComponent } from '../../../reminders/components/date/d
 import { CoreCourseModuleCompletionComponent } from '../module-completion/module-completion';
 import { CoreCourseModuleCompletionLegacyComponent } from '../module-completion-legacy/module-completion-legacy';
 import { CoreSharedModule } from '@/core/shared.module';
-import { CoreCourseModuleHelper } from '@features/course/services/course-module-helper';
 
 /**
  * Component to display a module entry in a list of modules.
@@ -94,25 +93,30 @@ export class CoreCourseModuleComponent implements OnInit, OnDestroy {
         } else {
             this.indented = false;
         }
-        this.modNameTranslated = CoreCourseModuleHelper.translateModuleName(this.module.modname, this.module.modplural);
+        this.modNameTranslated = CoreCourse.translateModuleName(this.module.modname, this.module.modplural);
+        /*
         if (this.showCompletion) {
             this.showLegacyCompletion = this.showLegacyCompletion ??
                 CoreConstants.CONFIG.uselegacycompletion ??
                 !site.isVersionGreaterEqualThan('3.11');
             this.checkShowCompletion();
         } else {
+
+         */
             this.showLegacyCompletion = false;
             this.showCompletionConditions = false;
             this.showManualCompletion = false;
             this.hasCompletion = false;
-        }
+        //}
+
+     //   console.log(JSON.stringify(this.module));
 
         if (!this.module.handlerData) {
             return;
         }
 
         this.module.handlerData.a11yTitle = this.module.handlerData.a11yTitle ?? this.module.handlerData.title;
-        this.moduleHasView = CoreCourseModuleHelper.moduleHasView(this.module);
+        this.moduleHasView = CoreCourse.moduleHasView(this.module);
 
         if (this.showDownloadStatus && this.module.handlerData.showDownloadButton) {
             const status = await CoreCourseModulePrefetchDelegate.getDownloadedModuleStatus(this.module, this.module.course);
@@ -139,6 +143,8 @@ export class CoreCourseModuleComponent implements OnInit, OnDestroy {
                 this.updateModuleStatus(status);
             }, CoreSites.getCurrentSiteId());
         }
+
+
     }
 
     /**

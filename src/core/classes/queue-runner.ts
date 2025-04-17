@@ -90,7 +90,7 @@ export class CoreQueueRunner {
         let num = 1;
 
         do {
-            newId = `${id}-${num}`;
+            newId = id + '-' + num;
             num++;
         } while (newId in this.queue);
 

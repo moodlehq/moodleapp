@@ -37,7 +37,6 @@ import { CORE_SITE_PLUGINS_UPDATE_COURSE_CONTENT } from '@features/siteplugins/c
 import { CoreSharedModule } from '@/core/shared.module';
 import { CoreAlerts } from '@services/overlays/alerts';
 import { Translate } from '@singletons';
-import { ContextLevel } from '@/core/constants';
 
 /**
  * Component to render a site plugin content.
@@ -64,9 +63,6 @@ export class CoreSitePluginsPluginContentComponent implements OnInit, DoCheck {
     @Input() data: Record<string, unknown> = {}; // Data to pass to the component.
     @Input() preSets?: CoreSiteWSPreSets; // The preSets for the WS call.
     @Input() pageTitle?: string; // Current page title. It can be used by the "new-content" directives.
-    @Input() contextLevel?: ContextLevel; // The context level to filter text. Can be used by some directives.
-    @Input() contextInstanceId?: number; // The instance ID related to the context. Can be used by some directives.
-    @Input() courseId?: number; // Course ID the text belongs to. It can be used to improve performance with filters.
     @Output() onContentLoaded = new EventEmitter<CoreSitePluginsPluginContentLoadedData>(); // Emits event when content is loaded.
     @Output() onLoadingContent = new EventEmitter<boolean>(); // Emits an event when starts to load the content.
 
@@ -190,7 +186,6 @@ export class CoreSitePluginsPluginContentComponent implements OnInit, DoCheck {
         jsData?: Record<string, unknown> | boolean,
         preSets?: CoreSiteWSPreSets,
         ptrEnabled?: boolean,
-        filterOptions?: FilterOptions,
     ): void {
         if (jsData === true) {
             jsData = this.data;
@@ -208,9 +203,6 @@ export class CoreSitePluginsPluginContentComponent implements OnInit, DoCheck {
                 jsData,
                 preSets,
                 ptrEnabled,
-                contextLevel: filterOptions?.contextLevel || this.contextLevel,
-                contextInstanceId: filterOptions?.contextInstanceId || this.contextInstanceId,
-                courseId: filterOptions?.courseId || this.courseId,
             },
         });
     }
@@ -303,10 +295,4 @@ export type CoreSitePluginsPluginContentLoadedData = {
     refresh: boolean;
     success: boolean;
     content: string;
-};
-
-type FilterOptions = {
-    contextLevel?: ContextLevel; // The context level to filter text.
-    contextInstanceId?: number; // The instance ID related to the context.
-    courseId?: number; // Course ID the text belongs to. It can be used to improve performance with filters.
 };

@@ -648,8 +648,8 @@ export class CoreH5PFramework {
                         'l1.majorversion AS majorVersion, l1.minorversion AS minorVersion, ' +
                         'l1.patchversion AS patchVersion, l1.addto AS addTo, ' +
                         'l1.preloadedjs AS preloadedJs, l1.preloadedcss AS preloadedCss ' +
-                    `FROM ${LIBRARIES_TABLE_NAME} l1 ` +
-                    `LEFT JOIN ${LIBRARIES_TABLE_NAME} l2 ON l1.machinename = l2.machinename AND (` +
+                    'FROM ' + LIBRARIES_TABLE_NAME + ' l1 ' +
+                    'LEFT JOIN ' + LIBRARIES_TABLE_NAME + ' l2 ON l1.machinename = l2.machinename AND (' +
                         'l1.majorversion < l2.majorversion OR (l1.majorversion = l2.majorversion AND ' +
                         'l1.minorversion < l2.minorversion)) ' +
                     'WHERE l1.addto IS NOT NULL AND l2.machinename IS NULL';
@@ -697,7 +697,7 @@ export class CoreH5PFramework {
             disable: null,
             folderName: contentData.foldername,
             title: libData.title,
-            slug: `${CoreH5PCore.slugify(libData.title)}-${contentData.id}`,
+            slug: CoreH5PCore.slugify(libData.title) + '-' + contentData.id,
             filtered: contentData.filtered,
             libraryId: libData.id,
             libraryName: libData.machinename,
@@ -738,19 +738,14 @@ export class CoreH5PFramework {
 
         const db = await CoreSites.getSiteDb(siteId);
 
-        let query = `SELECT
-            hl.id AS libraryId,
-            hl.machinename AS machineName,
-            hl.majorversion AS majorVersion,
-            hl.minorversion AS minorVersion,
-            hl.patchversion AS patchVersion,
-            hl.preloadedcss AS preloadedCss,
-            hl.preloadedjs AS preloadedJs,
-            hcl.dropcss AS dropCss,
-            hcl.dependencytype as dependencyType
-        FROM ${CONTENTS_LIBRARIES_TABLE_NAME} hcl
-        JOIN ${LIBRARIES_TABLE_NAME} hl ON hcl.libraryid = hl.id
-        WHERE hcl.h5pid = ?`;
+        let query = 'SELECT hl.id AS libraryId, hl.machinename AS machineName, ' +
+                        'hl.majorversion AS majorVersion, hl.minorversion AS minorVersion, ' +
+                        'hl.patchversion AS patchVersion, hl.preloadedcss AS preloadedCss, ' +
+                        'hl.preloadedjs AS preloadedJs, hcl.dropcss AS dropCss, ' +
+                        'hcl.dependencytype as dependencyType ' +
+                    'FROM ' + CONTENTS_LIBRARIES_TABLE_NAME + ' hcl ' +
+                    'JOIN ' + LIBRARIES_TABLE_NAME + ' hl ON hcl.libraryid = hl.id ' +
+                    'WHERE hcl.h5pid = ?';
 
         const queryArgs: (string | number)[] = [];
         queryArgs.push(id);
@@ -814,16 +809,11 @@ export class CoreH5PFramework {
         };
 
         // Now get the dependencies.
-        const sql = `SELECT
-            hl.id,
-            hl.machinename,
-            hl.majorversion,
-            hl.minorversion,
-            hll.dependencytype
-        FROM ${LIBRARY_DEPENDENCIES_TABLE_NAME} hll
-        JOIN ${LIBRARIES_TABLE_NAME} hl ON hll.requiredlibraryid = hl.id
-        WHERE hll.libraryid = ?
-        ORDER BY hl.id ASC`;
+        const sql = 'SELECT hl.id, hl.machinename, hl.majorversion, hl.minorversion, hll.dependencytype ' +
+                'FROM ' + LIBRARY_DEPENDENCIES_TABLE_NAME + ' hll ' +
+                'JOIN ' + LIBRARIES_TABLE_NAME + ' hl ON hll.requiredlibraryid = hl.id ' +
+                'WHERE hll.libraryid = ? ' +
+                'ORDER BY hl.id ASC';
 
         const sqlParams = [
             library.id,
@@ -835,7 +825,7 @@ export class CoreH5PFramework {
 
         for (let i = 0; i < result.rows.length; i++) {
             const dependency: LibraryDependency = result.rows.item(i);
-            const key = `${dependency.dependencytype}Dependencies`;
+            const key = dependency.dependencytype + 'Dependencies';
 
             libraryData[key].push({
                 machineName: dependency.machinename,

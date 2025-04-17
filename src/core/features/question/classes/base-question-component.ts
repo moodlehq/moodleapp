@@ -16,7 +16,7 @@ import { Input, Output, EventEmitter, Component, Optional, Inject, ElementRef, O
 import { CoreFileHelper } from '@services/file-helper';
 
 import { CoreSites } from '@services/sites';
-import { CoreDom } from '@singletons/dom';
+import { CoreDomUtils } from '@services/utils/dom';
 import { CoreText } from '@singletons/text';
 import { CoreUrl } from '@singletons/url';
 import { CoreWSFile } from '@services/ws';
@@ -103,7 +103,7 @@ export class CoreQuestionBaseComponent<T extends AddonModQuizQuestion = AddonMod
         const questionElement = convertTextToHTMLElement(this.question.html);
 
         // Extract question text.
-        this.question.text = CoreDom.getContentsOfElement(questionElement, '.qtext');
+        this.question.text = CoreDomUtils.getContentsOfElement(questionElement, '.qtext');
         if (this.question.text === undefined) {
             this.logger.warn('Aborting because of an error parsing question.', this.question.slot);
 
@@ -165,7 +165,7 @@ export class CoreQuestionBaseComponent<T extends AddonModQuizQuestion = AddonMod
                 disabled: radioEl.disabled,
             };
             // Get the label with the question text.
-            const label = questionEl.querySelector<HTMLLabelElement>(`label[for="${option.id}"]`);
+            const label = questionEl.querySelector<HTMLLabelElement>('label[for="' + option.id + '"]');
 
             question.optionsName = option.name;
 
@@ -251,7 +251,7 @@ export class CoreQuestionBaseComponent<T extends AddonModQuizQuestion = AddonMod
         }
 
         // Get the accessibility label.
-        const accessibilityLabel = questionEl.querySelector<HTMLLabelElement>(`label[for="${select.id}"]`);
+        const accessibilityLabel = questionEl.querySelector<HTMLLabelElement>('label[for="' + select.id + '"]');
         selectModel.accessibilityLabel = accessibilityLabel?.innerHTML;
 
         question.select = selectModel;
@@ -298,7 +298,7 @@ export class CoreQuestionBaseComponent<T extends AddonModQuizQuestion = AddonMod
 
         if (review) {
             // Search the answer and the attachments.
-            question.answer = CoreDom.getContentsOfElement(questionEl, '.qtype_essay_response');
+            question.answer = CoreDomUtils.getContentsOfElement(questionEl, '.qtype_essay_response');
             question.wordCountInfo = questionEl.querySelector('.answer > p')?.innerHTML;
 
             if (question.parsedSettings) {
@@ -307,7 +307,7 @@ export class CoreQuestionBaseComponent<T extends AddonModQuizQuestion = AddonMod
                 );
             } else {
                 question.attachments = CoreQuestionHelper.getQuestionAttachmentsFromHtml(
-                    CoreDom.getContentsOfElement(questionEl, '.attachments') || '',
+                    CoreDomUtils.getContentsOfElement(questionEl, '.attachments') || '',
                 );
             }
 
@@ -322,9 +322,9 @@ export class CoreQuestionBaseComponent<T extends AddonModQuizQuestion = AddonMod
 
         if (!textarea && (question.hasInlineText || !question.allowsAttachments)) {
             // Textarea not found, we might be in review. Search the answer and the attachments.
-            question.answer = CoreDom.getContentsOfElement(questionEl, '.qtype_essay_response');
+            question.answer = CoreDomUtils.getContentsOfElement(questionEl, '.qtype_essay_response');
             question.attachments = CoreQuestionHelper.getQuestionAttachmentsFromHtml(
-                CoreDom.getContentsOfElement(questionEl, '.attachments') || '',
+                CoreDomUtils.getContentsOfElement(questionEl, '.attachments') || '',
             );
 
             return questionEl;
@@ -457,8 +457,8 @@ export class CoreQuestionBaseComponent<T extends AddonModQuizQuestion = AddonMod
         }
 
         // Remove sequencecheck and validation error.
-        CoreDom.removeElement(content, 'input[name*=sequencecheck]');
-        CoreDom.removeElement(content, '.validationerror');
+        CoreDomUtils.removeElement(content, 'input[name*=sequencecheck]');
+        CoreDomUtils.removeElement(content, '.validationerror');
 
         // Replace Moodle's correct/incorrect and feedback classes with our own.
         CoreQuestionHelper.replaceCorrectnessClasses(element);
@@ -648,7 +648,7 @@ export class CoreQuestionBaseComponent<T extends AddonModQuizQuestion = AddonMod
 
         // Get the prompt.
         const question: AddonModQuizMultichoiceQuestion = this.question;
-        question.prompt = CoreDom.getContentsOfElement(questionEl, '.prompt');
+        question.prompt = CoreDomUtils.getContentsOfElement(questionEl, '.prompt');
 
         // Search radio buttons first (single choice).
         let options = Array.from(questionEl.querySelectorAll<HTMLInputElement>('input[type="radio"]'));
@@ -690,10 +690,10 @@ export class CoreQuestionBaseComponent<T extends AddonModQuizQuestion = AddonMod
 
             // Get the label with the question text. Try the new format first.
             const labelId = element.getAttribute('aria-labelledby');
-            let label = labelId ? questionEl.querySelector(`#${labelId.replace(/:/g, '\\:')}`) : undefined;
+            let label = labelId ? questionEl.querySelector('#' + labelId.replace(/:/g, '\\:')) : undefined;
             if (!label) {
                 // Not found, use the old format.
-                label = questionEl.querySelector(`label[for="${option.id}"]`);
+                label = questionEl.querySelector('label[for="' + option.id + '"]');
             }
             option.class = label?.className || option.class;
 

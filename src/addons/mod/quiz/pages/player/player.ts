@@ -50,12 +50,7 @@ import { CoreTime } from '@singletons/time';
 import { CoreDirectivesRegistry } from '@singletons/directives-registry';
 import { CoreWSError } from '@classes/errors/wserror';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
-import {
-    ADDON_MOD_QUIZ_ATTEMPT_FINISHED_EVENT,
-    AddonModQuizAttemptStates,
-    ADDON_MOD_QUIZ_COMPONENT_LEGACY,
-    ADDON_MOD_QUIZ_COMPONENT,
-} from '../../constants';
+import { ADDON_MOD_QUIZ_ATTEMPT_FINISHED_EVENT, AddonModQuizAttemptStates, ADDON_MOD_QUIZ_COMPONENT } from '../../constants';
 import { CoreWait } from '@singletons/wait';
 import { CoreModals } from '@services/overlays/modals';
 import { CoreLoadings } from '@services/overlays/loadings';
@@ -86,7 +81,7 @@ export default class AddonModQuizPlayerPage implements OnInit, OnDestroy, CanLea
     quiz?: AddonModQuizQuizWSData; // The quiz the attempt belongs to.
     attempt?: QuizAttempt; // The attempt being attempted.
     moduleUrl?: string; // URL to the module in the site.
-    component = ADDON_MOD_QUIZ_COMPONENT_LEGACY; // Component to link the files to.
+    component = ADDON_MOD_QUIZ_COMPONENT; // Component to link the files to.
     loaded = false; // Whether data has been loaded.
     quizAborted = false; // Whether the quiz was aborted due to an error.
     offline = false; // Whether the quiz is being attempted in offline mode.
@@ -842,7 +837,7 @@ export default class AddonModQuizPlayerPage implements OnInit, OnDestroy, CanLea
         await CoreDirectivesRegistry.waitDirectivesReady(this.elementRef.nativeElement, 'core-question');
         await CoreDom.scrollToElement(
             this.elementRef.nativeElement,
-            `#addon-mod_quiz-question-${slot}`,
+            '#addon-mod_quiz-question-' + slot,
         );
     }
 

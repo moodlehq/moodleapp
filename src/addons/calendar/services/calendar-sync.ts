@@ -28,7 +28,7 @@ import { AddonCalendarHelper } from './calendar-helper';
 import { makeSingleton, Translate } from '@singletons';
 import { CoreSync, CoreSyncResult } from '@services/sync';
 import { CoreNetworkError } from '@classes/errors/network-error';
-import { Dayjs } from 'dayjs';
+import moment from 'moment-timezone';
 import {
     ADDON_CALENDAR_AUTO_SYNCED,
     ADDON_CALENDAR_COMPONENT,
@@ -37,7 +37,6 @@ import {
 } from '../constants';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreWSError } from '@classes/errors/wserror';
-import { DEFAULT_TEXT_FORMAT } from '@singletons/text';
 
 /**
  * Service to sync calendar.
@@ -111,7 +110,7 @@ export class AddonCalendarSyncProvider extends CoreSyncBaseProvider<AddonCalenda
             return currentSyncPromise;
         }
 
-        this.logger.debug(`Try to sync calendar events for site ${siteId}`);
+        this.logger.debug('Try to sync calendar events for site ' + siteId);
 
         // Get offline events.
         const syncPromise = this.performSyncEvents(siteId);
@@ -178,7 +177,7 @@ export class AddonCalendarSyncProvider extends CoreSyncBaseProvider<AddonCalenda
 
         // Verify that event isn't blocked.
         if (CoreSync.isBlocked(ADDON_CALENDAR_COMPONENT, eventId, siteId)) {
-            this.logger.debug(`Cannot sync event ${eventId} because it is blocked.`);
+            this.logger.debug('Cannot sync event ' + eventId + ' because it is blocked.');
 
             throw new CoreSyncBlockedError(Translate.instant(
                 'core.errorsyncblocked',
@@ -256,7 +255,7 @@ export class AddonCalendarSyncProvider extends CoreSyncBaseProvider<AddonCalenda
             {
                 description: {
                     text: event.description || '',
-                    format: DEFAULT_TEXT_FORMAT,
+                    format: 1,
                     itemid: 0, // Files not supported yet.
                 },
             },
@@ -310,7 +309,7 @@ export type AddonCalendarSyncEvents = CoreSyncResult & {
     deleted: number[];
     toinvalidate: AddonCalendarSyncInvalidateEvent[];
     source?: string; // Added on pages.
-    dayJS?: Dayjs; // Added on day page.
+    moment?: moment.Moment; // Added on day page.
 };
 
 export type AddonCalendarSyncInvalidateEvent = {

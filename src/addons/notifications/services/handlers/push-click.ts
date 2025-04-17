@@ -21,11 +21,11 @@ import { CorePushNotificationsClickHandler } from '@features/pushnotifications/s
 import { CorePushNotificationsNotificationBasicData } from '@features/pushnotifications/services/pushnotifications';
 import { CoreContentLinksHelper } from '@features/contentlinks/services/contentlinks-helper';
 import { AddonNotifications } from '../notifications';
+import { AddonNotificationsMainMenuHandlerService } from './mainmenu';
 import { AddonNotificationsHelper } from '../notifications-helper';
 import { CoreViewer } from '@features/viewer/services/viewer';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreOpener } from '@singletons/opener';
-import { ADDONS_NOTICATIONS_MAIN_PAGE_NAME } from '@addons/notifications/constants';
 
 /**
  * Handler for non-messaging push notifications clicks.
@@ -121,7 +121,7 @@ export class AddonNotificationsPushClickHandlerService implements CorePushNotifi
         await CorePromiseUtils.ignoreErrors(AddonNotifications.invalidateNotificationsList(notification.site));
 
         await CoreNavigator.navigateToSitePath(
-            `${ADDONS_NOTICATIONS_MAIN_PAGE_NAME}/list`,
+            `${AddonNotificationsMainMenuHandlerService.PAGE_NAME}/list`,
             {
                 siteId: notification.site,
                 preferCurrentTab: false,

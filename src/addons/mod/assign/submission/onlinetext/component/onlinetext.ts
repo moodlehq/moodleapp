@@ -15,18 +15,17 @@
 import { AddonModAssignSubmissionPluginBaseComponent } from '@addons/mod/assign/classes/base-submission-plugin-component';
 import { AddonModAssign } from '@addons/mod/assign/services/assign';
 import { AddonModAssignOffline } from '@addons/mod/assign/services/assign-offline';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ElementRef } from '@angular/core';
 import { FormBuilder, FormControl } from '@angular/forms';
 import { CoreSites } from '@services/sites';
 import { CoreText } from '@singletons/text';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { AddonModAssignSubmissionOnlineTextPluginData } from '../services/handler';
 import { ContextLevel } from '@/core/constants';
-import { ADDON_MOD_ASSIGN_COMPONENT_LEGACY } from '@addons/mod/assign/constants';
+import { ADDON_MOD_ASSIGN_COMPONENT } from '@addons/mod/assign/constants';
 import { CoreViewer } from '@features/viewer/services/viewer';
 import { CoreEditorRichTextEditorComponent } from '@features/editor/components/rich-text-editor/rich-text-editor';
 import { CoreSharedModule } from '@/core/shared.module';
-import { CoreFileHelper } from '@services/file-helper';
 
 /**
  * Component to render an onlinetext submission plugin.
@@ -44,20 +43,22 @@ export class AddonModAssignSubmissionOnlineTextComponent extends AddonModAssignS
 
     control?: FormControl<string>;
     words = 0;
-    component = ADDON_MOD_ASSIGN_COMPONENT_LEGACY;
+    component = ADDON_MOD_ASSIGN_COMPONENT;
     text = '';
     loaded = false;
     wordLimitEnabled = false;
     currentUserId: number;
     wordLimit = 0;
-    isSent = false;
 
     protected wordCountTimeout?: number;
+    protected element: HTMLElement;
 
     constructor(
         protected fb: FormBuilder,
+        element: ElementRef,
     ) {
         super();
+        this.element = element.nativeElement;
         this.currentUserId = CoreSites.getCurrentSiteUserId();
     }
 
@@ -78,19 +79,33 @@ export class AddonModAssignSubmissionOnlineTextComponent extends AddonModAssignS
             if (offlineData && offlineData.plugindata) {
                 // Offline submission, get text if submission is not removed.
                 if (offlineData.plugindata.onlinetext_editor) {
-                    this.text = CoreFileHelper.replacePluginfileUrls(
-                        (<AddonModAssignSubmissionOnlineTextPluginData> offlineData.plugindata).onlinetext_editor.text,
-                        this.plugin.fileareas?.[0]?.files ?? [],
-                    );
-                    this.isSent = false;
+                    this.text = (<AddonModAssignSubmissionOnlineTextPluginData>offlineData.plugindata).onlinetext_editor.text;
                 }
             } else {
                 // No offline data found, return online text.
                 this.text = AddonModAssign.getSubmissionPluginText(this.plugin);
-                this.isSent = true;
             }
 
-            if (this.edit) {
+            // Set the text.
+            if (!this.edit) {
+                // Not editing, see full text when clicked.
+                this.element.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+
+                    if (this.text) {
+                        // Open a new state with the interpolated contents.
+                        CoreViewer.viewText(this.plugin.name, this.text, {
+                            component: this.component,
+                            componentId: this.assign.cmid,
+                            filter: true,
+                            contextLevel: ContextLevel.MODULE,
+                            instanceId: this.assign.cmid,
+                            courseId: this.assign.course,
+                        });
+                    }
+                });
+            } else {
                 // Create and add the control.
                 this.control = this.fb.control(this.text, { nonNullable: true });
             }
@@ -102,27 +117,6 @@ export class AddonModAssignSubmissionOnlineTextComponent extends AddonModAssignS
         } finally {
             this.loaded = true;
         }
-    }
-
-    /**
-     * Open the text in a modal.
-     *
-     * @param e Event.
-     */
-    open(e: Event): void {
-        // Not editing, see full text when clicked.
-        e.preventDefault();
-        e.stopPropagation();
-
-        // Open a new state with the interpolated contents.
-        CoreViewer.viewText(this.plugin.name, this.text, {
-            component: this.component,
-            componentId: this.assign.cmid,
-            filter: true,
-            contextLevel: ContextLevel.MODULE,
-            instanceId: this.assign.cmid,
-            courseId: this.assign.course,
-        });
     }
 
     /**

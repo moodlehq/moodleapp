@@ -30,19 +30,6 @@ export async function getEditorServices(): Promise<Type<unknown>[]> {
     ];
 }
 
-/**
- * Get directives and components for site plugins.
- *
- * @returns Returns directives and components.
- */
-export async function getEditorExportedDirectives(): Promise<Type<unknown>[]> {
-    const { CoreEditorRichTextEditorComponent } = await import('@features/editor/components/rich-text-editor/rich-text-editor');
-
-    return [
-        CoreEditorRichTextEditorComponent,
-    ];
-}
-
 @NgModule({
     providers: [
         {

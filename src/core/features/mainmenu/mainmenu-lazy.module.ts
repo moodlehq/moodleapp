@@ -16,7 +16,8 @@ import { Injector, NgModule } from '@angular/core';
 import { ROUTES, Routes } from '@angular/router';
 
 import { resolveMainMenuRoutes } from './mainmenu-routing.module';
-import { MAIN_MENU_HOME_PAGE_NAME, MAIN_MENU_MORE_PAGE_NAME } from './constants';
+import { CoreMainMenuHomeHandlerService } from './services/handlers/mainmenu';
+import { MAIN_MENU_MORE_PAGE_NAME } from './constants';
 
 /**
  * Build module routes.
@@ -31,9 +32,9 @@ function buildRoutes(injector: Injector): Routes {
         {
             path: '',
             loadComponent: () => import('@features/mainmenu/pages/menu/menu'),
-            loadChildren: () => [
+            children: [
                 {
-                    path: MAIN_MENU_HOME_PAGE_NAME,
+                    path: CoreMainMenuHomeHandlerService.PAGE_NAME,
                     loadChildren: () => import('./mainmenu-home-lazy.module'),
                 },
                 {

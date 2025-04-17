@@ -19,7 +19,7 @@ import { CoreFileSession } from '@services/file-session';
 import { CoreDom } from '@singletons/dom';
 import { AddonModDataFieldPluginBaseComponent } from '../../../classes/base-field-plugin-component';
 import { CoreFile } from '@services/file';
-import { ADDON_MOD_DATA_COMPONENT_LEGACY } from '@addons/mod/data/constants';
+import { ADDON_MOD_DATA_COMPONENT } from '@addons/mod/data/constants';
 import { CoreSharedModule } from '@/core/shared.module';
 
 /**
@@ -83,22 +83,22 @@ export class AddonModDataFieldPictureComponent extends AddonModDataFieldPluginBa
      */
     protected init(): void {
         if (this.searchMode) {
-            this.addControl(`f_${this.field.id}`);
+            this.addControl('f_' + this.field.id);
 
             return;
         }
 
-        this.component = ADDON_MOD_DATA_COMPONENT_LEGACY;
+        this.component = ADDON_MOD_DATA_COMPONENT;
         this.componentId = this.database!.coursemodule;
 
         this.updateValue(this.value);
 
         if (this.editMode) {
             this.maxSizeBytes = parseInt(this.field.param3, 10);
-            CoreFileSession.setFiles(this.component, `${this.database!.id}_${this.field.id}`, this.files);
+            CoreFileSession.setFiles(this.component, this.database!.id + '_' + this.field.id, this.files);
 
             const alttext = (this.value && this.value.content1) || '';
-            this.addControl(`f_${this.field.id}_alttext`, alttext);
+            this.addControl('f_' + this.field.id + '_alttext', alttext);
         }
     }
 
@@ -113,7 +113,7 @@ export class AddonModDataFieldPictureComponent extends AddonModDataFieldPluginBa
         // Get image or thumb.
         if (files.length > 0) {
             const filenameSeek = this.listMode
-                ? `thumb_${value?.content}`
+                ? 'thumb_' + value?.content
                 : value?.content;
             this.image = this.findFile(files, filenameSeek || '');
 

@@ -35,12 +35,7 @@ import {
     CoreCoursesMyCoursesUpdatedEventAction,
     CORE_COURSES_STATE_FAVOURITE,
     CORE_COURSES_STATE_HIDDEN,
-    CORE_COURSES_DOWNLOAD_FEATURE_NAME,
-    CORE_COURSE_DOWNLOAD_FEATURE_NAME,
-    CORE_COURSES_MYCOURSES_MENU_FEATURE_NAME,
-    CORE_COURSES_SEARCH_FEATURE_NAME,
 } from '../constants';
-import { CoreTextFormat } from '@singletons/text';
 
 declare module '@singletons/events' {
 
@@ -130,7 +125,7 @@ export class CoreCoursesProvider {
         const site = await CoreSites.getSite(siteId);
 
         // Get parent when id is the root category.
-        const criteriaKey = categoryId === 0 ? 'parent' : 'id';
+        const criteriaKey = categoryId == 0 ? 'parent' : 'id';
         const params: CoreCourseGetCategoriesWSParams = {
             criteria: [
                 {
@@ -171,7 +166,7 @@ export class CoreCoursesProvider {
         const site = await CoreSites.getSite(siteId);
 
         const siteHomeId = site.getSiteHomeId();
-        if (courseIds.length === 1) {
+        if (courseIds.length == 1) {
             // Only 1 course, check if it belongs to the user courses. If so, use all user courses.
             return this.getCourseIdsIfEnrolled(courseIds[0], siteId);
         }
@@ -203,11 +198,11 @@ export class CoreCoursesProvider {
             const courses = await this.getUserCourses(true, siteId);
             let useAllCourses = false;
 
-            if (courseId === siteHomeId) {
+            if (courseId == siteHomeId) {
                 // It's site home, use all courses.
                 useAllCourses = true;
             } else {
-                useAllCourses = !!courses.find((course) => course.id === courseId);
+                useAllCourses = !!courses.find((course) => course.id == courseId);
             }
 
             if (useAllCourses) {
@@ -250,7 +245,7 @@ export class CoreCoursesProvider {
     isDownloadCourseDisabledInSite(site?: CoreSite): boolean {
         site = site || CoreSites.getCurrentSite();
 
-        return !site || site.isOfflineDisabled() || site.isFeatureDisabled(CORE_COURSE_DOWNLOAD_FEATURE_NAME);
+        return !site || site.isOfflineDisabled() || site.isFeatureDisabled('NoDelegate_CoreCourseDownload');
     }
 
     /**
@@ -274,7 +269,7 @@ export class CoreCoursesProvider {
     isDownloadCoursesDisabledInSite(site?: CoreSite): boolean {
         site = site || CoreSites.getCurrentSite();
 
-        return !site || site.isOfflineDisabled() || site.isFeatureDisabled(CORE_COURSES_DOWNLOAD_FEATURE_NAME);
+        return !site || site.isOfflineDisabled() || site.isFeatureDisabled('NoDelegate_CoreCoursesDownload');
     }
 
     /**
@@ -298,7 +293,7 @@ export class CoreCoursesProvider {
     isMyCoursesDisabledInSite(site?: CoreSite): boolean {
         site = site || CoreSites.getCurrentSite();
 
-        return !site || site.isFeatureDisabled(CORE_COURSES_MYCOURSES_MENU_FEATURE_NAME);
+        return !site || site.isFeatureDisabled('CoreMainMenuDelegate_CoreCourses');
     }
 
     /**
@@ -322,7 +317,7 @@ export class CoreCoursesProvider {
     isSearchCoursesDisabledInSite(site?: CoreSite): boolean {
         site = site || CoreSites.getCurrentSite();
 
-        return !site || site.isFeatureDisabled(CORE_COURSES_SEARCH_FEATURE_NAME);
+        return !site || site.isFeatureDisabled('CoreCourseOptionsDelegate_search');
     }
 
     /**
@@ -335,7 +330,7 @@ export class CoreCoursesProvider {
     async getCourse(id: number, siteId?: string): Promise<CoreCourseGetCoursesData> {
         const courses = await this.getCourses([id], siteId);
 
-        if (courses?.length > 0) {
+        if (courses && courses.length > 0) {
             return courses[0];
         }
 
@@ -380,6 +375,10 @@ export class CoreCoursesProvider {
      * @returns Promise resolved with the courses.
      */
     async getCourses(ids: number[], siteId?: string): Promise<CoreCourseGetCoursesWSResponse> {
+        if (!Array.isArray(ids)) {
+            throw Error('ids parameter should be an array');
+        }
+
         if (ids.length === 0) {
             return [];
         }
@@ -420,14 +419,14 @@ export class CoreCoursesProvider {
      * @returns Promise resolved with the field and value to use.
      */
     protected async fixCoursesByFieldParams(
-        field = '',
+        field: string = '',
         value: number | string = '',
         siteId?: string,
     ): Promise<{ field: string; value: number | string }> {
 
-        if (field === 'id' || field === 'ids') {
+        if (field == 'id' || field == 'ids') {
             let courseIds: number[];
-            if (typeof value === 'string') {
+            if (typeof value == 'string') {
                 courseIds = value.split(',').map((id) => parseInt(id, 10));
             } else {
                 courseIds = [value];
@@ -464,7 +463,7 @@ export class CoreCoursesProvider {
     async getCourseByField(field?: string, value?: string | number, siteId?: string): Promise<CoreCourseSearchedData> {
         const courses = await this.getCoursesByField(field, value, siteId);
 
-        if (courses?.length > 0) {
+        if (courses && courses.length > 0) {
             return courses[0];
         }
 
@@ -485,12 +484,12 @@ export class CoreCoursesProvider {
      * @param siteId Site ID. If not defined, use current site.
      * @returns Promise resolved with the courses.
      */
-    async getCoursesByField(
+    getCoursesByField(
         field: string = '',
         value: string | number = '',
         siteId?: string,
     ): Promise<CoreCourseSearchedData[]> {
-        return await firstValueFrom(this.getCoursesByFieldObservable(field, value, { siteId }));
+        return firstValueFrom(this.getCoursesByFieldObservable(field, value, { siteId }));
     }
 
     /**
@@ -521,7 +520,7 @@ export class CoreCoursesProvider {
             // Fix params. Tries to use cached data, no need to use observer.
             const fieldParams = await this.fixCoursesByFieldParams(field, value, siteId);
 
-            const hasChanged = fieldParams.field !== field || fieldParams.value !== value;
+            const hasChanged = fieldParams.field != field || fieldParams.value != value;
             field = fieldParams.field;
             value = fieldParams.value;
             const data: CoreCourseGetCoursesByFieldWSParams = {
@@ -545,7 +544,7 @@ export class CoreCoursesProvider {
                     throw Error('WS core_course_get_courses_by_field failed');
                 }
 
-                if (field === 'ids' && hasChanged) {
+                if (field == 'ids' && hasChanged) {
                     // The list of courses requestes was changed to optimize it.
                     // Return only the ones that were being requested.
                     const courseIds = String(originalValue).split(',').map((id) => parseInt(id, 10));
@@ -594,12 +593,12 @@ export class CoreCoursesProvider {
      * @returns Promise resolved with the list of courses.
      * @since 3.8
      */
-    async getEnrolledCoursesByCustomField(
+    getEnrolledCoursesByCustomField(
         customFieldName: string,
         customFieldValue: string,
         siteId?: string,
-    ): Promise<CoreCourseSummaryExporterData[]> {
-        return await firstValueFrom(this.getEnrolledCoursesByCustomFieldObservable(customFieldName, customFieldValue, {
+    ): Promise<CoreCourseSummaryData[]> {
+        return firstValueFrom(this.getEnrolledCoursesByCustomFieldObservable(customFieldName, customFieldValue, {
             readingStrategy: CoreSitesReadingStrategy.PREFER_NETWORK,
             siteId,
         }));
@@ -618,7 +617,7 @@ export class CoreCoursesProvider {
         customFieldName: string,
         customFieldValue: string,
         options: CoreSitesCommonWSOptions,
-    ): WSObservable<CoreCourseSummaryExporterData[]> {
+    ): WSObservable<CoreCourseSummaryData[]> {
         return asyncObservable(async () => {
             const site = await CoreSites.getSite(options. siteId);
 
@@ -646,14 +645,14 @@ export class CoreCoursesProvider {
      * @param siteId Site ID. If not defined, current site.
      * @returns Promise resolved with the options for each course.
      */
-    async getCoursesAdminAndNavOptions(
+    getCoursesAdminAndNavOptions(
         courseIds: number[],
         siteId?: string,
     ): Promise<{
             navOptions: CoreCourseUserAdminOrNavOptionCourseIndexed;
             admOptions: CoreCourseUserAdminOrNavOptionCourseIndexed;
         }> {
-        return await firstValueFrom(this.getCoursesAdminAndNavOptionsObservable(courseIds, { siteId }));
+        return firstValueFrom(this.getCoursesAdminAndNavOptionsObservable(courseIds, { siteId }));
     }
 
     /**
@@ -707,7 +706,7 @@ export class CoreCoursesProvider {
      * @returns Promise resolved with courses.
      * @since 3.6
      */
-    async getRecentCourses(options: CoreCourseGetRecentCoursesOptions = {}): Promise<CoreCourseSummaryExporterData[]> {
+    async getRecentCourses(options: CoreCourseGetRecentCoursesOptions = {}): Promise<CoreCourseSummaryData[]> {
         const site = await CoreSites.getSite(options.siteId);
 
         const userId = options.userId || site.getUserId();
@@ -721,7 +720,7 @@ export class CoreCoursesProvider {
             cacheKey: this.getRecentCoursesCacheKey(userId),
         };
 
-        return site.read<CoreCourseGetRecentCoursesWSResponse>('core_course_get_recent_courses', params, preSets);
+        return site.read<CoreCourseSummaryData[]>('core_course_get_recent_courses', params, preSets);
     }
 
     /**
@@ -750,11 +749,11 @@ export class CoreCoursesProvider {
      * @param options Options.
      * @returns Promise resolved with administration options for each course.
      */
-    async getUserAdministrationOptions(
+    getUserAdministrationOptions(
         courseIds: number[],
         options?: CoreSitesCommonWSOptions,
     ): Promise<CoreCourseUserAdminOrNavOptionCourseIndexed> {
-        return await firstValueFrom(this.getUserAdministrationOptionsObservable(courseIds, options));
+        return firstValueFrom(this.getUserAdministrationOptionsObservable(courseIds, options));
     }
 
     /**
@@ -820,11 +819,11 @@ export class CoreCoursesProvider {
      * @param options Options.
      * @returns Promise resolved with navigation options for each course.
      */
-    async getUserNavigationOptions(
+    getUserNavigationOptions(
         courseIds: number[],
         options?: CoreSitesCommonWSOptions,
     ): Promise<CoreCourseUserAdminOrNavOptionCourseIndexed> {
-        return await firstValueFrom(this.getUserNavigationOptionsObservable(courseIds, options));
+        return firstValueFrom(this.getUserNavigationOptionsObservable(courseIds, options));
     }
 
     /**
@@ -872,10 +871,10 @@ export class CoreCoursesProvider {
      * @returns Formatted options.
      */
     protected formatUserAdminOrNavOptions(courses: CoreCourseUserAdminOrNavOption[]): CoreCourseUserAdminOrNavOptionCourseIndexed {
-        const result: CoreCourseUserAdminOrNavOptionCourseIndexed = {};
+        const result = {};
 
         courses.forEach((course) => {
-            const options: CoreCourseUserAdminOrNavOptionIndexed = {};
+            const options = {};
 
             if (course.options) {
                 course.options.forEach((option) => {
@@ -899,9 +898,13 @@ export class CoreCoursesProvider {
      * @returns Promise resolved with the course.
      */
     async getUserCourse(id: number, preferCache?: boolean, siteId?: string): Promise<CoreEnrolledCourseData> {
+        if (!id) {
+            throw Error('Invalid id parameter on getUserCourse');
+        }
+
         const courses = await this.getUserCourses(preferCache, siteId);
 
-        const course = courses.find((course) => course.id === id);
+        const course = courses.find((course) => course.id == id);
 
         if (course) {
             return course;
@@ -918,14 +921,14 @@ export class CoreCoursesProvider {
      * @param strategy Reading strategy.
      * @returns Promise resolved with the courses.
      */
-    async getUserCourses(
+    getUserCourses(
         preferCache: boolean = false,
         siteId?: string,
         strategy?: CoreSitesReadingStrategy,
     ): Promise<CoreEnrolledCourseData[]> {
         strategy = strategy ?? (preferCache ? CoreSitesReadingStrategy.PREFER_CACHE : undefined);
 
-        return await firstValueFrom(this.getUserCoursesObservable({
+        return firstValueFrom(this.getUserCoursesObservable({
             readingStrategy: strategy,
             siteId,
         }));
@@ -1038,6 +1041,7 @@ export class CoreCoursesProvider {
      * @param categoryId Category ID to get.
      * @param addSubcategories If it should add subcategories to the list.
      * @param siteId Site Id. If not defined, use current site.
+     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateCategories(categoryId: number, addSubcategories?: boolean, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -1050,9 +1054,10 @@ export class CoreCoursesProvider {
      *
      * @param id Course ID.
      * @param siteId Site Id. If not defined, use current site.
+     * @returns Promise resolved when the data is invalidated.
      */
-    async invalidateCourse(id: number, siteId?: string): Promise<void> {
-        await this.invalidateCourses([id], siteId);
+    invalidateCourse(id: number, siteId?: string): Promise<void> {
+        return this.invalidateCourses([id], siteId);
     }
 
     /**
@@ -1086,6 +1091,7 @@ export class CoreCoursesProvider {
      *
      * @param courseIds IDs of courses to get.
      * @param siteId Site ID to invalidate. If not defined, use current site.
+     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateCoursesAdminAndNavOptions(courseIds: number[], siteId?: string): Promise<void> {
         siteId = siteId || CoreSites.getCurrentSiteId();
@@ -1104,6 +1110,7 @@ export class CoreCoursesProvider {
      *
      * @param ids Courses IDs.
      * @param siteId Site Id. If not defined, use current site.
+     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateCourses(ids: number[], siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -1117,6 +1124,7 @@ export class CoreCoursesProvider {
      * @param field See getCoursesByField for info.
      * @param value The value to match.
      * @param siteId Site Id. If not defined, use current site.
+     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateCoursesByField(field: string = '', value: number | string = '', siteId?: string): Promise<void> {
         if (typeof value === 'string' && value.length === 0) {
@@ -1131,7 +1139,7 @@ export class CoreCoursesProvider {
 
         const site = await CoreSites.getSite(siteId);
 
-        await site.invalidateWsCacheForKey(this.getCoursesByFieldCacheKey(field, value));
+        return site.invalidateWsCacheForKey(this.getCoursesByFieldCacheKey(field, value));
     }
 
     /**
@@ -1139,6 +1147,7 @@ export class CoreCoursesProvider {
      *
      * @param userId User ID. If not defined, current user.
      * @param siteId Site Id. If not defined, use current site.
+     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateRecentCourses(userId?: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -1150,6 +1159,7 @@ export class CoreCoursesProvider {
      * Invalidates all user administration options.
      *
      * @param siteId Site ID to invalidate. If not defined, use current site.
+     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateUserAdministrationOptions(siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -1162,6 +1172,7 @@ export class CoreCoursesProvider {
      *
      * @param courseIds IDs of courses.
      * @param siteId Site ID to invalidate. If not defined, use current site.
+     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateUserAdministrationOptionsForCourses(courseIds: number[], siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -1173,6 +1184,7 @@ export class CoreCoursesProvider {
      * Invalidates get user courses WS call.
      *
      * @param siteId Site ID to invalidate. If not defined, use current site.
+     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateUserCourses(siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -1184,6 +1196,7 @@ export class CoreCoursesProvider {
      * Invalidates all user navigation options.
      *
      * @param siteId Site ID to invalidate. If not defined, use current site.
+     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateUserNavigationOptions(siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -1196,6 +1209,7 @@ export class CoreCoursesProvider {
      *
      * @param courseIds IDs of courses.
      * @param siteId Site ID to invalidate. If not defined, use current site.
+     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateUserNavigationOptionsForCourses(courseIds: number[], siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -1308,7 +1322,7 @@ export class CoreCoursesProvider {
      * @param enable True to enable, false to disable.
      */
     setCourseDownloadOptionsEnabled(enable: boolean): void {
-        if (this.downloadOptionsEnabled === enable) {
+        if (this.downloadOptionsEnabled == enable) {
             return;
         }
 
@@ -1371,7 +1385,7 @@ export type CoreCourseBasicData = {
     displayname?: string; // Course display name.
     shortname: string; // Course short name.
     summary: string; // Summary.
-    summaryformat?: CoreTextFormat; // Summary format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
+    summaryformat: number; // Summary format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
     categoryid?: number; // Course category id.
 };
 
@@ -1590,32 +1604,25 @@ type CoreCourseGetCoursesWSParams = {
 export type CoreCourseGetCoursesWSResponse = CoreCourseGetCoursesData[];
 
 /**
- * Type for exporting a course summary.
- * This relates to LMS course_summary_exporter, do not modify unless the exporter changes.
+ * Course data exported by course_summary_exporter;
  */
-export type CoreCourseSummaryExporterData = {
-    id: number; // Id.
-    fullname: string; // Fullname.
-    shortname: string; // Shortname.
+export type CoreCourseSummaryData = CoreCourseBasicData & { // Course.
     idnumber: string; // Idnumber.
-    summary: string; // Summary.
-    summaryformat?: CoreTextFormat; // Summary format (1 = HTML, 0 = MOODLE, 2 = PLAIN, or 4 = MARKDOWN).
     startdate: number; // Startdate.
     enddate: number; // Enddate.
-    visible: boolean; // @since 3.8. Visible.
-    showactivitydates: boolean | null; // @since 3.11. Whether the activity dates are shown or not.
-    showcompletionconditions: boolean | null; // @since 3.11. Whether the activity completion conditions are shown or not.
-    pdfexportfont: string; // Pdfexportfont.
+    visible: boolean; // Visible.
+    showactivitydates: boolean; // Showactivitydates.
+    showcompletionconditions: boolean; // Showcompletionconditions.
     fullnamedisplay: string; // Fullnamedisplay.
     viewurl: string; // Viewurl.
-    courseimage: string; // @since 3.6. Courseimage.
-    progress?: number; // @since 3.6. Progress.
-    hasprogress: boolean; // @since 3.6. Hasprogress.
-    isfavourite: boolean; // @since 3.6. Isfavourite.
-    hidden: boolean; // @since 3.6. Hidden.
-    timeaccess?: number; // @since 3.6. Timeaccess.
-    showshortname: boolean; // @since 3.6. Showshortname.
-    coursecategory: string; // @since 3.7. Coursecategory.
+    courseimage: string; // Courseimage.
+    progress?: number; // Progress.
+    hasprogress: boolean; // Hasprogress.
+    isfavourite: boolean; // Isfavourite.
+    hidden: boolean; // Hidden.
+    timeaccess?: number; // Timeaccess.
+    showshortname: boolean; // Showshortname.
+    coursecategory: string; // Coursecategory.
 };
 
 /**
@@ -1634,7 +1641,7 @@ type CoreCourseGetEnrolledCoursesByTimelineClassificationWSParams = {
  * Data returned by core_course_get_enrolled_courses_by_timeline_classification WS.
  */
 export type CoreCourseGetEnrolledCoursesByTimelineClassificationWSResponse = {
-    courses: CoreCourseSummaryExporterData[];
+    courses: CoreCourseSummaryData[];
     nextoffset: number; // Offset for the next request.
 };
 
@@ -1672,7 +1679,7 @@ export type CoreCategoryData = {
     name: string; // Category name.
     idnumber?: string; // Category id number.
     description: string; // Category description.
-    descriptionformat: CoreTextFormat; // Description format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
+    descriptionformat: number; // Description format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
     parent: number; // Parent category id.
     sortorder: number; // Category sorting order.
     coursecount: number; // Number of courses in this category.
@@ -1748,13 +1755,6 @@ export type CoreCourseGetRecentCoursesWSParams = {
     offset?: number; // Result set offset.
     sort?: string; // Sort string.
 };
-
-/**
- * Data returned by core_course_get_recent_courses WS.
- *
- * WS Description: List of courses a user has accessed most recently.
- */
-export type CoreCourseGetRecentCoursesWSResponse = CoreCourseSummaryExporterData[];
 
 /**
  * Options for getRecentCourses.

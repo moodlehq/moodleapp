@@ -33,7 +33,7 @@ import {
 import { AddonModLessonAnswerData, AddonModLessonHelper } from '../../services/lesson-helper';
 import { CoreTime } from '@singletons/time';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
-import { ADDON_MOD_LESSON_COMPONENT_LEGACY } from '../../constants';
+import { ADDON_MOD_LESSON_COMPONENT } from '../../constants';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreAlerts } from '@services/overlays/alerts';
 import { CoreSharedModule } from '@/core/shared.module';
@@ -52,7 +52,7 @@ import { CoreSharedModule } from '@/core/shared.module';
 })
 export default class AddonModLessonUserRetakePage implements OnInit {
 
-    component = ADDON_MOD_LESSON_COMPONENT_LEGACY;
+    component = ADDON_MOD_LESSON_COMPONENT;
     lesson?: AddonModLessonLessonWSData; // The lesson the retake belongs to.
     courseId!: number; // Course ID the lesson belongs to.
     selectedRetake?: number; // The retake to see.

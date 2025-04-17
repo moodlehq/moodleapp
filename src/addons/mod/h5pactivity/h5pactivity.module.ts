@@ -30,7 +30,7 @@ import { canLeaveGuard } from '@guards/can-leave';
 const routes: Routes = [
     {
         path: ADDON_MOD_H5PACTIVITY_PAGE_NAME,
-        loadChildren: () => [
+        children: [
             {
                 path: ':courseId/:cmId',
                 loadComponent: () => import('./pages/index/index'),

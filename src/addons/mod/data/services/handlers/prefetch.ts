@@ -14,9 +14,9 @@
 
 import { asyncInstance } from '@/core/utils/async-instance';
 import {
-    ADDON_MOD_DATA_COMPONENT,
-    ADDON_MOD_DATA_COMPONENT_LEGACY,
-    ADDON_MOD_DATA_MODNAME,
+    ADDON_MOD_DATA_PREFETCH_COMPONENT,
+    ADDON_MOD_DATA_PREFETCH_MODNAME,
+    ADDON_MOD_DATA_PREFETCH_NAME,
 } from '@addons/mod/data/constants';
 import { CoreCourseActivityPrefetchHandlerBase } from '@features/course/classes/activity-prefetch-handler';
 import { CoreCourseModulePrefetchHandler } from '@features/course/services/module-prefetch-delegate';
@@ -24,9 +24,9 @@ import type { AddonModDataPrefetchHandlerLazyService } from '@addons/mod/data/se
 
 export class AddonModDataPrefetchHandlerService extends CoreCourseActivityPrefetchHandlerBase {
 
-    name = ADDON_MOD_DATA_COMPONENT;
-    modName = ADDON_MOD_DATA_MODNAME;
-    component = ADDON_MOD_DATA_COMPONENT_LEGACY;
+    name = ADDON_MOD_DATA_PREFETCH_NAME;
+    modName = ADDON_MOD_DATA_PREFETCH_MODNAME;
+    component = ADDON_MOD_DATA_PREFETCH_COMPONENT;
     updatesNames = /^configuration$|^.*files$|^entries$|^gradeitems$|^outcomes$|^comments$|^ratings/;
 
 }

@@ -13,16 +13,16 @@
 // limitations under the License.
 
 import { CoreCourseActivityPrefetchHandlerBase } from '@features/course/classes/activity-prefetch-handler';
-import { ADDON_MOD_CHAT_COMPONENT, ADDON_MOD_CHAT_MODNAME, ADDON_MOD_CHAT_COMPONENT_LEGACY } from '../../constants';
+import { ADDON_MOD_CHAT_PREFETCH_COMPONENT, ADDON_MOD_CHAT_PREFETCH_MODNAME, ADDON_MOD_CHAT_PREFETCH_NAME } from '../../constants';
 import { CoreCourseModulePrefetchHandler } from '@features/course/services/module-prefetch-delegate';
 import { asyncInstance } from '@/core/utils/async-instance';
 import type { AddonModChatPrefetchHandlerLazyService } from './prefetch-lazy';
 
 export class AddonModChatPrefetchHandlerService extends CoreCourseActivityPrefetchHandlerBase {
 
-    name = ADDON_MOD_CHAT_COMPONENT;
-    modName = ADDON_MOD_CHAT_MODNAME;
-    component = ADDON_MOD_CHAT_COMPONENT_LEGACY;
+    name = ADDON_MOD_CHAT_PREFETCH_NAME;
+    modName = ADDON_MOD_CHAT_PREFETCH_MODNAME;
+    component = ADDON_MOD_CHAT_PREFETCH_COMPONENT;
 
 }
 

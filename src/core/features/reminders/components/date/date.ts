@@ -14,8 +14,9 @@
 
 import { CoreReminders } from '@features/reminders/services/reminders';
 import { Component, Input, OnInit } from '@angular/core';
-import { CoreTime } from '@singletons/time';
+import { CoreTimeUtils } from '@services/utils/time';
 import { Translate } from '@singletons';
+import { CoreTime } from '@singletons/time';
 import { CoreSharedModule } from '@/core/shared.module';
 import { CoreRemindersSetButtonComponent } from '../set-button/set-button';
 
@@ -59,7 +60,7 @@ export class CoreRemindersDateComponent implements OnInit {
         }
 
         const remindersEnabled = CoreReminders.isEnabled();
-        this.showReminderButton = remindersEnabled && this.time > CoreTime.timestamp();
+        this.showReminderButton = remindersEnabled && this.time > CoreTimeUtils.timestamp();
 
         if (!this.showReminderButton) {
             return;
@@ -83,15 +84,15 @@ export class CoreRemindersDateComponent implements OnInit {
      */
     protected getReadableTime(timestamp: number, relativeTo = 0): string {
         if (!relativeTo) {
-            return CoreTime.userDate(timestamp * 1000, 'core.strftimedatetime', true);
+            return CoreTimeUtils.userDate(timestamp * 1000, 'core.strftimedatetime', true);
         }
 
         return Translate.instant(
-            `core.course.relativedatessubmissionduedate${timestamp > relativeTo ? 'after' : 'before'}`,
+            'core.course.relativedatessubmissionduedate' + (timestamp > relativeTo ? 'after' : 'before'),
             {
                 $a: {
                     datediffstr: relativeTo === timestamp ?
-                        `0 ${Translate.instant('core.secs')}` :
+                        '0 ' + Translate.instant('core.secs') :
                         CoreTime.formatTime(relativeTo - timestamp, 3),
                 },
             },

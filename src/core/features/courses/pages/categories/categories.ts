@@ -99,7 +99,7 @@ export default class CoreCoursesCategoriesPage implements OnInit, OnDestroy {
                 ws: 'core_course_get_categories',
                 name: this.title,
                 data: { categoryid: this.categoryId, category: 'course' },
-                url: `/course/index.php${this.categoryId > 0 ? `?categoryid=${this.categoryId}` : ''}`,
+                url: '/course/index.php' + (this.categoryId > 0 ? `?categoryid=${this.categoryId}` : ''),
             });
         });
     }
@@ -129,9 +129,23 @@ export default class CoreCoursesCategoriesPage implements OnInit, OnDestroy {
      */
     protected async fetchCategories(): Promise<void> {
         try {
+
+            const STANDARD_UNIT_CAT_ID:number = 9;
+            const SELECTED_UNIT_CAT_ID:number = 10;
+
             const categories: CoreCategoryData[] = await CoreCourses.getCategories(this.categoryId, true);
 
+            //this.categoryId
+            if(this.categoryId == STANDARD_UNIT_CAT_ID || STANDARD_UNIT_CAT_ID ==  SELECTED_UNIT_CAT_ID) {
+                const categories_standard_units: CoreCategoryData[] = await CoreCourses.getCategories(STANDARD_UNIT_CAT_ID, true);
+                const categories_selected_units: CoreCategoryData[] = await CoreCourses.getCategories(SELECTED_UNIT_CAT_ID, true);
+                const categories: CoreCategoryData[] = [...categories_standard_units, ...categories_selected_units];
+            }
+
+
             this.currentCategory = undefined;
+
+
 
             const index = categories.findIndex((category) => category.id == this.categoryId);
 
@@ -140,6 +154,12 @@ export default class CoreCoursesCategoriesPage implements OnInit, OnDestroy {
                 // Delete current Category to avoid problems with the formatTree.
                 delete categories[index];
             }
+
+
+           // console.log('******************** categories ********************');
+            //console.log(this.currentCategory);
+            //console.log('******************** end categories ********************');
+
 
             // Sort by depth and sortorder to avoid problems formatting Tree.
             categories.sort((a, b) => {
@@ -150,7 +170,10 @@ export default class CoreCoursesCategoriesPage implements OnInit, OnDestroy {
                 return a.depth > b.depth ? 1 : -1;
             });
 
-            this.categories = CoreUtils.formatTree(categories, 'parent', 'id', this.categoryId);
+           // this.categories = CoreUtils.formatTree(categories, 'parent', 'id', this.categoryId);
+            this.categories = [...CoreUtils.formatTree(categories, 'parent', 'id', STANDARD_UNIT_CAT_ID), ...CoreUtils.formatTree(categories, 'parent', 'id', SELECTED_UNIT_CAT_ID)];
+           // console.log(this.categories);
+
 
             if (this.currentCategory) {
                 this.title = this.currentCategory.name;
@@ -164,6 +187,8 @@ export default class CoreCoursesCategoriesPage implements OnInit, OnDestroy {
                     });
                 }
             }
+
+
 
             this.logView();
         } catch (error) {
@@ -198,7 +223,7 @@ export default class CoreCoursesCategoriesPage implements OnInit, OnDestroy {
      */
     openCategory(categoryId: number): void {
         CoreNavigator.navigateToSitePath(
-            `courses/categories/${categoryId}`,
+            'courses/categories/' + categoryId,
             { params: {
                 enrolled: this.showOnlyEnrolled,
             } },

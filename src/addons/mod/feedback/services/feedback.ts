@@ -21,11 +21,11 @@ import { CoreFilepool } from '@services/filepool';
 import { CoreSites, CoreSitesCommonWSOptions, CoreSitesReadingStrategy } from '@services/sites';
 import { CoreObject } from '@singletons/object';
 import { CoreWSExternalFile, CoreWSExternalWarning, CoreWSStoredFile } from '@services/ws';
-import { makeSingleton } from '@singletons';
+import { makeSingleton, Translate } from '@singletons';
 import { AddonModFeedbackOffline } from './feedback-offline';
 import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
 import {
-    ADDON_MOD_FEEDBACK_COMPONENT_LEGACY,
+    ADDON_MOD_FEEDBACK_COMPONENT,
     ADDON_MOD_FEEDBACK_FORM_SUBMITTED,
     ADDON_MOD_FEEDBACK_LINE_SEP,
     ADDON_MOD_FEEDBACK_MULTICHOICE_ADJUST_SEP,
@@ -33,14 +33,10 @@ import {
     ADDON_MOD_FEEDBACK_MULTICHOICERATED_VALUE_SEP,
     ADDON_MOD_FEEDBACK_PER_PAGE,
     AddonModFeedbackIndexTabName,
-    AddonModFeedbackMultichoiceSubtype,
-    AddonModFeedbackQuestionType,
 } from '../constants';
 import { CoreCacheUpdateFrequency } from '@/core/constants';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreWSError } from '@classes/errors/wserror';
-import { CoreTextFormat } from '@singletons/text';
-import { CoreCourseModuleHelper } from '@features/course/services/course-module-helper';
 
 /**
  * Service that provides some features for feedbacks.
@@ -66,10 +62,10 @@ export class AddonModFeedbackProvider {
         }
 
         switch (depend.typ) {
-            case AddonModFeedbackQuestionType.LABEL:
+            case 'label':
                 return false;
-            case AddonModFeedbackQuestionType.MULTICHOICE:
-            case AddonModFeedbackQuestionType.MULTICHOICERATED:
+            case 'multichoice':
+            case 'multichoicerated':
                 return this.compareDependItemMultichoice(depend, item.dependvalue);
             default:
                 break;
@@ -87,19 +83,17 @@ export class AddonModFeedbackProvider {
      */
     protected compareDependItemMultichoice(item: AddonModFeedbackItem, dependValue: string): boolean {
         const parts = item.presentation.split(ADDON_MOD_FEEDBACK_MULTICHOICE_TYPE_SEP) || [];
-        const subtype = parts.length > 0 && parts[0]
-            ? parts[0] as AddonModFeedbackMultichoiceSubtype
-            : AddonModFeedbackMultichoiceSubtype.RADIO;
+        const subtype = parts.length > 0 && parts[0] ? parts[0] : 'r';
 
         const choicesStr = (parts[1] || '').split(ADDON_MOD_FEEDBACK_MULTICHOICE_ADJUST_SEP)[0] || '';
         const choices = choicesStr.split(ADDON_MOD_FEEDBACK_LINE_SEP) || [];
         let values: AddonModFeedbackResponseValue[];
 
-        if (subtype === AddonModFeedbackMultichoiceSubtype.CHECKBOX) {
+        if (subtype === 'c') {
             if (item.rawValue === undefined) {
                 values = [''];
             } else {
-                item.rawValue = `${item.rawValue}`;
+                item.rawValue = '' + item.rawValue;
                 values = item.rawValue.split(ADDON_MOD_FEEDBACK_LINE_SEP);
             }
         } else {
@@ -111,7 +105,7 @@ export class AddonModFeedbackProvider {
                 if (values[x] == index + 1) {
                     let value = choices[index];
 
-                    if (item.typ === AddonModFeedbackQuestionType.MULTICHOICERATED) {
+                    if (item.typ == 'multichoicerated') {
                         value = value.split(ADDON_MOD_FEEDBACK_MULTICHOICERATED_VALUE_SEP)[1] || '';
                     }
 
@@ -203,9 +197,7 @@ export class AddonModFeedbackProvider {
             }
 
             // Treat multichoice checkboxes.
-            if (item.typ === AddonModFeedbackQuestionType.MULTICHOICE &&
-                item.presentation.split(ADDON_MOD_FEEDBACK_MULTICHOICE_TYPE_SEP)[0] ===
-                AddonModFeedbackMultichoiceSubtype.CHECKBOX) {
+            if (item.typ === 'multichoice' && item.presentation.split(ADDON_MOD_FEEDBACK_MULTICHOICE_TYPE_SEP)[0] === 'c') {
 
                 offlineValues[item.id] = offlineValues[item.id].filter((value) => Number(value) > 0);
                 item.rawValue = offlineValues[item.id].join(ADDON_MOD_FEEDBACK_LINE_SEP);
@@ -324,7 +316,7 @@ export class AddonModFeedbackProvider {
         };
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getAnalysisDataCacheKey(feedbackId, options.groupId),
-            component: ADDON_MOD_FEEDBACK_COMPONENT_LEGACY,
+            component: ADDON_MOD_FEEDBACK_COMPONENT,
             componentId: options.cmId,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
         };
@@ -354,7 +346,7 @@ export class AddonModFeedbackProvider {
      * @returns Cache key.
      */
     protected getAnalysisDataPrefixCacheKey(feedbackId: number): string {
-        return `${this.getFeedbackDataPrefixCacheKey(feedbackId)}:analysis:`;
+        return this.getFeedbackDataPrefixCacheKey(feedbackId) + ':analysis:';
     }
 
     /**
@@ -421,7 +413,7 @@ export class AddonModFeedbackProvider {
      * @returns Cache key.
      */
     protected getCompletedDataCacheKey(feedbackId: number): string {
-        return `${this.getFeedbackDataPrefixCacheKey(feedbackId)}:completed:`;
+        return this.getFeedbackDataPrefixCacheKey(feedbackId) + ':completed:';
     }
 
     /**
@@ -439,7 +431,7 @@ export class AddonModFeedbackProvider {
         };
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getCurrentCompletedTimeModifiedDataCacheKey(feedbackId),
-            component: ADDON_MOD_FEEDBACK_COMPONENT_LEGACY,
+            component: ADDON_MOD_FEEDBACK_COMPONENT,
             componentId: options.cmId,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
         };
@@ -465,7 +457,7 @@ export class AddonModFeedbackProvider {
      * @returns Cache key.
      */
     protected getCurrentCompletedTimeModifiedDataCacheKey(feedbackId: number): string {
-        return `${this.getFeedbackDataPrefixCacheKey(feedbackId)}:completedtime:`;
+        return this.getFeedbackDataPrefixCacheKey(feedbackId) + ':completedtime:';
     }
 
     /**
@@ -486,7 +478,7 @@ export class AddonModFeedbackProvider {
         };
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getCurrentValuesDataCacheKey(feedbackId),
-            component: ADDON_MOD_FEEDBACK_COMPONENT_LEGACY,
+            component: ADDON_MOD_FEEDBACK_COMPONENT,
             componentId: options.cmId,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
         };
@@ -518,7 +510,7 @@ export class AddonModFeedbackProvider {
      * @returns Cache key.
      */
     protected getCurrentValuesDataCacheKey(feedbackId: number): string {
-        return `${this.getFeedbackDataPrefixCacheKey(feedbackId)}:currentvalues`;
+        return this.getFeedbackDataPrefixCacheKey(feedbackId) + ':currentvalues';
     }
 
     /**
@@ -539,7 +531,7 @@ export class AddonModFeedbackProvider {
         };
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getFeedbackAccessInformationDataCacheKey(feedbackId),
-            component: ADDON_MOD_FEEDBACK_COMPONENT_LEGACY,
+            component: ADDON_MOD_FEEDBACK_COMPONENT,
             componentId: options.cmId,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
         };
@@ -554,7 +546,7 @@ export class AddonModFeedbackProvider {
      * @returns Cache key.
      */
     protected getFeedbackAccessInformationDataCacheKey(feedbackId: number): string {
-        return `${this.getFeedbackDataPrefixCacheKey(feedbackId)}:access`;
+        return this.getFeedbackDataPrefixCacheKey(feedbackId) + ':access';
     }
 
     /**
@@ -564,7 +556,7 @@ export class AddonModFeedbackProvider {
      * @returns Cache key.
      */
     protected getFeedbackCacheKey(courseId: number): string {
-        return `${AddonModFeedbackProvider.ROOT_CACHE_KEY}feedback:${courseId}`;
+        return AddonModFeedbackProvider.ROOT_CACHE_KEY + 'feedback:' + courseId;
     }
 
     /**
@@ -588,8 +580,8 @@ export class AddonModFeedbackProvider {
      */
     protected async getFeedbackDataByKey(
         courseId: number,
-        key: 'id' | 'coursemodule',
-        value: number,
+        key: string,
+        value: unknown,
         options: CoreSitesCommonWSOptions = {},
     ): Promise<AddonModFeedbackWSFeedback> {
         const site = await CoreSites.getSite(options.siteId);
@@ -600,7 +592,7 @@ export class AddonModFeedbackProvider {
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getFeedbackCacheKey(courseId),
             updateFrequency: CoreCacheUpdateFrequency.RARELY,
-            component: ADDON_MOD_FEEDBACK_COMPONENT_LEGACY,
+            component: ADDON_MOD_FEEDBACK_COMPONENT,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
         };
 
@@ -610,7 +602,12 @@ export class AddonModFeedbackProvider {
             preSets,
         );
 
-        return CoreCourseModuleHelper.getActivityByField(response.feedbacks, key, value);
+        const currentFeedback = response.feedbacks.find((feedback) => feedback[key] == value);
+        if (currentFeedback) {
+            return currentFeedback;
+        }
+
+        throw new CoreError(Translate.instant('core.course.modulenotfound'));
     }
 
     /**
@@ -653,7 +650,7 @@ export class AddonModFeedbackProvider {
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getItemsDataCacheKey(feedbackId),
             updateFrequency: CoreCacheUpdateFrequency.SOMETIMES,
-            component: ADDON_MOD_FEEDBACK_COMPONENT_LEGACY,
+            component: ADDON_MOD_FEEDBACK_COMPONENT,
             componentId: options.cmId,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
         };
@@ -668,7 +665,7 @@ export class AddonModFeedbackProvider {
      * @returns Cache key.
      */
     protected getItemsDataCacheKey(feedbackId: number): string {
-        return `${this.getFeedbackDataPrefixCacheKey(feedbackId)}:items`;
+        return this.getFeedbackDataPrefixCacheKey(feedbackId) + ':items';
     }
 
     /**
@@ -695,7 +692,7 @@ export class AddonModFeedbackProvider {
         };
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getNonRespondentsDataCacheKey(feedbackId, options.groupId),
-            component: ADDON_MOD_FEEDBACK_COMPONENT_LEGACY,
+            component: ADDON_MOD_FEEDBACK_COMPONENT,
             componentId: options.cmId,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
         };
@@ -721,7 +718,7 @@ export class AddonModFeedbackProvider {
      * @returns Cache key.
      */
     protected getNonRespondentsDataPrefixCacheKey(feedbackId: number): string {
-        return `${this.getFeedbackDataPrefixCacheKey(feedbackId)}:nonrespondents:`;
+        return this.getFeedbackDataPrefixCacheKey(feedbackId) + ':nonrespondents:';
     }
 
     /**
@@ -780,7 +777,7 @@ export class AddonModFeedbackProvider {
                     return false;
                 }
 
-                if (item.typ === AddonModFeedbackQuestionType.PAGEBREAK) {
+                if (item.typ == 'pagebreak') {
                     currentPage++;
 
                     return false;
@@ -871,7 +868,7 @@ export class AddonModFeedbackProvider {
         };
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getResponsesAnalysisDataCacheKey(feedbackId, options.groupId),
-            component: ADDON_MOD_FEEDBACK_COMPONENT_LEGACY,
+            component: ADDON_MOD_FEEDBACK_COMPONENT,
             componentId: options.cmId,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
         };
@@ -897,7 +894,7 @@ export class AddonModFeedbackProvider {
      * @returns Cache key.
      */
     protected getResponsesAnalysisDataPrefixCacheKey(feedbackId: number): string {
-        return `${this.getFeedbackDataPrefixCacheKey(feedbackId)}:responsesanalysis:`;
+        return this.getFeedbackDataPrefixCacheKey(feedbackId) + ':responsesanalysis:';
     }
 
     /**
@@ -915,7 +912,7 @@ export class AddonModFeedbackProvider {
         };
         const preSets = {
             cacheKey: this.getResumePageDataCacheKey(feedbackId),
-            component: ADDON_MOD_FEEDBACK_COMPONENT_LEGACY,
+            component: ADDON_MOD_FEEDBACK_COMPONENT,
             componentId: options.cmId,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
         };
@@ -933,7 +930,7 @@ export class AddonModFeedbackProvider {
      * @returns Cache key.
      */
     protected getResumePageDataCacheKey(feedbackId: number): string {
-        return `${this.getFeedbackDataPrefixCacheKey(feedbackId)}:launch`;
+        return this.getFeedbackDataPrefixCacheKey(feedbackId) + ':launch';
     }
 
     /**
@@ -941,6 +938,7 @@ export class AddonModFeedbackProvider {
      *
      * @param feedbackId Feedback ID.
      * @param siteId Site ID. If not defined, current site.
+     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateAllFeedbackData(feedbackId: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -953,11 +951,12 @@ export class AddonModFeedbackProvider {
      *
      * @param feedbackId Feedback ID.
      * @param siteId Site ID. If not defined, current site.
+     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateAnalysisData(feedbackId: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
 
-        await site.invalidateWsCacheForKeyStartingWith(this.getAnalysisDataPrefixCacheKey(feedbackId));
+        return site.invalidateWsCacheForKeyStartingWith(this.getAnalysisDataPrefixCacheKey(feedbackId));
     }
 
     /**
@@ -967,6 +966,7 @@ export class AddonModFeedbackProvider {
      * @param moduleId The module ID.
      * @param courseId Course ID of the module.
      * @param siteId Site ID. If not defined, current site.
+     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateContent(moduleId: number, courseId: number, siteId?: string): Promise<void> {
         siteId = siteId || CoreSites.getCurrentSiteId();
@@ -984,11 +984,12 @@ export class AddonModFeedbackProvider {
      *
      * @param feedbackId Feedback ID.
      * @param siteId Site ID. If not defined, current site.
+     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateCurrentValuesData(feedbackId: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
 
-        await site.invalidateWsCacheForKey(this.getCurrentValuesDataCacheKey(feedbackId));
+        return site.invalidateWsCacheForKey(this.getCurrentValuesDataCacheKey(feedbackId));
     }
 
     /**
@@ -996,11 +997,12 @@ export class AddonModFeedbackProvider {
      *
      * @param feedbackId Feedback ID.
      * @param siteId Site ID. If not defined, current site.
+     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateFeedbackAccessInformationData(feedbackId: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
 
-        await site.invalidateWsCacheForKey(this.getFeedbackAccessInformationDataCacheKey(feedbackId));
+        return site.invalidateWsCacheForKey(this.getFeedbackAccessInformationDataCacheKey(feedbackId));
     }
 
     /**
@@ -1008,11 +1010,12 @@ export class AddonModFeedbackProvider {
      *
      * @param courseId Course ID.
      * @param siteId Site ID. If not defined, current site.
+     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateFeedbackData(courseId: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
 
-        await site.invalidateWsCacheForKey(this.getFeedbackCacheKey(courseId));
+        return site.invalidateWsCacheForKey(this.getFeedbackCacheKey(courseId));
     }
 
     /**
@@ -1020,9 +1023,10 @@ export class AddonModFeedbackProvider {
      *
      * @param moduleId The module ID.
      * @param siteId Site ID. If not defined, current site.
+     * @returns Promise resolved when the files are invalidated.
      */
     async invalidateFiles(moduleId: number, siteId?: string): Promise<void> {
-        await CoreFilepool.invalidateFilesByComponent(siteId, ADDON_MOD_FEEDBACK_COMPONENT_LEGACY, moduleId);
+        return CoreFilepool.invalidateFilesByComponent(siteId, ADDON_MOD_FEEDBACK_COMPONENT, moduleId);
     }
 
     /**
@@ -1030,6 +1034,7 @@ export class AddonModFeedbackProvider {
      *
      * @param feedbackId Feedback ID.
      * @param siteId Site ID. If not defined, current site.
+     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateNonRespondentsData(feedbackId: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -1042,6 +1047,7 @@ export class AddonModFeedbackProvider {
      *
      * @param feedbackId Feedback ID.
      * @param siteId Site ID. If not defined, current site.
+     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateResponsesAnalysisData(feedbackId: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -1054,6 +1060,7 @@ export class AddonModFeedbackProvider {
      *
      * @param feedbackId Feedback ID.
      * @param siteId Site ID. If not defined, current site.
+     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateResumePageData(feedbackId: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -1077,7 +1084,7 @@ export class AddonModFeedbackProvider {
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getCompletedDataCacheKey(feedbackId),
             updateFrequency: CoreCacheUpdateFrequency.RARELY,
-            component: ADDON_MOD_FEEDBACK_COMPONENT_LEGACY,
+            component: ADDON_MOD_FEEDBACK_COMPONENT,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
         };
 
@@ -1101,7 +1108,7 @@ export class AddonModFeedbackProvider {
         await CoreCourseLogHelper.log(
             'mod_feedback_view_feedback',
             params,
-            ADDON_MOD_FEEDBACK_COMPONENT_LEGACY,
+            ADDON_MOD_FEEDBACK_COMPONENT,
             id,
             siteId,
         );
@@ -1293,7 +1300,7 @@ export type AddonModFeedbackWSItem = {
     name: string; // The item name.
     label: string; // The item label.
     presentation: string; // The text describing the item or the available possible answers.
-    typ: AddonModFeedbackQuestionType; // The type of the item.
+    typ: string; // The type of the item.
     hasvalue: number; // Whether it has a value or not.
     position: number; // The position in the list of questions.
     required: boolean; // Whether is a item (question) required or not.
@@ -1452,8 +1459,7 @@ export type AddonModFeedbackWSFeedback = {
     course: number; // Course id this feedback is part of.
     name: string; // Feedback name.
     intro: string; // Feedback introduction text.
-    introformat?: CoreTextFormat; // Intro format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
-    lang: string; // Forced activity language.
+    introformat?: number; // Intro format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
     anonymous: number; // Whether the feedback is anonymous.
     // eslint-disable-next-line @typescript-eslint/naming-convention
     email_notification?: boolean; // Whether email notifications will be sent to teachers.
@@ -1465,7 +1471,7 @@ export type AddonModFeedbackWSFeedback = {
     // eslint-disable-next-line @typescript-eslint/naming-convention
     page_after_submit?: string; // Text to display after submission.
     // eslint-disable-next-line @typescript-eslint/naming-convention
-    page_after_submitformat?: CoreTextFormat; // Page_after_submit format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
+    page_after_submitformat?: number; // Page_after_submit format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
     // eslint-disable-next-line @typescript-eslint/naming-convention
     publish_stats: boolean; // Whether stats should be published.
     timeopen?: number; // Allow answers from this time.

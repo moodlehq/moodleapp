@@ -18,7 +18,7 @@ import { Routes } from '@angular/router';
 import { CoreMainMenuTabRoutingModule } from '@features/mainmenu/mainmenu-tab-routing.module';
 import { CORE_SITE_SCHEMAS } from '@services/sites';
 import { CoreCourseFormatModule } from '@features/course/format/formats.module';
-import { COURSE_SITE_SCHEMA, COURSE_OFFLINE_SITE_SCHEMA } from './services/database/course';
+import { SITE_SCHEMA, OFFLINE_SITE_SCHEMA } from './services/database/course';
 import { SITE_SCHEMA as LOG_SITE_SCHEMA } from './services/database/log';
 import { SITE_SCHEMA as PREFETCH_SITE_SCHEMA } from './services/database/module-prefetch';
 import { CoreCourseModulePrefetchDelegate } from './services/module-prefetch-delegate';
@@ -41,8 +41,6 @@ import { CORE_COURSE_PAGE_NAME, CORE_COURSE_CONTENTS_PAGE_NAME } from './constan
 export async function getCourseServices(): Promise<Type<unknown>[]> {
     const { CoreCourseProvider } = await import('@features/course/services/course');
     const { CoreCourseHelperProvider } = await import('@features/course/services/course-helper');
-    const { CoreCourseModuleHelperService } = await import('@features/course/services/course-module-helper');
-    const { CoreCourseDownloadStatusHelperService } = await import('@features/course/services/course-download-status-helper');
     const { CoreCourseLogHelperProvider } = await import('@features/course/services/log-helper');
     const { CoreCourseFormatDelegateService } = await import('@features/course/services/format-delegate');
     const { CoreCourseModuleDelegateService } = await import('@features/course/services/module-delegate');
@@ -54,8 +52,6 @@ export async function getCourseServices(): Promise<Type<unknown>[]> {
     return [
         CoreCourseProvider,
         CoreCourseHelperProvider,
-        CoreCourseModuleHelperService,
-        CoreCourseDownloadStatusHelperService,
         CoreCourseLogHelperProvider,
         CoreCourseFormatDelegateService,
         CoreCourseModuleDelegateService,
@@ -83,13 +79,10 @@ export async function getCourseExportedObjects(): Promise<Record<string, unknown
         CORE_COURSE_COMPONENT,
         CORE_COURSE_CORE_MODULES,
     } = await import('@features/course/constants');
-
-    // Export components that are used from JS code instead of in templates. E.g. when opening a modal or in a handler.
     const { CoreCourseUnsupportedModuleComponent } =
         await import ('@features/course/components/unsupported-module/unsupported-module');
     const { CoreCourseFormatSingleActivityComponent } =
         await import ('@features/course/format/singleactivity/components/singleactivity');
-    const { CoreCourseCourseIndexComponent } = await import('@features/course/components/course-index/course-index');
 
     /* eslint-disable @typescript-eslint/naming-convention */
     return {
@@ -97,7 +90,6 @@ export async function getCourseExportedObjects(): Promise<Record<string, unknown
         CoreCourseResourcePrefetchHandlerBase,
         CoreCourseUnsupportedModuleComponent,
         CoreCourseFormatSingleActivityComponent,
-        CoreCourseCourseIndexComponent,
         CoreCourseAccessDataType,
         CORE_COURSE_ALL_SECTIONS_ID,
         CORE_COURSE_STEALTH_MODULES_SECTION_ID,
@@ -110,40 +102,24 @@ export async function getCourseExportedObjects(): Promise<Record<string, unknown
 }
 
 /**
- * Get directives and components for site plugins.
+ * Get standalone components for site plugins.
  *
- * @returns Returns directives and components.
+ * @returns Returns standalone components.
  */
-export async function getCourseExportedDirectives(): Promise<Type<unknown>[]> {
-    const { CoreCourseFormatComponent } = await import('@features/course/components/course-format/course-format');
-    const { CoreCourseSectionComponent } = await import('@features/course/components/course-section/course-section');
-    const { CoreCourseModuleComponent } = await import('@features/course/components/module/module');
-    const { CoreCourseModuleCompletionComponent } = await import('@features/course/components/module-completion/module-completion');
-    const { CoreCourseModuleCompletionLegacyComponent } =
-        await import('@features/course/components/module-completion-legacy/module-completion-legacy');
-    const { CoreCourseModuleInfoComponent } = await import('@features/course/components/module-info/module-info');
-    const { CoreCourseModuleNavigationComponent } = await import('@features/course/components/module-navigation/module-navigation');
-
-    const { CoreCourseDownloadModuleMainFileDirective } = await import('@features/course/directives/download-module-main-file');
-
+export async function getCourseStandaloneComponents(): Promise<Type<unknown>[]> {
     // eslint-disable-next-line deprecation/deprecation
     const { CoreCourseModuleDescriptionComponent } =
         await import('@features/course/components/module-description/module-description');
     // eslint-disable-next-line deprecation/deprecation
     const { CoreCourseModuleManualCompletionComponent } =
         await import('@features/course/components/module-manual-completion/module-manual-completion');
+    const { CoreCourseFormatComponent } =
+        await import('@features/course/components/course-format/course-format');
 
     return [
         CoreCourseModuleDescriptionComponent,
         CoreCourseModuleManualCompletionComponent,
         CoreCourseFormatComponent,
-        CoreCourseSectionComponent,
-        CoreCourseModuleComponent,
-        CoreCourseModuleCompletionComponent,
-        CoreCourseModuleCompletionLegacyComponent,
-        CoreCourseModuleInfoComponent,
-        CoreCourseModuleNavigationComponent,
-        CoreCourseDownloadModuleMainFileDirective,
     ];
 }
 
@@ -170,7 +146,7 @@ const courseIndexRoutes: Routes = [
     providers: [
         {
             provide: CORE_SITE_SCHEMAS,
-            useValue: [COURSE_SITE_SCHEMA, COURSE_OFFLINE_SITE_SCHEMA, LOG_SITE_SCHEMA, PREFETCH_SITE_SCHEMA],
+            useValue: [SITE_SCHEMA, OFFLINE_SITE_SCHEMA, LOG_SITE_SCHEMA, PREFETCH_SITE_SCHEMA],
             multi: true,
         },
         {

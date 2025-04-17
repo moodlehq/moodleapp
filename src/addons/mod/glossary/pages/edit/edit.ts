@@ -19,10 +19,10 @@ import { CoreError } from '@classes/errors/error';
 import { CoreNetworkError } from '@classes/errors/network-error';
 import { CoreFileUploader, CoreFileUploaderStoreFilesResult } from '@features/fileuploader/services/fileuploader';
 import { CanLeave } from '@guards/can-leave';
-import { CoreFileEntry, CoreFileHelper } from '@services/file-helper';
+import { CoreFileEntry } from '@services/file-helper';
 import { CoreNavigator } from '@services/navigator';
 import { CoreNetwork } from '@services/network';
-import { CoreSites, CoreSitesReadingStrategy } from '@services/sites';
+import { CoreSites } from '@services/sites';
 import { CoreText } from '@singletons/text';
 import { CoreWSError } from '@classes/errors/wserror';
 import { Translate } from '@singletons';
@@ -38,7 +38,7 @@ import {
 import { AddonModGlossaryHelper } from '../../services/glossary-helper';
 import { AddonModGlossaryOffline } from '../../services/glossary-offline';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
-import { ADDON_MOD_GLOSSARY_COMPONENT_LEGACY } from '../../constants';
+import { ADDON_MOD_GLOSSARY_COMPONENT } from '../../constants';
 import { CoreLoadings } from '@services/overlays/loadings';
 import { CoreAlerts } from '@services/overlays/alerts';
 import { CoreEditorRichTextEditorComponent } from '@features/editor/components/rich-text-editor/rich-text-editor';
@@ -60,7 +60,7 @@ export default class AddonModGlossaryEditPage implements OnInit, CanLeave {
 
     @ViewChild('editFormEl') formElement?: ElementRef;
 
-    component = ADDON_MOD_GLOSSARY_COMPONENT_LEGACY;
+    component = ADDON_MOD_GLOSSARY_COMPONENT;
     cmId!: number;
     courseId!: number;
     loaded = false;
@@ -106,11 +106,7 @@ export default class AddonModGlossaryEditPage implements OnInit, CanLeave {
                 this.editorExtraParams.timecreated = timecreated;
                 this.handler = new AddonModGlossaryOfflineFormHandler(this, timecreated);
             } else if (entrySlug) {
-                // Get the entry content unfiltered to edit it.
-                const { entry } = await AddonModGlossary.getEntry(Number(entrySlug), {
-                    readingStrategy: CoreSitesReadingStrategy.ONLY_NETWORK,
-                    filter: false,
-                });
+                const { entry } = await AddonModGlossary.getEntry(Number(entrySlug));
 
                 this.entry = entry;
                 this.editorExtraParams.timecreated = entry.timecreated;
@@ -303,7 +299,7 @@ abstract class AddonModGlossaryFormHandler {
         const data = this.page.data;
         const itemId = await CoreFileUploader.uploadOrReuploadFiles(
             data.attachments,
-            ADDON_MOD_GLOSSARY_COMPONENT_LEGACY,
+            ADDON_MOD_GLOSSARY_COMPONENT,
             glossary.id,
         );
 
@@ -645,10 +641,7 @@ class AddonModGlossaryOnlineFormHandler extends AddonModGlossaryFormHandler {
         const data = this.page.data;
 
         data.concept = this.entry.concept;
-        data.definition = CoreFileHelper.replacePluginfileUrls(
-            this.entry.definition,
-            this.entry.definitioninlinefiles || [],
-        );
+        data.definition = this.entry.definition || '';
         data.timecreated = this.entry.timecreated;
         data.usedynalink = this.entry.usedynalink;
 
@@ -685,10 +678,7 @@ class AddonModGlossaryOnlineFormHandler extends AddonModGlossaryFormHandler {
 
         const data = this.page.data;
         const options = this.getSaveOptions(glossary);
-        const definition = CoreText.formatHtmlLines(CoreFileHelper.restorePluginfileUrls(
-            data.definition,
-            this.entry.definitioninlinefiles || [],
-        ));
+        const definition = CoreText.formatHtmlLines(data.definition);
 
         // Upload attachments, if any.
         const attachmentsId = await this.uploadAttachments();
