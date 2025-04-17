@@ -1,5 +1,5 @@
 <ion-card *ngIf="module.handlerData && module.visibleoncoursepage !== 0"
-    class="activity-card core-course-module-handler {{module.handlerData.class}}" [class.core-course-module-with-view]="moduleHasView"
+    class="activity-card core-course-module-handler {{module.handlerData.class}} trace" [class.core-course-module-with-view]="moduleHasView"
     [class.item-dimmed]="module.visible === 0 || module.uservisible === false" (click)="moduleClicked($event)"
     [attr.tappable]="module.handlerData.action && module.uservisible ? '' : null"
     [class.ion-activatable]="module.handlerData.action && module.uservisible"
@@ -7,108 +7,32 @@
     <ng-container *ngIf="!module.handlerData.loading">
         <ion-item class="ion-text-wrap">
             <ion-label>
+
+
                 <div class="activity-main">
+
+
+
                     <core-mod-icon *ngIf="module.handlerData.icon" [modicon]="module.handlerData.icon" [modname]="module.modname"
                         [componentId]="module.instance" [fallbackTranslation]="module.modplural" [purpose]="module.purpose"
                         [isBranded]="module.branded" />
-                    <div class="activity-title">
-                        <p class="item-heading">
-                            @if (module.handlerData.action && module.uservisible) {
-                                <span (ariaButtonClick)="moduleClicked($event)">
-                                    <ng-container *ngTemplateOutlet="title" />
-                                </span>
-                            } @else {
-                                <ng-container *ngTemplateOutlet="title" />
-                            }
-                            <ng-template #title>
-                                <core-format-text [text]="module.handlerData.title" contextLevel="module" [contextInstanceId]="module.id"
-                                    [courseId]="module.course"
-                                    [attr.aria-label]="module.handlerData.a11yTitle + ', ' + modNameTranslated" />
-                            </ng-template>
-                            <ion-icon name="fas-lock" *ngIf="module.visible === 0 || module.uservisible === false"
-                                [attr.aria-label]="'core.restricted' | translate" />
-                            <ion-icon *ngIf="prefetchStatusIcon$ | async as prefetchStatusIcon" [name]="prefetchStatusIcon" color="success"
-                                [attr.aria-label]="((prefetchStatusText$ | async) || '') | translate" />
-                        </p>
 
-                        <div class="core-module-additional-info" *ngIf="module.visible === 0 || (module.visible !== 0 && module.isStealth)">
-                            <!-- Hidden badges -->
-                            <ion-badge color="secondary" *ngIf="module.visible === 0" class="ion-text-wrap">
-                                <ion-icon name="far-eye-slash" aria-hidden="true" />
-                                {{ 'core.course.hiddenfromstudents' | translate }}
-                            </ion-badge>
-                            <ion-badge color="secondary" *ngIf="module.visible !== 0 && module.isStealth" class="ion-text-wrap">
-                                <ion-icon name="fas-eye-low-vision" aria-hidden="true" />
-                                {{ 'core.course.hiddenoncoursepage' | translate }}
-                            </ion-badge>
-                        </div>
-                    </div>
-                    <!-- Buttons. -->
-                    <div *ngIf="module.uservisible !== false" class="core-module-buttons">
-                        <!-- Module completion (legacy). -->
-                        <core-course-module-completion-legacy *ngIf="module.completiondata && showLegacyCompletion"
-                            [completion]="module.completiondata" [moduleName]="module.name" [moduleId]="module.id"
-                            (completionChanged)="completionChanged.emit($event)" />
 
-                        <!-- Activity completion. For tablets -->
-                        <core-course-module-completion *ngIf="hasCompletion && !showLegacyCompletion" [completion]="module.completiondata"
-                            [moduleName]="module.name" [moduleId]="module.id" [showCompletionConditions]="showCompletionConditions"
-                            [showManualCompletion]="showManualCompletion" (completionChanged)="completionChanged.emit($event)" />
-
-                        <!-- Button defined by the module handler. -->
-                        <ion-button fill="clear" class="core-module-button-more core-animate-show-hide" *ngIf="module.handlerData.button"
-                            [hidden]="module.handlerData.button.hidden || module.handlerData.spinner" (click)="buttonClicked($event)"
-                            [attr.aria-label]="module.handlerData.button.label | translate:{$a: module.handlerData.title}">
-                            <ion-icon [name]="module.handlerData.button.icon" slot="icon-only" aria-hidden="true" />
-                        </ion-button>
-
-                        <!-- @deprecated since 4.3. Buttons defined by the module handler. -->
-                        <ion-button fill="clear" class="core-module-button-more core-animate-show-hide"
-                            *ngIf="!module.handlerData.button && module.handlerData.buttons &&  module.handlerData.buttons[0]"
-                            [hidden]="module.handlerData.buttons[0].hidden || module.handlerData.spinner" (click)="buttonClicked($event)"
-                            [attr.aria-label]="module.handlerData.buttons[0].label | translate:{$a: module.handlerData.title}">
-                            <ion-icon [name]="module.handlerData.buttons[0].icon" slot="icon-only" aria-hidden="true" />
-                        </ion-button>
-                    </div>
                 </div>
 
-                <!-- Activity dates. -->
-                <div *ngIf="showActivityDates && module.dates?.length" class="activity-dates activity-extra">
-                    <core-reminders-date *ngFor="let date of module.dates" [type]="date.id" [label]="date.label" [time]="date.timestamp"
-                        [relativeTo]="date.relativeto" />
-                </div>
 
-                <!-- Activity completion. -->
+
+                <!-- Activity completion.
                 <core-course-module-completion class="activity-extra" *ngIf="hasCompletion && !showLegacyCompletion"
                     [completion]="module.completiondata" [moduleName]="module.name" [moduleId]="module.id"
                     [showCompletionConditions]="showCompletionConditions" [showManualCompletion]="showManualCompletion"
                     (completionChanged)="completionChanged.emit($event)" />
-
-
-                <!-- Description and restrictions -->
-                <div *ngIf="module.description || (showAvailability && module.availabilityinfo)" id="activity-{{module.id}}-collapsible"
-                    class="ion-text-wrap activity-description-availabilityinfo activity-extra" [collapsible-item]="64">
-                    <core-format-text class="core-module-description" *ngIf="module.description" [text]="module.description"
-                        contextLevel="module" [contextInstanceId]="module.id" [courseId]="module.course" />
-
-                    <!-- Availability info -->
-                    <div *ngIf="showAvailability && module.availabilityinfo" class="core-module-availabilityinfo colored-box-with-icon">
-                        <ion-icon name="fas-lock" [attr.aria-label]="'core.restricted' | translate" />
-                        <core-format-text [text]="module.availabilityinfo" contextLevel="module" [contextInstanceId]="module.id"
-                            [courseId]="module.course" />
-                    </div>
-                </div>
-
-                <div *ngIf="showExtra && module.handlerData.extraBadge" class="ion-text-wrap activity-extrabadges activity-extra"
-                    [innerHTML]="module.handlerData.extraBadge"></div>
+                    -->
             </ion-label>
 
         </ion-item>
 
-        <div class="core-course-last-module-viewed colored-box-with-icon" *ngIf="isLastViewed">
-            <ion-icon name="fas-eye" aria-hidden="true" />
-            {{ 'core.course.lastaccessedactivity' | translate }}
-        </div>
+
 
         @if (module.handlerData.action && module.uservisible) {
             <ion-ripple-effect />

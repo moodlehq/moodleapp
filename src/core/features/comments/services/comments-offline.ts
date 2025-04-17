@@ -14,7 +14,7 @@
 
 import { Injectable } from '@angular/core';
 import { CoreSites } from '@services/sites';
-import { CoreTime } from '@singletons/time';
+import { CoreTimeUtils } from '@services/utils/time';
 import { makeSingleton } from '@singletons';
 import { COMMENTS_TABLE, COMMENTS_DELETED_TABLE, CoreCommentsDBRecord, CoreCommentsDeletedDBRecord } from './database/comments';
 import { ContextLevel } from '@/core/constants';
@@ -236,7 +236,7 @@ export class CoreCommentsOfflineProvider {
         siteId?: string,
     ): Promise<CoreCommentsDBRecord> {
         const site = await CoreSites.getSite(siteId);
-        const now = CoreTime.timestamp();
+        const now = CoreTimeUtils.timestamp();
         const data: CoreCommentsDBRecord = {
             contextlevel: contextLevel,
             instanceid: instanceId,
@@ -274,7 +274,7 @@ export class CoreCommentsOfflineProvider {
         siteId?: string,
     ): Promise<void> {
         const site = await CoreSites.getSite(siteId);
-        const now = CoreTime.timestamp();
+        const now = CoreTimeUtils.timestamp();
         const data: CoreCommentsDeletedDBRecord = {
             contextlevel: contextLevel,
             instanceid: instanceId,

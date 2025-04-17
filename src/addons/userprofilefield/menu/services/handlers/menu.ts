@@ -53,7 +53,7 @@ export class AddonUserProfileFieldMenuHandlerService implements CoreUserProfileF
         registerAuth: string,
         formValues: CoreFormFields,
     ): Promise<CoreUserProfileFieldHandlerData | undefined> {
-        const name = `profile_field_${field.shortname}`;
+        const name = 'profile_field_' + field.shortname;
 
         if (formValues[name]) {
             return {

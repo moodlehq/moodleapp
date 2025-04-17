@@ -29,7 +29,6 @@ import { CoreAnyError } from '@classes/errors/error';
 import { CoreErrorHelper } from '@services/error-helper';
 import { ADDON_NOTES_AUTO_SYNCED } from './constants';
 import { CorePromiseUtils } from '@singletons/promise-utils';
-import { DEFAULT_TEXT_FORMAT } from '@singletons/text';
 
 /**
  * Service to sync notes.
@@ -122,7 +121,7 @@ export class AddonNotesSyncProvider extends CoreSyncBaseProvider<AddonNotesSyncR
             return currentSyncPromise;
         }
 
-        this.logger.debug(`Try to sync notes for course ${courseId}`);
+        this.logger.debug('Try to sync notes for course ' + courseId);
 
         const syncPromise = this.performSyncNotes(courseId, siteId);
 
@@ -166,7 +165,7 @@ export class AddonNotesSyncProvider extends CoreSyncBaseProvider<AddonNotesSyncR
             publishstate: note.publishstate,
             courseid: note.courseid,
             text: note.content,
-            format: DEFAULT_TEXT_FORMAT,
+            format: 1,
         }));
 
         // Send the notes.

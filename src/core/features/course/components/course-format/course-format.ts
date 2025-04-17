@@ -66,8 +66,6 @@ import { CoreInfiniteLoadingComponent } from '@components/infinite-loading/infin
 import { CoreSite } from '@classes/sites/site';
 import { CoreCourseSectionComponent, CoreCourseSectionToDisplay } from '../course-section/course-section';
 import { CoreAlerts } from '@services/overlays/alerts';
-import { CoreCourseModuleHelper } from '@features/course/services/course-module-helper';
-import { ADDON_STORAGE_MANAGER_PAGE_NAME } from '@addons/storagemanager/constants';
 
 /**
  * Component to display course contents using a certain format. If the format isn't found, use default one.
@@ -400,7 +398,7 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
             return;
         }
 
-        const viewedModules = await CoreCourseModuleHelper.getViewedModules(this.course.id);
+        const viewedModules = await CoreCourse.getViewedModules(this.course.id);
 
         this.viewedModulesInitialized = true;
         this.lastModuleViewed = viewedModules[0];
@@ -548,9 +546,9 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
      */
     async gotoCourseDownloads(): Promise<void> {
         const sectionId = this.selectedSection?.id !== this.allSectionsId ? this.selectedSection?.id : undefined;
-
+alert(sectionId);
         CoreNavigator.navigateToSitePath(
-            `${ADDON_STORAGE_MANAGER_PAGE_NAME}/${this.course.id}`,
+            `storage/${this.course.id}`,
             {
                 params: {
                     title: this.course.fullname,

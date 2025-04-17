@@ -44,6 +44,9 @@ import { CORE_COURSES_MY_COURSES_UPDATED_EVENT, CoreCoursesMyCoursesUpdatedEvent
 import { CoreAlerts } from '@services/overlays/alerts';
 import { CoreRemindersDateComponent } from '../../../reminders/components/date/date';
 import { CoreSharedModule } from '@/core/shared.module';
+import {CoreCourseSectionToDisplay} from "@features/course/components/course-section/course-section";
+import {CORE_COURSE_ALL_SECTIONS_ID} from "@features/course/constants";
+import {CoreLogger} from "@singletons/logger";
 
 /**
  * Page that shows the summary of a course including buttons to enrol and other available options.
@@ -63,6 +66,7 @@ export default class CoreCourseSummaryPage implements OnInit, OnDestroy {
     @Input() course?: CoreCourseSummaryData;
     @Input() courseId = 0;
 
+
     @ViewChild('courseThumb') courseThumb?: ElementRef;
 
     isEnrolled = false;
@@ -81,6 +85,9 @@ export default class CoreCourseSummaryPage implements OnInit, OnDestroy {
     courseMenuHandlers: CoreCourseOptionsMenuHandlerToDisplay[] = [];
     displayOpenInBrowser = false;
     isTeacher = false;
+    allSectionsId = CORE_COURSE_ALL_SECTIONS_ID;
+    selectedSection?: CoreCourseSectionToDisplay;
+    courseFullname: string = '';
 
     protected actionSheet?: HTMLIonActionSheetElement;
     protected waitStart = 0;
@@ -144,8 +151,8 @@ export default class CoreCourseSummaryPage implements OnInit, OnDestroy {
         }
 
         const currentSiteUrl = CoreSites.getRequiredCurrentSite().getURL();
-        this.enrolUrl = CorePath.concatenatePaths(currentSiteUrl, `enrol/index.php?id=${this.courseId}`);
-        this.courseUrl = CorePath.concatenatePaths(currentSiteUrl, `course/view.php?id=${this.courseId}`);
+        this.enrolUrl = CorePath.concatenatePaths(currentSiteUrl, 'enrol/index.php?id=' + this.courseId);
+        this.courseUrl = CorePath.concatenatePaths(currentSiteUrl, 'course/view.php?id=' + this.courseId);
         this.displayOpenInBrowser = CoreSites.getRequiredCurrentSite().shouldDisplayInformativeLinks();
 
         await this.getCourse();
@@ -219,6 +226,8 @@ export default class CoreCourseSummaryPage implements OnInit, OnDestroy {
                 this.course.displayname = courseByField.displayname;
                 this.course.categoryname = courseByField.categoryname;
                 this.course.overviewfiles = courseByField.overviewfiles;
+                this.courseFullname = courseByField.fullname;
+               // console.log('\n\t\n ************ ' + this.courseFullname);
             } else  {
                 this.course = courseByField;
             }
@@ -407,6 +416,29 @@ export default class CoreCourseSummaryPage implements OnInit, OnDestroy {
         this.openCourse(true);
     }
 
+
+    /**
+     * Open course downloads page.
+     */
+    async gotoCourseDownloads(): Promise<void> {
+        const sectionId = this.selectedSection?.id !== this.allSectionsId ? this.selectedSection?.id : undefined;
+
+        var logger = CoreLogger.getInstance('CoreAuthenticaedSite');
+        logger.info(this.courseId);
+        //console.log(this.course);
+        //. (this.course);
+
+        CoreNavigator.navigateToSitePath(
+            `storage/${this.courseId}`,
+            {
+                params: {
+                    title: this.courseFullname,
+                    sectionId,
+                    isGuest: false,
+                },
+            },
+        );
+    }
     /**
      * Refresh the data.
      *
@@ -513,7 +545,7 @@ export default class CoreCourseSummaryPage implements OnInit, OnDestroy {
             const tint = CoreColors.lighter(this.course.color, 50);
             this.courseThumb.nativeElement.style.setProperty('--course-color-tint', tint);
         } else if(this.course.colorNumber !== undefined) {
-            this.courseThumb.nativeElement.classList.add(`course-color-${this.course.colorNumber}`);
+            this.courseThumb.nativeElement.classList.add('course-color-' + this.course.colorNumber);
         }
     }
 

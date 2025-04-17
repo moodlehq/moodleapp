@@ -240,7 +240,7 @@ export default class AddonNotificationsSettingsPage implements OnInit, OnDestroy
         }
 
         const processorState: ProcessorStateFormatted = processor[state];
-        const preferenceName = `${notification.preferencekey}_${processorState.name}`;
+        const preferenceName = notification.preferencekey + '_' + processorState.name;
 
         let value = notification.processors
             .filter((processor) => processor[state].checked)
@@ -279,7 +279,7 @@ export default class AddonNotificationsSettingsPage implements OnInit, OnDestroy
             return;
         }
 
-        const preferenceName = `${notification.preferencekey}_enabled`;
+        const preferenceName = notification.preferencekey + '_enabled';
 
         let value = notification.processors
             .filter((processor) => processor.enabled)

@@ -49,7 +49,7 @@ export class AddonModDataFieldTextareaHandlerService extends AddonModDataFieldTe
         inputData: CoreFormFields<string>,
         originalFieldData: AddonModDataEntryField,
     ): AddonModDataSubfieldData[] {
-        const fieldName = `f_${field.id}`;
+        const fieldName = 'f_' + field.id;
         const files = this.getFieldEditFiles(field, inputData, originalFieldData);
 
         let text = CoreFileHelper.restorePluginfileUrls(inputData[fieldName] || '', <CoreWSFile[]> files);

@@ -19,7 +19,7 @@ import { CoreCourse } from '@features/course/services/course';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSitesReadingStrategy } from '@services/sites';
 import { makeSingleton } from '@singletons';
-import { ADDON_MOD_FEEDBACK_FEATURE_NAME, ADDON_MOD_FEEDBACK_PAGE_NAME } from '../../constants';
+import { ADDON_MOD_FEEDBACK_PAGE_NAME } from '../../constants';
 import { CoreLoadings } from '@services/overlays/loadings';
 import { CoreAlerts } from '@services/overlays/alerts';
 
@@ -31,7 +31,7 @@ import { CoreAlerts } from '@services/overlays/alerts';
 export class AddonModFeedbackPrintLinkHandlerService extends CoreContentLinksHandlerBase {
 
     name = 'AddonModFeedbackPrintLinkHandler';
-    featureName = ADDON_MOD_FEEDBACK_FEATURE_NAME;
+    featureName = 'CoreCourseModuleDelegate_AddonModFeedback';
     pattern = /\/mod\/feedback\/print\.php.*([?&](id)=\d+)/;
 
     /**
@@ -51,7 +51,7 @@ export class AddonModFeedbackPrintLinkHandlerService extends CoreContentLinksHan
                     );
 
                     await CoreNavigator.navigateToSitePath(
-                        `${ADDON_MOD_FEEDBACK_PAGE_NAME}/${module.course}/${module.id}/form`,
+                        ADDON_MOD_FEEDBACK_PAGE_NAME + `/${module.course}/${module.id}/form`,
                         {
                             params: {
                                 preview: true,

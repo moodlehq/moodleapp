@@ -13,11 +13,11 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
-import { CoreSites, CoreSitesWSOptionsWithFilter } from '@services/sites';
+import { CoreSites } from '@services/sites';
 import { CoreSite } from '@classes/sites/site';
 import { CoreNetwork } from '@services/network';
-import { CoreText, CoreTextFormat } from '@singletons/text';
-import { CoreTime } from '@singletons/time';
+import { CoreText } from '@singletons/text';
+import { CoreTimeUtils } from '@services/utils/time';
 import { CoreUrl } from '@singletons/url';
 import { CoreObject } from '@singletons/object';
 import { CoreGroups } from '@services/groups';
@@ -26,9 +26,9 @@ import { CoreConfig } from '@services/config';
 import { AddonCalendarOffline } from './calendar-offline';
 import { CoreUser } from '@features/user/services/user';
 import { CoreWSExternalWarning, CoreWSDate } from '@services/ws';
-import dayjs from 'dayjs';
+import moment from 'moment-timezone';
 import { AddonCalendarEventDBRecord } from './database/calendar';
-import { CoreCourses, CoreCourseSummaryExporterData } from '@features/courses/services/courses';
+import { CoreCourses } from '@features/courses/services/courses';
 import { ContextLevel, CoreCacheUpdateFrequency, CoreConstants } from '@/core/constants';
 import { CoreWSError } from '@classes/errors/wserror';
 import { ApplicationInit, makeSingleton, Translate } from '@singletons';
@@ -327,19 +327,19 @@ export class AddonCalendarProvider {
 
         if (event.timeduration) {
 
-            if (dayjs.tz(start).isSame(end, 'day')) {
+            if (moment(start).isSame(end, 'day')) {
                 // Event starts and ends the same day.
                 if (event.timeduration == CoreConstants.SECONDS_DAY) {
                     time = Translate.instant('addon.calendar.allday');
                 } else {
-                    time = getStartTimeHtml(CoreTime.userDate(start, format)) + ' <strong>&raquo;</strong> ' +
-                            getEndTimeHtml(CoreTime.userDate(end, format));
+                    time = getStartTimeHtml(CoreTimeUtils.userDate(start, format)) + ' <strong>&raquo;</strong> ' +
+                            getEndTimeHtml(CoreTimeUtils.userDate(end, format));
                 }
 
             } else {
                 // Event lasts more than one day.
-                const timeStart = CoreTime.userDate(start, format);
-                const timeEnd = CoreTime.userDate(end, format);
+                const timeStart = CoreTimeUtils.userDate(start, format);
+                const timeEnd = CoreTimeUtils.userDate(end, format);
                 const promises: Promise<void>[] = [];
 
                 // Don't use common words when the event lasts more than one day.
@@ -347,14 +347,14 @@ export class AddonCalendarProvider {
                 let dayEnd = this.getDayRepresentation(end, false) + ', ';
 
                 // Add links to the days if needed.
-                if (dayStart && (!seenDay || !dayjs.tz(seenDay).isSame(start, 'day'))) {
+                if (dayStart && (!seenDay || !moment(seenDay).isSame(start, 'day'))) {
                     promises.push(this.getViewUrl('day', event.timestart, undefined, siteId).then((url) => {
                         dayStart = CoreUrl.buildLink(url, dayStart);
 
                         return;
                     }));
                 }
-                if (dayEnd && (!seenDay || !dayjs.tz(seenDay).isSame(end, 'day'))) {
+                if (dayEnd && (!seenDay || !moment(seenDay).isSame(end, 'day'))) {
                     promises.push(this.getViewUrl('day', end / 1000, undefined, siteId).then((url) => {
                         dayEnd = CoreUrl.buildLink(url, dayEnd);
 
@@ -369,7 +369,7 @@ export class AddonCalendarProvider {
             }
         } else {
             // There is no time duration.
-            time = getStartTimeHtml(CoreTime.userDate(start, format));
+            time = getStartTimeHtml(CoreTimeUtils.userDate(start, format));
         }
 
         if (showTime) {
@@ -377,7 +377,7 @@ export class AddonCalendarProvider {
         }
 
         // Display day + time.
-        if (seenDay && dayjs.tz(seenDay).isSame(start, 'day')) {
+        if (seenDay && moment(seenDay).isSame(start, 'day')) {
             // This day is currently being displayed, don't add an link.
             return this.getDayRepresentation(start, useCommonWords) + ', ' + time;
         }
@@ -416,7 +416,7 @@ export class AddonCalendarProvider {
      * @returns Cache key.
      */
     protected getAccessInformationCacheKey(courseId?: number): string {
-        return `${AddonCalendarProvider.ROOT_CACHE_KEY}accessInformation:${courseId || 0}`;
+        return AddonCalendarProvider.ROOT_CACHE_KEY + 'accessInformation:' + (courseId || 0);
     }
 
     /**
@@ -469,7 +469,7 @@ export class AddonCalendarProvider {
      * @returns Cache key.
      */
     protected getAllowedEventTypesCacheKey(courseId?: number): string {
-        return `${AddonCalendarProvider.ROOT_CACHE_KEY}allowedEventTypes:${courseId || 0}`;
+        return AddonCalendarProvider.ROOT_CACHE_KEY + 'allowedEventTypes:' + (courseId || 0);
     }
 
     /**
@@ -534,11 +534,11 @@ export class AddonCalendarProvider {
 
         if (!useCommonWords) {
             // We don't want words, just a date.
-            return CoreTime.userDate(time, 'core.strftimedayshort');
+            return CoreTimeUtils.userDate(time, 'core.strftimedayshort');
         }
 
-        const date = dayjs.tz(time);
-        const today = dayjs.tz();
+        const date = moment(time);
+        const today = moment();
 
         if (date.isSame(today, 'day')) {
             return Translate.instant('addon.calendar.today');
@@ -550,7 +550,7 @@ export class AddonCalendarProvider {
             return Translate.instant('addon.calendar.tomorrow');
         }
 
-        return CoreTime.userDate(time, 'core.strftimedayshort');
+        return CoreTimeUtils.userDate(time, 'core.strftimedayshort');
     }
 
     /**
@@ -593,17 +593,14 @@ export class AddonCalendarProvider {
      * Get a calendar event by ID. This function returns more data than getEvent, but it isn't available in all Moodles.
      *
      * @param id Event ID.
-     * @param options Options.
+     * @param siteId ID of the site. If not defined, use current site.
      * @returns Promise resolved when the event data is retrieved.
      */
-    async getEventById(id: number, options: CoreSitesWSOptionsWithFilter = {}): Promise<AddonCalendarEvent> {
-        const site = await CoreSites.getSite(options.siteId);
-
+    async getEventById(id: number, siteId?: string): Promise<AddonCalendarEvent> {
+        const site = await CoreSites.getSite(siteId);
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getEventCacheKey(id),
             updateFrequency: CoreCacheUpdateFrequency.RARELY,
-            ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
-            ...CoreSites.getFilterPresets(options.filter),
         };
         const params: AddonCalendarGetCalendarEventByIdWSParams = {
             eventid: id,
@@ -612,15 +609,10 @@ export class AddonCalendarProvider {
             const response: AddonCalendarGetCalendarEventByIdWSResponse =
                 await site.read('core_calendar_get_calendar_event_by_id', params, preSets);
 
-            this.updateLocalEvents([response.event], { siteId: site.getId() });
+            this.updateLocalEvents([response.event], { siteId });
 
             return response.event;
         } catch (error) {
-            if (options.filter === false) {
-                // Don't return data from DB when requesting unfiltered data.
-                throw error;
-            }
-
             try {
                 return (await this.getEventFromLocalDb(id)) as AddonCalendarEvent;
             } catch {
@@ -636,7 +628,7 @@ export class AddonCalendarProvider {
      * @returns Cache key.
      */
     protected getEventCacheKey(id: number): string {
-        return `${AddonCalendarProvider.ROOT_CACHE_KEY}events:${id}`;
+        return AddonCalendarProvider.ROOT_CACHE_KEY + 'events:' + id;
     }
 
     /**
@@ -792,7 +784,7 @@ export class AddonCalendarProvider {
      * @returns Prefix Cache key.
      */
     protected getDayEventsPrefixCacheKey(): string {
-        return `${AddonCalendarProvider.ROOT_CACHE_KEY}day:`;
+        return AddonCalendarProvider.ROOT_CACHE_KEY + 'day:';
     }
 
     /**
@@ -842,7 +834,7 @@ export class AddonCalendarProvider {
         siteId?: string,
     ): Promise<AddonCalendarGetEventsEvent[]> {
 
-        initialTime = initialTime || CoreTime.timestamp();
+        initialTime = initialTime || CoreTimeUtils.timestamp();
 
         const site = await CoreSites.getSite(siteId);
         siteId = site.getId();
@@ -902,7 +894,7 @@ export class AddonCalendarProvider {
      * @returns Prefix Cache key.
      */
     protected getEventsListPrefixCacheKey(): string {
-        return `${AddonCalendarProvider.ROOT_CACHE_KEY}events:`;
+        return AddonCalendarProvider.ROOT_CACHE_KEY + 'events:';
     }
 
     /**
@@ -992,7 +984,7 @@ export class AddonCalendarProvider {
      * @returns Prefix Cache key.
      */
     protected getMonthlyEventsPrefixCacheKey(): string {
-        return `${AddonCalendarProvider.ROOT_CACHE_KEY}monthly:`;
+        return AddonCalendarProvider.ROOT_CACHE_KEY + 'monthly:';
     }
 
     /**
@@ -1069,7 +1061,7 @@ export class AddonCalendarProvider {
      * @returns Prefix Cache key.
      */
     protected getUpcomingEventsPrefixCacheKey(): string {
-        return `${AddonCalendarProvider.ROOT_CACHE_KEY}upcoming:`;
+        return AddonCalendarProvider.ROOT_CACHE_KEY + 'upcoming:';
     }
 
     /**
@@ -1094,13 +1086,13 @@ export class AddonCalendarProvider {
      */
     async getViewUrl(view: string, time?: number, courseId?: string, siteId?: string): Promise<string> {
         const site = await CoreSites.getSite(siteId);
-        let url = CorePath.concatenatePaths(site.getURL(), `calendar/view.php?view=${view}`);
+        let url = CorePath.concatenatePaths(site.getURL(), 'calendar/view.php?view=' + view);
 
         if (time) {
-            url += `&time=${time}`;
+            url += '&time=' + time;
         }
         if (courseId) {
-            url += `&course=${courseId}`;
+            url += '&course=' + courseId;
         }
 
         return url;
@@ -1123,6 +1115,7 @@ export class AddonCalendarProvider {
      *
      * @param courseId Course ID. If not defined, site calendar.
      * @param siteId Site ID. If not defined, current site.
+     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateAccessInformation(courseId?: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -1135,6 +1128,7 @@ export class AddonCalendarProvider {
      *
      * @param courseId Course ID. If not defined, site calendar.
      * @param siteId Site ID. If not defined, current site.
+     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateAllowedEventTypes(courseId?: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -1146,6 +1140,7 @@ export class AddonCalendarProvider {
      * Invalidates day events for all days.
      *
      * @param siteId Site Id. If not defined, use current site.
+     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateAllDayEvents(siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -1159,6 +1154,7 @@ export class AddonCalendarProvider {
      * @param year Year.
      * @param month Month.
      * @param day Day.
+     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateDayEvents(year: number, month: number, day: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -1201,6 +1197,7 @@ export class AddonCalendarProvider {
      * Invalidates monthly events for all months.
      *
      * @param siteId Site Id. If not defined, use current site.
+     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateAllMonthlyEvents(siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -1213,6 +1210,7 @@ export class AddonCalendarProvider {
      *
      * @param year Year.
      * @param month Month.
+     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateMonthlyEvents(year: number, month: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -1224,6 +1222,7 @@ export class AddonCalendarProvider {
      * Invalidates upcoming events for all courses and categories.
      *
      * @param siteId Site Id. If not defined, use current site.
+     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateAllUpcomingEvents(siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -1237,6 +1236,7 @@ export class AddonCalendarProvider {
      * @param courseId Course ID.
      * @param categoryId Category ID.
      * @param siteId Site Id. If not defined, use current site.
+     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateUpcomingEvents(courseId?: number, categoryId?: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -1248,6 +1248,7 @@ export class AddonCalendarProvider {
      * Invalidates look ahead setting.
      *
      * @param siteId Site Id. If not defined, use current site.
+     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateLookAhead(siteId?: string): Promise<void> {
         await CoreUser.invalidateUserPreference('calendar_lookahead', siteId);
@@ -1257,9 +1258,10 @@ export class AddonCalendarProvider {
      * Invalidates time format setting.
      *
      * @param siteId Site Id. If not defined, use current site.
+     * @returns Promise resolved when the data is invalidated.
      */
-    async invalidateTimeFormat(siteId?: string): Promise<void> {
-        await CoreUser.invalidateUserPreference('calendar_timeformat', siteId);
+    invalidateTimeFormat(siteId?: string): Promise<void> {
+        return CoreUser.invalidateUserPreference('calendar_timeformat', siteId);
     }
 
     /**
@@ -1622,7 +1624,7 @@ export type AddonCalendarEventBase = {
     id: number; // Id.
     name: string; // Name.
     description?: string; // Description.
-    descriptionformat?: CoreTextFormat; // Description format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
+    descriptionformat?: number; // Description format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
     location?: string; // @since 3.6. Location.
     categoryid?: number; // Categoryid.
     groupid?: number; // Groupid.
@@ -1661,7 +1663,27 @@ export type AddonCalendarEventBase = {
         nestedname: string; // Nestedname.
         url: string; // Url.
     };
-    course?: CoreCourseSummaryExporterData;
+    course?: {
+        id: number; // Id.
+        fullname: string; // Fullname.
+        shortname: string; // Shortname.
+        idnumber: string; // Idnumber.
+        summary: string; // Summary.
+        summaryformat: number; // Summary format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
+        startdate: number; // Startdate.
+        enddate: number; // Enddate.
+        visible: boolean; // @since 3.8. Visible.
+        fullnamedisplay: string; // Fullnamedisplay.
+        viewurl: string; // Viewurl.
+        courseimage: string; // @since 3.6. Courseimage.
+        progress?: number; // @since 3.6. Progress.
+        hasprogress: boolean; // @since 3.6. Hasprogress.
+        isfavourite: boolean; // @since 3.6. Isfavourite.
+        hidden: boolean; // @since 3.6. Hidden.
+        timeaccess?: number; // @since 3.6. Timeaccess.
+        showshortname: boolean; // @since 3.6. Showshortname.
+        coursecategory: string; // @since 3.7. Coursecategory.
+    };
     subscription?: {
         displayeventsource: boolean; // Displayeventsource.
         subscriptionname?: string; // Subscriptionname.
@@ -1920,7 +1942,7 @@ export type AddonCalendarGetEventsEvent = {
     id: number; // Event id.
     name: string; // Event name.
     description?: string; // Description.
-    format: CoreTextFormat; // Description format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
+    format: number; // Description format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
     courseid: number; // Course id.
     categoryid?: number; // Category id (only for category events).
     groupid: number; // Group id.
@@ -1996,7 +2018,7 @@ export type AddonCalendarSubmitCreateUpdateFormDataWSParams = Omit<AddonCalendar
     id?: number;
     description?: {
         text: string;
-        format: CoreTextFormat;
+        format: number;
         itemid: number; // File area ID.
     };
     visible?: number;
@@ -2035,7 +2057,7 @@ export type AddonCalendarEventToDisplay = Partial<AddonCalendarCalendarEvent> & 
     moduleIcon?: string; // Calculated in the app. Module icon.
     formattedType: string; // Calculated in the app. Formatted type.
     duration?: number; // Calculated in the app. Duration of offline event.
-    format?: CoreTextFormat; // Calculated in the app. Format of offline event.
+    format?: number; // Calculated in the app. Format of offline event.
     timedurationuntil?: number; // Calculated in the app. Time duration until of offline event.
     timedurationminutes?: number; // Calculated in the app. Time duration in minutes of offline event.
     ispast?: boolean; // Calculated in the app. Whether the event is in the past.

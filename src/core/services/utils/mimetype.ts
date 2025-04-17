@@ -13,33 +13,64 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
-import { CoreFileEntry } from '@services/file-helper';
+import { FileEntry } from '@awesome-cordova-plugins/file/ngx';
+
+import { CoreFile } from '@services/file';
+import { CoreFileUtils } from '@singletons/file-utils';
+import { CoreText } from '@singletons/text';
+import { makeSingleton, Translate } from '@singletons';
+import { CoreLogger } from '@singletons/logger';
+import { CoreWS, CoreWSFile } from '@services/ws';
+
+import extToMime from '@/assets/exttomime.json';
+import mimeToExt from '@/assets/mimetoext.json';
+import { CoreFileEntry, CoreFileHelper } from '@services/file-helper';
+import { CoreUrl } from '@singletons/url';
 import { CoreSites } from '@services/sites';
-import { makeSingleton } from '@singletons';
-import { CoreMimetype } from '@singletons/mimetype';
+import { CoreUtils } from '@singletons/utils';
+
+interface MimeTypeInfo {
+    type: string;
+    icon?: string;
+    groups?: string[];
+    // eslint-disable-next-line id-blacklist
+    string?: string;
+    deprecated?: string; // Deprecated mimetype name.
+}
 
 interface MimeTypeGroupInfo {
     mimetypes: string[];
     extensions: string[];
 }
 
-/**
+const EXTENSION_REGEX = /^[a-z0-9]+$/;
+
+/*
  * "Utils" service with helper functions for mimetypes and extensions.
- *
- * @deprecated since 5.0. Use CoreMimetype instead.
  */
 @Injectable({ providedIn: 'root' })
 export class CoreMimetypeUtilsProvider {
+
+    protected logger: CoreLogger;
+    protected extToMime: Record<string, MimeTypeInfo> = {};
+    protected mimeToExt: Record<string, string[]> = {};
+    protected groupsMimeInfo: Record<string, MimeTypeGroupInfo> = {};
+
+    constructor() {
+        this.logger = CoreLogger.getInstance('CoreMimetypeUtilsProvider');
+
+        this.extToMime = extToMime;
+        this.mimeToExt = mimeToExt;
+    }
 
     /**
      * Check if a file extension can be embedded without using iframes.
      *
      * @param extension Extension.
      * @returns Whether it can be embedded.
-     * @deprecated since 5.0. Use CoreMimetype.canBeEmbedded instead.
      */
     canBeEmbedded(extension?: string): boolean {
-        return CoreMimetype.canBeEmbedded(extension);
+        return this.isExtensionInGroup(extension, ['web_image', 'web_video', 'web_audio']);
     }
 
     /**
@@ -47,10 +78,57 @@ export class CoreMimetypeUtilsProvider {
      *
      * @param extension Extension to clean.
      * @returns Clean extension.
-     * @deprecated since 5.0. Use CoreMimetype.cleanExtension instead.
      */
     cleanExtension(extension: string): string {
-        return CoreMimetype.cleanExtension(extension);
+        if (!extension) {
+            return extension;
+        }
+
+        // If the extension has parameters, remove them.
+        let position = extension.indexOf('?');
+        if (position > -1) {
+            extension = extension.substring(0, position);
+        }
+
+        // If the extension has an anchor, remove it.
+        position = extension.indexOf('#');
+        if (position > -1) {
+            extension = extension.substring(0, position);
+        }
+
+        // Remove hash in extension if there's any (added by filepool).
+        extension = extension.replace(/_.{32}$/, '');
+
+        // Remove dot from the extension if found.
+        if (extension && extension[0] == '.') {
+            extension = extension.substring(1);
+        }
+
+        return extension;
+    }
+
+    /**
+     * Fill the mimetypes and extensions info for a certain group.
+     *
+     * @param group Group name.
+     */
+    protected fillGroupMimeInfo(group: string): void {
+        const mimetypes = {}; // Use an object to prevent duplicates.
+        const extensions: string[] = []; // Extensions are unique.
+
+        for (const extension in this.extToMime) {
+            const data = this.extToMime[extension];
+            if (data.type && data.groups && data.groups.indexOf(group) != -1) {
+                // This extension has the group, add it to the list.
+                mimetypes[data.type] = true;
+                extensions.push(extension);
+            }
+        }
+
+        this.groupsMimeInfo[group] = {
+            mimetypes: Object.keys(mimetypes),
+            extensions,
+        };
     }
 
     /**
@@ -59,10 +137,28 @@ export class CoreMimetypeUtilsProvider {
      * @param mimetype Mimetype.
      * @param url URL of the file. It will be used if there's more than one possible extension.
      * @returns Extension.
-     * @deprecated since 5.0. Use CoreMimetype.getExtension instead.
      */
     getExtension(mimetype: string, url?: string): string | undefined {
-       return CoreMimetype.getExtension(mimetype, url);
+        mimetype = mimetype || '';
+        mimetype = mimetype.split(';')[0]; // Remove codecs from the mimetype if any.
+
+        if (mimetype == 'application/x-forcedownload' || mimetype == 'application/forcedownload') {
+            // Couldn't get the right mimetype, try to guess it.
+            return url && this.guessExtensionFromUrl(url);
+        }
+
+        const extensions = this.mimeToExt[mimetype];
+        if (extensions && extensions.length) {
+            if (extensions.length > 1 && url) {
+                // There's more than one possible extension. Check if the URL has extension.
+                const candidate = this.guessExtensionFromUrl(url);
+                if (candidate && extensions.indexOf(candidate) != -1) {
+                    return candidate;
+                }
+            }
+
+            return extensions[0];
+        }
     }
 
     /**
@@ -71,10 +167,46 @@ export class CoreMimetypeUtilsProvider {
      * @param file File object.
      * @param path Alternative path that will override fileurl from file object.
      * @returns The embedded HTML string.
-     * @deprecated since 5.0. Use CoreMimetype.getEmbeddedHtml instead.
      */
     getEmbeddedHtml(file: CoreFileEntry, path?: string): string {
-        return CoreMimetype.getEmbeddedHtml(file, path);
+        const filename = CoreFileUtils.isFileEntry(file) ? (file as FileEntry).name : file.filename;
+        const extension = !CoreFileUtils.isFileEntry(file) && file.mimetype
+            ? this.getExtension(file.mimetype)
+            : (filename && this.getFileExtension(filename));
+        const mimeType = !CoreFileUtils.isFileEntry(file) && file.mimetype
+            ? file.mimetype
+            : (extension && this.getMimeType(extension));
+
+        // @todo linting: See if this can be removed
+        (file as CoreWSFile).mimetype = mimeType;
+
+        if (extension && this.canBeEmbedded(extension)) {
+            const embedType = this.getExtensionType(extension);
+
+            // @todo linting: See if this can be removed
+            (file as { embedType?: string }).embedType = embedType;
+
+            path = path ?? (CoreFileUtils.isFileEntry(file) ? CoreFile.getFileEntryURL(file) : CoreFileHelper.getFileUrl(file));
+            path = path && CoreFile.convertFileSrc(path);
+
+            switch (embedType) {
+                case 'image':
+                    return `<img src="${path}">`;
+                case 'audio':
+                case 'video':
+                    // Add videoJS class and ID because the media could use the VideoJS player.
+                    return [
+                        `<${embedType} controls title="${filename}" src="${path}" controlsList="nodownload" class="video-js" ` +
+                            `id="id_videojs_moodleapp_${CoreUtils.getUniqueId('CoreMimetypeUtils-embedded-media')}">`,
+                        `<source src="${path}" type="${mimeType}">`,
+                        `</${embedType}>`,
+                    ].join('');
+                default:
+                    return '';
+            }
+        }
+
+        return '';
     }
 
     /**
@@ -82,12 +214,11 @@ export class CoreMimetypeUtilsProvider {
      *
      * @param extension Extension.
      * @returns Icon URL.
-     * @deprecated since 5.0. Use CoreMimetype.getExtensionIcon instead.
      */
     getExtensionIcon(extension: string): string {
-        const site = CoreSites.getCurrentSite();
+        const icon = this.getExtensionIconName(extension) || 'unknown';
 
-        return CoreMimetype.getExtensionIcon(extension, site);
+        return this.getFileIconForType(icon);
     }
 
     /**
@@ -95,10 +226,18 @@ export class CoreMimetypeUtilsProvider {
      *
      * @param extension Extension.
      * @returns Icon. Undefined if not found.
-     * @deprecated since 5.0. Use CoreMimetype.getExtensionIconName instead.
      */
     getExtensionIconName(extension: string): string | undefined {
-        return CoreMimetype.getExtensionIconName(extension);
+        if (this.extToMime[extension]) {
+            if (this.extToMime[extension].icon) {
+                return this.extToMime[extension].icon;
+            } else {
+                const type = this.extToMime[extension].type.split('/')[0];
+                if (type == 'video' || type == 'text' || type == 'image' || type == 'document' || type == 'audio') {
+                    return type;
+                }
+            }
+        }
     }
 
     /**
@@ -106,10 +245,13 @@ export class CoreMimetypeUtilsProvider {
      *
      * @param extension Extension.
      * @returns Type of the extension.
-     * ,@deprecated since 5.0. Use CoreMimetype.getExtensionType instead.
      */
     getExtensionType(extension: string): string | undefined {
-        return CoreMimetype.getExtensionType(extension);
+        extension = this.cleanExtension(extension);
+
+        if (this.extToMime[extension] && this.extToMime[extension].string) {
+            return this.extToMime[extension].string;
+        }
     }
 
     /**
@@ -117,10 +259,12 @@ export class CoreMimetypeUtilsProvider {
      *
      * @param mimetype Mimetype.
      * @returns Extensions.
-     * @deprecated since 5.0. Use CoreMimetype.getExtensions instead.
      */
     getExtensions(mimetype: string): string[] {
-        return CoreMimetype.getExtensions(mimetype);
+        mimetype = mimetype || '';
+        mimetype = mimetype.split(';')[0]; // Remove codecs from the mimetype if any.
+
+        return this.mimeToExt[mimetype] || [];
     }
 
     /**
@@ -128,24 +272,25 @@ export class CoreMimetypeUtilsProvider {
      *
      * @param filename The name of the file.
      * @returns The path to a file icon.
-     * @deprecated since 5.0. Use CoreMimetype.getFileIcon instead.
      */
     getFileIcon(filename: string): string {
-        const site = CoreSites.getCurrentSite();
+        const extension = this.getFileExtension(filename);
+        const icon = (extension && this.getExtensionIconName(extension)) || 'unknown';
 
-        return CoreMimetype.getFileIcon(filename, site);
+        return this.getFileIconForType(icon);
     }
 
     /**
      * Get the folder icon URL.
      *
      * @returns The path to a folder icon.
-     * @deprecated since 5.0. Use CoreMimetype.getFileIconForType('folder') instead.
      */
     getFolderIcon(): string {
-        const site = CoreSites.getCurrentSite();
+        if (CoreSites.getCurrentSite() === undefined || CoreSites.getCurrentSite()?.isVersionGreaterEqualThan('4.0')) {
+            return 'assets/img/files/folder.svg';
+        }
 
-        return CoreMimetype.getFileIconForType('folder', site);
+        return 'assets/img/files_legacy/folder-64.png';
     }
 
     /**
@@ -153,12 +298,13 @@ export class CoreMimetypeUtilsProvider {
      *
      * @param type The type to get the icon.
      * @returns The icon path.
-     * @deprecated since 5.0. Use CoreMimetype.getFileIconForType instead.
      */
     getFileIconForType(type: string): string {
-        const site = CoreSites.getCurrentSite();
+        if (CoreSites.getCurrentSite() === undefined || CoreSites.getCurrentSite()?.isVersionGreaterEqualThan('4.0')) {
+            return 'assets/img/files/' + type + '.svg';
+        }
 
-        return CoreMimetype.getFileIconForType(type, site);
+        return 'assets/img/files_legacy/' + type + '-64.png';
     }
 
     /**
@@ -167,10 +313,27 @@ export class CoreMimetypeUtilsProvider {
      *
      * @param fileUrl The file URL.
      * @returns The lowercased extension without the dot, or undefined.
-     * @deprecated since 5.0. Use CoreMimetype.guessExtensionFromUrl instead.
      */
     guessExtensionFromUrl(fileUrl: string): string | undefined {
-        return CoreMimetype.guessExtensionFromUrl(fileUrl);
+        const parsed = CoreUrl.parse(fileUrl);
+        const split = parsed?.path?.split('.');
+        let extension: string | undefined;
+
+        if (split && split.length > 1) {
+            const candidate = split[split.length - 1].toLowerCase();
+            if (EXTENSION_REGEX.test(candidate)) {
+                extension = candidate;
+            }
+        }
+
+        // Check extension corresponds to a mimetype to know if it's valid.
+        if (extension && this.getMimeType(extension) === undefined) {
+            this.logger.warn('Guess file extension: Not valid extension ' + extension);
+
+            return;
+        }
+
+        return extension;
     }
 
     /**
@@ -179,10 +342,24 @@ export class CoreMimetypeUtilsProvider {
      *
      * @param filename The file name.
      * @returns The lowercased extension, or undefined.
-     * @deprecated since 5.0. Use CoreMimetype.getFileExtension instead.
      */
     getFileExtension(filename: string): string | undefined {
-        return CoreMimetype.getFileExtension(filename);
+        const dot = filename.lastIndexOf('.');
+        let ext: string | undefined;
+
+        if (dot > -1) {
+            ext = filename.substring(dot + 1).toLowerCase();
+            ext = this.cleanExtension(ext);
+
+            // Check extension corresponds to a mimetype to know if it's valid.
+            if (this.getMimeType(ext) === undefined) {
+                this.logger.warn('Get file extension: Not valid extension ' + ext);
+
+                return;
+            }
+        }
+
+        return ext;
     }
 
     /**
@@ -191,16 +368,19 @@ export class CoreMimetypeUtilsProvider {
      * @param group Group name.
      * @param field The field to get. If not supplied, all the info will be returned.
      * @returns Info for the group.
-     * @deprecated since 5.0. Use CoreMimetype.getGroupMimeInfo instead.
      */
     getGroupMimeInfo(group: string): MimeTypeGroupInfo;
     getGroupMimeInfo(group: string, field: string): string[] | undefined;
     getGroupMimeInfo(group: string, field?: string): MimeTypeGroupInfo | string[] | undefined {
-        if (!field) {
-            return CoreMimetype.getGroupMimeInfo(group);
+        if (this.groupsMimeInfo[group] === undefined) {
+            this.fillGroupMimeInfo(group);
         }
 
-        return CoreMimetype.getGroupMimeInfo(group, field);
+        if (field) {
+            return this.groupsMimeInfo[group][field];
+        }
+
+        return this.groupsMimeInfo[group];
     }
 
     /**
@@ -208,10 +388,17 @@ export class CoreMimetypeUtilsProvider {
      *
      * @param extension Extension.
      * @returns Mimetype.
-     * @deprecated since 5.0. Use CoreMimetype.getMimeType instead.
      */
     getMimeType(extension?: string): string | undefined {
-        return CoreMimetype.getMimeType(extension);
+        if (!extension) {
+            return;
+        }
+
+        extension = this.cleanExtension(extension);
+
+        if (this.extToMime[extension] && this.extToMime[extension].type) {
+            return this.extToMime[extension].type;
+        }
     }
 
     /**
@@ -219,10 +406,11 @@ export class CoreMimetypeUtilsProvider {
      *
      * @param extension Extension.
      * @returns Deprecated mimetype.
-     * @deprecated since 5.0. Use CoreMimetype.getDeprecatedMimeType instead.
      */
     getDeprecatedMimeType(extension: string): string | undefined {
-        return CoreMimetype.getDeprecatedMimeType(extension);
+        extension = this.cleanExtension(extension);
+
+        return this.extToMime[extension]?.deprecated;
     }
 
     /**
@@ -232,10 +420,79 @@ export class CoreMimetypeUtilsProvider {
      * @param obj Instance of FileEntry OR object with 'filename' and 'mimetype' OR string with mimetype.
      * @param capitalise If true, capitalises first character of result.
      * @returns Type description.
-     * @deprecated since 5.0. Use CoreMimetype.getMimetypeDescription instead.
      */
     getMimetypeDescription(obj: CoreFileEntry | string, capitalise?: boolean): string {
-       return CoreMimetype.getMimetypeDescription(obj, capitalise);
+        const langPrefix = 'assets.mimetypes.';
+        let filename: string | undefined = '';
+        let mimetype: string | undefined = '';
+        let extension: string | undefined = '';
+
+        if (typeof obj === 'object' && CoreFileUtils.isFileEntry(obj)) {
+            // It's a FileEntry. Don't use the file function because it's asynchronous and the type isn't reliable.
+            filename = obj.name;
+        } else if (typeof obj === 'object') {
+            filename = obj.filename || '';
+            mimetype = obj.mimetype || '';
+        } else {
+            mimetype = obj;
+        }
+
+        if (filename) {
+            extension = this.getFileExtension(filename);
+
+            if (!mimetype) {
+                // Try to calculate the mimetype using the extension.
+                mimetype = extension && this.getMimeType(extension);
+            }
+        }
+
+        if (!mimetype) {
+            // Don't have the mimetype, stop.
+            return '';
+        }
+
+        if (!extension) {
+            extension = this.getExtension(mimetype);
+        }
+
+        const mimetypeStr = this.getMimetypeType(mimetype) || '';
+        const chunks = mimetype.split('/');
+        const attr = {
+            mimetype,
+            ext: extension || '',
+            mimetype1: chunks[0],
+            mimetype2: chunks[1] || '',
+        };
+        const translateParams = {};
+
+        for (const key in attr) {
+            const value = attr[key];
+            translateParams[key] = value;
+            translateParams[key.toUpperCase()] = value.toUpperCase();
+            translateParams[CoreText.capitalize(key)] = CoreText.capitalize(value);
+        }
+
+        // MIME types may include + symbol but this is not permitted in string ids.
+        const safeMimetype = mimetype.replace(/\+/g, '_');
+        const safeMimetypeStr = mimetypeStr.replace(/\+/g, '_');
+        const safeMimetypeTrns = Translate.instant(langPrefix + safeMimetype, { $a: translateParams });
+        const safeMimetypeStrTrns = Translate.instant(langPrefix + safeMimetypeStr, { $a: translateParams });
+        const defaultTrns = Translate.instant(langPrefix + 'default', { $a: translateParams });
+        let result = mimetype;
+
+        if (safeMimetypeTrns != langPrefix + safeMimetype) {
+            result = safeMimetypeTrns;
+        } else if (safeMimetypeStrTrns != langPrefix + safeMimetypeStr) {
+            result = safeMimetypeStrTrns;
+        } else if (defaultTrns != langPrefix + 'default') {
+            result = defaultTrns;
+        }
+
+        if (capitalise) {
+            result = CoreText.capitalize(result);
+        }
+
+        return result;
     }
 
     /**
@@ -243,10 +500,21 @@ export class CoreMimetypeUtilsProvider {
      *
      * @param mimetype Mimetype.
      * @returns Type of the mimetype.
-     * @deprecated since 5.0. Use CoreMimetype.getMimetypeType instead.
      */
     getMimetypeType(mimetype: string): string | undefined {
-       return CoreMimetype.getMimetypeType(mimetype);
+        mimetype = mimetype.split(';')[0]; // Remove codecs from the mimetype if any.
+
+        const extensions = this.mimeToExt[mimetype];
+        if (!extensions) {
+            return;
+        }
+
+        for (let i = 0; i < extensions.length; i++) {
+            const extension = extensions[i];
+            if (this.extToMime[extension] && this.extToMime[extension].string) {
+                return this.extToMime[extension].string;
+            }
+        }
     }
 
     /**
@@ -254,12 +522,23 @@ export class CoreMimetypeUtilsProvider {
      *
      * @param mimetype Mimetype.
      * @returns Type of the mimetype.
-     * @deprecated since 5.0. Use CoreMimetype.getMimetypeIcon instead.
      */
     getMimetypeIcon(mimetype: string): string {
-        const site = CoreSites.getCurrentSite();
+        mimetype = mimetype.split(';')[0]; // Remove codecs from the mimetype if any.
 
-        return CoreMimetype.getMimetypeIcon(mimetype, site);
+        const extensions = this.mimeToExt[mimetype] || [];
+        let icon = 'unknown';
+
+        for (let i = 0; i < extensions.length; i++) {
+            const iconName = this.getExtensionIconName(extensions[i]);
+
+            if (iconName) {
+                icon = iconName;
+                break;
+            }
+        }
+
+        return this.getFileIconForType(icon);
     }
 
     /**
@@ -269,10 +548,21 @@ export class CoreMimetypeUtilsProvider {
      *
      * @param url The URL of the file.
      * @returns Promise resolved with the mimetype.
-     * @deprecated since 5.0. Use CoreMimetype.getMimeTypeFromUrl instead.
      */
     async getMimeTypeFromUrl(url: string): Promise<string> {
-        return CoreMimetype.getMimeTypeFromUrl(url);
+        // First check if it can be guessed from the URL.
+        const extension = CoreMimetypeUtils.guessExtensionFromUrl(url);
+        const mimetype = extension && CoreMimetypeUtils.getMimeType(extension);
+
+        // Ignore PHP extension for now, it could be serving a file.
+        if (mimetype && extension !== 'php') {
+            return mimetype;
+        }
+
+        // Can't be guessed, get the remote mimetype.
+        const remoteMimetype = await CoreWS.getRemoteFileMimeType(url);
+
+        return remoteMimetype || mimetype || '';
     }
 
     /**
@@ -280,10 +570,12 @@ export class CoreMimetypeUtilsProvider {
      *
      * @param name Group name.
      * @returns Translated name.
-     * @deprecated since 5.0. Use CoreMimetype.getTranslatedGroupName instead.
      */
     getTranslatedGroupName(name: string): string {
-        return CoreMimetype.getTranslatedGroupName(name);
+        const key = 'assets.mimetypes.group:' + name;
+        const translated = Translate.instant(key);
+
+        return translated != key ? translated : name;
     }
 
     /**
@@ -293,10 +585,21 @@ export class CoreMimetypeUtilsProvider {
      * @param extension Extension.
      * @param groups List of groups to check.
      * @returns Whether the extension belongs to any of the groups.
-     * @deprecated since 5.0. Use CoreMimetype.isExtensionInGroup instead.
      */
     isExtensionInGroup(extension: string | undefined, groups: string[]): boolean {
-        return CoreMimetype.isExtensionInGroup(extension, groups);
+        if (!extension) {
+            return false;
+        }
+
+        extension = this.cleanExtension(extension);
+        const extensionGroups = this.extToMime[extension] && this.extToMime[extension].groups;
+        let found = false;
+
+        if (groups.length && extensionGroups) {
+            found = extensionGroups.some((group => groups.includes(group)));
+        }
+
+        return found;
     }
 
     /**
@@ -304,10 +607,9 @@ export class CoreMimetypeUtilsProvider {
      *
      * @param mimetype Mimetype.
      * @returns Boolean.
-     * @deprecated since 5.0. Use CoreMimetype.isStreamedMimetype instead.
      */
     isStreamedMimetype(mimetype: string): boolean {
-        return CoreMimetype.isStreamedMimetype(mimetype);
+        return mimetype.indexOf('video') != -1 || mimetype.indexOf('audio') != -1;
     }
 
     /**
@@ -315,15 +617,21 @@ export class CoreMimetypeUtilsProvider {
      *
      * @param path Path.
      * @returns Path without extension.
-     * @deprecated since 5.0. Use CoreMimetype.removeExtension instead.
      */
     removeExtension(path: string): string {
-        return CoreMimetype.removeExtension(path);
+        const position = path.lastIndexOf('.');
+
+        if (position > -1) {
+            // Check extension corresponds to a mimetype to know if it's valid.
+            const extension = path.substring(position + 1).toLowerCase();
+            if (this.getMimeType(extension) !== undefined) {
+                return path.substring(0, position); // Remove extension.
+            }
+        }
+
+        return path;
     }
 
 }
-/**
- * @deprecated since 5.0. Use CoreMimetype instead.
- */
-// eslint-disable-next-line deprecation/deprecation
+
 export const CoreMimetypeUtils = makeSingleton(CoreMimetypeUtilsProvider);

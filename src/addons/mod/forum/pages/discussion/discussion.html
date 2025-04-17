@@ -5,8 +5,7 @@
         </ion-buttons>
         <ion-title>
             <h1 *ngIf="startingPost">
-                <core-format-text contextLevel="module" [text]="startingPost.subject" [contextInstanceId]="cmId" [courseId]="courseId"
-                    [sanitize]="!startingPost.id || startingPost.id < 0" />
+                <core-format-text contextLevel="module" [text]="startingPost.subject" [contextInstanceId]="cmId" [courseId]="courseId" />
             </h1>
         </ion-title>
         <ion-buttons slot="end" />

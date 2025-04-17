@@ -36,7 +36,6 @@ Feature: Test forum navigation
       | forum | Discussion 18 | Discussion 18 message | 1638201800 |
       | forum | Discussion 19 | Discussion 19 message | 1638201900 |
       | forum | Discussion 20 | Discussion 20 message | 1638202000 |
-    And I wait "1" seconds
     And the following "mod_forum > posts" exist:
       | discussion | parentsubject | message |
       | Discussion 04 | Discussion 04 | Discussion 04 first reply |

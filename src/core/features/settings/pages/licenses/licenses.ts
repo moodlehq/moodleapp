@@ -59,9 +59,9 @@ export default class CoreSettingsLicensesPage implements OnInit {
     constructor() {
         this.appLicenseVersion = CoreConstants.BUILD.isDevelopment
             ? 'main'
-            : `v${CoreConstants.CONFIG.versionname}`;
+            : 'v' + CoreConstants.CONFIG.versionname;
 
-        this.licensesUrl = `https://raw.githubusercontent.com/moodlehq/moodleapp/${this.appLicenseVersion}/licenses.json`;
+        this.licensesUrl = 'https://raw.githubusercontent.com/moodlehq/moodleapp/' + this.appLicenseVersion + '/licenses.json';
     }
 
     /**
@@ -84,7 +84,7 @@ export default class CoreSettingsLicensesPage implements OnInit {
                     license.repository = license.repository.replace('git://', 'https://');
                     if (license.repository.indexOf('github.com') > 0) {
                         const version = license.name == 'moodlemobile' ? this.appLicenseVersion : license.version;
-                        license.licenseUrl = `${license.repository}/blob/${version}/${license.licenseFile}`;
+                        license.licenseUrl = license.repository + '/blob/' + version + '/' + license.licenseFile;
                     }
                 }
 

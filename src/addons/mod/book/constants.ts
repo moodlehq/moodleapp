@@ -12,15 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { CORE_COURSE_MODULE_FEATURE_PREFIX } from '@features/course/constants';
-
-export const ADDON_MOD_BOOK_COMPONENT = 'AddonModBook';
-export const ADDON_MOD_BOOK_COMPONENT_LEGACY = 'mmaModBook';
+export const ADDON_MOD_BOOK_COMPONENT = 'mmaModBook';
 export const ADDON_MOD_BOOK_PAGE_NAME = 'mod_book';
-export const ADDON_MOD_BOOK_MODNAME = 'book';
-
-export const ADDON_MOD_BOOK_FEATURE_NAME = CORE_COURSE_MODULE_FEATURE_PREFIX + ADDON_MOD_BOOK_COMPONENT;
-
 /**
  * Constants to define how the chapters and subchapters of a book should be displayed in that table of contents.
  */

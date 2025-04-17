@@ -15,12 +15,14 @@
 import { APP_INITIALIZER, NgModule } from '@angular/core';
 
 import { CoreEmulatorHelper } from './services/emulator-helper';
+import { CoreEmulatorComponentsModule } from './components/components.module';
 
 // Ionic Native services.
 import { Camera } from '@awesome-cordova-plugins/camera/ngx';
 import { Clipboard } from '@awesome-cordova-plugins/clipboard/ngx';
 import { File } from '@awesome-cordova-plugins/file/ngx';
 import { FileOpener } from '@awesome-cordova-plugins/file-opener/ngx';
+import { Geolocation } from '@awesome-cordova-plugins/geolocation/ngx';
 import { InAppBrowser } from '@awesome-cordova-plugins/in-app-browser/ngx';
 import { LocalNotifications } from '@awesome-cordova-plugins/local-notifications/ngx';
 import { MediaCapture } from '@awesome-cordova-plugins/media-capture/ngx';
@@ -31,6 +33,7 @@ import { CameraMock } from './services/camera';
 import { ClipboardMock } from './services/clipboard';
 import { FileMock } from './services/file';
 import { FileOpenerMock } from './services/file-opener';
+import { GeolocationMock } from './services/geolocation';
 import { InAppBrowserMock } from './services/inappbrowser';
 import { LocalNotificationsMock } from './services/local-notifications';
 import { MediaCaptureMock } from './services/media-capture';
@@ -52,6 +55,9 @@ import { CoreDbProviderMock } from '@features/emulator/services/db';
  * functions we check if the app is running in mobile or not, and then provide the right service to use.
  */
 @NgModule({
+    imports: [
+        CoreEmulatorComponentsModule,
+    ],
     providers: [
         {
             provide: Camera,
@@ -68,6 +74,10 @@ import { CoreDbProviderMock } from '@features/emulator/services/db';
         {
             provide: FileOpener,
             useFactory: (): FileOpener => CorePlatform.isMobile() ? new FileOpener() : new FileOpenerMock(),
+        },
+        {
+            provide: Geolocation,
+            useFactory: (): Geolocation => CorePlatform.isMobile() ? new Geolocation() : new GeolocationMock(),
         },
         {
             provide: InAppBrowser,

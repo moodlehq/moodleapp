@@ -24,9 +24,9 @@ import { CoreNetwork } from '@services/network';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { CoreText } from '@singletons/text';
 import { CoreSites } from '@services/sites';
-import { CoreCourseModuleHelper } from '@features/course/services/course-module-helper';
-import { CoreTime } from '@singletons/time';
-import { DomSanitizer, NgZone, Translate } from '@singletons';
+import { CoreCourse } from '@features/course/services/course';
+import { CoreTimeUtils } from '@services/utils/time';
+import { NgZone, Translate } from '@singletons';
 import { Subscription } from 'rxjs';
 import { CoreNavigator } from '@services/navigator';
 import { CorePromiseUtils } from '@singletons/promise-utils';
@@ -156,9 +156,9 @@ export default class AddonCalendarEventPage implements OnInit, OnDestroy {
         }, this.currentSiteId);
 
         // Set and update current time. Use a 5 seconds error margin.
-        this.currentTime = CoreTime.timestamp();
+        this.currentTime = CoreTimeUtils.timestamp();
         this.updateCurrentTime = window.setInterval(() => {
-            this.currentTime = CoreTime.timestamp();
+            this.currentTime = CoreTimeUtils.timestamp();
         }, 5000);
 
         this.checkExactAlarms();
@@ -269,7 +269,7 @@ export default class AddonCalendarEventPage implements OnInit, OnDestroy {
 
             if (this.event.moduleIcon) {
                 // It's a module event, translate the module name to the current language.
-                const name = CoreCourseModuleHelper.translateModuleName(this.event.modulename || '');
+                const name = CoreCourse.translateModuleName(this.event.modulename || '');
                 if (name.indexOf('core.mod_') === -1) {
                     this.event.modulename = name;
                 }
@@ -303,9 +303,7 @@ export default class AddonCalendarEventPage implements OnInit, OnDestroy {
             if (this.event.location) {
                 // Build a link to open the address in maps.
                 this.event.location = CoreText.decodeHTML(this.event.location);
-                this.event.encodedLocation = DomSanitizer.bypassSecurityTrustUrl(CoreUrl.buildMapsURL({
-                    query: this.event.location,
-                }));
+                this.event.encodedLocation = CoreUrl.buildAddressURL(this.event.location);
             }
 
             // Check if event was deleted in offine.

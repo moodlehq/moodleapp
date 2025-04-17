@@ -47,10 +47,10 @@ export class AddonModDataFieldCheckboxComponent extends AddonModDataFieldPluginB
         }
 
         if (this.searchMode) {
-            this.addControl(`f_${this.field.id}_allreq`);
+            this.addControl('f_' + this.field.id + '_allreq');
         }
 
-        this.addControl(`f_${this.field.id}`, this.getValidValues(this.value));
+        this.addControl('f_' + this.field.id, this.getValidValues(this.value));
     }
 
     /**

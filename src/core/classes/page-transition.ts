@@ -335,7 +335,7 @@ export const moodleTransitionAnimation = (navEl: HTMLElement, opts: TransitionOp
                     const leavingBackBtnText = createAnimation();
                     leavingBackBtnText
                         .addElement(shadow(backButtonEl).querySelector('.button-text') || [])
-                        .fromTo('transform', `translateX(${CENTER})`, `translateX(${`${isRTL ? -124 : 124}px`})`);
+                        .fromTo('transform', `translateX(${CENTER})`, `translateX(${(isRTL ? -124 : 124) + 'px'})`);
                     leavingToolBar.addAnimation(leavingBackBtnText);
                 }
 

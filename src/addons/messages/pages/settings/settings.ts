@@ -207,10 +207,10 @@ export default class AddonMessagesSettingsPage implements OnInit, OnDestroy {
 
         const promises: Promise<void>[] = [];
         if (this.loggedInOffLegacyMode) {
-            promises.push(CoreUser.updateUserPreference(`${notification.preferencekey}_loggedin`, value));
-            promises.push(CoreUser.updateUserPreference(`${notification.preferencekey}_loggedoff`, value));
+            promises.push(CoreUser.updateUserPreference(notification.preferencekey + '_loggedin', value));
+            promises.push(CoreUser.updateUserPreference(notification.preferencekey + '_loggedoff', value));
         }  else {
-            promises.push(CoreUser.updateUserPreference(`${notification.preferencekey}_enabled`, value));
+            promises.push(CoreUser.updateUserPreference(notification.preferencekey + '_enabled', value));
         }
 
         try {
@@ -240,14 +240,14 @@ export default class AddonMessagesSettingsPage implements OnInit, OnDestroy {
     ): Promise<void> {
         // Update only the specified state.
         const processorState: AddonNotificationsPreferencesNotificationProcessorState = processor[state];
-        const preferenceName = `${notification.preferencekey}_${processorState.name}`;
+        const preferenceName = notification.preferencekey + '_' + processorState.name;
 
         const value = notification.processors
             .filter((processor) => processor[state].checked)
             .map((processor) => processor.name)
             .join(',');
 
-        notification[`updating${state}`] = true;
+        notification['updating'+state] = true;
         try {
             await CoreUser.updateUserPreference(preferenceName, value);
             // Update the preferences since they were modified.
@@ -257,7 +257,7 @@ export default class AddonMessagesSettingsPage implements OnInit, OnDestroy {
             CoreAlerts.showError(error);
             processorState.checked = !processorState.checked;
         } finally {
-            notification[`updating${state}`] = false;
+            notification['updating'+state] = false;
         }
     }
 

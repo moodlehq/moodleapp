@@ -21,15 +21,14 @@ import { CoreMainMenuRoutingModule } from '@features/mainmenu/mainmenu-routing.m
 import { CoreMainMenuTabRoutingModule } from '@features/mainmenu/mainmenu-tab-routing.module';
 import { CorePushNotificationsDelegate } from '@features/pushnotifications/services/push-delegate';
 import { CoreSettingsDelegate } from '@features/settings/services/settings-delegate';
-import { AddonNotificationsMainMenuHandler } from './services/handlers/mainmenu';
+import { AddonNotificationsMainMenuHandler, AddonNotificationsMainMenuHandlerService } from './services/handlers/mainmenu';
 import { AddonNotificationsCronHandler } from './services/handlers/cron';
 import { AddonNotificationsPushClickHandler } from './services/handlers/push-click';
-import { AddonNotificationsSettingsHandler } from './services/handlers/settings';
+import { AddonNotificationsSettingsHandler, AddonNotificationsSettingsHandlerService } from './services/handlers/settings';
 import { CoreSitePreferencesRoutingModule } from '@features/settings/settings-site-routing.module';
 import { CoreContentLinksDelegate } from '@features/contentlinks/services/contentlinks-delegate';
 import { AddonNotificationsPreferencesLinkHandler } from './services/handlers/preferences-link';
 import { AddonNotificationsLinkHandler } from './services/handlers/notifications-link';
-import { ADDONS_NOTICATIONS_MAIN_PAGE_NAME, ADDONS_NOTICATIONS_SETTINGS_PAGE_NAME } from './constants';
 
 /**
  * Get notifications services.
@@ -48,13 +47,13 @@ export async function getNotificationsServices(): Promise<Type<unknown>[]> {
 
 const routes: Routes = [
     {
-        path: ADDONS_NOTICATIONS_MAIN_PAGE_NAME,
+        path: AddonNotificationsMainMenuHandlerService.PAGE_NAME,
         loadChildren: () => import('./notifications-lazy.module'),
     },
 ];
 const preferencesRoutes: Routes = [
     {
-        path: ADDONS_NOTICATIONS_SETTINGS_PAGE_NAME,
+        path: AddonNotificationsSettingsHandlerService.PAGE_NAME,
         loadComponent: () => import('@addons/notifications/pages/settings/settings'),
     },
 ];

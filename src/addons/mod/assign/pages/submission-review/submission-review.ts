@@ -17,8 +17,10 @@ import { ActivatedRoute, ActivatedRouteSnapshot } from '@angular/router';
 import { CoreRoutedItemsManagerSourcesTracker } from '@classes/items-management/routed-items-manager-sources-tracker';
 import { CoreSwipeNavigationItemsManager } from '@classes/items-management/swipe-navigation-items-manager';
 import { CoreCourse } from '@features/course/services/course';
+import { CanLeave } from '@guards/can-leave';
 import { CoreNavigator } from '@services/navigator';
-import { AddonModAssignSubmissionsSource } from '../../classes/submissions-source';
+import { CoreScreen } from '@services/screen';
+import { AddonModAssignListFilterName, AddonModAssignSubmissionsSource } from '../../classes/submissions-source';
 import { AddonModAssignSubmissionComponent } from '../../components/submission/submission';
 import { AddonModAssign, AddonModAssignAssign } from '../../services/assign';
 import { CoreTime } from '@singletons/time';
@@ -26,7 +28,6 @@ import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 import { Translate } from '@singletons';
 import { CoreAlerts } from '@services/overlays/alerts';
 import { CoreSharedModule } from '@/core/shared.module';
-import { ADDON_MOD_ASSIGN_MODNAME, AddonModAssignListFilterName } from '../../constants';
 
 /**
  * Page that displays a submission.
@@ -40,7 +41,7 @@ import { ADDON_MOD_ASSIGN_MODNAME, AddonModAssignListFilterName } from '../../co
         AddonModAssignSubmissionComponent,
     ],
 })
-export default class AddonModAssignSubmissionReviewPage implements OnInit, OnDestroy {
+export default class AddonModAssignSubmissionReviewPage implements OnInit, OnDestroy, CanLeave {
 
     @ViewChild(AddonModAssignSubmissionComponent) submissionComponent?: AddonModAssignSubmissionComponent;
 
@@ -74,7 +75,7 @@ export default class AddonModAssignSubmissionReviewPage implements OnInit, OnDes
                     contextname: this.assign.name,
                     subpage: Translate.instant('addon.mod_assign.grading'),
                 }),
-                data: { id, assignid: this.assign.id, category: ADDON_MOD_ASSIGN_MODNAME },
+                data: { id, assignid: this.assign.id, category: 'assign' },
                 url: `/mod/assign/view.php?id=${this.assign.cmid}&action=grader&${paramName}=${id}`,
             });
         });
@@ -122,6 +123,34 @@ export default class AddonModAssignSubmissionReviewPage implements OnInit, OnDes
      */
     ngOnDestroy(): void {
         this.submissions?.destroy();
+    }
+
+    /**
+     * Check if we can leave the page or not.
+     *
+     * @returns Resolved if we can leave it, rejected if not.
+     */
+    async canLeave(): Promise<boolean> {
+        if (!this.submissionComponent || this.forceLeave) {
+            return true;
+        }
+
+        // Check if data has changed.
+        return this.submissionComponent.canLeave();
+    }
+
+    /**
+     * User entered the page.
+     */
+    ionViewDidEnter(): void {
+        this.submissionComponent?.ionViewDidEnter();
+    }
+
+    /**
+     * User left the page.
+     */
+    ionViewDidLeave(): void {
+        this.submissionComponent?.ionViewDidLeave();
     }
 
     /**
@@ -189,6 +218,26 @@ export default class AddonModAssignSubmissionReviewPage implements OnInit, OnDes
         this.refreshAllData().finally(() => {
             refresher?.complete();
         });
+    }
+
+    /**
+     * Submit a grade and feedback.
+     */
+    async submitGrade(): Promise<void> {
+        if (!this.submissionComponent) {
+            return;
+        }
+
+        try {
+            await this.submissionComponent.submitGrade();
+            // Grade submitted, leave the view if not in tablet.
+            if (!CoreScreen.isTablet) {
+                this.forceLeave = true;
+                CoreNavigator.back();
+            }
+        } catch (error) {
+            CoreAlerts.showError(error, { default: Translate.instant('core.error') });
+        }
     }
 
 }

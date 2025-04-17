@@ -18,7 +18,7 @@ import { CoreCourseModuleMainActivityComponent } from '@features/course/classes/
 import CoreCourseContentsPage from '@features/course/pages/contents/contents';
 import { AddonModLti, AddonModLtiLti } from '../../services/lti';
 import { AddonModLtiHelper } from '../../services/lti-helper';
-import { ADDON_MOD_LTI_COMPONENT_LEGACY } from '../../constants';
+import { ADDON_MOD_LTI_COMPONENT } from '../../constants';
 import { CoreCourseModuleNavigationComponent } from '@features/course/components/module-navigation/module-navigation';
 import { CoreCourseModuleInfoComponent } from '@features/course/components/module-info/module-info';
 import { CoreSharedModule } from '@/core/shared.module';
@@ -38,7 +38,7 @@ import { CoreSharedModule } from '@/core/shared.module';
 })
 export class AddonModLtiIndexComponent extends CoreCourseModuleMainActivityComponent implements OnInit {
 
-    component = ADDON_MOD_LTI_COMPONENT_LEGACY;
+    component = ADDON_MOD_LTI_COMPONENT;
     pluginName = 'lti';
     displayDescription = false;
 

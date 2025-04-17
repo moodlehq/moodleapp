@@ -19,7 +19,7 @@ import { CoreNavigator } from '@services/navigator';
 import { CoreSitesReadingStrategy } from '@services/sites';
 import { makeSingleton, Translate } from '@singletons';
 import { AddonModWiki } from '../wiki';
-import { ADDON_MOD_WIKI_MODNAME, ADDON_MOD_WIKI_PAGE_NAME } from '../../constants';
+import { ADDON_MOD_WIKI_PAGE_NAME } from '../../constants';
 import { AddonModWikiCreateLinkHandlerService } from '@addons/mod/wiki/services/handlers/create-link';
 import { CoreLoadings } from '@services/overlays/loadings';
 import { CoreAlerts } from '@services/overlays/alerts';
@@ -105,19 +105,19 @@ export class AddonModWikiCreateLinkHandlerLazyService extends AddonModWikiCreate
                 // User is seeing the wiki, we can get the module from the wiki params.
                 const routeParams = CoreNavigator.getRouteParams(route);
 
-                path = `${path}/${routeParams.courseId}/${routeParams.cmId}/edit`;
+                path = path + `/${routeParams.courseId}/${routeParams.cmId}/edit`;
             } else if (wikiId) {
                 // The URL specifies which wiki it belongs to. Get the module.
                 const module = await CoreCourse.getModuleBasicInfoByInstance(
                     wikiId,
-                    ADDON_MOD_WIKI_MODNAME,
+                    'wiki',
                     { siteId, readingStrategy: CoreSitesReadingStrategy.PREFER_CACHE },
                 );
 
-                path = `${path}/${module.course}/${module.id}/edit`;
+                path = path + `/${module.course}/${module.id}/edit`;
             } else {
                 // Cannot get module ID.
-                path = `${path}/${courseId || 0}/0/edit`;
+                path = path + `/${courseId || 0}/0/edit`;
             }
 
             // Open the page.

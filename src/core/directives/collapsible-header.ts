@@ -28,7 +28,6 @@ import { Subscription } from 'rxjs';
 import { CoreFormatTextDirective } from './format-text';
 import { CoreWait } from '@singletons/wait';
 import { toBoolean } from '../transforms/boolean';
-import { AsyncDirective } from '@classes/async-directive';
 
 declare module '@singletons/events' {
 
@@ -75,7 +74,7 @@ export const COLLAPSIBLE_HEADER_UPDATED = 'collapsible_header_updated';
     selector: 'ion-header[collapsible]',
     standalone: true,
 })
-export class CoreCollapsibleHeaderDirective implements OnInit, OnChanges, OnDestroy, AsyncDirective {
+export class CoreCollapsibleHeaderDirective implements OnInit, OnChanges, OnDestroy {
 
     @Input({ transform: toBoolean }) collapsible = true;
 
@@ -99,7 +98,6 @@ export class CoreCollapsibleHeaderDirective implements OnInit, OnChanges, OnDest
     protected mutationObserver?: MutationObserver;
     protected loadingFloatingTitle = false;
     protected visiblePromise?: CoreCancellablePromise<void>;
-    protected onReadyPromise = new CorePromisedValue<void>();
 
     constructor(el: ElementRef) {
         this.collapsedHeader = el.nativeElement;
@@ -122,8 +120,6 @@ export class CoreCollapsibleHeaderDirective implements OnInit, OnChanges, OnDest
      */
     async init(): Promise<void> {
         if (!this.collapsible || this.expandedHeader) {
-            this.onReadyPromise.resolve();
-
             return;
         }
 
@@ -138,9 +134,7 @@ export class CoreCollapsibleHeaderDirective implements OnInit, OnChanges, OnDest
         this.listenEvents();
 
         await this.initializeFloatingTitle();
-        await this.initializeContent();
-
-        this.onReadyPromise.resolve();
+        this.initializeContent();
     }
 
     /**
@@ -621,13 +615,6 @@ export class CoreCollapsibleHeaderDirective implements OnInit, OnChanges, OnDest
         }
 
         return frozen;
-    }
-
-    /**
-     * @inheritdoc
-     */
-    async ready(): Promise<void> {
-        return this.onReadyPromise;
     }
 
 }

@@ -19,7 +19,7 @@ import { CoreFilepool } from '@services/filepool';
 import { CoreLang, CoreLangFormat } from '@services/lang';
 import { CorePlatform } from '@services/platform';
 import { CoreSites } from '@services/sites';
-import { CoreMimetype } from '@singletons/mimetype';
+import { CoreMimetypeUtils } from '@services/utils/mimetype';
 import { Translate, FileOpener, WebIntent, InAppBrowser, NgZone } from '@singletons';
 import { CoreConstants } from '../constants';
 import { CoreFile } from '@services/file';
@@ -84,8 +84,8 @@ export class CoreOpener {
         // Convert the path to a native path if needed.
         path = CoreFile.unconvertFileSrc(path);
 
-        const extension = CoreMimetype.getFileExtension(path);
-        const mimetype = extension && CoreMimetype.getMimeType(extension);
+        const extension = CoreMimetypeUtils.getFileExtension(path);
+        const mimetype = extension && CoreMimetypeUtils.getMimeType(extension);
 
         if (mimetype == 'text/html' && CorePlatform.isAndroid()) {
             // Open HTML local files in InAppBrowser, in system browser some embedded files aren't loaded.
@@ -151,7 +151,7 @@ export class CoreOpener {
                 }
 
                 // Cannot open mimetype. Check if there is a deprecated mimetype for the extension.
-                const deprecatedMimetype = CoreMimetype.getDeprecatedMimeType(extension);
+                const deprecatedMimetype = CoreMimetypeUtils.getDeprecatedMimeType(extension);
                 if (!deprecatedMimetype || deprecatedMimetype === mimetype) {
                     throw error;
                 }
@@ -159,7 +159,7 @@ export class CoreOpener {
                 await openFile(path, deprecatedMimetype);
             }
         } catch (error) {
-            CoreOpener.logger.error(`Error opening file ${path} with mimetype ${mimetype}`);
+            CoreOpener.logger.error('Error opening file ' + path + ' with mimetype ' + mimetype);
             CoreOpener.logger.error('Error: ', JSON.stringify(error));
 
             if (!extension || extension.indexOf('/') > -1 || extension.indexOf('\\') > -1) {
@@ -210,7 +210,7 @@ export class CoreOpener {
     static async openOnlineFile(url: string): Promise<void> {
         if (CorePlatform.isAndroid()) {
             // In Android we need the mimetype to open it.
-            const mimetype = await CorePromiseUtils.ignoreErrors(CoreMimetype.getMimeTypeFromUrl(url));
+            const mimetype = await CorePromiseUtils.ignoreErrors(CoreMimetypeUtils.getMimeTypeFromUrl(url));
 
             if (!mimetype) {
                 // Couldn't retrieve mimetype. Return error.
@@ -233,7 +233,7 @@ export class CoreOpener {
 
                 return;
             } catch (error) {
-                CoreOpener.logger.error(`Error opening online file ${url} with mimetype ${mimetype}`);
+                CoreOpener.logger.error('Error opening online file ' + url + ' with mimetype ' + mimetype);
                 CoreOpener.logger.error('Error: ', JSON.stringify(error));
 
                 throw new Error(Translate.instant('core.erroropenfilenoapp'));

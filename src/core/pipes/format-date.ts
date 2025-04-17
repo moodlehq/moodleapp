@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { Pipe, PipeTransform } from '@angular/core';
-import { CoreTime } from '@singletons/time';
+import { CoreTimeUtils } from '@services/utils/time';
 import { CoreLogger } from '@singletons/logger';
 
 /**
@@ -37,7 +37,7 @@ export class CoreFormatDatePipe implements PipeTransform {
      * @param timestamp Timestamp to format (in milliseconds). If not defined, use current time.
      * @param format Format to use. It should be a string code to handle i18n (e.g. core.strftimetime).
      *               Defaults to strftimedaydatetime.
-     * @param convert If true, convert the format from PHP to DayJS. Set it to false for DayJS formats.
+     * @param convert If true, convert the format from PHP to Moment. Set it to false for Moment formats.
      * @returns Formatted date.
      */
     transform(timestamp: string | number, format?: string, convert?: boolean): string {
@@ -57,7 +57,7 @@ export class CoreFormatDatePipe implements PipeTransform {
 
         // Add "core." if needed.
         if (format.indexOf('strf') === 0 || format.indexOf('df') === 0) {
-            format = `core.${format}`;
+            format = 'core.' + format;
         }
 
         if (convert === undefined) {
@@ -65,7 +65,7 @@ export class CoreFormatDatePipe implements PipeTransform {
             convert = format.indexOf('core.df') != 0;
         }
 
-        return CoreTime.userDate(timestamp, format, convert);
+        return CoreTimeUtils.userDate(timestamp, format, convert);
     }
 
 }

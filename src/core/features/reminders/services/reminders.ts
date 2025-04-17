@@ -15,7 +15,7 @@
 import { Injectable } from '@angular/core';
 import { CoreLocalNotifications } from '@services/local-notifications';
 import { CoreSites } from '@services/sites';
-import { CoreTime } from '@singletons/time';
+import { CoreTimeUtils } from '@services/utils/time';
 import { makeSingleton, Translate } from '@singletons';
 import { CoreReminderDBRecord, REMINDERS_TABLE } from './database/reminders';
 import { ILocalNotification } from '@awesome-cordova-plugins/local-notifications';
@@ -314,7 +314,7 @@ export class CoreRemindersService {
         const notification: ILocalNotification = {
             id: reminder.id,
             title: reminder.title,
-            text: CoreTime.userDate(reminder.time * 1000, 'core.strftimedaydatetime', true),
+            text: CoreTimeUtils.userDate(reminder.time * 1000, 'core.strftimedaydatetime', true),
             icon: 'file://assets/img/icons/calendar.png',
             trigger: {
                 at: new Date(notificationTime),
@@ -432,7 +432,7 @@ export class CoreRemindersService {
     async getDefaultNotificationTime(siteId?: string): Promise<number> {
         siteId = siteId || CoreSites.getCurrentSiteId();
 
-        const key = `${REMINDERS_DEFAULT_NOTIFICATION_TIME_SETTING}#${siteId}`;
+        const key = REMINDERS_DEFAULT_NOTIFICATION_TIME_SETTING + '#' + siteId;
 
         return CoreConfig.get(key, CoreConstants.CONFIG.calendarreminderdefaultvalue || 3600);
     }
@@ -447,7 +447,7 @@ export class CoreRemindersService {
     async setDefaultNotificationTime(time: number, siteId?: string): Promise<void> {
         siteId = siteId || CoreSites.getCurrentSiteId();
 
-        const key = `${REMINDERS_DEFAULT_NOTIFICATION_TIME_SETTING}#${siteId}`;
+        const key = REMINDERS_DEFAULT_NOTIFICATION_TIME_SETTING + '#' + siteId;
 
         await CoreConfig.set(key, time);
 

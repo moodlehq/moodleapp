@@ -30,8 +30,6 @@ import { CoreSharedModule } from '@/core/shared.module';
 import { AddonBlockTimelineEventsComponent } from '../events/events';
 import { CoreAlerts } from '@services/overlays/alerts';
 import { CoreSearchBoxComponent } from '@features/search/components/search-box/search-box';
-import { CoreToasts } from '@services/overlays/toasts';
-import { Translate } from '@singletons';
 
 /**
  * Component to render a timeline block.
@@ -210,14 +208,6 @@ export class AddonBlockTimelineComponent implements OnInit, ICoreBlockComponent 
             }),
             resolved(),
             mergeAll(),
-            tap((sections) => {
-                if (this.loaded) {
-                    CoreToasts.show({
-                        cssClass: 'sr-only',
-                        message: Translate.instant('core.resultsfound', { $a: sections.length }),
-                    });
-                }
-            }),
             catchError(error => {
                 // An error ocurred in the function, log the error and just resolve the observable so the workflow continues.
                 this.logger.error(error);

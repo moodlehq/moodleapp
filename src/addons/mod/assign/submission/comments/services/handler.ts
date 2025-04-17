@@ -20,7 +20,6 @@ import { CoreComments } from '@features/comments/services/comments';
 import { makeSingleton } from '@singletons';
 import { AddonModAssignSubmissionCommentsComponent } from '../component/comments';
 import { ContextLevel } from '@/core/constants';
-import { ADDON_MOD_ASSIGN_COMMENTS_AREA, ADDON_MOD_ASSIGN_COMMENTS_COMPONENT_NAME } from '../constants';
 
 /**
  * Handler for comments submission plugin.
@@ -34,9 +33,9 @@ export class AddonModAssignSubmissionCommentsHandlerService implements AddonModA
     /**
      * @inheritdoc
      */
-    async canContainFiltersWhenEditing(): Promise<boolean> {
-        // This plugin cannot be edited.
-        return false;
+    canEditOffline(): boolean {
+        // This plugin is read only, but return true to prevent blocking the edition.
+        return true;
     }
 
     /**
@@ -72,9 +71,9 @@ export class AddonModAssignSubmissionCommentsHandlerService implements AddonModA
         await CoreComments.getComments(
             ContextLevel.MODULE,
             assign.cmid,
-            ADDON_MOD_ASSIGN_COMMENTS_COMPONENT_NAME,
+            'assignsubmission_comments',
             submission.id,
-            ADDON_MOD_ASSIGN_COMMENTS_AREA,
+            'submission_comments',
             0,
             siteId,
         );

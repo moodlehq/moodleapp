@@ -14,26 +14,28 @@
 
 import { NgModule, APP_INITIALIZER } from '@angular/core';
 import { Routes } from '@angular/router';
+import { CoreMainMenuRoutingModule } from '@features/mainmenu/mainmenu-routing.module';
 import { CoreMainMenuTabRoutingModule } from '@features/mainmenu/mainmenu-tab-routing.module';
 import { CoreSitePreferencesRoutingModule } from '@features/settings/settings-site-routing.module';
 import { CoreSettingsDelegate } from '@features/settings/services/settings-delegate';
 import { AddonStorageManagerSettingsHandler } from './services/handlers/settings';
-import { ADDON_STORAGE_MANAGER_PAGE_NAME } from './constants';
 
 const routes: Routes = [
     {
-        path: ADDON_STORAGE_MANAGER_PAGE_NAME,
+        path: 'storage',
         loadComponent: () => import('./pages/courses-storage/courses-storage'),
     },
     {
-        path: `${ADDON_STORAGE_MANAGER_PAGE_NAME}/:courseId`,
+        path: 'storage/:courseId',
         loadComponent: () => import('./pages/course-storage/course-storage'),
+
     },
 ];
 
 @NgModule({
     imports: [
         CoreMainMenuTabRoutingModule.forChild(routes),
+        CoreMainMenuRoutingModule.forChild({ children: routes }),
         CoreSitePreferencesRoutingModule.forChild(routes),
     ],
     providers: [

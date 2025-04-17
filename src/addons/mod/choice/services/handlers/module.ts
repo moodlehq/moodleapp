@@ -12,12 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import { CoreConstants, ModPurpose } from '@/core/constants';
 import { Injectable, Type } from '@angular/core';
 import { CoreModuleHandlerBase } from '@features/course/classes/module-base-handler';
 import { CoreCourseModuleHandler } from '@features/course/services/module-delegate';
 import { makeSingleton } from '@singletons';
-import { ADDON_MOD_CHOICE_MODNAME, ADDON_MOD_CHOICE_PAGE_NAME } from '../../constants';
-import { ModFeature, ModPurpose } from '@addons/mod/constants';
+import { ADDON_MOD_CHOICE_PAGE_NAME } from '../../constants';
 
 /**
  * Handler to support choice modules.
@@ -26,20 +26,20 @@ import { ModFeature, ModPurpose } from '@addons/mod/constants';
 export class AddonModChoiceModuleHandlerService extends CoreModuleHandlerBase implements CoreCourseModuleHandler {
 
     name = 'AddonModChoice';
-    modName = ADDON_MOD_CHOICE_MODNAME;
+    modName = 'choice';
     protected pageName = ADDON_MOD_CHOICE_PAGE_NAME;
 
     supportedFeatures = {
-        [ModFeature.GROUPS]: true,
-        [ModFeature.GROUPINGS]: true,
-        [ModFeature.MOD_INTRO]: true,
-        [ModFeature.COMPLETION_TRACKS_VIEWS]: true,
-        [ModFeature.COMPLETION_HAS_RULES]: true,
-        [ModFeature.GRADE_HAS_GRADE]: false,
-        [ModFeature.GRADE_OUTCOMES]: false,
-        [ModFeature.BACKUP_MOODLE2]: true,
-        [ModFeature.SHOW_DESCRIPTION]: true,
-        [ModFeature.MOD_PURPOSE]: ModPurpose.COMMUNICATION,
+        [CoreConstants.FEATURE_GROUPS]: true,
+        [CoreConstants.FEATURE_GROUPINGS]: true,
+        [CoreConstants.FEATURE_MOD_INTRO]: true,
+        [CoreConstants.FEATURE_COMPLETION_TRACKS_VIEWS]: true,
+        [CoreConstants.FEATURE_COMPLETION_HAS_RULES]: true,
+        [CoreConstants.FEATURE_GRADE_HAS_GRADE]: false,
+        [CoreConstants.FEATURE_GRADE_OUTCOMES]: false,
+        [CoreConstants.FEATURE_BACKUP_MOODLE2]: true,
+        [CoreConstants.FEATURE_SHOW_DESCRIPTION]: true,
+        [CoreConstants.FEATURE_MOD_PURPOSE]: ModPurpose.MOD_PURPOSE_COMMUNICATION,
     };
 
     /**

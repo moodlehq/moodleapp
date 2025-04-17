@@ -15,7 +15,7 @@
 import { FormControl, Validators } from '@angular/forms';
 import { Component } from '@angular/core';
 
-import { CoreTime } from '@singletons/time';
+import { CoreTimeUtils } from '@services/utils/time';
 import { CoreUtils } from '@singletons/utils';
 import { AuthEmailSignupProfileField } from '@features/login/services/login-helper';
 import { CoreUserProfileField } from '@features/user/services/user';
@@ -80,8 +80,8 @@ export class AddonUserProfileFieldDatetimeComponent extends CoreUserProfileField
             this.max = field.param2;
         }
 
-        this.min = this.min || CoreTime.getDatetimeDefaultMin();
-        this.max = this.max || CoreTime.getDatetimeDefaultMax();
+        this.min = this.min || CoreTimeUtils.getDatetimeDefaultMin();
+        this.max = this.max || CoreTimeUtils.getDatetimeDefaultMax();
     }
 
     /**

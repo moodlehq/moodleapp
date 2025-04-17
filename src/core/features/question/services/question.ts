@@ -17,7 +17,7 @@ import { Injectable } from '@angular/core';
 import { CoreFile } from '@services/file';
 import { CoreSites } from '@services/sites';
 import { CoreText } from '@singletons/text';
-import { CoreTime } from '@singletons/time';
+import { CoreTimeUtils } from '@services/utils/time';
 import { CoreArray } from '@singletons/array';
 import { CoreWSExternalFile } from '@services/ws';
 import { makeSingleton } from '@singletons';
@@ -324,7 +324,7 @@ export class CoreQuestionProvider {
      * @returns Question component ID.
      */
     getQuestionComponentId(question: CoreQuestionQuestionParsed, componentId: string | number): string {
-        return `${componentId}_${question.questionnumber}`;
+        return componentId + '_' + question.questionnumber;
     }
 
     /**
@@ -340,7 +340,7 @@ export class CoreQuestionProvider {
         siteId = siteId || CoreSites.getCurrentSiteId();
 
         const siteFolderPath = CoreFile.getSiteFolder(siteId);
-        const questionFolderPath = `offlinequestion/${type}/${component}/${componentId}`;
+        const questionFolderPath = 'offlinequestion/' + type + '/' + component + '/' + componentId;
 
         return CorePath.concatenatePaths(siteFolderPath, questionFolderPath);
     }
@@ -517,7 +517,7 @@ export class CoreQuestionProvider {
         timemodified?: number,
         siteId?: string,
     ): Promise<void> {
-        timemodified = timemodified || CoreTime.timestamp();
+        timemodified = timemodified || CoreTimeUtils.timestamp();
 
         const db = await CoreSites.getSiteDb(siteId);
         const promises: Promise<unknown>[] = [];

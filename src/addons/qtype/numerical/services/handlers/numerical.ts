@@ -182,14 +182,14 @@ export class AddonQtypeNumericalHandlerService implements CoreQuestionHandler {
 
         if (!question.parsedSettings || question.parsedSettings.unitsleft === null) {
             // We don't know if units should be before or after so we check both.
-            match = answer.match(new RegExp(`^${regexString}`));
+            match = answer.match(new RegExp('^' + regexString));
             if (!match) {
                 unitsLeft = true;
-                match = answer.match(new RegExp(`${regexString}$`));
+                match = answer.match(new RegExp(regexString + '$'));
             }
         } else {
             unitsLeft = question.parsedSettings.unitsleft === '1';
-            regexString = unitsLeft ? `${regexString}$` : `^${regexString}`;
+            regexString = unitsLeft ? regexString + '$' : '^' + regexString;
 
             match = answer.match(new RegExp(regexString));
         }

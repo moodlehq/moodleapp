@@ -52,7 +52,7 @@ import {
 import { AddonModWikiMapModalReturn } from '../map/map';
 import {
     ADDON_MOD_WIKI_AUTO_SYNCED,
-    ADDON_MOD_WIKI_COMPONENT_LEGACY,
+    ADDON_MOD_WIKI_COMPONENT,
     ADDON_MOD_WIKI_MANUAL_SYNCED,
     ADDON_MOD_WIKI_PAGE_CREATED_EVENT,
     ADDON_MOD_WIKI_PAGE_NAME,
@@ -89,7 +89,7 @@ export class AddonModWikiIndexComponent extends CoreCourseModuleMainActivityComp
     @Input() userId?: number;
     @Input() groupId?: number;
 
-    component = ADDON_MOD_WIKI_COMPONENT_LEGACY;
+    component = ADDON_MOD_WIKI_COMPONENT;
     componentId?: number;
     pluginName = 'wiki';
     groupWiki = false;
@@ -759,7 +759,7 @@ export class AddonModWikiIndexComponent extends CoreCourseModuleMainActivityComp
 
         if (content.length > 0) {
             const editUrl = CorePath.concatenatePaths(CoreSites.getRequiredCurrentSite().getURL(), '/mod/wiki/edit.php');
-            content = content.replace(/href="edit\.php/g, `href="${editUrl}`);
+            content = content.replace(/href="edit\.php/g, 'href="' + editUrl);
         }
 
         return content;

@@ -92,7 +92,7 @@ export class FileTransferMock {
             this.errorCallback = errorCallback;
 
             if (basicAuthHeader) {
-                source = source.replace(`${this.getUrlCredentials(source)}@`, '');
+                source = source.replace(this.getUrlCredentials(source) + '@', '');
 
                 options = options || {};
                 options.headers = options.headers || {};
@@ -172,7 +172,7 @@ export class FileTransferMock {
             if (credentials) {
                 header = {
                     name: 'Authorization',
-                    value: `Basic ${window.btoa(credentials)}`,
+                    value: 'Basic ' + window.btoa(credentials),
                 };
             }
         }
@@ -258,7 +258,7 @@ export class FileTransferMock {
             let httpMethod: string | undefined;
 
             if (basicAuthHeader) {
-                url = url.replace(`${this.getUrlCredentials(url)}@`, '');
+                url = url.replace(this.getUrlCredentials(url) + '@', '');
 
                 options = options || {};
                 options.headers = options.headers || {};

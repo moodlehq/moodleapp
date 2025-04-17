@@ -11,7 +11,7 @@
     </ion-toolbar>
 </ion-header>
 <ion-content>
-    <core-loading [hideUntil]="loaded" placeholderType="column" placeholderHeight="48px">
+    <core-loading [hideUntil]="loaded">
         <ion-list *ngIf="loaded" id="core-course-section-selector" role="listbox" aria-labelledby="core-course-section-selector-label">
             <ng-container *ngFor="let section of sectionsToRender">
                 <ion-item *ngIf="allSectionId === section.id" class="divider core-course-index-all"

@@ -25,7 +25,8 @@ import { makeSingleton } from '@singletons';
 import { CoreEvents } from '@singletons/events';
 import { AddonModChoice } from './choice';
 import { AddonModChoiceOffline } from './choice-offline';
-import { ADDON_MOD_CHOICE_AUTO_SYNCED, ADDON_MOD_CHOICE_COMPONENT_LEGACY, ADDON_MOD_CHOICE_MODNAME } from '../constants';
+import { AddonModChoicePrefetchHandler } from './handlers/prefetch';
+import { ADDON_MOD_CHOICE_AUTO_SYNCED, ADDON_MOD_CHOICE_COMPONENT } from '../constants';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 
 declare module '@singletons/events' {
@@ -61,7 +62,7 @@ export class AddonModChoiceSyncProvider extends CoreCourseActivitySyncBaseProvid
      * @returns Sync ID.
      */
     protected getSyncId(choiceId: number, userId: number): string {
-        return `${choiceId}#${userId}`;
+        return choiceId + '#' + userId;
     }
 
     /**
@@ -162,7 +163,7 @@ export class AddonModChoiceSyncProvider extends CoreCourseActivitySyncBaseProvid
         };
 
         // Sync offline logs.
-        await CorePromiseUtils.ignoreErrors(CoreCourseLogHelper.syncActivity(ADDON_MOD_CHOICE_COMPONENT_LEGACY, choiceId, siteId));
+        await CorePromiseUtils.ignoreErrors(CoreCourseLogHelper.syncActivity(ADDON_MOD_CHOICE_COMPONENT, choiceId, siteId));
 
         const data = await CorePromiseUtils.ignoreErrors(AddonModChoiceOffline.getResponse(choiceId, siteId, userId));
 
@@ -210,9 +211,9 @@ export class AddonModChoiceSyncProvider extends CoreCourseActivitySyncBaseProvid
 
         // Data has been sent to server, prefetch choice if needed.
         try {
-            const module = await CoreCourse.getModuleBasicInfoByInstance(choiceId, ADDON_MOD_CHOICE_MODNAME, { siteId });
+            const module = await CoreCourse.getModuleBasicInfoByInstance(choiceId, 'choice', { siteId });
 
-            await this.prefetchModuleAfterUpdate(module, courseId, undefined, siteId);
+            await this.prefetchAfterUpdate(AddonModChoicePrefetchHandler.instance, module, courseId, undefined, siteId);
         } catch {
             // Ignore errors.
         }

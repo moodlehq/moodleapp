@@ -106,9 +106,9 @@ export default class CoreSettingsDevPage implements OnInit {
 
         const privateToken = currentSite.getPrivateToken();
         const filesAccessKey = currentSite.getFilesAccessKey();
-        this.token = `...${currentSite.getToken().slice(-3)}`;
-        this.privateToken = privateToken && (`...${privateToken.slice(-3)}`);
-        this.filesAccessKey = filesAccessKey && (`...${filesAccessKey.slice(-3)}`);
+        this.token = '...' + currentSite.getToken().slice(-3);
+        this.privateToken = privateToken && ('...' + privateToken.slice(-3));
+        this.filesAccessKey = filesAccessKey && ('...' + filesAccessKey.slice(-3));
 
         this.autoLoginTimeBetweenRequests = await currentSite.getAutoLoginMinTimeBetweenRequests();
         this.lastAutoLoginTime = currentSite.getLastAutoLoginTime();

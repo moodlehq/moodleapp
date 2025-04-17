@@ -31,7 +31,7 @@ function buildRoutes(injector: Injector): Routes {
         {
             path: '',
             component: CoreCourseContentsPage,
-            loadChildren: () => routes.children,
+            children: routes.children,
         },
         ...routes.siblings,
     ];

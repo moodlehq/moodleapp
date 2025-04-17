@@ -51,7 +51,6 @@ export class CoreSiteLogoComponent implements OnInit, OnDestroy {
     siteId?: string;
     siteLogo?: string;
     logoLoaded = false;
-    logoError = false;
     fallbackLogo = '';
     showSiteName = true;
     appName = CoreConstants.CONFIG.appname;
@@ -68,21 +67,20 @@ export class CoreSiteLogoComponent implements OnInit, OnDestroy {
             await this.loadInfo();
         }, this.siteId);
 
-        this.fallbackLogo = this.logoType === 'top' ? 'assets/img/top_logo.png' : 'assets/img/login_logo.png';
+        this.fallbackLogo = this.logoType === 'top' ? 'assets/img/dfa_logo.jpeg' : 'assets/img/dfa_logo.jpeg';
         this.showSiteName = this.logoType !== 'top';
 
         await this.loadInfo();
     }
 
     /**
-     * Function to handle the image loaded.
+     * Function to handle the image error.
      */
-    imageLoaded(success: boolean): void {
-        if (!success && this.hideOnError) {
+    imageError(): void {
+        if (this.hideOnError) {
             this.showLogo = false;
         }
-
-        this.logoError = !success;
+        this.siteLogo = undefined;
     }
 
     /**
@@ -110,8 +108,6 @@ export class CoreSiteLogoComponent implements OnInit, OnDestroy {
         this.siteName = await site.getSiteName() || '';
 
         this.showSiteName = this.logoType !== 'top' || site.getShowTopLogo() === 'hidden';
-
-        this.logoError = false;
 
         if (this.logoType === 'top' && site.getShowTopLogo() === 'hidden') {
             this.showLogo = false;

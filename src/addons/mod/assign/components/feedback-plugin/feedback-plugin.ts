@@ -24,7 +24,7 @@ import {
 } from '../../services/assign';
 import { AddonModAssignHelper, AddonModAssignPluginConfig } from '../../services/assign-helper';
 import { AddonModAssignFeedbackDelegate } from '../../services/feedback-delegate';
-import { ADDON_MOD_ASSIGN_COMPONENT_LEGACY } from '../../constants';
+import { ADDON_MOD_ASSIGN_COMPONENT } from '../../constants';
 import { toBoolean } from '@/core/transforms/boolean';
 import { CoreSharedModule } from '@/core/shared.module';
 
@@ -54,7 +54,7 @@ export class AddonModAssignFeedbackPluginComponent implements OnInit {
     data?: AddonModAssignFeedbackPluginData; // Data to pass to the component.
 
     // Data to render the plugin if it isn't supported.
-    component = ADDON_MOD_ASSIGN_COMPONENT_LEGACY;
+    component = ADDON_MOD_ASSIGN_COMPONENT;
     text = '';
     files: CoreWSFile[] = [];
     notSupported = false;

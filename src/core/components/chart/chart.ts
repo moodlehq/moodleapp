@@ -17,7 +17,7 @@ import { toBoolean } from '@/core/transforms/boolean';
 import { Component, Input, OnDestroy, OnInit, ElementRef, OnChanges, ViewChild, SimpleChange } from '@angular/core';
 import { CoreFilter } from '@features/filter/services/filter';
 import { CoreFilterHelper } from '@features/filter/services/filter-helper';
-import { LegendOptions, ChartTypeRegistry, ChartType, type Chart, LegendItem } from 'chart.js';
+import { ChartLegendLabelItem, ChartLegendOptions } from 'chart.js';
 import { CoreBaseModule } from '@/core/base.module';
 import { CoreFaIconDirective } from '@directives/fa-icon';
 
@@ -54,8 +54,8 @@ export class CoreChartComponent implements OnDestroy, OnInit, OnChanges {
 
     @Input() data: number[] = []; // Chart data.
     @Input() labels: string[] = []; // Labels of the data.
-    @Input({ required: true }) type!: CoreChartType; // Type of chart.
-    @Input() legend?: LegendOptions<ChartType>; // Legend options.
+    @Input() type?: string; // Type of chart.
+    @Input() legend?: ChartLegendOptions; // Legend options.
     @Input() height = 300; // Height of the chart element.
     @Input({ transform: toBoolean }) filter?: boolean; // Whether to filter labels.
                                                        // If not defined, true if contextLevel and instanceId are set.
@@ -66,23 +66,24 @@ export class CoreChartComponent implements OnDestroy, OnInit, OnChanges {
     @ViewChild('canvas') canvas?: ElementRef<HTMLCanvasElement>;
 
     chart?: ChartWithLegend;
-    legendItems: LegendItem[] = [];
+    legendItems: ChartLegendLabelItem[] = [];
 
     /**
      * @inheritdoc
      */
     async ngOnInit(): Promise<void> {
-        const legend = this.legend === undefined
-            ? {
+        let legend: ChartLegendOptions = {};
+        if (this.legend === undefined) {
+            legend = {
                 display: false,
                 labels: {
-                    generateLabels: (chart: Chart): LegendItem[] => {
+                    generateLabels: (chart: Chart): ChartLegendLabelItem[] => {
                         const data = chart.data;
                         if (data.labels?.length) {
                             const datasets = data.datasets?.[0];
 
-                            return data.labels.map<LegendItem>((label, i) => ({
-                                text: `${label}: ${datasets?.data?.[i]}`,
+                            return data.labels.map<ChartLegendLabelItem>((label, i) => ({
+                                text: label + ': ' + datasets?.data?.[i],
                                 fillStyle: datasets?.backgroundColor?.[i],
                             }));
                         }
@@ -90,12 +91,14 @@ export class CoreChartComponent implements OnDestroy, OnInit, OnChanges {
                         return [];
                     },
                 },
-            }
-            : Object.assign({}, this.legend);
+            };
+        } else {
+            legend = Object.assign({}, this.legend);
+        }
 
-        const indexAxis = this.type === 'bar'
-            ?  this.data.length < 5 ? 'x' : 'y'
-            : undefined;
+        if (this.type === 'bar' && this.data.length >= 5) {
+            this.type = 'horizontalBar';
+        }
 
         // Format labels if needed.
         await this.formatLabels();
@@ -105,9 +108,7 @@ export class CoreChartComponent implements OnDestroy, OnInit, OnChanges {
             return;
         }
 
-        const { Chart, registerables } = await import('chart.js');
-
-        Chart.register(...registerables);
+        const { Chart } = await import('./chart.lazy');
 
         this.chart = new Chart(context, {
             type: this.type,
@@ -118,12 +119,7 @@ export class CoreChartComponent implements OnDestroy, OnInit, OnChanges {
                     backgroundColor: this.getRandomColors(this.data.length),
                 }],
             },
-            options: {
-                indexAxis,
-                plugins: {
-                    legend,
-                },
-            },
+            options: { legend },
         });
 
         this.updateLegendItems();
@@ -191,7 +187,7 @@ export class CoreChartComponent implements OnDestroy, OnInit, OnChanges {
             const red = Math.floor(Math.random() * 255);
             const green = Math.floor(Math.random() * 255);
             const blue = Math.floor(Math.random() * 255);
-            CoreChartComponent.backgroundColors.push(`rgba(${red}, ${green}, ${blue}, 0.6)`);
+            CoreChartComponent.backgroundColors.push('rgba(' + red + ', ' + green + ', ' + blue + ', 0.6)');
         }
 
         return CoreChartComponent.backgroundColors.slice(0, n);
@@ -219,8 +215,6 @@ export class CoreChartComponent implements OnDestroy, OnInit, OnChanges {
 // For some reason the legend property isn't defined in TS, define it ourselves.
 type ChartWithLegend = Chart & {
     legend?: {
-        legendItems?: LegendItem[];
+        legendItems?: ChartLegendLabelItem[];
     };
 };
-
-export type CoreChartType = keyof ChartTypeRegistry;

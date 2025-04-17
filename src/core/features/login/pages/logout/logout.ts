@@ -48,7 +48,7 @@ export default class CoreLoginLogoutPage implements OnInit {
             urlToOpen: CoreNavigator.getRouteParam('urlToOpen'),
         };
 
-        if (!CoreSites.getCurrentSite()) {
+        if (!CoreSites.isLoggedIn()) {
             // This page shouldn't open if user isn't logged in, but if that happens just navigate to the right page.
             await this.navigateAfterLogout(siteId, redirectData);
 

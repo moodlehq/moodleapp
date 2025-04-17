@@ -97,7 +97,6 @@ export class CoreReadingModeDirective implements AfterViewInit, OnDestroy {
         const collapsibleHeader = CoreDirectivesRegistry.resolve(header, CoreCollapsibleHeaderDirective);
         if (collapsibleHeader) {
             this.header = collapsibleHeader;
-            await this.header.ready();
         }
 
         const label = Translate.instant('core.viewer.enterreadingmode');

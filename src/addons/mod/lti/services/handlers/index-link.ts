@@ -15,7 +15,6 @@
 import { Injectable } from '@angular/core';
 import { CoreContentLinksModuleIndexHandler } from '@features/contentlinks/classes/module-index-handler';
 import { makeSingleton } from '@singletons';
-import { ADDON_MOD_LTI_COMPONENT, ADDON_MOD_LTI_MODNAME } from '../../constants';
 
 /**
  * Handler to treat links to LTI.
@@ -26,7 +25,7 @@ export class AddonModLtiIndexLinkHandlerService extends CoreContentLinksModuleIn
     name = 'AddonModLtiIndexLinkHandlerService';
 
     constructor() {
-        super(ADDON_MOD_LTI_COMPONENT, ADDON_MOD_LTI_MODNAME, 'l');
+        super('AddonModLti', 'lti', 'l');
     }
 
 }

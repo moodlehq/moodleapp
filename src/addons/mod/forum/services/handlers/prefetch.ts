@@ -25,7 +25,7 @@ import { CorePromiseUtils } from '@singletons/promise-utils';
 import { AddonModForumSync, AddonModForumSyncResult } from '../forum-sync';
 import { makeSingleton } from '@singletons';
 import { CoreCourses } from '@features/courses/services/courses';
-import { ADDON_MOD_FORUM_COMPONENT_LEGACY, ADDON_MOD_FORUM_MODNAME } from '../../constants';
+import { ADDON_MOD_FORUM_COMPONENT } from '../../constants';
 
 /**
  * Handler to prefetch forums.
@@ -34,8 +34,8 @@ import { ADDON_MOD_FORUM_COMPONENT_LEGACY, ADDON_MOD_FORUM_MODNAME } from '../..
 export class AddonModForumPrefetchHandlerService extends CoreCourseActivityPrefetchHandlerBase {
 
     name = 'AddonModForum';
-    modName = ADDON_MOD_FORUM_MODNAME;
-    component = ADDON_MOD_FORUM_COMPONENT_LEGACY;
+    modName = 'forum';
+    component = ADDON_MOD_FORUM_COMPONENT;
     updatesNames = /^configuration$|^.*files$|^discussions$/;
 
     /**
@@ -172,9 +172,10 @@ export class AddonModForumPrefetchHandlerService extends CoreCourseActivityPrefe
      *
      * @param moduleId The module ID.
      * @param courseId The course ID the module belongs to.
+     * @returns Promise resolved when the data is invalidated.
      */
-    async invalidateContent(moduleId: number, courseId: number): Promise<void> {
-        await AddonModForum.invalidateContent(moduleId, courseId);
+    invalidateContent(moduleId: number, courseId: number): Promise<void> {
+        return AddonModForum.invalidateContent(moduleId, courseId);
     }
 
     /**

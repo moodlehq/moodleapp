@@ -22,6 +22,7 @@ import { CoreSites } from '@services/sites';
 import { Translate } from '@singletons';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import {
+    AddonModAssignListFilterName,
     AddonModAssignSubmissionForList,
     AddonModAssignSubmissionsSource,
 } from '../../classes/submissions-source';
@@ -31,13 +32,7 @@ import {
     AddonModAssignAutoSyncData,
 } from '../../services/assign-sync';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
-import {
-    ADDON_MOD_ASSIGN_AUTO_SYNCED,
-    ADDON_MOD_ASSIGN_GRADED_EVENT,
-    ADDON_MOD_ASSIGN_MANUAL_SYNCED,
-    ADDON_MOD_ASSIGN_MODNAME,
-    AddonModAssignListFilterName,
-} from '../../constants';
+import { ADDON_MOD_ASSIGN_AUTO_SYNCED, ADDON_MOD_ASSIGN_GRADED_EVENT, ADDON_MOD_ASSIGN_MANUAL_SYNCED } from '../../constants';
 import { CoreAlerts } from '@services/overlays/alerts';
 import { CoreSharedModule } from '@/core/shared.module';
 
@@ -189,7 +184,7 @@ export default class AddonModAssignSubmissionListPage implements AfterViewInit, 
                     contextname: this.assign.name,
                     subpage: Translate.instant('addon.mod_assign.grading'),
                 }),
-                data: { assignid: this.assign.id, category: ADDON_MOD_ASSIGN_MODNAME },
+                data: { assignid: this.assign.id, category: 'assign' },
                 url: `/mod/assign/view.php?id=${this.assign.cmid}&action=grading`,
             });
         } catch (error) {

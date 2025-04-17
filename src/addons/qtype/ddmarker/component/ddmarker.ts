@@ -18,9 +18,9 @@ import { AddonModQuizQuestionBasicData, CoreQuestionBaseComponent } from '@featu
 import { CoreQuestionHelper } from '@features/question/services/question-helper';
 import { CoreFilepool } from '@services/filepool';
 import { CoreSites } from '@services/sites';
+import { CoreDomUtils } from '@services/utils/dom';
 import { AddonQtypeDdMarkerQuestion } from '../classes/ddmarker';
 import { CoreSharedModule } from '@/core/shared.module';
-import { CoreWait } from '@singletons/wait';
 
 /**
  * Component to render a drag-and-drop markers question.
@@ -165,7 +165,7 @@ export class AddonQtypeDdMarkerComponent
         }
 
         if (this.questionTextEl) {
-            await CoreWait.waitForImages(this.questionTextEl.nativeElement);
+            await CoreDomUtils.waitForImages(this.questionTextEl.nativeElement);
         }
 
         // Create the instance.

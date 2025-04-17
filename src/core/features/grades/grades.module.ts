@@ -20,7 +20,7 @@ import { CoreCourseOptionsDelegate } from '@features/course/services/course-opti
 import { CoreMainMenuTabRoutingModule } from '@features/mainmenu/mainmenu-tab-routing.module';
 import { CoreUserDelegate } from '@features/user/services/user-delegate';
 import { PARTICIPANTS_PAGE_NAME } from '@features/user/constants';
-import { GRADES_PAGE_NAME, GRADES_PARTICIPANTS_PAGE_NAME } from './constants';
+import { GRADES_PAGE_NAME, GRADES_PARTICIPANTS_PAGE_NAME } from './services/grades-helper';
 import { CoreGradesCourseOptionHandler } from './services/handlers/course-option';
 import { CoreGradesOverviewLinkHandler } from './services/handlers/overview-link';
 import { CoreGradesUserHandler } from './services/handlers/user';
@@ -61,7 +61,7 @@ const tabletRoutes: Routes = [
     {
         path: '',
         loadComponent: () => import('@features/grades/pages/courses/courses'),
-        loadChildren: () => [
+        children: [
             {
                 path: ':courseId',
                 loadComponent: () => import('@features/grades/pages/course/course'),
@@ -73,7 +73,7 @@ const tabletRoutes: Routes = [
 const mainMenuChildrenRoutes: Routes = [
     {
         path: GRADES_PAGE_NAME,
-        loadChildren: () => [
+        children: [
             ...conditionalRoutes(mobileRoutes, () => CoreScreen.isMobile),
             ...conditionalRoutes(tabletRoutes, () => CoreScreen.isTablet),
         ],
@@ -100,7 +100,7 @@ const courseIndexRoutes: Routes = [
     {
         path: GRADES_PARTICIPANTS_PAGE_NAME,
         loadComponent: () => import('@features/user/pages/participants/participants'),
-        loadChildren: () => conditionalRoutes([
+        children: conditionalRoutes([
             {
                 path: ':userId',
                 loadComponent: () => import('@features/grades/pages/course/course'),

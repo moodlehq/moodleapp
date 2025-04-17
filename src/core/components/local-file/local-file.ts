@@ -19,9 +19,9 @@ import { CoreIonLoadingElement } from '@classes/ion-loading';
 import { CoreFile } from '@services/file';
 import { CoreFileHelper } from '@services/file-helper';
 import { CoreSites } from '@services/sites';
-import { CoreMimetype } from '@singletons/mimetype';
+import { CoreMimetypeUtils } from '@services/utils/mimetype';
 import { CoreText } from '@singletons/text';
-import { CoreTime } from '@singletons/time';
+import { CoreTimeUtils } from '@services/utils/time';
 import { CoreOpener, CoreOpenerOpenFileOptions, OpenFileAction } from '@singletons/opener';
 import { CoreForms } from '@singletons/form';
 import { CorePath } from '@singletons/path';
@@ -99,12 +99,12 @@ export class CoreLocalFileComponent implements OnInit {
             this.size = CoreText.bytesToSize(metadata.size, 2);
         }
 
-        this.timemodified = CoreTime.userDate(metadata.modificationTime.getTime(), 'core.strftimedatetimeshort');
+        this.timemodified = CoreTimeUtils.userDate(metadata.modificationTime.getTime(), 'core.strftimedatetimeshort');
 
         this.isIOS = CorePlatform.isIOS();
         this.defaultIsOpenWithPicker = CoreFileHelper.defaultIsOpenWithPicker();
         this.openButtonIcon = this.defaultIsOpenWithPicker ? 'fas-file' : 'fas-share-from-square';
-        this.openButtonLabel = this.defaultIsOpenWithPicker ? 'core.openfile' : 'core.share';
+        this.openButtonLabel = this.defaultIsOpenWithPicker ? 'core.openfile' : 'core.openwith';
     }
 
     /**
@@ -112,9 +112,8 @@ export class CoreLocalFileComponent implements OnInit {
      */
     protected loadFileBasicData(file: FileEntry): void {
         this.fileName = file.name;
-
-        this.fileIcon = CoreMimetype.getFileIcon(file.name, CoreSites.getCurrentSite());
-        this.fileExtension = CoreMimetype.getFileExtension(file.name);
+        this.fileIcon = CoreMimetypeUtils.getFileIcon(file.name);
+        this.fileExtension = CoreMimetypeUtils.getFileExtension(file.name);
 
         // Let's calculate the relative path for the file.
         this.relativePath = CoreFile.removeBasePath(CoreFile.getFileEntryURL(file));

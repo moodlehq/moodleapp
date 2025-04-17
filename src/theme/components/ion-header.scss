@@ -65,7 +65,7 @@ ion-header.header-md {
             margin: 0;
         }
 
-        .filter_mathjaxloader_equation mjx-container {
+        .filter_mathjaxloader_equation div {
             display: inline !important;
         }
 
@@ -125,6 +125,6 @@ ion-header.header-md {
         --core-header-toolbar-background: transparent;
         --core-header-shadow: none !important;
         --core-header-buttons-color: var(--text-color);
-        --core-header-buttons-background: var(--background, var(--background-color));
+        --core-header-buttons-background: var(--background);
     }
 }

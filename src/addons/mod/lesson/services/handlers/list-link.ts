@@ -16,7 +16,6 @@ import { Injectable } from '@angular/core';
 
 import { CoreContentLinksModuleListHandler } from '@features/contentlinks/classes/module-list-handler';
 import { makeSingleton } from '@singletons';
-import { ADDON_MOD_LESSON_COMPONENT, ADDON_MOD_LESSON_MODNAME } from '../../constants';
 
 /**
  * Handler to treat links to lesson list page.
@@ -27,7 +26,7 @@ export class AddonModLessonListLinkHandlerService extends CoreContentLinksModule
     name = 'AddonModLessonListLinkHandler';
 
     constructor() {
-        super(ADDON_MOD_LESSON_COMPONENT, ADDON_MOD_LESSON_MODNAME);
+        super('AddonModLesson', 'lesson');
     }
 
 }

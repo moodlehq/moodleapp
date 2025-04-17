@@ -21,7 +21,7 @@ import { MediaFile } from '@awesome-cordova-plugins/media-capture/ngx';
 
 import { CoreNetwork } from '@services/network';
 import { CoreFile, CoreFileProvider, CoreFileProgressEvent } from '@services/file';
-import { CoreMimetype } from '@singletons/mimetype';
+import { CoreMimetypeUtils } from '@services/utils/mimetype';
 import { CoreText } from '@singletons/text';
 import { CoreArray } from '@singletons/array';
 import { makeSingleton, Translate, Camera, ActionSheetController } from '@singletons';
@@ -288,14 +288,14 @@ export class CoreFileUploaderHelperProvider {
             return;
         }
 
-        let extension = CoreMimetype.getFileExtension(nameAndDir.name);
+        let extension = CoreMimetypeUtils.getFileExtension(nameAndDir.name);
 
         if (!extension) {
             // The URI doesn't have an extension, add it now.
-            extension = CoreMimetype.getExtension(result.mediaType);
+            extension = CoreMimetypeUtils.getExtension(result.mediaType);
 
             if (extension) {
-                nameAndDir.name += `.${extension}`;
+                nameAndDir.name += '.' + extension;
             }
         }
 
@@ -422,7 +422,7 @@ export class CoreFileUploaderHelperProvider {
         });
 
         this.actionSheet = await ActionSheetController.create({
-            header: title ? title : Translate.instant(`core.fileuploader.${upload ? 'uploadafile' : 'selectafile'}`),
+            header: title ? title : Translate.instant('core.fileuploader.' + (upload ? 'uploadafile' : 'selectafile')),
             buttons: buttons,
         });
         await this.actionSheet.present();
@@ -545,7 +545,7 @@ export class CoreFileUploaderHelperProvider {
         upload?: boolean,
         mimetypes?: string[],
     ): Promise<CoreWSUploadFileResult | FileEntry> {
-        this.logger.debug(`Trying to record a ${isAudio ? 'audio' : 'video'  } file`);
+        this.logger.debug('Trying to record a ' + (isAudio ? 'audio' : 'video') + ' file');
 
         let media: MediaFile | CoreFileUploaderAudioRecording;
 
@@ -570,7 +570,7 @@ export class CoreFileUploaderHelperProvider {
 
         // Make sure the path has the protocol. In iOS it doesn't.
         if (CorePlatform.isMobile() && path.indexOf('file://') == -1) {
-            path = `file://${path}`;
+            path = 'file://' + path;
         }
 
         const options = CoreFileUploader.getMediaUploadOptions(media);

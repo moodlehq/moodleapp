@@ -7,7 +7,7 @@
     "availablecourses": "Available courses",
     "browserenrolinstructions": "We will take you to your device's browser. Once you have completed your enrolment, please come back to this app.",
     "cannotretrievemorecategories": "Categories deeper than level {{$a}} cannot be retrieved.",
-    "categories": "Course categories",
+    "categories": "Course levels",
     "completeenrolmentbrowser": "Complete enrolment in browser",
     "courses": "Courses",
     "downloadcourses": "Download all courses",

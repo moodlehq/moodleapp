@@ -49,7 +49,7 @@ export class CoreSitePluginsUserProfileFieldHandler extends CoreSitePluginsBaseH
         formValues: CoreFormFields,
     ): Promise<CoreUserProfileFieldHandlerData> {
         // No getData function implemented, use a default behaviour.
-        const name = `profile_field_${field.shortname}`;
+        const name = 'profile_field_' + field.shortname;
 
         return {
             type: ('type' in field ? field.type : field.datatype) || '',

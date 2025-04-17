@@ -13,14 +13,11 @@
                 <div class="input-units" slot="end">°E</div>
             </ion-input>
         </div>
-        <div class="addon-data-latlong addon-data-latlong-coordinates-instructions">
-            <ion-note>
-                <ion-icon name="fas-circle-question" aria-hidden="true" class="text-info" />
-                <span>
-                    <core-format-text [text]="'core.howtoobtaincoordinates' | translate:{ url: mapsUrl }"
-                        [showBrowserWarningInLinks]="false" />
-                </span>
-            </ion-note>
+        <div class="addon-data-latlong" *ngIf="locationServicesEnabled">
+            <ion-button (click)="getLocation($event)">
+                <ion-icon name="fas-crosshairs" slot="start" aria-hidden="true" />
+                {{ 'addon.mod_data.mylocation' | translate }}
+            </ion-button>
         </div>
         <core-input-errors *ngIf="error" [control]="form.controls['f_'+field.id]" [errorText]="error" />
     </ng-container>
@@ -28,5 +25,5 @@
 
 
 <span *ngIf="displayMode && value">
-    <a [href]="getLatLongLink(north, east)" core-link>{{ formatLatLong(north, east) }}</a>
+    <a [href]="getLatLongLink(north, east)">{{ formatLatLong(north, east) }}</a>
 </span>

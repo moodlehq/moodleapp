@@ -23,10 +23,10 @@ const MAIN_MENU_TAB_ROUTES = new InjectionToken('MAIN_MENU_TAB_ROUTES');
  * Build module routes.
  *
  * @param injector Injector.
- * @param mainRoute Main route. Cannot use loadChildren because we might need to add more children.
+ * @param mainRoute Main route.
  * @returns Routes.
  */
-export function buildTabMainRoutes(injector: Injector, mainRoute: Omit<Route, 'loadChildren'>): Routes {
+export function buildTabMainRoutes(injector: Injector, mainRoute: Route): Routes {
     const path = mainRoute.path ?? '';
     const routes = resolveModuleRoutes(injector, MAIN_MENU_TAB_ROUTES);
 

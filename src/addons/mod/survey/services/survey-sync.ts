@@ -23,9 +23,10 @@ import { CoreSites } from '@services/sites';
 import { CoreWSError } from '@classes/errors/wserror';
 import { makeSingleton } from '@singletons';
 import { CoreEvents } from '@singletons/events';
+import { getPrefetchHandlerInstance } from './handlers/prefetch';
 import { AddonModSurvey } from './survey';
 import { AddonModSurveyAnswersDBRecordFormatted, AddonModSurveyOffline } from './survey-offline';
-import { ADDON_MOD_SURVEY_AUTO_SYNCED, ADDON_MOD_SURVEY_COMPONENT_LEGACY, ADDON_MOD_SURVEY_MODNAME } from '../constants';
+import { ADDON_MOD_SURVEY_AUTO_SYNCED, ADDON_MOD_SURVEY_COMPONENT } from '../constants';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 
 /**
@@ -49,7 +50,7 @@ export class AddonModSurveySyncProvider extends CoreCourseActivitySyncBaseProvid
      * @protected
      */
     getSyncId(surveyId: number, userId: number): string {
-        return `${surveyId}#${userId}`;
+        return surveyId + '#' + userId;
     }
 
     /**
@@ -154,7 +155,7 @@ export class AddonModSurveySyncProvider extends CoreCourseActivitySyncBaseProvid
         };
 
         // Sync offline logs.
-        CorePromiseUtils.ignoreErrors(CoreCourseLogHelper.syncActivity(ADDON_MOD_SURVEY_COMPONENT_LEGACY, surveyId, siteId));
+        CorePromiseUtils.ignoreErrors(CoreCourseLogHelper.syncActivity(ADDON_MOD_SURVEY_COMPONENT, surveyId, siteId));
 
         let answersNumber = 0;
         let data: AddonModSurveyAnswersDBRecordFormatted | undefined;
@@ -202,10 +203,10 @@ export class AddonModSurveySyncProvider extends CoreCourseActivitySyncBaseProvid
                 await AddonModSurvey.invalidateSurveyData(result.courseId, siteId);
 
                 // Data has been sent to server, update survey data.
-                const module = await CoreCourse.getModuleBasicInfoByInstance(surveyId, ADDON_MOD_SURVEY_MODNAME, { siteId });
+                const module = await CoreCourse.getModuleBasicInfoByInstance(surveyId, 'survey', { siteId });
 
                 CorePromiseUtils.ignoreErrors(
-                    this.prefetchModuleAfterUpdate(module, result.courseId, undefined, siteId),
+                    this.prefetchAfterUpdate(getPrefetchHandlerInstance(), module, result.courseId, undefined, siteId),
                 );
             }
         }

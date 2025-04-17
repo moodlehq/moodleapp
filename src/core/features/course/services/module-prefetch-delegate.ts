@@ -20,7 +20,7 @@ import { CoreFile } from '@services/file';
 import { CoreFileHelper } from '@services/file-helper';
 import { CoreFilepool } from '@services/filepool';
 import { CoreSites } from '@services/sites';
-import { CoreTime } from '@singletons/time';
+import { CoreTimeUtils } from '@services/utils/time';
 import { CoreArray } from '@singletons/array';
 import { CoreCourse, CoreCourseAnyModuleData, CoreCourseModuleContentFile } from './course';
 import { CoreCache } from '@classes/cache';
@@ -35,7 +35,8 @@ import { CHECK_UPDATES_TIMES_TABLE, CoreCourseCheckUpdatesDBRecord } from './dat
 import { CoreFileSizeSum } from '@services/plugin-file-delegate';
 import { CoreCourseHelper, CoreCourseModuleData } from './course-helper';
 import { CorePromiseUtils } from '@singletons/promise-utils';
-import { CORE_COURSE_MODULE_FEATURE_PREFIX } from '../constants';
+
+const ROOT_CACHE_KEY = 'mmCourse:';
 
 /**
  * Delegate to register module prefetch handlers.
@@ -43,10 +44,8 @@ import { CORE_COURSE_MODULE_FEATURE_PREFIX } from '../constants';
 @Injectable({ providedIn: 'root' })
 export class CoreCourseModulePrefetchDelegateService extends CoreDelegate<CoreCourseModulePrefetchHandler> {
 
-    protected static readonly ROOT_CACHE_KEY = 'mmCourse:';
-
     protected statusCache = new CoreCache();
-    protected featurePrefix = CORE_COURSE_MODULE_FEATURE_PREFIX;
+    protected featurePrefix = 'CoreCourseModuleDelegate_';
     protected handlerNameProperty = 'modName';
 
     // Promises for check updates, to prevent performing the same request twice at the same time.
@@ -216,7 +215,7 @@ export class CoreCourseModulePrefetchDelegateService extends CoreDelegate<CoreCo
      */
     async getCourseUpdates(modules: CoreCourseModuleData[], courseId: number): Promise<CourseUpdates> {
         // Check if there's already a getCourseUpdates in progress.
-        const id = Md5.hashAsciiStr(`${courseId}#${JSON.stringify(modules)}`);
+        const id = Md5.hashAsciiStr(courseId + '#' + JSON.stringify(modules));
         const siteId = CoreSites.getCurrentSiteId();
 
         if (this.courseUpdatesPromises[siteId] && this.courseUpdatesPromises[siteId][id] !== undefined) {
@@ -286,7 +285,7 @@ export class CoreCourseModulePrefetchDelegateService extends CoreDelegate<CoreCo
             // Store the last execution of the check updates call.
             const entry: CoreCourseCheckUpdatesDBRecord = {
                 courseId: courseId,
-                time: CoreTime.timestamp(),
+                time: CoreTimeUtils.timestamp(),
             };
             CorePromiseUtils.ignoreErrors(site.getDb().insertRecord(CHECK_UPDATES_TIMES_TABLE, entry));
 
@@ -334,7 +333,7 @@ export class CoreCourseModulePrefetchDelegateService extends CoreDelegate<CoreCo
      * @returns Cache key.
      */
     protected getCourseUpdatesCacheKey(courseId: number): string {
-        return `${CoreCourseModulePrefetchDelegateService.ROOT_CACHE_KEY}courseUpdates:${courseId}`;
+        return ROOT_CACHE_KEY + 'courseUpdates:' + courseId;
     }
 
     /**
@@ -925,7 +924,7 @@ export class CoreCourseModulePrefetchDelegateService extends CoreDelegate<CoreCo
      * @returns Cache key.
      */
     protected getModuleUpdatesCacheKey(courseId: number, moduleId: number): string {
-        return `${this.getCourseUpdatesCacheKey(courseId)}:${moduleId}`;
+        return this.getCourseUpdatesCacheKey(courseId) + ':' + moduleId;
     }
 
     /**
@@ -934,8 +933,8 @@ export class CoreCourseModulePrefetchDelegateService extends CoreDelegate<CoreCo
      * @param moduleName The module name to work on.
      * @returns Prefetch handler.
      */
-    getPrefetchHandlerFor<T extends CoreCourseModulePrefetchHandler>(moduleName: string): T | undefined {
-        return this.getHandler(moduleName, true) as T;
+    getPrefetchHandlerFor(moduleName: string): CoreCourseModulePrefetchHandler | undefined {
+        return this.getHandler(moduleName, true);
     }
 
     /**
@@ -1471,6 +1470,7 @@ export interface CoreCourseModulePrefetchHandler extends CoreDelegateHandler {
      *
      * @param moduleId The module ID.
      * @param courseId Course ID the module belongs to.
+     * @returns Promise resolved when the data is invalidated.
      */
     invalidateContent(moduleId: number, courseId: number): Promise<void>;
 
@@ -1567,7 +1567,7 @@ export interface CoreCourseModulePrefetchHandler extends CoreDelegateHandler {
      * @param module Module.
      * @param courseId Course ID the module belongs to
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved with sync data when done.
+     * @returns Promise resolved when done.
      */
     sync?(module: CoreCourseAnyModuleData, courseId: number, siteId?: string): Promise<unknown>;
 }

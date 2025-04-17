@@ -24,11 +24,9 @@ import {
 } from '../../services/h5pactivity';
 import { CoreTime } from '@singletons/time';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
-import { ADDON_MOD_H5PACTIVITY_COMPONENT_LEGACY } from '../../constants';
+import { ADDON_MOD_H5PACTIVITY_COMPONENT } from '../../constants';
 import { CoreAlerts } from '@services/overlays/alerts';
 import { CoreSharedModule } from '@/core/shared.module';
-import { CoreSites } from '@services/sites';
-import { AddonModH5PActivityAttemptSummaryComponent } from '../../components/attempt-summary/attempt-summary';
 
 /**
  * Page that displays results of an attempt.
@@ -40,7 +38,6 @@ import { AddonModH5PActivityAttemptSummaryComponent } from '../../components/att
     standalone: true,
     imports: [
         CoreSharedModule,
-        AddonModH5PActivityAttemptSummaryComponent,
     ],
 })
 export default class AddonModH5PActivityAttemptResultsPage implements OnInit {
@@ -49,7 +46,7 @@ export default class AddonModH5PActivityAttemptResultsPage implements OnInit {
     h5pActivity?: AddonModH5PActivityData;
     attempt?: AddonModH5PActivityAttemptResults;
     user?: CoreUserProfile;
-    component = ADDON_MOD_H5PACTIVITY_COMPONENT_LEGACY;
+    component = ADDON_MOD_H5PACTIVITY_COMPONENT;
     courseId!: number;
     cmId!: number;
 
@@ -135,9 +132,7 @@ export default class AddonModH5PActivityAttemptResultsPage implements OnInit {
      * @returns Promise resolved when done.
      */
     protected async fetchUserProfile(): Promise<void> {
-        if (!this.attempt || this.attempt?.userid === CoreSites.getCurrentSiteUserId()) {
-            this.user = undefined;
-
+        if (!this.attempt) {
             return;
         }
 

@@ -1,113 +1,91 @@
-@if (question && (question.text || question.text === '')) {
-    <ion-list>
-        <!-- Question text. -->
-        <ion-item class="ion-text-wrap">
+<ion-list *ngIf="question && (question.text || question.text === '')">
+    <!-- Question text. -->
+    <ion-item class="ion-text-wrap">
+        <ion-label>
+            <core-format-text [component]="component" [componentId]="componentId" [text]="question.text" [contextLevel]="contextLevel"
+                [contextInstanceId]="contextInstanceId" [courseId]="courseId" />
+        </ion-label>
+    </ion-item>
+
+    <!-- Editing the question. -->
+    <ng-container *ngIf="!review">
+        <!-- Textarea. -->
+        <ion-item *ngIf="question.textarea && (!question.hasDraftFiles || uploadFilesSupported)">
+            <!-- "Format" and draftid hidden inputs -->
+            <input *ngIf="question.formatInput" type="hidden" [name]="question.formatInput.name" [value]="question.formatInput.value">
+            <input *ngIf="question.answerDraftIdInput" type="hidden" [name]="question.answerDraftIdInput.name"
+                [value]="question.answerDraftIdInput.value">
+            <!-- Plain text textarea. -->
+            <ion-textarea *ngIf="question.isPlainText" [ariaLabel]="'core.question.answer' | translate" class="core-question-textarea"
+                [ngClass]='{"core-monospaced": question.isMonospaced}' placeholder="{{ 'core.question.answer' | translate }}"
+                [attr.name]="question.textarea.name" [ngModel]="question.textarea.text" />
+            <!-- Rich text editor. -->
+            <core-rich-text-editor *ngIf="!question.isPlainText" [attr.aria-label]="'core.question.answer' | translate"
+                placeholder="{{ 'core.question.answer' | translate }}" [control]="formControl" [name]="question.textarea.name"
+                [component]="component" [componentId]="componentId" [autoSave]="false" />
+        </ion-item>
+
+        <!-- Draft files not supported. -->
+        <ng-container *ngIf="question.textarea && question.hasDraftFiles && !uploadFilesSupported">
+            <ion-item class="ion-text-wrap core-danger-item">
+                <ion-label class="core-question-warning">
+                    {{ 'core.question.errorembeddedfilesnotsupportedinsite' | translate }}
+                </ion-label>
+            </ion-item>
+            <ion-item class="ion-text-wrap">
+                <ion-label>
+                    <core-format-text [component]="component" [componentId]="componentId" [text]="question.textarea.text"
+                        [contextLevel]="contextLevel" [contextInstanceId]="contextInstanceId" [courseId]="courseId" />
+                </ion-label>
+            </ion-item>
+        </ng-container>
+
+        <!-- Attachments. -->
+        <ng-container *ngIf="question.allowsAttachments">
+            <core-attachments *ngIf="uploadFilesSupported && question.attachmentsDraftIdInput" [files]="attachments" [component]="component"
+                [componentId]="componentId" [maxSize]="question.attachmentsMaxBytes" [maxSubmissions]="question.attachmentsMaxFiles"
+                [allowOffline]="offlineEnabled" [acceptedTypes]="question.attachmentsAcceptedTypes" [courseId]="courseId" />
+
+            <input *ngIf="question.attachmentsDraftIdInput" type="hidden" [name]="question.attachmentsDraftIdInput.name"
+                [value]="question.attachmentsDraftIdInput.value">
+
+            <!-- Attachments not supported in this site. -->
+            <ion-item *ngIf="!uploadFilesSupported" class="ion-text-wrap core-danger-item">
+                <ion-label class="core-question-warning">
+                    {{ 'core.question.errorattachmentsnotsupportedinsite' | translate }}
+                </ion-label>
+            </ion-item>
+        </ng-container>
+    </ng-container>
+
+    <!-- Reviewing the question. -->
+    <ng-container *ngIf="review">
+        <!-- Answer to the question and attachments (reviewing). -->
+        <ion-item class="ion-text-wrap" *ngIf="question.answer || question.answer === ''">
             <ion-label>
-                <core-format-text [component]="component" [componentId]="componentId" [text]="question.text" [contextLevel]="contextLevel"
-                    [contextInstanceId]="contextInstanceId" [courseId]="courseId" />
+                <core-format-text [ngClass]='{"core-monospaced": question.isMonospaced}' [component]="component" [componentId]="componentId"
+                    [text]="question.answer" [contextLevel]="contextLevel" [contextInstanceId]="contextInstanceId" [courseId]="courseId" />
             </ion-label>
         </ion-item>
 
-        <!-- Editing the question. -->
-        @if (!review) {
-            @if (question.textarea && (!question.hasDraftFiles || uploadFilesSupported)) {
-                <!-- Textarea. -->
-                <ion-item>
-                    <!-- "Format" and draftid hidden inputs -->
-                    @if (question.formatInput) {
-                        <input type="hidden" [name]="question.formatInput.name" [value]="question.formatInput.value">
-                    }
-                    @if (question.answerDraftIdInput) {
-                        <input type="hidden" [name]="question.answerDraftIdInput.name" [value]="question.answerDraftIdInput.value">
-                    }
+        <!-- Word count info. -->
+        <ion-item class="ion-text-wrap" *ngIf="question.wordCountInfo">
+            <ion-label>
+                <core-format-text [component]="component" [componentId]="componentId" [text]="question.wordCountInfo"
+                    [contextLevel]="contextLevel" [contextInstanceId]="contextInstanceId" [courseId]="courseId" />
+            </ion-label>
+        </ion-item>
 
-                    @if (question.isPlainText) {
-                        <!-- Plain text textarea. -->
-                        <ion-textarea [ariaLabel]="'core.question.answer' | translate" class="core-question-textarea"
-                            [ngClass]='{"core-monospaced": question.isMonospaced}' placeholder="{{ 'core.question.answer' | translate }}"
-                            [attr.name]="question.textarea.name" [ngModel]="question.textarea.text" />
-                    } @else {
-                        <!-- Rich text editor. -->
-                        <core-rich-text-editor [attr.aria-label]="'core.question.answer' | translate"
-                            placeholder="{{ 'core.question.answer' | translate }}" [control]="formControl" [name]="question.textarea.name"
-                            [component]="component" [componentId]="componentId" [autoSave]="false" />
-                    }
-                </ion-item>
-            } @else if (question.textarea) {
-                <!-- Draft files not supported. -->
-                <ion-item class="ion-text-wrap core-danger-item">
-                    <ion-label class="core-question-warning">
-                        {{ 'core.question.errorembeddedfilesnotsupportedinsite' | translate }}
-                    </ion-label>
-                </ion-item>
-                <ion-item class="ion-text-wrap">
-                    <ion-label>
-                        <core-format-text [component]="component" [componentId]="componentId" [text]="question.textarea.text"
-                            [contextLevel]="contextLevel" [contextInstanceId]="contextInstanceId" [courseId]="courseId" />
-                    </ion-label>
-                </ion-item>
-            }
+        <!-- Answer plagiarism. -->
+        <ion-item class="ion-text-wrap" *ngIf="question.answerPlagiarism">
+            <ion-label>
+                <core-format-text [component]="component" [componentId]="componentId" [text]="question.answerPlagiarism"
+                    [contextLevel]="contextLevel" [contextInstanceId]="contextInstanceId" [courseId]="courseId" />
+            </ion-label>
+        </ion-item>
 
-            @if (question.allowsAttachments) {
-                <!-- Attachments. -->
-                @if (uploadFilesSupported && question.attachmentsDraftIdInput) {
-                    <core-attachments [files]="attachments" [component]="component" [componentId]="componentId"
-                        [maxSize]="question.attachmentsMaxBytes" [maxSubmissions]="question.attachmentsMaxFiles"
-                        [allowOffline]="offlineEnabled" [acceptedTypes]="question.attachmentsAcceptedTypes" [courseId]="courseId" />
-                }
-
-                @if (question.attachmentsDraftIdInput) {
-                    <input type="hidden" [name]="question.attachmentsDraftIdInput.name" [value]="question.attachmentsDraftIdInput.value">
-                }
-
-                @if (!uploadFilesSupported) {
-                    <!-- Attachments not supported in this site. -->
-                    <ion-item class="ion-text-wrap core-danger-item">
-                        <ion-label class="core-question-warning">
-                            {{ 'core.question.errorattachmentsnotsupportedinsite' | translate }}
-                        </ion-label>
-                    </ion-item>
-                }
-            }
-        }
-
-        @if (review) {
-            <!-- Reviewing the question. -->
-            @if (question.answer || question.answer === '') {
-                <ion-item class="ion-text-wrap">
-                    <ion-label>
-                        <core-format-text [ngClass]='{"core-monospaced": question.isMonospaced}' [component]="component"
-                            [componentId]="componentId" [text]="question.answer" [contextLevel]="contextLevel"
-                            [contextInstanceId]="contextInstanceId" [courseId]="courseId" />
-                    </ion-label>
-                </ion-item>
-            }
-
-            @if (question.wordCountInfo) {
-                <!-- Word count info. -->
-                <ion-item class="ion-text-wrap">
-                    <ion-label>
-                        <core-format-text [component]="component" [componentId]="componentId" [text]="question.wordCountInfo"
-                            [contextLevel]="contextLevel" [contextInstanceId]="contextInstanceId" [courseId]="courseId" />
-                    </ion-label>
-                </ion-item>
-            }
-
-            @if (question.answerPlagiarism) {
-                <!-- Answer plagiarism. -->
-                <ion-item class="ion-text-wrap">
-                    <ion-label>
-                        <core-format-text [component]="component" [componentId]="componentId" [text]="question.answerPlagiarism"
-                            [contextLevel]="contextLevel" [contextInstanceId]="contextInstanceId" [courseId]="courseId" />
-                    </ion-label>
-                </ion-item>
-            }
-
-            @if (question.attachments) {
-                <!-- List of attachments when reviewing. -->
-                <core-files [files]="question.attachments" [component]="component" [componentId]="componentId"
-                    [extraHtml]="question.attachmentsPlagiarisms" />
-            }
-        }
-    </ion-list>
-}
+        <!-- List of attachments when reviewing. -->
+        <core-files *ngIf="question.attachments" [files]="question.attachments" [component]="component" [componentId]="componentId"
+            [extraHtml]="question.attachmentsPlagiarisms" />
+    </ng-container>
+</ion-list>

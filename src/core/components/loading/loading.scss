@@ -2,7 +2,7 @@
 
 @mixin inline() {
     &:not(.core-loading-loaded) {
-        min-height: calc(var(--internal-loading-inline-min-height) + 32px);
+        min-height: var(--internal-loading-inline-min-height);
         width: 100%;
         position: relative;
     }
@@ -13,7 +13,7 @@
         height: auto;
 
         .core-loading-message {
-            @include margin(0px, 0px, 0px, 16px);
+            @include margin(0, 0, 0, 10px);
         }
     }
 }
@@ -29,25 +29,6 @@
     --loading-display: flex;
     --loading-display-message: block;
     --contents-display: block;
-
-    --loading-placeholder-direction: column;
-    --loading-placeholder-justify: flex-start;
-    --loading-placeholder-align-items: center;
-    --loading-placeholder-align-content: center;
-    --loading-placeholder-wrap: nowrap;
-    --loading-placeholder-gap: 16px;
-
-    --loading-placeholder-padding: 16px;
-    --loading-placeholder-margin: 0px;
-    --loading-placeholder-max-height: none;
-    --loading-placeholder-element-radius: var(--mdl-shape-borderRadius-md);
-    --loading-placeholder-element-width: 100px;
-    --loading-placeholder-element-height: 100px;
-
-    --loading-placeholder-element-column-width: 100%;
-
-    --placeholder-color: var(--gray-500);
-    --placeholder-highlight: var(--loading-background);
 
     @include core-transition(all, 200ms);
     display: var(--contents-display);
@@ -65,8 +46,7 @@
     }
 
     .core-loading-container {
-        user-select: none;
-        pointer-events: all; // Block clicks
+        pointer-events: none;
         position: absolute;
         @include position(0, 0, 0, 0);
         height: 100%;
@@ -83,81 +63,13 @@
         flex-direction: column;
 
         .core-loading-message {
-            @include margin(16px, 0, 0, 0);
+            @include margin(10px, 0, 0, 0);
             display: var(--loading-display-message);
         }
 
         ion-spinner {
             --color: var(--loading-spinner);
             color: var(--color);
-        }
-
-        .placeholder {
-            position: absolute;
-            @include position(0px, 0px, 0px, 0px);
-            height: 100%;
-            width: 100%;
-            overflow: hidden;
-            display: flex;
-            flex-direction: var(--loading-placeholder-direction);
-            flex-wrap: var(--loading-placeholder-wrap);
-            gap: var(--loading-placeholder-gap);
-            padding: var(--loading-placeholder-padding);
-            margin: var(--loading-placeholder-margin);
-            justify-content: var(--loading-placeholder-justify);
-            align-items: var(--loading-placeholder-align-items);
-            align-content: var(--loading-placeholder-align-content);
-            max-height: var(--loading-placeholder-max-height);
-
-            &.row,
-            &.rowwrap {
-                --loading-placeholder-direction: row;
-            }
-
-            &.column,
-            &.columnwrap,
-            &.free,
-            &.imageandboxes {
-                --loading-placeholder-element-width: var(--loading-placeholder-element-column-width);
-                --loading-placeholder-direction: column;
-            }
-
-
-            &.rowwrap,
-            &.columnwrap,
-            &.free {
-                --loading-placeholder-wrap: wrap;
-            }
-
-            &.listwithavatar,
-            &.listwithicon,
-            &.free {
-                --loading-placeholder-gap: 0px;
-                --loading-placeholder-padding: 0px;
-
-                ::ng-deep {
-                    ion-avatar ion-skeleton-text {
-                        --loading-placeholder-element-radius: 100%;
-                    }
-
-                    ion-skeleton-text {
-                        border-radius: var(--loading-placeholder-element-radius);
-                    }
-
-                    & > * {
-                        width: var(--loading-placeholder-element-column-width);
-                        flex-shrink: 0;
-                    }
-                }
-            }
-
-            ion-skeleton-text.placeholder-element {
-                flex-shrink: 0;
-                margin: 0px;
-                width: var(--loading-placeholder-element-width);
-                height: var(--loading-placeholder-element-height);
-                border-radius: var(--loading-placeholder-element-radius);
-            }
         }
     }
 
@@ -171,9 +83,4 @@
 :host-context(core-block) {
     // Implicit Inline.
     @include inline();
-}
-
-@keyframes core-loading {
-    0% { background-position: 200% 0; }
-    100% { background-position: -200% 0; }
 }

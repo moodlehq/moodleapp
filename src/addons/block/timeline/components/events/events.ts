@@ -20,7 +20,6 @@ import { CoreEnrolledCourseDataWithOptions } from '@features/courses/services/co
 import { AddonBlockTimelineDayEvents } from '@addons/block/timeline/classes/section';
 import { CoreSharedModule } from '@/core/shared.module';
 import { toBoolean } from '@/core/transforms/boolean';
-import { CoreContentLinksHelper } from '@features/contentlinks/services/contentlinks-helper';
 
 /**
  * Directive to render a list of events in course overview.
@@ -74,7 +73,7 @@ export class AddonBlockTimelineEventsComponent implements OnInit {
         const modal = await CoreLoadings.show();
 
         try {
-            await CoreContentLinksHelper.visitLink(url);
+            await CoreSites.visitLink(url);
         } finally {
             modal.dismiss();
         }

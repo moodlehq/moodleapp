@@ -16,13 +16,14 @@ import { Injectable } from '@angular/core';
 
 import { makeSingleton } from '@singletons';
 import { CoreSettingsHandler, CoreSettingsHandlerData } from '@features/settings/services/settings-delegate';
-import { ADDON_STORAGE_MANAGER_PAGE_NAME } from '@addons/storagemanager/constants';
 
 /**
  * Mange storage settings handler.
  */
 @Injectable({ providedIn: 'root' })
 export class AddonStorageManagerSettingsHandlerService implements CoreSettingsHandler {
+
+    static readonly PAGE_NAME = 'storage';
 
     name = 'AddonStorageManager';
     priority = 400;
@@ -41,7 +42,7 @@ export class AddonStorageManagerSettingsHandlerService implements CoreSettingsHa
         return {
             icon: 'fas-box-archive',
             title: 'addon.storagemanager.managedownloads',
-            page: ADDON_STORAGE_MANAGER_PAGE_NAME,
+            page: AddonStorageManagerSettingsHandlerService.PAGE_NAME,
             class: 'addon-storagemanager-settings-handler',
         };
     }

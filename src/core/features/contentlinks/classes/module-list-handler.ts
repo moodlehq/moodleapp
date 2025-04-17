@@ -17,7 +17,6 @@ import { Translate } from '@singletons';
 
 import { CoreContentLinksAction } from '../services/contentlinks-delegate';
 import { CoreNavigator } from '@services/navigator';
-import { CORE_COURSE_MODULE_FEATURE_PREFIX } from '@features/course/constants';
 
 /**
  * Handler to handle URLs pointing to a list of a certain type of modules.
@@ -42,8 +41,8 @@ export class CoreContentLinksModuleListHandler extends CoreContentLinksHandlerBa
         super();
 
         // Match the index.php URL with an id param.
-        this.pattern = new RegExp(`/mod/${modName}/index.php.*([&?]id=\\d+)`);
-        this.featureName = CORE_COURSE_MODULE_FEATURE_PREFIX + addon;
+        this.pattern = new RegExp('/mod/' + modName + '/index.php.*([&?]id=\\d+)');
+        this.featureName = 'CoreCourseModuleDelegate_' + addon;
     }
 
     /**
@@ -62,10 +61,10 @@ export class CoreContentLinksModuleListHandler extends CoreContentLinksHandlerBa
 
         return [{
             action: async (siteId): Promise<void> => {
-                await CoreNavigator.navigateToSitePath(`course/${params.id}/list-mod-type`, {
+                await CoreNavigator.navigateToSitePath('course/' + params.id + '/list-mod-type', {
                     params: {
                         modName: this.modName,
-                        title: this.title || Translate.instant(`addon.mod_${this.modName}.modulenameplural`),
+                        title: this.title || Translate.instant('addon.mod_' + this.modName + '.modulenameplural'),
                     },
                     siteId,
                 });

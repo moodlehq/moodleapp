@@ -123,7 +123,7 @@ export class CoreTabsComponent extends CoreTabsBaseComponent<CoreTabComponent> i
     protected async loadTab(tabToSelect: CoreTabComponent): Promise<boolean> {
         const currentTab = this.getSelected();
         currentTab?.unselectTab();
-        await tabToSelect.selectTab();
+        tabToSelect.selectTab();
 
         return true;
     }

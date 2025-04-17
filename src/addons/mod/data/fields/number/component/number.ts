@@ -43,7 +43,7 @@ export class AddonModDataFieldNumberComponent extends AddonModDataFieldPluginBas
             value = isNaN(v) ? '' : v;
         }
 
-        this.addControl(`f_${this.field.id}`, value);
+        this.addControl('f_' + this.field.id, value);
     }
 
 }

@@ -14,17 +14,16 @@
 
 import { Injectable } from '@angular/core';
 import { CoreSites, CoreSitesCommonWSOptions } from '@services/sites';
-import { CoreWSExternalWarning } from '@services/ws';
-import { makeSingleton } from '@singletons';
-import { CoreCacheUpdateFrequency } from '@/core/constants';
-import { CoreMimetype } from '@singletons/mimetype';
+import { CoreWSExternalWarning, CoreWSExternalFile } from '@services/ws';
+import { makeSingleton, Translate } from '@singletons';
+import { CoreCacheUpdateFrequency, CoreConstants } from '@/core/constants';
+import { CoreMimetypeUtils } from '@services/utils/mimetype';
 import { CoreCourse } from '@features/course/services/course';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreCourseLogHelper } from '@features/course/services/log-helper';
+import { CoreError } from '@classes/errors/error';
 import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
-import { ADDON_MOD_URL_COMPONENT_LEGACY } from '../constants';
-import { ModResourceDisplay } from '@addons/mod/constants';
-import { CoreCourseModuleHelper, CoreCourseModuleStandardElements } from '@features/course/services/course-module-helper';
+import { ADDON_MOD_URL_COMPONENT } from '../constants';
 
 /**
  * Service that provides some features for urls.
@@ -40,19 +39,19 @@ export class AddonModUrlProvider {
      * @param url URL data.
      * @returns Final display type.
      */
-    getFinalDisplayType(url?: AddonModUrlUrl): ModResourceDisplay {
+    getFinalDisplayType(url?: AddonModUrlUrl): number {
         if (!url) {
             return -1;
         }
 
-        const extension = CoreMimetype.guessExtensionFromUrl(url.externalurl);
+        const extension = CoreMimetypeUtils.guessExtensionFromUrl(url.externalurl);
 
         // PDFs can be embedded in web, but not in the Mobile app.
-        if (url.display === ModResourceDisplay.EMBED && extension === 'pdf') {
-            return ModResourceDisplay.DOWNLOAD;
+        if (url.display == CoreConstants.RESOURCELIB_DISPLAY_EMBED && extension == 'pdf') {
+            return CoreConstants.RESOURCELIB_DISPLAY_DOWNLOAD;
         }
 
-        if (url.display !== ModResourceDisplay.AUTO) {
+        if (url.display != CoreConstants.RESOURCELIB_DISPLAY_AUTO) {
             return url.display;
         }
 
@@ -61,12 +60,12 @@ export class AddonModUrlProvider {
         if (currentSite && currentSite.containsUrl(url.externalurl)) {
             if (url.externalurl.indexOf('file.php') == -1 && url.externalurl.indexOf('.php') != -1) {
                 // Most probably our moodle page with navigation.
-                return ModResourceDisplay.OPEN;
+                return CoreConstants.RESOURCELIB_DISPLAY_OPEN;
             }
         }
 
         const download = ['application/zip', 'application/x-tar', 'application/g-zip', 'application/pdf', 'text/html'];
-        let mimetype = CoreMimetype.getMimeType(extension);
+        let mimetype = CoreMimetypeUtils.getMimeType(extension);
 
         if (url.externalurl.indexOf('.php') != -1 || url.externalurl.slice(-1) === '/' ||
                 (url.externalurl.indexOf('//') != -1 && url.externalurl.match(/\//g)?.length == 2)) {
@@ -75,15 +74,15 @@ export class AddonModUrlProvider {
         }
 
         if (mimetype && download.indexOf(mimetype) != -1) {
-            return ModResourceDisplay.DOWNLOAD;
+            return CoreConstants.RESOURCELIB_DISPLAY_DOWNLOAD;
         }
 
-        if (extension && CoreMimetype.canBeEmbedded(extension)) {
-            return ModResourceDisplay.EMBED;
+        if (extension && CoreMimetypeUtils.canBeEmbedded(extension)) {
+            return CoreConstants.RESOURCELIB_DISPLAY_EMBED;
         }
 
         // Let the browser deal with it somehow.
-        return ModResourceDisplay.OPEN;
+        return CoreConstants.RESOURCELIB_DISPLAY_OPEN;
     }
 
     /**
@@ -93,7 +92,45 @@ export class AddonModUrlProvider {
      * @returns Cache key.
      */
     protected getUrlCacheKey(courseId: number): string {
-        return `${AddonModUrlProvider.ROOT_CACHE_KEY}url:${courseId}`;
+        return AddonModUrlProvider.ROOT_CACHE_KEY + 'url:' + courseId;
+    }
+
+    /**
+     * Get a url data.
+     *
+     * @param courseId Course ID.
+     * @param key Name of the property to check.
+     * @param value Value to search.
+     * @param options Other options.
+     * @returns Promise resolved when the url is retrieved.
+     */
+    protected async getUrlDataByKey(
+        courseId: number,
+        key: string,
+        value: number,
+        options: CoreSitesCommonWSOptions = {},
+    ): Promise<AddonModUrlUrl> {
+        const site = await CoreSites.getSite(options.siteId);
+
+        const params: AddonModUrlGetUrlsByCoursesWSParams = {
+            courseids: [courseId],
+        };
+
+        const preSets: CoreSiteWSPreSets = {
+            cacheKey: this.getUrlCacheKey(courseId),
+            updateFrequency: CoreCacheUpdateFrequency.RARELY,
+            component: ADDON_MOD_URL_COMPONENT,
+            ...CoreSites.getReadingStrategyPreSets(options.readingStrategy),
+        };
+
+        const response = await site.read<AddonModUrlGetUrlsByCoursesResult>('mod_url_get_urls_by_courses', params, preSets);
+
+        const currentUrl = response.urls.find((url) => url[key] == value);
+        if (currentUrl) {
+            return currentUrl;
+        }
+
+        throw new CoreError(Translate.instant('core.course.modulenotfound'));
     }
 
     /**
@@ -104,23 +141,8 @@ export class AddonModUrlProvider {
      * @param options Other options.
      * @returns Promise resolved when the url is retrieved.
      */
-    async getUrl(courseId: number, cmId: number, options: CoreSitesCommonWSOptions = {}): Promise<AddonModUrlUrl> {
-        const site = await CoreSites.getSite(options.siteId);
-
-        const params: AddonModUrlGetUrlsByCoursesWSParams = {
-            courseids: [courseId],
-        };
-
-        const preSets: CoreSiteWSPreSets = {
-            cacheKey: this.getUrlCacheKey(courseId),
-            updateFrequency: CoreCacheUpdateFrequency.RARELY,
-            component: ADDON_MOD_URL_COMPONENT_LEGACY,
-            ...CoreSites.getReadingStrategyPreSets(options.readingStrategy),
-        };
-
-        const response = await site.read<AddonModUrlGetUrlsByCoursesResult>('mod_url_get_urls_by_courses', params, preSets);
-
-        return CoreCourseModuleHelper.getActivityByCmId(response.urls, cmId);
+    getUrl(courseId: number, cmId: number, options: CoreSitesCommonWSOptions = {}): Promise<AddonModUrlUrl> {
+        return this.getUrlDataByKey(courseId, 'coursemodule', cmId, options);
     }
 
     /**
@@ -133,20 +155,18 @@ export class AddonModUrlProvider {
         url = url || '';
 
         const matches = url.match(/\//g);
-        const extension = CoreMimetype.guessExtensionFromUrl(url);
+        const extension = CoreMimetypeUtils.guessExtensionFromUrl(url);
 
-        if (!matches || matches.length < 3 || url.slice(-1) === '/' || extension === 'php') {
+        if (!matches || matches.length < 3 || url.slice(-1) === '/' || extension == 'php') {
             // Use default icon.
             return '';
         }
 
-        const site = CoreSites.getCurrentSite();
-
-        const icon = CoreMimetype.getExtensionIcon(extension ?? '', site);
+        const icon = CoreMimetypeUtils.getExtensionIcon(extension ?? '');
 
         // We do not want to return those icon types, the module icon is more appropriate.
-        if (icon === CoreMimetype.getFileIconForType('unknown', site) ||
-            icon === CoreMimetype.getFileIconForType('html', site)) {
+        if (icon === CoreMimetypeUtils.getFileIconForType('unknown') ||
+            icon === CoreMimetypeUtils.getFileIconForType('html')) {
             return '';
         }
 
@@ -159,8 +179,9 @@ export class AddonModUrlProvider {
      * @param moduleId The module ID.
      * @param courseId Course ID of the module.
      * @param siteId Site ID. If not defined, current site.
+     * @returns Promise resolved when the data is invalidated.
      */
-    async invalidateContent(moduleId: number, courseId: number, siteId?: string): Promise<void> {
+    invalidateContent(moduleId: number, courseId: number, siteId?: string): Promise<void> {
         siteId = siteId || CoreSites.getCurrentSiteId();
 
         const promises: Promise<void>[] = [];
@@ -168,7 +189,7 @@ export class AddonModUrlProvider {
         promises.push(this.invalidateUrlData(courseId, siteId));
         promises.push(CoreCourse.invalidateModule(moduleId, siteId, 'url'));
 
-        await CorePromiseUtils.allPromises(promises);
+        return CorePromiseUtils.allPromises(promises);
     }
 
     /**
@@ -176,6 +197,7 @@ export class AddonModUrlProvider {
      *
      * @param courseId Course ID.
      * @param siteId Site ID. If not defined, current site.
+     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateUrlData(courseId: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -198,7 +220,7 @@ export class AddonModUrlProvider {
         return CoreCourseLogHelper.log(
             'mod_url_view_url',
             params,
-            ADDON_MOD_URL_COMPONENT_LEGACY,
+            ADDON_MOD_URL_COMPONENT,
             id,
             siteId,
         );
@@ -224,12 +246,23 @@ type AddonModUrlViewUrlWSParams = {
 /**
  * URL returnd by mod_url_get_urls_by_courses.
  */
-export type AddonModUrlUrl = CoreCourseModuleStandardElements & {
+export type AddonModUrlUrl = {
+    id: number; // Module id.
+    coursemodule: number; // Course module id.
+    course: number; // Course id.
+    name: string; // URL name.
+    intro: string; // Summary.
+    introformat: number; // Intro format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
+    introfiles: CoreWSExternalFile[];
     externalurl: string; // External URL.
-    display: ModResourceDisplay; // How to display the url.
+    display: number; // How to display the url.
     displayoptions: string; // Display options (width, height).
     parameters: string; // Parameters to append to the URL.
     timemodified: number; // Last time the url was modified.
+    section: number; // Course section id.
+    visible: number; // Module visibility.
+    groupmode: number; // Group mode.
+    groupingid: number; // Grouping id.
 };
 
 /**

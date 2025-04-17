@@ -17,7 +17,7 @@ import { Component, Input, OnInit, OnChanges, OnDestroy, SimpleChange } from '@a
 import { CoreSiteBasicInfo, CoreSites } from '@services/sites';
 import { CoreUtils } from '@singletons/utils';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
-import { CoreUserBasicData } from '@features/user/services/user';
+import { USER_PROFILE_PICTURE_UPDATED, CoreUserBasicData } from '@features/user/services/user';
 import { CoreNavigator } from '@services/navigator';
 import { CoreNetwork } from '@services/network';
 import { CoreUserHelper } from '@features/user/services/user-helper';
@@ -27,7 +27,6 @@ import { toBoolean } from '@/core/transforms/boolean';
 import { CoreBaseModule } from '@/core/base.module';
 import { CoreExternalContentDirective } from '@directives/external-content';
 import { CoreAriaButtonClickDirective } from '@directives/aria-button';
-import { CORE_USER_PROFILE_PICTURE_UPDATED } from '@features/user/constants';
 
 /**
  * Component to display a "user avatar".
@@ -60,7 +59,6 @@ export class CoreUserAvatarComponent implements OnInit, OnChanges, OnDestroy {
 
     avatarUrl?: string;
     initials = '';
-    imageError = false;
 
     // Variable to check if we consider this user online or not.
     // @todo Use setting when available (see MDL-63972) so we can use site setting.
@@ -72,7 +70,7 @@ export class CoreUserAvatarComponent implements OnInit, OnChanges, OnDestroy {
         this.currentUserId = CoreSites.getCurrentSiteUserId();
 
         this.pictureObserver = CoreEvents.on(
-            CORE_USER_PROFILE_PICTURE_UPDATED,
+            USER_PROFILE_PICTURE_UPDATED,
             (data) => {
                 if (data.userId === this.userId) {
                     this.avatarUrl = data.picture;
@@ -99,7 +97,7 @@ export class CoreUserAvatarComponent implements OnInit, OnChanges, OnDestroy {
                 fullname: this.site.fullname ?? '',
                 firstname: this.site.firstname ?? '',
                 lastname: this.site.lastname ?? '',
-                profileimageurl: this.site.userpictureurl ?? '',
+                userpictureurl: this.site.userpictureurl,
             };
         }
 
@@ -117,31 +115,31 @@ export class CoreUserAvatarComponent implements OnInit, OnChanges, OnDestroy {
     }
 
     /**
-     * Avatar image loading handler.
+     * Avatar image loading error handler.
      */
-    imageLoaded(success: boolean): void {
-        this.imageError = !success;
+    loadImageError(): void {
+        this.avatarUrl = undefined;
     }
 
     /**
      * Set fields from user.
      */
     protected async setFields(): Promise<void> {
-        const profileUrl = this.profileUrl || this.user?.profileimageurl || this.user?.userprofileimageurl ||
-            this.user?.userpictureurl || this.user?.profileimageurlsmall || this.user?.urls?.profileimage;
+        const profileUrl = this.profileUrl || (this.user && (this.user.profileimageurl || this.user.userprofileimageurl ||
+            this.user.userpictureurl || this.user.profileimageurlsmall || (this.user.urls && this.user.urls.profileimage)));
 
         if (typeof profileUrl === 'string') {
             this.avatarUrl = profileUrl;
         }
 
-        this.fullname = this.fullname || this.user?.fullname || this.user?.userfullname;
+        this.fullname = this.fullname || (this.user && (this.user.fullname || this.user.userfullname));
 
         if (this.avatarUrl && CoreUrl.isThemeImageUrl(this.avatarUrl)) {
             this.avatarUrl = undefined;
         }
 
-        this.userId = this.userId || this.user?.userid || this.user?.id;
-        this.courseId = this.courseId || this.user?.courseid;
+        this.userId = this.userId || (this.user && (this.user.userid || this.user.id));
+        this.courseId = this.courseId || (this.user && this.user.courseid);
 
         this.initials =
             await CoreUserHelper.getUserInitialsFromParts({

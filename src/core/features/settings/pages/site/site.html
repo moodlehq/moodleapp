@@ -14,7 +14,7 @@
         <ion-refresher slot="fixed" [disabled]="!handlers.loaded" (ionRefresh)="refreshData($event.target)">
             <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}" />
         </ion-refresher>
-        <core-loading [hideUntil]="handlers.loaded" placeholderType="column" placeholderHeight="48px">
+        <core-loading [hideUntil]="handlers.loaded">
             <ion-list>
                 <ion-item *ngFor="let handler of handlerItems" class="core-settings-handler" lines="none" [ngClass]="handler.class"
                     [attr.aria-label]="handler.title | translate" (click)="!handler.toggle && handlers.select(handler)"

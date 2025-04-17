@@ -36,7 +36,7 @@ import { AddonModFeedbackFormItem, AddonModFeedbackHelper } from '../../services
 import { AddonModFeedbackSync } from '../../services/feedback-sync';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 import {
-    ADDON_MOD_FEEDBACK_COMPONENT_LEGACY,
+    ADDON_MOD_FEEDBACK_COMPONENT,
     ADDON_MOD_FEEDBACK_FORM_SUBMITTED,
     ADDON_MOD_FEEDBACK_PAGE_NAME,
     AddonModFeedbackIndexTabName,
@@ -48,7 +48,6 @@ import { CoreWSError } from '@classes/errors/wserror';
 import { CoreObject } from '@singletons/object';
 import { CoreAlerts } from '@services/overlays/alerts';
 import { CoreSharedModule } from '@/core/shared.module';
-import { CoreContentLinksHelper } from '@features/contentlinks/services/contentlinks-helper';
 
 /**
  * Page that displays feedback form.
@@ -80,7 +79,7 @@ export default class AddonModFeedbackFormPage implements OnInit, OnDestroy, CanL
     courseId!: number;
     feedback?: AddonModFeedbackWSFeedback;
     completionPageContents?: string;
-    component = ADDON_MOD_FEEDBACK_COMPONENT_LEGACY;
+    component = ADDON_MOD_FEEDBACK_COMPONENT;
     offline = false;
     feedbackLoaded = false;
     access?: AddonModFeedbackGetFeedbackAccessInformationWSResponse;
@@ -438,7 +437,7 @@ export default class AddonModFeedbackFormPage implements OnInit, OnDestroy, CanL
             return;
         }
 
-        CoreNavigator.navigateToSitePath(`${ADDON_MOD_FEEDBACK_PAGE_NAME}/${this.courseId}/${this.cmId}`, {
+        CoreNavigator.navigateToSitePath(ADDON_MOD_FEEDBACK_PAGE_NAME + `/${this.courseId}/${this.cmId}`, {
             params: {
                 module: this.module,
                 tab: AddonModFeedbackIndexTabName.ANALYSIS,
@@ -459,7 +458,7 @@ export default class AddonModFeedbackFormPage implements OnInit, OnDestroy, CanL
         const modal = await CoreLoadings.show();
 
         try {
-            await CoreContentLinksHelper.visitLink(this.siteAfterSubmit, { siteId: this.currentSite.id });
+            await CoreSites.visitLink(this.siteAfterSubmit, { siteId: this.currentSite.id });
         } finally {
             modal.dismiss();
         }

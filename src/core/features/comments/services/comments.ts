@@ -25,7 +25,8 @@ import { CoreCommentsOffline } from './comments-offline';
 import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
 import { ContextLevel, CoreCacheUpdateFrequency } from '@/core/constants';
 import { CorePromiseUtils } from '@singletons/promise-utils';
-import { CoreTextFormat } from '@singletons/text';
+
+const ROOT_CACHE_KEY = 'mmComments:';
 
 declare module '@singletons/events' {
 
@@ -46,8 +47,6 @@ declare module '@singletons/events' {
  */
 @Injectable( { providedIn: 'root' })
 export class CoreCommentsProvider {
-
-    protected static readonly ROOT_CACHE_KEY = 'mmComments:';
 
     static readonly REFRESH_COMMENTS_EVENT = 'core_comments_refresh_comments';
     static readonly COMMENTS_COUNT_CHANGED_EVENT = 'core_comments_count_changed';
@@ -374,7 +373,7 @@ export class CoreCommentsProvider {
         itemId: number,
         area: string = '',
     ): string {
-        return `${this.getCommentsPrefixCacheKey(contextLevel, instanceId)}:${component}:${itemId}:${area}`;
+        return this.getCommentsPrefixCacheKey(contextLevel, instanceId) + ':' + component + ':' + itemId + ':' + area;
     }
 
     /**
@@ -385,7 +384,7 @@ export class CoreCommentsProvider {
      * @returns Cache key.
      */
     protected getCommentsPrefixCacheKey(contextLevel: ContextLevel, instanceId: number): string {
-        return `${CoreCommentsProvider.ROOT_CACHE_KEY}comments:${contextLevel}:${instanceId}`;
+        return ROOT_CACHE_KEY + 'comments:' + contextLevel + ':' + instanceId;
     }
 
     /**
@@ -486,10 +485,10 @@ export class CoreCommentsProvider {
         const count = await getCommentsPageCount(0);
 
         if (trueCount || count < CoreCommentsProvider.pageSize) {
-            return `${count}`;
+            return count + '';
         } else if (CoreCommentsProvider.pageSizeOK && count >= CoreCommentsProvider.pageSize) {
             // Page Size is ok, show + in case it reached the limit.
-            return `${CoreCommentsProvider.pageSize - 1}+`;
+            return (CoreCommentsProvider.pageSize - 1) + '+';
         }
 
         const countMore = await getCommentsPageCount(1);
@@ -497,10 +496,10 @@ export class CoreCommentsProvider {
         if (countMore > 0) {
             CoreCommentsProvider.pageSizeOK = true;
 
-            return `${CoreCommentsProvider.pageSize - 1}+`;
+            return (CoreCommentsProvider.pageSize - 1) + '+';
         }
 
-        return `${count}`;
+        return count + '';
     }
 
     /**
@@ -512,6 +511,7 @@ export class CoreCommentsProvider {
      * @param itemId Associated id.
      * @param area String comment area. Default empty.
      * @param siteId Site ID. If not defined, current site.
+     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateCommentsData(
         contextLevel: ContextLevel,
@@ -543,6 +543,7 @@ export class CoreCommentsProvider {
      * @param contextLevel Contextlevel system, course, user...
      * @param instanceId The Instance id of item associated with the context level.
      * @param siteId Site ID. If not defined, current site.
+     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateCommentsByInstance(contextLevel: ContextLevel, instanceId: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -600,7 +601,7 @@ export type CoreCommentsCommentBasicData = {
 export type CoreCommentsData = {
     id: number; // Comment ID.
     content: string; // The content text formatted.
-    format: CoreTextFormat; // Content format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
+    format: number; // Content format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
     timecreated: number; // Time created (timestamp).
     strftimeformat: string; // Time format.
     profileurl: string; // URL profile.

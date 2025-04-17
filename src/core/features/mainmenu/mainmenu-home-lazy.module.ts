@@ -16,8 +16,8 @@ import { Injector, NgModule } from '@angular/core';
 import { ROUTES, Routes } from '@angular/router';
 
 import { buildTabMainRoutes } from '@features/mainmenu/mainmenu-tab-routing.module';
+import { CoreMainMenuHomeHandlerService } from '@features/mainmenu/services/handlers/mainmenu';
 import { resolveHomeRoutes } from '@features/mainmenu/mainmenu-home-routing.module';
-import { MAIN_MENU_HOME_PAGE_NAME } from './constants';
 
 /**
  * Build module routes.
@@ -32,7 +32,7 @@ function buildRoutes(injector: Injector): Routes {
         ...buildTabMainRoutes(injector, {
             path: '',
             data: {
-                mainMenuTabRoot: MAIN_MENU_HOME_PAGE_NAME,
+                mainMenuTabRoot: CoreMainMenuHomeHandlerService.PAGE_NAME,
             },
             loadComponent: () => import('@features/mainmenu/pages/home/home'),
             children: routes.children,

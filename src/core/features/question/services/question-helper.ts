@@ -19,7 +19,7 @@ import { CoreFile } from '@services/file';
 import { CoreFileHelper } from '@services/file-helper';
 import { CoreFilepool } from '@services/filepool';
 import { CoreSites } from '@services/sites';
-import { CoreDom } from '@singletons/dom';
+import { CoreDomUtils } from '@services/utils/dom';
 import { CoreText } from '@singletons/text';
 import { CoreUtils } from '@singletons/utils';
 import { CoreWSFile } from '@services/ws';
@@ -196,7 +196,7 @@ export class CoreQuestionHelperProvider {
         const redoSelector = '[type="submit"][name*=redoslot], [type="submit"][name*=tryagain]';
 
         // Search redo button in feedback.
-        if (!this.searchBehaviourButton(question, 'html', `.outcome ${redoSelector}`)) {
+        if (!this.searchBehaviourButton(question, 'html', '.outcome ' + redoSelector)) {
             // Not found in question HTML.
             if (question.feedbackHtml) {
                 // We extracted the feedback already, search it in there.
@@ -327,13 +327,13 @@ export class CoreQuestionHelperProvider {
             question.html = question.html.replace(scriptCode, '');
 
             // Search init_question functions for this type.
-            const initMatches = scriptCode.match(new RegExp(`M.qtype_${question.type}.init_question\\(.*?}\\);`, 'mg'));
+            const initMatches = scriptCode.match(new RegExp('M.qtype_' + question.type + '.init_question\\(.*?}\\);', 'mg'));
             if (initMatches) {
                 let initMatch = initMatches.pop();
 
                 if (initMatch) {
                     // Remove start and end of the match, we only want the object.
-                    initMatch = initMatch.replace(`M.qtype_${question.type}.init_question(`, '');
+                    initMatch = initMatch.replace('M.qtype_' + question.type + '.init_question(', '');
                     initMatch = initMatch.substring(0, initMatch.length - 2);
 
                     // Try to convert it to an object and add it to the question.
@@ -362,7 +362,7 @@ export class CoreQuestionHelperProvider {
      * @returns Object where the keys are the names.
      */
     getAllInputNamesFromHtml(html: string): Record<string, boolean> {
-        const element = convertTextToHTMLElement(`<form>${html}</form>`);
+        const element = convertTextToHTMLElement('<form>' + html + '</form>');
         const form = <HTMLFormElement> element.children[0];
         const answers: Record<string, boolean> = {};
 
@@ -431,7 +431,7 @@ export class CoreQuestionHelperProvider {
         const element = convertTextToHTMLElement(html);
 
         // Remove the filemanager (area to attach files to a question).
-        CoreDom.removeElement(element, 'div[id*=filemanager]');
+        CoreDomUtils.removeElement(element, 'div[id*=filemanager]');
 
         // Search the anchors.
         const anchors = Array.from(element.querySelectorAll('a'));
@@ -490,7 +490,7 @@ export class CoreQuestionHelperProvider {
             question.stateclass = state.stateclass;
         }
 
-        question.stateClass = `core-question-${question.stateclass ?? 'unknown'}`;
+        question.stateClass = 'core-question-' + (question.stateclass ?? 'unknown');
     }
 
     /**
@@ -540,7 +540,7 @@ export class CoreQuestionHelperProvider {
     getValidationErrorFromHtml(html: string): string | undefined {
         const element = convertTextToHTMLElement(html);
 
-        return CoreDom.getContentsOfElement(element, '.validationerror');
+        return CoreDomUtils.getContentsOfElement(element, '.validationerror');
     }
 
     /**
@@ -590,7 +590,7 @@ export class CoreQuestionHelperProvider {
      * @param question Question.
      */
     loadLocalAnswersInHtml(question: CoreQuestionQuestion): void {
-        const element = convertTextToHTMLElement(`<form>${question.html}</form>`);
+        const element = convertTextToHTMLElement('<form>' + question.html + '</form>');
         const form = <HTMLFormElement> element.children[0];
 
         // Search all input elements.
@@ -618,7 +618,7 @@ export class CoreQuestionHelperProvider {
                 element.innerHTML = question.localAnswers[name];
             } else if (element.tagName == 'SELECT') {
                 // Search the selected option and select it.
-                const selected = element.querySelector(`option[value="${question.localAnswers[name]}"]`);
+                const selected = element.querySelector('option[value="' + question.localAnswers[name] + '"]');
                 if (selected) {
                     selected.setAttribute('selected', 'selected');
                 }
@@ -737,7 +737,7 @@ export class CoreQuestionHelperProvider {
      * @param element DOM element.
      */
     replaceCorrectnessClasses(element: HTMLElement): void {
-        CoreDom.replaceClassesInElement(element, {
+        CoreDomUtils.replaceClassesInElement(element, {
             correct: 'core-question-answer-correct',
             incorrect: 'core-question-answer-incorrect',
             partiallycorrect: 'core-question-answer-partiallycorrect',
@@ -750,7 +750,7 @@ export class CoreQuestionHelperProvider {
      * @param element DOM element.
      */
     replaceFeedbackClasses(element: HTMLElement): void {
-        CoreDom.replaceClassesInElement(element, {
+        CoreDomUtils.replaceClassesInElement(element, {
             outcome: 'core-question-feedback-container core-question-feedback-padding',
             specificfeedback: 'core-question-feedback-container core-question-feedback-inline',
         });
@@ -976,41 +976,51 @@ export class CoreQuestionHelperProvider {
         contextInstanceId?: number,
         courseId?: number,
     ): void {
-        const icons = <HTMLElement[]> Array.from(element.querySelectorAll('ion-icon.questioncorrectnessicon[tappable]'));
-
+        const icons = <HTMLElement[]> Array.from(element.querySelectorAll('ion-icon.questioncorrectnessicon'));
+        const title = Translate.instant('core.question.feedback');
         const getClickableFeedback = (icon: HTMLElement) => {
             const parentElement = icon.parentElement;
+            const parentIsClickable = parentElement instanceof HTMLButtonElement || parentElement instanceof HTMLAnchorElement;
+
+            if (parentElement && parentIsClickable && parentElement.dataset.toggle === 'popover') {
+                return {
+                    element: parentElement,
+                    html: parentElement?.dataset.content,
+                };
+            }
 
             // Support legacy icons used before MDL-77856 (4.2).
-            return parentElement?.querySelector('.feedbackspan.accesshide')?.innerHTML;
+            if (icon.hasAttribute('tappable')) {
+                return {
+                    element: icon,
+                    html: parentElement?.querySelector('.feedbackspan.accesshide')?.innerHTML,
+                };
+            }
+
+            return null;
         };
 
         icons.forEach(icon => {
-            const content = getClickableFeedback(icon);
+            const target = getClickableFeedback(icon);
 
-            if (!content) {
+            if (!target || !target.html) {
                 return;
             }
 
             // There's a hidden feedback, show it when the icon is clicked.
-            icon.dataset.disabledA11yClicks = 'true';
-            icon.addEventListener('click', event => {
+            target.element.dataset.disabledA11yClicks = 'true';
+            target.element.addEventListener('click', event => {
                 event.preventDefault();
                 event.stopPropagation();
-                const title = Translate.instant('core.question.feedback');
 
-                CoreViewer.viewText(
-                    title,
-                    content ?? '',
-                    {
-                        component: component,
-                        componentId: componentId,
-                        filter: true,
-                        contextLevel: contextLevel,
-                        instanceId: contextInstanceId,
-                        courseId: courseId,
-                    },
-                );
+                CoreViewer.viewText(title, target.html ?? '', {
+                    component: component,
+                    componentId: componentId,
+                    filter: true,
+                    contextLevel: contextLevel,
+                    instanceId: contextInstanceId,
+                    courseId: courseId,
+                });
             });
         });
     }

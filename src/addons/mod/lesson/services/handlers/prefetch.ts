@@ -31,13 +31,8 @@ import {
     AddonModLessonPasswordOptions,
 } from '../lesson';
 import { AddonModLessonSync, AddonModLessonSyncResult } from '../lesson-sync';
-import {
-    ADDON_MOD_LESSON_COMPONENT_LEGACY,
-    ADDON_MOD_LESSON_MODNAME,
-    AddonModLessonJumpTo,
-    AddonModLessonPageSubtype,
-} from '../../constants';
-import { AddonModLessonHelper } from '../lesson-helper';
+import { ADDON_MOD_LESSON_COMPONENT, AddonModLessonJumpTo, AddonModLessonPageSubtype } from '../../constants';
+import { CorePrompts } from '@services/overlays/prompts';
 
 /**
  * Handler to prefetch lessons.
@@ -46,8 +41,8 @@ import { AddonModLessonHelper } from '../lesson-helper';
 export class AddonModLessonPrefetchHandlerService extends CoreCourseActivityPrefetchHandlerBase {
 
     name = 'AddonModLesson';
-    modName = ADDON_MOD_LESSON_MODNAME;
-    component = ADDON_MOD_LESSON_COMPONENT_LEGACY;
+    modName = 'lesson';
+    component = ADDON_MOD_LESSON_COMPONENT;
     // Don't check timers to decrease positives. If a user performs some action it will be reflected in other items.
     updatesNames = /^configuration$|^.*files$|^grades$|^gradeitems$|^pages$|^answers$|^questionattempts$|^pagesviewed$/;
 
@@ -65,7 +60,7 @@ export class AddonModLessonPrefetchHandlerService extends CoreCourseActivityPref
         let lesson = await AddonModLesson.getLesson(courseId, module.id, { siteId });
 
         // Get the lesson password if it's needed.
-        const passwordData = await AddonModLessonHelper.getLessonPassword(lesson.id, {
+        const passwordData = await this.getLessonPassword(lesson.id, {
             readingStrategy: CoreSitesReadingStrategy.ONLY_NETWORK,
             askPassword: single,
             siteId,
@@ -94,10 +89,69 @@ export class AddonModLessonPrefetchHandlerService extends CoreCourseActivityPref
     }
 
     /**
+     * Get the lesson password if needed. If not stored, it can ask the user to enter it.
+     *
+     * @param lessonId Lesson ID.
+     * @param options Other options.
+     * @returns Promise resolved when done.
+     */
+    async getLessonPassword(
+        lessonId: number,
+        options: AddonModLessonGetPasswordOptions = {},
+    ): Promise<AddonModLessonGetPasswordResult> {
+
+        options.siteId = options.siteId || CoreSites.getCurrentSiteId();
+
+        // Get access information to check if password is needed.
+        const accessInfo = await AddonModLesson.getAccessInformation(lessonId, options);
+
+        if (!accessInfo.preventaccessreasons.length) {
+            // Password not needed.
+            return { accessInfo };
+        }
+
+        const passwordNeeded = accessInfo.preventaccessreasons.length == 1 &&
+            AddonModLesson.isPasswordProtected(accessInfo);
+
+        if (!passwordNeeded) {
+            // Lesson cannot be played, reject.
+            throw new CoreError(accessInfo.preventaccessreasons[0].message);
+        }
+
+        // The lesson requires a password. Check if there is one in DB.
+        let password = await CorePromiseUtils.ignoreErrors(AddonModLesson.getStoredPassword(lessonId));
+
+        if (password) {
+            try {
+                return await this.validatePassword(lessonId, accessInfo, password, options);
+            } catch {
+                // Error validating it.
+            }
+        }
+
+        // Ask for the password if allowed.
+        if (!options.askPassword) {
+            // Cannot ask for password, reject.
+            throw new CoreError(accessInfo.preventaccessreasons[0].message);
+        }
+
+        // Create and show the modal.
+        const response = await CorePrompts.promptPassword({
+            title: 'addon.mod_lesson.enterpassword',
+            placeholder: 'core.login.password',
+            submit: 'addon.mod_lesson.continue',
+        });
+        password = response.password;
+
+        return this.validatePassword(lessonId, accessInfo, password, options);
+    }
+
+    /**
      * Invalidate the prefetched content.
      *
      * @param moduleId The module ID.
      * @param courseId The course ID the module belongs to.
+     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateContent(moduleId: number, courseId: number): Promise<void> {
         // Only invalidate the data that doesn't ignore cache when prefetching.
@@ -187,7 +241,7 @@ export class AddonModLessonPrefetchHandlerService extends CoreCourseActivityPref
         let lesson = await AddonModLesson.getLesson(courseId, module.id, commonOptions);
 
         // Get the lesson password if it's needed.
-        const passwordData = await AddonModLessonHelper.getLessonPassword(lesson.id, {
+        const passwordData = await this.getLessonPassword(lesson.id, {
             readingStrategy: CoreSitesReadingStrategy.ONLY_NETWORK,
             askPassword: single,
             siteId,
@@ -424,6 +478,39 @@ export class AddonModLessonPrefetchHandlerService extends CoreCourseActivityPref
     }
 
     /**
+     * Validate the password.
+     *
+     * @param lessonId Lesson ID.
+     * @param accessInfo Lesson access info.
+     * @param password Password to check.
+     * @param options Other options.
+     * @returns Promise resolved when done.
+     */
+    protected async validatePassword(
+        lessonId: number,
+        accessInfo: AddonModLessonGetAccessInformationWSResponse,
+        password: string,
+        options: CoreCourseCommonModWSOptions = {},
+    ): Promise<AddonModLessonGetPasswordResult> {
+
+        options.siteId = options.siteId || CoreSites.getCurrentSiteId();
+
+        const lesson = await AddonModLesson.getLessonWithPassword(lessonId, {
+            password,
+            ...options, // Include all options.
+        });
+
+        // Password is ok, store it and return the data.
+        await AddonModLesson.storePassword(lesson.id, password, options.siteId);
+
+        return {
+            password,
+            lesson,
+            accessInfo,
+        };
+    }
+
+    /**
      * Sync a module.
      *
      * @param module Module.
@@ -438,3 +525,19 @@ export class AddonModLessonPrefetchHandlerService extends CoreCourseActivityPref
 }
 
 export const AddonModLessonPrefetchHandler = makeSingleton(AddonModLessonPrefetchHandlerService);
+
+/**
+ * Options to pass to get lesson password.
+ */
+export type AddonModLessonGetPasswordOptions = CoreCourseCommonModWSOptions & {
+    askPassword?: boolean; // True if we should ask for password if needed, false otherwise.
+};
+
+/**
+ * Result of getLessonPassword.
+ */
+export type AddonModLessonGetPasswordResult = {
+    password?: string;
+    lesson?: AddonModLessonLessonWSData;
+    accessInfo: AddonModLessonGetAccessInformationWSResponse;
+};

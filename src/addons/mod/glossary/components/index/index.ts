@@ -50,7 +50,7 @@ import {
 import { AddonModGlossaryPrefetchHandler } from '../../services/handlers/prefetch';
 import { CoreTime } from '@singletons/time';
 import {
-    ADDON_MOD_GLOSSARY_COMPONENT_LEGACY,
+    ADDON_MOD_GLOSSARY_COMPONENT,
     ADDON_MOD_GLOSSARY_ENTRY_ADDED,
     ADDON_MOD_GLOSSARY_ENTRY_DELETED,
     ADDON_MOD_GLOSSARY_ENTRY_UPDATED,
@@ -84,7 +84,7 @@ export class AddonModGlossaryIndexComponent extends CoreCourseModuleMainActivity
 
     @ViewChild(CoreSplitViewComponent) splitView!: CoreSplitViewComponent;
 
-    component = ADDON_MOD_GLOSSARY_COMPONENT_LEGACY;
+    component = ADDON_MOD_GLOSSARY_COMPONENT;
     pluginName = 'glossary';
 
     canAdd = false;

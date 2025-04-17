@@ -211,7 +211,7 @@ img[core-external-content]:not([src]) {
     visibility: hidden;
 }
 
-.core-course-module-handler:not(.addon-mod-label-handler) .item-heading .filter_mathjaxloader_equation mjx-container {
+.core-course-module-handler:not(.addon-mod-label-handler) .item-heading .filter_mathjaxloader_equation div {
     display: inline !important;
 }
 

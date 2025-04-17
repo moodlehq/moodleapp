@@ -18,13 +18,12 @@ import { CoreContentLinksDelegate } from '@features/contentlinks/services/conten
 import { CoreMainMenuTabRoutingModule } from '@features/mainmenu/mainmenu-tab-routing.module';
 import { CoreUserDelegate } from '@features/user/services/user-delegate';
 import { CoreReportBuilderLinkHandler } from './services/handlers/reportbuilder-link';
-import { CoreReportBuilderHandler } from './services/handlers/reportbuilder';
-import { CORE_REPORT_BUILDER_PAGE_NAME } from './constants';
+import { CoreReportBuilderHandler, CoreReportBuilderHandlerService } from './services/handlers/reportbuilder';
 
 const routes: Routes = [
     {
-        path: CORE_REPORT_BUILDER_PAGE_NAME,
-        loadChildren: () => [
+        path: CoreReportBuilderHandlerService.PAGE_NAME,
+        children: [
             {
                 path: '',
                 loadComponent: () => import('@features/reportbuilder/pages/list/list'),

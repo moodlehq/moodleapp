@@ -208,7 +208,8 @@
 
 
     <div collapsible-footer *ngIf="!showLoading" slot="fixed">
-        <div class="list-item-limited-width" *ngIf="access && workshop?.phase >= PHASE_SUBMISSION && showSubmit">
+        <div class="list-item-limited-width" *ngIf="access && workshop?.phase >= PHASE_SUBMISSION && canSubmit && showSubmit &&
+                ((access.creatingsubmissionallowed && !submission) || (access.modifyingsubmissionallowed && submission))">
             <!-- Show only on current phase -->
             <ion-button expand="block" *ngIf="access.creatingsubmissionallowed && !submission" (click)="gotoSubmit()"
                 class="ion-text-wrap ion-margin">

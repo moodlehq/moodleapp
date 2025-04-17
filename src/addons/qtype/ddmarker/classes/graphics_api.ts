@@ -61,15 +61,15 @@ export class AddonQtypeDdMarkerGraphicsApi {
 
         const position = CoreDom.getRelativeElementPosition(bgImg, ddArea);
 
-        dropZones.style.left = `${position.x}px`;
-        dropZones.style.top = `${position.y}px`;
-        dropZones.style.width = `${bgImg.width}px`;
-        dropZones.style.height = `${bgImg.height}px`;
+        dropZones.style.left = position.x + 'px';
+        dropZones.style.top = position.y + 'px';
+        dropZones.style.width = bgImg.width + 'px';
+        dropZones.style.height = bgImg.height + 'px';
 
-        markerTexts.style.left = `${position.x}px`;
-        markerTexts.style.top = `${position.y}px`;
-        markerTexts.style.width = `${bgImg.width}px`;
-        markerTexts.style.height = `${bgImg.height}px`;
+        markerTexts.style.left = position.x + 'px';
+        markerTexts.style.top = position.y + 'px';
+        markerTexts.style.width = bgImg.width + 'px';
+        markerTexts.style.height = bgImg.height + 'px';
 
         if (!this.dropZone) {
             this.dropZone = <SVGSVGElement> document.createElementNS(this.NS, 'svg');
@@ -81,8 +81,8 @@ export class AddonQtypeDdMarkerGraphicsApi {
             }
         }
 
-        this.dropZone.style.width = `${bgImg.width}px`;
-        this.dropZone.style.height = `${bgImg.height}px`;
+        this.dropZone.style.width = bgImg.width + 'px';
+        this.dropZone.style.height = bgImg.height + 'px';
 
         this.instance.shapes = [];
     }

@@ -20,7 +20,7 @@
                 <core-user-avatar [user]="student" slot="start" [userId]="student.id" [courseId]="courseId" [linkProfile]="false" />
                 <ion-label>
                     <h2>{{student.fullname}}</h2>
-                    <core-progress-bar [progress]="student.bestgrade" a11yText="core.gradenoun" />
+                    <core-progress-bar [progress]="student.bestgrade" a11yText="addon.mod_lesson.grade" />
                 </ion-label>
             </ion-item>
 
@@ -43,7 +43,7 @@
                         <ion-grid class="ion-no-padding">
                             <ion-row>
                                 <ion-col>
-                                    <p class="item-heading">{{ 'core.gradenoun' | translate }}</p>
+                                    <p class="item-heading">{{ 'addon.mod_lesson.grade' | translate }}</p>
                                     <p>{{ 'core.percentagenumber' | translate:{$a: retake.userstats.grade} }}</p>
                                 </ion-col>
 

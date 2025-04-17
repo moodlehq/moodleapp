@@ -18,7 +18,7 @@ import { CoreFilepool } from '@services/filepool';
 import { CoreFileHelper } from '@services/file-helper';
 import { CorePluginFileDelegate } from '@services/plugin-file-delegate';
 import { CoreSites } from '@services/sites';
-import { CoreMimetype } from '@singletons/mimetype';
+import { CoreMimetypeUtils } from '@services/utils/mimetype';
 import { CoreUrl } from '@singletons/url';
 import { CoreText } from '@singletons/text';
 import { DownloadStatus } from '@/core/constants';
@@ -105,7 +105,7 @@ export class CoreFileComponent implements OnInit, OnDestroy {
         this.isIOS = CorePlatform.isIOS();
         this.defaultIsOpenWithPicker = CoreFileHelper.defaultIsOpenWithPicker();
         this.openButtonIcon = this.defaultIsOpenWithPicker ? 'fas-file' : 'fas-share-from-square';
-        this.openButtonLabel = this.defaultIsOpenWithPicker ? 'core.openfile' : 'core.share';
+        this.openButtonLabel = this.defaultIsOpenWithPicker ? 'core.openfile' : 'core.openwith';
 
         if (this.showSize && this.fileSize && this.fileSize >= 0) {
             this.fileSizeReadable = CoreText.bytesToSize(this.fileSize, 2);
@@ -117,11 +117,8 @@ export class CoreFileComponent implements OnInit, OnDestroy {
             this.alwaysDownload = true; // Always show the download button in external files.
         }
 
-        const site = CoreSites.getCurrentSite();
-
-        this.fileIcon = 'mimetype' in this.file && this.file.mimetype
-            ? CoreMimetype.getMimetypeIcon(this.file.mimetype, site)
-            : CoreMimetype.getFileIcon(this.fileName, site);
+        this.fileIcon = 'mimetype' in this.file && this.file.mimetype ?
+            CoreMimetypeUtils.getMimetypeIcon(this.file.mimetype) : CoreMimetypeUtils.getFileIcon(this.fileName);
 
         if (this.canDownload) {
             this.calculateState();

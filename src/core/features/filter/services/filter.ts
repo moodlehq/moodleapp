@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Injectable, SecurityContext } from '@angular/core';
+import { Injectable } from '@angular/core';
 
 import { CoreNetwork } from '@services/network';
 import { CoreSites, CoreSitesCommonWSOptions, CoreSitesReadingStrategy } from '@services/sites';
@@ -20,7 +20,7 @@ import { CoreSite } from '@classes/sites/site';
 import { CoreWSExternalWarning } from '@services/ws';
 import { CoreText } from '@singletons/text';
 import { CoreFilterDelegate } from './filter-delegate';
-import { DomSanitizer, makeSingleton } from '@singletons';
+import { makeSingleton } from '@singletons';
 import { CoreEvents, CoreEventSiteData } from '@singletons/events';
 import { CoreLogger } from '@singletons/logger';
 import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
@@ -32,7 +32,7 @@ import { ContextLevel, CoreCacheUpdateFrequency } from '@/core/constants';
 @Injectable({ providedIn: 'root' })
 export class CoreFilterProvider {
 
-    protected static readonly ROOT_CACHE_KEY = 'mmFilter:';
+    protected readonly ROOT_CACHE_KEY = 'mmFilter:';
 
     protected logger: CoreLogger;
 
@@ -228,7 +228,7 @@ export class CoreFilterProvider {
         siteId?: string,
     ): Promise<string> {
 
-        if (!text || typeof text !== 'string') {
+        if (!text || typeof text != 'string') {
             // No need to do any filters and cleaning.
             return '';
         }
@@ -256,10 +256,6 @@ export class CoreFilterProvider {
             text = CoreText.cleanTags(text, { singleLine: options.singleLine });
         }
 
-        if (options.sanitize) {
-            text = DomSanitizer.sanitize(SecurityContext.HTML, text) || '';
-        }
-
         if (options.shortenLength && options.shortenLength > 0) {
             text = CoreText.shortenText(text, options.shortenLength);
         }
@@ -277,7 +273,7 @@ export class CoreFilterProvider {
      * @returns Cache key.
      */
     protected getAllStatesCacheKey(): string {
-        return `${CoreFilterProvider.ROOT_CACHE_KEY}allStates`;
+        return this.ROOT_CACHE_KEY + 'allStates';
     }
 
     /**
@@ -334,7 +330,7 @@ export class CoreFilterProvider {
      * @returns Cache key.
      */
     protected getAvailableInContextsPrefixCacheKey(): string {
-        return `${CoreFilterProvider.ROOT_CACHE_KEY}availableInContexts:`;
+        return this.ROOT_CACHE_KEY + 'availableInContexts:';
     }
 
     /**
@@ -490,6 +486,7 @@ export class CoreFilterProvider {
      * Invalidates all available in context WS calls.
      *
      * @param siteId Site ID (empty for current site).
+     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateAllAvailableInContext(siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -501,6 +498,7 @@ export class CoreFilterProvider {
      * Invalidates get all states WS call.
      *
      * @param siteId Site ID (empty for current site).
+     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateAllStates(siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -513,6 +511,7 @@ export class CoreFilterProvider {
      *
      * @param contexts The contexts to check.
      * @param siteId Site ID (empty for current site).
+     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateAvailableInContexts(
         contexts: CoreFiltersGetAvailableInContextWSParamContext[],
@@ -529,6 +528,7 @@ export class CoreFilterProvider {
      * @param contextLevel The context level to check.
      * @param instanceId The instance ID.
      * @param siteId Site ID (empty for current site).
+     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateAvailableInContext(contextLevel: ContextLevel, instanceId: number, siteId?: string): Promise<void> {
         await this.invalidateAvailableInContexts([{ contextlevel: contextLevel, instanceid: instanceId }], siteId);
@@ -679,7 +679,6 @@ export type CoreFilterFormatTextOptions = {
     contextLevel?: ContextLevel; // The context level where the text is.
     instanceId?: number; // The instance id related to the context.
     clean?: boolean; // If true all HTML will be removed. Default false.
-    sanitize?: boolean; // If true the text will be sanitized. Default false.
     filter?: boolean; // If true the string will be run through applicable filters as well. Default true.
     singleLine?: boolean; // If true then new lines will be removed (all the text in a single line).
     shortenLength?: number; // Number of characters to shorten the text.

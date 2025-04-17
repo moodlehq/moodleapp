@@ -1,57 +1,7 @@
 @use "theme/globals" as *;
 
 :host {
-    ion-item.item-dimmed {
-        --background: transparent;
-    }
-
-    ion-item:not(:last-child) {
-        --inner-border-width: 0 0 1px 0;
-    }
-
-    core-user-avatar {
-        --core-avatar-size: 32px;
-        --margin-vertical-on-item: 0;
-    }
-
-    ion-grid {
-        --ion-grid-padding: 0;
-        --ion-grid-column-padding: 8px;
-    }
-
-    ion-row {
-        @include padding-horizontal(8px);
-        &:not(:first-child) {
-            min-height: var(--a11y-sizing-minTargetSize);
-        }
-        &:nth-child(even) {
-            background-color: var(--light);
-        }
-    }
-
-    ion-col[role=columnheader] {
-        font-weight: bold;
+    .addon-mod_h5pactivity-table-header ion-col {
         @include ellipsis();
-    }
-
-    ion-col[role=gridcell] {
-        display: flex;
-        overflow-wrap: anywhere;
-        align-items: center;
-        core-user-avatar {
-            @include margin-horizontal(0, 8px);
-        }
-        [role=button] {
-            // Override minimum size for buttons, it's already applied for rows.
-            min-height: 0;
-            min-width: 0;
-        }
-    }
-
-    .ripple-parent {
-        position: relative;
-        ion-ripple-effect {
-            z-index: 1;
-        }
     }
 }

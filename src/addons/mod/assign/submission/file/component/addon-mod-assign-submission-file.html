@@ -1,7 +1,7 @@
 <!-- Read only. -->
 <ion-item class="ion-text-wrap" *ngIf="files && files.length && !edit">
     <ion-label>
-        <p class="item-heading">{{ plugin.name }}</p>
+        <h2>{{ plugin.name }}</h2>
         <div>
             <core-files [files]="files" [component]="component" [componentId]="assign.cmid" [alwaysDownload]="true" />
         </div>
@@ -12,7 +12,7 @@
 <div *ngIf="edit">
     <ion-item-divider class="ion-text-wrap" [sticky]="true">
         <ion-label>
-            <p class="item-heading">{{ plugin.name }}</p>
+            <h2>{{ plugin.name }}</h2>
         </ion-label>
     </ion-item-divider>
     <core-attachments [files]="files" [maxSize]="maxSize" [maxSubmissions]="maxSubmissions" [courseId]="assign.course"

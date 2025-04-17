@@ -15,7 +15,6 @@
 import { Injectable } from '@angular/core';
 import { CoreContentLinksModuleListHandler } from '@features/contentlinks/classes/module-list-handler';
 import { makeSingleton } from '@singletons';
-import { ADDON_MOD_FEEDBACK_COMPONENT, ADDON_MOD_FEEDBACK_MODNAME } from '../../constants';
 
 /**
  * Handler to treat links to feedback list page.
@@ -26,7 +25,7 @@ export class AddonModFeedbackListLinkHandlerService extends CoreContentLinksModu
     name = 'AddonModFeedbackListLinkHandler';
 
     constructor() {
-        super(ADDON_MOD_FEEDBACK_COMPONENT, ADDON_MOD_FEEDBACK_MODNAME);
+        super('AddonModFeedback', 'feedback');
     }
 
 }

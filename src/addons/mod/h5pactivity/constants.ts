@@ -12,17 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { CORE_COURSE_MODULE_FEATURE_PREFIX } from '@features/course/constants';
+export const ADDON_MOD_H5PACTIVITY_COMPONENT = 'mmaModH5PActivity';
 
-export const ADDON_MOD_H5PACTIVITY_COMPONENT = 'AddonModH5PActivity';
-export const ADDON_MOD_H5PACTIVITY_COMPONENT_LEGACY = 'mmaModH5PActivity';
 export const ADDON_MOD_H5PACTIVITY_PAGE_NAME = 'mod_h5pactivity';
-export const ADDON_MOD_H5PACTIVITY_MODNAME = 'h5pactivity';
-
-export const ADDON_MOD_H5PACTIVITY_FEATURE_NAME = CORE_COURSE_MODULE_FEATURE_PREFIX + ADDON_MOD_H5PACTIVITY_COMPONENT;
-
-// Events.
-export const ADDON_MOD_H5PACTIVITY_AUTO_SYNCED = 'addon_mod_h5pactivity_autom_synced';
 
 export const ADDON_MOD_H5PACTIVITY_TRACK_COMPONENT = 'mod_h5pactivity'; // Component for tracking.
 export const ADDON_MOD_H5PACTIVITY_USERS_PER_PAGE = 20;
@@ -37,3 +29,5 @@ export const enum AddonModH5PActivityGradeMethod {
 }
 
 export const ADDON_MOD_H5PACTIVITY_STATE_ID = 'state';
+
+export const ADDON_MOD_H5PACTIVITY_AUTO_SYNCED = 'addon_mod_h5pactivity_autom_synced';

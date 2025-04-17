@@ -16,7 +16,7 @@ import { AfterViewInit, Component, OnDestroy, OnInit, ViewChild } from '@angular
 import { CoreNavigator } from '@services/navigator';
 import { CoreListItemsManager } from '@classes/items-management/list-items-manager';
 import { CoreSplitViewComponent } from '@components/split-view/split-view';
-import { CoreUser, CoreUserParticipant, CoreUserDescriptionExporter } from '@features/user/services/user';
+import { CoreUser, CoreUserParticipant, CoreUserData } from '@features/user/services/user';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreUserParticipantsSource } from '@features/user/classes/participants-source';
 import { CoreRoutedItemsManagerSourcesTracker } from '@classes/items-management/routed-items-manager-sources-tracker';
@@ -195,8 +195,7 @@ export default class CoreUserParticipantsPage implements OnInit, AfterViewInit, 
 /**
  * Helper to manage the list of participants.
  */
-class CoreUserParticipantsManager
-    extends CoreListItemsManager<CoreUserParticipant | CoreUserDescriptionExporter, CoreUserParticipantsSource> {
+class CoreUserParticipantsManager extends CoreListItemsManager<CoreUserParticipant | CoreUserData, CoreUserParticipantsSource> {
 
     /**
      * @inheritdoc

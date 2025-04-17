@@ -18,7 +18,7 @@ import { CoreCourseActivityPrefetchHandlerBase } from '@features/course/classes/
 import { CoreCourseAnyModuleData } from '@features/course/services/course';
 import { makeSingleton } from '@singletons';
 import { AddonModLti } from '../lti';
-import { ADDON_MOD_LTI_COMPONENT_LEGACY, ADDON_MOD_LTI_MODNAME } from '../../constants';
+import { ADDON_MOD_LTI_COMPONENT } from '../../constants';
 
 /**
  * Handler to prefetch LTIs. LTIs cannot be prefetched, but the handler will be used to invalidate some data on course PTR.
@@ -27,8 +27,8 @@ import { ADDON_MOD_LTI_COMPONENT_LEGACY, ADDON_MOD_LTI_MODNAME } from '../../con
 export class AddonModLtiPrefetchHandlerService extends CoreCourseActivityPrefetchHandlerBase {
 
     name = 'AddonModLti';
-    modName = ADDON_MOD_LTI_MODNAME;
-    component = ADDON_MOD_LTI_COMPONENT_LEGACY;
+    modName = 'lti';
+    component = ADDON_MOD_LTI_COMPONENT;
 
     /**
      * @inheritdoc

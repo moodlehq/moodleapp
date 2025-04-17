@@ -29,7 +29,7 @@ import { ADDON_MOD_IMSCP_PAGE_NAME } from './constants';
 const routes: Routes = [
     {
         path: ADDON_MOD_IMSCP_PAGE_NAME,
-        loadChildren: () => [
+        children: [
             {
                 path: ':courseId/:cmId',
                 loadComponent: () => import('./pages/index/index'),

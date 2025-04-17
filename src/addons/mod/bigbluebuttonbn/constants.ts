@@ -12,11 +12,5 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { CORE_COURSE_MODULE_FEATURE_PREFIX } from '@features/course/constants';
-
-export const ADDON_MOD_BBB_COMPONENT = 'AddonModBBB';
-export const ADDON_MOD_BBB_COMPONENT_LEGACY = 'mmaModBigBlueButtonBN';
+export const ADDON_MOD_BBB_COMPONENT = 'mmaModBigBlueButtonBN';
 export const ADDON_MOD_BBB_PAGE_NAME = 'mod_bigbluebuttonbn';
-export const ADDON_MOD_BBB_MODNAME = 'bigbluebuttonbn';
-
-export const ADDON_MOD_BBB_FEATURE_NAME = CORE_COURSE_MODULE_FEATURE_PREFIX + ADDON_MOD_BBB_COMPONENT_LEGACY;

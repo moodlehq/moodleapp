@@ -23,7 +23,6 @@ import { CorePath } from '@singletons/path';
 import { AddonModDataEntryWSField } from './data';
 import { AddonModDataEntryDBRecord, DATA_ENTRY_TABLE } from './database/data';
 import { AddonModDataAction } from '../constants';
-import { CoreTime } from '@singletons/time';
 
 /**
  * Service to handle Offline data.
@@ -207,7 +206,7 @@ export class AddonModDataOfflineProvider {
     protected async getDatabaseFolder(dataId: number, siteId?: string): Promise<string> {
         const site = await CoreSites.getSite(siteId);
         const siteFolderPath = CoreFile.getSiteFolder(site.getId());
-        const folderPath = `offlinedatabase/${dataId}`;
+        const folderPath = 'offlinedatabase/' + dataId;
 
         return CorePath.concatenatePaths(siteFolderPath, folderPath);
     }
@@ -224,7 +223,7 @@ export class AddonModDataOfflineProvider {
     async getEntryFieldFolder(dataId: number, entryId: number, fieldId: number, siteId?: string): Promise<string> {
         const folderPath = await this.getDatabaseFolder(dataId, siteId);
 
-        return CorePath.concatenatePaths(folderPath, `${entryId}_${fieldId}`);
+        return CorePath.concatenatePaths(folderPath, entryId + '_' + fieldId);
     }
 
     /**
@@ -234,11 +233,8 @@ export class AddonModDataOfflineProvider {
      * @returns Record object with columns parsed.
      */
     protected parseRecord(record: AddonModDataEntryDBRecord): AddonModDataOfflineAction {
-        const timemodified = CoreTime.ensureSeconds(record.timemodified);
-
         return Object.assign(record, {
             fields: CoreText.parseJSON<AddonModDataEntryWSField[]>(record.fields),
-            timemodified,
         });
     }
 
@@ -267,7 +263,7 @@ export class AddonModDataOfflineProvider {
     ): Promise<AddonModDataEntryDBRecord> {
         const site = await CoreSites.getSite(siteId);
 
-        timemodified = timemodified || CoreTime.timestamp();
+        timemodified = timemodified || Date.now();
         entryId = entryId === undefined || entryId === null ? -timemodified : entryId;
 
         const entry: AddonModDataEntryDBRecord = {

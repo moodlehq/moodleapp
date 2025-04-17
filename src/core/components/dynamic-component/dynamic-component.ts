@@ -31,7 +31,7 @@ import {
 import { AsyncDirective } from '@classes/async-directive';
 import { CorePromisedValue } from '@classes/promised-value';
 
-import { CoreAngular } from '@singletons/angular';
+import { CoreDomUtils } from '@services/utils/dom';
 import { CoreLogger } from '@singletons/logger';
 
 /**
@@ -129,7 +129,7 @@ export class CoreDynamicComponent<ComponentClass> implements OnChanges, DoCheck,
         if (changes) {
             this.setInputData();
             if (this.instance.ngOnChanges) {
-                this.instance.ngOnChanges(CoreAngular.createChangesFromKeyValueDiff(changes));
+                this.instance.ngOnChanges(CoreDomUtils.createChangesFromKeyValueDiff(changes));
             }
         }
     }

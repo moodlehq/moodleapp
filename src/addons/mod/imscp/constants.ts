@@ -12,11 +12,5 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { CORE_COURSE_MODULE_FEATURE_PREFIX } from '@features/course/constants';
-
-export const ADDON_MOD_IMSCP_COMPONENT = 'AddonModImscp';
-export const ADDON_MOD_IMSCP_COMPONENT_LEGACY = 'mmaModImscp';
+export const ADDON_MOD_IMSCP_COMPONENT = 'mmaModImscp';
 export const ADDON_MOD_IMSCP_PAGE_NAME = 'mod_imscp';
-export const ADDON_MOD_IMSCP_MODNAME = 'imscp';
-
-export const ADDON_MOD_IMSCP_FEATURE_NAME = CORE_COURSE_MODULE_FEATURE_PREFIX + ADDON_MOD_IMSCP_COMPONENT;

@@ -90,7 +90,7 @@ export class CoreTabsOutletComponent extends CoreTabsBaseComponent<CoreTabsOutle
      * @returns Tab with enabled and id.
      */
     protected static formatTab(tab: CoreTabsOutletTab): CoreTabsOutletTabWithId {
-        tab.id = tab.id || `core-tab-outlet-${CoreUtils.getUniqueId('CoreTabsOutletComponent')}`;
+        tab.id = tab.id || 'core-tab-outlet-' + CoreUtils.getUniqueId('CoreTabsOutletComponent');
         if (tab.enabled === undefined) {
             tab.enabled = true;
         }

@@ -20,7 +20,7 @@ import { CoreNavigator } from '@services/navigator';
 import { CoreSitesReadingStrategy } from '@services/sites';
 import { CoreLoadings } from '@services/overlays/loadings';
 import { makeSingleton } from '@singletons';
-import { ADDON_MOD_FORUM_FEATURE_NAME, ADDON_MOD_FORUM_MODNAME, ADDON_MOD_FORUM_PAGE_NAME } from '../../constants';
+import { ADDON_MOD_FORUM_PAGE_NAME } from '../../constants';
 
 /**
  * Content links handler for forum new discussion.
@@ -30,7 +30,7 @@ import { ADDON_MOD_FORUM_FEATURE_NAME, ADDON_MOD_FORUM_MODNAME, ADDON_MOD_FORUM_
 export class AddonModForumPostLinkHandlerService extends CoreContentLinksHandlerBase {
 
     name = 'AddonModForumPostLinkHandler';
-    featureName = ADDON_MOD_FORUM_FEATURE_NAME;
+    featureName = 'CoreCourseModuleDelegate_AddonModForum';
     pattern = /\/mod\/forum\/post\.php.*([?&](forum)=\d+)/;
 
     /**
@@ -49,7 +49,7 @@ export class AddonModForumPostLinkHandlerService extends CoreContentLinksHandler
                 try {
                     const module = await CoreCourse.getModuleBasicInfoByInstance(
                         forumId,
-                        ADDON_MOD_FORUM_MODNAME,
+                        'forum',
                         { siteId, readingStrategy: CoreSitesReadingStrategy.PREFER_CACHE },
                     );
 

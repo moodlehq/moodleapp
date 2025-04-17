@@ -49,7 +49,7 @@ export class AddonModDataFieldRadiobuttonHandlerService implements AddonModDataF
         field: AddonModDataField,
         inputData: CoreFormFields<string>,
     ): AddonModDataSearchEntriesAdvancedFieldFormatted[] {
-        const fieldName = `f_${field.id}`;
+        const fieldName = 'f_' + field.id;
         if (inputData[fieldName]) {
             return [{
                 name: fieldName,
@@ -64,7 +64,7 @@ export class AddonModDataFieldRadiobuttonHandlerService implements AddonModDataF
      * @inheritdoc
      */
     getFieldEditData(field: AddonModDataField, inputData: CoreFormFields<string>): AddonModDataSubfieldData[] {
-        const fieldName = `f_${field.id}`;
+        const fieldName = 'f_' + field.id;
 
         return [{
             fieldid: field.id,
@@ -80,7 +80,7 @@ export class AddonModDataFieldRadiobuttonHandlerService implements AddonModDataF
         inputData: CoreFormFields<string>,
         originalFieldData: AddonModDataEntryField,
     ): boolean {
-        const fieldName = `f_${field.id}`;
+        const fieldName = 'f_' + field.id;
         const input = inputData[fieldName] || '';
         const content = originalFieldData?.content || '';
 

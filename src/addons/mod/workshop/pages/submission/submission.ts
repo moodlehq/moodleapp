@@ -22,7 +22,7 @@ import { CoreUser, CoreUserProfile } from '@features/user/services/user';
 import { CanLeave } from '@guards/can-leave';
 import { IonContent } from '@ionic/angular';
 import { CoreNavigator } from '@services/navigator';
-import { CoreSites, CoreSitesReadingStrategy } from '@services/sites';
+import { CoreSites } from '@services/sites';
 import { CoreSync } from '@services/sync';
 import { CoreText } from '@singletons/text';
 import { Translate } from '@singletons';
@@ -60,8 +60,6 @@ import { CoreEditorRichTextEditorComponent } from '@features/editor/components/r
 import { AddonModWorkshopAssessmentComponent } from '../../components/assessment/assessment';
 import { AddonModWorkshopSubmissionComponent } from '../../components/submission/submission';
 import { CoreSharedModule } from '@/core/shared.module';
-import { CoreNetwork } from '@services/network';
-import { CoreErrorHelper } from '@services/error-helper';
 
 /**
  * Page that displays a workshop submission.
@@ -108,7 +106,6 @@ export default class AddonModWorkshopSubmissionPage implements OnInit, OnDestroy
     evaluateByProfile?: CoreUserProfile;
     feedbackForm: FormGroup; // The form group.
     submissionId!: number;
-    loadFeedbackToEditErrorMessage?: string;
 
     protected workshopId!: number;
     protected currentUserId: number;
@@ -215,7 +212,7 @@ export default class AddonModWorkshopSubmissionPage implements OnInit, OnDestroy
             access: this.access,
         };
 
-        CoreNavigator.navigate(`${this.submissionId}/edit`, params);
+        CoreNavigator.navigate(String(this.submissionId) + '/edit', params);
     }
 
     /**
@@ -240,11 +237,8 @@ export default class AddonModWorkshopSubmissionPage implements OnInit, OnDestroy
      */
     protected async fetchSubmissionData(): Promise<void> {
         try {
-            this.canAddFeedback = !this.assessmentId && AddonModWorkshopHelper.canAddFeedback(this.workshop, this.access);
-
             this.submission = await AddonModWorkshopHelper.getSubmissionById(this.workshopId, this.submissionId, {
                 cmId: this.module.id,
-                canEdit: this.userId === this.currentUserId && this.access.modifyingsubmissionallowed,
             });
 
             const promises: Promise<void>[] = [];
@@ -255,6 +249,9 @@ export default class AddonModWorkshopSubmissionPage implements OnInit, OnDestroy
             this.userId = this.submission.authorid || this.userId;
             this.canEdit = this.currentUserId == this.userId && this.access.cansubmit && this.access.modifyingsubmissionallowed;
             this.canDelete = this.access.candeletesubmissions;
+
+            this.canAddFeedback = !this.assessmentId && this.workshop.phase > AddonModWorkshopPhase.PHASE_ASSESSMENT &&
+                this.workshop.phase < AddonModWorkshopPhase.PHASE_CLOSED && this.access.canoverridegrades;
             this.ownAssessment = undefined;
 
             if (this.access.canviewallassessments) {
@@ -284,7 +281,6 @@ export default class AddonModWorkshopSubmissionPage implements OnInit, OnDestroy
                 // Get new data, different that came from stateParams.
                 promises.push(AddonModWorkshop.getAssessment(this.workshopId, this.assessmentId, {
                     cmId: this.module.id,
-                    canAssess: AddonModWorkshopHelper.canEditAssessments(this.workshop, this.access),
                 }).then((assessment) => {
                     // Only allow the student to delete their own submission if it's still editable and hasn't been assessed.
                     if (this.canDelete) {
@@ -313,7 +309,7 @@ export default class AddonModWorkshopSubmissionPage implements OnInit, OnDestroy
             if (this.canAddFeedback) {
                 if (!this.isDestroyed) {
                     // Block the workshop.
-                    CoreSync.blockOperation(ADDON_MOD_WORKSHOP_COMPONENT, this.workshopId);
+                    CoreSync.blockOperation(this.component, this.workshopId);
                 }
 
                 promises.push(this.fillEvaluationsGrades());
@@ -380,8 +376,6 @@ export default class AddonModWorkshopSubmissionPage implements OnInit, OnDestroy
         } catch {
             // Ignore errors.
             this.hasOffline = false;
-
-            await this.loadFeedbackToEdit();
         } finally {
             this.originalEvaluation.published = this.evaluate.published;
             this.originalEvaluation.text = this.evaluate.text;
@@ -390,31 +384,6 @@ export default class AddonModWorkshopSubmissionPage implements OnInit, OnDestroy
             this.feedbackForm.controls['published'].setValue(this.evaluate.published);
             this.feedbackForm.controls['grade'].setValue(this.evaluate.grade.value);
             this.feedbackForm.controls['text'].setValue(this.evaluate.text);
-        }
-    }
-
-    /**
-     * Load submission feedback to edit it (for teachers).
-     */
-    protected async loadFeedbackToEdit(): Promise<void> {
-        if (!this.workshop || !this.evaluate) {
-            return;
-        }
-
-        try {
-            // Retrieve the unfiltered evaluate text to edit it.
-            const submission = await AddonModWorkshopHelper.getSubmissionById(this.workshopId, this.submissionId, {
-                cmId: this.module.id,
-                filter: false,
-                readingStrategy: CoreSitesReadingStrategy.ONLY_NETWORK,
-            });
-
-            this.evaluate.text = submission.feedbackauthor || '';
-            this.loadFeedbackToEditErrorMessage = undefined;
-        } catch (error) {
-            this.loadFeedbackToEditErrorMessage = !CoreNetwork.isOnline() ?
-                Translate.instant('core.notavailableoffline') :
-                CoreErrorHelper.getErrorMessageFromError(error) || Translate.instant('core.networkerrormsg');
         }
     }
 
@@ -679,7 +648,7 @@ export default class AddonModWorkshopSubmissionPage implements OnInit, OnDestroy
         this.syncObserver?.off();
         this.obsAssessmentSaved?.off();
         // Restore original back functions.
-        CoreSync.unblockOperation(ADDON_MOD_WORKSHOP_COMPONENT, this.workshopId);
+        CoreSync.unblockOperation(this.component, this.workshopId);
     }
 
 }

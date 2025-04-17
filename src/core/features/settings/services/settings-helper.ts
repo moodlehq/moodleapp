@@ -24,7 +24,7 @@ import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreConstants } from '@/core/constants';
 import { CoreConfig } from '@services/config';
 import { CoreFilter } from '@features/filter/services/filter';
-import { CoreCourseDownloadStatusHelper } from '@features/course/services/course-download-status-helper';
+import { CoreCourse } from '@features/course/services/course';
 import { makeSingleton, Translate } from '@singletons';
 import { CoreError } from '@classes/errors/error';
 import { Observable, Subject } from 'rxjs';
@@ -139,7 +139,7 @@ export class CoreSettingsHelperProvider {
         promises.push(site.deleteFolder().then(() => {
             CoreFilepool.clearAllPackagesStatus(siteId);
             CoreFilepool.clearFilepool(siteId);
-            CoreCourseDownloadStatusHelper.clearAllCoursesStatus(siteId);
+            CoreCourse.clearAllCoursesStatus(siteId);
 
             siteInfo.spaceUsage = 0;
 
@@ -183,8 +183,8 @@ export class CoreSettingsHelperProvider {
             spaceUsage: 0,
         };
 
-        siteInfo.cacheEntries = await CorePromiseUtils.ignoreErrors(this.calcSiteClearRows(site), 0);
-        siteInfo.spaceUsage = await CorePromiseUtils.ignoreErrors(site.getTotalUsage(), 0);
+        siteInfo.cacheEntries = await this.calcSiteClearRows(site);
+        siteInfo.spaceUsage = await site.getTotalUsage();
 
         return siteInfo;
     }
@@ -385,7 +385,7 @@ export class CoreSettingsHelperProvider {
     applyZoomLevel(zoomLevel: CoreZoomLevel): void {
         const zoom = CoreConstants.CONFIG.zoomlevels[zoomLevel];
 
-        document.documentElement.style.setProperty('--zoom-level', `${zoom}%`);
+        document.documentElement.style.setProperty('--zoom-level', zoom + '%');
     }
 
     /**
@@ -517,17 +517,6 @@ export class CoreSettingsHelperProvider {
 
         await CoreNavigator.navigate('/');
         window.location.reload();
-    }
-
-    /**
-     * Check if rich text editor is enabled.
-     *
-     * @returns Promise resolved with boolean: true if enabled, false otherwise.
-     */
-    async isRichTextEditorEnabled(): Promise<boolean> {
-        const enabled = await CoreConfig.get(CoreConstants.SETTINGS_RICH_TEXT_EDITOR, true);
-
-        return !!enabled;
     }
 
 }

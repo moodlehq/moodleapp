@@ -36,7 +36,7 @@ export class CoreCronDelegateService {
 
     // Constants.
     static readonly DEFAULT_INTERVAL = 3600000; // Default interval is 1 hour.
-    static readonly MIN_INTERVAL = 240000; // Minimum interval is 4 minutes.
+    static readonly MIN_INTERVAL = 300000; // Minimum interval is 5 minutes.
     static readonly MAX_TIME_PROCESS = 120000; // Max time a process can block the queue. Defaults to 2 minutes.
 
     protected logger: CoreLogger;
@@ -80,7 +80,7 @@ export class CoreCronDelegateService {
             this.logger.debug(`Cannot execute cron job because is invalid: ${name}`);
 
             throw new CoreError(
-                `${Translate.instant('core.errorsomethingwrong')}<br>${Translate.instant('core.errorsitesupport')}`,
+                Translate.instant('core.errorsomethingwrong') + '<br>' + Translate.instant('core.errorsitesupport'),
             );
         }
 
@@ -141,7 +141,7 @@ export class CoreCronDelegateService {
      * @returns Promise resolved when the handler finishes or reaches max time, rejected if it fails.
      */
     protected async executeHandler(name: string, force?: boolean, siteId?: string): Promise<void> {
-        this.logger.debug(`Executing handler: ${name}`);
+        this.logger.debug('Executing handler: ' + name);
 
         try {
             // Wrap the call in Promise.resolve to make sure it's a promise.
@@ -233,7 +233,7 @@ export class CoreCronDelegateService {
      * @returns Handler's last execution ID.
      */
     protected getHandlerLastExecutionId(name: string): string {
-        return `last_execution_${name}`;
+        return 'last_execution_' + name;
     }
 
     /**
@@ -478,7 +478,6 @@ export interface CoreCronHandler {
 
     /**
      * Returns handler's interval in milliseconds. Defaults to CoreCronDelegateService.DEFAULT_INTERVAL.
-     * The minumum interval is CoreCronDelegateService.MIN_INTERVAL (4 minutes).
      *
      * @returns Interval time (in milliseconds).
      */

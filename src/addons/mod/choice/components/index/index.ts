@@ -18,7 +18,7 @@ import { CoreCourseModuleMainActivityComponent } from '@features/course/classes/
 import CoreCourseContentsPage from '@features/course/pages/contents/contents';
 import { IonContent } from '@ionic/angular';
 import { CoreSites } from '@services/sites';
-import { CoreTime } from '@singletons/time';
+import { CoreTimeUtils } from '@services/utils/time';
 import { Translate } from '@singletons';
 import { CoreEvents } from '@singletons/events';
 import {
@@ -33,9 +33,10 @@ import {
     AddonModChoiceSync,
     AddonModChoiceSyncResult,
 } from '../../services/choice-sync';
+import { AddonModChoicePrefetchHandler } from '../../services/handlers/prefetch';
 import {
     ADDON_MOD_CHOICE_AUTO_SYNCED,
-    ADDON_MOD_CHOICE_COMPONENT_LEGACY,
+    ADDON_MOD_CHOICE_COMPONENT,
     ADDON_MOD_CHOICE_PUBLISH_ANONYMOUS,
     AddonModChoiceShowResults,
 } from '../../constants';
@@ -44,7 +45,6 @@ import { CoreAlerts } from '@services/overlays/alerts';
 import { CoreSharedModule } from '@/core/shared.module';
 import { CoreCourseModuleNavigationComponent } from '@features/course/components/module-navigation/module-navigation';
 import { CoreCourseModuleInfoComponent } from '@features/course/components/module-info/module-info';
-import { CoreGroupInfo, CoreGroups } from '@services/groups';
 
 /**
  * Component that displays a choice.
@@ -61,7 +61,7 @@ import { CoreGroupInfo, CoreGroups } from '@services/groups';
 })
 export class AddonModChoiceIndexComponent extends CoreCourseModuleMainActivityComponent implements OnInit {
 
-    component = ADDON_MOD_CHOICE_COMPONENT_LEGACY;
+    component = ADDON_MOD_CHOICE_COMPONENT;
     pluginName = 'choice';
 
     choice?: AddonModChoiceChoice;
@@ -72,20 +72,15 @@ export class AddonModChoiceIndexComponent extends CoreCourseModuleMainActivityCo
     canEdit = false;
     canDelete = false;
     canSeeResults = false;
-    showResultsLoading = true;
     data: number[] = [];
     labels: string[] = [];
     results: AddonModChoiceResultFormatted[] = [];
     publishInfo?: string; // Message explaining the user what will happen with his choices.
 
-    groupsSupported = false;
-    groupId = 0;
-    groupInfo?: CoreGroupInfo;
-
     protected userId?: number;
     protected syncEventName = ADDON_MOD_CHOICE_AUTO_SYNCED;
     protected hasAnsweredOnline = false;
-    protected now = CoreTime.timestamp();
+    protected now = CoreTimeUtils.timestamp();
 
     constructor(
         protected content?: IonContent,
@@ -102,11 +97,7 @@ export class AddonModChoiceIndexComponent extends CoreCourseModuleMainActivityCo
 
         this.userId = CoreSites.getCurrentSiteUserId();
 
-        try {
-            await this.loadContent(false, true);
-        } finally {
-            this.showResultsLoading = false;
-        }
+        await this.loadContent(false, true);
     }
 
     /**
@@ -142,7 +133,7 @@ export class AddonModChoiceIndexComponent extends CoreCourseModuleMainActivityCo
      * @inheritdoc
      */
     protected async fetchContent(refresh?: boolean, sync = false, showErrors = false): Promise<void> {
-        this.now = CoreTime.timestamp();
+        this.now = CoreTimeUtils.timestamp();
 
         this.choice = await AddonModChoice.getChoice(this.courseId, this.module.id);
 
@@ -166,7 +157,7 @@ export class AddonModChoiceIndexComponent extends CoreCourseModuleMainActivityCo
         // We need fetchOptions to finish before calling fetchResults because it needs hasAnsweredOnline variable.
         await this.fetchOptions(this.choice);
 
-        await this.fetchGroupsAndResults(this.choice);
+        await this.fetchResults(this.choice);
     }
 
     /**
@@ -316,32 +307,10 @@ export class AddonModChoiceIndexComponent extends CoreCourseModuleMainActivityCo
     }
 
     /**
-     * Fetch group info if needed and choice results.
-     *
-     * @param choice Choice instance.
-     */
-    protected async fetchGroupsAndResults(choice: AddonModChoiceChoice): Promise<void> {
-        if (!AddonModChoice.choiceHasBeenOpened(choice, this.now)) {
-            // Cannot see results yet.
-            this.canSeeResults = false;
-
-            return;
-        }
-
-        this.groupsSupported = await AddonModChoice.areGroupsSupported();
-        if (this.groupsSupported) {
-            this.groupInfo = await CoreGroups.getActivityGroupInfo(this.module.id, false);
-
-            this.groupId = CoreGroups.validateGroupId(this.groupId, this.groupInfo);
-        }
-
-        await this.fetchResults(choice);
-    }
-
-    /**
      * Convenience function to get choice results.
      *
      * @param choice Choice.
+     * @returns Resolved when done.
      */
     protected async fetchResults(choice: AddonModChoiceChoice): Promise<void> {
         if (!AddonModChoice.choiceHasBeenOpened(choice, this.now)) {
@@ -351,10 +320,7 @@ export class AddonModChoiceIndexComponent extends CoreCourseModuleMainActivityCo
             return;
         }
 
-        const results = await AddonModChoice.getResults(choice.id, {
-            cmId: this.module.id,
-            groupId: this.groupId,
-        });
+        const results = await AddonModChoice.getResults(choice.id, { cmId: this.module.id });
 
         let hasVotes = false;
         this.data = [];
@@ -497,7 +463,7 @@ export class AddonModChoiceIndexComponent extends CoreCourseModuleMainActivityCo
 
         try {
             // The choice is downloaded, update the data.
-            await AddonModChoiceSync.prefetchModuleAfterUpdate(this.module, this.courseId);
+            await AddonModChoiceSync.prefetchAfterUpdate(AddonModChoicePrefetchHandler.instance, this.module, this.courseId);
 
             // Update the view.
             this.showLoadingAndFetch(false, false);
@@ -525,27 +491,6 @@ export class AddonModChoiceIndexComponent extends CoreCourseModuleMainActivityCo
         }
 
         return AddonModChoiceSync.syncChoice(this.choice.id, this.userId);
-    }
-
-    /**
-     * Group changed, reload some data.
-     *
-     * @returns Promise resolved when done.
-     */
-    async groupChanged(): Promise<void> {
-        if (!this.choice) {
-            return;
-        }
-
-        this.showResultsLoading = true;
-
-        try {
-            await this.fetchResults(this.choice);
-        } catch (error) {
-            CoreAlerts.showError(error);
-        } finally {
-            this.showResultsLoading = false;
-        }
     }
 
 }

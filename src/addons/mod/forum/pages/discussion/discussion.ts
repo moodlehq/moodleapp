@@ -52,7 +52,7 @@ import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 import {
     ADDON_MOD_FORUM_AUTO_SYNCED,
     ADDON_MOD_FORUM_CHANGE_DISCUSSION_EVENT,
-    ADDON_MOD_FORUM_COMPONENT_LEGACY,
+    ADDON_MOD_FORUM_COMPONENT,
     ADDON_MOD_FORUM_MANUAL_SYNCED,
     ADDON_MOD_FORUM_MARK_READ_EVENT,
     ADDON_MOD_FORUM_REPLY_DISCUSSION_EVENT,
@@ -121,7 +121,7 @@ export default class AddonModForumDiscussionPage implements OnInit, AfterViewIni
     refreshIcon = CoreConstants.ICON_LOADING;
     syncIcon = CoreConstants.ICON_LOADING;
     discussionStr = '';
-    component = ADDON_MOD_FORUM_COMPONENT_LEGACY;
+    component = ADDON_MOD_FORUM_COMPONENT;
     cmId?: number;
     canPin = false;
     availabilityMessage: string | null = null;
@@ -215,7 +215,7 @@ export default class AddonModForumDiscussionPage implements OnInit, AfterViewIni
             // Scroll to the post.
             CoreDom.scrollToElement(
                 this.elementRef.nativeElement,
-                `#addon-mod_forum-post-${scrollTo}`,
+                '#addon-mod_forum-post-' + scrollTo,
             );
         }
     }

@@ -16,7 +16,7 @@ import { Injectable } from '@angular/core';
 import { CoreSites } from '@services/sites';
 import { CoreFormFields } from '@singletons/form';
 import { CoreText } from '@singletons/text';
-import { CoreTime } from '@singletons/time';
+import { CoreTimeUtils } from '@services/utils/time';
 import { CoreObject } from '@singletons/object';
 import { makeSingleton } from '@singletons';
 import {
@@ -116,7 +116,7 @@ export class AddonModLessonOfflineProvider {
 
         entry.finished = finished ? 1 : 0;
         entry.outoftime = outOfTime ? 1 : 0;
-        entry.timemodified = CoreTime.timestamp();
+        entry.timemodified = CoreTimeUtils.timestamp();
 
         await site.getDb().insertRecord(RETAKES_TABLE_NAME, entry);
     }
@@ -504,7 +504,7 @@ export class AddonModLessonOfflineProvider {
             lessonid: lessonId,
             retake: retake,
             pageid: page.id,
-            timemodified: CoreTime.timestamp(),
+            timemodified: CoreTimeUtils.timestamp(),
             courseid: courseId,
             data: data ? JSON.stringify(data) : null,
             type: page.type,
@@ -545,7 +545,7 @@ export class AddonModLessonOfflineProvider {
         const entry = await this.getRetakeWithFallback(lessonId, courseId, retake, site.id);
 
         entry.lastquestionpage = lastPage;
-        entry.timemodified = CoreTime.timestamp();
+        entry.timemodified = CoreTimeUtils.timestamp();
 
         await site.getDb().insertRecord(RETAKES_TABLE_NAME, entry);
     }

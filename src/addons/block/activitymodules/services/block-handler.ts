@@ -14,6 +14,7 @@
 
 import { Injectable } from '@angular/core';
 import { CoreBlockHandlerData } from '@features/block/services/block-delegate';
+import { AddonBlockActivityModulesComponent } from '../components/activitymodules/activitymodules';
 import { CoreBlockBaseHandler } from '@features/block/classes/base-block-handler';
 import { makeSingleton } from '@singletons';
 
@@ -27,10 +28,11 @@ export class AddonBlockActivityModulesHandlerService extends CoreBlockBaseHandle
     blockName = 'activity_modules';
 
     /**
-     * @inheritdoc
+     * Returns the data needed to render the block.
+     *
+     * @returns Data or promise resolved with the data.
      */
-    async getDisplayData(): Promise<CoreBlockHandlerData> {
-        const { AddonBlockActivityModulesComponent } = await import('../components/activitymodules/activitymodules');
+    getDisplayData(): CoreBlockHandlerData {
 
         return {
             title: 'addon.block_activitymodules.pluginname',

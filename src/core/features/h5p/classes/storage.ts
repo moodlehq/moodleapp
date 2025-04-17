@@ -188,7 +188,7 @@ export class CoreH5PStorage {
             content.params = JSON.stringify(data.contentJsonData);
 
             // Save the content files in their right place in FS.
-            const destFolder = CorePath.concatenatePaths(CoreFileProvider.TMPFOLDER, `h5p/${folderName}`);
+            const destFolder = CorePath.concatenatePaths(CoreFileProvider.TMPFOLDER, 'h5p/' + folderName);
             const contentPath = CorePath.concatenatePaths(destFolder, 'content');
 
             // Save the content files before saving to DB, in case the app is closed while copying the files.

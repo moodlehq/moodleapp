@@ -41,16 +41,14 @@ import { CoreEvents } from '@singletons/events';
 import { makeSingleton } from '@singletons';
 import { effectWithInjectionContext, modelWithInjectionContext } from '@/core/utils/signals';
 
-// Import core services and exported directives/objects.
-import { CoreSharedModule } from '@/core/shared.module';
-import { getCoreDeprecatedComponents } from '@components/components.module';
+// Import core services.
 import { getCoreExportedObjects, getCoreServices } from '@/core/core.module';
-import { getBlockExportedDirectives, getBlockServices } from '@features/block/block.module';
+import { getBlockServices } from '@features/block/block.module';
 import { getCommentsServices } from '@features/comments/comments.module';
 import { getContentLinksExportedObjects, getContentLinksServices } from '@features/contentlinks/contentlinks.module';
-import { getCourseExportedObjects, getCourseServices, getCourseExportedDirectives } from '@features/course/course.module';
-import { getCoursesExportedDirectives, getCoursesExportedObjects, getCoursesServices } from '@features/courses/courses.module';
-import { getEditorExportedDirectives, getEditorServices } from '@features/editor/editor.module';
+import { getCourseExportedObjects, getCourseServices, getCourseStandaloneComponents } from '@features/course/course.module';
+import { getCoursesExportedObjects, getCoursesServices } from '@features/courses/courses.module';
+import { getEditorServices } from '@features/editor/editor.module';
 import { getEnrolServices } from '@features/enrol/enrol.module';
 import { getFileUploadedServices } from '@features/fileuploader/fileuploader.module';
 import { getFilterServices } from '@features/filter/filter.module';
@@ -60,23 +58,22 @@ import { getLoginServices } from '@features/login/login.module';
 import { getMainMenuExportedObjects, getMainMenuServices } from '@features/mainmenu/mainmenu.module';
 import { getNativeServices } from '@features/native/native.module';
 import { getPushNotificationsServices } from '@features/pushnotifications/pushnotifications.module';
-import { getQuestionExportedDirectives, getQuestionServices } from '@features/question/question.module';
+import { getQuestionServices } from '@features/question/question.module';
 import { getRatingServices } from '@features/rating/rating.module';
-import { getRemindersExportedDirectives, getRemindersServices } from '@features/reminders/reminders.module';
-import { getSearchExportedDirectives, getSearchServices } from '@features/search/search.module';
+import { getSearchServices } from '@features/search/search.module';
 import { getSettingsServices } from '@features/settings/settings.module';
 import { getSharedFilesServices } from '@features/sharedfiles/sharedfiles.module';
 import { getSiteHomeServices } from '@features/sitehome/sitehome.module';
 import { getStyleServices } from '@features/styles/styles.module';
 import { getTagServices } from '@features/tag/tag.module';
-import { getUsersExportedDirectives, getUsersServices } from '@features/user/user.module';
+import { getUsersServices } from '@features/user/user.module';
 import { getXAPIServices } from '@features/xapi/xapi.module';
 
 // Import other libraries and providers.
 import { DomSanitizer } from '@angular/platform-browser';
 import { FormBuilder, Validators } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
-import dayjs from 'dayjs';
+import moment from 'moment-timezone';
 import { Md5 } from 'ts-md5/dist/md5';
 
 // Import core classes that can be useful for site plugins.
@@ -91,10 +88,8 @@ import { CoreDom } from '@singletons/dom';
 import { CoreFileUtils } from '@singletons/file-utils';
 import { CoreForms } from '@singletons/form';
 import { CoreGeolocationError, CoreGeolocationErrorReason } from '@services/geolocation';
-import { CoreIframe } from '@singletons/iframe';
 import { CoreKeyboard } from '@singletons/keyboard';
 import { CoreMedia } from '@singletons/media';
-import { CoreMimetype } from '@singletons/mimetype';
 import { CoreNetwork } from '@services/network';
 import { CoreObject } from '@singletons/object';
 import { CoreOpener } from '@singletons/opener';
@@ -108,6 +103,17 @@ import { CoreUtils } from '@singletons/utils';
 import { CoreWait } from '@singletons/wait';
 import { CoreWindow } from '@singletons/window';
 import { getCoreErrorsExportedObjects } from '@classes/errors/errors';
+
+// Import all core modules that define components, directives and pipes.
+import { CoreSharedModule } from '@/core/shared.module';
+import { CoreCourseComponentsModule } from '@features/course/components/components.module';
+import { CoreCourseDirectivesModule } from '@features/course/directives/directives.module';
+import { CoreCoursesComponentsModule } from '@features/courses/components/components.module';
+import { CoreUserComponentsModule } from '@features/user/components/components.module';
+import { CoreQuestionComponentsModule } from '@features/question/components/components.module';
+import { CoreBlockComponentsModule } from '@features/block/components/components.module';
+import { CoreEditorComponentsModule } from '@features/editor/components/components.module';
+import { CoreSearchComponentsModule } from '@features/search/components/components.module';
 
 // Import addon providers. Do not import database module because it causes circular dependencies.
 import { getBadgesServices } from '@addons/badges/badges.module';
@@ -123,13 +129,16 @@ import { getNotesServices } from '@addons/notes/notes.module';
 import { getNotificationsServices } from '@addons/notifications/notifications.module';
 import { getPrivateFilesServices } from '@addons/privatefiles/privatefiles.module';
 
+// Import standalone components used by site plugins.
+import { getCoreStandaloneComponents } from '@components/components.module';
+
 // Import some addon modules that define components, directives and pipes. Only import the important ones.
 import { CorePromisedValue } from '@classes/promised-value';
 import { CorePlatform } from '@services/platform';
 
 import { CoreAutoLogoutService } from '@features/autologout/services/autologout';
 import {
-    getSitePluginsExportedDirectives,
+    getSitePluginsDirectives,
     getSitePluginsExportedObjects,
     getSitePluginsServices,
 } from '@features/siteplugins/siteplugins.module';
@@ -152,19 +161,20 @@ export class CoreCompileProvider {
     // List of imports for dynamic module. Since the template can have any component we need to import all core components modules.
     protected readonly IMPORTS = [
         CoreSharedModule,
+        CoreCourseComponentsModule,
+        CoreCoursesComponentsModule,
+        CoreUserComponentsModule,
+        CoreCourseDirectivesModule,
+        CoreQuestionComponentsModule,
+        CoreBlockComponentsModule,
+        CoreEditorComponentsModule,
+        CoreSearchComponentsModule,
     ];
 
     protected readonly LAZY_IMPORTS = [
-        getBlockExportedDirectives,
-        getCoreDeprecatedComponents,
-        getCourseExportedDirectives,
-        getCoursesExportedDirectives,
-        getEditorExportedDirectives,
-        getQuestionExportedDirectives,
-        getRemindersExportedDirectives,
-        getSearchExportedDirectives,
-        getSitePluginsExportedDirectives,
-        getUsersExportedDirectives,
+        getCoreStandaloneComponents,
+        getCourseStandaloneComponents,
+        getSitePluginsDirectives,
     ];
 
     protected componentId = 0;
@@ -292,11 +302,7 @@ export class CoreCompileProvider {
         instance['Validators'] = Validators;
         instance['CoreEventsProvider'] = CoreEvents;
         instance['CoreLoggerProvider'] = CoreLogger;
-        /**
-         * @deprecated since 5.0, plugins should use native Date parsing functions instead.
-         * Also now it uses DayJS.tz.
-         */
-        instance['moment'] = dayjs.tz;
+        instance['moment'] = moment;
         instance['Md5'] = Md5;
         instance['signal'] = signal;
         instance['computed'] = computed;
@@ -317,10 +323,8 @@ export class CoreCompileProvider {
         instance['CoreDom'] = CoreDom;
         instance['CoreFileUtils'] = CoreFileUtils;
         instance['CoreForms'] = CoreForms;
-        instance['CoreIframe'] = CoreIframe;
         instance['CoreKeyboard'] = CoreKeyboard;
         instance['CoreMedia'] = CoreMedia;
-        instance['CoreMimetype'] = CoreMimetype;
         instance['CoreObject'] = CoreObject;
         instance['CoreOpener'] = CoreOpener;
         instance['CorePath'] = CorePath;
@@ -337,12 +341,8 @@ export class CoreCompileProvider {
         instance['CoreCache'] = CoreCache; // @deprecated since 4.4, plugins should use plain objects instead.
         instance['CoreDelegate'] = CoreDelegate;
         instance['CorePromisedValue'] = CorePromisedValue;
-
-        /**
-         * @deprecated since 5.0, geolocation is deprecated and will be removed in future versions.
-         */
-        instance['CoreGeolocationError'] = CoreGeolocationError; // eslint-disable-line deprecation/deprecation
-        instance['CoreGeolocationErrorReason'] = CoreGeolocationErrorReason; // eslint-disable-line deprecation/deprecation
+        instance['CoreGeolocationError'] = CoreGeolocationError;
+        instance['CoreGeolocationErrorReason'] = CoreGeolocationErrorReason;
 
         // Inject exported objects.
         for (const name in this.exportedObjects) {
@@ -408,7 +408,6 @@ export class CoreCompileProvider {
             getNotesServices(),
             getNotificationsServices(),
             getPrivateFilesServices(),
-            getRemindersServices(),
             getSitePluginsServices(),
         ]);
 

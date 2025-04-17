@@ -135,10 +135,7 @@ export class AddonModWorkshopAssessmentComponent implements OnInit {
                     params.submission = await AddonModWorkshopHelper.getSubmissionById(
                         this.workshop.id,
                         this.assessment.submissionid,
-                        {
-                            cmId: this.workshop.coursemodule,
-                            canEdit: this.assessment.reviewerid === this.currentUserId && this.access.modifyingsubmissionallowed,
-                        },
+                        { cmId: this.workshop.coursemodule },
                     );
 
                     CoreNavigator.navigate(String(this.assessmentId), { params });

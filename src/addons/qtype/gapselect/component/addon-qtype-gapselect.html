@@ -1,10 +1,8 @@
-@if (question && (question.text || question.text === '')) {
-    <ion-list class="addon-qtype-gapselect-container">
-        <ion-item class="ion-text-wrap">
-            <ion-label>
-                <core-format-text [component]="component" [componentId]="componentId" [text]="question.text" [contextLevel]="contextLevel"
-                    [contextInstanceId]="contextInstanceId" [courseId]="courseId" (afterRender)="questionRendered()" />
-            </ion-label>
-        </ion-item>
-    </ion-list>
-}
+<ion-list class="addon-qtype-gapselect-container" *ngIf="question && (question.text || question.text === '')">
+    <ion-item class="ion-text-wrap">
+        <ion-label>
+            <core-format-text [component]="component" [componentId]="componentId" [text]="question.text" [contextLevel]="contextLevel"
+                [contextInstanceId]="contextInstanceId" [courseId]="courseId" (afterRender)="questionRendered()" />
+        </ion-label>
+    </ion-item>
+</ion-list>

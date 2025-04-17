@@ -14,14 +14,14 @@
 
 import { Injectable, Type } from '@angular/core';
 
+import { CoreConstants, ModPurpose } from '@/core/constants';
 import { CoreCourseModuleHandler, CoreCourseModuleHandlerData } from '@features/course/services/module-delegate';
 import { CoreCourseModuleData } from '@features/course/services/course-helper';
 import { makeSingleton } from '@singletons';
 import { AddonModLtiHelper } from '../lti-helper';
 import { CoreModuleHandlerBase } from '@features/course/classes/module-base-handler';
-import { CoreCourseModuleHelper } from '@features/course/services/course-module-helper';
-import { ADDON_MOD_LTI_MODNAME, ADDON_MOD_LTI_PAGE_NAME } from '../../constants';
-import { ModFeature, ModPurpose } from '@addons/mod/constants';
+import { CoreCourse } from '@features/course/services/course';
+import { ADDON_MOD_LTI_PAGE_NAME } from '../../constants';
 
 /**
  * Handler to support LTI modules.
@@ -30,19 +30,19 @@ import { ModFeature, ModPurpose } from '@addons/mod/constants';
 export class AddonModLtiModuleHandlerService extends CoreModuleHandlerBase implements CoreCourseModuleHandler {
 
     name = 'AddonModLti';
-    modName = ADDON_MOD_LTI_MODNAME;
+    modName = 'lti';
     protected pageName = ADDON_MOD_LTI_PAGE_NAME;
 
     supportedFeatures = {
-        [ModFeature.GROUPS]: false,
-        [ModFeature.GROUPINGS]: false,
-        [ModFeature.MOD_INTRO]: true,
-        [ModFeature.COMPLETION_TRACKS_VIEWS]: true,
-        [ModFeature.GRADE_HAS_GRADE]: true,
-        [ModFeature.GRADE_OUTCOMES]: true,
-        [ModFeature.BACKUP_MOODLE2]: true,
-        [ModFeature.SHOW_DESCRIPTION]: true,
-        [ModFeature.MOD_PURPOSE]: ModPurpose.OTHER,
+        [CoreConstants.FEATURE_GROUPS]: false,
+        [CoreConstants.FEATURE_GROUPINGS]: false,
+        [CoreConstants.FEATURE_MOD_INTRO]: true,
+        [CoreConstants.FEATURE_COMPLETION_TRACKS_VIEWS]: true,
+        [CoreConstants.FEATURE_GRADE_HAS_GRADE]: true,
+        [CoreConstants.FEATURE_GRADE_OUTCOMES]: true,
+        [CoreConstants.FEATURE_BACKUP_MOODLE2]: true,
+        [CoreConstants.FEATURE_SHOW_DESCRIPTION]: true,
+        [CoreConstants.FEATURE_MOD_PURPOSE]: ModPurpose.MOD_PURPOSE_OTHER,
     };
 
     /**
@@ -63,7 +63,7 @@ export class AddonModLtiModuleHandlerService extends CoreModuleHandlerBase imple
                 // Launch the LTI.
                 AddonModLtiHelper.getDataAndLaunch(courseId, module);
 
-                CoreCourseModuleHelper.storeModuleViewed(courseId, module.id);
+                CoreCourse.storeModuleViewed(courseId, module.id);
             },
         };
 
@@ -83,7 +83,7 @@ export class AddonModLtiModuleHandlerService extends CoreModuleHandlerBase imple
      * @inheritdoc
      */
     getIconSrc(module?: CoreCourseModuleData | undefined, modicon?: string | undefined): string | undefined {
-        return module?.modicon ?? modicon ?? CoreCourseModuleHelper.getModuleIconSrc(this.modName);
+        return module?.modicon ?? modicon ?? CoreCourse.getModuleIconSrc(this.modName);
     }
 
 }

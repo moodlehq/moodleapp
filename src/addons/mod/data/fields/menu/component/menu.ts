@@ -47,7 +47,7 @@ export class AddonModDataFieldMenuComponent extends AddonModDataFieldPluginBaseC
             val = this.value.content;
         }
 
-        this.addControl(`f_${this.field.id}`, val);
+        this.addControl('f_' + this.field.id, val);
     }
 
 }

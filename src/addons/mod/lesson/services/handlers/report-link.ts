@@ -20,7 +20,7 @@ import { CoreCourse } from '@features/course/services/course';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSitesReadingStrategy } from '@services/sites';
 import { makeSingleton } from '@singletons';
-import { ADDON_MOD_LESSON_FEATURE_NAME, ADDON_MOD_LESSON_PAGE_NAME } from '../../constants';
+import { ADDON_MOD_LESSON_PAGE_NAME } from '../../constants';
 import { CoreLoadings } from '@services/overlays/loadings';
 import { CoreAlerts } from '@services/overlays/alerts';
 
@@ -31,7 +31,7 @@ import { CoreAlerts } from '@services/overlays/alerts';
 export class AddonModLessonReportLinkHandlerService extends CoreContentLinksHandlerBase {
 
     name = 'AddonModLessonReportLinkHandler';
-    featureName = ADDON_MOD_LESSON_FEATURE_NAME;
+    featureName = 'CoreCourseModuleDelegate_AddonModLesson';
     pattern = /\/mod\/lesson\/report\.php.*([&?]id=\d+)/;
 
     /**
@@ -142,11 +142,11 @@ export class AddonModLessonReportLinkHandlerService extends CoreContentLinksHand
                 { siteId, readingStrategy: CoreSitesReadingStrategy.PREFER_CACHE },
             );
             const params = {
-                retake: retake ?? 0,
+                retake: retake || 0,
             };
 
             CoreNavigator.navigateToSitePath(
-                `${ADDON_MOD_LESSON_PAGE_NAME}/${module.course}/${module.id}/user-retake/${userId}`,
+                ADDON_MOD_LESSON_PAGE_NAME + `/${module.course}/${module.id}/user-retake/${userId}`,
                 { params, siteId },
             );
         } catch (error) {

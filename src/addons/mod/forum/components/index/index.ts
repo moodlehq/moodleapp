@@ -53,7 +53,7 @@ import { CoreNavigator } from '@services/navigator';
 import {
     ADDON_MOD_FORUM_AUTO_SYNCED,
     ADDON_MOD_FORUM_CHANGE_DISCUSSION_EVENT,
-    ADDON_MOD_FORUM_COMPONENT_LEGACY,
+    ADDON_MOD_FORUM_COMPONENT,
     ADDON_MOD_FORUM_MANUAL_SYNCED,
     ADDON_MOD_FORUM_NEW_DISCUSSION_EVENT,
     ADDON_MOD_FORUM_PAGE_NAME,
@@ -89,7 +89,7 @@ export class AddonModForumIndexComponent extends CoreCourseModuleMainActivityCom
 
     @ViewChild(CoreSplitViewComponent) splitView!: CoreSplitViewComponent;
 
-    component = ADDON_MOD_FORUM_COMPONENT_LEGACY;
+    component = ADDON_MOD_FORUM_COMPONENT;
     pluginName = 'forum';
     descriptionNote?: string;
     promisedDiscussions: CorePromisedValue<AddonModForumDiscussionsManager>;
@@ -171,10 +171,6 @@ export class AddonModForumIndexComponent extends CoreCourseModuleMainActivityCom
 
     get errorLoadingDiscussions(): boolean {
         return !!this.discussions?.getSource().errorLoadingDiscussions;
-    }
-
-    get hasBlockingEnabled(): boolean {
-        return !!(this.forum?.blockafter && this.forum.blockperiod);
     }
 
     /**

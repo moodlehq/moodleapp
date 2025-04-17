@@ -129,7 +129,7 @@ export default class AddonModImscpViewPage implements OnInit {
 
             if (downloadResult?.failed) {
                 const error = CoreErrorHelper.getErrorMessageFromError(downloadResult.error) || downloadResult.error;
-                this.warning = Translate.instant('core.errordownloadingsomefiles') + (error ? ` ${error}` : '');
+                this.warning = Translate.instant('core.errordownloadingsomefiles') + (error ? ' ' + error : '');
             } else {
                 this.warning = '';
             }

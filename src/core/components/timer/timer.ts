@@ -16,7 +16,7 @@ import { toBoolean } from '@/core/transforms/boolean';
 import { Component, Input, Output, EventEmitter, OnInit, OnDestroy, ElementRef } from '@angular/core';
 import { CoreUser } from '@features/user/services/user';
 
-import { CoreTime } from '@singletons/time';
+import { CoreTimeUtils } from '@services/utils/time';
 import { CoreBaseModule } from '@/core/base.module';
 import { CoreSecondsToHMSPipe } from '@pipes/seconds-to-hms';
 
@@ -102,7 +102,7 @@ export class CoreTimerComponent implements OnInit, OnDestroy {
         // Check time left every 200ms.
         this.timeInterval = window.setInterval(() => {
             container = container || this.elementRef.nativeElement;
-            this.timeLeft = Math.max(endTime - CoreTime.timestamp(), 0);
+            this.timeLeft = Math.max(endTime - CoreTimeUtils.timestamp(), 0);
 
             if (this.timeLeft <= 100) {
                 this.hidable = false;
@@ -122,11 +122,11 @@ export class CoreTimerComponent implements OnInit, OnDestroy {
                 for (let i = 0; i < this.underTimeClassThresholds.length; i++) {
                     const threshold = this.underTimeClassThresholds[i];
                     if (this.timeLeft <= threshold) {
-                        if (!container.classList.contains(`core-timer-under-${this.timeLeft}`)) {
+                        if (!container.classList.contains('core-timer-under-' + this.timeLeft)) {
                             // Add new class and remove the previous one.
                             const nextTreshold = this.underTimeClassThresholds[i + 1];
-                            container.classList.add(`core-timer-under-${threshold}`);
-                            nextTreshold && container.classList.remove(`core-timer-under-${nextTreshold}`);
+                            container.classList.add('core-timer-under-' + threshold);
+                            nextTreshold && container.classList.remove('core-timer-under-' + nextTreshold);
                         }
 
                         break;

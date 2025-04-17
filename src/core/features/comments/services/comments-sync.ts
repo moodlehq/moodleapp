@@ -167,7 +167,7 @@ export class CoreCommentsSyncProvider extends CoreSyncBaseProvider<CoreCommentsS
             return currentSyncPromise;
         }
 
-        this.logger.debug(`Try to sync comments ${syncId} in site ${siteId}`);
+        this.logger.debug('Try to sync comments ' + syncId + ' in site ' + siteId);
 
         const syncPromise = this.performSyncComments(contextLevel, instanceId, component, itemId, area, siteId);
 
@@ -320,7 +320,7 @@ export class CoreCommentsSyncProvider extends CoreSyncBaseProvider<CoreCommentsS
         itemId: number,
         area: string = '',
     ): string {
-        return `${contextLevel}#${instanceId}#${component}#${itemId}#${area}`;
+        return contextLevel + '#' + instanceId + '#' + component + '#' + itemId + '#' + area;
     }
 
 }

@@ -18,11 +18,10 @@ import { Subject, BehaviorSubject } from 'rxjs';
 import { CoreDelegate, CoreDelegateHandler } from '@classes/delegate';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreEvents } from '@singletons/events';
-import { CoreUserProfile } from './user';
+import { CoreUserProfile, USER_PROFILE_REFRESHED } from './user';
 import { makeSingleton } from '@singletons';
 import { CoreCourses, CoreCourseUserAdminOrNavOptionIndexed } from '@features/courses/services/courses';
 import { CoreSites } from '@services/sites';
-import { CORE_USER_PROFILE_REFRESHED } from '../constants';
 
 export enum CoreUserProfileHandlerType {
     LIST_ITEM = 'listitem', // User profile handler type to be shown as a list item.
@@ -251,7 +250,7 @@ export class CoreUserDelegateService extends CoreDelegate<CoreUserProfileHandler
             this.clearHandlerCache();
         });
 
-        CoreEvents.on(CORE_USER_PROFILE_REFRESHED, (data) => {
+        CoreEvents.on(USER_PROFILE_REFRESHED, (data) => {
             const context = data.courseId ? CoreUserDelegateContext.COURSE : CoreUserDelegateContext.SITE;
             this.clearHandlerCache(data.userId, context, data.courseId);
         });
@@ -505,10 +504,10 @@ export class CoreUserDelegateService extends CoreDelegate<CoreUserProfileHandler
         const type = handler.type as string;
 
         // eslint-disable-next-line deprecation/deprecation
-        if (type === CoreUserDelegateService.TYPE_COMMUNICATION || type === CoreUserDelegateService.TYPE_ACTION) {
+        if (type == CoreUserDelegateService.TYPE_COMMUNICATION || type == CoreUserDelegateService.TYPE_ACTION) {
             handler.type = CoreUserProfileHandlerType.BUTTON;
         // eslint-disable-next-line deprecation/deprecation
-        } else if (type === CoreUserDelegateService.TYPE_NEW_PAGE) {
+        } else if (type == CoreUserDelegateService.TYPE_NEW_PAGE) {
             handler.type = CoreUserProfileHandlerType.LIST_ITEM;
 
         }

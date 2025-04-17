@@ -26,11 +26,12 @@ import {
     AddonCompetency,
     AddonCompetencyDataForPlanPageCompetency,
     AddonCompetencyDataForCourseCompetenciesPageCompetency,
+    AddonCompetencyProvider,
 } from '@addons/competency/services/competency';
 import { CoreNavigator } from '@services/navigator';
 import { ContextLevel } from '@/core/constants';
 import { CorePromiseUtils } from '@singletons/promise-utils';
-import { ADDON_COMPETENCY_SUMMARY_PAGE, AddonCompetencyLearningPlanStatus } from '@addons/competency/constants';
+import { ADDON_COMPETENCY_SUMMARY_PAGE } from '@addons/competency/constants';
 import { CoreSwipeNavigationItemsManager } from '@classes/items-management/swipe-navigation-items-manager';
 import { CoreRoutedItemsManagerSourcesTracker } from '@classes/items-management/routed-items-manager-sources-tracker';
 import { AddonCompetencyPlanCompetenciesSource } from '@addons/competency/classes/competency-plan-competencies-source';
@@ -57,7 +58,7 @@ export default class AddonCompetencyCompetencyPage implements OnInit, OnDestroy 
 
     competencyLoaded = false;
     competencies!: AddonCompetencyCompetenciesSwipeManager;
-    planStatus?: AddonCompetencyLearningPlanStatus;
+    planStatus?: number;
     coursemodules?: CoreCourseModuleSummary[];
     user?: CoreUserSummary;
     competency?: AddonCompetencyDataForUserCompetencySummaryWSResponse;
@@ -159,7 +160,7 @@ export default class AddonCompetencyCompetencyPage implements OnInit, OnDestroy 
 
             this.competency.evidence.forEach((evidence) => {
                 if (evidence.descidentifier) {
-                    const key = `addon.competency.${evidence.descidentifier}`;
+                    const key = 'addon.competency.' + evidence.descidentifier;
                     evidence.description = Translate.instant(key, { $a: evidence.desca });
                 }
             });
@@ -294,7 +295,7 @@ export default class AddonCompetencyCompetencyPage implements OnInit, OnDestroy 
                 AddonCompetency.logCompetencyInPlanView(source.PLAN_ID, compId, this.planStatus, name, userId),
             );
 
-            const wsName = this.planStatus === AddonCompetencyLearningPlanStatus.COMPLETE
+            const wsName = this.planStatus === AddonCompetencyProvider.STATUS_COMPLETE
                 ? 'core_competency_user_competency_plan_viewed'
                 : 'core_competency_user_competency_viewed_in_plan';
 

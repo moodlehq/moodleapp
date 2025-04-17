@@ -51,14 +51,13 @@
         <!-- List of files. -->
         <ion-list *ngIf="files && files.length > 0">
             <ng-container *ngFor="let file of files">
-                @if (file.isdir) {
-                    <ion-card>
-                        <ion-item button class="ion-text-wrap item-file item-directory" (click)="openFolder(file)" [detail]="true">
-                            <ion-icon name="fas-folder" slot="start" [attr.aria-label]="'core.folder' | translate" />
-                            <ion-label>{{file.filename}}</ion-label>
-                        </ion-item>
-                    </ion-card>
-                } @else {
+                <ion-item button *ngIf="file.isdir" class="ion-text-wrap item-file item-directory" (click)="openFolder(file)"
+                    [detail]="true">
+                    <ion-icon name="fas-folder" slot="start" [attr.aria-label]="'core.folder' | translate" />
+                    <ion-label>{{file.filename}}</ion-label>
+                </ion-item>
+
+                @if (!file.isdir) {
                     <addon-privatefiles-file [file]="file" [component]="component" [componentId]="file.contextid"
                         (onOpenMenuClick)="root === 'my' && openManagementFileMenu($event, file)"
                         (longPress)="canDeleteFiles && root === 'my' && enableMultipleSelection(file)"

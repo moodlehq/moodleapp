@@ -19,7 +19,7 @@ import { CoreCourse } from '@features/course/services/course';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSitesReadingStrategy } from '@services/sites';
 import { makeSingleton, Translate } from '@singletons';
-import { ADDON_MOD_GLOSSARY_FEATURE_NAME, ADDON_MOD_GLOSSARY_PAGE_NAME } from '../../constants';
+import { ADDON_MOD_GLOSSARY_PAGE_NAME } from '../../constants';
 import { CoreLoadings } from '@services/overlays/loadings';
 import { CoreAlerts } from '@services/overlays/alerts';
 
@@ -32,7 +32,7 @@ import { CoreAlerts } from '@services/overlays/alerts';
 export class AddonModGlossaryEditLinkHandlerService extends CoreContentLinksHandlerBase {
 
     name = 'AddonModGlossaryEditLinkHandler';
-    featureName = ADDON_MOD_GLOSSARY_FEATURE_NAME;
+    featureName = 'CoreCourseModuleDelegate_AddonModGlossary';
     pattern = /\/mod\/glossary\/edit\.php.*([?&](cmid)=\d+)/;
 
     /**

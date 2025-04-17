@@ -112,7 +112,8 @@ export default class CoreSettingsDeviceInfoPage implements OnDestroy {
         }
 
         if (window.screen) {
-            this.deviceInfo.screen = `${window.innerWidth}x${window.innerHeight} (${window.screen.width}x${window.screen.height})`;
+            this.deviceInfo.screen = window.innerWidth + 'x' + window.innerHeight +
+                ' (' + window.screen.width + 'x' + window.screen.height + ')';
         }
 
         if (CorePlatform.isMobile()) {
@@ -202,9 +203,11 @@ export default class CoreSettingsDeviceInfoPage implements OnDestroy {
         this.displaySiteUrl = !!this.deviceInfo.siteUrl &&
             (currentSite ?? CoreSitesFactory.makeUnauthenticatedSite(this.deviceInfo.siteUrl)).shouldDisplayInformativeLinks();
 
-        const basepath = await CoreFile.getBasePath();
-        this.deviceInfo.fileSystemRoot = basepath;
-        this.fsClickable = CoreFile.usesHTMLAPI();
+        if (CoreFile.isAvailable()) {
+            const basepath = await CoreFile.getBasePath();
+            this.deviceInfo.fileSystemRoot = basepath;
+            this.fsClickable = CoreFile.usesHTMLAPI();
+        }
 
         const showDevOptionsOnConfig = await CoreConfig.get('showDevOptions', 0);
         this.devOptionsForced = CoreConstants.enableDevTools();

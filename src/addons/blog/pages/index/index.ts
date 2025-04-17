@@ -230,16 +230,6 @@ export default class AddonBlogIndexPage implements OnInit, OnDestroy {
     }
 
     /**
-     * Whether an entry has offline data.
-     *
-     * @param entry Entry.
-     * @returns Whether it has offline data.
-     */
-    entryHasOfflineData(entry: AddonBlogPostFormatted | AddonBlogOfflinePostFormatted): boolean {
-        return !this.isOnlineEntry(entry) || !!entry.updatedOffline;
-    }
-
-    /**
      * Fetch blog entries.
      *
      * @param refresh Empty events array first.
@@ -486,7 +476,7 @@ export default class AddonBlogIndexPage implements OnInit, OnDestroy {
             case 'edit': {
                 await CoreNavigator.navigateToSitePath(`blog/edit/${this.isOnlineEntry(entry) && entry.id
                     ? entry.id
-                    : `new-${entry.created}`}`, {
+                    : 'new-' + entry.created}`, {
                         params: this.filter.cmid
                             ? { cmId: this.filter.cmid, filters: this.filter, lastModified: entry.lastmodified }
                             : { filters: this.filter, lastModified: entry.lastmodified },

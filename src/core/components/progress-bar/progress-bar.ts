@@ -56,10 +56,10 @@ export class CoreProgressBarComponent implements OnChanges {
     ngOnChanges(changes: { [name: string]: SimpleChange }): void {
         if (changes.color) {
             if (changes.color.previousValue) {
-                this.element.classList.remove('ion-color', `ion-color-${changes.color.previousValue}`);
+                this.element.classList.remove('ion-color', 'ion-color-' + changes.color.previousValue);
             }
             if (changes.color.currentValue) {
-                this.element.classList.add('ion-color', `ion-color-${changes.color.currentValue}`);
+                this.element.classList.add('ion-color', 'ion-color-' + changes.color.currentValue);
             }
         }
 
@@ -98,7 +98,7 @@ export class CoreProgressBarComponent implements OnChanges {
             this.text = Translate.instant('core.percentagenumber', { $a: this.progressNumber });
         }
 
-        this.width = DomSanitizer.bypassSecurityTrustStyle(`${this.progressNumber}%`);
+        this.width = DomSanitizer.bypassSecurityTrustStyle(this.progressNumber + '%');
     }
 
 }

@@ -5,10 +5,8 @@
         </ion-buttons>
         <ion-title>
             <h1>
-                @if (h5pActivity) {
-                    <core-format-text [text]="h5pActivity.name" contextLevel="module" [contextInstanceId]="h5pActivity.coursemodule"
-                        [courseId]="courseId" />
-                }
+                <core-format-text *ngIf="h5pActivity" [text]="h5pActivity.name" contextLevel="module"
+                    [contextInstanceId]="h5pActivity.coursemodule" [courseId]="courseId" />
             </h1>
         </ion-title>
     </ion-toolbar>
@@ -18,128 +16,56 @@
         <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}" />
     </ion-refresher>
     <core-loading [hideUntil]="loaded">
-        <h2 class="ion-margin">{{ 'addon.mod_h5pactivity.attempts_report' | translate }}</h2>
+        <ion-list *ngIf="users.length">
+            <!-- "Header" of the table -->
+            <ion-item class="addon-mod_h5pactivity-table-header hide-detail font-bold" [detail]="true">
+                <ion-label>
+                    <ion-row class="ion-align-items-center">
+                        <ion-col class="ion-text-center" size="4">{{ 'core.user' | translate }}</ion-col>
+                        <ion-col class="ion-text-center" size="4">{{ 'core.date' | translate }}</ion-col>
+                        <ion-col class="ion-text-center" size="2">{{ 'addon.mod_h5pactivity.score' | translate }}</ion-col>
+                        <ion-col class="ion-text-center" size="2">{{ 'addon.mod_h5pactivity.attempts' | translate }}</ion-col>
+                    </ion-row>
+                </ion-label>
+            </ion-item>
 
-        @if (users.length) {
-            @if (isTablet()) {
-                <ng-container *ngTemplateOutlet="usersTabletTemplate; context: { users }" />
-            } @else {
-                <ng-container *ngTemplateOutlet="usersMobileTemplate; context: { users }" />
-            }
-        }
+            <!-- List of users. -->
+            <ion-item class="ion-text-wrap addon-mod_h5pactivity-table-row" *ngFor="let user of users" [detail]="true"
+                [attr.aria-label]="'addon.mod_h5pactivity.review_user_attempts' | translate:{$a: user.attempts.length}"
+                (click)="openUser(user)" [class.hide-detail]="!user.attempts.length" [button]="user.attempts.length > 0">
+
+                <ion-label>
+                    <ion-row class="ion-align-items-center">
+                        <ion-col class="ion-text-center" size="4">
+                            <p>
+                                <core-user-avatar [user]="user.user" [courseId]="courseId" />
+                            </p>
+                            {{ user.user.fullname }}
+                        </ion-col>
+                        <ion-col class="ion-text-center" size="4">
+                            <span *ngIf="user.attempts.length">
+                                {{ user.attempts[user.attempts.length - 1].timemodified | coreFormatDate:'strftimedatetimeshort' }}
+                            </span>
+                            <span *ngIf="!user.attempts.length">-</span>
+                        </ion-col>
+                        <ion-col class="ion-text-center" size="2">
+                            <span *ngIf="user.score !== undefined">
+                                {{ 'core.percentagenumber' | translate: {$a: user.score} }}
+                            </span>
+                            <span *ngIf="user.score === undefined">-</span>
+                        </ion-col>
+                        <ion-col class="ion-text-center" size="2">
+                            {{user.attempts.length}}
+                        </ion-col>
+                    </ion-row>
+                </ion-label>
+            </ion-item>
+        </ion-list>
 
         <!-- No attempts. -->
-        @if (!users.length && !canLoadMore) {
-            <core-empty-box icon="fas-chart-bar" [message]="'addon.mod_h5pactivity.noparticipants' | translate" />
-        }
+        <core-empty-box *ngIf="!users.length && !canLoadMore" icon="fas-chart-bar"
+            [message]="'addon.mod_h5pactivity.noparticipants' | translate" />
 
         <core-infinite-loading [enabled]="loaded && canLoadMore" [error]="fetchMoreUsersFailed" (action)="fetchMoreUsers($event)" />
     </core-loading>
 </ion-content>
-
-<ng-template #usersMobileTemplate let-users="users">
-    <ion-list>
-        @for (user of users; track user.userid) {
-            <ion-item [detail]="true" (click)="openUser(user)" [class.item-dimmed]="!user.attempts.length"
-                [class.hide-detail]="!user.attempts.length" [button]="user.attempts.length > 0">
-
-                <core-user-avatar [user]="user.user" [courseId]="courseId" [linkProfile]="false" slot="start" />
-                <ion-label>
-                    <div class="flex-row ion-align-items-center">
-                        <div class="flex-column">
-                            <div class="item-heading">{{ user.user.fullname }}</div>
-                            @if (user.attempts.length > 0) {
-                                <small>
-                                    {{ 'addon.mod_h5pactivity.numberofattempts' | translate: {$a: user.attempts.length} }}
-                                </small>
-                            }
-                        </div>
-                        <small>
-                            @if (user.score !== undefined) {
-                                {{ 'core.percentagenumber' | translate: {$a: user.score} }}
-                            } @else {
-                                <span aria-hidden="true">&ndash;</span>
-                                <span class="sr-only">{{ 'core.none' | translate }}</span>
-                            }
-                        </small>
-                    </div>
-                </ion-label>
-            </ion-item>
-        }
-    </ion-list>
-</ng-template>
-
-<ng-template #usersTabletTemplate let-users="users">
-    <ion-grid role="grid">
-
-        <!-- Header of the table -->
-        <ion-row role="row" class="ion-align-items-center">
-            <ion-col role="columnheader" size="4">
-                {{ 'core.user' | translate }}
-            </ion-col>
-            <ion-col role="columnheader">
-                {{ 'addon.mod_h5pactivity.startdate' | translate }}
-            </ion-col>
-            <ion-col role="columnheader" class="ion-text-center">
-                {{ 'addon.mod_h5pactivity.score' | translate }}
-            </ion-col>
-            <ion-col role="columnheader" class="ion-text-center">
-                {{ 'addon.mod_h5pactivity.attempts' | translate }}
-                @if (totalAttempts) {
-                    ({{ totalAttempts }})
-                }
-            </ion-col>
-            <ion-col role="columnheader" size="auto">
-                <!-- Placeholder -->
-                <ion-icon name="fas-chevron-right" aria-hidden="true" class="invisible" />
-            </ion-col>
-        </ion-row>
-
-        <!-- List of users. -->
-        @for (user of users; track user.userid) {
-            <ion-row role="row" [attr.tappable]="user.attempts.length > 0" (click)="openUser(user)" class="ripple-parent"
-                [class.item-dimmed]="!user.attempts.length" [class.ion-activatable]="user.attempts.length">
-                <ion-col role="gridcell" size="4" class="flex-row">
-                    <core-user-avatar [user]="user.user" [courseId]="courseId" [linkProfile]="false" />
-                    <span>{{ user.user.fullname }}</span>
-                </ion-col>
-                <ion-col role="gridcell">
-                    @if (user.attempts.length > 0) {
-                        {{ user.attempts[user.attempts.length - 1].timemodified | coreFormatDate:'strftimedatetimeshort' }}
-                    } @else {
-                        <span aria-hidden="true">&ndash;</span>
-                        <span class="sr-only">{{ 'core.none' | translate }}</span>
-                    }
-                </ion-col>
-                <ion-col role="gridcell" class="ion-justify-content-center">
-                    @if (user.score !== undefined) {
-                        {{ 'core.percentagenumber' | translate: {$a: user.score} }}
-                    } @else {
-                        <span aria-hidden="true">&ndash;</span>
-                        <span class="sr-only">{{ 'core.none' | translate }}</span>
-                    }
-                </ion-col>
-                <ion-col role="gridcell" class="ion-justify-content-center">
-                    @if (user.attempts.length > 0) {
-                        {{ user.attempts.length }}
-                    } @else {
-                        <span aria-hidden="true">&ndash;</span>
-                        <span class="sr-only">{{ 'core.none' | translate }}</span>
-                    }
-                </ion-col>
-                <ion-col role="gridcell" size="auto">
-                    @if (user.attempts.length) {
-                        <span (ariaButtonClick)="openUser(user)">
-                            <ion-icon name="fas-chevron-right"
-                                [attr.aria-label]="'addon.mod_h5pactivity.review_user_attempts' | translate:{$a: user.attempts.length}" />
-                        </span>
-                    } @else {
-                        <!-- Placeholder -->
-                        <ion-icon name="fas-chevron-right" aria-hidden="true" class="invisible" />
-                    }
-                </ion-col>
-                <ion-ripple-effect />
-            </ion-row>
-        }
-    </ion-grid>
-</ng-template>

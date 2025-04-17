@@ -20,7 +20,6 @@ import { CoreUrl } from '@singletons/url';
 import { CoreUtils } from '@singletons/utils';
 import { makeSingleton } from '@singletons';
 import { AddonModFeedbackHelper } from '../feedback-helper';
-import { ADDON_MOD_FEEDBACK_FEATURE_NAME } from '../../constants';
 
 /**
  * Handler for feedback push notifications clicks.
@@ -30,7 +29,7 @@ export class AddonModFeedbackPushClickHandlerService implements CorePushNotifica
 
     name = 'AddonModFeedbackPushClickHandler';
     priority = 200;
-    featureName = ADDON_MOD_FEEDBACK_FEATURE_NAME;
+    featureName = 'CoreCourseModuleDelegate_AddonModFeedback';
 
     /**
      * @inheritdoc

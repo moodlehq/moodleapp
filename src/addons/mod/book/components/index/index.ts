@@ -19,7 +19,7 @@ import CoreCourseContentsPage from '@features/course/pages/contents/contents';
 import { CoreCourse } from '@features/course/services/course';
 import { CoreNavigator } from '@services/navigator';
 import { CorePromiseUtils } from '@singletons/promise-utils';
-import { ADDON_MOD_BOOK_MODNAME, ADDON_MOD_BOOK_PAGE_NAME, AddonModBookNumbering } from '../../constants';
+import { ADDON_MOD_BOOK_PAGE_NAME, AddonModBookNumbering } from '../../constants';
 import { CoreSharedModule } from '@/core/shared.module';
 import { CoreCourseModuleNavigationComponent } from '@features/course/components/module-navigation/module-navigation';
 import { CoreCourseModuleInfoComponent } from '@features/course/components/module-info/module-info';
@@ -39,7 +39,7 @@ import { CoreCourseModuleInfoComponent } from '@features/course/components/modul
 })
 export class AddonModBookIndexComponent extends CoreCourseModuleMainResourceComponent implements OnInit, OnDestroy {
 
-    pluginName = ADDON_MOD_BOOK_MODNAME;
+    pluginName = 'book';
     showNumbers = true;
     addPadding = true;
     showBullets = false;

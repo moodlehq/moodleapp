@@ -16,13 +16,19 @@ import { Injectable, SimpleChange, KeyValueChanges } from '@angular/core';
 import { IonContent } from '@ionic/angular';
 import { PopoverOptions, AlertOptions, AlertButton, TextFieldTypes } from '@ionic/core';
 
+import { CoreConfig } from '@services/config';
 import { CoreWSExternalWarning } from '@services/ws';
+import { CoreUrl, CoreUrlPartNames } from '@singletons/url';
+import { CoreConstants } from '@/core/constants';
 import { CoreIonLoadingElement } from '@classes/ion-loading';
 import { CoreAnyError, CoreError } from '@classes/errors/error';
 import { AlertController, makeSingleton, Translate } from '@singletons';
+import { CoreLogger } from '@singletons/logger';
 import { CoreFileSizeSum } from '@services/plugin-file-delegate';
+import { CorePlatform } from '@services/platform';
 import { CoreCancellablePromise } from '@classes/cancellable-promise';
 import { CorePasswordModalParams, CorePasswordModalResponse } from '@components/password-modal/password-modal';
+import { CoreKeyboard } from '@singletons/keyboard';
 import { CoreWait } from '@singletons/wait';
 import { CoreToasts, ToastDuration, ShowToastOptions } from '../overlays/toasts';
 import { CoreModals, OpenModalOptions } from '@services/overlays/modals';
@@ -32,20 +38,28 @@ import { CoreLoadings } from '@services/overlays/loadings';
 import { CoreErrorHelper, CoreErrorObject } from '@services/error-helper';
 import { convertTextToHTMLElement } from '@/core/utils/create-html-element';
 import { CoreHTMLClasses } from '@singletons/html-classes';
-import { CoreDom, VerticalPoint } from '@singletons/dom';
+import { CoreDom } from '@singletons/dom';
 import { CoreAlerts } from '@services/overlays/alerts';
 import { PromptButton } from '@services/overlays/prompts';
-import { CoreBoostrap } from '@singletons/bootstrap';
-import { CoreAngular } from '@singletons/angular';
-import { CoreSettingsHelper } from '@features/settings/services/settings-helper';
 
-/**
- * Utils service with helper functions for UI, DOM elements and HTML code.
- *
- * @deprecated since 5.0. Almost all functions have been moved to CoreDom, but check each function to see where it was moved.
+/*
+ * "Utils" service with helper functions for UI, DOM elements and HTML code.
  */
 @Injectable({ providedIn: 'root' })
 export class CoreDomUtilsProvider {
+
+    protected readonly INSTANCE_ID_ATTR_NAME = 'core-instance-id';
+
+    // List of input types that support keyboard.
+    protected readonly INPUT_SUPPORT_KEYBOARD: string[] = ['date', 'datetime', 'datetime-local', 'email', 'month', 'number',
+        'password', 'search', 'tel', 'text', 'time', 'url', 'week'];
+
+    protected matchesFunctionName?: string; // Name of the "matches" function to use when simulating a closest call.
+    protected logger: CoreLogger;
+
+    constructor() {
+        this.logger = CoreLogger.getInstance('CoreDomUtilsProvider');
+    }
 
     /**
      * If the download size is higher than a certain threshold shows a confirm dialog.
@@ -88,10 +102,24 @@ export class CoreDomUtilsProvider {
      *
      * @param changes Changes detected by KeyValueDiffer.
      * @returns Changes in a format like ngOnChanges.
-     * @deprecated since 5.0. Use CoreAngular.createChangesFromKeyValueDiff instead.
      */
     createChangesFromKeyValueDiff(changes: KeyValueChanges<string, unknown>): { [name: string]: SimpleChange } {
-        return CoreAngular.createChangesFromKeyValueDiff(changes);
+        const newChanges: { [name: string]: SimpleChange } = {};
+
+        // Added items are considered first change.
+        changes.forEachAddedItem((item) => {
+            newChanges[item.key] = new SimpleChange(item.previousValue, item.currentValue, true);
+        });
+
+        // Changed or removed items aren't first change.
+        changes.forEachChangedItem((item) => {
+            newChanges[item.key] = new SimpleChange(item.previousValue, item.currentValue, false);
+        });
+        changes.forEachRemovedItem((item) => {
+            newChanges[item.key] = new SimpleChange(item.previousValue, item.currentValue, true);
+        });
+
+        return newChanges;
     }
 
     /**
@@ -99,10 +127,25 @@ export class CoreDomUtilsProvider {
      *
      * @param code CSS code.
      * @returns List of URLs.
-     * @deprecated since 5.0. Use CoreDom.extractUrlsFromCSS instead.
      */
     extractUrlsFromCSS(code: string): string[] {
-        return CoreDom.extractUrlsFromCSS(code);
+        // First of all, search all the url(...) occurrences that don't include "data:".
+        const urls: string[] = [];
+        const matches = code.match(/url\(\s*["']?(?!data:)([^)]+)\)/igm);
+
+        if (!matches) {
+            return urls;
+        }
+
+        // Extract the URL from each match.
+        matches.forEach((match) => {
+            const submatches = match.match(/url\(\s*['"]?([^'"]*)['"]?\s*\)/im);
+            if (submatches?.[1]) {
+                urls.push(submatches[1]);
+            }
+        });
+
+        return urls;
     }
 
     /**
@@ -110,22 +153,87 @@ export class CoreDomUtilsProvider {
      *
      * @param html HTML text.
      * @returns Fixed HTML text.
-     * @deprecated since 5.0. Use CoreDom.fixHtml instead.
      */
     fixHtml(html: string): string {
-        return CoreDom.fixHtml(html);
+        // We can't use CoreText.processHTML because it removes elements that
+        // are not allowed as a child of <div>, like <li> or <tr>.
+        const template = document.createElement('template');
+        template.innerHTML = html;
+
+        // eslint-disable-next-line no-control-regex
+        const attrNameRegExp = /[^\x00-\x20\x7F-\x9F"'>/=]+/;
+        const fixElement = (element: Element): void => {
+            // Remove attributes with an invalid name.
+            Array.from(element.attributes).forEach((attr) => {
+                if (!attrNameRegExp.test(attr.name)) {
+                    element.removeAttributeNode(attr);
+                }
+            });
+
+            Array.from(element.children).forEach(fixElement);
+        };
+
+         Array.from(template.content.children).forEach(fixElement);
+
+         return template.innerHTML;
     }
 
     /**
      * Focus an element and open keyboard.
      *
      * @param element HTML element to focus.
-     * @deprecated since 5.0. Use CoreDom.focusElement instead.
      */
     async focusElement(
         element: HTMLIonInputElement | HTMLIonTextareaElement | HTMLIonSearchbarElement | HTMLIonButtonElement | HTMLElement,
     ): Promise<void> {
-        await CoreDom.focusElement(element);
+        let elementToFocus = element;
+
+        /**
+         * See focusElement function on Ionic Framework utils/helpers.ts.
+         */
+        if (elementToFocus.classList.contains('ion-focusable')) {
+            const app = elementToFocus.closest('ion-app');
+            if (app) {
+                app.setFocus([elementToFocus]);
+            }
+
+            if (document.activeElement === elementToFocus) {
+                return;
+            }
+        }
+
+        const isIonButton = element.tagName === 'ION-BUTTON';
+        if ('getInputElement' in elementToFocus) {
+            // If it's an Ionic element get the right input to use.
+            elementToFocus.componentOnReady && await elementToFocus.componentOnReady();
+            elementToFocus = await elementToFocus.getInputElement();
+        } else if (isIonButton) {
+            // For ion-button, we need to call focus on the inner button. But the activeElement will be the ion-button.
+            ('componentOnReady' in elementToFocus) && await elementToFocus.componentOnReady();
+            elementToFocus = elementToFocus.shadowRoot?.querySelector('.button-native') ?? elementToFocus;
+        }
+
+        if (!elementToFocus || !elementToFocus.focus) {
+            throw new CoreError('Element to focus cannot be focused');
+        }
+
+        let retries = 10;
+        while (retries > 0 && elementToFocus !== document.activeElement) {
+            elementToFocus.focus();
+
+            if (elementToFocus === document.activeElement || (isIonButton && element === document.activeElement)) {
+                await CoreWait.nextTick();
+                if (CorePlatform.isAndroid() && this.supportsInputKeyboard(elementToFocus)) {
+                    // On some Android versions the keyboard doesn't open automatically.
+                    CoreKeyboard.open();
+                }
+                break;
+            }
+
+            // @TODO Probably a Mutation Observer would get this working.
+            await CoreWait.wait(50);
+            retries--;
+        }
     }
 
     /**
@@ -147,10 +255,12 @@ export class CoreDomUtilsProvider {
      * @param element DOM element to search in.
      * @param selector Selector to search.
      * @returns Selection contents. Undefined if not found.
-     * @deprecated since 5.0. Use CoreDom.getContentsOfElement instead.
      */
     getContentsOfElement(element: HTMLElement, selector: string): string | undefined {
-        return CoreDom.getContentsOfElement(element, selector);
+        const selected = element.querySelector(selector);
+        if (selected) {
+            return selected.innerHTML;
+        }
     }
 
     /**
@@ -159,10 +269,9 @@ export class CoreDomUtilsProvider {
      * @param html HTML element in string.
      * @param attribute Attribute to get.
      * @returns Attribute value.
-     * @deprecated since 5.0. Use CoreDom.getHTMLElementAttribute instead.
      */
     getHTMLElementAttribute(html: string, attribute: string): string | null {
-        return CoreDom.getHTMLElementAttribute(html, attribute);
+        return convertTextToHTMLElement(html).children[0].getAttribute(attribute);
     }
 
     /**
@@ -171,10 +280,9 @@ export class CoreDomUtilsProvider {
      * @param style Style from getComputedStyle.
      * @param measure Measure to get.
      * @returns Result of the measure.
-     * @deprecated since 5.0. Use CoreDom.getComputedStyleMeasure instead.
      */
-    getComputedStyleMeasure(style: CSSStyleDeclaration, measure: keyof CSSStyleDeclaration): number {
-        return CoreDom.getComputedStyleMeasure(style, measure);
+    getComputedStyleMeasure(style: CSSStyleDeclaration, measure: string): number {
+        return parseInt(style[measure], 10) || 0;
     }
 
     /**
@@ -217,10 +325,41 @@ export class CoreDomUtilsProvider {
      * Handle bootstrap tooltips in a certain element.
      *
      * @param element Element to check.
-     * @deprecated since 5.0. Use CoreBoostrap.handleBootstrapTooltipsAndPopovers instead.
      */
     handleBootstrapTooltips(element: HTMLElement): void {
-        CoreBoostrap.handleBootstrapTooltipsAndPopovers(element);
+        const els = Array.from(element.querySelectorAll('[data-toggle="tooltip"]'));
+
+        els.forEach((el) => {
+            const content = el.getAttribute('title') || el.getAttribute('data-original-title');
+            const trigger = el.getAttribute('data-trigger') || 'hover focus';
+            const treated = el.getAttribute('data-bstooltip-treated');
+
+            if (!content || treated === 'true' ||
+                    (trigger.indexOf('hover') == -1 && trigger.indexOf('focus') == -1 && trigger.indexOf('click') == -1)) {
+                return;
+            }
+
+            el.setAttribute('data-bstooltip-treated', 'true'); // Mark it as treated.
+
+            // Store the title in data-original-title instead of title, like BS does.
+            el.setAttribute('data-original-title', content);
+            el.setAttribute('title', '');
+
+            el.addEventListener('click', async (ev: Event) => {
+                const html = el.getAttribute('data-html');
+
+                const { CoreBSTooltipComponent } = await import('@components/bs-tooltip/bs-tooltip');
+
+                await CorePopovers.openWithoutResult({
+                    component: CoreBSTooltipComponent,
+                    componentProps: {
+                        content,
+                        html: html === 'true',
+                    },
+                    event: ev,
+                });
+            });
+        });
     }
 
     /**
@@ -230,24 +369,48 @@ export class CoreDomUtilsProvider {
      * @param element DOM element to check.
      * @param point The point of the element to check.
      * @returns Whether the element is outside of the viewport.
-     * @deprecated since 5.0. Use CoreDom.isElementOutsideOfScreen instead.
      */
     isElementOutsideOfScreen(
         scrollEl: HTMLElement,
         element: HTMLElement,
         point: VerticalPoint = VerticalPoint.MID,
     ): boolean {
-        return CoreDom.isElementOutsideOfScreen(scrollEl, element, point);
+        const elementRect = element.getBoundingClientRect();
+
+        if (!elementRect) {
+            return false;
+        }
+
+        let elementPoint: number;
+        switch (point) {
+            case VerticalPoint.TOP:
+                elementPoint = elementRect.top;
+                break;
+
+            case VerticalPoint.BOTTOM:
+                elementPoint = elementRect.bottom;
+                break;
+
+            case VerticalPoint.MID:
+                elementPoint = Math.round((elementRect.bottom + elementRect.top) / 2);
+                break;
+        }
+
+        const scrollElRect = scrollEl.getBoundingClientRect();
+        const scrollTopPos = scrollElRect?.top || 0;
+
+        return elementPoint > window.innerHeight || elementPoint < scrollTopPos;
     }
 
     /**
      * Check if rich text editor is enabled.
      *
      * @returns Promise resolved with boolean: true if enabled, false otherwise.
-     * @deprecated since 5.0. Use CoreSettingsHelper.isRichTextEditorEnabled instead.
      */
     async isRichTextEditorEnabled(): Promise<boolean> {
-        return CoreSettingsHelper.isRichTextEditorEnabled();
+        const enabled = await CoreConfig.get(CoreConstants.SETTINGS_RICH_TEXT_EDITOR, true);
+
+        return !!enabled;
     }
 
     /**
@@ -257,10 +420,19 @@ export class CoreDomUtilsProvider {
      * @param newParent The new parent.
      * @param prepend If true, adds the children to the beginning of the new parent.
      * @returns List of moved children.
-     * @deprecated since 5.0. Use CoreDom.moveChildren instead.
      */
     moveChildren(oldParent: HTMLElement, newParent: HTMLElement, prepend?: boolean): Node[] {
-        return CoreDom.moveChildren(oldParent, newParent, prepend);
+        const movedChildren: Node[] = [];
+        const referenceNode = prepend ? newParent.firstChild : null;
+
+        while (oldParent.childNodes.length > 0) {
+            const child = oldParent.childNodes[0];
+            movedChildren.push(child);
+
+            newParent.insertBefore(child, referenceNode);
+        }
+
+        return movedChildren;
     }
 
     /**
@@ -268,10 +440,12 @@ export class CoreDomUtilsProvider {
      *
      * @param element DOM element to search in.
      * @param selector Selector to search.
-     * @deprecated since 5.0. Use CoreDom.removeElementFromElement instead.
      */
     removeElement(element: HTMLElement, selector: string): void {
-        CoreDom.removeElement(element, selector);
+        const selected = element.querySelector(selector);
+        if (selected) {
+            selected.remove();
+        }
     }
 
     /**
@@ -281,10 +455,23 @@ export class CoreDomUtilsProvider {
      * @param selector Selector to search.
      * @param removeAll True if it should remove all matches found, false if it should only remove the first one.
      * @returns HTML without the element.
-     * @deprecated since 5.0. Use CoreDom.removeElementFromHtml instead.
      */
     removeElementFromHtml(html: string, selector: string, removeAll?: boolean): string {
-        return CoreDom.removeElementFromHtml(html, selector, removeAll);
+        const element = convertTextToHTMLElement(html);
+
+        if (removeAll) {
+            const selected = element.querySelectorAll(selector);
+            for (let i = 0; i < selected.length; i++) {
+                selected[i].remove();
+            }
+        } else {
+            const selected = element.querySelector(selector);
+            if (selected) {
+                selected.remove();
+            }
+        }
+
+        return element.innerHTML;
     }
 
     /**
@@ -293,10 +480,16 @@ export class CoreDomUtilsProvider {
      * @param element DOM element.
      * @param map Mapping of the classes to replace. Keys must be the value to replace, values must be
      *            the new class name. Example: {'correct': 'core-question-answer-correct'}.
-     * @deprecated since 5.0. Use CoreDom.replaceClassesInElement instead.
      */
     replaceClassesInElement(element: HTMLElement, map: {[currentValue: string]: string}): void {
-        CoreDom.replaceClassesInElement(element, map);
+        for (const key in map) {
+            const foundElements = element.querySelectorAll('.' + key);
+
+            for (let i = 0; i < foundElements.length; i++) {
+                const foundElement = foundElements[i];
+                foundElement.className = foundElement.className.replace(key, map[key]);
+            }
+        }
     }
 
     /**
@@ -306,14 +499,60 @@ export class CoreDomUtilsProvider {
      * @param paths Object linking URLs in the html code with the real URLs to use.
      * @param anchorFn Function to call with each anchor. Optional.
      * @returns Treated HTML code.
-     * @deprecated since 5.0. Use CoreDom.restoreSourcesInHtml instead.
      */
     restoreSourcesInHtml(
         html: string,
         paths: {[url: string]: string},
         anchorFn?: (anchor: HTMLElement, href: string) => void,
     ): string {
-        return CoreDom.restoreSourcesInHtml(html, paths, anchorFn);
+        const element = convertTextToHTMLElement(html);
+
+        // Treat elements with src (img, audio, video, ...).
+        const media = Array.from(element.querySelectorAll<HTMLElement>('img, video, audio, source, track, iframe, embed'));
+        media.forEach((media: HTMLElement) => {
+            const currentSrc = media.getAttribute('src');
+            const newSrc = currentSrc ?
+                paths[CoreUrl.removeUrlParts(
+                    CoreUrl.decodeURIComponent(currentSrc),
+                    [CoreUrlPartNames.Query, CoreUrlPartNames.Fragment],
+                )] :
+                undefined;
+
+            if (newSrc !== undefined) {
+                media.setAttribute('src', newSrc);
+            }
+
+            // Treat video posters.
+            const currentPoster = media.getAttribute('poster');
+            if (media.tagName == 'VIDEO' && currentPoster) {
+                const newPoster = paths[CoreUrl.decodeURIComponent(currentPoster)];
+                if (newPoster !== undefined) {
+                    media.setAttribute('poster', newPoster);
+                }
+            }
+        });
+
+        // Now treat links.
+        const anchors = Array.from(element.querySelectorAll('a'));
+        anchors.forEach((anchor: HTMLElement) => {
+            const currentHref = anchor.getAttribute('href');
+            const newHref = currentHref ?
+                paths[CoreUrl.removeUrlParts(
+                    CoreUrl.decodeURIComponent(currentHref),
+                    [CoreUrlPartNames.Query, CoreUrlPartNames.Fragment],
+                )] :
+                undefined;
+
+            if (newHref !== undefined) {
+                anchor.setAttribute('href', newHref);
+
+                if (typeof anchorFn == 'function') {
+                    anchorFn(anchor, newHref);
+                }
+            }
+        });
+
+        return element.innerHTML;
     }
 
     /**
@@ -321,10 +560,15 @@ export class CoreDomUtilsProvider {
      *
      * @param content Content where to execute the function.
      * @returns Promise resolved with content height.
-     * @deprecated since 5.0. Use CoreDom.getContentHeight instead.
      */
     async getContentHeight(content: IonContent): Promise<number> {
-        return CoreDom.getContentHeight(content);
+        try {
+            const scrollElement = await content.getScrollElement();
+
+            return scrollElement.clientHeight || 0;
+        } catch {
+            return 0;
+        }
     }
 
     /**
@@ -332,10 +576,15 @@ export class CoreDomUtilsProvider {
      *
      * @param content Content where to execute the function.
      * @returns Promise resolved with scroll height.
-     * @deprecated since 5.0. Use CoreDom.getScrollHeight instead.
      */
     async getScrollHeight(content: IonContent): Promise<number> {
-        return CoreDom.getScrollHeight(content);
+        try {
+            const scrollElement = await content.getScrollElement();
+
+            return scrollElement.scrollHeight || 0;
+        } catch {
+            return 0;
+        }
     }
 
     /**
@@ -343,10 +592,15 @@ export class CoreDomUtilsProvider {
      *
      * @param content Content where to execute the function.
      * @returns Promise resolved with scroll top.
-     * @deprecated since 5.0. Use CoreDom.getScrollTop instead.
      */
     async getScrollTop(content: IonContent): Promise<number> {
-        return CoreDom.getScrollTop(content);
+        try {
+            const scrollElement = await content.getScrollElement();
+
+            return scrollElement.scrollTop || 0;
+        } catch {
+            return 0;
+        }
     }
 
     /**
@@ -665,10 +919,12 @@ export class CoreDomUtilsProvider {
      *
      * @param el HTML element to check.
      * @returns Whether it supports input using keyboard.
-     * @deprecated since 5.0. Use CoreDom.supportsInputKeyboard instead.
      */
     supportsInputKeyboard(el: HTMLElement): boolean {
-        return CoreDom.supportsInputKeyboard(el);
+        return el &&
+            !(<HTMLInputElement> el).disabled &&
+            (el.tagName.toLowerCase() == 'textarea' ||
+                (el.tagName.toLowerCase() == 'input' && this.INPUT_SUPPORT_KEYBOARD.indexOf((<HTMLInputElement> el).type) != -1));
     }
 
     /**
@@ -676,10 +932,11 @@ export class CoreDomUtilsProvider {
      *
      * @param text HTML text.
      * @returns Same text converted to HTMLCollection.
-     * @deprecated since 5.0. Use CoreDom.toDom instead.
      */
     toDom(text: string): HTMLCollection {
-        return CoreDom.toDom(text);
+        const element = convertTextToHTMLElement(text);
+
+        return element.children;
     }
 
     /**
@@ -772,10 +1029,63 @@ export class CoreDomUtilsProvider {
      *
      * @param element The element to search in.
      * @returns Promise resolved with a boolean: whether there was any image to load.
-     * @deprecated since 5.0. Use CoreWait.waitForImages instead.
      */
     waitForImages(element: HTMLElement): CoreCancellablePromise<boolean> {
-        return CoreWait.waitForImages(element);
+        const imgs = Array.from(element.querySelectorAll('img'));
+
+        if (imgs.length === 0) {
+            return CoreCancellablePromise.resolve(false);
+        }
+
+        let completedImages = 0;
+        let waitedForImages = false;
+        const listeners: WeakMap<Element, () => unknown> = new WeakMap();
+        const imageCompleted = (resolve: (result: boolean) => void) => {
+            completedImages++;
+
+            if (completedImages === imgs.length) {
+                resolve(waitedForImages);
+            }
+        };
+
+        return new CoreCancellablePromise<boolean>(
+            resolve => {
+                for (const img of imgs) {
+                    if (!img || img.complete) {
+                        imageCompleted(resolve);
+
+                        continue;
+                    }
+
+                    waitedForImages = true;
+
+                    // Wait for image to load or fail.
+                    const imgCompleted = (): void => {
+                        img.removeEventListener('load', imgCompleted);
+                        img.removeEventListener('error', imgCompleted);
+
+                        imageCompleted(resolve);
+                    };
+
+                    img.addEventListener('load', imgCompleted);
+                    img.addEventListener('error', imgCompleted);
+
+                    listeners.set(img, imgCompleted);
+                }
+            },
+            () => {
+                imgs.forEach(img => {
+                    const listener = listeners.get(img);
+
+                    if (!listener) {
+                        return;
+                    }
+
+                    img.removeEventListener('load', listener);
+                    img.removeEventListener('error', listener);
+                });
+            },
+        );
     }
 
     /**
@@ -783,10 +1093,12 @@ export class CoreDomUtilsProvider {
      *
      * @param el The element to wrap.
      * @param wrapper Wrapper.
-     * @deprecated since 5.0. Use CoreDom.wrapElement instead.
      */
     wrapElement(el: HTMLElement, wrapper: HTMLElement): void {
-        CoreDom.wrapElement(el, wrapper);
+        // Insert the wrapper before the element.
+        el.parentNode?.insertBefore(wrapper, el);
+        // Now move the element into the wrapper.
+        wrapper.appendChild(el);
     }
 
     /**
@@ -843,8 +1155,14 @@ export class CoreDomUtilsProvider {
     }
 
 }
-/**
- * @deprecated since 4.5. Use CoreDom instead.
- */
-// eslint-disable-next-line deprecation/deprecation
+
 export const CoreDomUtils = makeSingleton(CoreDomUtilsProvider);
+
+/**
+ * Vertical points for an element.
+ */
+export enum VerticalPoint {
+    TOP = 'top',
+    MID = 'mid',
+    BOTTOM = 'bottom',
+}

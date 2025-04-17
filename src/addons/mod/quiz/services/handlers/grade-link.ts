@@ -16,7 +16,6 @@ import { Injectable } from '@angular/core';
 
 import { CoreContentLinksModuleGradeHandler } from '@features/contentlinks/classes/module-grade-handler';
 import { makeSingleton } from '@singletons';
-import { ADDON_MOD_QUIZ_COMPONENT, ADDON_MOD_QUIZ_MODNAME } from '../../constants';
 
 /**
  * Handler to treat links to quiz grade.
@@ -28,7 +27,7 @@ export class AddonModQuizGradeLinkHandlerService extends CoreContentLinksModuleG
     canReview = false;
 
     constructor() {
-        super(ADDON_MOD_QUIZ_COMPONENT, ADDON_MOD_QUIZ_MODNAME);
+        super('AddonModQuiz', 'quiz');
     }
 
 }

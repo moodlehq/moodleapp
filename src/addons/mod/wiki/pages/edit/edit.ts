@@ -30,13 +30,7 @@ import { AddonModWiki } from '../../services/wiki';
 import { AddonModWikiOffline } from '../../services/wiki-offline';
 import { AddonModWikiSync } from '../../services/wiki-sync';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
-import {
-    ADDON_MOD_WIKI_COMPONENT,
-    ADDON_MOD_WIKI_COMPONENT_LEGACY,
-    ADDON_MOD_WIKI_MODNAME,
-    ADDON_MOD_WIKI_PAGE_CREATED_EVENT,
-    ADDON_MOD_WIKI_RENEW_LOCK_TIME,
-} from '../../constants';
+import { ADDON_MOD_WIKI_COMPONENT, ADDON_MOD_WIKI_PAGE_CREATED_EVENT, ADDON_MOD_WIKI_RENEW_LOCK_TIME } from '../../constants';
 import { CoreLoadings } from '@services/overlays/loadings';
 import { CoreFileHelper } from '@services/file-helper';
 import { CoreAlerts } from '@services/overlays/alerts';
@@ -66,7 +60,7 @@ export default class AddonModWikiEditPage implements OnInit, OnDestroy, CanLeave
     contentControl: FormControl<string>; // The FormControl for the page content.
     canEditTitle = false; // Whether title can be edited.
     loaded = false; // Whether the data has been loaded.
-    component = ADDON_MOD_WIKI_COMPONENT_LEGACY; // Component to link the files to.
+    component = ADDON_MOD_WIKI_COMPONENT; // Component to link the files to.
     wrongVersionLock = false; // Whether the page lock doesn't match the initial one.
     editorExtraParams: Record<string, unknown> = {};
 
@@ -121,7 +115,7 @@ export default class AddonModWikiEditPage implements OnInit, OnDestroy, CanLeave
         this.pageForm.addControl('text', this.contentControl);
 
         // Block the wiki so it cannot be synced.
-        CoreSync.blockOperation(ADDON_MOD_WIKI_COMPONENT, this.blockId);
+        CoreSync.blockOperation(this.component, this.blockId);
 
         if (this.pageId) {
             this.editorExtraParams.pageid = this.pageId;
@@ -140,9 +134,9 @@ export default class AddonModWikiEditPage implements OnInit, OnDestroy, CanLeave
                 // Block the subwiki now that we have blockId for sure.
                 const newBlockId = AddonModWikiSync.getSubwikiBlockId(this.subwikiId, this.wikiId, this.userId, this.groupId);
                 if (newBlockId !== this.blockId) {
-                    CoreSync.unblockOperation(ADDON_MOD_WIKI_COMPONENT, this.blockId);
+                    CoreSync.unblockOperation(this.component, this.blockId);
                     this.blockId = newBlockId;
-                    CoreSync.blockOperation(ADDON_MOD_WIKI_COMPONENT, this.blockId);
+                    CoreSync.blockOperation(this.component, this.blockId);
                 }
 
                 this.logView();
@@ -288,7 +282,7 @@ export default class AddonModWikiEditPage implements OnInit, OnDestroy, CanLeave
 
         const module = await CoreCourse.getModuleBasicInfoByInstance(
             this.wikiId,
-            ADDON_MOD_WIKI_MODNAME,
+            'wiki',
             { readingStrategy: CoreSitesReadingStrategy.PREFER_CACHE },
         );
 
@@ -527,7 +521,7 @@ export default class AddonModWikiEditPage implements OnInit, OnDestroy, CanLeave
 
         // Unblock the subwiki.
         if (this.blockId) {
-            CoreSync.unblockOperation(ADDON_MOD_WIKI_COMPONENT, this.blockId);
+            CoreSync.unblockOperation(this.component, this.blockId);
         }
     }
 

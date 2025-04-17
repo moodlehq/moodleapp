@@ -14,7 +14,7 @@
 
 import { Injectable } from '@angular/core';
 import { makeSingleton, Translate } from '@singletons';
-import dayjs from 'dayjs';
+import moment from 'moment-timezone';
 import { AddonModChatMessage, AddonModChatSessionMessage } from './chat';
 
 const patternTo = new RegExp(/^To\s([^:]+):(.*)/);
@@ -124,7 +124,7 @@ export class AddonModChatHelperProvider {
         }
 
         // Check if day has changed.
-        return !dayjs.tz(message.timestamp * 1000).isSame(prevMessage.timestamp * 1000, 'day');
+        return !moment(message.timestamp * 1000).isSame(prevMessage.timestamp * 1000, 'day');
     }
 
 }

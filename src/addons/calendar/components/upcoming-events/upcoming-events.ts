@@ -282,7 +282,7 @@ export class AddonCalendarUpcomingEventsComponent implements OnInit, DoCheck, On
             return this.onlineEvents;
         }
 
-        const start = CoreTime.timestamp();
+        const start = Date.now() / 1000;
         const end = start + (CoreConstants.SECONDS_DAY * this.lookAhead);
         let result: AddonCalendarEventToDisplay[] = this.onlineEvents;
 

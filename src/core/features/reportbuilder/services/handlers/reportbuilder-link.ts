@@ -18,7 +18,7 @@ import { CoreContentLinksAction } from '@features/contentlinks/services/contentl
 import { CoreNavigator } from '@services/navigator';
 import { makeSingleton } from '@singletons';
 import { CoreReportBuilder } from '../reportbuilder';
-import { CORE_REPORT_BUILDER_PAGE_NAME } from '@features/reportbuilder/constants';
+import { CoreReportBuilderHandlerService } from './reportbuilder';
 
 /**
  * Content links handler for report builder
@@ -37,7 +37,7 @@ export class CoreReportBuilderLinkHandlerService extends CoreContentLinksHandler
         return [{
             action: async (siteId): Promise<void> => {
                 await CoreNavigator.navigateToSitePath(
-                    `${CORE_REPORT_BUILDER_PAGE_NAME}/${params.id || ''}`,
+                    `${CoreReportBuilderHandlerService.PAGE_NAME}/${params.id || ''}`,
                     { siteId },
                 );
             },

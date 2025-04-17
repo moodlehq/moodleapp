@@ -24,7 +24,7 @@ import {
     CoreWSExternalWarning,
     CoreWSUploadFileResult,
 } from '@services/ws';
-import { CoreTime } from '@singletons/time';
+import { CoreTimeUtils } from '@services/utils/time';
 import { CoreUrl } from '@singletons/url';
 import { CoreOpener, CoreOpenerOpenInBrowserOptions } from '@singletons/opener';
 import { CoreConstants } from '@/core/constants';
@@ -120,7 +120,7 @@ export class CoreSite extends CoreAuthenticatedSite {
         this.setInfo(otherData.info);
         this.calculateOfflineDisabled();
 
-        this.db = CoreDB.getDB(`Site-${this.id}`);
+        this.db = CoreDB.getDB('Site-' + this.id);
     }
 
     /**
@@ -256,7 +256,7 @@ export class CoreSite extends CoreAuthenticatedSite {
                 jsInitialValue: 0,
             },
             {
-                sql: `WHERE component = ?${extraClause}`,
+                sql: 'WHERE component = ?' + extraClause,
                 sqlParams: params,
                 js: record => record.component === component && (params.length === 1 || record.componentId === componentId),
             },
@@ -321,7 +321,7 @@ export class CoreSite extends CoreAuthenticatedSite {
      * @inheritdoc
      */
     async invalidateWsCache(): Promise<void> {
-        this.logger.debug(`Invalidate all the cache for site: ${this.id}`);
+        this.logger.debug('Invalidate all the cache for site: ' + this.id);
 
         try {
             await this.cacheTable.update({ expirationTime: 0 });
@@ -338,7 +338,7 @@ export class CoreSite extends CoreAuthenticatedSite {
             return;
         }
 
-        this.logger.debug(`Invalidate cache for key: ${key}`);
+        this.logger.debug('Invalidate cache for key: ' + key);
 
         await this.cacheTable.update({ expirationTime: 0 }, { key });
     }
@@ -351,11 +351,11 @@ export class CoreSite extends CoreAuthenticatedSite {
             return;
         }
 
-        this.logger.debug(`Invalidate cache for key starting with: ${key}`);
+        this.logger.debug('Invalidate cache for key starting with: ' + key);
 
         await this.cacheTable.updateWhere({ expirationTime: 0 }, {
             sql: 'key LIKE ?',
-            sqlParams: [`${key}%`],
+            sqlParams: [key + '%'],
             js: record => !!record.key?.startsWith(key),
         });
     }
@@ -392,14 +392,14 @@ export class CoreSite extends CoreAuthenticatedSite {
      * Deletes site's DB.
      */
     async deleteDB(): Promise<void> {
-        await CoreDB.deleteDB(`Site-${this.id}`);
+        await CoreDB.deleteDB('Site-' + this.id);
     }
 
     /**
      * Deletes site's folder.
      */
     async deleteFolder(): Promise<void> {
-        if (!this.id) {
+        if (!CoreFile.isAvailable() || !this.id) {
             return;
         }
 
@@ -415,7 +415,7 @@ export class CoreSite extends CoreAuthenticatedSite {
      * @returns Promise resolved with the site space usage (size).
      */
     async getSpaceUsage(): Promise<number> {
-        if (this.id) {
+        if (CoreFile.isAvailable() && this.id) {
             const siteFolderPath = CoreFile.getSiteFolder(this.id);
 
             return CoreFile.getDirectorySize(siteFolderPath).catch(() => 0);
@@ -550,8 +550,8 @@ export class CoreSite extends CoreAuthenticatedSite {
      */
     getConfig(name?: undefined, ignoreCache?: boolean): Promise<CoreSiteConfig>;
     getConfig(name: string, ignoreCache?: boolean): Promise<string>;
-    async getConfig(name?: string, ignoreCache?: boolean): Promise<string | CoreSiteConfig> {
-        return await firstValueFrom(
+    getConfig(name?: string, ignoreCache?: boolean): Promise<string | CoreSiteConfig> {
+        return firstValueFrom(
             this.getConfigObservable(<string> name, ignoreCache ? CoreSitesReadingStrategy.ONLY_NETWORK : undefined),
         );
     }
@@ -581,7 +581,7 @@ export class CoreSite extends CoreAuthenticatedSite {
                     }
                 }
 
-                throw new CoreError(`Site config not found: ${name}`);
+                throw new CoreError('Site config not found: ' + name);
             } else {
                 // Return all settings in the same array.
                 const settings: CoreSiteConfig = {};
@@ -684,7 +684,7 @@ export class CoreSite extends CoreAuthenticatedSite {
         if (this.lastAutoLogin > 0) {
             const timeBetweenRequests = await this.getAutoLoginMinTimeBetweenRequests();
 
-            if (CoreTime.timestamp() - this.lastAutoLogin < timeBetweenRequests) {
+            if (CoreTimeUtils.timestamp() - this.lastAutoLogin < timeBetweenRequests) {
                 // Not enough time has passed since last auto login.
                 return url;
             }
@@ -709,7 +709,7 @@ export class CoreSite extends CoreAuthenticatedSite {
                 return url;
             }
 
-            this.lastAutoLogin = CoreTime.timestamp();
+            this.lastAutoLogin = CoreTimeUtils.timestamp();
 
             return data.autologinurl + '?userid=' + userId + '&key=' + data.key + '&urltogo=' + encodeURIComponent(url);
         } catch (error) {

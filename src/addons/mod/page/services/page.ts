@@ -15,16 +15,15 @@
 import { Injectable } from '@angular/core';
 import { CoreSitesCommonWSOptions, CoreSites } from '@services/sites';
 import { CoreWSExternalWarning, CoreWSExternalFile } from '@services/ws';
-import { makeSingleton } from '@singletons';
+import { makeSingleton, Translate } from '@singletons';
 import { CoreFilepool } from '@services/filepool';
 import { CoreCourse } from '@features/course/services/course';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreCourseLogHelper } from '@features/course/services/log-helper';
+import { CoreError } from '@classes/errors/error';
 import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
-import { ADDON_MOD_PAGE_COMPONENT_LEGACY } from '../constants';
+import { ADDON_MOD_PAGE_COMPONENT } from '../constants';
 import { CoreCacheUpdateFrequency } from '@/core/constants';
-import { CoreTextFormat } from '@singletons/text';
-import { CoreCourseModuleHelper, CoreCourseModuleStandardElements } from '@features/course/services/course-module-helper';
 
 /**
  * Service that provides some features for page.
@@ -42,7 +41,25 @@ export class AddonModPageProvider {
      * @param options Other options.
      * @returns Promise resolved when the page is retrieved.
      */
-    async getPageData(courseId: number, cmId: number, options: CoreSitesCommonWSOptions = {}): Promise<AddonModPagePage> {
+    getPageData(courseId: number, cmId: number, options: CoreSitesCommonWSOptions = {}): Promise<AddonModPagePage> {
+        return this.getPageByKey(courseId, 'coursemodule', cmId, options);
+    }
+
+    /**
+     * Get a page.
+     *
+     * @param courseId Course ID.
+     * @param key Name of the property to check.
+     * @param value Value to search.
+     * @param options Other options.
+     * @returns Promise resolved when the page is retrieved.
+     */
+    protected async getPageByKey(
+        courseId: number,
+        key: string,
+        value: number,
+        options: CoreSitesCommonWSOptions = {},
+    ): Promise<AddonModPagePage> {
         const site = await CoreSites.getSite(options.siteId);
 
         const params: AddonModPageGetPagesByCoursesWSParams = {
@@ -51,13 +68,18 @@ export class AddonModPageProvider {
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getPageCacheKey(courseId),
             updateFrequency: CoreCacheUpdateFrequency.RARELY,
-            component: ADDON_MOD_PAGE_COMPONENT_LEGACY,
+            component: ADDON_MOD_PAGE_COMPONENT,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy),
         };
 
         const response = await site.read<AddonModPageGetPagesByCoursesWSResponse>('mod_page_get_pages_by_courses', params, preSets);
 
-        return CoreCourseModuleHelper.getActivityByCmId(response.pages, cmId);
+        const currentPage = response.pages.find((page) => page[key] == value);
+        if (currentPage) {
+            return currentPage;
+        }
+
+        throw new CoreError(Translate.instant('core.course.modulenotfound'));
     }
 
     /**
@@ -67,7 +89,7 @@ export class AddonModPageProvider {
      * @returns Cache key.
      */
     protected getPageCacheKey(courseId: number): string {
-        return `${AddonModPageProvider.ROOT_CACHE_KEY}page:${courseId}`;
+        return AddonModPageProvider.ROOT_CACHE_KEY + 'page:' + courseId;
     }
 
     /**
@@ -84,7 +106,7 @@ export class AddonModPageProvider {
         const promises: Promise<void>[] = [];
 
         promises.push(this.invalidatePageData(courseId, siteId));
-        promises.push(CoreFilepool.invalidateFilesByComponent(siteId, ADDON_MOD_PAGE_COMPONENT_LEGACY, moduleId));
+        promises.push(CoreFilepool.invalidateFilesByComponent(siteId, ADDON_MOD_PAGE_COMPONENT, moduleId));
         promises.push(CoreCourse.invalidateModule(moduleId, siteId));
 
         return CorePromiseUtils.allPromises(promises);
@@ -95,6 +117,7 @@ export class AddonModPageProvider {
      *
      * @param courseId Course ID.
      * @param siteId Site ID. If not defined, current site.
+     * @returns Promise resolved when the data is invalidated.
      */
     async invalidatePageData(courseId: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -129,7 +152,7 @@ export class AddonModPageProvider {
         return CoreCourseLogHelper.log(
             'mod_page_view_page',
             params,
-            ADDON_MOD_PAGE_COMPONENT_LEGACY,
+            ADDON_MOD_PAGE_COMPONENT,
             pageid,
             siteId,
         );
@@ -142,9 +165,16 @@ export const AddonModPage = makeSingleton(AddonModPageProvider);
 /**
  * Page returned by mod_page_get_pages_by_courses.
  */
-export type AddonModPagePage = CoreCourseModuleStandardElements & {
+export type AddonModPagePage = {
+    id: number; // Module id.
+    coursemodule: number; // Course module id.
+    course: number; // Course id.
+    name: string; // Page name.
+    intro: string; // Summary.
+    introformat: number; // Intro format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
+    introfiles: CoreWSExternalFile[];
     content: string; // Page content.
-    contentformat: CoreTextFormat; // Content format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
+    contentformat: number; // Content format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
     contentfiles: CoreWSExternalFile[];
     legacyfiles: number; // Legacy files flag.
     legacyfileslast: number; // Legacy files last control flag.
@@ -152,6 +182,10 @@ export type AddonModPagePage = CoreCourseModuleStandardElements & {
     displayoptions: string; // Display options (width, height).
     revision: number; // Incremented when after each file changes, to avoid cache.
     timemodified: number; // Last time the page was modified.
+    section: number; // Course section id.
+    visible: number; // Module visibility.
+    groupmode: number; // Group mode.
+    groupingid: number; // Grouping id.
 };
 
 /**

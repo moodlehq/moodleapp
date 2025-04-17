@@ -27,7 +27,7 @@ import { CoreFormFields } from '@singletons/form';
 import { makeSingleton, Translate } from '@singletons';
 import { CoreFileEntry } from '@services/file-helper';
 import type { AddonModDataFieldPluginBaseComponent } from '@addons/mod/data/classes/base-field-plugin-component';
-import { ADDON_MOD_DATA_COMPONENT_LEGACY } from '@addons/mod/data/constants';
+import { ADDON_MOD_DATA_COMPONENT } from '@addons/mod/data/constants';
 
 /**
  * Handler for file data field plugin.
@@ -51,7 +51,7 @@ export class AddonModDataFieldFileHandlerService implements AddonModDataFieldHan
      * @inheritdoc
      */
     getFieldSearchData(field: AddonModDataField, inputData: CoreFormFields): AddonModDataSearchEntriesAdvancedFieldFormatted[] {
-        const fieldName = `f_${field.id}`;
+        const fieldName = 'f_' + field.id;
 
         if (inputData[fieldName]) {
             return [{
@@ -80,14 +80,14 @@ export class AddonModDataFieldFileHandlerService implements AddonModDataFieldHan
      * @inheritdoc
      */
     getFieldEditFiles(field: AddonModDataField): CoreFileEntry[] {
-        return CoreFileSession.getFiles(ADDON_MOD_DATA_COMPONENT_LEGACY, `${field.dataid}_${field.id}`);
+        return CoreFileSession.getFiles(ADDON_MOD_DATA_COMPONENT, field.dataid + '_' + field.id);
     }
 
     /**
      * @inheritdoc
      */
     hasFieldDataChanged(field: AddonModDataField, inputData: CoreFormFields, originalFieldData: AddonModDataEntryField): boolean {
-        const files = CoreFileSession.getFiles(ADDON_MOD_DATA_COMPONENT_LEGACY, `${field.dataid}_${field.id}`) || [];
+        const files = CoreFileSession.getFiles(ADDON_MOD_DATA_COMPONENT, field.dataid + '_' + field.id) || [];
         let originalFiles = (originalFieldData && originalFieldData.files) || [];
 
         if (originalFiles.length) {

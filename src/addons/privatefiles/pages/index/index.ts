@@ -343,7 +343,7 @@ export default class AddonPrivateFilesIndexPage implements OnInit, OnDestroy {
             {
                 filename: this.selectedFiles.length === 1
                     ? this.selectedFiles[0].filename
-                    : (`${this.selectedFiles.length} ${Translate.instant('addon.privatefiles.files')}`),
+                    : (this.selectedFiles.length + ' ' + Translate.instant('addon.privatefiles.files')),
             },
         );
 

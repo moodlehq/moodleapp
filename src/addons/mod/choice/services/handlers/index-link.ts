@@ -15,7 +15,6 @@
 import { Injectable } from '@angular/core';
 import { CoreContentLinksModuleIndexHandler } from '@features/contentlinks/classes/module-index-handler';
 import { makeSingleton } from '@singletons';
-import { ADDON_MOD_CHOICE_COMPONENT, ADDON_MOD_CHOICE_MODNAME } from '../../constants';
 
 /**
  * Handler to treat links to choice index.
@@ -26,7 +25,7 @@ export class AddonModChoiceIndexLinkHandlerService extends CoreContentLinksModul
     name = 'AddonModChoiceIndexLinkHandler';
 
     constructor() {
-        super(ADDON_MOD_CHOICE_COMPONENT, ADDON_MOD_CHOICE_MODNAME);
+        super('AddonModChoice', 'choice');
     }
 
 }

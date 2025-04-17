@@ -19,7 +19,7 @@ import { CoreError } from '@classes/errors/error';
 import { CoreCourse } from '@features/course/services/course';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSites, CoreSitesReadingStrategy } from '@services/sites';
-import { CoreDom } from '@singletons/dom';
+import { CoreDomUtils } from '@services/utils/dom';
 import { CoreWSError } from '@classes/errors/wserror';
 import { makeSingleton, Translate } from '@singletons';
 import { AddonModQuizAccessRuleDelegate } from './access-rules-delegate';
@@ -33,14 +33,13 @@ import {
 import { AddonModQuizOffline } from './quiz-offline';
 import {
     ADDON_MOD_QUIZ_IMMEDIATELY_AFTER_PERIOD,
-    ADDON_MOD_QUIZ_MODNAME,
     ADDON_MOD_QUIZ_PAGE_NAME,
     AddonModQuizAttemptStates,
     AddonModQuizDisplayOptionsAttemptStates,
 } from '../constants';
 import { QuestionDisplayOptionsMarks } from '@features/question/constants';
 import { CoreGroups } from '@services/groups';
-import { CoreTime } from '@singletons/time';
+import { CoreTimeUtils } from '@services/utils/time';
 import { CoreModals } from '@services/overlays/modals';
 import { CoreLoadings } from '@services/overlays/loadings';
 import { convertTextToHTMLElement } from '@/core/utils/create-html-element';
@@ -169,8 +168,8 @@ export class AddonModQuizHelperProvider {
         }
 
         if (reviewFrom) {
-            return Translate.instant(`addon.mod_quiz.noreviewuntil${short ? 'short' : ''}`, {
-                $a: CoreTime.userDate(reviewFrom * 1000, short ? 'core.strftimedatetimeshort': undefined),
+            return Translate.instant('addon.mod_quiz.noreviewuntil' + (short ? 'short' : ''), {
+                $a: CoreTimeUtils.userDate(reviewFrom * 1000, short ? 'core.strftimedatetimeshort': undefined),
             });
         } else {
             return Translate.instant('addon.mod_quiz.noreviewattempt');
@@ -312,7 +311,7 @@ export class AddonModQuizHelperProvider {
     getQuestionMarkFromHtml(html: string): string | undefined {
         const element = convertTextToHTMLElement(html);
 
-        return CoreDom.getContentsOfElement(element, '.grade');
+        return CoreDomUtils.getContentsOfElement(element, '.grade');
     }
 
     /**
@@ -353,7 +352,7 @@ export class AddonModQuizHelperProvider {
 
             const module = await CoreCourse.getModuleBasicInfoByInstance(
                 quizId,
-                ADDON_MOD_QUIZ_MODNAME,
+                'quiz',
                 { siteId, readingStrategy: CoreSitesReadingStrategy.PREFER_CACHE },
             );
 
@@ -523,55 +522,6 @@ export class AddonModQuizHelperProvider {
 
             throw error;
         }
-    }
-
-    /**
-     * Gather some preflight data for an attempt. This function will start a new attempt if needed.
-     *
-     * @param quiz Quiz.
-     * @param accessInfo Quiz access info returned by AddonModQuizProvider.getQuizAccessInformation.
-     * @param attempt Attempt to continue. Don't pass any value if the user needs to start a new attempt.
-     * @param askPreflight Whether it should ask for preflight data if needed.
-     * @param title Lang key of the title to set to preflight modal (e.g. 'addon.mod_quiz.startattempt').
-     * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved with the preflight data.
-     */
-    async getPreflightDataToAttemptOffline(
-        quiz: AddonModQuizQuizWSData,
-        accessInfo: AddonModQuizGetQuizAccessInformationWSResponse,
-        attempt?: AddonModQuizAttemptWSData,
-        askPreflight?: boolean,
-        title?: string,
-        siteId?: string,
-    ): Promise<Record<string, string>> {
-        const preflightData: Record<string, string> = {};
-
-        if (askPreflight) {
-            // We can ask preflight, check if it's needed and get the data.
-            await AddonModQuizHelper.getAndCheckPreflightData(
-                quiz,
-                accessInfo,
-                preflightData,
-                {
-                    attempt,
-                    prefetch: true,
-                    title,
-                    siteId,
-                },
-            );
-        } else {
-            // Get some fixed preflight data from access rules (data that doesn't require user interaction).
-            const rules = accessInfo?.activerulenames || [];
-
-            await AddonModQuizAccessRuleDelegate.getFixedPreflightData(rules, quiz, preflightData, attempt, true, siteId);
-
-            if (!attempt) {
-                // We need to create a new attempt.
-                await AddonModQuiz.startAttempt(quiz.id, preflightData, false, siteId);
-            }
-        }
-
-        return preflightData;
     }
 
 }

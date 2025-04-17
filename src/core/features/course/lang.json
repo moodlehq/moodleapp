@@ -1,5 +1,7 @@
 {
+    "activitydisabled": "Your organisation has disabled this activity in the mobile app.",
     "activitynotavailableoffline": "This activity is not available offline.",
+    "activitynotyetviewableremoteaddon": "Your organisation installed a plugin that is not yet supported.",
     "activityrequiresconnection": "This activity is only available with an internet connection. If your device is offline, you will not be able to access it.",
     "allsections": "All sections",
     "aria:sectionprogress": "Section progress:",

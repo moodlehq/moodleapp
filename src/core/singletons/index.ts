@@ -43,6 +43,7 @@ import { Clipboard as ClipboardService } from '@awesome-cordova-plugins/clipboar
 import { Device as DeviceService } from '@awesome-cordova-plugins/device/ngx';
 import { File as FileService } from '@awesome-cordova-plugins/file/ngx';
 import { FileOpener as FileOpenerService } from '@awesome-cordova-plugins/file-opener/ngx';
+import { Geolocation as GeolocationService } from '@awesome-cordova-plugins/geolocation/ngx';
 import { HTTP } from '@awesome-cordova-plugins/http/ngx';
 import { InAppBrowser as InAppBrowserService } from '@awesome-cordova-plugins/in-app-browser/ngx';
 import { WebView as WebViewService } from '@awesome-cordova-plugins/ionic-webview/ngx';
@@ -171,6 +172,7 @@ export const Badge = makeSingleton(BadgeService);
 export const Clipboard = makeSingleton(ClipboardService);
 export const File = makeSingleton(FileService);
 export const FileOpener = makeSingleton(FileOpenerService);
+export const Geolocation = makeSingleton(GeolocationService);
 export const InAppBrowser = makeSingleton(InAppBrowserService);
 export const Keyboard = makeSingleton(KeyboardService);
 export const LocalNotifications = makeSingleton(LocalNotificationsService);

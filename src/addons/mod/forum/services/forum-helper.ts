@@ -19,7 +19,7 @@ import { CoreUser } from '@features/user/services/user';
 import { CoreNetwork } from '@services/network';
 import { CoreFile } from '@services/file';
 import { CoreSites } from '@services/sites';
-import { CoreTime } from '@singletons/time';
+import { CoreTimeUtils } from '@services/utils/time';
 import { CoreUtils } from '@singletons/utils';
 import { makeSingleton, Translate } from '@singletons';
 import {
@@ -31,7 +31,7 @@ import {
 } from './forum';
 import { AddonModForumDiscussionOptions, AddonModForumOffline, AddonModForumOfflineReply } from './forum-offline';
 import { CoreFileEntry } from '@services/file-helper';
-import { ADDON_MOD_FORUM_ALL_GROUPS, ADDON_MOD_FORUM_COMPONENT_LEGACY } from '../constants';
+import { ADDON_MOD_FORUM_ALL_GROUPS, ADDON_MOD_FORUM_COMPONENT } from '../constants';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreWSError } from '@classes/errors/wserror';
 
@@ -290,13 +290,13 @@ export class AddonModForumHelperProvider {
 
         if (getDueDateMessage) {
             if (this.isDueDateReached(forum)) {
-                const dueDate = CoreTime.userDate(forum.duedate * 1000);
+                const dueDate = CoreTimeUtils.userDate(forum.duedate * 1000);
 
                 return Translate.instant('addon.mod_forum.thisforumisdue', { $a: dueDate });
             }
 
             if (forum.duedate && forum.duedate > 0) {
-                const dueDate = CoreTime.userDate(forum.duedate * 1000);
+                const dueDate = CoreTimeUtils.userDate(forum.duedate * 1000);
 
                 return Translate.instant('addon.mod_forum.thisforumhasduedate', { $a: dueDate });
             }
@@ -405,7 +405,7 @@ export class AddonModForumHelperProvider {
      * @returns If cut off date has been reached.
      */
     isCutoffDateReached(forum: AddonModForumData): boolean {
-        const now = CoreTime.timestamp();
+        const now = Date.now() / 1000;
 
         return !!forum.cutoffdate && forum.cutoffdate > 0 && forum.cutoffdate < now;
     }
@@ -417,7 +417,7 @@ export class AddonModForumHelperProvider {
      * @returns If due date has been reached.
      */
     isDueDateReached(forum: AddonModForumData): forum is AddonModForumData & { duedate: number } {
-        const now = CoreTime.timestamp();
+        const now = Date.now() / 1000;
         const duedate = forum.duedate ?? 0;
 
         return duedate > 0 && duedate < now;
@@ -504,7 +504,7 @@ export class AddonModForumHelperProvider {
             return this.storeNewDiscussionFiles(forumId, timecreated, files, siteId);
         }
 
-        return CoreFileUploader.uploadOrReuploadFiles(files, ADDON_MOD_FORUM_COMPONENT_LEGACY, forumId, siteId);
+        return CoreFileUploader.uploadOrReuploadFiles(files, ADDON_MOD_FORUM_COMPONENT, forumId, siteId);
     }
 
     /**
@@ -546,7 +546,7 @@ export class AddonModForumHelperProvider {
             return this.storeReplyFiles(forumId, postId, files, siteId, userId);
         }
 
-        return CoreFileUploader.uploadOrReuploadFiles(files, ADDON_MOD_FORUM_COMPONENT_LEGACY, forumId, siteId);
+        return CoreFileUploader.uploadOrReuploadFiles(files, ADDON_MOD_FORUM_COMPONENT, forumId, siteId);
     }
 
 }

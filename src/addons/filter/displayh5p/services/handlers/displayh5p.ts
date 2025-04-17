@@ -21,7 +21,6 @@ import { CoreH5PPlayerComponent } from '@features/h5p/components/h5p-player/h5p-
 import { CoreUrl } from '@singletons/url';
 import { CoreH5PHelper } from '@features/h5p/classes/helper';
 import { CoreText } from '@singletons/text';
-import { CoreUtils } from '@singletons/utils';
 
 /**
  * Handler to support the Display H5P filter.
@@ -37,7 +36,7 @@ export class AddonFilterDisplayH5PHandlerService extends CoreFilterDefaultHandle
      */
     filter(
         text: string,
-    ): string {
+    ): string | Promise<string> {
         return CoreText.processHTML(text, (element) => {
             const h5pIframes = <HTMLIFrameElement[]> Array.from(element.querySelectorAll('iframe.h5p-iframe'));
 
@@ -83,28 +82,22 @@ export class AddonFilterDisplayH5PHandlerService extends CoreFilterDefaultHandle
         viewContainerRef: ViewContainerRef,
         component?: string,
         componentId?: string | number,
-    ): void {
+    ): void | Promise<void> {
 
         const placeholders = <HTMLElement[]> Array.from(container.querySelectorAll('div.core-h5p-tmp-placeholder'));
 
         placeholders.forEach((placeholder) => {
-            if (!placeholder.parentElement) {
-                return;
-            }
+            const url = placeholder.getAttribute('data-player-src') || '';
 
             // Create the component to display the player.
-            const h5pInstance = viewContainerRef.createComponent<CoreH5PPlayerComponent>(CoreH5PPlayerComponent).instance;
+            const componentRef = viewContainerRef.createComponent<CoreH5PPlayerComponent>(CoreH5PPlayerComponent);
 
-            const url = placeholder.getAttribute('data-player-src') || '';
-            h5pInstance.src = url;
-            h5pInstance.component = component;
-            h5pInstance.componentId = componentId;
-
-            // Check if auto-play was enabled when inserting the iframe using the TinyMCE editor.
-            h5pInstance.autoPlay = CoreUtils.isTrueOrOne(placeholder.parentElement.dataset.mobileappAutoplay);
+            componentRef.instance.src = url;
+            componentRef.instance.component = component;
+            componentRef.instance.componentId = componentId;
 
             // Move the component to its right position.
-            placeholder.parentElement.replaceChild(h5pInstance.getElement(), placeholder);
+            placeholder.parentElement?.replaceChild(componentRef.instance.elementRef.nativeElement, placeholder);
         });
     }
 

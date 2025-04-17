@@ -15,6 +15,7 @@
 import { Type } from '@angular/core';
 
 import { AddonModQuizAccessRuleHandler } from '@addons/mod/quiz/services/access-rules-delegate';
+import { CoreSitePluginsQuizAccessRuleComponent } from '../../components/quiz-access-rule/quiz-access-rule';
 
 /**
  * Handler to display a quiz access rule site plugin.
@@ -47,13 +48,10 @@ export class CoreSitePluginsQuizAccessRuleHandler implements AddonModQuizAccessR
     /**
      * @inheritdoc
      */
-    async getPreflightComponent(): Promise<undefined | Type<unknown>> {
-        if (!this.hasTemplate) {
-            return;
+    getPreflightComponent(): undefined | Type<unknown> {
+        if (this.hasTemplate) {
+            return CoreSitePluginsQuizAccessRuleComponent;
         }
-        const { CoreSitePluginsQuizAccessRuleComponent } = await import('../../components/quiz-access-rule/quiz-access-rule');
-
-        return CoreSitePluginsQuizAccessRuleComponent;
     }
 
     /**

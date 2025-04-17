@@ -132,7 +132,7 @@ export class CoreMainMenuProvider {
                 return;
             }
 
-            const id = `${url}#${type}`;
+            const id = url + '#' + type;
             if (!icon) {
                 // Icon not defined, use default one.
                 icon = type == 'embedded' ? 'fas-expand' : 'fas-link'; // @todo Find a better icon for embedded.
@@ -169,8 +169,8 @@ export class CoreMainMenuProvider {
             const entry = map[id];
             let data = entry.labels[currentLangApp]
                 ?? entry.labels[currentLangLMS]
-                ?? entry.labels[`${currentLangApp}_only`]
-                ?? entry.labels[`${currentLangLMS}_only`]
+                ?? entry.labels[currentLangApp + '_only']
+                ?? entry.labels[currentLangLMS + '_only']
                 ?? entry.labels.none
                 ?? entry.labels[fallbackLang];
 

@@ -51,7 +51,7 @@ import { AddonModLessonOffline } from '../../services/lesson-offline';
 import { AddonModLessonSync } from '../../services/lesson-sync';
 import { CoreFormFields, CoreForms } from '@singletons/form';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
-import { ADDON_MOD_LESSON_COMPONENT, ADDON_MOD_LESSON_COMPONENT_LEGACY, AddonModLessonJumpTo } from '../../constants';
+import { ADDON_MOD_LESSON_COMPONENT, AddonModLessonJumpTo } from '../../constants';
 import { CoreModals } from '@services/overlays/modals';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreWSError } from '@classes/errors/wserror';
@@ -78,7 +78,7 @@ export default class AddonModLessonPlayerPage implements OnInit, OnDestroy, CanL
     @ViewChild(IonContent) content?: IonContent;
     @ViewChild('questionFormEl') formElement?: ElementRef;
 
-    component = ADDON_MOD_LESSON_COMPONENT_LEGACY;
+    component = ADDON_MOD_LESSON_COMPONENT;
     readonly LESSON_EOL = AddonModLessonJumpTo.EOL;
     questionForm?: FormGroup; // The FormGroup for question pages.
     title?: string; // The page title.
@@ -162,7 +162,7 @@ export default class AddonModLessonPlayerPage implements OnInit, OnDestroy, CanL
     ngOnDestroy(): void {
         if (this.lesson) {
             // Unblock the lesson so it can be synced.
-            CoreSync.unblockOperation(ADDON_MOD_LESSON_COMPONENT, this.lesson.id);
+            CoreSync.unblockOperation(this.component, this.lesson.id);
         }
     }
 
@@ -282,7 +282,7 @@ export default class AddonModLessonPlayerPage implements OnInit, OnDestroy, CanL
             this.title = this.lesson.name; // Temporary title.
 
             // Block the lesson so it cannot be synced.
-            CoreSync.blockOperation(ADDON_MOD_LESSON_COMPONENT, this.lesson.id);
+            CoreSync.blockOperation(this.component, this.lesson.id);
 
             // Wait for any ongoing sync to finish. We won't sync a lesson while it's being played.
             await AddonModLessonSync.waitForSync(this.lesson.id);
@@ -645,7 +645,7 @@ export default class AddonModLessonPlayerPage implements OnInit, OnDestroy, CanL
         CoreAnalytics.logEvent({
             type: CoreAnalyticsEventType.VIEW_ITEM,
             ws: 'mod_lesson_get_page_data',
-            name: `${this.lesson.name}: ${title}`,
+            name: this.lesson.name + ': ' + title,
             data: { id: this.lesson.id, pageid: pageId, category: 'lesson' },
             url: `/mod/lesson/view.php?id=${this.lesson.id}&pageid=${pageId}`,
         });

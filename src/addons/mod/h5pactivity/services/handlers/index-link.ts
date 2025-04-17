@@ -15,7 +15,6 @@
 import { Injectable } from '@angular/core';
 import { CoreContentLinksModuleIndexHandler } from '@features/contentlinks/classes/module-index-handler';
 import { makeSingleton } from '@singletons';
-import { ADDON_MOD_H5PACTIVITY_COMPONENT, ADDON_MOD_H5PACTIVITY_MODNAME } from '../../constants';
 
 /**
  * Handler to treat links to H5P activity index.
@@ -26,7 +25,7 @@ export class AddonModH5PActivityIndexLinkHandlerService extends CoreContentLinks
     name = 'AddonModH5PActivityIndexLinkHandler';
 
     constructor() {
-        super(ADDON_MOD_H5PACTIVITY_COMPONENT, ADDON_MOD_H5PACTIVITY_MODNAME);
+        super('AddonModH5PActivity', 'h5pactivity');
     }
 
 }

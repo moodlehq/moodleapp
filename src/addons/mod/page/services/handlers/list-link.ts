@@ -16,7 +16,6 @@ import { Injectable } from '@angular/core';
 import { CoreContentLinksModuleListHandler } from '@features/contentlinks/classes/module-list-handler';
 import { makeSingleton } from '@singletons';
 import { AddonModPage } from '../page';
-import { ADDON_MOD_PAGE_COMPONENT, ADDON_MOD_PAGE_MODNAME } from '../../constants';
 
 /**
  * Handler to treat links to page list page.
@@ -27,11 +26,14 @@ export class AddonModPageListLinkHandlerService extends CoreContentLinksModuleLi
     name = 'AddonModPageListLinkHandler';
 
     constructor() {
-        super(ADDON_MOD_PAGE_COMPONENT, ADDON_MOD_PAGE_MODNAME);
+        super('AddonModPage', 'page');
     }
 
     /**
-     * @inheritdoc
+     * Check if the handler is enabled on a site level.
+     *
+     * @param siteId The site ID.
+     * @returns Whether or not the handler is enabled on a site level.
      */
     isEnabled(siteId: string): Promise<boolean> {
         return AddonModPage.isPluginEnabled(siteId);

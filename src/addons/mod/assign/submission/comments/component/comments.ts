@@ -18,7 +18,6 @@ import { Component, ViewChild } from '@angular/core';
 import { CoreCommentsCommentsComponent } from '@features/comments/components/comments/comments';
 import { CoreComments } from '@features/comments/services/comments';
 import { CoreSharedModule } from '@/core/shared.module';
-import { ADDON_MOD_ASSIGN_COMMENTS_AREA, ADDON_MOD_ASSIGN_COMMENTS_COMPONENT_NAME } from '../constants';
 
 /**
  * Component to render a comments submission plugin.
@@ -53,9 +52,9 @@ export class AddonModAssignSubmissionCommentsComponent extends AddonModAssignSub
         return CoreComments.invalidateCommentsData(
             ContextLevel.MODULE,
             this.assign.cmid,
-            ADDON_MOD_ASSIGN_COMMENTS_COMPONENT_NAME,
+            'assignsubmission_comments',
             this.submission.id,
-            ADDON_MOD_ASSIGN_COMMENTS_AREA,
+            'submission_comments',
         );
     }
 

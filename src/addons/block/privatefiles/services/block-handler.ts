@@ -14,9 +14,10 @@
 
 import { Injectable } from '@angular/core';
 import { CoreBlockHandlerData } from '@features/block/services/block-delegate';
+import { CoreBlockOnlyTitleComponent } from '@features/block/components/only-title-block/only-title-block';
 import { CoreBlockBaseHandler } from '@features/block/classes/base-block-handler';
+import { AddonPrivateFilesUserHandlerService } from '@addons/privatefiles/services/handlers/user';
 import { makeSingleton } from '@singletons';
-import { ADDON_PRIVATE_FILES_PAGE_NAME } from '@addons/privatefiles/constants';
 
 /**
  * Block handler.
@@ -28,16 +29,17 @@ export class AddonBlockPrivateFilesHandlerService extends CoreBlockBaseHandler {
     blockName = 'private_files';
 
     /**
-     * @inheritdoc
+     * Returns the data needed to render the block.
+     *
+     * @returns Data or promise resolved with the data.
      */
-    async getDisplayData(): Promise<CoreBlockHandlerData> {
-        const { CoreBlockOnlyTitleComponent } = await import('@features/block/components/only-title-block/only-title-block');
+    getDisplayData(): CoreBlockHandlerData {
 
         return {
             title: 'addon.block_privatefiles.pluginname',
             class: 'addon-block-private-files',
             component: CoreBlockOnlyTitleComponent,
-            link: ADDON_PRIVATE_FILES_PAGE_NAME,
+            link: AddonPrivateFilesUserHandlerService.PAGE_NAME,
             linkParams: { root: 'my' },
             navOptions: {
                 preferCurrentTab: false,

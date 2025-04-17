@@ -241,7 +241,7 @@ export class AddonModGlossaryOfflineProvider {
         const site = await CoreSites.getSite(siteId);
 
         const siteFolderPath = CoreFile.getSiteFolder(site.getId());
-        const folderPath = `offlineglossary/${glossaryId}`;
+        const folderPath = 'offlineglossary/' + glossaryId;
 
         return CorePath.concatenatePaths(siteFolderPath, folderPath);
     }
@@ -258,7 +258,7 @@ export class AddonModGlossaryOfflineProvider {
     async getEntryFolder(glossaryId: number, concept: string, timeCreated: number, siteId?: string): Promise<string> {
         const folderPath = await this.getGlossaryFolder(glossaryId, siteId);
 
-        return CorePath.concatenatePaths(folderPath, `newentry_${concept}_${timeCreated}`);
+        return CorePath.concatenatePaths(folderPath, 'newentry_' + concept + '_' + timeCreated);
     }
 
     /**

@@ -20,9 +20,9 @@ import { CoreContentLinksAction } from '@features/contentlinks/services/contentl
 import { CoreSiteHome } from '../sitehome';
 import { makeSingleton } from '@singletons';
 import { CoreNavigator } from '@services/navigator';
+import { CoreSiteHomeHomeHandlerService } from './sitehome-home';
+import { CoreMainMenuHomeHandlerService } from '@features/mainmenu/services/handlers/mainmenu';
 import { Params } from '@angular/router';
-import { CORE_SITEHOME_PAGE_NAME } from '@features/sitehome/constants';
-import { MAIN_MENU_HOME_PAGE_NAME } from '@features/mainmenu/constants';
 
 /**
  * Handler to treat links to site home index.
@@ -48,7 +48,7 @@ export class CoreSiteHomeIndexLinkHandlerService extends CoreContentLinksHandler
         return [{
             action: async (siteId: string): Promise<void> => {
                 await CoreNavigator.navigateToSitePath(
-                    `/${MAIN_MENU_HOME_PAGE_NAME}/${CORE_SITEHOME_PAGE_NAME}`,
+                    `/${CoreMainMenuHomeHandlerService.PAGE_NAME}/${CoreSiteHomeHomeHandlerService.PAGE_NAME}`,
                     {
                         preferCurrentTab: false,
                         siteId,

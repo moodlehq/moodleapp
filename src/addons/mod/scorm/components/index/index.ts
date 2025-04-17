@@ -40,14 +40,13 @@ import {
     AddonModScormSyncResult,
 } from '../../services/scorm-sync';
 import {
-    ADDON_MOD_SCORM_COMPONENT_LEGACY,
+    ADDON_MOD_SCORM_COMPONENT,
     AddonModScormForceAttempt,
     AddonModScormMode,
     AddonModScormSkipView,
     ADDON_MOD_SCORM_DATA_SENT_EVENT,
     ADDON_MOD_SCORM_DATA_AUTO_SYNCED,
     ADDON_MOD_SCORM_PAGE_NAME,
-    ADDON_MOD_SCORM_COMPONENT,
 } from '../../constants';
 import { CoreWait } from '@singletons/wait';
 import { CorePromiseUtils } from '@singletons/promise-utils';
@@ -76,7 +75,7 @@ export class AddonModScormIndexComponent extends CoreCourseModuleMainActivityCom
 
     @Input() autoPlayData?: AddonModScormAutoPlayData; // Data to use to play the SCORM automatically.
 
-    component = ADDON_MOD_SCORM_COMPONENT_LEGACY;
+    component = ADDON_MOD_SCORM_COMPONENT;
     pluginName = 'scorm';
 
     scorm?: AddonModScormScorm; // The SCORM object.
@@ -126,6 +125,7 @@ export class AddonModScormIndexComponent extends CoreCourseModuleMainActivityCom
     ) {
         super('AddonModScormIndexComponent', content, courseContentsPage);
 
+        this.skip = true;
         this.isOnline = CoreNetwork.isOnline();
         this.onlineObserver = CoreNetwork.onChange().subscribe(() => {
             // Execute the callback in the Angular zone, so change detection doesn't stop working.
@@ -665,7 +665,7 @@ export class AddonModScormIndexComponent extends CoreCourseModuleMainActivityCom
         if (!result.updated && this.dataSent) {
             // The user sent data to server, but not in the sync process. Check if we need to fetch data.
             await CorePromiseUtils.ignoreErrors(
-                AddonModScormSync.prefetchModuleAfterUpdate(this.module, this.courseId),
+                AddonModScormSync.prefetchAfterUpdate(AddonModScormPrefetchHandler.instance, this.module, this.courseId),
             );
         }
 

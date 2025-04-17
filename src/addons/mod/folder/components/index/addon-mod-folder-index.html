@@ -1,16 +1,14 @@
 <!-- Buttons to add to the header. -->
 <core-navbar-buttons slot="end">
-    @if (!subfolder) {
-        @if (!courseContentsPage) {
-            <ion-button fill="clear" (click)="openModuleSummary()" aria-haspopup="true" [ariaLabel]="'core.info' | translate">
-                <ion-icon name="fas-circle-info" slot="icon-only" aria-hidden="true" />
-            </ion-button>
-        } @else {
-            <core-context-menu>
-                <core-context-menu-item [priority]="5000" [content]="'core.info' | translate" (action)="openModuleSummary()"
-                    iconAction="fas-circle-info" />
-            </core-context-menu>
-        }
+    @if (!courseContentsPage) {
+        <ion-button fill="clear" (click)="openModuleSummary()" aria-haspopup="true" [ariaLabel]="'core.info' | translate">
+            <ion-icon name="fas-circle-info" slot="icon-only" aria-hidden="true" />
+        </ion-button>
+    } @else {
+        <core-context-menu>
+            <core-context-menu-item [priority]="5000" [content]="'core.info' | translate" (action)="openModuleSummary()"
+                iconAction="fas-circle-info" />
+        </core-context-menu>
     }
 </core-navbar-buttons>
 
@@ -22,14 +20,14 @@
         [componentId]="componentId" [courseId]="courseId" />
 
     <ion-list *ngIf="contents && (contents.files.length + contents.folders.length > 0)">
-        <ion-card *ngFor="let folder of contents.folders">
+        <ng-container *ngFor="let folder of contents.folders">
             <ion-item class="ion-text-wrap item-file item-directory" (click)="openFolder(folder)" [detail]="true" button>
                 <ion-icon name="fas-folder" slot="start" [attr.aria-label]="'core.folder' | translate" />
                 <ion-label>
                     <p class="item-heading">{{folder.filename}}</p>
                 </ion-label>
             </ion-item>
-        </ion-card>
+        </ng-container>
         <ng-container *ngFor="let file of contents.files">
             <core-file [file]="file" [component]="component" [componentId]="componentId" />
         </ng-container>

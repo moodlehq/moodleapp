@@ -14,6 +14,7 @@
 
 import { Injectable } from '@angular/core';
 import { CoreBlockHandlerData } from '@features/block/services/block-delegate';
+import { AddonBlockStarredCoursesComponent } from '../components/starredcourses/starredcourses';
 import { CoreBlockBaseHandler } from '@features/block/classes/base-block-handler';
 import { makeSingleton } from '@singletons';
 
@@ -27,10 +28,11 @@ export class AddonBlockStarredCoursesHandlerService extends CoreBlockBaseHandler
     blockName = 'starredcourses';
 
     /**
-     * @inheritdoc
+     * Returns the data needed to render the block.
+     *
+     * @returns Data or promise resolved with the data.
      */
-    async getDisplayData(): Promise<CoreBlockHandlerData> {
-        const { AddonBlockStarredCoursesComponent } = await import('../components/starredcourses/starredcourses');
+    getDisplayData(): CoreBlockHandlerData {
 
         return {
             title: 'addon.starredcourses.pluginname',

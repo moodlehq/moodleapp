@@ -16,7 +16,7 @@ import { Injectable } from '@angular/core';
 
 import { CoreContentLinksHandlerBase } from '@features/contentlinks/classes/base-handler';
 import { CoreContentLinksAction } from '@features/contentlinks/services/contentlinks-delegate';
-import { CoreContentLinksHelper } from '@features/contentlinks/services/contentlinks-helper';
+import { CoreSites } from '@services/sites';
 import { makeSingleton, Translate } from '@singletons';
 import { AddonReportInsights } from '../insights';
 import { CoreToasts } from '@services/overlays/toasts';
@@ -81,7 +81,7 @@ export class AddonReportInsightsActionLinkHandlerService extends CoreContentLink
                     // Try to open the link in the app.
                     const forwardUrl = decodeURIComponent(params.forwardurl);
 
-                    await CoreContentLinksHelper.visitLink(forwardUrl, { siteId });
+                    await CoreSites.visitLink(forwardUrl, { siteId });
                 }
             },
         }];

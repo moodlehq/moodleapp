@@ -21,7 +21,7 @@ import { CoreApp } from '@services/app';
 import { CoreGroupInfo, CoreGroups } from '@services/groups';
 import { CoreSites } from '@services/sites';
 import { CoreText } from '@singletons/text';
-import { CoreTime } from '@singletons/time';
+import { CoreTimeUtils } from '@services/utils/time';
 import { CoreArray } from '@singletons/array';
 import { Translate } from '@singletons';
 import {
@@ -30,7 +30,7 @@ import {
     AddonModBBBMeetingInfo,
     AddonModBBBRecordingPlaybackTypes,
 } from '../../services/bigbluebuttonbn';
-import { ADDON_MOD_BBB_COMPONENT_LEGACY, ADDON_MOD_BBB_MODNAME } from '../../constants';
+import { ADDON_MOD_BBB_COMPONENT } from '../../constants';
 import { CoreLoadings } from '@services/overlays/loadings';
 import { convertTextToHTMLElement } from '@/core/utils/create-html-element';
 import { CorePromiseUtils } from '@singletons/promise-utils';
@@ -56,8 +56,8 @@ import { CoreCourseModuleNavigationComponent } from '@features/course/components
 })
 export class AddonModBBBIndexComponent extends CoreCourseModuleMainActivityComponent implements OnInit {
 
-    component = ADDON_MOD_BBB_COMPONENT_LEGACY;
-    pluginName = ADDON_MOD_BBB_MODNAME;
+    component = ADDON_MOD_BBB_COMPONENT;
+    pluginName = 'bigbluebuttonbn';
     bbb?: AddonModBBBData;
     groupInfo?: CoreGroupInfo;
     groupId = 0;
@@ -173,7 +173,7 @@ export class AddonModBBBIndexComponent extends CoreCourseModuleMainActivityCompo
                 }
 
                 if (columnData.formatter === 'customDate' && !isNaN(Number(value))) {
-                    value = CoreTime.userDate(Number(value), 'core.strftimedaydate');
+                    value = CoreTimeUtils.userDate(Number(value), 'core.strftimedaydate');
                 } else if (columnData.allowHTML && typeof value === 'string') {
                     // If the HTML is empty, don't display it.
                     const valueElement = convertTextToHTMLElement(value);

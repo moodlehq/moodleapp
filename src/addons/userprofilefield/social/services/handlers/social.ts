@@ -54,7 +54,7 @@ export class AddonUserProfileFieldSocialHandlerService implements CoreUserProfil
         registerAuth: string,
         formValues: CoreFormFields,
     ): Promise<CoreUserProfileFieldHandlerData | undefined> {
-        const name = `profile_field_${field.shortname}`;
+        const name = 'profile_field_' + field.shortname;
 
         return {
             type: 'social',

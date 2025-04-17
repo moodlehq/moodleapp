@@ -15,7 +15,6 @@
 import { Injectable } from '@angular/core';
 import { CoreContentLinksModuleListHandler } from '@features/contentlinks/classes/module-list-handler';
 import { makeSingleton } from '@singletons';
-import { ADDON_MOD_DATA_COMPONENT, ADDON_MOD_DATA_MODNAME } from '../../constants';
 
 /**
  * Handler to treat links to data list page.
@@ -26,7 +25,7 @@ export class AddonModDataListLinkHandlerService extends CoreContentLinksModuleLi
     name = 'AddonModDataListLinkHandler';
 
     constructor() {
-        super(ADDON_MOD_DATA_COMPONENT, ADDON_MOD_DATA_MODNAME);
+        super('AddonModData', 'data');
     }
 
 }

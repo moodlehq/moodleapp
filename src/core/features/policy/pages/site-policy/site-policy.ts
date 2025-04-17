@@ -15,7 +15,7 @@
 import { ChangeDetectorRef, Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 
 import { CoreSites, CoreSitesReadingStrategy } from '@services/sites';
-import { CoreMimetype } from '@singletons/mimetype';
+import { CoreMimetypeUtils } from '@services/utils/mimetype';
 import { CoreSite } from '@classes/sites/site';
 import { CoreNavigator } from '@services/navigator';
 import { CoreEvents } from '@singletons/events';
@@ -145,9 +145,9 @@ export default class CorePolicySitePolicyPage implements OnInit, OnDestroy {
 
         // Try to get the mime type.
         try {
-            const mimeType = await CoreMimetype.getMimeTypeFromUrl(this.sitePoliciesURL);
+            const mimeType = await CoreMimetypeUtils.getMimeTypeFromUrl(this.sitePoliciesURL);
 
-            const extension = CoreMimetype.getExtension(mimeType, this.sitePoliciesURL);
+            const extension = CoreMimetypeUtils.getExtension(mimeType, this.sitePoliciesURL);
             this.showInline = extension == 'html' || extension == 'htm';
         } catch {
             // Unable to get mime type, assume it's not supported.
@@ -267,11 +267,11 @@ export default class CorePolicySitePolicyPage implements OnInit, OnDestroy {
 
         this.pendingPolicies?.forEach(policy => {
             if (policy.optional) {
-                this.policiesForm?.addControl(`agreepolicy${policy.versionid}`, new FormControl<number | undefined>(undefined, {
+                this.policiesForm?.addControl('agreepolicy' + policy.versionid, new FormControl<number | undefined>(undefined, {
                     validators: Validators.required,
                 }));
             } else {
-                this.policiesForm?.addControl(`agreepolicy${policy.versionid}`, new FormControl(false, {
+                this.policiesForm?.addControl('agreepolicy' + policy.versionid, new FormControl(false, {
                     validators: Validators.requiredTrue,
                     nonNullable: true,
                 }));
@@ -409,7 +409,7 @@ export default class CorePolicySitePolicyPage implements OnInit, OnDestroy {
         const acceptances: Record<number, number> = {};
 
         this.pendingPolicies?.forEach(policy => {
-            const control = this.policiesForm?.controls[`agreepolicy${policy.versionid}`];
+            const control = this.policiesForm?.controls['agreepolicy' + policy.versionid];
             if (!control) {
                 return;
             }

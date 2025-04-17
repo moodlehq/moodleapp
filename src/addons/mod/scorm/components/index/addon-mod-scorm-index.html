@@ -103,7 +103,7 @@
                 <ion-item class="ion-text-wrap" *ngIf="syncTime">
                     <ion-label>
                         <p class="item-heading">{{ 'core.lastsync' | translate }}</p>
-                        <p class="addon-scorm-last-sync-date">{{ syncTime }}</p>
+                        <p>{{ syncTime }}</p>
                     </ion-label>
                 </ion-item>
             </ion-list>
@@ -198,11 +198,13 @@
 
                     <div class="adaptable-buttons-row">
                         <!-- Open mode (Preview or Normal) -->
+                        <!--
                         <ion-button *ngIf="!scorm.hidebrowse" expand="block" fill="outline" (click)="open($event, true)"
                             class="ion-text-wrap ion-margin">
                             <ion-icon name="fas-magnifying-glass" slot="start" aria-hidden="true" />
                             {{ 'addon.mod_scorm.browse' | translate }}
                         </ion-button>
+                        -->
                         <ion-button expand="block" (click)="open($event)" class="ion-text-wrap ion-margin">
                             {{ 'addon.mod_scorm.enter' | translate }}
                         </ion-button>

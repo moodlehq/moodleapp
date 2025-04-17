@@ -14,12 +14,12 @@
 
 import { Component, OnInit, OnDestroy, Optional, OnChanges, SimpleChanges } from '@angular/core';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
-import { CoreTime } from '@singletons/time';
+import { CoreTimeUtils } from '@services/utils/time';
 import { CoreSites, CoreSitesReadingStrategy } from '@services/sites';
 import {
     CoreCourses,
     CoreCoursesMyCoursesUpdatedEventData,
-    CoreCourseSummaryExporterData,
+    CoreCourseSummaryData,
 } from '@features/courses/services/courses';
 import { CoreCoursesHelper, CoreEnrolledCourseDataWithExtraInfoAndOptions } from '@features/courses/services/courses-helper';
 import { CoreCourseHelper, CorePrefetchStatusInfo } from '@features/course/services/course-helper';
@@ -114,6 +114,7 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
     protected fetchContentDefaultError = 'Error getting my overview data.';
     protected gradePeriodAfter = 0;
     protected gradePeriodBefore = 0;
+    protected today = 0;
     protected firstLoadWatcher?: PageLoadWatcher;
     protected loadsManager: PageLoadsManager;
 
@@ -469,7 +470,7 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
                 return this.refreshContent(true);
             }
 
-            course.lastaccess = CoreTime.timestamp();
+            course.lastaccess = CoreTimeUtils.timestamp();
 
             await this.invalidateCourseList();
             await this.filterCourses();
@@ -576,6 +577,9 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
             }
         } else {
             this.saveFilters(timeFilter);
+
+            // Update today date.
+            this.today = Date.now();
 
             // Apply filters.
             switch(timeFilter) {
@@ -774,8 +778,8 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
      * @returns Whether it has meaningful changes.
      */
     protected async customFilterCoursesHaveMeaningfulChanges(
-        previousCourses: CoreCourseSummaryExporterData[],
-        newCourses: CoreCourseSummaryExporterData[],
+        previousCourses: CoreCourseSummaryData[],
+        newCourses: CoreCourseSummaryData[],
     ): Promise<boolean> {
         if (previousCourses.length !== newCourses.length) {
             return true;

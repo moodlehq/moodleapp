@@ -12,178 +12,137 @@
     <ion-refresher slot="fixed" [disabled]="!columns || !rows" (ionRefresh)="refreshGrades($event.target)">
         <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}" />
     </ion-refresher>
-    <core-loading [hideUntil]="loaded" placeholderType="column" placeholderHeight="36px">
-        @if (!rows.length) {
-            <core-empty-box icon="fas-chart-bar" [message]="'core.grades.nogradesreturned' | translate" />
-        } @else {
-            <div class="core-grades-container">
-                <table class="core-table core-grades-table" [class.summary]="showSummary">
-                    <thead>
-                        <tr>
-                            @for (column of columns; track column.name) {
-                                <th id="{{column.name}}" class="ion-text-start" [class.ion-hide-md-down]="column.hiddenPhone"
-                                    [attr.colspan]="column.colspan">
-                                    @if (column.name === 'grade') {
-                                        {{ 'core.gradenoun' | translate }}
-                                    } @else {
-                                        {{ 'core.grades.' + column.name | translate }}
-                                    }
-                                </th>
-                            }
+    <core-loading [hideUntil]="loaded">
+        <core-empty-box *ngIf="!rows.length" icon="fas-chart-bar" [message]="'core.grades.nogradesreturned' | translate" />
+        <div *ngIf="rows.length" class="core-grades-container">
+            <table class="core-table core-grades-table" [class.summary]="showSummary">
+                <thead>
+                    <tr>
+                        <th *ngFor="let column of columns" id="{{column.name}}" class="ion-text-start"
+                            [class.ion-hide-md-down]="column.hiddenPhone" [attr.colspan]="column.colspan">
+                            {{ 'core.grades.' + column.name | translate }}
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <ng-container *ngFor="let row of rows | slice:0:rowsOnView">
+                        <tr *ngIf="row.itemtype === 'leader'">
+                            <td [attr.rowspan]="row.rowspan" class="core-grades-table-leader"></td>
                         </tr>
-                    </thead>
-                    <tbody>
-                        @for (row of rows | slice:0:rowsOnView; track row) {
-                            @if (row.itemtype === 'leader') {
-                                <tr>
-                                    <td [attr.rowspan]="row.rowspan" class="core-grades-table-leader"></td>
-                                </tr>
-                            } @else {
-                                <tr [attr.role]="row.expandable && showSummary ? 'button row' : 'row'"
-                                    [attr.tabindex]="row.expandable && showSummary && 0" [attr.aria-expanded]="row.expanded"
-                                    [attr.aria-label]="rowAriaLabel(row)" [attr.aria-controls]="row.detailsid"
-                                    (ariaButtonClick)="row.expandable && showSummary && toggleRow(row)" [class]="row.rowclass"
-                                    [class.core-grades-grade-clickable]="row.expandable && showSummary" [id]="'grade-'+row.id">
-                                    @if (row.itemtype) {
-                                        @if (row.itemtype === 'category') {
-                                            <td class="core-grades-table-category" [attr.rowspan]="row.rowspan">
-                                            </td>
-                                        }
-                                        <th class="core-grades-table-gradeitem ion-text-start" [attr.colspan]="row.colspan">
-                                            @if (row.expandable && showSummary) {
-                                                <ion-icon aria-hidden="true" slot="start" name="fas-chevron-right"
-                                                    class="expandable-status-icon" [class.expandable-status-icon-expanded]="row.expanded" />
-                                            }
-                                            @if (row.icon) {
-                                                <ion-icon name="{{row.icon}}" slot="start" [attr.aria-label]="row.iconAlt" />
-                                            }
-                                            @if (row.image) {
-                                                @if (row.itemmodule) {
-                                                    <core-mod-icon [modicon]="row.image" slot="start" [modname]="row.itemmodule"
-                                                        [colorize]="false" />
-                                                } @else {
-                                                    <img [url]="row.image" slot="start" class="core-module-icon" [alt]="row.iconAlt"
-                                                        core-external-content />
-                                                }
-                                            }
-                                            <span [innerHTML]="row.gradeitem"></span>
-                                        </th>
-                                        @if (row.itemtype !== 'category') {
-                                            @for (column of columns; track column.name) {
-                                                @if (column.name === 'feedback' && row.feedback !== undefined) {
-                                                    <td class="ion-text-start core-grades-table-feedback"
-                                                        [class.ion-hide-md-down]="column.hiddenPhone">
-                                                        <core-format-text collapsible-item [text]="row.feedback" contextLevel="course"
-                                                            [contextInstanceId]="courseId" />
-                                                    </td>
-                                                } @else if (column.name === 'grade') {
-                                                    <td [class.ion-hide-md-down]="column.hiddenPhone"
-                                                        class="ion-text-start core-grades-table-grade {{row.gradeClass}}">
-                                                        @if (row.gradeIcon) {
-                                                            <ion-icon [name]="row.gradeIcon" [attr.aria-label]="row.gradeIconAlt" />
-                                                        }
-                                                        <span [innerHTML]="row[column.name]"></span>
-                                                    </td>
-                                                } @else if (column.name !== 'gradeitem' && column.name !== 'feedback' &&
-                                                        column.name !== 'grade' && row[column.name] !== undefined) {
-                                                    <td [class]="'ion-text-start core-grades-table-' + column.name"
-                                                        [class.ion-hide-md-down]="column.hiddenPhone" [innerHTML]="row[column.name]">
-                                                    </td>
-                                                }
+                        <tr [attr.role]="row.expandable && showSummary ? 'button row' : 'row'"
+                            [attr.tabindex]="row.expandable && showSummary && 0" [attr.aria-expanded]="row.expanded"
+                            [attr.aria-label]="rowAriaLabel(row)" [attr.aria-controls]="row.detailsid"
+                            (ariaButtonClick)="row.expandable && showSummary && toggleRow(row)" [class]="row.rowclass"
+                            [class.core-grades-grade-clickable]="row.expandable && showSummary" [id]="'grade-'+row.id"
+                            *ngIf="row.itemtype !== 'leader'">
+                            <ng-container *ngIf="row.itemtype">
+                                <td *ngIf="row.itemtype === 'category'" class="core-grades-table-category" [attr.rowspan]="row.rowspan">
+                                </td>
+                                <th class="core-grades-table-gradeitem ion-text-start" [attr.colspan]="row.colspan">
+                                    <ion-icon *ngIf="row.expandable && showSummary" aria-hidden="true" slot="start" name="fas-chevron-right"
+                                        class="expandable-status-icon" [class.expandable-status-icon-expanded]="row.expanded" />
+                                    <ion-icon *ngIf="row.icon" name="{{row.icon}}" slot="start" [attr.aria-label]="row.iconAlt" />
+                                    <img *ngIf="row.image && !row.itemmodule" [src]="row.image" slot="start" class="core-module-icon"
+                                        [alt]="row.iconAlt" core-external-content />
+                                    <core-mod-icon *ngIf="row.image && row.itemmodule" [modicon]="row.image" slot="start"
+                                        [modname]="row.itemmodule" [colorize]="false" />
+                                    <span [innerHTML]="row.gradeitem"></span>
+                                </th>
+                                <ng-container *ngIf="row.itemtype !== 'category'">
+                                    <ng-container *ngFor="let column of columns">
+                                        <td *ngIf="column.name !== 'gradeitem' && column.name !== 'feedback' && column.name !== 'grade' &&
+                                        row[column.name] !== undefined" [class]="'ion-text-start core-grades-table-' + column.name"
+                                            [class.ion-hide-md-down]="column.hiddenPhone" [innerHTML]="row[column.name]">
+                                        </td>
+                                        <td *ngIf="column.name === 'feedback' && row.feedback !== undefined"
+                                            class="ion-text-start core-grades-table-feedback" [class.ion-hide-md-down]="column.hiddenPhone">
+                                            <core-format-text collapsible-item [text]="row.feedback" contextLevel="course"
+                                                [contextInstanceId]="courseId" />
+                                        </td>
+                                        <td *ngIf="column.name === 'grade'" [class.ion-hide-md-down]="column.hiddenPhone"
+                                            class="ion-text-start core-grades-table-grade {{row.gradeClass}}">
+                                            <ion-icon *ngIf="row.gradeIcon" [name]="row.gradeIcon" [attr.aria-label]="row.gradeIconAlt" />
+                                            <span [innerHTML]="row[column.name]"></span>
+                                        </td>
+                                    </ng-container>
+                                </ng-container>
+                            </ng-container>
+                        </tr>
+                        <tr *ngIf="row.expandable && row.expanded" [id]="row.detailsid" [class]="row.rowclass">
+                            <td [attr.colspan]="totalColumnsSpan">
+                                <ion-list>
+                                    <ion-item class="ion-text-wrap" *ngIf="row.weight">
+                                        <ion-label>
+                                            <p class="item-heading">{{ 'core.grades.weight' | translate}}</p>
+                                            <p [innerHTML]="row.weight"></p>
+                                        </ion-label>
+                                    </ion-item>
 
-                                            }
-                                        }
-                                    }
-                                </tr>
-                            }
-                            @if (row.expandable && row.expanded) {
-                                <tr [id]="row.detailsid" [class]="row.rowclass">
-                                    <td [attr.colspan]="totalColumnsSpan">
-                                        <ion-list>
-                                            @if (row.weight) {
-                                                <ion-item class="ion-text-wrap">
-                                                    <ion-label>
-                                                        <p class="item-heading">{{ 'core.grades.weight' | translate}}</p>
-                                                        <p [innerHTML]="row.weight"></p>
-                                                    </ion-label>
-                                                </ion-item>
-                                            }
-                                            @if (row.grade) {
-                                                <ion-item class="ion-text-wrap">
-                                                    <ion-label>
-                                                        <p class="item-heading">{{ 'core.gradenoun' | translate}}</p>
-                                                        <p [innerHTML]="row.grade"></p>
-                                                    </ion-label>
-                                                </ion-item>
-                                            }
-                                            @if (row.range) {
-                                                <ion-item class="ion-text-wrap">
-                                                    <ion-label>
-                                                        <p class="item-heading">{{ 'core.grades.range' | translate}}</p>
-                                                        <p [innerHTML]="row.range"></p>
-                                                    </ion-label>
-                                                </ion-item>
-                                            }
-                                            @if (row.percentage) {
-                                                <ion-item class="ion-text-wrap">
-                                                    <ion-label>
-                                                        <p class="item-heading">{{ 'core.grades.percentage' | translate}}</p>
-                                                        <p [innerHTML]="row.percentage"></p>
-                                                    </ion-label>
-                                                </ion-item>
-                                            }
-                                            @if (row.lettergrade) {
-                                                <ion-item class="ion-text-wrap">
-                                                    <ion-label>
-                                                        <p class="item-heading">{{ 'core.grades.lettergrade' | translate}}</p>
-                                                        <p [innerHTML]="row.lettergrade"></p>
-                                                    </ion-label>
-                                                </ion-item>
-                                            }
-                                            @if (row.rank) {
-                                                <ion-item class="ion-text-wrap">
-                                                    <ion-label>
-                                                        <p class="item-heading">{{ 'core.grades.rank' | translate}}</p>
-                                                        <p [innerHTML]="row.rank"></p>
-                                                    </ion-label>
-                                                </ion-item>
-                                            }
-                                            @if (row.average) {
-                                                <ion-item class="ion-text-wrap">
-                                                    <ion-label>
-                                                        <p class="item-heading">{{ 'core.grades.average' | translate}}</p>
-                                                        <p [innerHTML]="row.average"></p>
-                                                    </ion-label>
-                                                </ion-item>
-                                            }
-                                            @if (row.feedback) {
-                                                <ion-item class="ion-text-wrap">
-                                                    <ion-label>
-                                                        <p class="item-heading">{{ 'core.grades.feedback' | translate}}</p>
-                                                        <p>
-                                                            <core-format-text collapsible-item [text]="row.feedback" contextLevel="course"
-                                                                [contextInstanceId]="courseId" />
-                                                        </p>
-                                                    </ion-label>
-                                                </ion-item>
-                                            }
-                                            @if (row.contributiontocoursetotal) {
-                                                <ion-item class="ion-text-wrap">
-                                                    <ion-label>
-                                                        <p class="item-heading">{{ 'core.grades.contributiontocoursetotal' | translate}}</p>
-                                                        <p [innerHTML]="row.contributiontocoursetotal"></p>
-                                                    </ion-label>
-                                                </ion-item>
-                                            }
-                                        </ion-list>
-                                    </td>
-                                </tr>
-                            }
-                        }
-                    </tbody>
-                </table>
-                <core-infinite-loading [enabled]="rowsOnView < rows.length" (action)="loadMore($event)" />
-            </div>
-        }
+                                    <ion-item class="ion-text-wrap" *ngIf="row.grade">
+                                        <ion-label>
+                                            <p class="item-heading">{{ 'core.grades.grade' | translate}}</p>
+                                            <p [innerHTML]="row.grade"></p>
+                                        </ion-label>
+                                    </ion-item>
+
+                                    <ion-item class="ion-text-wrap" *ngIf="row.range">
+                                        <ion-label>
+                                            <p class="item-heading">{{ 'core.grades.range' | translate}}</p>
+                                            <p [innerHTML]="row.range"></p>
+                                        </ion-label>
+                                    </ion-item>
+
+                                    <ion-item class="ion-text-wrap" *ngIf="row.percentage">
+                                        <ion-label>
+                                            <p class="item-heading">{{ 'core.grades.percentage' | translate}}</p>
+                                            <p [innerHTML]="row.percentage"></p>
+                                        </ion-label>
+                                    </ion-item>
+
+                                    <ion-item class="ion-text-wrap" *ngIf="row.lettergrade">
+                                        <ion-label>
+                                            <p class="item-heading">{{ 'core.grades.lettergrade' | translate}}</p>
+                                            <p [innerHTML]="row.lettergrade"></p>
+                                        </ion-label>
+                                    </ion-item>
+
+                                    <ion-item class="ion-text-wrap" *ngIf="row.rank">
+                                        <ion-label>
+                                            <p class="item-heading">{{ 'core.grades.rank' | translate}}</p>
+                                            <p [innerHTML]="row.rank"></p>
+                                        </ion-label>
+                                    </ion-item>
+
+                                    <ion-item class="ion-text-wrap" *ngIf="row.average">
+                                        <ion-label>
+                                            <p class="item-heading">{{ 'core.grades.average' | translate}}</p>
+                                            <p [innerHTML]="row.average"></p>
+                                        </ion-label>
+                                    </ion-item>
+
+                                    <ion-item class="ion-text-wrap" *ngIf="row.feedback">
+                                        <ion-label>
+                                            <p class="item-heading">{{ 'core.grades.feedback' | translate}}</p>
+                                            <p>
+                                                <core-format-text collapsible-item [text]="row.feedback" contextLevel="course"
+                                                    [contextInstanceId]="courseId" />
+                                            </p>
+                                        </ion-label>
+                                    </ion-item>
+
+                                    <ion-item class="ion-text-wrap" *ngIf="row.contributiontocoursetotal">
+                                        <ion-label>
+                                            <p class="item-heading">{{ 'core.grades.contributiontocoursetotal' | translate}}</p>
+                                            <p [innerHTML]="row.contributiontocoursetotal"></p>
+                                        </ion-label>
+                                    </ion-item>
+                                </ion-list>
+                            </td>
+                        </tr>
+                    </ng-container>
+                </tbody>
+            </table>
+            <core-infinite-loading [enabled]="rowsOnView < rows.length" (action)="loadMore($event)" />
+        </div>
     </core-loading>
 </ion-content>
