@@ -209,7 +209,7 @@ jobs:
           MOODLE_REPO: ${{ github.event.inputs.moodle_repository || 'https://github.com/moodle/moodle.git' }}
           MOODLE_BEHAT_IONIC_WWWROOT: https://localhost:8001
           MOODLE_BEHAT_DEFAULT_BROWSER: chrome
-          MOODLE_BEHAT_CHROME_CAPABILITIES: "['extra_capabilities' => ['chromeOptions' => ['args' => ['--ignore-certificate-errors', '--allow-running-insecure-content'], 'prefs' => ['credentials_enable_service' => false, 'profile.password_manager_leak_detection' => false]]]]"
+          MOODLE_BEHAT_CHROME_CAPABILITIES: "['extra_capabilities' => ['chromeOptions' => ['args' => ['--ignore-certificate-errors', '--allow-running-insecure-content'], 'prefs' => ['credentials_enable_service' => false, 'profile.password_manager_enabled' => false, 'profile.password_manager_leak_detection' => false]]]]"
 
       - name: Update config
         run: |
