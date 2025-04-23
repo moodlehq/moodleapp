@@ -21,6 +21,7 @@ import { CoreSites } from '@services/sites';
 import { AddonQtypeDdMarkerQuestion } from '../classes/ddmarker';
 import { CoreSharedModule } from '@/core/shared.module';
 import { CoreWait } from '@singletons/wait';
+import { CoreText } from '@singletons/text';
 
 /**
  * Component to render a drag-and-drop markers question.
@@ -111,8 +112,14 @@ export class AddonQtypeDdMarkerComponent
             }
             nextIndex++;
 
-            if (this.question.amdArgs[nextIndex] !== undefined) {
-                this.dropZones = <unknown[]> this.question.amdArgs[nextIndex];
+            // Try to get drop zones from data attribute (Moodle 5.1+). If not found, fallback to old way of retrieving it.
+            const dropZones = ddArea.querySelector<HTMLElement>('.dropzones');
+            const visibleDropZones = dropZones?.dataset.visibledDropzones ?
+                CoreText.parseJSON(dropZones.dataset.visibledDropzones, null) :
+                this.question.amdArgs[nextIndex];
+
+            if (visibleDropZones) {
+                this.dropZones = <unknown[]> visibleDropZones;
             }
         }
 
