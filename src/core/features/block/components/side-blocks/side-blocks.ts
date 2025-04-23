@@ -24,6 +24,7 @@ import { ContextLevel } from '@/core/constants';
 import { CoreWait } from '@singletons/wait';
 import { CoreSharedModule } from '@/core/shared.module';
 import { CoreAlerts } from '@services/overlays/alerts';
+import { CoreCoursesMyPageName } from '@features/courses/constants';
 
 /**
  * Component that displays the list of side blocks.
@@ -43,7 +44,7 @@ export class CoreBlockSideBlocksComponent implements OnInit {
     @Input({ required: true }) contextLevel!: ContextLevel;
     @Input({ required: true }) instanceId!: number;
     @Input() initialBlockInstanceId?: number;
-    @Input() myDashboardPage?: string;
+    @Input() myDashboardPage?: CoreCoursesMyPageName;
 
     @ViewChildren(CoreBlockComponent) blocksComponents?: QueryList<CoreBlockComponent>;
 
