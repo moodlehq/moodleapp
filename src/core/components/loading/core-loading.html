@@ -6,7 +6,7 @@
                 <p class="core-loading-message" role="status">{{message}}</p>
             }
         } @else {
-            <div class="{{placeholderType}} list-item-limited-width placeholder">
+            <div class="{{placeholderType}} placeholder" [class.list-item-limited-width]="placeholderType !== 'free'">
                 @if (placeholderType === 'free') {
                     <ng-content select="[placeholder]" />
                 } @else if (placeholderType === 'listwithicon' || placeholderType === 'listwithavatar') {
