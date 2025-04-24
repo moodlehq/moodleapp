@@ -132,7 +132,7 @@ export class AddonCalendarHelperProvider {
         const result = {};
 
         events.forEach((event) => {
-            const treatedDay = dayjs.tz(event.timestart * 1000);
+            let treatedDay = dayjs.tz(event.timestart * 1000);
             const endDay = dayjs.tz((event.timestart + event.timeduration) * 1000);
 
             // Add the event to all the days it lasts.
@@ -148,7 +148,7 @@ export class AddonCalendarHelperProvider {
                 }
                 result[monthId][day].push(event);
 
-                treatedDay.add(1, 'day'); // Treat next day.
+                treatedDay = treatedDay.add(1, 'day'); // Treat next day.
             }
         });
 
