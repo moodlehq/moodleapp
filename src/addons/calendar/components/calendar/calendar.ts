@@ -520,7 +520,7 @@ class AddonCalendarMonthSlidesItemsManagerSource extends CoreSwipeSlidesDynamicI
      */
     getPreviousItem(item: MonthBasicData): MonthBasicData | null {
         return {
-            dayJS: item.dayJS.clone().subtract(1, 'month'),
+            dayJS: item.dayJS.subtract(1, 'month'),
         };
     }
 
@@ -529,7 +529,7 @@ class AddonCalendarMonthSlidesItemsManagerSource extends CoreSwipeSlidesDynamicI
      */
     getNextItem(item: MonthBasicData): MonthBasicData | null {
         return {
-            dayJS: item.dayJS.clone().add(1, 'month'),
+            dayJS: item.dayJS.add(1, 'month'),
         };
     }
 

@@ -416,7 +416,7 @@ export default class AddonCalendarDayPage implements OnInit, OnDestroy {
             if (selectedDay) {
                 // Use current time but in the specified day.
                 const now = dayjs.tz();
-                params.timestamp = selectedDay.dayJS.clone().set({ hour: now.hour(), minute: now.minute() }).valueOf();
+                params.timestamp = selectedDay.dayJS.set({ hour: now.hour(), minute: now.minute() }).valueOf();
             }
         }
 
@@ -665,7 +665,7 @@ class AddonCalendarDaySlidesItemsManagerSource extends CoreSwipeSlidesDynamicIte
      */
     getPreviousItem(item: DayBasicData): DayBasicData | null {
         return {
-            dayJS: item.dayJS.clone().subtract(1, 'day'),
+            dayJS: item.dayJS.subtract(1, 'day'),
         };
     }
 
@@ -674,7 +674,7 @@ class AddonCalendarDaySlidesItemsManagerSource extends CoreSwipeSlidesDynamicIte
      */
     getNextItem(item: DayBasicData): DayBasicData | null {
         return {
-            dayJS: item.dayJS.clone().add(1, 'day'),
+            dayJS: item.dayJS.add(1, 'day'),
         };
     }
 
