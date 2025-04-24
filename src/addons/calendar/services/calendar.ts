@@ -543,10 +543,10 @@ export class AddonCalendarProvider {
         if (date.isSame(today, 'day')) {
             return Translate.instant('addon.calendar.today');
         }
-        if (date.isSame(today.clone().subtract(1, 'days'), 'day')) {
+        if (date.isSame(today.subtract(1, 'days'), 'day')) {
             return Translate.instant('addon.calendar.yesterday');
         }
-        if (date.isSame(today.clone().add(1, 'days'), 'day')) {
+        if (date.isSame(today.add(1, 'days'), 'day')) {
             return Translate.instant('addon.calendar.tomorrow');
         }
 
