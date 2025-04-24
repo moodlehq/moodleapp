@@ -32,8 +32,9 @@
 
                     .userpicture {
                         border-radius: var(--core-avatar-radius);
-                        width: var(--core-avatar-size);
-                        height: var(--core-avatar-size);
+                        width: var(--core-avatar-size) !important;
+                        height: var(--core-avatar-size) !important;
+                        vertical-align: middle;
                     }
 
                     .userinitials {
