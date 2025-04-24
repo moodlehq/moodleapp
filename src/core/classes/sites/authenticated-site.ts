@@ -388,7 +388,7 @@ export class CoreAuthenticatedSite extends CoreUnauthenticatedSite {
      * @description
      *
      * Sends a webservice request to the site. This method will automatically add the
-     * required parameters and pass it on to the low level API in CoreWSProvider.call().
+     * required parameters and pass it on to the low level API in CoreWS.call().
      *
      * Caching is also implemented, when enabled this method will returned a cached version of the request if the
      * data hasn't expired.
@@ -947,7 +947,7 @@ export class CoreAuthenticatedSite extends CoreUnauthenticatedSite {
                     const match = /^moodlews(setting.*)$/.exec(key);
                     if (match) {
                         if (match[1] == 'settingfilter' || match[1] == 'settingfileurl') {
-                            // Undo special treatment of these settings in CoreWSProvider.convertValuesToString.
+                            // Undo special treatment of these settings in CoreWS.convertValuesToString.
                             value = (value == 'true' ? '1' : '0');
                         } else if (match[1] == 'settinglang') {
                             // Use the lang globally to avoid exceptions with languages not installed.
@@ -1011,7 +1011,7 @@ export class CoreAuthenticatedSite extends CoreUnauthenticatedSite {
                     });
                 } else {
                     let responseData = response.data ? CoreText.parseJSON(response.data) : {};
-                    // Match the behaviour of CoreWSProvider.call when no response is expected.
+                    // Match the behaviour of CoreWS.call when no response is expected.
                     const responseExpected = wsPresets.responseExpected === undefined || wsPresets.responseExpected;
                     if (!responseExpected && (responseData == null || responseData === '')) {
                         responseData = {};
@@ -1343,7 +1343,8 @@ export class CoreAuthenticatedSite extends CoreUnauthenticatedSite {
      * @inheritdoc
      */
     async getPublicConfig(options: { readingStrategy?: CoreSitesReadingStrategy } = {}): Promise<CoreSitePublicConfigResponse> {
-        const ignoreCache = CoreSitesReadingStrategy.ONLY_NETWORK || CoreSitesReadingStrategy.PREFER_NETWORK;
+        const ignoreCache = options.readingStrategy === CoreSitesReadingStrategy.ONLY_NETWORK ||
+            options.readingStrategy ===  CoreSitesReadingStrategy.PREFER_NETWORK;
         if (!ignoreCache && this.publicConfig) {
             return this.publicConfig;
         }
@@ -1364,8 +1365,6 @@ export class CoreAuthenticatedSite extends CoreUnauthenticatedSite {
             cachePreSets.saveToCache = false;
             cachePreSets.emergencyCache = false;
         }
-
-        // Check for an ongoing identical request if we're not ignoring cache.
 
         // Check for an ongoing identical request.
         const ongoingRequest = this.getOngoingRequest<CoreSitePublicConfigResponse>(cacheId, cachePreSets);

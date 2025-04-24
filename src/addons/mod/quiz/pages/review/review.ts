@@ -41,6 +41,8 @@ import { AddonModQuizQuestionCardComponent } from '../../components/question-car
 import { AddonModQuizAttemptInfoComponent } from '../../components/attempt-info/attempt-info';
 import { CoreSharedModule } from '@/core/shared.module';
 import { CoreQuestionComponent } from '@features/question/components/question/question';
+import { CoreWait } from '@singletons/wait';
+import { CoreLoadings } from '@services/overlays/loadings';
 
 /**
  * Page that allows reviewing a quiz attempt.
@@ -60,6 +62,8 @@ export default class AddonModQuizReviewPage implements OnInit {
 
     @ViewChild(IonContent) content?: IonContent;
 
+    protected static readonly QUESTIONS_PER_LOAD_WHEN_SHOW_ALL = 10;
+
     attempt?: AddonModQuizAttemptWSData; // The attempt being reviewed.
     component = ADDON_MOD_QUIZ_COMPONENT_LEGACY; // Component to link the files to.
     showAll = false; // Whether to view all questions in the same page.
@@ -78,6 +82,8 @@ export default class AddonModQuizReviewPage implements OnInit {
     quiz?: AddonModQuizQuizWSData; // The quiz the attempt belongs to.
     courseId!: number; // The course ID the quiz belongs to.
     cmId!: number; // Course module id the attempt belongs to.
+    canLoadMore = false;
+    allQuestions: CoreQuestionQuestionForView[] = []; // When using infinite loading, this will contain all the questions.
 
     protected attemptId!: number; // The attempt being reviewed.
     protected currentPage!: number; // The current page being reviewed.
@@ -101,8 +107,7 @@ export default class AddonModQuizReviewPage implements OnInit {
             this.cmId = CoreNavigator.getRequiredRouteNumberParam('cmId');
             this.courseId = CoreNavigator.getRequiredRouteNumberParam('courseId');
             this.attemptId = CoreNavigator.getRequiredRouteNumberParam('attemptId');
-            this.currentPage = CoreNavigator.getRouteNumberParam('page') || -1;
-            this.showAll = this.currentPage == -1;
+            this.currentPage = CoreNavigator.getRouteNumberParam('page') || 0;
         } catch (error) {
             CoreAlerts.showError(error);
             CoreNavigator.back();
@@ -124,12 +129,12 @@ export default class AddonModQuizReviewPage implements OnInit {
      * @param slot Slot of the question to scroll to.
      */
     async changePage(page: number, slot?: number): Promise<void> {
-        if (slot !== undefined && (this.attempt?.currentpage == -1 || page == this.currentPage)) {
+        if (slot !== undefined && (this.attempt?.currentpage === -1 || page === this.currentPage)) {
             // Scrol to a certain question in the current page.
             this.scrollToQuestion(slot);
 
             return;
-        } else if (page == this.currentPage) {
+        } else if (page === this.currentPage) {
             // If the user is navigating to the current page and no question specified, we do nothing.
             return;
         }
@@ -196,9 +201,15 @@ export default class AddonModQuizReviewPage implements OnInit {
         this.additionalData = data.additionaldata;
         this.currentPage = page;
 
-        this.questions = data.questions;
-        this.nextPage = page + 1;
-        this.previousPage = page - 1;
+        if (page === -1) {
+            this.allQuestions = data.questions;
+            this.questions = data.questions.slice(0, AddonModQuizReviewPage.QUESTIONS_PER_LOAD_WHEN_SHOW_ALL);
+            this.canLoadMore = this.allQuestions.length > this.questions.length;
+        } else {
+            this.questions = data.questions;
+            this.nextPage = page + 1;
+            this.previousPage = page - 1;
+        }
 
         this.questions.forEach((question) => {
             // Get the readable mark for each question.
@@ -207,6 +218,21 @@ export default class AddonModQuizReviewPage implements OnInit {
             // Extract the question info box.
             CoreQuestionHelper.extractQuestionInfoBox(question, '.info');
         });
+    }
+
+    /**
+     * Show more questions (only used when showing all the questions at the same time).
+     *
+     * @param infiniteComplete Infinite scroll complete function. Only used from core-infinite-loading.
+     */
+    loadMore(infiniteComplete?: () => void): void {
+        this.questions = this.questions.concat(this.allQuestions.slice(
+            this.questions.length,
+            this.questions.length + AddonModQuizReviewPage.QUESTIONS_PER_LOAD_WHEN_SHOW_ALL,
+        ));
+        this.canLoadMore = this.allQuestions.length > this.questions.length;
+
+        infiniteComplete?.();
     }
 
     /**
@@ -254,7 +280,27 @@ export default class AddonModQuizReviewPage implements OnInit {
      *
      * @param slot Slot of the question to scroll to.
      */
-    protected scrollToQuestion(slot: number): void {
+    protected async scrollToQuestion(slot: number): Promise<void> {
+        if (this.showAll && this.canLoadMore) {
+            // First make sure that the question is visible.
+            const pageIndex = this.allQuestions.findIndex(question => question.slot === slot);
+            if (pageIndex > this.questions.length) {
+                // Not visible, load the needed questions.
+                // Show a loading modal because if there are a lot of questions to load it can take a few seconds to render.
+                const loading = await CoreLoadings.show();
+
+                const lastQuestionToLoad = Math.ceil(pageIndex / AddonModQuizReviewPage.QUESTIONS_PER_LOAD_WHEN_SHOW_ALL) *
+                    AddonModQuizReviewPage.QUESTIONS_PER_LOAD_WHEN_SHOW_ALL;
+                this.questions = this.questions.concat(this.allQuestions.slice(this.questions.length, lastQuestionToLoad));
+                this.canLoadMore = this.allQuestions.length > this.questions.length;
+
+                // Wait some ticks to let the questions render, otherwise the scroll might end up in a wrong position.
+                await CoreWait.nextTicks(5);
+                await loading.dismiss();
+                await CoreWait.nextTick(); // For some reason scrolling doesn't work right after dismiss, wait a tick.
+            }
+        }
+
         CoreDom.scrollToElement(
             this.elementRef.nativeElement,
             `#addon-mod_quiz-question-${slot}`,

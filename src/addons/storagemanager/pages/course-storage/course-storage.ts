@@ -748,6 +748,8 @@ export default class AddonStorageManagerCourseStoragePage implements OnInit, OnD
             }
 
             CoreAlerts.showError(error, { default: Translate.instant('core.course.errordownloadingcourse') });
+        } finally {
+            this.changeDetectorRef.markForCheck();
         }
     }
 

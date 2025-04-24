@@ -20,7 +20,7 @@ import { CorePromisedValue } from '@classes/promised-value';
 import { CoreBlockComponent } from '@features/block/components/block/block';
 import { CoreBlockDelegate } from '@features/block/services/block-delegate';
 import { CoreCourseBlock } from '@features/course/services/course';
-import { CoreCoursesDashboard, CoreCoursesDashboardProvider } from '@features/courses/services/dashboard';
+import { CoreCoursesDashboard } from '@features/courses/services/dashboard';
 import { CoreSites } from '@services/sites';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
@@ -35,6 +35,7 @@ import { CoreSharedModule } from '@/core/shared.module';
 import { CoreSiteLogoComponent } from '../../../../components/site-logo/site-logo';
 import { CoreMainMenuUserButtonComponent } from '../../../mainmenu/components/user-menu-button/user-menu-button';
 import { CoreBlockSideBlocksButtonComponent } from '../../../block/components/side-blocks-button/side-blocks-button';
+import { CoreCoursesMyPageName } from '@features/courses/constants';
 
 /**
  * Page that shows a my courses.
@@ -65,7 +66,7 @@ export default class CoreCoursesMyPage implements OnInit, OnDestroy, AsyncDirect
     loadedBlock?: Partial<CoreCourseBlock>;
     myOverviewBlock?: AddonBlockMyOverviewComponent;
     loaded = false;
-    myPageCourses = CoreCoursesDashboardProvider.MY_PAGE_COURSES;
+    myPageCourses = CoreCoursesMyPageName.COURSES;
     hasSideBlocks = false;
 
     protected updateSiteObserver: CoreEventObserver;
@@ -182,7 +183,7 @@ export default class CoreCoursesMyPage implements OnInit, OnDestroy, AsyncDirect
 
         const promises: Promise<void>[] = [];
 
-        promises.push(CoreCoursesDashboard.invalidateDashboardBlocks(CoreCoursesDashboardProvider.MY_PAGE_COURSES));
+        promises.push(CoreCoursesDashboard.invalidateDashboardBlocks(CoreCoursesMyPageName.COURSES));
 
         // Invalidate the blocks.
         if (this.myOverviewBlock) {

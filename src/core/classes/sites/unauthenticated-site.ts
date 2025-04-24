@@ -245,7 +245,7 @@ export class CoreUnauthenticatedSite {
      * Get the public config of this site.
      *
      * @param options Options.
-     * @returns Promise resolved with public config. Rejected with an object if error, see CoreWSProvider.callAjax.
+     * @returns Promise resolved with public config. Rejected with an object if error, see CoreWS.callAjax.
      */
     async getPublicConfig(options: { readingStrategy?: CoreSitesReadingStrategy } = {}): Promise<CoreSitePublicConfigResponse> {
         const ignoreCache = options.readingStrategy === CoreSitesReadingStrategy.ONLY_NETWORK ||
