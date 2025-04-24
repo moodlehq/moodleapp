@@ -82,9 +82,9 @@
         }
 
         <core-loading [hideUntil]="!showResultsLoading" [fullscreen]="false">
-            <ion-grid class="ion-no-padding">
+            <ion-grid class="ion-no-padding addon-mod-choice-chart-results">
                 <ion-row>
-                    <ion-col size="12" size-lg="5">
+                    <ion-col size="12" size-lg="6">
                         <ion-item class="ion-text-wrap core-warning-item" *ngIf="hasOffline">
                             <ion-icon slot="start" name="fas-triangle-exclamation" color="warning" aria-hidden="true" />
                             <ion-label>{{ 'addon.mod_choice.resultsnotsynced' | translate }}</ion-label>
@@ -96,7 +96,7 @@
                             </ion-label>
                         </ion-item>
                     </ion-col>
-                    <ion-col *ngIf="choice.publish && results" size="12" size-lg="7">
+                    <ion-col *ngIf="choice.publish && results" size="12" size-lg="6">
                         <ion-item-group *ngFor="let result of results">
                             <ion-item [button]="result.numberofuser > 0" class="divider ion-text-wrap" (click)="toggle(result)"
                                 [attr.aria-label]="(result.expanded ? 'core.collapse' : 'core.expand') | translate" [detail]="false">
