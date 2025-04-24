@@ -136,7 +136,7 @@ export class CoreIframe {
 
         if (!canHandleLink) {
             div.innerHTML = (isSubframe ? '' : '<div class="core-iframe-network-error"></div>') +
-                `<p>${Translate.instant('core.networkerroriframemsg')}</p>`;
+                `<p>${Translate.instant('core.notavailableoffline')}</p>`;
 
             element.parentElement?.insertBefore(div, element);
 
