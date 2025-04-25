@@ -25,6 +25,25 @@
         display: none;
     }
 
+    .core-grading-summary-grade {
+        display: flex;
+        align-items: center;
+        gap: 0.25rem;
+
+        ion-icon {
+            flex-shrink: 0;
+        }
+
+        .penalty-indicator-icon {
+            display: none;
+        }
+    }
+
+    .core-grading-summary-penalty {
+        color: var(--danger);
+        font-size: 0.75em;
+    }
+
     ion-badge {
         margin-left: 2px;
         margin-right: 2px;

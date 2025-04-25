@@ -79,10 +79,21 @@
                                                 } @else if (column.name === 'grade') {
                                                     <td [class.ion-hide-md-down]="column.hiddenPhone"
                                                         class="ion-text-start core-grades-table-grade {{row.gradeClass}}">
-                                                        @if (row.gradeIcon) {
-                                                            <ion-icon [name]="row.gradeIcon" [attr.aria-label]="row.gradeIconAlt" />
+                                                        <div>
+                                                            @if (row.gradeIcon) {
+                                                                <ion-icon [name]="row.gradeIcon" [attr.aria-label]="row.gradeIconAlt" />
+                                                            }
+                                                            @if (row.penalty) {
+                                                                <ion-icon name="fas-triangle-exclamation" color="danger"
+                                                                    aria-hidden="true" />
+                                                            }
+                                                            <span [innerHTML]="row[column.name]"></span>
+                                                        </div>
+                                                        @if (row.penalty) {
+                                                            <div class="core-grades-expanded-grade-penalty" [class.sr-only]="showSummary">
+                                                                {{ row.penalty }}
+                                                            </div>
                                                         }
-                                                        <span [innerHTML]="row[column.name]"></span>
                                                     </td>
                                                 } @else if (column.name !== 'gradeitem' && column.name !== 'feedback' &&
                                                         column.name !== 'grade' && row[column.name] !== undefined) {
@@ -112,7 +123,18 @@
                                                 <ion-item class="ion-text-wrap">
                                                     <ion-label>
                                                         <p class="item-heading">{{ 'core.gradenoun' | translate}}</p>
-                                                        <p [innerHTML]="row.grade"></p>
+                                                        <p class="core-grades-expanded-grade">
+                                                            @if (row.penalty) {
+                                                                <ion-icon name="fas-triangle-exclamation" color="danger"
+                                                                    aria-hidden="true" />
+                                                            }
+                                                            <span [innerHTML]="row.grade"></span>
+                                                        </p>
+                                                        @if (row.penalty) {
+                                                            <p class="core-grades-expanded-grade-penalty">
+                                                                {{ row.penalty }}
+                                                            </p>
+                                                        }
                                                     </ion-label>
                                                 </ion-item>
                                             }
