@@ -262,9 +262,19 @@
                         <ion-item class="ion-text-wrap core-grading-summary">
                             <ion-label>
                                 <p class="item-heading">{{ 'core.gradenoun' | translate }}</p>
-                                <p>
-                                    <core-format-text [text]="feedback.gradefordisplay" [filter]="false" />
+                                <p class="core-grading-summary-grade">
+                                    @if (feedback.penalty) {
+                                        <ion-icon name="fas-triangle-exclamation" color="danger" aria-hidden="true" />
+                                    }
+                                    <span>
+                                        <core-format-text [text]="feedback.gradefordisplay" [filter]="false" />
+                                    </span>
                                 </p>
+                                @if (feedback.penalty) {
+                                    <p class="core-grading-summary-penalty">
+                                        {{ feedback.penalty }}
+                                    </p>
+                                }
                             </ion-label>
                             @if (feedback.advancedgrade) {
                                 <ion-button slot="end" (click)="showAdvancedGrade(feedback.gradefordisplay)"
@@ -365,9 +375,17 @@
                                             <ion-item class="ion-text-wrap core-grading-summary">
                                                 <ion-label>
                                                     <p class="item-heading">{{ 'core.gradenoun' | translate }}</p>
-                                                    <p>
+                                                    <p class="core-grading-summary-grade">
+                                                        @if (attempt.penalty) {
+                                                            <ion-icon name="fas-triangle-exclamation" color="danger" aria-hidden="true" />
+                                                        }
                                                         <core-format-text [text]="attempt.grade.gradefordisplay" [filter]="false" />
                                                     </p>
+                                                    @if (attempt.penalty) {
+                                                        <p class="core-grading-summary-penalty">
+                                                            {{ attempt.penalty }}
+                                                        </p>
+                                                    }
                                                 </ion-label>
                                                 @if (attempt.advancedgrade) {
                                                     <ion-button slot="end" (click)="showAdvancedGrade(attempt.grade.gradefordisplay)"

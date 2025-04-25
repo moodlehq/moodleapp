@@ -59,13 +59,27 @@
                 <ion-item class="ion-text-wrap" *ngIf="grade.method === 'simple'">
                     <ion-label>
                         <p class="item-heading">{{ 'addon.mod_assign.currentgrade' | translate }}</p>
-                        <p *ngIf="grade.gradebookGrade && !grade.scale">
-                            {{ grade.gradebookGrade }}
+                        <p class="core-grading-summary-grade">
+                            @if (grade.gradebookGrade) {
+                                @if (grade.penalty) {
+                                    <ion-icon name="fas-triangle-exclamation" color="danger" aria-hidden="true" />
+                                }
+                                <span>
+                                    @if (grade.scale) {
+                                        {{ grade.scale[grade.gradebookGrade].label }}
+                                    } @else {
+                                        {{ grade.gradebookGrade }}
+                                    }
+                                </span>
+                            } @else {
+                                -
+                            }
                         </p>
-                        <p *ngIf="grade.gradebookGrade && grade.scale">
-                            {{ grade.scale[grade.gradebookGrade].label }}
-                        </p>
-                        <p *ngIf="!grade.gradebookGrade">-</p>
+                        @if (grade.penalty) {
+                            <p class="core-grading-summary-penalty">
+                                {{ grade.penalty }}
+                            </p>
+                        }
                     </ion-label>
                 </ion-item>
 
