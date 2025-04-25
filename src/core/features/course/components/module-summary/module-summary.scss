@@ -1,5 +1,25 @@
 @use "theme/globals" as *;
 
+:host {
+    .core-grading-summary-grade {
+        display: flex;
+        align-items: center;
+
+        ion-icon {
+            flex-shrink: 0;
+        }
+
+        ::ng-deep .penalty-indicator-icon {
+            display: none;
+        }
+    }
+
+    .core-grading-summary-penalty {
+        color: var(--danger);
+        font-size: 0.75em;
+    }
+}
+
 :host ::ng-deep ion-item[collapsible] ion-label {
     margin-top: 12px;
 }
