@@ -589,15 +589,15 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy {
      * @param feedback The feedback data from the submission status.
      */
     protected async loadFeedback(assign: AddonModAssignAssign, feedback?: AddonModAssignSubmissionFeedback): Promise<void> {
-        if (feedback) {
-            this.feedback = feedback;
+        this.feedback = feedback;
 
+        if (this.feedback) {
             // If we have data about the grader, get its profile.
-            this.grader = await this.getGrader(feedback.grade);
+            this.grader = await this.getGrader(this.feedback.grade);
 
             // Check if the grade uses advanced grading.
-            this.feedback.advancedgrade = this.getAdvancedGrade(feedback.gradefordisplay);
-            this.feedback.penalty = CoreGradesHelper.getPenaltyFromGrade(feedback.gradefordisplay);
+            this.feedback.advancedgrade = this.getAdvancedGrade(this.feedback.gradefordisplay);
+            this.feedback.penalty = CoreGradesHelper.getPenaltyFromGrade(this.feedback.gradefordisplay);
         }
 
         // Get the grade for the assign.
