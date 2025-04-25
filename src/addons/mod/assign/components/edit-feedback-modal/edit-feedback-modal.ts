@@ -53,6 +53,7 @@ import { CoreFormFields, CoreForms } from '@singletons/form';
 @Component({
     selector: 'addon-mod-assign-edit-feedback-modal',
     templateUrl: 'edit-feedback-modal.html',
+    styleUrl: 'edit-feedback-modal.scss',
     standalone: true,
     imports: [
         CoreSharedModule,
@@ -359,6 +360,8 @@ export class AddonModAssignEditFeedbackModalComponent implements OnDestroy, OnIn
                 });
                 gradeInfo.disabled = grade.gradeislocked || grade.gradeisoverridden;
             }
+
+            this.grade.penalty = CoreGradesHelper.getPenaltyFromGrade(grade.gradeformatted);
         });
 
         gradeInfo.outcomes = outcomes;
@@ -599,6 +602,7 @@ type AddonModAssignSubmissionGrade = {
     lang: string;
     disabled: boolean;
     unreleasedGrade?: SafeNumber | string;
+    penalty?: string; // Parsed from grade.
 };
 
 type AddonModAssignGradeInfo = Omit<CoreCourseModuleGradeInfo, 'outcomes'> & {

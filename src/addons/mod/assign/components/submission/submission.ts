@@ -511,6 +511,7 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy {
                 // If we have data about the grader, get its profile.
                 attempt.grader = await this.getGrader(attempt.grade);
                 attempt.advancedgrade = this.getAdvancedGrade(attempt.grade?.gradefordisplay);
+                attempt.penalty = CoreGradesHelper.getPenaltyFromGrade(attempt.grade?.gradefordisplay);
             });
 
             promises.push(...graderPromises);
@@ -596,6 +597,7 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy {
 
             // Check if the grade uses advanced grading.
             this.feedback.advancedgrade = this.getAdvancedGrade(feedback.gradefordisplay);
+            this.feedback.penalty = CoreGradesHelper.getPenaltyFromGrade(feedback.gradefordisplay);
         }
 
         // Get the grade for the assign.
@@ -1042,12 +1044,14 @@ type AddonModAssignSubmissionAttemptFormatted = AddonModAssignSubmissionAttempt 
  */
 type AddonModAssignSubmissionFeedbackFormatted = AddonModAssignSubmissionFeedback & {
     advancedgrade?: boolean; // Calculated in the app. Whether it uses advanced grading.
+    penalty?: string; // Parsed from gradefordisplay.
 };
 
 type AddonModAssignSubmissionPreviousAttemptFormatted = AddonModAssignSubmissionPreviousAttempt & {
     submissionStatusBadge?: StatusBadge;
     grader?: CoreUserProfile;
     advancedgrade?: boolean;
+    penalty?: string; // Parsed from gradefordisplay.
 };
 
 type StatusBadge = {
