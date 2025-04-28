@@ -138,7 +138,6 @@ export class CoreTime {
         const plugins = [
             import('dayjs/plugin/localeData'),
             import('dayjs/plugin/objectSupport'),
-            import('dayjs/plugin/updateLocale'),
             import('dayjs/plugin/dayOfYear'),
             import('dayjs/plugin/weekday'),
             import('dayjs/plugin/calendar'),
@@ -156,8 +155,7 @@ export class CoreTime {
 
         // Set relative time thresholds for humanize(), otherwise for example 47 minutes were converted to 'an hour'.
         const strictThresholds = [
-            { l: 's', r: 1 },
-            { l: 'ss', r: 59, d: 'second' },
+            { l: 's', r: 59, d: 'second' }, // ss is not declared on locale.
             { l: 'm', r: 1 },
             { l: 'mm', r: 59, d: 'minute' },
             { l: 'h', r: 1 },
@@ -178,21 +176,6 @@ export class CoreTime {
         const plugin = await import('dayjs/plugin/relativeTime');
 
         dayjs.extend(plugin.default, config);
-
-        // This is a workaround to fix the relative time translations.
-        // https://github.com/iamkun/dayjs/issues/1545
-        dayjs.updateLocale('en', {
-            relativeTime: {
-                ...dayjs.Ls['en'].relativeTime,
-                ss: '%d seconds',
-                mm: '%d minutes',
-                hh: '%d hours',
-                dd: '%d days',
-                // eslint-disable-next-line @typescript-eslint/naming-convention
-                MM: '%d months',
-                yy: '%d years',
-            },
-        });
     }
 
     /**
