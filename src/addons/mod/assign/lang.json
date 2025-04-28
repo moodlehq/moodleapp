@@ -16,6 +16,7 @@
     "attemptreopenmethod": "Grant attempts",
     "attemptreopenmethod_automatic": "Automatically",
     "attemptreopenmethod_manual": "Manually",
+    "attemptreopenmethod_none": "Never",
     "attemptreopenmethod_untilpass": "Automatically until pass",
     "attemptsettings": "Attempt settings",
     "beginassignment": "Begin assignment",
