@@ -132,6 +132,8 @@ export class CoreGradesHelperProvider {
                     row.gradeIconAlt = Translate.instant('core.grades.fail');
                     content = CoreText.cleanTags(content);
                 }
+
+                row.penalty = CoreGradesHelper.getPenaltyFromGrade(content);
             } else {
                 content = CoreText.replaceNewLines(content, '<br>');
             }
@@ -424,6 +426,24 @@ export class CoreGradesHelperProvider {
 
             return false;
         }));
+    }
+
+    /**
+     * Parse the penalty message from the grade HTML content.
+     *
+     * @param grade Grade to parse.
+     * @returns The penalty message or undefined if not found.
+     */
+    getPenaltyFromGrade(grade?: string): string | undefined {
+        if (!grade) {
+            return undefined;
+        }
+
+        const template = document.createElement('template');
+        template.innerHTML = grade;
+        const icon = template.content.querySelector<HTMLElement>('.penalty-indicator-icon');
+
+        return icon?.title;
     }
 
     /**
@@ -758,6 +778,7 @@ export type CoreGradesFormattedTableRow = CoreGradesFormattedRowCommonData & {
     gradeClass?: string;
     gradeIcon?: string;
     gradeIconAlt?: string;
+    penalty?: string;
 };
 
 export type CoreGradesFormattedTableColumn = {

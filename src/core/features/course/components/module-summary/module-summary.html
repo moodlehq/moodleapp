@@ -69,22 +69,34 @@
                         <ion-icon name="fas-chevron-right" flip-rtl slot="start" aria-hidden="true" class="expandable-status-icon"
                             [class.expandable-status-icon-expanded]="grade.expanded" />
                         <ion-label>
-                            <p class="item-heading" *ngIf="!grade.itemmodule">
-                                <core-format-text [text]="grade.gradeitem" contextLevel="course" [contextInstanceId]="courseId" />
+                            <p class="item-heading">
+                                @if (grade.itemmodule) {
+                                    {{ 'core.gradenoun' | translate }}
+                                } @else {
+                                    <core-format-text [text]="grade.gradeitem" contextLevel="course" [contextInstanceId]="courseId" />
+                                }
                             </p>
-                            <p class="item-heading" *ngIf="grade.itemmodule">
-                                {{ 'core.gradenoun' | translate }}
-                            </p>
-                            <p *ngIf="grade.grade && grade.grade !== '-'" [innerHTML]="grade.grade"></p>
-                            <ion-badge *ngIf="!grade.grade || grade.grade === '-'" color="light">
-                                {{ 'core.grades.notgraded' | translate }}
-                            </ion-badge>
+                            @if (grade.grade && grade.grade !== '-') {
+                                <p class="core-grading-summary-grade">
+                                    @if (grade.penalty) {
+                                        <ion-icon name="fas-triangle-exclamation" color="danger" aria-hidden="true" />
+                                    }
+                                    <span [innerHTML]="grade.grade"></span>
+                                </p>
+                            } @else {
+                                <ion-badge color="light">
+                                    {{ 'core.grades.notgraded' | translate }}
+                                </ion-badge>
+                            }
+                            @if (grade.penalty) {
+                                <p class="core-grading-summary-penalty" [class.sr-only]="!grade.expanded">
+                                    {{ grade.penalty }}
+                                </p>
+                            }
                         </ion-label>
                         <ion-icon *ngIf="grade.icon" name="{{grade.icon}}" slot="end" [attr.aria-label]="grade.iconAlt" />
                         <img *ngIf="grade.image && !grade.itemmodule" [url]="grade.image" slot="end" [alt]="grade.iconAlt"
                             core-external-content />
-                        <ion-icon *ngIf="grade.image && grade.itemmodule" name="fas-chart-bar" slot="end"
-                            [attr.aria-label]="grade.iconAlt" />
                     </ion-item>
                     <div *ngIf="grade.expanded" [id]="'grade-'+grade.id">
                         <ion-item class="ion-text-wrap" *ngIf="grade.weight?.length > 0 && grade.weight !== '-'">
