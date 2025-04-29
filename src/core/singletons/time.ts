@@ -14,7 +14,8 @@
 
 import { Translate } from '@singletons';
 import { CoreConstants } from '../constants';
-import dayjs from 'dayjs';
+import { dayjs } from '@/core/utils/dayjs';
+import { CorePlatform } from '@services/platform';
 
 /**
  * Singleton with helper functions for time operations.
@@ -143,8 +144,10 @@ export class CoreTime {
             import('dayjs/plugin/calendar'),
             import('dayjs/plugin/localizedFormat'),
             import('dayjs/plugin/utc'),
-            import('dayjs/plugin/timezone'),
         ];
+        if (CorePlatform.isAutomated()) {
+            plugins.push(import('dayjs/plugin/timezone'));
+        }
 
         const result = await Promise.all(plugins);
         result.map((plugin) => {
@@ -292,24 +295,6 @@ export class CoreTime {
     }
 
     /**
-     * Force timezone to use. Timezone is forced for automated tests.
-     */
-    static async forceTimezoneForTesting(): Promise<void> {
-        await CoreTime.initialize();
-
-        // Use the same timezone forced for LMS in tests.
-        dayjs.tz.setDefault('Australia/Perth');
-    }
-
-    /**
-     * Reset timezone to use. Timezone is forced for automated tests.
-     */
-    static resetTimezoneForTesting(): void {
-        // Use the local timezone.
-        dayjs.tz.setDefault();
-    }
-
-    /**
      * Translates legacy timezone names.
      *
      * @param tz Timezone name.
@@ -355,7 +340,7 @@ export class CoreTime {
      * @returns The readable timestamp.
      */
     static readableTimestamp(): string {
-        return dayjs.tz().format('YYYYMMDDHHmmss');
+        return dayjs().format('YYYYMMDDHHmmss');
     }
 
     /**
@@ -364,7 +349,7 @@ export class CoreTime {
      * @returns The current timestamp in seconds.
      */
     static timestamp(): number {
-        return dayjs.tz().unix();
+        return dayjs().unix();
     }
 
     /**
@@ -472,7 +457,7 @@ export class CoreTime {
             format = CoreTime.convertPHPToJSDateFormat(format);
         }
 
-        return dayjs.tz(timestamp).format(format);
+        return dayjs(timestamp).format(format);
     }
 
     /**
@@ -484,7 +469,7 @@ export class CoreTime {
     static toDatetimeFormat(timestamp?: number): string {
         // See https://ionicframework.com/docs/api/datetime#iso-8601-datetime-format-yyyy-mm-ddthhmmz
         // Do not use toISOString because it returns the date in UTC.
-        return dayjs.tz(timestamp).format('YYYY-MM-DDTHH:mm');
+        return dayjs(timestamp).format('YYYY-MM-DDTHH:mm');
     }
 
     /**
@@ -510,8 +495,8 @@ export class CoreTime {
      */
     static getMidnightForTimestamp(timestamp?: number): number {
         return timestamp === undefined
-            ? dayjs.tz().startOf('day').unix()
-            : dayjs.tz(timestamp * 1000).startOf('day').unix();
+            ? dayjs().startOf('day').unix()
+            : dayjs(timestamp * 1000).startOf('day').unix();
     }
 
     /**
@@ -520,7 +505,7 @@ export class CoreTime {
      * @returns The maximum year for datetime inputs.
      */
     static getDatetimeDefaultMax(): string {
-        return String(dayjs.tz().year() + 20);
+        return String(dayjs().year() + 20);
     }
 
     /**
@@ -529,7 +514,7 @@ export class CoreTime {
      * @returns The minimum year for datetime inputs.
      */
     static getDatetimeDefaultMin(): string {
-        return String(dayjs.tz().year() - 20);
+        return String(dayjs().year() - 20);
     }
 
 }

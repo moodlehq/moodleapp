@@ -17,7 +17,7 @@ import { CoreSites } from '@services/sites';
 import {
     AddonCalendarEvent,
 } from '@addons/calendar/services/calendar';
-import dayjs from 'dayjs';
+import { dayjs } from '@/core/utils/dayjs';
 import { makeSingleton } from '@singletons';
 import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
 
@@ -280,7 +280,7 @@ export class AddonBlockTimelineProvider {
      * @returns timestamp.
      */
     getDayStart(daysOffset = 0): number {
-        return dayjs.tz().startOf('day').add(daysOffset, 'days').unix();
+        return dayjs().startOf('day').add(daysOffset, 'days').unix();
     }
 
 }

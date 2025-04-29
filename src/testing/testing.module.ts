@@ -13,7 +13,6 @@
 // limitations under the License.
 
 import { APP_INITIALIZER, NgModule } from '@angular/core';
-import { CoreTime } from '@singletons/time';
 import { TestingBehatRuntime, TestingBehatRuntimeService } from './services/behat-runtime';
 import { CorePlatform } from '@services/platform';
 
@@ -32,9 +31,6 @@ async function initializeAutomatedTests(window: AutomatedTestsWindow) {
     }
 
     window.behat = TestingBehatRuntime.instance;
-
-    // Force timezone for automated tests.
-    await CoreTime.forceTimezoneForTesting();
 }
 
 @NgModule({
