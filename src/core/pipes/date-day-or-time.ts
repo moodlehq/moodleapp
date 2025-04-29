@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { Pipe, PipeTransform } from '@angular/core';
-import dayjs from 'dayjs';
+import { dayjs } from '@/core/utils/dayjs';
 
 import { CoreTime } from '@singletons/time';
 import { Translate } from '@singletons';
@@ -62,7 +62,7 @@ export class CoreDateDayOrTimePipe implements PipeTransform {
             timestamp = numberTimestamp;
         }
 
-        return dayjs.tz(timestamp * 1000).calendar(null, {
+        return dayjs(timestamp * 1000).calendar(null, {
             sameDay: CoreTime.convertPHPToJSDateFormat(Translate.instant('core.strftimetime')),
             lastDay: Translate.instant('core.dflastweekdate'),
             lastWeek: Translate.instant('core.dflastweekdate'),

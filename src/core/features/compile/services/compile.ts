@@ -76,7 +76,7 @@ import { getXAPIServices } from '@features/xapi/xapi.module';
 import { DomSanitizer } from '@angular/platform-browser';
 import { FormBuilder, Validators } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
-import dayjs from 'dayjs';
+import { dayjs } from '@/core/utils/dayjs';
 import { Md5 } from 'ts-md5/dist/md5';
 
 // Import core classes that can be useful for site plugins.
@@ -294,9 +294,9 @@ export class CoreCompileProvider {
         instance['CoreLoggerProvider'] = CoreLogger;
         /**
          * @deprecated since 5.0, plugins should use native Date parsing functions instead.
-         * Also now it uses DayJS.tz.
+         * Also now it uses dayjs.
          */
-        instance['moment'] = dayjs.tz;
+        instance['moment'] = dayjs;
         instance['Md5'] = Md5;
         instance['signal'] = signal;
         instance['computed'] = computed;

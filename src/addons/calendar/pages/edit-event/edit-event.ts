@@ -40,7 +40,7 @@ import { CoreNavigator } from '@services/navigator';
 import { CanLeave } from '@guards/can-leave';
 import { CoreForms } from '@singletons/form';
 import { CoreReminders, CoreRemindersService } from '@features/reminders/services/reminders';
-import dayjs from 'dayjs';
+import { dayjs } from '@/core/utils/dayjs';
 import {
     ADDON_CALENDAR_COMPONENT,
     ADDON_CALENDAR_EDIT_EVENT_EVENT,
@@ -473,8 +473,8 @@ export default class AddonCalendarEditEventPage implements OnInit, OnDestroy, Ca
     async submit(): Promise<void> {
         // Validate data.
         const formData = this.form.value;
-        const timeStartDate = dayjs.tz(formData.timestart).unix();
-        const timeUntilDate = dayjs.tz(formData.timedurationuntil).unix();
+        const timeStartDate = dayjs(formData.timestart).unix();
+        const timeUntilDate = dayjs(formData.timedurationuntil).unix();
         const timeDurationMinutes = parseInt(formData.timedurationminutes || '', 10);
         let error: string | undefined;
 
@@ -661,7 +661,7 @@ export default class AddonCalendarEditEventPage implements OnInit, OnDestroy, Ca
      */
     async addReminder(): Promise<void> {
         const formData = this.form.value;
-        const eventTime = dayjs.tz(formData.timestart).unix();
+        const eventTime = dayjs(formData.timestart).unix();
 
         const { CoreRemindersSetReminderMenuComponent } =
             await import('@features/reminders/components/set-reminder-menu/set-reminder-menu');
