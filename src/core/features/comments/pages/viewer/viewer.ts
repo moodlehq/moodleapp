@@ -383,6 +383,9 @@ export default class CoreCommentsViewerPage implements OnInit, OnDestroy, AfterV
 
             } else if (commentsResponse === false) {
                 // Comments added in offline mode.
+                // Store the text in newComment to avoid text input being empty after modifying an existing offline comment.
+                this.newComment = text;
+
                 await this.loadOfflineData();
             }
 
