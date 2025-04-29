@@ -20,7 +20,7 @@ import { CoreContentLinksAction } from '@features/contentlinks/services/contentl
 import { CoreNavigator } from '@services/navigator';
 import { makeSingleton } from '@singletons';
 import { AddonCalendar } from '../calendar';
-import dayjs from 'dayjs';
+import { dayjs } from '@/core/utils/dayjs';
 
 const SUPPORTED_VIEWS = ['month', 'mini', 'minithree', 'day', 'upcoming', 'upcoming_mini'];
 
@@ -55,7 +55,7 @@ export class AddonCalendarViewLinkHandlerService extends CoreContentLinksHandler
                     };
                     const timestamp = params.time ? Number(params.time) * 1000 : Date.now();
 
-                    const dayJSInstance = dayjs.tz(timestamp);
+                    const dayJSInstance = dayjs(timestamp);
                     stateParams.year = dayJSInstance.year();
                     stateParams.month = dayJSInstance.month() + 1;
 
@@ -72,7 +72,7 @@ export class AddonCalendarViewLinkHandlerService extends CoreContentLinksHandler
                     };
                     const timestamp = params.time ? Number(params.time) * 1000 : Date.now();
 
-                    const dayJSInstance = dayjs.tz(timestamp);
+                    const dayJSInstance = dayjs(timestamp);
                     stateParams.year = dayJSInstance.year();
                     stateParams.month = dayJSInstance.month() + 1;
                     stateParams.day = dayJSInstance.date();

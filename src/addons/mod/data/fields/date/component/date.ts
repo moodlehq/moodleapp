@@ -14,7 +14,7 @@
 
 import { Component } from '@angular/core';
 import { CoreTime } from '@singletons/time';
-import dayjs, { Dayjs } from 'dayjs';
+import { dayjs, Dayjs } from '@/core/utils/dayjs';
 import { AddonModDataFieldPluginBaseComponent } from '../../../classes/base-field-plugin-component';
 import { CoreSharedModule } from '@/core/shared.module';
 
@@ -56,15 +56,15 @@ export class AddonModDataFieldDateComponent extends AddonModDataFieldPluginBaseC
             this.addControl(`f_${this.field.id}_z`);
 
             dayJSInstance = this.searchFields['f_' + this.field.id + '_y']
-                ? dayjs.tz(this.searchFields['f_' + this.field.id + '_y'] + '-' +
+                ? dayjs(this.searchFields['f_' + this.field.id + '_y'] + '-' +
                     this.searchFields['f_' + this.field.id + '_m'] + '-' + this.searchFields['f_' + this.field.id + '_d'])
-                : dayjs.tz();
+                : dayjs();
 
             this.searchFields[`f_${this.field.id}`] = CoreTime.toDatetimeFormat(dayJSInstance.valueOf());
         } else {
             dayJSInstance = this.value?.content
-                ? dayjs.tz(parseInt(this.value.content, 10) * 1000)
-                : dayjs.tz();
+                ? dayjs(parseInt(this.value.content, 10) * 1000)
+                : dayjs();
 
         }
 

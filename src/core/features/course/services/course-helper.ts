@@ -14,7 +14,7 @@
 
 import { Injectable } from '@angular/core';
 import { Params } from '@angular/router';
-import dayjs from 'dayjs';
+import { dayjs } from '@/core/utils/dayjs';
 
 import { CoreSites, CoreSitesReadingStrategy } from '@services/sites';
 import {
@@ -1365,9 +1365,9 @@ export class CoreCourseHelperProvider {
         const downloadTime = packageData.downloadTime;
         let downloadTimeReadable = '';
         if (now - downloadTime < 7 * 86400) {
-            downloadTimeReadable = dayjs.tz(downloadTime * 1000).fromNow();
+            downloadTimeReadable = dayjs(downloadTime * 1000).fromNow();
         } else {
-            downloadTimeReadable = dayjs.tz(downloadTime * 1000).calendar();
+            downloadTimeReadable = dayjs(downloadTime * 1000).calendar();
         }
 
         return {
