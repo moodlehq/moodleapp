@@ -139,7 +139,7 @@ export default class CoreSettingsGeneralPage {
         try {
             await CoreLang.changeCurrentLanguage(this.selectedLanguage);
         } finally {
-            const langName = this.languages.find((lang) => lang.code == this.selectedLanguage)?.name;
+            const langName = this.languages.find((lang) => lang.code === this.selectedLanguage)?.name;
 
             const buttons: AlertButton[] = [
                 {
