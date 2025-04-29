@@ -37,7 +37,7 @@ import { CoreCommentsOffline } from '@features/comments/services/comments-offlin
 import { CoreCommentsDBRecord } from '@features/comments/services/database/comments';
 import { CoreTime } from '@singletons/time';
 import { CoreNetwork } from '@services/network';
-import dayjs from 'dayjs';
+import { dayjs } from '@/core/utils/dayjs';
 import { Subscription } from 'rxjs';
 import { CoreAnimations } from '@components/animations';
 import { CoreToasts, ToastDuration } from '@services/overlays/toasts';
@@ -552,7 +552,7 @@ export default class CoreCommentsViewerPage implements OnInit, OnDestroy, AfterV
         }
 
         // Check if day has changed.
-        return !dayjs.tz(comment.timecreated * 1000).isSame(prevComment.timecreated * 1000, 'day');
+        return !dayjs(comment.timecreated * 1000).isSame(prevComment.timecreated * 1000, 'day');
     }
 
     /**

@@ -20,7 +20,7 @@ import { CoreConfig } from '@services/config';
 import { CoreSubscriptions } from '@singletons/subscriptions';
 import { makeSingleton, Translate } from '@singletons';
 
-import dayjs from 'dayjs';
+import { dayjs } from '@/core/utils/dayjs';
 import { CoreSite } from '../classes/sites/site';
 import { CorePlatform } from '@services/platform';
 import { CoreLogger } from '@singletons/logger';

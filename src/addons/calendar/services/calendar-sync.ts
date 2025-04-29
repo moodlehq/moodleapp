@@ -28,7 +28,7 @@ import { AddonCalendarHelper } from './calendar-helper';
 import { makeSingleton, Translate } from '@singletons';
 import { CoreSync, CoreSyncResult } from '@services/sync';
 import { CoreNetworkError } from '@classes/errors/network-error';
-import { Dayjs } from 'dayjs';
+import { Dayjs } from '@/core/utils/dayjs';
 import {
     ADDON_CALENDAR_AUTO_SYNCED,
     ADDON_CALENDAR_COMPONENT,

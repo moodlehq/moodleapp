@@ -246,6 +246,10 @@ const appConfig = {
         'no-irregular-whitespace': 'error',
         'no-multiple-empty-lines': ['error', { max: 1 }],
         'no-new-wrappers': 'error',
+        'no-restricted-imports': ['error', {
+            'name': 'dayjs',
+            'message': 'Please use the dayjs wrapper from @/core/utils/dayjs instead.',
+        }],
         'no-sequences': 'error',
         'no-trailing-spaces': 'error',
         'no-unused-labels': 'error',
