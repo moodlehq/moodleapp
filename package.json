@@ -138,7 +138,7 @@
         "@angular/compiler-cli": "17.3.12",
         "@angular/language-service": "17.3.12",
         "@ionic/angular-toolkit": "11.0.1",
-        "@ionic/cli": "7.2.0",
+        "@ionic/cli": "7.2.1",
         "@jsdevtools/coverage-istanbul-loader": "3.0.5",
         "@types/faker": "5.5.9",
         "@types/jest": "26.0.24",
