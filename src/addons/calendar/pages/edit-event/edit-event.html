@@ -176,13 +176,13 @@
             <!-- Repeat (for new events). -->
             <ng-container *ngIf="!eventId || eventId < 0">
                 <ion-item class="ion-text-wrap divider">
-                    <ion-checkbox labelPlacement="start" formControlName="repeat">
+                    <ion-checkbox labelPlacement="start" formControlName="repeat" (ionChange)="repeatChanged()">
                         <p class="item-heading">{{ 'addon.calendar.repeatevent' | translate }}</p>
                     </ion-checkbox>
                 </ion-item>
                 <ion-item class="ion-text-wrap">
                     <ion-input labelPlacement="stacked" [label]="'addon.calendar.repeatweeksl' | translate" type="number" name="repeats"
-                        formControlName="repeats" [disabled]="!form.controls.repeat.value" />
+                        formControlName="repeats" />
                 </ion-item>
             </ng-container>
 
