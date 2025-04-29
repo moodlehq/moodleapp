@@ -228,10 +228,9 @@ export default class CoreCommentsViewerPage implements OnInit, OnDestroy, AfterV
 
             this.comments.forEach((comment, index) => this.calculateCommentData(comment, this.comments[index - 1]));
 
-            this.canDeleteComments = this.addDeleteCommentsAvailable &&
-                (this.hasOffline || this.comments.some((comment) => !!comment.delete));
-
             await this.loadOfflineData();
+
+            this.calculateCanDelete();
         } catch (error) {
             this.loadMoreError = true; // Set to prevent infinite calls with infinite-loading.
             if (error && this.componentName === ADDON_MOD_ASSIGN_COMMENTS_COMPONENT_NAME) {
@@ -370,7 +369,6 @@ export default class CoreCommentsViewerPage implements OnInit, OnDestroy, AfterV
 
                 // Add the comment to the top.
                 this.comments = this.comments.concat([addedComment]);
-                this.canDeleteComments = this.addDeleteCommentsAvailable;
 
                 CoreEvents.trigger(CoreCommentsProvider.COMMENTS_COUNT_CHANGED_EVENT, {
                     contextLevel: this.contextLevel,
@@ -387,6 +385,8 @@ export default class CoreCommentsViewerPage implements OnInit, OnDestroy, AfterV
                 // Comments added in offline mode.
                 await this.loadOfflineData();
             }
+
+            this.calculateCanDelete();
         } catch (error) {
             CoreAlerts.showError(error);
         } finally {
@@ -431,6 +431,8 @@ export default class CoreCommentsViewerPage implements OnInit, OnDestroy, AfterV
             return;
         }
 
+        const modal = await CoreLoadings.show('core.sending', true);
+
         try {
             const deletedOnline = await CoreComments.deleteComment(deleteComment);
             this.showDelete = false;
@@ -453,10 +455,11 @@ export default class CoreCommentsViewerPage implements OnInit, OnDestroy, AfterV
                     this.refreshInBackground();
                 }
             } else {
-                this.loadOfflineData();
+                await this.loadOfflineData();
             }
 
             this.invalidateComments();
+            this.calculateCanDelete();
 
             CoreToasts.show({
                 message: 'core.comments.eventcommentdeleted',
@@ -465,7 +468,17 @@ export default class CoreCommentsViewerPage implements OnInit, OnDestroy, AfterV
             });
         } catch (error) {
             CoreAlerts.showError(error, { default: 'Delete comment failed.' });
+        } finally {
+            modal.dismiss();
         }
+    }
+
+    /**
+     * Calculate whether user can delete comments.
+     */
+    protected calculateCanDelete(): void {
+        this.canDeleteComments = this.addDeleteCommentsAvailable &&
+            (this.hasOffline || this.comments.some((comment) => !!comment.delete));
     }
 
     /**
