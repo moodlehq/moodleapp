@@ -43,7 +43,6 @@ body.core-reading-mode-enabled {
         background: var(--background);
 
         [core-reading-mode] {
-            zoom: var(--reading-mode-zoom, 1);
             &> * {
                 --ion-item-background: var(--reading-mode-background, --ion-background-color);
                 --text-color: var(--reading-mode-text-color, --text-color);
@@ -55,6 +54,22 @@ body.core-reading-mode-enabled {
 
         .hide-on-reading-mode {
             display: none !important;
+        }
+    }
+
+    ion-content.core-reading-mode-content.md,
+    ion-content.core-reading-mode-content.md core-split-view ion-content {
+        [core-reading-mode] {
+            zoom: var(--reading-mode-zoom, 1);
+        }
+    }
+
+    ion-content.core-reading-mode-content.ios,
+    ion-content.core-reading-mode-content.ios core-split-view ion-content {
+        [core-reading-mode] {
+            transform: scale(var(--reading-mode-zoom, 100%));
+            transform-origin: top left;
+            width: var(--reading-mode-width, 100%);
         }
     }
 }
