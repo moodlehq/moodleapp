@@ -703,6 +703,15 @@ export default class AddonCalendarEditEventPage implements OnInit, OnDestroy, Ca
     }
 
     /**
+     * Value of repeat input changed.
+     */
+    repeatChanged(): void {
+        this.form.controls.repeat.value ?
+            this.form.controls.repeats.enable() :
+            this.form.controls.repeats.disable();
+    }
+
+    /**
      * @inheritdoc
      */
     ngOnDestroy(): void {
