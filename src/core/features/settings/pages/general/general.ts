@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component } from '@angular/core';
+import { Component, Type } from '@angular/core';
 import { CoreConstants } from '@/core/constants';
 import { CoreConfig } from '@services/config';
 import { CoreEvents } from '@singletons/events';
@@ -29,6 +29,7 @@ import { CoreAnalytics } from '@services/analytics';
 import { CoreNative } from '@features/native/services/native';
 import { CoreAlerts } from '@services/overlays/alerts';
 import { CoreSharedModule } from '@/core/shared.module';
+import { CoreEditorService } from '@features/editor/services/editor';
 
 /**
  * Page that displays the general settings.
@@ -57,6 +58,8 @@ export default class CoreSettingsGeneralPage {
     colorSchemeDisabled = false;
     isAndroid = false;
     displayIframeHelp = false;
+
+    protected editorSettingsComponentClass?: Type<unknown>;
 
     constructor() {
         this.asyncInit();
@@ -104,6 +107,8 @@ export default class CoreSettingsGeneralPage {
             }));
 
         this.pinchToZoom = await CoreSettingsHelper.getPinchToZoom();
+
+        this.editorSettingsComponentClass = await CoreEditorService.getSettingsComponentClass();
 
         this.debugDisplay = await CoreConfig.get(CoreConstants.SETTINGS_DEBUG_DISPLAY, false);
 
