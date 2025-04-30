@@ -4,14 +4,9 @@
         (blur)="blurRTE($event)" (keydown)="onKeyDown($event)">
     </div>
 
-    <ion-textarea [hidden]="rteEnabled" #textarea class="core-textarea" role="textbox" [attr.name]="name" ngControl="control"
-        [placeholder]="placeholder" [aria-labelledby]="ariaLabelledBy" (ionChange)="onChange()" (ionFocus)="focusRTE($event)"
+    <ion-textarea [hidden]="rteEnabled" #textarea class="core-textarea" role="textbox" [placeholder]="placeholder"
+        [attr.aria-labelledby]="ariaLabelledBy" (ionChange)="onChange?.($event.target.value ?? '')" (ionFocus)="focusRTE($event)"
         (ionBlur)="blurRTE($event)" />
-
-    <div class="core-rte-info-message" *ngIf="infoMessage" role="status">
-        <ion-icon name="fas-circle-info" aria-hidden="true" />
-        {{ infoMessage | translate }}
-    </div>
 </div>
 
 <div #toolbar class="core-rte-toolbar" [class.toolbar-hidden]="toolbarHidden">
