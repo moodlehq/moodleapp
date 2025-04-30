@@ -18,11 +18,12 @@ import { Http } from '@singletons';
 import { IonSearchbar } from '@ionic/angular';
 import { firstValueFrom } from 'rxjs';
 import { CoreSharedModule } from '@/core/shared.module';
+import { CoreEditorService } from '@features/editor/services/editor';
 
 /**
  * Defines license info
  */
-interface CoreSettingsLicense {
+export interface CoreSettingsLicense {
     name: string;
     version: string;
     licenses: string | string[];
@@ -94,6 +95,9 @@ export default class CoreSettingsLicensesPage implements OnInit {
                 return license;
             });
 
+            this.allLicenses.push(...await CoreEditorService.getLicenseInformation());
+
+            this.allLicenses.sort((a, b) => a.name.localeCompare(b.name));
             this.filterLicenses();
 
             this.error = false;
