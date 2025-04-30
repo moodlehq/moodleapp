@@ -15,6 +15,7 @@
 import { Injectable, Type } from '@angular/core';
 import { makeSingleton } from '@singletons';
 import { CoreEditorBaseComponent } from '@features/editor/classes/base-editor-component';
+import type { CoreSettingsLicense } from '@features/settings/pages/licenses/licenses';
 
 /**
  * Service with features regarding the rich text editor.
@@ -31,6 +32,15 @@ export class CoreEditorServiceProvider {
         const module = await import('@/core/features/editor/components/classic-editor/classic-editor');
 
         return module.CoreEditorClassicEditorComponent;
+    }
+
+    /**
+     * Returns the information to include in the licenses page of the app settings.
+     *
+     * @returns Promise that resolves with the license information.
+     */
+    async getLicenseInformation(): Promise<CoreSettingsLicense[]> {
+        return [];
     }
 
     /**
