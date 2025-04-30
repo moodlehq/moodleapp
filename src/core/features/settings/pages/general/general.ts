@@ -49,7 +49,6 @@ export default class CoreSettingsGeneralPage {
     zoomLevels: { value: CoreZoomLevel; style: number; selected: boolean }[] = [];
     selectedZoomLevel = CoreZoomLevel.NONE;
     pinchToZoom = false;
-    richTextEditor = true;
     debugDisplay = false;
     analyticsAvailable = false;
     analyticsEnabled = false;
@@ -105,8 +104,6 @@ export default class CoreSettingsGeneralPage {
             }));
 
         this.pinchToZoom = await CoreSettingsHelper.getPinchToZoom();
-
-        this.richTextEditor = await CoreConfig.get(CoreConstants.SETTINGS_RICH_TEXT_EDITOR, true);
 
         this.debugDisplay = await CoreConfig.get(CoreConstants.SETTINGS_DEBUG_DISPLAY, false);
 
@@ -238,18 +235,6 @@ export default class CoreSettingsGeneralPage {
 
         CoreSettingsHelper.setColorScheme(this.selectedScheme);
         CoreConfig.set(CoreConstants.SETTINGS_COLOR_SCHEME, this.selectedScheme);
-    }
-
-    /**
-     * Called when the rich text editor is enabled or disabled.
-     *
-     * @param ev Event
-     */
-    richTextEditorChanged(ev: Event): void {
-        ev.stopPropagation();
-        ev.preventDefault();
-
-        CoreConfig.set(CoreConstants.SETTINGS_RICH_TEXT_EDITOR, this.richTextEditor ? 1 : 0);
     }
 
     /**

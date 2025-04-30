@@ -519,17 +519,6 @@ export class CoreSettingsHelperProvider {
         window.location.reload();
     }
 
-    /**
-     * Check if rich text editor is enabled.
-     *
-     * @returns Promise resolved with boolean: true if enabled, false otherwise.
-     */
-    async isRichTextEditorEnabled(): Promise<boolean> {
-        const enabled = await CoreConfig.get(CoreConstants.SETTINGS_RICH_TEXT_EDITOR, true);
-
-        return !!enabled;
-    }
-
 }
 
 export const CoreSettingsHelper = makeSingleton(CoreSettingsHelperProvider);
