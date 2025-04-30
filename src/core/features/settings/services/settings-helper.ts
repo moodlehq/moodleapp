@@ -462,12 +462,21 @@ export class CoreSettingsHelperProvider {
     }
 
     /**
+     * Check if the dark mode is enabled.
+     *
+     * @returns True if the dark mode is enabled, false otherwise.
+     */
+    isDarkModeEnabled(): boolean {
+        return CoreHTMLClasses.hasModeClass('dark');
+    }
+
+    /**
      * Toggles dark mode based on enabled boolean.
      *
      * @param enable True to enable dark mode, false to disable.
      */
     protected toggleDarkMode(enable: boolean = false): void {
-        const isDark = CoreHTMLClasses.hasModeClass('dark');
+        const isDark = this.isDarkModeEnabled();
 
         if (isDark !== enable) {
             CoreHTMLClasses.toggleModeClass('dark', enable);
