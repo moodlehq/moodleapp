@@ -33,6 +33,15 @@ export class CoreEditorServiceProvider {
         return module.CoreEditorClassicEditorComponent;
     }
 
+    /**
+     * Returns the component to include in the general page of the app settings.
+     *
+     * @returns Promise that resolves with the component class or undefined.
+     */
+    async getSettingsComponentClass(): Promise<Type<unknown> | undefined> {
+        return undefined;
+    }
+
 }
 
 export const CoreEditorService = makeSingleton(CoreEditorServiceProvider);

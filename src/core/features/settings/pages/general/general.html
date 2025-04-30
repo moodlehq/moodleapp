@@ -55,6 +55,7 @@
                 <p class="ion-text-wrap">{{ 'core.settings.colorscheme-system-notice' | translate }}</p>
             </ion-label>
         </ion-item>
+        <core-dynamic-component [component]="editorSettingsComponentClass" />
         <ion-item *ngIf="displayIframeHelp" lines="none">
             <ion-label>
                 <p class="item-heading ion-text-wrap">{{ 'core.settings.ioscookies' | translate }}</p>
