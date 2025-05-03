@@ -14,6 +14,7 @@
 
 import { CoreMainMenuHandler, CoreMainMenuHandlerData } from '@features/mainmenu/services/mainmenu-delegate';
 import {
+    CoreSitePlugins,
     CoreSitePluginsContent,
     CoreSitePluginsMainMenuHandlerData,
     CoreSitePluginsPlugin,
@@ -43,6 +44,8 @@ export class CoreSitePluginsMainMenuHandler extends CoreSitePluginsBaseHandler i
      * @inheritdoc
      */
     getDisplayData(): CoreMainMenuHandlerData {
+        const handlerName = CoreSitePlugins.getHandlerNameFromUniqueName(this.name, this.plugin.addon);
+
         return {
             title: this.title,
             icon: this.handlerSchema.displaydata?.icon || 'fas-question',
@@ -52,6 +55,7 @@ export class CoreSitePluginsMainMenuHandler extends CoreSitePluginsBaseHandler i
                 title: this.title,
                 initResult: this.initResult,
                 ptrEnabled: this.handlerSchema.ptrenabled,
+                handlerName,
             },
             onlyInMore: true,
         };

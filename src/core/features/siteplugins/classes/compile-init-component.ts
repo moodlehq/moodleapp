@@ -27,6 +27,8 @@ export class CoreSitePluginsCompileInitComponent {
     extraImports: Type<unknown>[] = [];
     protected handlerSchema?: CoreSitePluginsInitHandlerData; // The handler data.
 
+    stylesPath?: string; // Styles to apply to the component.
+
     /**
      * Function called when the component is created.
      *
@@ -42,17 +44,17 @@ export class CoreSitePluginsCompileInitComponent {
     /**
      * Get the handler data.
      *
-     * @param name The name of the handler.
+     * @param handlerName The name of the handler.
      */
-    getHandlerData(name: string): void {
+    async getHandlerData(handlerName: string): Promise<void> {
         // Retrieve the handler data.
-        const handler = CoreSitePlugins.getSitePluginHandler(name);
+        const handler = CoreSitePlugins.getSitePluginHandler(handlerName);
 
-        this.handlerSchema = handler?.handlerSchema;
-
-        if (!this.handlerSchema) {
+        if (!handler?.handlerSchema) {
             return;
         }
+
+        this.handlerSchema = handler.handlerSchema;
 
         // Load first template.
         if (this.handlerSchema.methodTemplates?.length) {
@@ -72,6 +74,8 @@ export class CoreSitePluginsCompileInitComponent {
         if (this.handlerSchema.methodJSResult) {
             this.jsData.CONTENT_JS_RESULT = this.handlerSchema.methodJSResult;
         }
+
+        this.stylesPath = await CoreSitePlugins.getHandlerDownloadedStyles(handlerName);
     }
 
 }

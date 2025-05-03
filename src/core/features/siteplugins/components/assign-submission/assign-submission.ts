@@ -59,7 +59,7 @@ export class CoreSitePluginsAssignSubmissionComponent extends CoreSitePluginsCom
         this.extraImports = await getModAssignComponentModules();
 
         if (this.plugin) {
-            this.getHandlerData(AddonModAssignSubmissionDelegate.getHandlerName(this.plugin.type));
+            await this.getHandlerData(AddonModAssignSubmissionDelegate.getHandlerName(this.plugin.type));
         }
     }
 
