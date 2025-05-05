@@ -90,6 +90,7 @@ export class CoreSwipeSlidesComponent<Item = unknown> implements OnChanges, OnDe
     protected resizeListener: CoreEventObserver;
     protected activeSlideIndex?: number;
     protected onReadyPromise = new CorePromisedValue<void>();
+    protected onUpdatePromise: CorePromisedValue<void> | null = null;
 
     constructor(
         elementRef: ElementRef<HTMLElement>,
@@ -188,7 +189,19 @@ export class CoreSwipeSlidesComponent<Item = unknown> implements OnChanges, OnDe
     async slideToIndex(index: number, speed?: number, runCallbacks?: boolean): Promise<void> {
         // If slides are being updated, wait for the update to finish.
         await this.ready();
+        await this.onUpdatePromise;
 
+        this.performSlideToIndex(index, speed, runCallbacks);
+    }
+
+    /**
+     * Perform the slide to index, without waiting for read/update.
+     *
+     * @param index Index.
+     * @param speed Animation speed.
+     * @param runCallbacks Whether to run callbacks.
+     */
+    protected async performSlideToIndex(index: number, speed?: number, runCallbacks?: boolean): Promise<void> {
         if (!this.swiper) {
             return;
         }
@@ -226,7 +239,9 @@ export class CoreSwipeSlidesComponent<Item = unknown> implements OnChanges, OnDe
      * @param speed Animation speed.
      * @param runCallbacks Whether to run callbacks.
      */
-    slideNext(speed?: number, runCallbacks?: boolean): void {
+    async slideNext(speed?: number, runCallbacks?: boolean): Promise<void> {
+        await this.onUpdatePromise;
+
         this.swiper?.slideNext(speed, runCallbacks);
     }
 
@@ -236,7 +251,9 @@ export class CoreSwipeSlidesComponent<Item = unknown> implements OnChanges, OnDe
      * @param speed Animation speed.
      * @param runCallbacks Whether to run callbacks.
      */
-    slidePrev(speed?: number, runCallbacks?: boolean): void {
+    async slidePrev(speed?: number, runCallbacks?: boolean): Promise<void> {
+        await this.onUpdatePromise;
+
         this.swiper?.slidePrev(speed, runCallbacks);
     }
 
@@ -244,6 +261,8 @@ export class CoreSwipeSlidesComponent<Item = unknown> implements OnChanges, OnDe
      * Called when items list has been updated.
      */
     protected async onItemsUpdated(): Promise<void> {
+        this.onUpdatePromise = new CorePromisedValue<void>();
+
         // Wait for slides to be added in DOM.
         await CoreWait.nextTick();
 
@@ -257,7 +276,12 @@ export class CoreSwipeSlidesComponent<Item = unknown> implements OnChanges, OnDe
         }
 
         // Keep the same slide in case the list has changed.
-        this.slideToItem(currentItem, 0, false);
+        const index = this.manager?.getSource().getItemIndex(currentItem) ?? -1;
+        if (index !== -1) {
+            await this.performSlideToIndex(index, 0, false);
+        }
+
+        this.onUpdatePromise.resolve();
     }
 
     /**
