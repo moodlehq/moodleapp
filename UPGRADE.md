@@ -15,7 +15,7 @@ For more information about upgrading, read the official documentation: https://m
  - On assignment activity Feedback plugins, the form controls are now shown in the same page and draft managing functions have been deprecated.
  - On prepareFeedbackData handler function for assignment activity Feedback plugins, a new parameter inputData has been added.
  - moment and moment-timezone have been removed in favour of dayjs.
- - moment has been deprecated to be used in site plugins, use native Date parsing functions instead. Now it uses dayjs.tz when calling moment instance.
+ - moment has been deprecated to be used in site plugins, use native Date parsing functions instead. Now it uses dayjs when calling moment instance.
  - Location permissions have been removed from the app. Geolocation and CoreGeolocation services are now deprecated and no longer allow obtaining the location.
  - chart.js has been updated to 4.4.8 some breaking changes may occur when using CoreChartComponent.
  - Assign submission plugins now should implement canContainFiltersWhenEditing instead of canEditOffline.

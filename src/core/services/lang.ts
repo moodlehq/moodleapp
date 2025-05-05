@@ -20,7 +20,7 @@ import { CoreConfig } from '@services/config';
 import { CoreSubscriptions } from '@singletons/subscriptions';
 import { makeSingleton, Translate } from '@singletons';
 
-import dayjs from 'dayjs';
+import { dayjs } from '@/core/utils/dayjs';
 import { CoreSite } from '../classes/sites/site';
 import { CorePlatform } from '@services/platform';
 import { CoreLogger } from '@singletons/logger';
@@ -186,8 +186,7 @@ export class CoreLangProvider {
      * @returns Promise resolved when the change is finished.
      */
     async changeCurrentLanguage(language: string): Promise<void> {
-        // Use british english when parent english is loaded.
-        dayjs.locale(language === 'en' ? 'en-gb' : language);
+        await this.loadDayJSLocale(language);
 
         const previousLanguage = this.currentLanguage ?? this.getDefaultLanguage();
 
@@ -215,6 +214,35 @@ export class CoreLangProvider {
                 // Some lang strings have changed, emit an event to update the pipes.
                 Translate.onLangChange.emit({ lang: language, translations: Translate.translations[language] });
             }
+        }
+    }
+
+    /**
+     * Load the locale for DayJS.
+     *
+     * @param locale Locale to load.
+     */
+    protected async loadDayJSLocale(locale: string): Promise<void> {
+        // Use british english when parent english is loaded.
+        locale = locale === 'en' ? 'en-gb' : locale;
+
+        try {
+            await import('dayjs/locale/' + locale);
+            dayjs.locale(locale);
+        } catch {
+            if (locale === 'en' || locale === 'en-gb') {
+                return;
+            }
+            const parentLang = await this.getParentLanguageForLang(locale);
+            const parentLangUsingHyphen = locale.substring(0, locale.indexOf('-'));
+
+            if (parentLangUsingHyphen && (parentLang === 'en' || parentLang === undefined)) {
+                await this.loadDayJSLocale(parentLangUsingHyphen);
+
+                return;
+            }
+
+            await this.loadDayJSLocale(parentLang ?? 'en');
         }
     }
 

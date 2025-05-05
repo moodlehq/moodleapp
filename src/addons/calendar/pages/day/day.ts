@@ -27,7 +27,7 @@ import { AddonCalendarFilter, AddonCalendarHelper } from '../../services/calenda
 import { AddonCalendarSync } from '../../services/calendar-sync';
 import { CoreCategoryData, CoreCourses, CoreEnrolledCourseData } from '@features/courses/services/courses';
 import { CoreCoursesHelper } from '@features/courses/services/courses-helper';
-import dayjs, { Dayjs } from 'dayjs';
+import { dayjs, Dayjs } from '@/core/utils/dayjs';
 import { NgZone, Translate } from '@singletons';
 import { CoreNavigator } from '@services/navigator';
 import { Params } from '@angular/router';
@@ -237,7 +237,7 @@ export default class AddonCalendarDayPage implements OnInit, OnDestroy {
         this.filter.filtered = this.filter.courseId !== undefined || types.some((name) => !this.filter[name]);
 
         const month = CoreNavigator.getRouteNumberParam('month');
-        const source = new AddonCalendarDaySlidesItemsManagerSource(this, dayjs.tz({
+        const source = new AddonCalendarDaySlidesItemsManagerSource(this, dayjs({
             year: CoreNavigator.getRouteNumberParam('year'),
             month: month ? month - 1 : undefined,
             date: CoreNavigator.getRouteNumberParam('day'),
@@ -415,7 +415,7 @@ export default class AddonCalendarDayPage implements OnInit, OnDestroy {
             const selectedDay = this.manager?.getSelectedItem();
             if (selectedDay) {
                 // Use current time but in the specified day.
-                const now = dayjs.tz();
+                const now = dayjs();
                 params.timestamp = selectedDay.dayJS.set({ hour: now.hour(), minute: now.minute() }).valueOf();
             }
         }
@@ -448,7 +448,7 @@ export default class AddonCalendarDayPage implements OnInit, OnDestroy {
         }
 
         const currentDay = {
-            dayJS: dayjs.tz(),
+            dayJS: dayjs(),
         };
         this.loaded = false;
 
@@ -688,8 +688,8 @@ class AddonCalendarDaySlidesItemsManagerSource extends CoreSwipeSlidesDynamicIte
             events: [],
             onlineEvents: [],
             filteredEvents: [],
-            isCurrentDay: day.dayJS.isSame(dayjs.tz(), 'day'),
-            isPastDay: day.dayJS.isBefore(dayjs.tz(), 'day'),
+            isCurrentDay: day.dayJS.isSame(dayjs(), 'day'),
+            isPastDay: day.dayJS.isBefore(dayjs(), 'day'),
         };
 
         if (preload) {

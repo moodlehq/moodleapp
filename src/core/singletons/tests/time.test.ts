@@ -12,19 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { mockTranslate } from '@/testing/utils';
+import { mockSingleton, mockTranslate } from '@/testing/utils';
 import { CoreTime } from '@singletons/time';
-import dayjs from 'dayjs';
+import { dayjs } from '@/core/utils/dayjs';
+import { CorePlatform } from '@services/platform';
 
 describe('CoreTime singleton', () => {
 
     beforeEach(async () => {
-        // Force timezone for automated tests.
-        await CoreTime.forceTimezoneForTesting();
-    });
+        mockSingleton(CorePlatform, { isAutomated: () => true });
 
-    afterEach(() => {
-        CoreTime.resetTimezoneForTesting();
+        await CoreTime.initialize();
     });
 
     it('formats time in a human readable format', () => {
