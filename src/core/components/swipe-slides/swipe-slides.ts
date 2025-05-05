@@ -191,7 +191,7 @@ export class CoreSwipeSlidesComponent<Item = unknown> implements OnChanges, OnDe
         await this.ready();
         await this.onUpdatePromise;
 
-        this.performSlideToIndex(index, speed, runCallbacks);
+        await this.performSlideToIndex(index, speed, runCallbacks);
     }
 
     /**
@@ -201,7 +201,7 @@ export class CoreSwipeSlidesComponent<Item = unknown> implements OnChanges, OnDe
      * @param speed Animation speed.
      * @param runCallbacks Whether to run callbacks.
      */
-    protected async performSlideToIndex(index: number, speed?: number, runCallbacks?: boolean): Promise<void> {
+    protected async performSlideToIndex(index: number, speed = 300, runCallbacks?: boolean): Promise<void> {
         if (!this.swiper) {
             return;
         }
@@ -217,6 +217,10 @@ export class CoreSwipeSlidesComponent<Item = unknown> implements OnChanges, OnDe
             return;
         }
         this.swiper.slideTo(index, speed, runCallbacks);
+
+        // The slideTo method doesn't return a promise, so the only way to know it has finished is either wait for the speed
+        // time or listen to the slideChangeTransitionEnd event.
+        await CoreWait.wait(speed);
     }
 
     /**
@@ -305,8 +309,6 @@ export class CoreSwipeSlidesComponent<Item = unknown> implements OnChanges, OnDe
         }
 
         this.activeSlideIndex = undefined;
-        this.manager?.setSelectedItem(currentItemData.item);
-
         this.onWillChange.emit(currentItemData);
 
         // Apply scroll on change. In some devices it's too soon to do it, that's why it's done again in DidChange.
@@ -324,7 +326,10 @@ export class CoreSwipeSlidesComponent<Item = unknown> implements OnChanges, OnDe
             return;
         }
 
+        // It's important to set selectedItem in here and not in WillChange, because setting the item can trigger some code to
+        // load new items, and if that happens in WillChange it causes problems.
         this.activeSlideIndex = currentItemData.index;
+        this.manager?.setSelectedItem(currentItemData.item);
 
         this.onDidChange.emit(currentItemData);
 
