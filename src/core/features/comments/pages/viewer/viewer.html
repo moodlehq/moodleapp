@@ -56,9 +56,14 @@
                 <ion-icon name="fas-triangle-exclamation" aria-hidden="true" />
                 {{ 'core.thereisdatatosync' | translate:{$a: 'core.comments.comments' | translate | lowercase } }}
             </ion-badge>
-            <core-message *ngIf="hasOffline && offlineComment" [message]="offlineComment" [text]="offlineComment.content"
-                [user]="offlineComment" [showDelete]="showDelete" [contextLevel]="contextLevel" [instanceId]="instanceId"
-                [courseId]="courseId" (onDeleteMessage)="deleteComment(offlineComment)" />
+            @if (hasOffline && offlineComment) {
+                <!-- Workaround to fix https://github.com/angular/angular/issues/26133 -->
+                <div>
+                    <core-message [message]="offlineComment" [text]="offlineComment.content" [user]="offlineComment"
+                        [showDelete]="showDelete" [contextLevel]="contextLevel" [instanceId]="instanceId" [courseId]="courseId"
+                        (onDeleteMessage)="deleteComment(offlineComment)" />
+                </div>
+            }
         </ion-list>
 
     </core-loading>
