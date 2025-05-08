@@ -177,7 +177,6 @@ export default class CoreCommentsViewerPage implements OnInit, OnDestroy, AfterV
      *
      * @param sync When to resync comments.
      * @param showErrors When to display errors or not.
-     * @returns Resolved when done.
      */
     protected async fetchComments(sync: boolean, showErrors = false): Promise<void> {
         this.loadMoreError = false;
