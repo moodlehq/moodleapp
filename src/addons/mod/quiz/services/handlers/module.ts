@@ -42,6 +42,7 @@ export class AddonModQuizModuleHandlerService extends CoreModuleHandlerBase impl
         [ModFeature.SHOW_DESCRIPTION]: true,
         [ModFeature.CONTROLS_GRADE_VISIBILITY]: true,
         [ModFeature.USES_QUESTIONS]: true,
+        [ModFeature.PLAGIARISM]: true,
         [ModFeature.MOD_PURPOSE]: ModPurpose.ASSESSMENT,
     };
 
