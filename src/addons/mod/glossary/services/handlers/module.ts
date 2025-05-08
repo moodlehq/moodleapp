@@ -37,10 +37,10 @@ export class AddonModGlossaryModuleHandlerService extends CoreModuleHandlerBase 
         [ModFeature.COMPLETION_HAS_RULES]: true,
         [ModFeature.GRADE_HAS_GRADE]: true,
         [ModFeature.GRADE_OUTCOMES]: true,
+        [ModFeature.RATE]: true,
         [ModFeature.BACKUP_MOODLE2]: true,
         [ModFeature.SHOW_DESCRIPTION]: true,
-        [ModFeature.RATE]: true,
-        [ModFeature.PLAGIARISM]: true,
+        [ModFeature.COMMENT]: true,
         [ModFeature.MOD_PURPOSE]: ModPurpose.COLLABORATION,
     };
 

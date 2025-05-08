@@ -30,7 +30,6 @@ export class AddonModLabelModuleHandlerService extends CoreModuleHandlerBase imp
     modName = ADDON_MOD_LABEL_MODNAME;
 
     supportedFeatures = {
-        [ModFeature.MOD_ARCHETYPE]: ModArchetype.RESOURCE,
         [ModFeature.IDNUMBER]: true,
         [ModFeature.GROUPS]: false,
         [ModFeature.GROUPINGS]: false,
@@ -38,8 +37,8 @@ export class AddonModLabelModuleHandlerService extends CoreModuleHandlerBase imp
         [ModFeature.COMPLETION_TRACKS_VIEWS]: false,
         [ModFeature.GRADE_HAS_GRADE]: false,
         [ModFeature.GRADE_OUTCOMES]: false,
+        [ModFeature.MOD_ARCHETYPE]: ModArchetype.RESOURCE,
         [ModFeature.BACKUP_MOODLE2]: true,
-        [ModFeature.SHOW_DESCRIPTION]: true,
         [ModFeature.NO_VIEW_LINK]: true,
         [ModFeature.MOD_PURPOSE]: ModPurpose.CONTENT,
     };
