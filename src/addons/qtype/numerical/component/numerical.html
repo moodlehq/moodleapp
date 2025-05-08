@@ -47,7 +47,7 @@
 <!-- Template for units entered using a select. -->
 <ng-template #selectUnits>
     @if (question && question.select) {
-        @if (question?.select?.accessibilityLabel) {
+        @if (question.select.accessibilityLabel) {
             <label class="accesshide" for="{{question.select.id}}">
                 {{ question.select.accessibilityLabel }}
             </label>
@@ -65,7 +65,7 @@
 
 <!-- Template for units entered using radio buttons. -->
 <ng-template #radioUnits>
-    @if (question && question.unit && question.options) {
+    @if (question && question.options) {
         <ion-radio-group [(ngModel)]="question.unit" [name]="question.optionsName">
             @for (option of question.options; track option.value) {
                 <ion-item class="ion-text-wrap">

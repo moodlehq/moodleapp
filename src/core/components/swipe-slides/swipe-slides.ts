@@ -90,6 +90,7 @@ export class CoreSwipeSlidesComponent<Item = unknown> implements OnChanges, OnDe
     protected resizeListener: CoreEventObserver;
     protected activeSlideIndex?: number;
     protected onReadyPromise = new CorePromisedValue<void>();
+    protected onUpdatePromise: CorePromisedValue<void> | null = null;
 
     constructor(
         elementRef: ElementRef<HTMLElement>,
@@ -188,7 +189,19 @@ export class CoreSwipeSlidesComponent<Item = unknown> implements OnChanges, OnDe
     async slideToIndex(index: number, speed?: number, runCallbacks?: boolean): Promise<void> {
         // If slides are being updated, wait for the update to finish.
         await this.ready();
+        await this.onUpdatePromise;
 
+        await this.performSlideToIndex(index, speed, runCallbacks);
+    }
+
+    /**
+     * Perform the slide to index, without waiting for read/update.
+     *
+     * @param index Index.
+     * @param speed Animation speed.
+     * @param runCallbacks Whether to run callbacks.
+     */
+    protected async performSlideToIndex(index: number, speed = 300, runCallbacks?: boolean): Promise<void> {
         if (!this.swiper) {
             return;
         }
@@ -204,6 +217,10 @@ export class CoreSwipeSlidesComponent<Item = unknown> implements OnChanges, OnDe
             return;
         }
         this.swiper.slideTo(index, speed, runCallbacks);
+
+        // The slideTo method doesn't return a promise, so the only way to know it has finished is either wait for the speed
+        // time or listen to the slideChangeTransitionEnd event.
+        await CoreWait.wait(speed);
     }
 
     /**
@@ -226,7 +243,9 @@ export class CoreSwipeSlidesComponent<Item = unknown> implements OnChanges, OnDe
      * @param speed Animation speed.
      * @param runCallbacks Whether to run callbacks.
      */
-    slideNext(speed?: number, runCallbacks?: boolean): void {
+    async slideNext(speed?: number, runCallbacks?: boolean): Promise<void> {
+        await this.onUpdatePromise;
+
         this.swiper?.slideNext(speed, runCallbacks);
     }
 
@@ -236,7 +255,9 @@ export class CoreSwipeSlidesComponent<Item = unknown> implements OnChanges, OnDe
      * @param speed Animation speed.
      * @param runCallbacks Whether to run callbacks.
      */
-    slidePrev(speed?: number, runCallbacks?: boolean): void {
+    async slidePrev(speed?: number, runCallbacks?: boolean): Promise<void> {
+        await this.onUpdatePromise;
+
         this.swiper?.slidePrev(speed, runCallbacks);
     }
 
@@ -244,6 +265,8 @@ export class CoreSwipeSlidesComponent<Item = unknown> implements OnChanges, OnDe
      * Called when items list has been updated.
      */
     protected async onItemsUpdated(): Promise<void> {
+        this.onUpdatePromise = new CorePromisedValue<void>();
+
         // Wait for slides to be added in DOM.
         await CoreWait.nextTick();
 
@@ -257,7 +280,12 @@ export class CoreSwipeSlidesComponent<Item = unknown> implements OnChanges, OnDe
         }
 
         // Keep the same slide in case the list has changed.
-        this.slideToItem(currentItem, 0, false);
+        const index = this.manager?.getSource().getItemIndex(currentItem) ?? -1;
+        if (index !== -1) {
+            await this.performSlideToIndex(index, 0, false);
+        }
+
+        this.onUpdatePromise.resolve();
     }
 
     /**
@@ -281,8 +309,6 @@ export class CoreSwipeSlidesComponent<Item = unknown> implements OnChanges, OnDe
         }
 
         this.activeSlideIndex = undefined;
-        this.manager?.setSelectedItem(currentItemData.item);
-
         this.onWillChange.emit(currentItemData);
 
         // Apply scroll on change. In some devices it's too soon to do it, that's why it's done again in DidChange.
@@ -300,7 +326,10 @@ export class CoreSwipeSlidesComponent<Item = unknown> implements OnChanges, OnDe
             return;
         }
 
+        // It's important to set selectedItem in here and not in WillChange, because setting the item can trigger some code to
+        // load new items, and if that happens in WillChange it causes problems.
         this.activeSlideIndex = currentItemData.index;
+        this.manager?.setSelectedItem(currentItemData.item);
 
         this.onDidChange.emit(currentItemData);
 
