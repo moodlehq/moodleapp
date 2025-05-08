@@ -36,9 +36,9 @@ export class AddonModWikiModuleHandlerService extends CoreModuleHandlerBase impl
         [ModFeature.COMPLETION_TRACKS_VIEWS]: true,
         [ModFeature.GRADE_HAS_GRADE]: false,
         [ModFeature.GRADE_OUTCOMES]: false,
+        [ModFeature.RATE]: false,
         [ModFeature.BACKUP_MOODLE2]: true,
         [ModFeature.SHOW_DESCRIPTION]: true,
-        [ModFeature.RATE]: false,
         [ModFeature.COMMENT]: true,
         [ModFeature.MOD_PURPOSE]: ModPurpose.COLLABORATION,
     };

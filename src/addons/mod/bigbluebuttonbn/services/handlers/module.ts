@@ -34,13 +34,15 @@ export class AddonModBBBModuleHandlerService extends CoreModuleHandlerBase imple
     protected sitePluginHandler?: CoreSitePluginsModuleHandler;
 
     supportedFeatures = {
+        [ModFeature.IDNUMBER]: true,
         [ModFeature.GROUPS]: true,
         [ModFeature.GROUPINGS]: true,
         [ModFeature.MOD_INTRO]: true,
-        [ModFeature.COMPLETION_TRACKS_VIEWS]: true,
-        [ModFeature.GRADE_HAS_GRADE]: false,
-        [ModFeature.GRADE_OUTCOMES]: true,
         [ModFeature.BACKUP_MOODLE2]: true,
+        [ModFeature.COMPLETION_TRACKS_VIEWS]: true,
+        [ModFeature.COMPLETION_HAS_RULES]: true,
+        [ModFeature.GRADE_HAS_GRADE]: true,
+        [ModFeature.GRADE_OUTCOMES]: false,
         [ModFeature.SHOW_DESCRIPTION]: true,
         [ModFeature.MOD_PURPOSE]: ModPurpose.COMMUNICATION,
     };

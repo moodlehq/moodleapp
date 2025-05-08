@@ -36,6 +36,7 @@ export class AddonModAssignModuleHandlerService extends CoreModuleHandlerBase im
         [ModFeature.COMPLETION_TRACKS_VIEWS]: true,
         [ModFeature.COMPLETION_HAS_RULES]: true,
         [ModFeature.GRADE_HAS_GRADE]: true,
+        [ModFeature.GRADE_HAS_PENALTY]: true,
         [ModFeature.GRADE_OUTCOMES]: true,
         [ModFeature.BACKUP_MOODLE2]: true,
         [ModFeature.SHOW_DESCRIPTION]: true,

@@ -43,11 +43,13 @@ export class AddonModForumModuleHandlerService extends CoreModuleHandlerBase imp
         [ModFeature.COMPLETION_HAS_RULES]: true,
         [ModFeature.GRADE_HAS_GRADE]: true,
         [ModFeature.GRADE_OUTCOMES]: true,
+        [ModFeature.RATE]: true,
         [ModFeature.BACKUP_MOODLE2]: true,
         [ModFeature.SHOW_DESCRIPTION]: true,
-        [ModFeature.RATE]: true,
         [ModFeature.PLAGIARISM]: true,
+        [ModFeature.ADVANCED_GRADING]: true,
         [ModFeature.MOD_PURPOSE]: ModPurpose.COLLABORATION,
+        [ModFeature.CAN_UNINSTALL]: false,
     };
 
     /**

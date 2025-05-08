@@ -48,10 +48,12 @@ export const enum ModResourceDisplay {
  */
 export const enum ModFeature {
     GRADE_HAS_GRADE = 'grade_has_grade', // True if module can provide a grade.
+    GRADE_HAS_PENALTY = 'grade_has_penalty', // True if module can support grade penalty.
     GRADE_OUTCOMES = 'outcomes', // True if module supports outcomes.
     ADVANCED_GRADING = 'grade_advanced_grading', // True if module supports advanced grading methods.
     CONTROLS_GRADE_VISIBILITY = 'controlsgradevisbility', // True if module controls grade visibility over gradebook.
     PLAGIARISM = 'plagiarism', // True if module supports plagiarism plugins.
+    COMPLETION = 'completion_enabled', // True if module supports completion (true by default)
     COMPLETION_TRACKS_VIEWS = 'completion_tracks_views', // True if module tracks whether somebody viewed it.
     COMPLETION_HAS_RULES = 'completion_has_rules', // True if module has custom completion rules.
     NO_VIEW_LINK = 'viewlink', // True if module has no 'view' page (like label).
@@ -65,6 +67,9 @@ export const enum ModFeature {
     MOD_PURPOSE = 'mod_purpose', // Type of module.
     RATE = 'rate',
     BACKUP_MOODLE2 = 'backup_moodle2', // True if module supports backup/restore of moodle2 format.
+    PUBLISHES_QUESTIONS = 'publishesquestions', // True if module shares questions with other modules.
+    CAN_DISPLAY = 'candisplay', // Used to determine if a plugin should render to display.
+    CAN_UNINSTALL = 'canuninstall', // Can this module type be uninstalled.
     SHOW_DESCRIPTION = 'showdescription', // True if module can show description on course main page.
     USES_QUESTIONS = 'usesquestions', // True if module uses the question bank.
 }
