@@ -236,6 +236,13 @@ export class AddonModDataHelperProvider {
                 template = template
                     .replace(valuesInsideTags, render)
                     .replace(replaceRegex, entry.contents[field.id].content);
+            } else {
+                // Replace field by a generic directive.
+                const render = `<addon-mod-data-field-plugin [field]="fields[${field.id}]" mode="${mode}" [database]="database" \
+                [value]="entries[${entry.id}].contents[${field.id}]" [recordHasOffline]="${entry.hasOffline ? 'true' : 'false'}" \
+                (gotoEntry)="gotoEntry($event)"></addon-mod-data-field-plugin>`;
+
+                template = template.replace(replaceRegex, render);
             }
 
             // Replace the field name tag.
