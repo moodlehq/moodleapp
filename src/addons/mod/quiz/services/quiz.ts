@@ -835,7 +835,7 @@ export class AddonModQuizProvider {
         );
 
         // Search the quiz.
-        return CoreCourseModuleHelper.getActivityByCmId(response.quizzes, value);
+        return CoreCourseModuleHelper.getActivityByField(response.quizzes, key, value);
     }
 
     /**
