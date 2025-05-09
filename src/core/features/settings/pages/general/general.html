@@ -55,12 +55,7 @@
                 <p class="ion-text-wrap">{{ 'core.settings.colorscheme-system-notice' | translate }}</p>
             </ion-label>
         </ion-item>
-        <ion-item>
-            <ion-toggle [(ngModel)]="richTextEditor" (ionChange)="richTextEditorChanged($event)">
-                <p class="item-heading ion-text-wrap">{{ 'core.settings.enablerichtexteditor' | translate }}</p>
-                <p class="ion-text-wrap">{{ 'core.settings.enablerichtexteditordescription' | translate }}</p>
-            </ion-toggle>
-        </ion-item>
+        <core-dynamic-component [component]="editorSettingsComponentClass" />
         <ion-item *ngIf="displayIframeHelp" lines="none">
             <ion-label>
                 <p class="item-heading ion-text-wrap">{{ 'core.settings.ioscookies' | translate }}</p>

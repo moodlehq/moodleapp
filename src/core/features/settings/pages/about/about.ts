@@ -12,13 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component } from '@angular/core';
+import { Component, Type, OnInit } from '@angular/core';
 
 import { CoreConstants } from '@/core/constants';
 import { CoreSites } from '@services/sites';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSite } from '@classes/sites/site';
 import { CoreSharedModule } from '@/core/shared.module';
+import { CoreEditorService } from '@features/editor/services/editor';
 
 /**
  * App settings about menu page.
@@ -32,7 +33,7 @@ import { CoreSharedModule } from '@/core/shared.module';
         CoreSharedModule,
     ],
 })
-export default class CoreSettingsAboutPage {
+export default class CoreSettingsAboutPage implements OnInit {
 
     appName: string;
     versionName: string;
@@ -42,6 +43,8 @@ export default class CoreSettingsAboutPage {
     currentSite?: CoreSite;
     showSurvey: boolean | undefined = false;
     legalDisclaimer = CoreConstants.CONFIG.legalDisclaimer;
+
+    protected editorAboutComponentClass?: Type<unknown>;
 
     constructor() {
         this.currentSite = CoreSites.getCurrentSite();
@@ -53,6 +56,10 @@ export default class CoreSettingsAboutPage {
         this.privacyPolicy = (this.currentSite && (this.currentSite.getStoredConfig('tool_mobile_apppolicy') ||
         this.currentSite.getStoredConfig('sitepolicy'))) || CoreConstants.CONFIG.privacypolicy;
         this.showSurvey = this.currentSite?.isAdmin();
+    }
+
+    async ngOnInit(): Promise<void> {
+        this.editorAboutComponentClass = await CoreEditorService.getAboutComponentClass();
     }
 
     /**

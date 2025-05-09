@@ -37,6 +37,7 @@
             <ion-icon name="fas-scale-balanced" slot="start" aria-hidden="true" />
             <ion-label>{{ 'core.settings.legaldisclaimer' | translate }}</ion-label>
         </ion-item>
+        <core-dynamic-component [component]="editorAboutComponentClass" />
     </ion-list>
 </ion-content>
 

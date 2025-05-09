@@ -37,7 +37,6 @@ import { CoreAlerts } from '@services/overlays/alerts';
 import { PromptButton } from '@services/overlays/prompts';
 import { CoreBoostrap } from '@singletons/bootstrap';
 import { CoreAngular } from '@singletons/angular';
-import { CoreSettingsHelper } from '@features/settings/services/settings-helper';
 
 /**
  * Utils service with helper functions for UI, DOM elements and HTML code.
@@ -244,10 +243,10 @@ export class CoreDomUtilsProvider {
      * Check if rich text editor is enabled.
      *
      * @returns Promise resolved with boolean: true if enabled, false otherwise.
-     * @deprecated since 5.0. Use CoreSettingsHelper.isRichTextEditorEnabled instead.
+     * @deprecated since 5.0. Plain text area editor has been removed.
      */
     async isRichTextEditorEnabled(): Promise<boolean> {
-        return CoreSettingsHelper.isRichTextEditorEnabled();
+        return true;
     }
 
     /**
