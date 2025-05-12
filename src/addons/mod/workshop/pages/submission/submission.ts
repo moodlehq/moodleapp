@@ -457,15 +457,15 @@ export default class AddonModWorkshopSubmissionPage implements OnInit, OnDestroy
 
         const inputData = this.feedbackForm.value;
 
-        if (this.originalEvaluation.published != inputData.published) {
+        if (this.originalEvaluation.published !== inputData.published) {
             return true;
         }
 
-        if (this.originalEvaluation.text != inputData.text) {
+        if ((this.originalEvaluation.text ?? '') !== (inputData.text ?? '')) {
             return true;
         }
 
-        if (this.originalEvaluation.grade != inputData.grade) {
+        if (this.originalEvaluation.grade !== inputData.grade) {
             return true;
         }
 
