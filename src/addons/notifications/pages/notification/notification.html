@@ -9,7 +9,27 @@
     </ion-toolbar>
 </ion-header>
 <ion-content [core-swipe-navigation]="notifications">
-    <core-loading [hideUntil]="loaded">
+    <core-loading [hideUntil]="loaded" placeholderType="free">
+        <ion-list placeholder class="ion-padding list-item-limited-width">
+            <ion-item>
+                <ion-avatar slot="start">
+                    <ion-skeleton-text [animated]="true" />
+                </ion-avatar>
+                <ion-label>
+                    <h3>
+                        <ion-skeleton-text [animated]="true" style="width: 80%;" />
+                    </h3>
+                    <p>
+                        <ion-skeleton-text [animated]="true" style="width: 60%;" />
+                    </p>
+                </ion-label>
+            </ion-item>
+            <ion-item>
+                <ion-label>
+                    <ion-skeleton-text [animated]="true" style="width: 100%; height: 80px;" />
+                </ion-label>
+            </ion-item>
+        </ion-list>
         <div class="list-item-limited-width" *ngIf="notification">
 
             <ion-item class="ion-text-wrap core-notification-title" lines="full">
