@@ -1808,8 +1808,10 @@ export class CoreCourseHelperProvider {
             return false;
         }
 
-        return (section.availabilityinfo !== undefined && section.availabilityinfo != '') ||
-            section.summary != '' || section.contents.length > 0;
+        return (section.availabilityinfo !== undefined && section.availabilityinfo !== '') ||
+            section.summary !== '' ||
+            section.contents.filter(modOrSubsection =>
+                !('visibleoncoursepage' in modOrSubsection) || modOrSubsection.visibleoncoursepage !== 0).length > 0;
     }
 
     /**
