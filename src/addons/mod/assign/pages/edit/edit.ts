@@ -199,7 +199,9 @@ export default class AddonModAssignEditPage implements OnInit, OnDestroy, CanLea
 
             if (filteredSubmissionStatus.assignmentdata?.activity) {
                 // There are activity instructions. Make sure to display it with filters applied.
-                this.activityInstructions = filteredSubmissionStatus.assignmentdata?.activity;
+                // Apply a workaround to URLs for sites that don't have MDL-83474 fixed.
+                this.activityInstructions = filteredSubmissionStatus.assignmentdata?.activity
+                    .replace(/mod_assign\/activityattachment\/(?!0\/)/g, 'mod_assign/activityattachment/0/');
             }
 
             this.introAttachments = submissionStatus.assignmentdata?.attachments?.intro ?? this.assign.introattachments;
