@@ -61,7 +61,7 @@ export class CoreSitePluginsAssignFeedbackComponent extends CoreSitePluginsCompi
         this.extraImports = await getModAssignComponentModules();
 
         if (this.plugin) {
-            this.getHandlerData(AddonModAssignFeedbackDelegate.getHandlerName(this.plugin.type));
+            await this.getHandlerData(AddonModAssignFeedbackDelegate.getHandlerName(this.plugin.type));
         }
     }
 

@@ -117,6 +117,7 @@ export class CoreSitePluginsCallWSNewContentDirective extends CoreSitePluginsCal
                     contextLevel: this.contextLevel ?? this.parentContent?.contextLevel,
                     contextInstanceId: this.contextInstanceId ?? this.parentContent?.contextInstanceId,
                     courseId: this.courseId ?? this.parentContent?.courseId ?? args.courseid,
+                    stylesPath: this.parentContent?.stylesPath,
                 },
             });
         }
