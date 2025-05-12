@@ -150,7 +150,8 @@ export default class CoreSiteHomeIndexPage implements OnInit, OnDestroy {
             this.section = config.numsections ? sections.find((section) => section.section === 1) : undefined;
             if (this.section) {
                 // If section name is 'Site', set it to empty string. This is the value set by the WS when the name is empty.
-                this.section.name = this.section.name === Translate.instant('core.site') ? '' : this.section.name.trim();
+                this.section.name = (this.section.name === 'Site' || this.section.name === Translate.instant('core.site')) ?
+                    '' : this.section.name.trim();
 
                 const result = await CoreCourseHelper.addHandlerDataForModules(
                     [this.section],
