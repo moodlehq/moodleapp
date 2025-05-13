@@ -60,43 +60,41 @@
                     <core-file *ngFor="let file of offlineEntry.attachments.online" [file]="file" [component]="component"
                         [componentId]="componentId" />
                 </div>
-                <div *ngIf="offlineEntry && offlineEntryFiles">
-                    <core-local-file *ngFor="let file of offlineEntryFiles" [file]="file" />
-                </div>
-                <ion-item class="ion-text-wrap"
-                    *ngIf="onlineEntry && tagsEnabled && entry && onlineEntry.tags && onlineEntry.tags.length > 0">
-                    <ion-label>
-                        <div slot="start">{{ 'core.tag.tags' | translate }}:</div>
-                        <core-tag-list [tags]="onlineEntry.tags" />
-                    </ion-label>
-                </ion-item>
-                <ion-item *ngIf="canDelete || canEdit">
-                    <div slot="end">
-                        <ion-button *ngIf="canDelete" fill="clear" color="danger" (click)="deleteEntry()"
-                            [ariaLabel]="'addon.mod_glossary.deleteentry' | translate">
-                            <ion-icon slot="icon-only" name="fas-trash" aria-hidden="true" />
-                        </ion-button>
-                        <ion-button *ngIf="canEdit" fill="clear" (click)="editEntry()"
-                            [ariaLabel]="'addon.mod_glossary.editentry' | translate">
-                            <ion-icon slot="icon-only" name="fas-pen" aria-hidden="true" />
-                        </ion-button>
-                    </div>
-                </ion-item>
-                <ion-item class="ion-text-wrap" *ngIf="onlineEntry && !onlineEntry.approved">
-                    <ion-label>
-                        <p><em>{{ 'addon.mod_glossary.entrypendingapproval' | translate }}</em></p>
-                    </ion-label>
-                </ion-item>
-                <core-comments *ngIf="glossary && glossary.allowcomments && onlineEntry && onlineEntry.id > 0 && commentsEnabled"
-                    contextLevel="module" [instanceId]="glossary.coursemodule" component="mod_glossary" [itemId]="onlineEntry.id"
-                    area="glossary_entry" [courseId]="glossary.course" [showItem]="true" [title]="entry.concept" />
-                <core-rating-rate *ngIf="glossary && ratingInfo && onlineEntry" [ratingInfo]="ratingInfo" contextLevel="module"
-                    [instanceId]="glossary.coursemodule" [itemId]="onlineEntry.id" [itemSetId]="0" [courseId]="glossary.course"
-                    [aggregateMethod]="glossary.assessed" [scaleId]="glossary.scale" [userId]="entry.userid" (onUpdate)="ratingUpdated()" />
-                <core-rating-aggregate *ngIf="glossary && ratingInfo && onlineEntry" [ratingInfo]="ratingInfo" contextLevel="module"
-                    [instanceId]="glossary.coursemodule" [itemId]="onlineEntry.id" [courseId]="glossary.course"
-                    [aggregateMethod]="glossary.assessed" [scaleId]="glossary.scale" />
             </div>
+            <div *ngIf="offlineEntry && offlineEntryFiles">
+                <core-local-file *ngFor="let file of offlineEntryFiles" [file]="file" />
+            </div>
+            <ion-item class="ion-text-wrap" *ngIf="onlineEntry && tagsEnabled && entry && onlineEntry.tags && onlineEntry.tags.length > 0">
+                <ion-label>
+                    <div slot="start">{{ 'core.tag.tags' | translate }}:</div>
+                    <core-tag-list [tags]="onlineEntry.tags" />
+                </ion-label>
+            </ion-item>
+            <ion-item *ngIf="canDelete || canEdit">
+                <div slot="end">
+                    <ion-button *ngIf="canDelete" fill="clear" color="danger" (click)="deleteEntry()"
+                        [ariaLabel]="'addon.mod_glossary.deleteentry' | translate">
+                        <ion-icon slot="icon-only" name="fas-trash" aria-hidden="true" />
+                    </ion-button>
+                    <ion-button *ngIf="canEdit" fill="clear" (click)="editEntry()" [ariaLabel]="'addon.mod_glossary.editentry' | translate">
+                        <ion-icon slot="icon-only" name="fas-pen" aria-hidden="true" />
+                    </ion-button>
+                </div>
+            </ion-item>
+            <ion-item class="ion-text-wrap" *ngIf="onlineEntry && !onlineEntry.approved">
+                <ion-label>
+                    <p><em>{{ 'addon.mod_glossary.entrypendingapproval' | translate }}</em></p>
+                </ion-label>
+            </ion-item>
+            <core-comments *ngIf="glossary && glossary.allowcomments && onlineEntry && onlineEntry.id > 0 && commentsEnabled"
+                contextLevel="module" [instanceId]="glossary.coursemodule" component="mod_glossary" [itemId]="onlineEntry.id"
+                area="glossary_entry" [courseId]="glossary.course" [showItem]="true" [title]="entry.concept" />
+            <core-rating-rate *ngIf="glossary && ratingInfo && onlineEntry" [ratingInfo]="ratingInfo" contextLevel="module"
+                [instanceId]="glossary.coursemodule" [itemId]="onlineEntry.id" [itemSetId]="0" [courseId]="glossary.course"
+                [aggregateMethod]="glossary.assessed" [scaleId]="glossary.scale" [userId]="entry.userid" (onUpdate)="ratingUpdated()" />
+            <core-rating-aggregate *ngIf="glossary && ratingInfo && onlineEntry" [ratingInfo]="ratingInfo" contextLevel="module"
+                [instanceId]="glossary.coursemodule" [itemId]="onlineEntry.id" [courseId]="glossary.course"
+                [aggregateMethod]="glossary.assessed" [scaleId]="glossary.scale" />
         </ng-container>
 
         <ion-card *ngIf="!entry" class="core-warning-card">
