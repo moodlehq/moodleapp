@@ -681,6 +681,11 @@ export class CoreSite extends CoreAuthenticatedSite {
             return url;
         }
 
+        if (CoreUrl.isTokenPluginFileUrl(url)) {
+            // Tokenpluginfile URLs authenticate the user using the access key, no need to use auto-login.
+            return url;
+        }
+
         if (this.lastAutoLogin > 0) {
             const timeBetweenRequests = await this.getAutoLoginMinTimeBetweenRequests();
 
