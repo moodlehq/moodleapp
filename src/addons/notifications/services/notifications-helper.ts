@@ -113,7 +113,7 @@ export class AddonNotificationsHelperProvider {
             return false;
         }
 
-        const notifId = 'savedmessageid' in notification ? notification.savedmessageid || notification.id : notification.id;
+        const notifId = 'savedmessageid' in notification ? Number(notification.savedmessageid) || notification.id : notification.id;
         if (!notifId) {
             return false;
         }
