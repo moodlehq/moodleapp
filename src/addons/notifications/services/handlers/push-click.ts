@@ -141,7 +141,7 @@ export const AddonNotificationsPushClickHandler = makeSingleton(AddonNotificatio
 
 export type AddonNotificationsPushNotification = CorePushNotificationsNotificationBasicData & {
     contexturl?: string; // URL related to the notification.
-    savedmessageid?: number; // Notification ID (optional).
+    savedmessageid?: number | string; // Notification ID (optional).
     id?: number; // Notification ID (optional).
     date?: string | number; // Notification date (timestamp). E.g. "1669204700".
 };
