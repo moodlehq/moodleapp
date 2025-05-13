@@ -223,12 +223,7 @@ export class CoreReadingModeDirective implements AfterViewInit, OnDestroy {
     ngOnDestroy(): void {
         this.viewportPromise?.cancel();
 
-        if (this.enabled && document.body.querySelectorAll('[core-reading-mode]')) {
-            // Do not disable if there are more instances of the directive in the DOM.
-
-            return;
-        }
-        this.disableReadingMode();
+        // Disable reading mode should be done by the user.
     }
 
 }
