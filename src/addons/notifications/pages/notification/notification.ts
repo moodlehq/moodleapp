@@ -25,6 +25,7 @@ import {
 } from '@addons/notifications/services/notifications-helper';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, ActivatedRouteSnapshot } from '@angular/router';
+import { CoreError } from '@classes/errors/error';
 import { CoreRoutedItemsManagerSourcesTracker } from '@classes/items-management/routed-items-manager-sources-tracker';
 import { CoreSwipeNavigationItemsManager } from '@classes/items-management/swipe-navigation-items-manager';
 import { CoreContentLinksAction, CoreContentLinksDelegate } from '@features/contentlinks/services/contentlinks-delegate';
@@ -67,7 +68,7 @@ export default class AddonNotificationsNotificationPage implements OnInit, OnDes
         let notification: AddonNotificationsNotification;
 
         try {
-            notification = this.getNotification();
+            notification = await this.getNotification();
         } catch (error) {
             CoreAlerts.showError(error);
             CoreNavigator.back();
@@ -108,11 +109,18 @@ export default class AddonNotificationsNotificationPage implements OnInit, OnDes
      *
      * @returns notification.
      */
-    getNotification(): AddonNotificationsNotification {
-        const id = CoreNavigator.getRouteNumberParam('id');
-        const notification = id ? this.getNotificationById(id) : undefined;
+    async getNotification(): Promise<AddonNotificationsNotification> {
+        const paramNotification = CoreNavigator.getRouteParam<AddonNotificationsNotification>('notification');
+        const id = CoreNavigator.getRouteNumberParam('id') ??
+            (paramNotification && 'savedmessageid' in paramNotification ? Number(paramNotification.savedmessageid) : undefined);
 
-        return notification ?? CoreNavigator.getRequiredRouteParam('notification');
+        const notification = (id ? await this.getNotificationById(id) : undefined) ?? paramNotification;
+
+        if (!notification) {
+            throw new CoreError('Required param \'notification\' not found.');
+        }
+
+        return notification;
     }
 
     /**
@@ -121,13 +129,16 @@ export default class AddonNotificationsNotificationPage implements OnInit, OnDes
      * @param notificationId Notification id.
      * @returns Found notification.
      */
-    getNotificationById(notificationId: number): AddonNotificationsNotification | undefined {
+    async getNotificationById(notificationId: number): Promise<AddonNotificationsNotification | undefined> {
         const source = CoreRoutedItemsManagerSourcesTracker.getOrCreateSource(
             CoreSites.getRequiredCurrentSite().isVersionGreaterEqualThan('4.0')
                 ? AddonNotificationsNotificationsSource
                 : AddonLegacyNotificationsNotificationsSource,
             [],
         );
+
+        await source.waitForLoaded();
+
         const notification = source.getItems()?.find(({ id }) => id === notificationId);
 
         if (!notification) {
