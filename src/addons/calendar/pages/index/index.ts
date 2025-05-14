@@ -64,6 +64,7 @@ export default class AddonCalendarIndexPage implements OnInit, OnDestroy {
     @ViewChild(AddonCalendarUpcomingEventsComponent) upcomingEventsComponent?: AddonCalendarUpcomingEventsComponent;
 
     protected currentSiteId: string;
+    protected initialized = false;
 
     // Observers.
     protected newEventObserver?: CoreEventObserver;
@@ -211,6 +212,8 @@ export default class AddonCalendarIndexPage implements OnInit, OnDestroy {
         this.syncIcon = CoreConstants.ICON_LOADING;
         this.isOnline = CoreNetwork.isOnline();
 
+        let refreshComponent = false;
+
         if (sync) {
             // Try to synchronize offline events.
             try {
@@ -221,6 +224,7 @@ export default class AddonCalendarIndexPage implements OnInit, OnDestroy {
 
                 if (result.updated) {
                     // Trigger a manual sync event.
+                    refreshComponent = this.initialized; // Refresh component only if it was already initialized.
                     result.source = 'index';
 
                     CoreEvents.trigger(
@@ -262,12 +266,17 @@ export default class AddonCalendarIndexPage implements OnInit, OnDestroy {
                 return;
             }));
 
+            if (refreshComponent) {
+                promises.push(this.refreshComponentData(true));
+            }
+
             await Promise.all(promises);
         } catch (error) {
             CoreAlerts.showError(error, { default: Translate.instant('addon.calendar.errorloadevents') });
         }
 
         this.loaded = true;
+        this.initialized = true;
         this.syncIcon = CoreConstants.ICON_SYNC;
     }
 
@@ -305,14 +314,20 @@ export default class AddonCalendarIndexPage implements OnInit, OnDestroy {
 
         promises.push(AddonCalendar.invalidateAllowedEventTypes());
 
-        // Refresh the sub-component.
-        if (this.showCalendar && this.calendarComponent) {
-            promises.push(this.calendarComponent.refreshData(afterChange));
-        } else if (!this.showCalendar && this.upcomingEventsComponent) {
-            promises.push(this.upcomingEventsComponent.refreshData());
-        }
+        promises.push(this.refreshComponentData(afterChange));
 
         await Promise.all(promises).finally(() => this.fetchData(sync, showErrors));
+    }
+
+    /**
+     * Refresh the data of the component if loaded (either calendar or upcoming events).
+     */
+    protected async refreshComponentData(afterChange = false): Promise<void> {
+        if (this.showCalendar) {
+            await this.calendarComponent?.refreshData(afterChange);
+        } else {
+            await this.upcomingEventsComponent?.refreshData();
+        }
     }
 
     /**
