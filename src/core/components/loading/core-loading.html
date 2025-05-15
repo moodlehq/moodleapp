@@ -8,7 +8,7 @@
         } @else {
             <div class="{{placeholderType}} placeholder" [class.list-item-limited-width]="placeholderType !== 'free'">
                 @if (placeholderType === 'free') {
-                    <ng-content select="[placeholder]" />
+                    <ng-content select="[loading-placeholder]" />
                 } @else if (placeholderType === 'listwithicon' || placeholderType === 'listwithavatar') {
                     @for (i of placeholderLimit|coreTimes; track i) {
                         <ion-item>
