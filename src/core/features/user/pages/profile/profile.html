@@ -13,7 +13,7 @@
         <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}" />
     </ion-refresher>
     <core-loading [hideUntil]="userLoaded" placeholderType="free">
-        <ion-list placeholder class="ion-padding list-item-limited-width">
+        <ion-list loading-placeholder class="ion-padding list-item-limited-width">
             <ion-item>
                 <ion-avatar slot="start" style="width: 80px; height: 80px;">
                     <ion-skeleton-text [animated]="true" />
