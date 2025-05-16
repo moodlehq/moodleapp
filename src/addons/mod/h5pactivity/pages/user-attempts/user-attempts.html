@@ -143,14 +143,16 @@
                 <ion-col role="gridcell" size="3">
                     {{ attempt.timemodified | coreFormatDate:'strftimedatetimeshort' }}
                 </ion-col>
-                <ion-col role="gridcell" class="ion-justify-content-center">
+                <ion-col role="gridcell" class="ion-justify-content-center ion-text-center">
                     {{ 'addon.mod_h5pactivity.score_out_of' | translate:{$a: attempt} }}
                 </ion-col>
-                <ion-col role="gridcell" class="ion-justify-content-center">{{ attempt.durationReadable }}</ion-col>
-                <ion-col role="gridcell" class="ion-justify-content-center">
+                <ion-col role="gridcell" class="ion-justify-content-center ion-text-center">
+                    {{ attempt.durationReadable }}
+                </ion-col>
+                <ion-col role="gridcell" class="ion-justify-content-center ion-text-center">
                     <addon-mod-h5pactivity-attempt-completion [attempt]="attempt" />
                 </ion-col>
-                <ion-col role="gridcell" class="ion-justify-content-center">
+                <ion-col role="gridcell" class="ion-justify-content-center ion-text-center">
                     <addon-mod-h5pactivity-attempt-success [attempt]="attempt" />
                 </ion-col>
                 <ion-col role="gridcell" size="auto">
