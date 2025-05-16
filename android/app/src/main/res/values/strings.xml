@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">BEC eLearning Marketplace LMS</string>
+    <string name="title_activity_main">BEC eLearning Marketplace LMS</string>
+    <string name="package_name">com.bec.elearningmarketplaceapp</string>
+    <string name="custom_url_scheme">com.bec.elearningmarketplaceapp</string>
+</resources>
