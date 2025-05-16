@@ -90,8 +90,9 @@ export class AddonModBookProvider {
         }
 
         const siteId = CoreSites.getCurrentSiteId();
+        const timemodified = contentsMap[chapterId].timemodified;
 
-        const url = await CoreFilepool.downloadUrl(siteId, indexUrl, false, ADDON_MOD_BOOK_COMPONENT, moduleId);
+        const url = await CoreFilepool.downloadUrl(siteId, indexUrl, false, ADDON_MOD_BOOK_COMPONENT, moduleId, timemodified);
 
         const content = await CoreWS.getText(url);
 
@@ -134,6 +135,7 @@ export class AddonModBookProvider {
                 // Index of the chapter, set indexUrl and tags of the chapter.
                 map[chapter].indexUrl = content.fileurl;
                 map[chapter].tags = content.tags;
+                map[chapter].timemodified = content.timemodified;
 
                 return;
             }
@@ -376,6 +378,7 @@ export type AddonModBookContentsMap = {
     [chapter: string]: {
         indexUrl?: string;
         paths: {[path: string]: string};
+        timemodified?: number;
         tags?: CoreTagItem[];
     };
 };

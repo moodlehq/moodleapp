@@ -62,6 +62,7 @@ export default class CoreTagIndexAreaPage implements OnInit {
     async ngOnInit(): Promise<void> {
         this.route.queryParams.subscribe(async () => {
             this.loaded = false;
+            this.areaComponent = undefined; // Re-calculate area component.
 
             this.tagId = CoreNavigator.getRouteNumberParam('tagId') || this.tagId;
             this.tagName = CoreNavigator.getRouteParam('tagName') || this.tagName;
