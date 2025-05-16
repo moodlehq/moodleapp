@@ -136,6 +136,9 @@ export class CoreConstants {
     static readonly NO_SITE_ID = 'NoSite';
 
     // Settings constants.
+    /**
+     * @deprecated since 5.0. Plain text area editor has been removed.
+     */
     static readonly SETTINGS_RICH_TEXT_EDITOR = 'CoreSettingsRichTextEditor';
     static readonly SETTINGS_NOTIFICATION_SOUND = 'CoreSettingsNotificationSound';
     static readonly SETTINGS_SYNC_ONLY_ON_WIFI = 'CoreSettingsSyncOnlyOnWifi';

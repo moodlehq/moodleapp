@@ -18,11 +18,12 @@ import { Http } from '@singletons';
 import { IonSearchbar } from '@ionic/angular';
 import { firstValueFrom } from 'rxjs';
 import { CoreSharedModule } from '@/core/shared.module';
+import { CoreEditorService } from '@features/editor/services/editor';
 
 /**
  * Defines license info
  */
-interface CoreSettingsLicense {
+export interface CoreSettingsLicense {
     name: string;
     version: string;
     licenses: string | string[];
@@ -47,6 +48,8 @@ interface CoreSettingsLicense {
 })
 export default class CoreSettingsLicensesPage implements OnInit {
 
+    protected static readonly LICENSES_PER_PAGE = 50;
+
     licensesUrl: string;
     loaded = false;
     licenses: CoreSettingsLicense[] = [];
@@ -55,6 +58,7 @@ export default class CoreSettingsLicensesPage implements OnInit {
     appLicenseVersion: string;
 
     protected allLicenses: CoreSettingsLicense[] = [];
+    protected filteredLicenses: CoreSettingsLicense[] = [];
 
     constructor() {
         this.appLicenseVersion = CoreConstants.BUILD.isDevelopment
@@ -91,6 +95,9 @@ export default class CoreSettingsLicensesPage implements OnInit {
                 return license;
             });
 
+            this.allLicenses.push(...await CoreEditorService.getLicenseInformation());
+
+            this.allLicenses.sort((a, b) => a.name.localeCompare(b.name));
             this.filterLicenses();
 
             this.error = false;
@@ -108,18 +115,18 @@ export default class CoreSettingsLicensesPage implements OnInit {
         const filter = this.textFilter.trim().toLowerCase();
 
         if (filter == '') {
-            this.licenses = this.allLicenses;
-
-            return;
+            this.filteredLicenses = this.allLicenses;
+        } else {
+            this.filteredLicenses = this.allLicenses.filter((license) => license.name.toLowerCase().indexOf(filter) >=0 ||
+                license.version.toLowerCase().indexOf(filter) >=0 ||
+                typeof license.licenses == 'string' && license.licenses.toLowerCase().indexOf(filter) >=0 ||
+                license.repository && license.repository.toLowerCase().indexOf(filter) >=0 ||
+                license.publisher && license.publisher.toLowerCase().indexOf(filter) >=0 ||
+                license.url && license.url.toLowerCase().indexOf(filter) >=0 ||
+                license.email && license.email.toLowerCase().indexOf(filter) >=0);
         }
 
-        this.licenses = this.allLicenses.filter((license) => license.name.toLowerCase().indexOf(filter) >=0 ||
-            license.version.toLowerCase().indexOf(filter) >=0 ||
-            typeof license.licenses == 'string' && license.licenses.toLowerCase().indexOf(filter) >=0 ||
-            license.repository && license.repository.toLowerCase().indexOf(filter) >=0 ||
-            license.publisher && license.publisher.toLowerCase().indexOf(filter) >=0 ||
-            license.url && license.url.toLowerCase().indexOf(filter) >=0 ||
-            license.email && license.email.toLowerCase().indexOf(filter) >=0);
+        this.licenses = this.filteredLicenses.slice(0, CoreSettingsLicensesPage.LICENSES_PER_PAGE);
     }
 
     /**
@@ -131,6 +138,24 @@ export default class CoreSettingsLicensesPage implements OnInit {
         this.textFilter = target.value || '';
 
         this.filterLicenses();
+    }
+
+    get canLoadMore(): boolean {
+        return this.licenses.length < this.filteredLicenses.length;
+    }
+
+    /**
+     * Load more licenses.
+     *
+     * @param infiniteComplete Infinite scroll complete function. Only used from core-infinite-loading.
+     * @returns Resolved when done.
+     */
+    async loadMore(infiniteComplete?: () => void): Promise<void> {
+        const start = this.licenses.length;
+        const end = start + CoreSettingsLicensesPage.LICENSES_PER_PAGE;
+        this.licenses.push(...this.filteredLicenses.slice(start, end));
+
+        infiniteComplete?.();
     }
 
 }

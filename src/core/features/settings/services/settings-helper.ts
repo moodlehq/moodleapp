@@ -462,12 +462,21 @@ export class CoreSettingsHelperProvider {
     }
 
     /**
+     * Check if the dark mode is enabled.
+     *
+     * @returns True if the dark mode is enabled, false otherwise.
+     */
+    isDarkModeEnabled(): boolean {
+        return CoreHTMLClasses.hasModeClass('dark');
+    }
+
+    /**
      * Toggles dark mode based on enabled boolean.
      *
      * @param enable True to enable dark mode, false to disable.
      */
     protected toggleDarkMode(enable: boolean = false): void {
-        const isDark = CoreHTMLClasses.hasModeClass('dark');
+        const isDark = this.isDarkModeEnabled();
 
         if (isDark !== enable) {
             CoreHTMLClasses.toggleModeClass('dark', enable);
@@ -517,17 +526,6 @@ export class CoreSettingsHelperProvider {
 
         await CoreNavigator.navigate('/');
         window.location.reload();
-    }
-
-    /**
-     * Check if rich text editor is enabled.
-     *
-     * @returns Promise resolved with boolean: true if enabled, false otherwise.
-     */
-    async isRichTextEditorEnabled(): Promise<boolean> {
-        const enabled = await CoreConfig.get(CoreConstants.SETTINGS_RICH_TEXT_EDITOR, true);
-
-        return !!enabled;
     }
 
 }

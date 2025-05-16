@@ -42,6 +42,7 @@
                     </ion-button>
                 </ion-item>
             </ng-container>
+            <core-infinite-loading [enabled]="canLoadMore" (action)="loadMore($event)" />
         </ion-list>
     </core-loading>
 </ion-content>
