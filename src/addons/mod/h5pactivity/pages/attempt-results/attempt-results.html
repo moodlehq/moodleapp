@@ -75,12 +75,12 @@
                                             <core-format-text [text]="option.description" [component]="component" [componentId]="cmId"
                                                 contextLevel="module" [contextInstanceId]="cmId" [courseId]="courseId" />
                                         </ion-col>
-                                        <ion-col role="gridcell" class="ion-justify-content-center">
+                                        <ion-col role="gridcell" class="ion-justify-content-center ion-text-center">
                                             @if (option.correctanswer) {
                                                 <ng-container *ngTemplateOutlet="answerTemplate; context: {answer: option.correctanswer}" />
                                             }
                                         </ion-col>
-                                        <ion-col role="gridcell" class="ion-justify-content-center">
+                                        <ion-col role="gridcell" class="ion-justify-content-center ion-text-center">
                                             @if (option.useranswer) {
                                                 <ng-container *ngTemplateOutlet="answerTemplate; context: {answer: option.useranswer}" />
                                             }
