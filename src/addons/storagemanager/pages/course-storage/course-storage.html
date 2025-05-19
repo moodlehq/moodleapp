@@ -112,8 +112,9 @@
                     @if (!isModule(modOrSubsection)) {
                         <ng-container *ngTemplateOutlet="sectionCard; context: { section: modOrSubsection }" />
                     } @else {
-                        <ion-item class="core-course-storage-activity"
-                            *ngIf="downloadEnabled || (!modOrSubsection.calculatingSize && modOrSubsection.totalSize > 0)">
+                        <ion-item class="core-course-storage-activity" *ngIf="modOrSubsection.handlerData &&
+                            modOrSubsection.visibleoncoursepage !== 0 &&
+                            (downloadEnabled || (!modOrSubsection.calculatingSize && modOrSubsection.totalSize > 0))">
                             <core-mod-icon slot="start" *ngIf="modOrSubsection.handlerData.icon"
                                 [modicon]="modOrSubsection.handlerData.icon" [modname]="modOrSubsection.modname"
                                 [componentId]="modOrSubsection.instance" [fallbackTranslation]="modOrSubsection.modplural"
