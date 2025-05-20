@@ -89,7 +89,7 @@ export class AddonModWikiCreateLinkHandlerLazyService extends AddonModWikiCreate
         const AddonModWikiIndexPage = await import('../../pages/index');
 
         try {
-            const route = CoreNavigator.getCurrentRoute({ pageComponent: AddonModWikiIndexPage });
+            const route = CoreNavigator.getCurrentRoute({ pageComponent: AddonModWikiIndexPage.default });
             if (!route) {
                 // Current view isn't wiki index.
                 return;
