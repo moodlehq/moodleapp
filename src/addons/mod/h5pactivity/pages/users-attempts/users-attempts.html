@@ -111,7 +111,7 @@
                         <span class="sr-only">{{ 'core.none' | translate }}</span>
                     }
                 </ion-col>
-                <ion-col role="gridcell" class="ion-justify-content-center">
+                <ion-col role="gridcell" class="ion-justify-content-center ion-text-center">
                     @if (user.score !== undefined) {
                         {{ 'core.percentagenumber' | translate: {$a: user.score} }}
                     } @else {
@@ -119,7 +119,7 @@
                         <span class="sr-only">{{ 'core.none' | translate }}</span>
                     }
                 </ion-col>
-                <ion-col role="gridcell" class="ion-justify-content-center">
+                <ion-col role="gridcell" class="ion-justify-content-center ion-text-center">
                     @if (user.attempts.length > 0) {
                         {{ user.attempts.length }}
                     } @else {
