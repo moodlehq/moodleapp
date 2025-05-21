@@ -210,20 +210,20 @@ export function asyncInstance<TLazyInstance extends TEagerInstance, TEagerInstan
                 return Reflect.get(target, property, receiver);
             }
 
-            if (wrapper.instance) {
-                const value = Reflect.get(wrapper.instance, property, receiver);
-
-                return isMethod(value)
-                    ? async (...args: unknown[]) => value.call(wrapper.instance, ...args)
-                    : value;
-            }
-
             if (
                 wrapper.eagerInstance &&
                 property in wrapper.eagerInstance &&
                 !wrapper.lazyOverrides?.includes(property)
             ) {
                 return Reflect.get(wrapper.eagerInstance, property, receiver);
+            }
+
+            if (wrapper.instance) {
+                const value = Reflect.get(wrapper.instance, property, receiver);
+
+                return isMethod(value)
+                    ? async (...args: unknown[]) => value.call(wrapper.instance, ...args)
+                    : value;
             }
 
             if (
