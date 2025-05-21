@@ -65,6 +65,7 @@ export class CoreReadingModeDirective implements AfterViewInit, OnDestroy {
         await this.viewportPromise;
         await CoreWait.nextTick();
         await this.addTextViewerButton();
+        this.element.classList.add('core-reading-mode-ready');
 
         this.enabled = document.body.classList.contains('core-reading-mode-enabled');
         if (this.enabled) {
@@ -114,10 +115,6 @@ export class CoreReadingModeDirective implements AfterViewInit, OnDestroy {
         buttonsContainer.appendChild(button);
 
         button.addEventListener('click', (e: Event) => {
-            if (!this.element.innerHTML) {
-                return;
-            }
-
             e.preventDefault();
             e.stopPropagation();
 
@@ -140,34 +137,44 @@ export class CoreReadingModeDirective implements AfterViewInit, OnDestroy {
 
         document.body.classList.add('core-reading-mode-enabled');
 
-        // Disable all styles in element.
-        this.disabledStyles = Array.from(this.element.querySelectorAll('style:not(disabled)'));
-        this.disabledStyles.forEach((style) => {
-            style.disabled = true;
-        });
+        const elements = document.body.querySelectorAll('[core-reading-mode].core-reading-mode-ready');
 
-        // Rename style attributes on DOM elements.
-        this.renamedStyles = Array.from(this.element.querySelectorAll('*[style]'));
-        this.renamedStyles.forEach((element: HTMLElement) => {
-            this.renamedStyles.push(element);
-            element.setAttribute('data-original-style', element.getAttribute('style') || '');
-            element.removeAttribute('style');
-        });
-
-        // Navigate to parent hidding all other elements.
-        let currentChild = this.element;
-        let parent = currentChild.parentElement;
-        while (parent && parent.tagName.toLowerCase() !== 'ion-content') {
-            Array.from(parent.children).forEach((child: HTMLElement) => {
-                if (child !== currentChild && child.tagName.toLowerCase() !== 'swiper-slide') {
-                    this.hiddenElements.push(child);
-                    child.classList.add('hide-on-reading-mode');
-                }
+        elements.forEach((element: HTMLElement) => {
+            // Disable all styles in element.
+            const disabledStyles: HTMLStyleElement[] = Array.from(element.querySelectorAll('style:not(disabled)'));
+            disabledStyles.forEach((style) => {
+                style.disabled = true;
             });
 
-            currentChild = parent;
-            parent = currentChild.parentElement;
-        }
+            this.disabledStyles = this.disabledStyles.concat(disabledStyles);
+
+            // Rename style attributes on DOM elements.
+            const renamedStyles: HTMLElement[] = Array.from(element.querySelectorAll('*[style]'));
+            renamedStyles.forEach((element: HTMLElement) => {
+                this.renamedStyles.push(element);
+                element.setAttribute('data-original-style', element.getAttribute('style') || '');
+                element.removeAttribute('style');
+            });
+
+            this.renamedStyles = this.renamedStyles.concat(renamedStyles);
+
+            // Navigate to parent hidding all other elements.
+            let currentChild = element;
+            let parent = currentChild.parentElement;
+            while (parent && parent.tagName.toLowerCase() !== 'ion-content') {
+                Array.from(parent.children).forEach((child: HTMLElement) => {
+                    if (child !== currentChild && child.tagName.toLowerCase() !== 'swiper-slide') {
+                        this.hiddenElements.push(child);
+                        child.classList.add('hide-on-reading-mode');
+                    }
+                });
+
+                currentChild = parent;
+                parent = currentChild.parentElement;
+            }
+
+            element.classList.remove('core-reading-mode-ready');
+        });
     }
 
     /**
@@ -196,6 +203,11 @@ export class CoreReadingModeDirective implements AfterViewInit, OnDestroy {
             element.classList.remove('hide-on-reading-mode');
         });
         this.hiddenElements = [];
+
+        const elements = document.body.querySelectorAll('[core-reading-mode]');
+        elements.forEach((element: HTMLElement) => {
+            element.classList.add('core-reading-mode-ready');
+        });
     }
 
     /**
