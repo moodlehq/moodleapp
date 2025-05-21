@@ -136,7 +136,7 @@ export default class AddonModWorkshopSubmissionPage implements OnInit, OnDestroy
         this.siteId = CoreSites.getCurrentSiteId();
 
         this.feedbackForm = new FormGroup({});
-        this.feedbackForm.addControl('published', this.fb.control(''));
+        this.feedbackForm.addControl('published', this.fb.control(false));
         this.feedbackForm.addControl('grade', this.fb.control(''));
         this.feedbackForm.addControl('text', this.fb.control(''));
 
