@@ -21,6 +21,8 @@
                 <ion-card-title>
                     <core-format-text [text]="title" contextLevel="course" [contextInstanceId]="courseId" [adaptImg]="false" />
                 </ion-card-title>
+            </ion-card-header>
+            <ion-card-content>
                 <ion-item class="size ion-text-wrap ion-no-padding">
                     <ion-label>
                         <p class="item-heading ion-text-wrap">{{ 'addon.storagemanager.totaldownloads' | translate }}</p>
@@ -42,7 +44,7 @@
                         { name: title }" />
                     {{ 'addon.storagemanager.deleteall' | translate }}
                 </ion-button>
-            </ion-card-header>
+            </ion-card-content>
         </ion-card>
 
         <ng-container *ngFor="let section of sections">
