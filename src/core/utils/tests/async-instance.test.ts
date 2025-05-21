@@ -29,23 +29,23 @@ describe('AsyncInstance', () => {
         const asyncService = asyncInstance(() => new LazyService());
 
         asyncService.setEagerInstance(new EagerService());
+        asyncService.setLazyOverrides(['overriddenHello']);
 
         expect(asyncService.instance).toBeUndefined();
         expect(asyncService.answer).toEqual(42);
+        expect(asyncService.eagerHello()).toEqual('hello');
         expect(asyncService.instance).toBeUndefined();
-        expect(await asyncService.isEager()).toBe(true);
         expect(await asyncService.hello()).toEqual('Hi there!');
         expect(asyncService.instance).toBeInstanceOf(LazyService);
-        expect(await asyncService.isEager()).toBe(false);
     });
 
     it('initialize instance for forced eager properties', async () => {
         const asyncService = asyncInstance(() => new LazyService());
 
         asyncService.setEagerInstance(new EagerService());
-        asyncService.setLazyOverrides(['isEager']);
+        asyncService.setLazyOverrides(['overriddenHello']);
 
-        expect(await asyncService.isEager()).toBe(false);
+        expect(await asyncService.overriddenHello()).toBe('Hi!');
     });
 
     it('does not return undefined methods when they are declared', async () => {
@@ -53,10 +53,11 @@ describe('AsyncInstance', () => {
 
         asyncService.setEagerInstance(new EagerService());
         asyncService.setLazyMethods(['hello', 'goodbye']);
+        asyncService.setLazyOverrides(['overriddenHello']);
 
         expect(asyncService.hello).not.toBeUndefined();
         expect(asyncService.goodbye).not.toBeUndefined();
-        expect(asyncService.isEager).not.toBeUndefined();
+        expect(asyncService.overriddenHello).not.toBeUndefined();
         expect(asyncService.notImplemented).toBeUndefined();
     });
 
@@ -113,20 +114,6 @@ describe('AsyncInstance', () => {
         expectSameTypes<AsyncInstance<LazyService>['goodbye'], () => Promise<string>>(true);
     });
 
-    it('keeps eager methods synchronous', () => {
-        // Arrange.
-        const asyncService = asyncInstance<LazyService, EagerService>(() => new LazyService());
-
-        asyncService.setEagerInstance(new EagerService());
-
-        // Act.
-        const message = asyncService.eagerHello();
-
-        // Assert.
-        expect(message).toEqual('hello');
-        expectSameTypes<typeof message, string>(true);
-    });
-
 });
 
 class EagerService {
@@ -139,8 +126,8 @@ class EagerService {
         return 'hello';
     }
 
-    async isEager(): Promise<boolean> {
-        return true;
+    async overriddenHello(): Promise<string> {
+        return 'should not be seen';
     }
 
 }
@@ -153,16 +140,16 @@ class FakeEagerService {
 
 class LazyService extends EagerService {
 
-    async isEager(): Promise<boolean> {
-        return false;
-    }
-
     hello(): string {
         return 'Hi there!';
     }
 
     async goodbye(): Promise<string> {
         return 'Sayonara!';
+    }
+
+    async overriddenHello(): Promise<string> {
+        return 'Hi!';
     }
 
 }
