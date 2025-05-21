@@ -48,7 +48,12 @@ body.core-reading-mode-enabled {
                 --text-color: var(--reading-mode-text-color, --text-color);
                 --color: var(--reading-mode-text-color, --text-color);
                 --subdued-text-color: var(--text-color);
-                color: var(--text-color);
+                --core-input-text: var(--text-color);
+                color: var(--text-color) !important;
+            }
+
+            core-comments, core-file, core-rating-rate {
+                display: none !important;
             }
         }
 
