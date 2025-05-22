@@ -25,5 +25,6 @@ export const ADDON_MOD_WIKI_FEATURE_NAME = CORE_COURSE_MODULE_FEATURE_PREFIX + A
 export const ADDON_MOD_WIKI_AUTO_SYNCED = 'addon_mod_wiki_autom_synced';
 export const ADDON_MOD_WIKI_MANUAL_SYNCED = 'addon_mod_wiki_manual_synced';
 export const ADDON_MOD_WIKI_PAGE_CREATED_EVENT = 'addon_mod_wiki_page_created';
+export const ADDON_MOD_WIKI_PAGE_CREATED_OFFLINE_EVENT = 'addon_mod_wiki_page_created_offline';
 
 export const ADDON_MOD_WIKI_RENEW_LOCK_TIME = 30000; // Milliseconds.
