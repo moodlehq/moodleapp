@@ -3,8 +3,10 @@
         <ng-container *ngFor="let group of subwikis">
             <ion-item-divider *ngIf="group.label">
                 <ion-label>
-                    <core-format-text [text]="group.label" contextLevel="course" [contextInstanceId]="courseId" [wsNotFiltered]="true"
-                        class="item-heading" />
+                    <p class="item-heading">
+                        <core-format-text [text]="group.label" contextLevel="course" [contextInstanceId]="courseId"
+                            [wsNotFiltered]="true" />
+                    </p>
                 </ion-label>
             </ion-item-divider>
             <ion-item class="ion-text-wrap" *ngFor="let subwiki of group.subwikis" (click)="openSubwiki(subwiki)" button
