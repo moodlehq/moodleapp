@@ -55,6 +55,7 @@ import {
     ADDON_MOD_WIKI_COMPONENT_LEGACY,
     ADDON_MOD_WIKI_MANUAL_SYNCED,
     ADDON_MOD_WIKI_PAGE_CREATED_EVENT,
+    ADDON_MOD_WIKI_PAGE_CREATED_OFFLINE_EVENT,
     ADDON_MOD_WIKI_PAGE_NAME,
 } from '../../constants';
 import { CoreModals } from '@services/overlays/modals';
@@ -120,6 +121,7 @@ export class AddonModWikiIndexComponent extends CoreCourseModuleMainActivityComp
     protected currentPage?: number; // Current loaded page ID.
     protected subwikiPages?: (AddonModWikiSubwikiPage | AddonModWikiPageDBRecord)[]; // List of subwiki pages.
     protected newPageObserver?: CoreEventObserver; // Observer to check for new pages.
+    protected pageCreatedOfflineObserver?: CoreEventObserver; // Observer to check for offline pages.
     protected manualSyncObserver?: CoreEventObserver; // An observer to watch for manual sync events.
     protected ignoreManualSyncEvent = false; // Whether manual sync event should be ignored.
     protected currentUserId?: number; // Current user ID.
@@ -191,6 +193,24 @@ export class AddonModWikiIndexComponent extends CoreCourseModuleMainActivityComp
                 this.showLoadingAndFetch(false, false);
             }
         }, this.siteId);
+
+        // If a new page is created in this wiki, mark that the wiki has offline data and load offline pages in map if needed.
+        this.pageCreatedOfflineObserver = CoreEvents.on(ADDON_MOD_WIKI_PAGE_CREATED_OFFLINE_EVENT, async (data) => {
+            if (data.wikiId && data.wikiId === this.wiki?.id) {
+                // Page created in current wiki, has offline data.
+                this.hasOffline = true;
+                this.currentSubwiki && await this.loadOfflineSubwikiPages(this.currentSubwiki);
+
+                return;
+            }
+
+            if (!data.wikiId) {
+                // Cannot tell if it's the same wiki, check if it has offline data now.
+                this.hasOffline = await AddonModWikiOffline.subwikisHaveOfflineData(this.loadedSubwikis);
+
+                this.hasOffline && this.currentSubwiki && await this.loadOfflineSubwikiPages(this.currentSubwiki);
+            }
+        });
     }
 
     /**
@@ -359,7 +379,7 @@ export class AddonModWikiIndexComponent extends CoreCourseModuleMainActivityComp
      * @param subwiki Subwiki.
      */
     protected async fetchSubwikiPages(subwiki: AddonModWikiSubwiki): Promise<void> {
-        const subwikiPages = subwiki.id <= 0 ?
+        const onlinePages = subwiki.id <= 0 ?
             [] :
             await AddonModWiki.getSubwikiPages(subwiki.wikiid, {
                 groupId: subwiki.groupid,
@@ -367,19 +387,39 @@ export class AddonModWikiIndexComponent extends CoreCourseModuleMainActivityComp
                 cmId: this.module.id,
             });
 
-        this.setCurrentPage(subwikiPages);
+        this.setCurrentPage(onlinePages);
 
         // Now get the offline pages.
-        const dbPages = await AddonModWikiOffline.getSubwikiNewPages(subwiki.id, subwiki.wikiid, subwiki.userid, subwiki.groupid);
-
-        this.subwikiPages = AddonModWiki.sortPagesByTitle(
-            (<(AddonModWikiSubwikiPage | AddonModWikiPageDBRecord)[]> subwikiPages).concat(dbPages),
-        );
+        const subwikiPages = await this.loadOfflineSubwikiPages(subwiki, onlinePages);
 
         // Reject if no currentPage selected from the subwikis given (if no subwikis available, do not reject).
-        if (!this.currentPage && !this.pageTitle && this.subwikiPages.length > 0) {
+        if (!this.currentPage && !this.pageTitle && subwikiPages.length > 0) {
             throw new CoreError();
         }
+    }
+
+    /**
+     * Load offline subwiki pages to the list of online pages, and store it in subwikiPages.
+     *
+     * @param subwiki Subwiki to load the pages from.
+     * @param onlinePages Online pages. If not found, extract them from subwikiPages.
+     * @returns List of online and offline pages.
+     */
+    protected async loadOfflineSubwikiPages(
+        subwiki: AddonModWikiSubwiki,
+        onlinePages?: AddonModWikiSubwikiPage[],
+    ): Promise<(AddonModWikiSubwikiPage | AddonModWikiPageDBRecord)[]> {
+        const dbPages = await AddonModWikiOffline.getSubwikiNewPages(subwiki.id, subwiki.wikiid, subwiki.userid, subwiki.groupid);
+
+        if (!onlinePages) {
+            onlinePages = this.subwikiPages?.filter(((page): page is AddonModWikiSubwikiPage => 'id' in page)) || [];
+        }
+
+        this.subwikiPages = AddonModWiki.sortPagesByTitle(
+            (<(AddonModWikiSubwikiPage | AddonModWikiPageDBRecord)[]> onlinePages).concat(dbPages),
+        );
+
+        return this.subwikiPages;
     }
 
     /**
@@ -933,6 +973,7 @@ export class AddonModWikiIndexComponent extends CoreCourseModuleMainActivityComp
 
         this.manualSyncObserver?.off();
         this.newPageObserver?.off();
+        this.pageCreatedOfflineObserver?.off();
         this.onlineSubscription.unsubscribe();
         if (this.wiki) {
             AddonModWiki.wikiPageClosed(this.wiki.id, this.currentPath);

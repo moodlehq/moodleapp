@@ -35,6 +35,7 @@ import {
     ADDON_MOD_WIKI_COMPONENT_LEGACY,
     ADDON_MOD_WIKI_MODNAME,
     ADDON_MOD_WIKI_PAGE_CREATED_EVENT,
+    ADDON_MOD_WIKI_PAGE_CREATED_OFFLINE_EVENT,
     ADDON_MOD_WIKI_RENEW_LOCK_TIME,
 } from '../../constants';
 import { CoreLoadings } from '@services/overlays/loadings';
@@ -435,6 +436,14 @@ export default class AddonModWikiEditPage implements OnInit, OnDestroy, CanLeave
 
             if (id <= 0) {
                 // Page stored in offline. Go to see the offline page.
+                CoreEvents.trigger(ADDON_MOD_WIKI_PAGE_CREATED_OFFLINE_EVENT, {
+                    wikiId: this.wikiId,
+                    subwikiId: this.subwikiId,
+                    userId: this.userId,
+                    groupId: this.groupId,
+                    pageTitle: title,
+                }, CoreSites.getCurrentSiteId());
+
                 return this.goToPage(title);
             }
 
