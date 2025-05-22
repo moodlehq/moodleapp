@@ -212,7 +212,8 @@ export class AddonModH5PActivityIndexComponent extends CoreCourseModuleMainActiv
 
         await this.loadContentState(); // Loading the state requires the access info.
 
-        this.trackComponent = this.accessInfo?.cansubmit ? ADDON_MOD_H5PACTIVITY_TRACK_COMPONENT : '';
+        this.trackComponent = this.h5pActivity.enabletracking && this.accessInfo?.cansubmit ?
+            ADDON_MOD_H5PACTIVITY_TRACK_COMPONENT : '';
         this.canViewAllAttempts = !!this.h5pActivity.enabletracking && !!this.accessInfo?.canreviewattempts &&
                 AddonModH5PActivity.canGetUsersAttemptsInSite();
 
