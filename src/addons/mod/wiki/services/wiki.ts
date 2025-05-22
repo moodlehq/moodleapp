@@ -264,10 +264,10 @@ export class AddonModWikiProvider {
     async getSubwikiPages(wikiId: number, options: AddonModWikiGetSubwikiPagesOptions = {}): Promise<AddonModWikiSubwikiPage[]> {
         const site = await CoreSites.getSite(options.siteId);
 
-        const groupId = options.groupId || -1;
-        const userId = options.userId || 0;
-        const sortBy = options.sortBy || 'title';
-        const sortDirection = options.sortDirection || 'ASC';
+        const groupId = options.groupId ?? -1;
+        const userId = options.userId ?? 0;
+        const sortBy = options.sortBy ?? 'title';
+        const sortDirection = options.sortDirection ?? 'ASC';
 
         const params: AddonModWikiGetSubwikiPagesWSParams = {
             wikiid: wikiId,
