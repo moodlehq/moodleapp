@@ -29,7 +29,7 @@
     <core-loading [hideUntil]="loaded">
         <ion-list *ngIf="submission">
             <addon-mod-workshop-submission [submission]="submission" [courseId]="courseId" [module]="module" [workshop]="workshop"
-                [access]="access" [viewDetails]="true" />
+                [access]="access" [submissionPage]="true" />
             <ion-item class="ion-text-wrap" *ngIf="canEdit || canDelete">
                 <ion-label>
                     <ion-button expand="block" *ngIf="canEdit" (click)="editSubmission()">
