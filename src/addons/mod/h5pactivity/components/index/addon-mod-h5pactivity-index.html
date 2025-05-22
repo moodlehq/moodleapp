@@ -44,14 +44,16 @@
     }
 
     <!-- Preview mode. -->
-    <ion-card class="core-warning-card" *ngIf="accessInfo && !trackComponent">
+    <ion-card class="core-info-card" *ngIf="accessInfo && !accessInfo.cansubmit">
         <ion-item>
-            <ion-icon name="fas-triangle-exclamation" slot="start" aria-hidden="true" />
+            <ion-icon name="fas-circle-info" slot="start" aria-hidden="true" />
             <ion-label>
                 {{ 'addon.mod_h5pactivity.previewmode' | translate }}
             </ion-label>
         </ion-item>
     </ion-card>
+
+    <!-- TODO: Once MDL-85566 is fixed, display trackingdisabled warning if user cannot submit and tracking is disabled. -->
 
     <ion-list *ngIf="deployedFile && !playing">
         <ion-item class="ion-text-wrap" *ngIf="stateMessage">
