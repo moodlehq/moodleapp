@@ -30,6 +30,7 @@ import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
 import {
     ADDON_MOD_WIKI_COMPONENT_LEGACY,
     ADDON_MOD_WIKI_PAGE_CREATED_EVENT,
+    ADDON_MOD_WIKI_PAGE_CREATED_OFFLINE_EVENT,
 } from '../constants';
 import { CoreCacheUpdateFrequency } from '@/core/constants';
 import { CorePromiseUtils } from '@singletons/promise-utils';
@@ -858,6 +859,7 @@ declare module '@singletons/events' {
      */
     export interface CoreEventsData {
         [ADDON_MOD_WIKI_PAGE_CREATED_EVENT]: AddonModWikiPageCreatedData;
+        [ADDON_MOD_WIKI_PAGE_CREATED_OFFLINE_EVENT]: AddonModWikiPageCreatedOfflineData;
     }
 
 }
@@ -1161,6 +1163,17 @@ export type AddonModWikiPageCreatedData = {
     pageId: number;
     subwikiId: number;
     pageTitle: string;
+};
+
+/**
+ * Data passed to PAGE_CREATED_OFFLINE event.
+ */
+export type AddonModWikiPageCreatedOfflineData = {
+    pageTitle: string;
+    wikiId?: number;
+    subwikiId?: number;
+    userId?: number;
+    groupId?: number;
 };
 
 /**
