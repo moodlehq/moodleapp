@@ -53,13 +53,14 @@ export class AddonModWorkshopSubmissionComponent implements OnInit {
     @Input({ required: true }) courseId!: number;
     @Input() assessment?: AddonModWorkshopSubmissionAssessmentWithFormData;
     @Input({ transform: toBoolean }) summary = false;
-    @Input({ transform: toBoolean }) viewDetails = false;
+    @Input({ transform: toBoolean }) submissionPage = false;
 
     component = ADDON_MOD_WORKSHOP_COMPONENT;
     componentId?: number;
     userId: number;
     loaded = false;
     offline = false;
+    viewDetails = false;
     profile?: CoreUserProfile;
     showGrade: (grade?: number|string) => boolean;
     evaluateByProfile?: CoreUserProfile;
@@ -100,7 +101,7 @@ export class AddonModWorkshopSubmissionComponent implements OnInit {
             }));
         }
 
-        this.viewDetails = this.viewDetails && this.workshop.phase === AddonModWorkshopPhase.PHASE_CLOSED;
+        this.viewDetails = !this.submissionPage && !this.summary && this.workshop.phase === AddonModWorkshopPhase.PHASE_CLOSED;
 
         if (this.viewDetails && this.submission.gradeoverby) {
             promises.push(CoreUser.getProfile(this.submission.gradeoverby, this.courseId, true).then((profile) => {
