@@ -1091,17 +1091,16 @@ export class AddonModWikiIndexComponent extends CoreCourseModuleMainActivityComp
         }
 
         if (multiLevelList) {
-            // As we loop over each subwiki, add it to the current group
-            let groupValue = -1;
-            let grouping: AddonModWikiSubwikiListGrouping;
+            // As we loop over each subwiki, add it to the right group.
+            const groupings: Record<number, AddonModWikiSubwikiListGrouping> = {};
 
             subwikiList.forEach((subwiki) => {
-                // Should we create a new grouping?
-                if (subwiki.groupid !== groupValue) {
+                let grouping = groupings[subwiki.groupid];
+                if (!grouping) {
+                    // Create a new grouping.
                     grouping = { label: subwiki.groupLabel, subwikis: [] };
-                    groupValue = subwiki.groupid;
-
                     this.subwikiData.subwikis.push(grouping);
+                    groupings[subwiki.groupid] = grouping;
                 }
 
                 // Add the subwiki to the currently active grouping.
