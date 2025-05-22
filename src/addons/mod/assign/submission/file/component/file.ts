@@ -65,25 +65,23 @@ export class AddonModAssignSubmissionFileComponent extends AddonModAssignSubmiss
         );
 
         try {
-            if (offlineData) {
-                // Offline submission, get files if submission is not removed.
-                if (offlineData.plugindata.files_filemanager) {
-                    const offlineDataFiles = <CoreFileUploaderStoreFilesResult>offlineData.plugindata.files_filemanager;
-                    // It has offline data.
-                    let offlineFiles: FileEntry[] = [];
-                    if (offlineDataFiles.offline) {
-                        offlineFiles = <FileEntry[]>await CorePromiseUtils.ignoreErrors(
-                            AddonModAssignHelper.getStoredSubmissionFiles(
-                                this.assign.id,
-                                ADDON_MOD_ASSIGN_SUBMISSION_FILE_FOLDER_NAME,
-                            ),
-                            [],
-                        );
-                    }
-
-                    this.files = offlineDataFiles.online || [];
-                    this.files = this.files.concat(offlineFiles);
+            // Offline submission, get files if submission is not removed.
+            if (offlineData?.plugindata?.files_filemanager) {
+                const offlineDataFiles = <CoreFileUploaderStoreFilesResult>offlineData.plugindata.files_filemanager;
+                // It has offline data.
+                let offlineFiles: FileEntry[] = [];
+                if (offlineDataFiles.offline) {
+                    offlineFiles = <FileEntry[]>await CorePromiseUtils.ignoreErrors(
+                        AddonModAssignHelper.getStoredSubmissionFiles(
+                            this.assign.id,
+                            ADDON_MOD_ASSIGN_SUBMISSION_FILE_FOLDER_NAME,
+                        ),
+                        [],
+                    );
                 }
+
+                this.files = offlineDataFiles.online || [];
+                this.files = this.files.concat(offlineFiles);
             } else {
                 // No offline data, get the online files.
                 this.files = AddonModAssign.getSubmissionPluginAttachments(this.plugin);

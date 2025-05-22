@@ -106,7 +106,7 @@ export class AddonModAssignFeedbackCommentsComponent extends AddonModAssignFeedb
             undefined,
         );
 
-        if (offlineData && offlineData.plugindata && offlineData.plugindata.assignfeedbackcomments_editor) {
+        if (offlineData?.plugindata?.assignfeedbackcomments_editor) {
             const pluginData = <AddonModAssignFeedbackCommentsPluginData>offlineData.plugindata;
             this.isSent = false;
 
