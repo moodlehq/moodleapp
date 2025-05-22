@@ -75,15 +75,13 @@ export class AddonModAssignSubmissionOnlineTextComponent extends AddonModAssignS
         this.wordLimit = parseInt(this.configs?.wordlimit || '0');
 
         try {
-            if (offlineData && offlineData.plugindata) {
+            if (offlineData?.plugindata.onlinetext_editor) {
                 // Offline submission, get text if submission is not removed.
-                if (offlineData.plugindata.onlinetext_editor) {
-                    this.text = CoreFileHelper.replacePluginfileUrls(
-                        (<AddonModAssignSubmissionOnlineTextPluginData> offlineData.plugindata).onlinetext_editor.text,
-                        this.plugin.fileareas?.[0]?.files ?? [],
-                    );
-                    this.isSent = false;
-                }
+                this.text = CoreFileHelper.replacePluginfileUrls(
+                    (<AddonModAssignSubmissionOnlineTextPluginData> offlineData.plugindata).onlinetext_editor.text,
+                    this.plugin.fileareas?.[0]?.files ?? [],
+                );
+                this.isSent = false;
             } else {
                 // No offline data found, return online text.
                 this.text = AddonModAssign.getSubmissionPluginText(this.plugin);

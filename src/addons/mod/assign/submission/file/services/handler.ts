@@ -181,7 +181,7 @@ export class AddonModAssignSubmissionFileHandlerService implements AddonModAssig
         );
 
         let numFiles: number;
-        if (offlineData && offlineData.plugindata && offlineData.plugindata.files_filemanager) {
+        if (offlineData?.plugindata?.files_filemanager) {
             const offlineDataFiles = <CoreFileUploaderStoreFilesResult>offlineData.plugindata.files_filemanager;
             // Has offline data, return the number of files.
             numFiles = offlineDataFiles.offline + offlineDataFiles.online.length;
