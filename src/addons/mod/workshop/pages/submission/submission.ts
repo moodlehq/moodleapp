@@ -193,7 +193,7 @@ export default class AddonModWorkshopSubmissionPage implements OnInit, OnDestroy
      * @returns Resolved if we can leave it, rejected if not.
      */
     async canLeave(): Promise<boolean> {
-        const assessmentHasChanged = this.assessmentStrategy?.hasDataChanged();
+        const assessmentHasChanged = await this.assessmentStrategy?.hasDataChanged();
         if (this.forceLeave || (!this.hasEvaluationChanged() && !assessmentHasChanged)) {
             return true;
         }
@@ -521,9 +521,10 @@ export default class AddonModWorkshopSubmissionPage implements OnInit, OnDestroy
      * Save the assessment.
      */
     async saveAssessment(): Promise<void> {
-        if (this.assessmentStrategy?.hasDataChanged()) {
+        const assessmentHasChanged = await this.assessmentStrategy?.hasDataChanged();
+        if (assessmentHasChanged) {
             try {
-                await this.assessmentStrategy.saveAssessment();
+                await this.assessmentStrategy?.saveAssessment();
                 this.forceLeavePage();
             } catch {
                 // Error, stay on the page.

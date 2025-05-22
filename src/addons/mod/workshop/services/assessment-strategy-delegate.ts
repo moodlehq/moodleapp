@@ -143,8 +143,10 @@ export class AddonWorkshopAssessmentStrategyDelegateService extends CoreDelegate
         workshopStrategy: string,
         originalValues: AddonModWorkshopGetAssessmentFormFieldsParsedData[],
         currentValues: AddonModWorkshopGetAssessmentFormFieldsParsedData[],
-    ): boolean {
-        return this.executeFunctionOnEnabled(workshopStrategy, 'hasDataChanged', [originalValues, currentValues]) || false;
+    ): Promise<boolean> {
+        return Promise.resolve(
+            this.executeFunctionOnEnabled(workshopStrategy, 'hasDataChanged', [originalValues, currentValues]) || false,
+        );
     }
 
     /**

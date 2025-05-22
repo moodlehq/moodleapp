@@ -168,8 +168,6 @@ export class AddonModWorkshopAssessmentStrategyComponent implements OnInit, OnDe
 
     /**
      * Convenience function to load the assessment data.
-     *
-     * @returns Promised resvoled when data is loaded.
      */
     protected async load(): Promise<void> {
         this.data.assessment = await AddonModWorkshopHelper.getReviewerAssessmentById(this.workshop.id, this.assessmentId, {
@@ -265,7 +263,7 @@ export class AddonModWorkshopAssessmentStrategyComponent implements OnInit, OnDe
      *
      * @returns True if data has changed.
      */
-    hasDataChanged(): boolean {
+    async hasDataChanged(): Promise<boolean> {
         if (!this.assessmentStrategyLoaded || !this.workshop.strategy || !this.edit) {
             return false;
         }
@@ -289,7 +287,7 @@ export class AddonModWorkshopAssessmentStrategyComponent implements OnInit, OnDe
             return true;
         }
 
-        return AddonWorkshopAssessmentStrategyDelegate.hasDataChanged(
+        return await AddonWorkshopAssessmentStrategyDelegate.hasDataChanged(
             this.workshop.strategy,
             this.originalData.selectedValues,
             this.data.selectedValues,
@@ -425,7 +423,7 @@ export class AddonModWorkshopAssessmentStrategyComponent implements OnInit, OnDe
     }
 
     /**
-     * Component destroyed.
+     * @inheritdoc
      */
     ngOnDestroy(): void {
         this.obsInvalidated?.off();
