@@ -202,6 +202,7 @@ export default class AddonModWorkshopSubmissionPage implements OnInit, OnDestroy
         await CoreAlerts.confirmLeaveWithChanges();
 
         CoreForms.triggerFormCancelledEvent(this.formElement, this.siteId);
+        CoreForms.triggerFormCancelledEvent(this.assessmentStrategy?.formElement, this.siteId);
 
         return true;
     }
