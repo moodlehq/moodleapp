@@ -29,6 +29,7 @@ import {
     ADDON_MOD_WORKSHOP_ASSESSMENT_INVALIDATED,
     ADDON_MOD_WORKSHOP_ASSESSMENT_SAVED,
     ADDON_MOD_WORKSHOP_COMPONENT,
+    ADDON_MOD_WORKSHOP_COMPONENT_LEGACY,
     ADDON_MOD_WORKSHOP_PER_PAGE,
     ADDON_MOD_WORKSHOP_SUBMISSION_CHANGED,
     AddonModWorkshopAction,
@@ -219,7 +220,7 @@ export class AddonModWorkshopProvider {
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getWorkshopDataCacheKey(courseId),
             updateFrequency: CoreCacheUpdateFrequency.RARELY,
-            component: ADDON_MOD_WORKSHOP_COMPONENT,
+            component: ADDON_MOD_WORKSHOP_COMPONENT_LEGACY,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
         };
         const response = await site.read<AddonModWorkshopGetWorkshopsByCoursesWSResponse>(
@@ -313,7 +314,7 @@ export class AddonModWorkshopProvider {
 
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getWorkshopAccessInformationDataCacheKey(workshopId),
-            component: ADDON_MOD_WORKSHOP_COMPONENT,
+            component: ADDON_MOD_WORKSHOP_COMPONENT_LEGACY,
             componentId: options.cmId,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
         };
@@ -357,7 +358,7 @@ export class AddonModWorkshopProvider {
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getUserPlanDataCacheKey(workshopId),
             updateFrequency: CoreCacheUpdateFrequency.OFTEN,
-            component: ADDON_MOD_WORKSHOP_COMPONENT,
+            component: ADDON_MOD_WORKSHOP_COMPONENT_LEGACY,
             componentId: options.cmId,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
         };
@@ -406,7 +407,7 @@ export class AddonModWorkshopProvider {
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getSubmissionsDataCacheKey(workshopId, userId, groupId),
             updateFrequency: CoreCacheUpdateFrequency.OFTEN,
-            component: ADDON_MOD_WORKSHOP_COMPONENT,
+            component: ADDON_MOD_WORKSHOP_COMPONENT_LEGACY,
             componentId: options.cmId,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
             ...CoreSites.getFilterPresets(options.filter),
@@ -453,7 +454,7 @@ export class AddonModWorkshopProvider {
 
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getSubmissionDataCacheKey(workshopId, submissionId),
-            component: ADDON_MOD_WORKSHOP_COMPONENT,
+            component: ADDON_MOD_WORKSHOP_COMPONENT_LEGACY,
             componentId: options.cmId,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
             ...CoreSites.getFilterPresets(options.filter),
@@ -494,7 +495,7 @@ export class AddonModWorkshopProvider {
 
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getGradesDataCacheKey(workshopId),
-            component: ADDON_MOD_WORKSHOP_COMPONENT,
+            component: ADDON_MOD_WORKSHOP_COMPONENT_LEGACY,
             componentId: options.cmId,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
         };
@@ -537,7 +538,7 @@ export class AddonModWorkshopProvider {
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getGradesReportDataCacheKey(workshopId, options.groupId),
             updateFrequency: CoreCacheUpdateFrequency.OFTEN,
-            component: ADDON_MOD_WORKSHOP_COMPONENT,
+            component: ADDON_MOD_WORKSHOP_COMPONENT_LEGACY,
             componentId: options.cmId,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
         };
@@ -632,7 +633,7 @@ export class AddonModWorkshopProvider {
 
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getSubmissionAssessmentsDataCacheKey(workshopId, submissionId),
-            component: ADDON_MOD_WORKSHOP_COMPONENT,
+            component: ADDON_MOD_WORKSHOP_COMPONENT_LEGACY,
             componentId: options.cmId,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
         };
@@ -939,7 +940,7 @@ export class AddonModWorkshopProvider {
 
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getReviewerAssessmentsDataCacheKey(workshopId, options.userId),
-            component: ADDON_MOD_WORKSHOP_COMPONENT,
+            component: ADDON_MOD_WORKSHOP_COMPONENT_LEGACY,
             componentId: options.cmId,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
             ...CoreSites.getFilterPresets(options.filter),
@@ -986,7 +987,7 @@ export class AddonModWorkshopProvider {
 
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getAssessmentDataCacheKey(workshopId, assessmentId),
-            component: ADDON_MOD_WORKSHOP_COMPONENT,
+            component: ADDON_MOD_WORKSHOP_COMPONENT_LEGACY,
             componentId: options.cmId,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
             ...CoreSites.getFilterPresets(options.filter),
@@ -1035,7 +1036,7 @@ export class AddonModWorkshopProvider {
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getAssessmentFormDataCacheKey(workshopId, assessmentId, mode),
             updateFrequency: CoreCacheUpdateFrequency.RARELY,
-            component: ADDON_MOD_WORKSHOP_COMPONENT,
+            component: ADDON_MOD_WORKSHOP_COMPONENT_LEGACY,
             componentId: options.cmId,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
         };
