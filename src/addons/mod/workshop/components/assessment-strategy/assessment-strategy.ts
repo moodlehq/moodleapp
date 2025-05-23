@@ -214,7 +214,10 @@ export class AddonModWorkshopAssessmentStrategyComponent implements OnInit, OnDe
                 this.hasOffline = false;
                 // Ignore errors.
             } finally {
-                this.feedbackText = this.data.assessment.feedbackauthor;
+                this.feedbackText = CoreFileHelper.replacePluginfileUrls(
+                    this.data.assessment.feedbackauthor,
+                    this.data.assessment.feedbackcontentfiles,
+                );
                 this.feedbackControl.setValue(this.feedbackText);
 
                 this.originalData.text = this.data.assessment.feedbackauthor;
