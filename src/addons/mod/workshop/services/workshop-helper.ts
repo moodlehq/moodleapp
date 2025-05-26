@@ -18,7 +18,7 @@ import { CoreFileUploader, CoreFileUploaderStoreFilesResult } from '@features/fi
 import { FileEntry } from '@awesome-cordova-plugins/file/ngx';
 import { CoreFile } from '@services/file';
 import { CoreFileEntry, CoreFileHelper } from '@services/file-helper';
-import { CoreSites } from '@services/sites';
+import { CoreSites, CoreSitesReadingStrategy } from '@services/sites';
 import { CoreText, DEFAULT_TEXT_FORMAT } from '@singletons/text';
 import { CoreUtils } from '@singletons/utils';
 import { makeSingleton, Translate } from '@singletons';
@@ -47,6 +47,7 @@ import {
 } from '@addons/mod/workshop/constants';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreObject } from '@singletons/object';
+import { CoreNetwork } from '@services/network';
 
 /**
  * Helper to gather some common functions for workshop.
@@ -180,7 +181,21 @@ export class AddonModWorkshopHelperProvider {
         options: AddonModWorkshopGetSubmissionsOptions = {},
     ): Promise<AddonModWorkshopSubmissionData> {
         try {
-            return await AddonModWorkshop.getSubmission(workshopId, submissionId, options);
+            const submission = await AddonModWorkshop.getSubmission(workshopId, submissionId, options);
+
+            if (options.filter !== false || CoreNetwork.isOnline()) {
+                return submission;
+            }
+
+            // Getting unfiltered data in offline. Check if there is newer data in getSubmissions.
+            const submissions = await CorePromiseUtils.ignoreErrors(AddonModWorkshop.getSubmissions(workshopId, {
+                readingStrategy: CoreSitesReadingStrategy.ONLY_CACHE,
+            }));
+
+            const submissionFromList = submissions?.find((submission) => submission.id === submissionId);
+
+            return submissionFromList && submissionFromList.timemodified > submission.timemodified ?
+                submissionFromList : submission;
         } catch {
             const submissions = await AddonModWorkshop.getSubmissions(workshopId, options);
 
@@ -511,6 +526,11 @@ export class AddonModWorkshopHelperProvider {
         const workshopId = actions[0].workshopid;
 
         actions.forEach((action) => {
+            if (action.action !== AddonModWorkshopAction.ADD && action.submissionid !== baseSubmission.id) {
+                // Editing or deleting a different submission, ignore.
+                return;
+            }
+
             switch (action.action) {
                 case AddonModWorkshopAction.ADD:
                 case AddonModWorkshopAction.UPDATE:
