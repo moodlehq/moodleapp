@@ -356,8 +356,8 @@ export default class AddonModLessonPlayerPage implements OnInit, OnDestroy, CanL
             await Promise.all(promises);
 
             this.mediaFile = this.lesson.mediafiles?.[0];
-            this.lessonWidth = this.lesson.slideshow ? CoreDom.formatSizeUnits(this.lesson.mediawidth!) : '';
-            this.lessonHeight = this.lesson.slideshow ? CoreDom.formatSizeUnits(this.lesson.mediaheight!) : '';
+            this.lessonWidth = this.lesson.slideshow ? CoreDom.formatSizeUnits(this.lesson.width ?? '100%') : '';
+            this.lessonHeight = this.lesson.slideshow ? CoreDom.formatSizeUnits(this.lesson.height ?? '100%') : '';
 
             await this.launchRetake(this.currentPage);
 
