@@ -87,7 +87,8 @@
                             <ion-item class="ion-text-wrap">
                                 <ion-label>
                                     <p class="item-heading">
-                                        {{ 'addon.badges.course' | translate: {$a: badge.coursefullname } }}
+                                        <core-format-text [text]="'addon.badges.course' | translate: {$a: badge.coursefullname }"
+                                            contextLevel="course" [contextInstanceId]="badge.courseid" />
                                     </p>
                                 </ion-label>
                             </ion-item>
