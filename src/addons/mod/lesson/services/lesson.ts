@@ -3187,15 +3187,18 @@ export class AddonModLessonProvider {
             }
 
             // Check if "number of attempts remaining" message is needed.
-            if (!result.correctanswer && !result.newpageid) {
+            if (!result.correctanswer) {
                 // Retreive the number of attempts left counter.
-                if (lesson.maxattempts && lesson.maxattempts > 0 && nAttempts >= lesson.maxattempts) {
+                if (!result.newpageid && lesson.maxattempts && lesson.maxattempts > 0 && nAttempts >= lesson.maxattempts) {
                     if (lesson.maxattempts > 1) { // Don't bother with message if only one attempt.
                         result.maxattemptsreached = true;
                     }
                     result.newpageid =  AddonModLessonJumpTo.NEXTPAGE;
                 } else if (lesson.maxattempts && lesson.maxattempts > 1) { // Don't show message if only one attempt or unlimited.
                     result.attemptsremaining = lesson.maxattempts - nAttempts;
+                    if (result.attemptsremaining <= 0) {
+                        result.maxattemptsreached = true;
+                    }
                 }
             }
         }
