@@ -3196,6 +3196,9 @@ export class AddonModLessonProvider {
                     result.newpageid =  AddonModLessonJumpTo.NEXTPAGE;
                 } else if (lesson.maxattempts && lesson.maxattempts > 1) { // Don't show message if only one attempt or unlimited.
                     result.attemptsremaining = lesson.maxattempts - nAttempts;
+                    if (result.attemptsremaining <= 0) {
+                        result.maxattemptsreached = true;
+                    }
                 }
             }
         }
