@@ -526,6 +526,11 @@ export class AddonModWorkshopHelperProvider {
         const workshopId = actions[0].workshopid;
 
         actions.forEach((action) => {
+            if (action.action !== AddonModWorkshopAction.ADD && action.submissionid !== baseSubmission.id) {
+                // Editing or deleting a different submission, ignore.
+                return;
+            }
+
             switch (action.action) {
                 case AddonModWorkshopAction.ADD:
                 case AddonModWorkshopAction.UPDATE:
