@@ -306,7 +306,7 @@ export class AddonModQuizOfflineProvider {
             );
 
             // Check if state has changed.
-            if (state && state.name != question.state) {
+            if (state && state.name !== question.state) {
                 newStates[question.slot] = state.name;
             }
 
