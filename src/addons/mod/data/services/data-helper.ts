@@ -217,49 +217,55 @@ export class AddonModDataHelperProvider {
             return '';
         }
 
-        // Replace the fields found on template.
-        fields.forEach((field) => {
-            let replace = `[[${field.name}]]`;
-            replace = replace.replace(/[-[\]/{}()*+?.\\^$|]/g, '\\$&');
-            let replaceRegex = new RegExp(replace, 'gi');
+        const replaceAll = (text: string, pattern: string, replacement: string): string => {
+            const escapedPattern = pattern.replace(/[-[\]/{}()*+?.\\^$|]/g, '\\$&');
 
-            const valuesInsideTags = new RegExp('>\\[\\[' + field.name + '\\]\\]<','gi');
+            return text.replace(new RegExp(escapedPattern, 'gi'), replacement);
+        };
 
-            if (template.match(valuesInsideTags)?.length) {
-                // Replace field by a generic directive.
-                const hasOffline = entry.hasOffline ? 'true' : 'false';
+        const replaceFields = (template: string, useRawContent: boolean): string => {
+            fields.forEach((field) => {
+                if (useRawContent) {
+                    // Replace field with unprocessed content.
+                    template = replaceAll(template, `[[${field.name}]]`, entry.contents[field.id]?.content ?? '');
+                } else {
+                    // Replace field by a generic directive.
+                    const render = `<addon-mod-data-field-plugin [field]="fields[${field.id}]" mode="${mode}" \
+                         [database]="database" [value]="entries[${entry.id}].contents[${field.id}]" \
+                         [recordHasOffline]="${entry.hasOffline ? 'true' : 'false'}" \
+                         (gotoEntry)="gotoEntry($event)"></addon-mod-data-field-plugin>`;
+                    template = replaceAll(template, `[[${field.name}]]`, render);
+                }
 
-                const render = `><addon-mod-data-field-plugin [field]="fields[${field.id}]" mode="${mode}" [database]="database" \
-                    [value]="entries[${entry.id}].contents[${field.id}]" [recordHasOffline]="${hasOffline}" \
-                    (gotoEntry)="gotoEntry($event)"></addon-mod-data-field-plugin><`;
+                // Replace the field name tag.
+                template = replaceAll(template, `[[${field.name}#name]]`, field.name);
 
-                template = template
-                    .replace(valuesInsideTags, render)
-                    .replace(replaceRegex, entry.contents[field.id].content);
-            } else {
-                // Replace field by a generic directive.
-                const render = `<addon-mod-data-field-plugin [field]="fields[${field.id}]" mode="${mode}" [database]="database" \
-                [value]="entries[${entry.id}].contents[${field.id}]" [recordHasOffline]="${entry.hasOffline ? 'true' : 'false'}" \
-                (gotoEntry)="gotoEntry($event)"></addon-mod-data-field-plugin>`;
+                // Replace the field description tag.
+                template = replaceAll(template, `[[${field.name}#description]]`, field.description);
+            });
 
-                template = template.replace(replaceRegex, render);
-            }
+            return template;
+        };
 
-            // Replace the field name tag.
-            replace = `[[${field.name}#name]]`;
-            replace = replace.replace(/[-[\]/{}()*+?.\\^$|]/g, '\\$&');
-            replaceRegex = new RegExp(replace, 'gi');
-
-            template = template.replace(replaceRegex, field.name);
-
-            // Replace the field description tag.
-            replace = `[[${field.name}#description]]`;
-            replace = replace.replace(/[-[\]/{}()*+?.\\^$|]/g, '\\$&');
-            replaceRegex = new RegExp(replace, 'gi');
-
-            template = template.replace(replaceRegex, field.description);
+        // First, replace fields inside attributes.
+        // We can't use convertTextToHTMLElement because it removes elements that
+        // are not allowed as a child of <div>, like <li> or <tr>.
+        const templateElement = document.createElement('template');
+        templateElement.innerHTML = template;
+        templateElement.content.querySelectorAll('*').forEach((element) => {
+           for (const name of element.getAttributeNames()) {
+                const value = element.getAttribute(name) ?? '';
+                if (value.match(/\[\[.*\]\]/)) {
+                    element.setAttribute(name, replaceFields(value, true));
+                }
+           }
         });
+        template = templateElement.innerHTML;
 
+        // Replace fields inside elements.
+        template = replaceFields(template, false);
+
+        // Replace actions.
         for (const action in actions) {
             const replaceRegex = new RegExp(`##${action}##`, 'gi');
             // Is enabled?
