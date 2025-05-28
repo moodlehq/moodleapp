@@ -34,9 +34,8 @@ body:not(.core-iframe-fullscreen) .collapsible-header-page {
     &:not(.collapsible-header-page-is-collapsed) .collapsible-header-collapsed {
         --core-header-toolbar-border-width: 0;
         --core-header-buttons-color: var(--text-color);
-        ion-toolbar {
-            --background: transparent;
-        }
+        --core-header-buttons-background: transparent;
+        --core-header-toolbar-background: transparent;
 
         h1 {
             opacity: 0;
