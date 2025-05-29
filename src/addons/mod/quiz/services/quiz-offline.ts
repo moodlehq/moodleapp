@@ -20,11 +20,12 @@ import { CoreQuestion, CoreQuestionQuestionParsed, CoreQuestionsAnswers } from '
 import { CoreSites } from '@services/sites';
 import { CoreTime } from '@singletons/time';
 import { CorePromiseUtils } from '@singletons/promise-utils';
-import { makeSingleton, Translate } from '@singletons';
+import { makeSingleton } from '@singletons';
 import { CoreLogger } from '@singletons/logger';
 import { AddonModQuizAttemptDBRecord, ATTEMPTS_TABLE_NAME } from './database/quiz';
 import { AddonModQuizAttemptWSData, AddonModQuizQuizWSData } from './quiz';
 import { ADDON_MOD_QUIZ_COMPONENT_LEGACY } from '../constants';
+import { CoreQuestionHelper } from '@features/question/services/question-helper';
 
 /**
  * Service to handle offline quiz.
@@ -140,31 +141,15 @@ export class AddonModQuizOfflineProvider {
      * @param attemptId Attempt ID.
      * @param questions List of questions.
      * @param siteId Site ID. If not defined, current site.
-     * @returns Questions with local states loaded.
      */
     async loadQuestionsLocalStates(
         attemptId: number,
         questions: CoreQuestionQuestionParsed[],
         siteId?: string,
-    ): Promise<CoreQuestionQuestionParsed[]> {
+    ): Promise<void> {
 
-        await Promise.all(questions.map(async (question) => {
-            const dbQuestion = await CorePromiseUtils.ignoreErrors(
-                CoreQuestion.getQuestion(ADDON_MOD_QUIZ_COMPONENT_LEGACY, attemptId, question.slot, siteId),
-            );
-
-            if (!dbQuestion) {
-                // Question not found.
-                return;
-            }
-
-            const state = CoreQuestion.getState(dbQuestion.state);
-            question.state = dbQuestion.state;
-            question.status = Translate.instant(`core.question.${state.status}`);
-            question.stateclass = state.stateclass;
-        }));
-
-        return questions;
+        await Promise.all(questions.map(async (question) =>
+            CoreQuestionHelper.loadLocalQuestionState(question, attemptId, siteId)));
     }
 
     /**
