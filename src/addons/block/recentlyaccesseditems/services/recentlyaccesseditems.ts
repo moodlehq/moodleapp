@@ -67,10 +67,10 @@ export class AddonBlockRecentlyAccessedItemsProvider {
         const cmIds: number[] = [];
 
         const itemsToDisplay = await Promise.all(items.map(async (item: AddonBlockRecentlyAccessedItemsItemCalculatedData) => {
-            const modicon = item.icon && CoreDom.getHTMLElementAttribute(item.icon, 'src');
+            const iconImgEl = this.getItemIconElement(item);
 
-            item.iconUrl = await CoreCourseModuleDelegate.getModuleIconSrc(item.modname, modicon || undefined);
-            item.iconTitle = item.icon && CoreDom.getHTMLElementAttribute(item.icon, 'title');
+            item.iconUrl = await CoreCourseModuleDelegate.getModuleIconSrc(item.modname, iconImgEl?.src);
+            item.iconTitle = iconImgEl?.title;
             cmIds.push(item.cmid);
 
             return item;
@@ -96,6 +96,29 @@ export class AddonBlockRecentlyAccessedItemsProvider {
         });
 
         return itemsToDisplay;
+    }
+
+    /**
+     * Given a recently accessed item, return the icon img element if found in the item's icon HTML.
+     *
+     * @param item Item to use.
+     * @returns Icon img element if found.
+     */
+    protected getItemIconElement(item: AddonBlockRecentlyaccesseditemsGetRecentItemsWSResponse): HTMLImageElement | undefined {
+        if (!item.icon) {
+            return;
+        }
+
+        const element: Element | undefined = CoreDom.toDom(item.icon)[0];
+        if (!element) {
+            return;
+        }
+
+        if (element.tagName === 'IMG') {
+            return element as HTMLImageElement;
+        }
+
+        return element.querySelector('img') || undefined;
     }
 
     /**
