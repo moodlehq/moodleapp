@@ -34,7 +34,7 @@ import { CoreSplitViewComponent } from '@components/split-view/split-view';
 import { CoreGradesFormattedItem, CoreGradesHelper } from '@features/grades/services/grades-helper';
 import { AddonModAssignHelper, AddonModAssignSubmissionFormatted } from '../../services/assign-helper';
 import { Translate } from '@singletons';
-import { CoreCourse, CoreCourseModuleGradeInfo } from '@features/course/services/course';
+import { CoreCourse } from '@features/course/services/course';
 import { AddonModAssignOffline } from '../../services/assign-offline';
 import { CoreUser, CoreUserProfile } from '@features/user/services/user';
 import { CoreTime } from '@singletons/time';
@@ -124,7 +124,6 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy {
     unsupportedEditPlugins: string[] = []; // List of submission plugins that don't support edit.
 
     grader?: CoreUserProfile; // Profile of the teacher that graded the submission.
-    gradeInfo?: CoreCourseModuleGradeInfo; // Grade data for the assignment, retrieved from the server.
     canGrade = false; // Whether the user is grading.
     canSaveGrades = false; // Whether the user can save the grades.
     gradeUrl?: string; // URL to grade in browser.
@@ -675,9 +674,14 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy {
         if (submissionGrade && (!feedback || !feedback.gradeddate || feedback.gradeddate < submissionGrade.timemodified)) {
             // If grade has been modified from gradebook, do not use offline.
             if (gradeModified < submissionGrade.timemodified) {
-                const gradeForDisplay = String(!this.gradeInfo?.scale
-                    ? CoreUtils.formatFloat(submissionGrade.grade)
-                    : submissionGrade.grade);
+                let gradeForDisplay: string;
+                if (gradeInfo.scale) {
+                    const scale = CoreUtils.makeMenuFromList(gradeInfo.scale, Translate.instant('core.nograde'), ',', -1);
+                    const scaleItem = scale.find(scaleItem => scaleItem.value === submissionGrade.grade);
+                    gradeForDisplay = scaleItem?.label ?? String(submissionGrade.grade);
+                } else {
+                    gradeForDisplay = CoreUtils.formatFloat(submissionGrade.grade);
+                }
 
                 if (!this.feedback) {
                     this.feedback = {
