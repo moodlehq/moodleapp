@@ -35,6 +35,7 @@ import { convertTextToHTMLElement } from '@/core/utils/create-html-element';
 import { AddonModQuizNavigationQuestion } from '@addons/mod/quiz/components/navigation-modal/navigation-modal';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreAlerts } from '@services/overlays/alerts';
+import { ADDON_MOD_QUIZ_COMPONENT_LEGACY } from '@addons/mod/quiz/constants';
 
 /**
  * Service with some common functions to handle questions.
@@ -597,7 +598,7 @@ export class CoreQuestionHelperProvider {
         Array.from(form.elements).forEach((element: HTMLInputElement | HTMLButtonElement) => {
             let name = element.name || '';
             // Ignore flag and submit inputs.
-            if (!name || name.match(/_:flagged$/) || element.type == 'submit' || element.tagName == 'BUTTON' ||
+            if (!name || name.match(/_:flagged$/) || element.type === 'submit' || element.tagName === 'BUTTON' ||
                     !question.localAnswers) {
                 return;
             }
@@ -605,7 +606,7 @@ export class CoreQuestionHelperProvider {
             // Search if there's a local answer.
             name = CoreQuestion.removeQuestionPrefix(name);
             if (question.localAnswers[name] === undefined) {
-                if (Object.keys(question.localAnswers).length && element.type == 'radio') {
+                if (Object.keys(question.localAnswers).length && element.type === 'radio') {
                     // No answer stored, but there is a sequencecheck or similar. This means the user cleared his choice.
                     element.removeAttribute('checked');
                 }
@@ -613,23 +614,27 @@ export class CoreQuestionHelperProvider {
                 return;
             }
 
-            if (element.tagName == 'TEXTAREA') {
+            if (element.tagName === 'TEXTAREA') {
                 // Just put the answer inside the textarea.
                 element.innerHTML = question.localAnswers[name];
-            } else if (element.tagName == 'SELECT') {
+            } else if (element.tagName === 'SELECT') {
                 // Search the selected option and select it.
                 const selected = element.querySelector(`option[value="${question.localAnswers[name]}"]`);
                 if (selected) {
+                    element.querySelectorAll('option').forEach((option) => {
+                        option.removeAttribute('selected');
+                    });
+
                     selected.setAttribute('selected', 'selected');
                 }
-            } else if (element.type == 'radio') {
+            } else if (element.type === 'radio') {
                 // Check if this radio is selected.
-                if (element.value == question.localAnswers[name]) {
+                if (element.value === question.localAnswers[name]) {
                     element.setAttribute('checked', 'checked');
                 } else {
                     element.removeAttribute('checked');
                 }
-            } else if (element.type == 'checkbox') {
+            } else if (element.type === 'checkbox') {
                 // Check if this checkbox is checked.
                 if (CoreUtils.isTrueOrOne(question.localAnswers[name])) {
                     element.setAttribute('checked', 'checked');
@@ -1013,6 +1018,33 @@ export class CoreQuestionHelperProvider {
                 );
             });
         });
+    }
+
+    /**
+     * Load local state in the questions.
+     *
+     * @param question Question.
+     * @param attemptId Attempt ID.
+     * @param siteId Site ID. If not defined, current site.
+     */
+    async loadLocalQuestionState(
+        question: CoreQuestionQuestionParsed,
+        attemptId: number,
+        siteId?: string,
+    ): Promise<void> {
+        const dbQuestion = await CorePromiseUtils.ignoreErrors(
+            CoreQuestion.getQuestion(ADDON_MOD_QUIZ_COMPONENT_LEGACY, attemptId, question.slot, siteId),
+        );
+
+        if (!dbQuestion) {
+            // Question not found.
+            return;
+        }
+
+        const state = CoreQuestion.getState(dbQuestion.state);
+        question.state = dbQuestion.state;
+        question.status = Translate.instant(`core.question.${state.status}`);
+        question.stateclass = state.stateclass;
     }
 
 }

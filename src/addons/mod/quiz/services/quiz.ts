@@ -575,7 +575,7 @@ export class AddonModQuizProvider {
         const questions = CoreQuestion.parseQuestions(response.questions);
 
         if (options.loadLocal) {
-            return AddonModQuizOffline.loadQuestionsLocalStates(attemptId, questions, site.getId());
+            await AddonModQuizOffline.loadQuestionsLocalStates(attemptId, questions, site.getId());
         }
 
         return questions;
