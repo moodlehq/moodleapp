@@ -170,6 +170,7 @@ export class CoreQuestionComponent implements OnInit, AsyncDirective {
         // Load local answers if offline is enabled.
         if (this.offlineEnabled && this.component && this.attemptId) {
             await CoreQuestionHelper.loadLocalAnswers(this.question, this.component, this.attemptId);
+            await CoreQuestionHelper.loadLocalQuestionState(this.question,this.attemptId);
         } else {
             this.question.localAnswers = {};
         }
@@ -211,13 +212,15 @@ export class CoreQuestionComponent implements OnInit, AsyncDirective {
         // Load local answers if offline is enabled.
         if (this.offlineEnabled && this.component && this.attemptId) {
             if (this.question.localAnswers && !CoreObject.isEmpty(this.question.localAnswers)) {
-                this.validationError = CoreQuestionDelegate.getValidationError(
-                    this.question,
-                    this.question.localAnswers,
-                    this.validationError,
-                    this.component,
-                    this.attemptId,
-                );
+                this.validationError = this.question.state === 'invalid'
+                    ? CoreQuestionDelegate.getValidationError(
+                        this.question,
+                        this.question.localAnswers,
+                        this.validationError,
+                        this.component,
+                        this.attemptId,
+                    )
+                    : '';
             }
         }
     }
