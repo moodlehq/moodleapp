@@ -54,9 +54,11 @@
                     </ion-item>
                 </ion-radio-group>
             </ion-list>
-            <div class="ion-padding addon-data-advanced-search" [hidden]="!advancedSearch || !search.searchingAdvanced">
-                <core-compile-html [text]="advancedSearch" [jsData]="jsData" [extraImports]="extraImports" />
-            </div>
+            @if (extraImports) {
+                <div class="ion-padding addon-data-advanced-search" [hidden]="!advancedSearch || !search.searchingAdvanced">
+                    <core-compile-html [text]="advancedSearch" [jsData]="jsData" [extraImports]="extraImports" />
+                </div>
+            }
         </ion-list>
         <div class="ion-padding">
             <ion-button expand="block" type="submit">

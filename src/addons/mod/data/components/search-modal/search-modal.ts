@@ -56,7 +56,7 @@ export class AddonModDataSearchModalComponent implements OnInit {
 
     advancedSearch = '';
     advancedIndexed: CoreFormFields = {};
-    extraImports: Type<unknown>[] = [];
+    extraImports?: Type<unknown>[];
 
     searchForm: FormGroup;
     jsData?: {
