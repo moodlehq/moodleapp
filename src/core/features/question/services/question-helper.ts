@@ -35,6 +35,7 @@ import { convertTextToHTMLElement } from '@/core/utils/create-html-element';
 import { AddonModQuizNavigationQuestion } from '@addons/mod/quiz/components/navigation-modal/navigation-modal';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreAlerts } from '@services/overlays/alerts';
+import { ADDON_MOD_QUIZ_COMPONENT_LEGACY } from '@addons/mod/quiz/constants';
 
 /**
  * Service with some common functions to handle questions.
@@ -1017,6 +1018,33 @@ export class CoreQuestionHelperProvider {
                 );
             });
         });
+    }
+
+    /**
+     * Load local state in the questions.
+     *
+     * @param question Question.
+     * @param attemptId Attempt ID.
+     * @param siteId Site ID. If not defined, current site.
+     */
+    async loadLocalQuestionState(
+        question: CoreQuestionQuestionParsed,
+        attemptId: number,
+        siteId?: string,
+    ): Promise<void> {
+        const dbQuestion = await CorePromiseUtils.ignoreErrors(
+            CoreQuestion.getQuestion(ADDON_MOD_QUIZ_COMPONENT_LEGACY, attemptId, question.slot, siteId),
+        );
+
+        if (!dbQuestion) {
+            // Question not found.
+            return;
+        }
+
+        const state = CoreQuestion.getState(dbQuestion.state);
+        question.state = dbQuestion.state;
+        question.status = Translate.instant(`core.question.${state.status}`);
+        question.stateclass = state.stateclass;
     }
 
 }
