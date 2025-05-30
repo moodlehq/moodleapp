@@ -146,11 +146,11 @@ Feature: Test glossary navigation
     When I go back in the app
     And I scroll to "Acerola" in the app
     And I press "Search" in the app
-    And I set the field "Enter your search query" to "something" in the app
+    And I set the field "Search query" to "something" in the app
     And I press enter
     Then I should find "No entries were found." in the app
 
-    When I set the field "Enter your search query" to "melon" in the app
+    When I set the field "Search query" to "melon" in the app
     And I press enter
     Then I should find "Honeydew Melon" in the app
     And I should find "Watermelon" in the app
@@ -265,11 +265,11 @@ Feature: Test glossary navigation
 
     # Search
     When I press "Search" in the app
-    And I set the field "Enter your search query" to "something" in the app
+    And I set the field "Search query" to "something" in the app
     And I press enter
     Then I should find "No entries were found." in the app
 
-    When I set the field "Enter your search query" to "melon" in the app
+    When I set the field "Search query" to "melon" in the app
     And I press enter
     Then I should find "Honeydew Melon" in the app
     And I should find "Watermelon" in the app
