@@ -60,10 +60,25 @@ export class AddonQtypeMultiAnswerHandlerService implements CoreQuestionHandler 
         const names = CoreQuestion.getBasicAnswers<boolean>(
             CoreQuestionHelper.getAllInputNamesFromHtml(question.html || ''),
         );
+
+        const completedCheckboxes: string[] = [];
         for (const name in names) {
             const value = answers[name];
-            if (!value) {
-                return QuestionCompleteGradableResponse.NO;
+
+            // Split name by _ to guess the type.
+            const parts = name.split('_');
+            if (parts.length  === 2 && parts[1] === 'answer') {
+                // Radio, dropdown or textarea.
+                if (!value) {
+                    return QuestionCompleteGradableResponse.NO;
+                }
+            } else if (completedCheckboxes.indexOf(parts[0]) === -1) {
+                // Checkboxes.
+                if (!value || value === 'false') {
+                    return QuestionCompleteGradableResponse.NO;
+                } else {
+                    completedCheckboxes.push(parts[0]);
+                }
             }
         }
 
@@ -85,10 +100,26 @@ export class AddonQtypeMultiAnswerHandlerService implements CoreQuestionHandler 
         answers: CoreQuestionsAnswers,
     ): QuestionCompleteGradableResponse {
         // We should always get a value for each select so we can assume we receive all the possible answers.
-        for (const name in answers) {
+        // Get all the inputs in the question to check if they've all been answered.
+        const names = CoreQuestion.getBasicAnswers<boolean>(
+            CoreQuestionHelper.getAllInputNamesFromHtml(question.html || ''),
+        );
+
+        for (const name in names) {
             const value = answers[name];
-            if (value || value === false) {
-                return QuestionCompleteGradableResponse.YES;
+
+            // Split name by _ to guess the type.
+            const parts = name.split('_');
+            if (parts.length  === 2 && parts[1] === 'answer') {
+                // Radio, dropdown or textarea.
+                if (value) {
+                    return QuestionCompleteGradableResponse.YES;
+                }
+            } else {
+                // Checkboxes.
+                if (value && value !== 'false') {
+                    return QuestionCompleteGradableResponse.YES;
+                }
             }
         }
 

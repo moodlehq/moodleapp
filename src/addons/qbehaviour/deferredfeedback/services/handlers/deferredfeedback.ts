@@ -81,7 +81,7 @@ export class AddonQbehaviourDeferredFeedbackHandlerService implements CoreQuesti
         let dbQuestion: CoreQuestionDBRecord | CoreQuestionQuestionWithAnswers = question;
         try {
             dbQuestion = await CoreQuestion.getQuestion(component, attemptId, question.slot, siteId);
-        } catch (error) {
+        } catch {
             // No entry found, use the original data.
         }
 
