@@ -169,7 +169,7 @@ jobs:
         run: moodle-plugin-ci install --plugin ./plugin --db-host=127.0.0.1
         env:
           DB: pgsql
-          MOODLE_BRANCH: ${{ github.event.inputs.moodle_branch || 'main' }}
+          MOODLE_BRANCH: ${{ github.event.inputs.moodle_branch || 'MOODLE_500_STABLE' }} # TODO: Use 'main' once MDL-85632 is fixed.
           MOODLE_REPO: ${{ github.event.inputs.moodle_repository || 'https://github.com/moodle/moodle.git' }}
           MOODLE_BEHAT_IONIC_WWWROOT: https://localhost:8001
           MOODLE_BEHAT_DEFAULT_BROWSER: chrome
