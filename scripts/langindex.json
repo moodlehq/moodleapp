@@ -2678,6 +2678,7 @@
   "core.user.emailagain": "moodle",
   "core.user.errorloaduser": "local_moodlemobileapp",
   "core.user.firstname": "moodle",
+  "core.user.fullnamedisplay": "moodle",
   "core.user.idnumber": "moodle",
   "core.user.institution": "moodle",
   "core.user.interests": "moodle",
