@@ -57,7 +57,7 @@ export class CoreSitePluginsQuizAccessRuleComponent extends CoreSitePluginsCompi
         this.jsData.form = this.form;
 
         if (this.rule) {
-            this.getHandlerData(AddonModQuizAccessRuleDelegate.getHandlerName(this.rule));
+            await this.getHandlerData(AddonModQuizAccessRuleDelegate.getHandlerName(this.rule));
         }
     }
 

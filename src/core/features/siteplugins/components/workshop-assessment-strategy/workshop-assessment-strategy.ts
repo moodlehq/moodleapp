@@ -60,7 +60,7 @@ export class CoreSitePluginsWorkshopAssessmentStrategyComponent extends CoreSite
 
         this.extraImports = await getModWorkshopComponentModules();
 
-        this.getHandlerData(AddonWorkshopAssessmentStrategyDelegate.getHandlerName(this.strategy));
+        await this.getHandlerData(AddonWorkshopAssessmentStrategyDelegate.getHandlerName(this.strategy));
     }
 
 }
