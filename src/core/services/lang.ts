@@ -229,6 +229,16 @@ export class CoreLangProvider {
         try {
             await import('dayjs/locale/' + locale);
             dayjs.locale(locale);
+
+            if (CorePlatform.isAutomated()) {
+                // Fix short names for automated tests to match the ones used in LMS. E.g. DayJS uses 'Jun' instead of 'June'.
+                dayjs.updateLocale('en-gb', {
+                    monthsShort: [
+                        'Jan', 'Feb', 'Mar', 'Apr', 'May', 'June',
+                        'July', 'Aug', 'Sept', 'Oct', 'Nov', 'Dec',
+                    ],
+                });
+            }
         } catch {
             if (locale === 'en' || locale === 'en-gb') {
                 return;

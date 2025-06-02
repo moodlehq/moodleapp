@@ -146,6 +146,7 @@ export class CoreTime {
         ];
         if (CorePlatform.isAutomated()) {
             plugins.push(import('dayjs/plugin/timezone'));
+            plugins.push(import('dayjs/plugin/updateLocale'));
         }
 
         const result = await Promise.all(plugins);
