@@ -26,7 +26,11 @@
             font-size: calc(var(--core-courseimage-on-course-size) - 24px);
             border-radius: var(--border-radius);
             color: var(--course-color-tint);
-            background: var(--course-color, transparent);
+            background: var(--course-color, white);
+        }
+
+        img {
+            background: var(--course-color, white);
         }
 
         // Fill geopaterns
