@@ -2,7 +2,7 @@
     [class.core-course-list-card]="layout === 'card' || layout === 'summarycard'" [class.item-dimmed]="course.hidden" (click)="openCourse()"
     tappable [attr.aria-label]="course.displayname || course.fullname">
 
-    <div *ngIf="layout === 'card' || layout === 'summarycard'" class="core-course-thumb" [class.core-course-color-img]="course.courseimage">
+    <div *ngIf="layout === 'card' || layout === 'summarycard'" class="core-course-thumb">
         <img *ngIf="course.courseimage" [url]="course.courseimage" core-external-content alt="" (error)="loadFallbackCourseIcon()" />
         <ion-icon *ngIf="!course.courseimage" name="fas-graduation-cap" class="course-icon" aria-hidden="true" />
     </div>
