@@ -116,7 +116,7 @@ ion-card.core-course-list-item {
         font-size: calc(var(--avatar-size) - 24px);
         border-radius: var(--avatar-radius);
         color: var(--course-color-tint);
-        background: var(--course-color, transparent);
+        background: var(--course-color, white);
     }
 
     ion-avatar {
@@ -124,7 +124,7 @@ ion-card.core-course-list-item {
         width: var(--avatar-size);
         height: var(--avatar-size);
         img {
-            background: transparent;
+            background: var(--course-color, white);
         }
     }
 
@@ -188,10 +188,6 @@ ion-card.core-course-list-card {
             height: 80px;
             margin: 0 auto;
             transform: translateY(-50%);
-        }
-
-        &.core-course-color-img {
-            background: var(--ion-item-background);
         }
 
         img {
