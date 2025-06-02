@@ -1,4 +1,4 @@
-body:not(.core-iframe-fullscreen) .collapsible-header-page {
+body:not(.core-iframe-fullscreen):not(.core-reading-mode-enabled) .collapsible-header-page {
     --collapsible-header-progress: 0;
     --collapsible-header-collapsed-height: 0px;
     --collapsible-header-expanded-y-delta: 0px;
