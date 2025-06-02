@@ -372,6 +372,7 @@ export class AddonModFeedbackHelperProvider {
             value: '',
             choices: [],
             slottedLabel: subtype === AddonModFeedbackMultichoiceSubtype.DROPDOWN,
+            cleanedName: CoreText.cleanTags(item.name),
         });
 
         formItem.presentation = parts.length > 1 ? parts[1] : '';
@@ -592,6 +593,7 @@ export type AddonModFeedbackTextItem = AddonModFeedbackFormBasicItem & {
 export type AddonModFeedbackMultichoiceItem = AddonModFeedbackFormBasicItem & {
     subtype: AddonModFeedbackMultichoiceSubtype;
     choices: { value: number; label: string; checked?: boolean }[];
+    cleanedName: string; // Name without HTML.
 };
 
 /**
