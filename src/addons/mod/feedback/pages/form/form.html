@@ -58,7 +58,7 @@
 
                             <ion-select labelPlacement="stacked" *ngIf="item.templateName === 'multichoice-d'" [required]="item.required"
                                 name="{{item.typ}}_{{item.id}}" [(ngModel)]="item.value" interface="action-sheet"
-                                [cancelText]="'core.cancel' | translate" [interfaceOptions]="{header: item.name}">
+                                [cancelText]="'core.cancel' | translate" [interfaceOptions]="{header: item.cleanedName}">
                                 <ng-container *ngTemplateOutlet="label; context: {item: item}" />
                                 <ion-select-option *ngFor="let option of item.choices" [value]="option.value">
                                     <core-format-text [component]="component" [componentId]="cmId" [text]="option.label"
