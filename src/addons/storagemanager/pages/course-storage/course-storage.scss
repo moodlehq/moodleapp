@@ -17,11 +17,14 @@
                 min-height: auto;
             }
 
-            ion-icon[slot=start] {
+            ion-icon.expandable-status-icon {
                 margin-inline-end: var(--mdl-spacing-2);
-                background-color: var(--gray-100);
-                border-radius: 50%;
+                background-color: var(--core-accordion-toggle-background);
                 padding: var(--mdl-spacing-1);
+                border-radius: 50%;
+                &:hover {
+                    background: var(--secondary);
+                }
             }
         }
 

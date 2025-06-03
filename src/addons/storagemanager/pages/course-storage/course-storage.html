@@ -100,11 +100,8 @@
                             [attr.aria-label]="'addon.storagemanager.deletedatafrom' | translate: { name: section.name }" />
                     </ion-button>
                 </div>
-                @if (section.expanded) {
-                    <ion-icon slot="start" size="small" name="fas-chevron-down" aria-hidden="true" />
-                } @else {
-                    <ion-icon slot="start" size="small" name="fas-chevron-right" aria-hidden="true" />
-                }
+                <ion-icon name="fas-chevron-right" flip-rtl slot="start" aria-hidden="true" class="expandable-status-icon"
+                    [class.expandable-status-icon-expanded]="section.expanded" />
             </ion-item>
             <ion-ripple-effect />
         </div>
