@@ -46,7 +46,6 @@ import {
     selector: 'page-core-user-about',
     templateUrl: 'about.html',
     styleUrl: 'about.scss',
-    standalone: true,
     imports: [
         CoreSharedModule,
         CoreUserProfileFieldComponent,

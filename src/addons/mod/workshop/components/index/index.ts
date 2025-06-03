@@ -70,7 +70,6 @@ import { CoreCourseModuleInfoComponent } from '@features/course/components/modul
 @Component({
     selector: 'addon-mod-workshop-index',
     templateUrl: 'addon-mod-workshop-index.html',
-    standalone: true,
     imports: [
         CoreSharedModule,
         AddonModWorkshopSubmissionComponent,

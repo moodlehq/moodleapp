@@ -50,7 +50,6 @@ const enum IconVersion {
     templateUrl: 'mod-icon.html',
     styleUrl: 'mod-icon.scss',
     changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: true,
     imports: [
         CoreBaseModule,
         CoreExternalContentDirective,

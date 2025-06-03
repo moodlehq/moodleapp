@@ -64,7 +64,6 @@ import { DEFAULT_TEXT_FORMAT } from '@singletons/text';
     selector: 'page-addon-calendar-edit-event',
     templateUrl: 'edit-event.html',
     styleUrl: 'edit-event.scss',
-    standalone: true,
     imports: [
         CoreSharedModule,
         CoreEditorRichTextEditorComponent,

@@ -53,7 +53,6 @@ import { CoreCourseDownloadStatusHelper } from '@features/course/services/course
     templateUrl: 'course-storage.html',
     styleUrl: 'course-storage.scss',
     changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: true,
     imports: [
         CoreSharedModule,
     ],

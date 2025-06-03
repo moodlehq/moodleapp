@@ -57,7 +57,6 @@ import { CoreRatingAggregateComponent } from '@features/rating/components/aggreg
     selector: 'page-addon-mod-data-entry',
     templateUrl: 'entry.html',
     styleUrl: '../../data.scss',
-    standalone: true,
     imports: [
         CoreSharedModule,
         CoreCompileHtmlComponent,

@@ -20,7 +20,6 @@ import { CoreUtils } from '@singletons/utils';
  */
 @Directive({
     selector: '[onResize]',
-    standalone: true,
 })
 export class CoreOnResizeDirective implements OnInit, OnDestroy {
 

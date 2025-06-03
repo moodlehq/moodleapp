@@ -46,7 +46,6 @@ import { ContextLevel } from '@/core/constants';
     selector: 'core-site-plugins-plugin-content',
     templateUrl: 'core-siteplugins-plugin-content.html',
     styles: [':host { display: contents; }'],
-    standalone: true,
     imports: [
         CoreSharedModule,
         CoreCompileHtmlComponent,

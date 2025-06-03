@@ -32,7 +32,6 @@ import { CoreSharedModule } from '@/core/shared.module';
 @Component({
     selector: 'addon-qtype-essay',
     templateUrl: 'addon-qtype-essay.html',
-    standalone: true,
     imports: [
         CoreSharedModule,
         CoreEditorRichTextEditorComponent,

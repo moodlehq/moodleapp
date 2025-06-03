@@ -27,7 +27,6 @@ import { CoreSharedModule } from '@/core/shared.module';
 @Component({
     selector: 'page-addon-calendar-settings',
     templateUrl: 'settings.html',
-    standalone: true,
     imports: [
         CoreSharedModule,
     ],

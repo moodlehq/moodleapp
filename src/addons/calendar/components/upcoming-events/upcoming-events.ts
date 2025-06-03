@@ -38,7 +38,6 @@ import { CoreSharedModule } from '@/core/shared.module';
     selector: 'addon-calendar-upcoming-events',
     templateUrl: 'addon-calendar-upcoming-events.html',
     styleUrl: '../../calendar-common.scss',
-    standalone: true,
     imports: [
         CoreSharedModule,
     ],

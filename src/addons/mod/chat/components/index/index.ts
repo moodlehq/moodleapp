@@ -30,7 +30,6 @@ import { CoreCourseModuleNavigationComponent } from '@features/course/components
 @Component({
     selector: 'addon-mod-chat-index',
     templateUrl: 'addon-mod-chat-index.html',
-    standalone: true,
     imports: [
         CoreSharedModule,
         CoreCourseModuleInfoComponent,

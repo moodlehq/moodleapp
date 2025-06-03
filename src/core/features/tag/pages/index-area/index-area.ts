@@ -27,7 +27,6 @@ import { CoreSharedModule } from '@/core/shared.module';
 @Component({
     selector: 'page-core-tag-index-area',
     templateUrl: 'index-area.html',
-    standalone: true,
     imports: [
         CoreSharedModule,
     ],

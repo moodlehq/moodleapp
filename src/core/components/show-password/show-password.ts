@@ -49,7 +49,6 @@ import { CoreBaseModule } from '@/core/base.module';
     templateUrl: 'core-show-password.html',
     styles: 'core-show-password { display: contents; }',
     encapsulation: ViewEncapsulation.None,
-    standalone: true,
     imports: [CoreBaseModule],
 })
 export class CoreShowPasswordComponent implements AfterViewInit {

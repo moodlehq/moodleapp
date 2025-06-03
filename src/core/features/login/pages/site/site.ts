@@ -60,7 +60,6 @@ import { CoreSharedModule } from '@/core/shared.module';
     selector: 'page-core-login-site',
     templateUrl: 'site.html',
     styleUrls: ['site.scss', '../../login.scss'],
-    standalone: true,
     imports: [
         CoreSharedModule,
     ],

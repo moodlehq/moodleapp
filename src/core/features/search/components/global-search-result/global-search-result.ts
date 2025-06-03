@@ -21,7 +21,6 @@ import { CoreSharedModule } from '@/core/shared.module';
     selector: 'core-search-global-search-result',
     templateUrl: 'global-search-result.html',
     styleUrl: './global-search-result.scss',
-    standalone: true,
     imports: [
         CoreSharedModule,
     ],

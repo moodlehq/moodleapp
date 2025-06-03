@@ -28,7 +28,6 @@ import { CoreAlerts } from '@services/overlays/alerts';
  */
 @Component({
     templateUrl: 'add-modal.html',
-    standalone: true,
     imports: [
         CoreSharedModule,
     ],

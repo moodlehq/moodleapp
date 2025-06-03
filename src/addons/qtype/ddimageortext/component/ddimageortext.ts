@@ -27,7 +27,6 @@ import { CoreText } from '@singletons/text';
     selector: 'addon-qtype-ddimageortext',
     templateUrl: 'addon-qtype-ddimageortext.html',
     styleUrls: ['../../../../core/features/question/question.scss', 'ddimageortext.scss'],
-    standalone: true,
     imports: [
         CoreSharedModule,
     ],

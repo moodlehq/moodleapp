@@ -60,7 +60,6 @@ import { convertTextToHTMLElement } from '@/core/utils/create-html-element';
     selector: 'core-rich-text-editor',
     templateUrl: 'core-rich-text-editor.html',
     styleUrl: 'rich-text-editor.scss',
-    standalone: true,
     imports: [
         CoreSharedModule,
     ],

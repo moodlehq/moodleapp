@@ -59,7 +59,6 @@ import { CoreSharedModule } from '@/core/shared.module';
     selector: 'page-addon-mod-assign-edit',
     templateUrl: 'edit.html',
     styleUrl: 'edit.scss',
-    standalone: true,
     imports: [
         CoreSharedModule,
         AddonModAssignSubmissionPluginComponent,

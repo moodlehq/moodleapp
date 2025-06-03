@@ -33,7 +33,6 @@ import { CoreSharedModule } from '@/core/shared.module';
 @Component({
     selector: 'page-addon-badges-user-badges',
     templateUrl: 'user-badges.html',
-    standalone: true,
     imports: [
         CoreSharedModule,
     ],

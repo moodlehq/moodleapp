@@ -24,7 +24,6 @@ import { CoreSharedModule } from '@/core/shared.module';
     selector: 'addon-qtype-multianswer',
     templateUrl: 'addon-qtype-multianswer.html',
     styleUrl: 'multianswer.scss',
-    standalone: true,
     imports: [
         CoreSharedModule,
     ],

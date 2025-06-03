@@ -21,8 +21,9 @@ import { CoreModalComponent } from '@classes/modal-component';
     styleUrl: './file-actions.scss',
     templateUrl: 'file-actions.html',
     changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: true,
-    imports: [CoreSharedModule],
+    imports: [
+        CoreSharedModule,
+    ],
 })
 export class AddonPrivateFilesFileActionsComponent extends CoreModalComponent<AddonPrivateFilesFileActionsComponentParams> {
 

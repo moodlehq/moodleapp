@@ -34,7 +34,6 @@ import { CoreFormatDatePipe } from '@pipes/format-date';
     templateUrl: 'message.html',
     styleUrl: 'message.scss',
     animations: [CoreAnimations.SLIDE_IN_OUT],
-    standalone: true,
     imports: [
         CoreBaseModule,
         CoreLongPressDirective,

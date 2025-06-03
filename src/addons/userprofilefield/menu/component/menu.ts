@@ -25,7 +25,6 @@ import { CoreSharedModule } from '@/core/shared.module';
     selector: 'addon-user-profile-field-menu',
     templateUrl: 'addon-user-profile-field-menu.html',
     styleUrl: './menu.scss',
-    standalone: true,
     imports: [
         CoreSharedModule,
     ],

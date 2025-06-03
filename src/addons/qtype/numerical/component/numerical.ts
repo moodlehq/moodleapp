@@ -24,7 +24,6 @@ import { CoreSharedModule } from '@/core/shared.module';
     selector: 'numerical',
     templateUrl: 'numerical.html',
     styleUrl: 'numerical.scss',
-    standalone: true,
     imports: [
         CoreSharedModule,
     ],

@@ -45,7 +45,6 @@ import { CorePromiseUtils } from '@singletons/promise-utils';
 @Component({
     selector: 'addon-block-recentlyaccessedcourses',
     templateUrl: 'addon-block-recentlyaccessedcourses.html',
-    standalone: true,
     imports: [
         CoreSharedModule,
         CoreCoursesCourseListItemComponent,

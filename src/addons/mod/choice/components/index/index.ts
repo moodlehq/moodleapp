@@ -53,7 +53,6 @@ import { CoreGroupInfo, CoreGroups } from '@services/groups';
     selector: 'addon-mod-choice-index',
     templateUrl: 'addon-mod-choice-index.html',
     styleUrl: 'index.scss',
-    standalone: true,
     imports: [
         CoreSharedModule,
         CoreCourseModuleInfoComponent,

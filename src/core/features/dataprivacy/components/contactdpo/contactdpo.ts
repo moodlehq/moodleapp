@@ -31,11 +31,9 @@ import { CoreAlerts } from '@services/overlays/alerts';
 @Component({
     selector: 'core-data-privacy-contact-dpo',
     templateUrl: 'contactdpo.html',
-    standalone: true,
     imports: [
         CoreSharedModule,
     ],
-
 })
 export class CoreDataPrivacyContactDPOComponent implements OnInit {
 

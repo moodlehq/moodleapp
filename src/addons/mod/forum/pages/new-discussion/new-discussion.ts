@@ -74,7 +74,6 @@ type NewDiscussionData = {
     selector: 'page-addon-mod-forum-new-discussion',
     templateUrl: 'new-discussion.html',
     styleUrl: 'new-discussion.scss',
-    standalone: true,
     imports: [
         CoreSharedModule,
         CoreEditorRichTextEditorComponent,

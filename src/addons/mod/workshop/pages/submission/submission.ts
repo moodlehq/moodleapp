@@ -69,7 +69,6 @@ import { CoreErrorHelper } from '@services/error-helper';
 @Component({
     selector: 'page-addon-mod-workshop-submission-page',
     templateUrl: 'submission.html',
-    standalone: true,
     imports: [
         CoreSharedModule,
         CoreEditorRichTextEditorComponent,

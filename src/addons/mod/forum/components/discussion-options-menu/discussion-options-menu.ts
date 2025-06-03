@@ -29,7 +29,6 @@ import { CoreAlerts } from '@services/overlays/alerts';
 @Component({
     selector: 'addon-forum-discussion-options-menu',
     templateUrl: 'discussion-options-menu.html',
-    standalone: true,
     imports: [
         CoreSharedModule,
     ],

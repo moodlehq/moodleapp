@@ -29,7 +29,6 @@ import { CoreSharedModule } from '@/core/shared.module';
     selector: 'core-site-plugins-quiz-access-rule',
     templateUrl: 'core-siteplugins-quiz-access-rule.html',
     styles: [':host { display: contents; }'],
-    standalone: true,
     imports: [
         CoreSharedModule,
         CoreCompileHtmlComponent,

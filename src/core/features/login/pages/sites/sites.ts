@@ -30,7 +30,6 @@ import { CoreSharedModule } from '@/core/shared.module';
     selector: 'page-core-login-sites',
     templateUrl: 'sites.html',
     animations: [CoreAnimations.SLIDE_IN_OUT, CoreAnimations.SHOW_HIDE],
-    standalone: true,
     imports: [
         CoreSharedModule,
     ],

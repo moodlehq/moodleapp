@@ -28,7 +28,6 @@ import { CoreDom } from '@singletons/dom';
     selector: 'addon-mod-quiz-navigation-modal',
     templateUrl: 'navigation-modal.html',
     styleUrl: 'navigation-modal.scss',
-    standalone: true,
     imports: [
         CoreSharedModule,
     ],

@@ -46,7 +46,6 @@ import { CoreEditorBaseComponent } from '@features/editor/classes/base-editor-co
     selector: 'core-editor-classic-editor',
     templateUrl: 'core-editor-classic-editor.html',
     styleUrl: 'classic-editor.scss',
-    standalone: true,
     imports: [
         CoreSharedModule,
     ],

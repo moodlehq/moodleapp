@@ -50,7 +50,6 @@ import { CoreLoadings } from '@services/overlays/loadings';
 @Component({
     selector: 'page-addon-mod-quiz-review',
     templateUrl: 'review.html',
-    standalone: true,
     imports: [
         CoreSharedModule,
         AddonModQuizAttemptInfoComponent,

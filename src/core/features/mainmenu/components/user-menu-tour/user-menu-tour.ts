@@ -23,7 +23,6 @@ import { CoreSharedModule } from '@/core/shared.module';
     selector: 'core-mainmenu-user-menu-tour',
     templateUrl: 'user-menu-tour.html',
     styleUrl: 'user-menu-tour.scss',
-    standalone: true,
     imports: [
         CoreSharedModule,
     ],

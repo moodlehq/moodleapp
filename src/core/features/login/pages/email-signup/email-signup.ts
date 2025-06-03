@@ -49,7 +49,6 @@ import { CoreUserProfileFieldComponent } from '@features/user/components/user-pr
     selector: 'page-core-login-email-signup',
     templateUrl: 'email-signup.html',
     styleUrl: '../../login.scss',
-    standalone: true,
     imports: [
         CoreSharedModule,
         CoreUserProfileFieldComponent,

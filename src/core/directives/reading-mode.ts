@@ -38,7 +38,6 @@ import { CoreLogger } from '@singletons/logger';
  */
 @Directive({
     selector: '[core-reading-mode]',
-    standalone: true,
 })
 export class CoreReadingModeDirective implements AfterViewInit, OnDestroy {
 

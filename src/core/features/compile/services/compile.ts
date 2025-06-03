@@ -207,7 +207,6 @@ export class CoreCompileProvider {
             template,
             host: { 'compiled-component-id': String(this.componentId++) },
             styles,
-            standalone: true,
             imports,
             schemas: [NO_ERRORS_SCHEMA],
         })(componentClass);

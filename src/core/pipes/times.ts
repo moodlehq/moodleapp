@@ -25,7 +25,6 @@ import { Pipe, PipeTransform } from '@angular/core';
  */
 @Pipe({
     name: 'coreTimes',
-    standalone: true,
 })
 export class CoreTimesPipe implements PipeTransform {
 

@@ -24,7 +24,6 @@ import { CoreSharedModule } from '@/core/shared.module';
     selector: 'addon-qtype-shortanswer',
     templateUrl: 'addon-qtype-shortanswer.html',
     styleUrl: 'shortanswer.scss',
-    standalone: true,
     imports: [
         CoreSharedModule,
     ],

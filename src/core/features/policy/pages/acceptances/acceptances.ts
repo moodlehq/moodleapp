@@ -37,7 +37,6 @@ import { CoreSharedModule } from '@/core/shared.module';
     selector: 'page-core-policy-acceptances',
     templateUrl: 'acceptances.html',
     styleUrl: 'acceptances.scss',
-    standalone: true,
     imports: [
         CoreSharedModule,
     ],

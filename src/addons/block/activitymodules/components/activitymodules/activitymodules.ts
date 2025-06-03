@@ -34,7 +34,6 @@ import { CoreCourseModuleHelper } from '@features/course/services/course-module-
     selector: 'addon-block-activitymodules',
     templateUrl: 'addon-block-activitymodules.html',
     styleUrl: 'activitymodules.scss',
-    standalone: true,
     imports: [
         CoreSharedModule,
     ],

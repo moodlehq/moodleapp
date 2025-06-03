@@ -42,7 +42,6 @@ import { CoreSharedModule } from '@/core/shared.module';
     selector: 'page-core-policy-site-policy',
     templateUrl: 'site-policy.html',
     styleUrl: 'site-policy.scss',
-    standalone: true,
     imports: [
         CoreSharedModule,
     ],

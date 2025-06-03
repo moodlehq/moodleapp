@@ -54,7 +54,6 @@ import { CoreSharedModule } from '@/core/shared.module';
     selector: 'page-core-login-credentials',
     templateUrl: 'credentials.html',
     styleUrl: '../../login.scss',
-    standalone: true,
     imports: [
         CoreSharedModule,
         CoreSiteLogoComponent,

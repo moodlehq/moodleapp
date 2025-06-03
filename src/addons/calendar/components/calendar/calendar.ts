@@ -62,7 +62,6 @@ import { CoreSharedModule } from '@/core/shared.module';
     selector: 'addon-calendar-calendar',
     templateUrl: 'addon-calendar-calendar.html',
     styleUrl: 'calendar.scss',
-    standalone: true,
     imports: [
         CoreSharedModule,
     ],

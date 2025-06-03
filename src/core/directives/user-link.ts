@@ -20,7 +20,6 @@ import { CoreNavigator } from '@services/navigator';
  */
 @Directive({
     selector: '[core-user-link]',
-    standalone: true,
 })
 export class CoreUserLinkDirective implements OnInit {
 

@@ -22,7 +22,6 @@ import { CoreSharedModule } from '@/core/shared.module';
 @Component({
     selector: 'addon-mod-data-field-radiobutton',
     templateUrl: 'addon-mod-data-field-radiobutton.html',
-    standalone: true,
     imports: [
         CoreSharedModule,
     ],

@@ -58,7 +58,6 @@ import { CoreChartType } from '@components/chart/chart';
 @Component({
     selector: 'addon-mod-feedback-index',
     templateUrl: 'addon-mod-feedback-index.html',
-    standalone: true,
     imports: [
         CoreSharedModule,
         CoreCourseModuleInfoComponent,

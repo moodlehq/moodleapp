@@ -40,7 +40,6 @@ import { CoreCompileHtmlComponent } from '@features/compile/components/compile-h
     selector: 'addon-mod-data-search-modal',
     templateUrl: 'search-modal.html',
     styleUrls: ['../../data.scss', '../../data-forms.scss'],
-    standalone: true,
     imports: [
         CoreSharedModule,
         CoreCompileHtmlComponent,

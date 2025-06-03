@@ -25,7 +25,6 @@ import { CoreQuestionBehaviourButton, CoreQuestionQuestion } from '@features/que
 @Component({
     selector: 'addon-qbehaviour-informationitem',
     templateUrl: 'addon-qbehaviour-informationitem.html',
-    standalone: true,
     imports: [
         CoreSharedModule,
     ],

@@ -47,7 +47,6 @@ import { CoreSharedModule } from '@/core/shared.module';
 @Component({
     selector: 'page-addon-mod-assign-submission-list',
     templateUrl: 'submission-list.html',
-    standalone: true,
     imports: [
         CoreSharedModule,
     ],

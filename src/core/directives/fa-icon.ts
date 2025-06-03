@@ -27,7 +27,6 @@ import { CoreConstants } from '../constants';
  */
 @Directive({
     selector: 'ion-icon[name]',
-    standalone: true,
 })
 export class CoreFaIconDirective implements AfterViewInit, OnChanges {
 

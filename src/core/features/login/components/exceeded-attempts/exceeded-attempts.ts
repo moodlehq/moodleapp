@@ -21,7 +21,6 @@ import { CoreSharedModule } from '@/core/shared.module';
     selector: 'core-login-exceeded-attempts',
     templateUrl: 'exceeded-attempts.html',
     styleUrl: './exceeded-attempts.scss',
-    standalone: true,
     imports: [
         CoreSharedModule,
     ],

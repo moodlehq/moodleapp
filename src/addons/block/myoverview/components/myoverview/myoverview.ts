@@ -55,7 +55,6 @@ const FILTER_PRIORITY: AddonBlockMyOverviewTimeFilters[] =
     selector: 'addon-block-myoverview',
     templateUrl: 'addon-block-myoverview.html',
     styleUrl: 'myoverview.scss',
-    standalone: true,
     imports: [
         CoreSharedModule,
         CoreCoursesCourseListItemComponent,

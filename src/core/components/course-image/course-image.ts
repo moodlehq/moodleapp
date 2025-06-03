@@ -25,7 +25,6 @@ import { CoreFaIconDirective } from '@directives/fa-icon';
     selector: 'core-course-image',
     templateUrl: 'course-image.html',
     styleUrl: './course-image.scss',
-    standalone: true,
     imports: [
         CoreBaseModule,
         CoreFaIconDirective,

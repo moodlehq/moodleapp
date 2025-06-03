@@ -35,7 +35,6 @@ import { CoreSharedModule } from '@/core/shared.module';
     selector: 'core-emulator-capture-media',
     templateUrl: 'capture-media.html',
     styleUrl: 'capture-media.scss',
-    standalone: true,
     imports: [
         CoreSharedModule,
     ],

@@ -39,7 +39,6 @@ import { CoreSharedModule } from '@/core/shared.module';
 @Component({
     selector: 'core-h5p-iframe',
     templateUrl: 'core-h5p-iframe.html',
-    standalone: true,
     imports: [
         CoreSharedModule,
     ],

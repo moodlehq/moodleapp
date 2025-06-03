@@ -44,7 +44,6 @@ import { CoreBlockSideBlocksButtonComponent } from '../../../block/components/si
     selector: 'page-core-sitehome-index',
     templateUrl: 'index.html',
     styleUrl: 'index.scss',
-    standalone: true,
     imports: [
         CoreSharedModule,
         CoreCourseModuleComponent,

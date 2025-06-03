@@ -29,7 +29,6 @@ import { CoreSharedModule } from '@/core/shared.module';
     selector: 'core-block-side-blocks-button',
     templateUrl: 'side-blocks-button.html',
     styleUrl: 'side-blocks-button.scss',
-    standalone: true,
     imports: [
         CoreSharedModule,
     ],

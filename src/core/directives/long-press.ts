@@ -23,7 +23,6 @@ import { GestureController } from '@singletons';
  */
 @Directive({
     selector: '[longPress]',
-    standalone: true,
 })
 export class CoreLongPressDirective implements OnInit, OnDestroy {
 

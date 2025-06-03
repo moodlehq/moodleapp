@@ -37,7 +37,6 @@ import { CoreCourseModuleHelper } from '@features/course/services/course-module-
     selector: 'core-course-module-navigation',
     templateUrl: 'core-course-module-navigation.html',
     styleUrl: 'module-navigation.scss',
-    standalone: true,
     imports: [
         CoreSharedModule,
     ],

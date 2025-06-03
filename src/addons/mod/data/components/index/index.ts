@@ -69,7 +69,6 @@ const contentToken = '<!-- CORE-DATABASE-CONTENT-GOES-HERE -->';
     selector: 'addon-mod-data-index',
     templateUrl: 'addon-mod-data-index.html',
     styleUrl: '../../data.scss',
-    standalone: true,
     imports: [
         CoreSharedModule,
         CoreCourseModuleInfoComponent,

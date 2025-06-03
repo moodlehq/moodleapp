@@ -24,7 +24,6 @@ import { Directive, ElementRef, OnDestroy, OnInit } from '@angular/core';
  */
 @Directive({
     selector: 'ion-button',
-    standalone: true,
 })
 export class CoreUpdateNonReactiveAttributesDirective implements OnInit, OnDestroy {
 

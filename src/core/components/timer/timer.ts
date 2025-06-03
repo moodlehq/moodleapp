@@ -30,7 +30,6 @@ import { CoreSecondsToHMSPipe } from '@pipes/seconds-to-hms';
     selector: 'core-timer',
     templateUrl: 'core-timer.html',
     styleUrl: 'timer.scss',
-    standalone: true,
     imports: [
         CoreBaseModule,
         CoreSecondsToHMSPipe,

@@ -50,7 +50,6 @@ import { CoreMainMenuUserButtonComponent } from '@features/mainmenu/components/u
 @Component({
     selector: 'page-addon-calendar-index',
     templateUrl: 'index.html',
-    standalone: true,
     imports: [
         CoreSharedModule,
         AddonCalendarCalendarComponent,

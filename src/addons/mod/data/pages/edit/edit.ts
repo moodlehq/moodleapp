@@ -57,7 +57,6 @@ import { CoreSharedModule } from '@/core/shared.module';
     selector: 'page-addon-mod-data-edit',
     templateUrl: 'edit.html',
     styleUrls: ['../../data.scss', '../../data-forms.scss'],
-    standalone: true,
     imports: [
         CoreSharedModule,
         CoreCompileHtmlComponent,

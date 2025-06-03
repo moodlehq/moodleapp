@@ -36,7 +36,6 @@ import { CoreRemindersDateComponent } from '../../../reminders/components/date/d
     selector: 'core-course-module-info',
     templateUrl: 'core-course-module-info.html',
     styleUrl: 'course-module-info.scss',
-    standalone: true,
     imports: [
         CoreSharedModule,
         CoreCourseModuleCompletionComponent,

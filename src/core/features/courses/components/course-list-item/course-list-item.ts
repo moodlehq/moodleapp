@@ -58,7 +58,6 @@ import { CoreSharedModule } from '@/core/shared.module';
     selector: 'core-courses-course-list-item',
     templateUrl: 'core-courses-course-list-item.html',
     styleUrl: 'course-list-item.scss',
-    standalone: true,
     imports: [
         CoreSharedModule,
     ],

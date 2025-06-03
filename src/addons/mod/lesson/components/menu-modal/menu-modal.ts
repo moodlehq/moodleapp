@@ -24,7 +24,6 @@ import AddonModLessonPlayerPage from '../../pages/player/player';
 @Component({
     selector: 'page-addon-mod-lesson-menu-modal',
     templateUrl: 'menu-modal.html',
-    standalone: true,
     imports: [
         CoreSharedModule,
     ],

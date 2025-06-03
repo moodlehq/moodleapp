@@ -141,7 +141,6 @@ async function renderAngularComponent<T>(component: Type<T>, config: RenderConfi
 function createWrapperComponent<U>(template: string, componentClass: Type<U>): Type<WrapperComponent<U>> {
     @Component({
         template,
-        standalone: true,
         imports: [
             componentClass,
         ],

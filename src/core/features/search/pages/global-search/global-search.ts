@@ -39,7 +39,6 @@ import { CoreContentLinksHelper } from '@features/contentlinks/services/contentl
 @Component({
     selector: 'page-core-search-global-search',
     templateUrl: 'global-search.html',
-    standalone: true,
     imports: [
         CoreSharedModule,
         CoreMainMenuUserButtonComponent,

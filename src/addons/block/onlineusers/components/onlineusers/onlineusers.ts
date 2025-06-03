@@ -23,7 +23,6 @@ import { CoreBlockPreRenderedComponent } from '@features/block/components/pre-re
     selector: 'addon-block-online-users',
     templateUrl: '../../../../../core/features/block/components/pre-rendered-block/core-block-pre-rendered.html',
     styleUrl: 'onlineusers.scss',
-    standalone: true,
     imports: [
         CoreSharedModule,
     ],

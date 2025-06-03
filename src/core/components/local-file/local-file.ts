@@ -48,7 +48,6 @@ import { CoreUpdateNonReactiveAttributesDirective } from '@directives/update-non
     selector: 'core-local-file',
     templateUrl: 'core-local-file.html',
     styleUrl: 'core-local-file.scss',
-    standalone: true,
     imports: [
         CoreBaseModule,
         CoreAriaButtonClickDirective,

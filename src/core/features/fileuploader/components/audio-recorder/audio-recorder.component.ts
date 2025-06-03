@@ -35,7 +35,6 @@ import { CoreAlerts } from '@services/overlays/alerts';
     styleUrl: 'audio-recorder.scss',
     templateUrl: 'audio-recorder.html',
     changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: true,
     imports: [
         CoreSharedModule,
         CoreFileUploaderAudioHistogramComponent,

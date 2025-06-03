@@ -78,7 +78,6 @@ import { CoreCourseModuleInfoComponent } from '@features/course/components/modul
     selector: 'addon-mod-forum-index',
     templateUrl: 'index.html',
     styleUrl: 'index.scss',
-    standalone: true,
     imports: [
         CoreSharedModule,
         CoreCourseModuleInfoComponent,

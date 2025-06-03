@@ -23,7 +23,6 @@ import { CoreSharedModule } from '@/core/shared.module';
 @Component({
     selector: 'addon-mod-wiki-subwiki-picker',
     templateUrl: 'addon-mod-wiki-subwiki-picker.html',
-    standalone: true,
     imports: [
         CoreSharedModule,
     ],

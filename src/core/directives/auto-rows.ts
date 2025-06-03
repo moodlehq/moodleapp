@@ -23,7 +23,6 @@ import { Directive, ElementRef, Output, EventEmitter, AfterViewInit, Input, OnCh
  */
 @Directive({
     selector: 'textarea[core-auto-rows], ion-textarea[core-auto-rows]',
-    standalone: true,
 })
 export class CoreAutoRowsDirective implements AfterViewInit, OnChanges {
 

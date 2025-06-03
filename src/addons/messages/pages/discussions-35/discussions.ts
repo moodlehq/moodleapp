@@ -45,7 +45,6 @@ import { CoreMainMenuUserButtonComponent } from '@features/mainmenu/components/u
     selector: 'addon-messages-discussions',
     templateUrl: 'discussions.html',
     styleUrl: '../../messages-common.scss',
-    standalone: true,
     imports: [
         CoreSharedModule,
         CoreSearchBoxComponent,

@@ -46,7 +46,6 @@ import { CoreCourseModuleHelper } from '@features/course/services/course-module-
     selector: 'core-course-module-summary',
     templateUrl: 'module-summary.html',
     styleUrl: 'module-summary.scss',
-    standalone: true,
     imports: [
         CoreSharedModule,
     ],

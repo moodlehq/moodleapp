@@ -24,7 +24,6 @@ import { CoreSharedModule } from '@/core/shared.module';
     selector: 'addon-qtype-multichoice',
     templateUrl: 'addon-qtype-multichoice.html',
     styleUrl: 'multichoice.scss',
-    standalone: true,
     imports: [
         CoreSharedModule,
     ],

@@ -26,7 +26,6 @@ import { CoreAlerts } from '@services/overlays/alerts';
 @Component({
     selector: 'addon-mod-chat-users-modal',
     templateUrl: 'users-modal.html',
-    standalone: true,
     imports: [
         CoreSharedModule,
     ],

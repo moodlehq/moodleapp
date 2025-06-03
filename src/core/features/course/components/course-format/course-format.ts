@@ -83,7 +83,6 @@ import { ADDON_STORAGE_MANAGER_PAGE_NAME } from '@addons/storagemanager/constant
     selector: 'core-course-format',
     templateUrl: 'course-format.html',
     styleUrl: 'course-format.scss',
-    standalone: true,
     imports: [
         CoreSharedModule,
         CoreCourseSectionComponent,

@@ -42,7 +42,6 @@ import { CoreCourseModuleNavigationComponent } from '@features/course/components
     selector: 'core-site-plugins-module-index',
     templateUrl: 'core-siteplugins-module-index.html',
     styles: [':host { display: contents; }'],
-    standalone: true,
     imports: [
         CoreSharedModule,
         CoreSitePluginsPluginContentComponent,

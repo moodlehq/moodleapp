@@ -44,7 +44,6 @@ import { CORE_USER_PROFILE_REFRESHED } from '@features/user/constants';
     selector: 'page-core-user-profile',
     templateUrl: 'profile.html',
     styleUrl: 'profile.scss',
-    standalone: true,
     imports: [
         CoreSharedModule,
     ],

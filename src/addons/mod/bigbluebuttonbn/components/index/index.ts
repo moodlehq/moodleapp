@@ -47,7 +47,6 @@ import { CoreCourseModuleNavigationComponent } from '@features/course/components
     selector: 'addon-mod-bbb-index',
     templateUrl: 'index.html',
     styleUrl: 'index.scss',
-    standalone: true,
     imports: [
         CoreSharedModule,
         CoreCourseModuleInfoComponent,

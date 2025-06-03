@@ -57,7 +57,6 @@ import { CoreErrorHelper } from '@services/error-helper';
 @Component({
     selector: 'page-addon-mod-workshop-assessment-page',
     templateUrl: 'assessment.html',
-    standalone: true,
     imports: [
         CoreSharedModule,
         AddonModWorkshopAssessmentStrategyComponent,

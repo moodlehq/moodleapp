@@ -28,7 +28,6 @@ import { CoreLinkDirective } from '@directives/link';
     selector: 'core-context-menu-popover',
     templateUrl: 'core-context-menu-popover.html',
     styleUrl: 'context-menu-popover.scss',
-    standalone: true,
     imports: [
         CoreBaseModule,
         CoreFaIconDirective,

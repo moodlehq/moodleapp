@@ -73,7 +73,6 @@ export const COLLAPSIBLE_HEADER_UPDATED = 'collapsible_header_updated';
  */
 @Directive({
     selector: 'ion-header[collapsible]',
-    standalone: true,
 })
 export class CoreCollapsibleHeaderDirective implements OnInit, OnChanges, OnDestroy, AsyncDirective {
 

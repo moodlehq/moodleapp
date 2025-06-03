@@ -42,7 +42,6 @@ import { CoreSecondsToHMSPipe } from '@pipes/seconds-to-hms';
 @Component({
     selector: 'core-chrono',
     templateUrl: 'core-chrono.html',
-    standalone: true,
     imports: [
         CoreBaseModule,
         CoreSecondsToHMSPipe,

@@ -22,7 +22,6 @@ import { CoreDom } from '@singletons/dom';
  */
 @Directive({
     selector: '[userTour]',
-    standalone: true,
 })
 export class CoreUserTourDirective implements OnInit, OnDestroy {
 
