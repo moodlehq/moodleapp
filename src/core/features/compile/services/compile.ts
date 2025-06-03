@@ -39,7 +39,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { CoreLogger } from '@singletons/logger';
 import { CoreEvents } from '@singletons/events';
 import { makeSingleton } from '@singletons';
-import { effectWithInjectionContext, modelWithInjectionContext } from '@/core/utils/signals';
+import { effectWithInjectionContext } from '@/core/utils/signals';
 
 // Import core services and exported directives/objects.
 import { CoreSharedModule } from '@/core/shared.module';
@@ -302,7 +302,6 @@ export class CoreCompileProvider {
         instance['computed'] = computed;
         instance['untracked'] = untracked;
         instance['effect'] = options.effectWrapper ?? effectWithInjectionContext(injector);
-        instance['model'] = modelWithInjectionContext(injector);
 
         /**
          * @deprecated since 4.1, plugins should use CoreNetwork instead.
