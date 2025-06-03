@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { AppRoutingModule } from '@/app/app-routing.module';
-import { APP_INITIALIZER, NgModule, Type } from '@angular/core';
+import { NgModule, Type, provideAppInitializer } from '@angular/core';
 import { Routes } from '@angular/router';
 
 import { CoreFileUploaderDelegate } from '@features/fileuploader/services/fileuploader-delegate';
@@ -73,17 +73,13 @@ const routes: Routes = [
         CoreSitePreferencesRoutingModule.forChild(routes),
     ],
     providers: [
-        {
-            provide: APP_INITIALIZER,
-            multi: true,
-            useValue: async () => {
-                CoreFileUploaderDelegate.registerHandler(CoreSharedFilesUploadHandler.instance);
-                CoreSettingsDelegate.registerHandler(CoreSharedFilesSettingsHandler.instance);
+        provideAppInitializer(async () => {
+            CoreFileUploaderDelegate.registerHandler(CoreSharedFilesUploadHandler.instance);
+            CoreSettingsDelegate.registerHandler(CoreSharedFilesSettingsHandler.instance);
 
-                CoreSharedFilesHelper.initialize();
-                await CoreSharedFiles.initializeDatabase();
-            },
-        },
+            CoreSharedFilesHelper.initialize();
+            await CoreSharedFiles.initializeDatabase();
+        }),
     ],
 })
 export class CoreSharedFilesModule {}

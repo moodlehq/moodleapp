@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { APP_INITIALIZER, NgModule, Type } from '@angular/core';
+import { NgModule, Type, provideAppInitializer } from '@angular/core';
 import { Routes } from '@angular/router';
 
 import { AddonBadgesMyBadgesLinkHandler } from './services/handlers/mybadges-link';
@@ -95,18 +95,14 @@ const mainMenuRoutes: Routes = [
         CoreMainMenuTabRoutingModule.forChild(mainMenuRoutes),
     ],
     providers: [
-        {
-            provide: APP_INITIALIZER,
-            multi: true,
-            useValue: () => {
-                CoreContentLinksDelegate.registerHandler(AddonBadgesMyBadgesLinkHandler.instance);
-                CoreContentLinksDelegate.registerHandler(AddonBadgesBadgeLinkHandler.instance);
-                CoreContentLinksDelegate.registerHandler(AddonBadgesBadgeClassLinkHandler.instance);
-                CoreUserDelegate.registerHandler(AddonBadgesUserHandler.instance);
-                CorePushNotificationsDelegate.registerClickHandler(AddonBadgesPushClickHandler.instance);
-                CoreTagAreaDelegate.registerHandler(AddonBadgesTagAreaHandler.instance);
-            },
-        },
+        provideAppInitializer(() => {
+            CoreContentLinksDelegate.registerHandler(AddonBadgesMyBadgesLinkHandler.instance);
+            CoreContentLinksDelegate.registerHandler(AddonBadgesBadgeLinkHandler.instance);
+            CoreContentLinksDelegate.registerHandler(AddonBadgesBadgeClassLinkHandler.instance);
+            CoreUserDelegate.registerHandler(AddonBadgesUserHandler.instance);
+            CorePushNotificationsDelegate.registerClickHandler(AddonBadgesPushClickHandler.instance);
+            CoreTagAreaDelegate.registerHandler(AddonBadgesTagAreaHandler.instance);
+        }),
     ],
 })
 export class AddonBadgesModule {}

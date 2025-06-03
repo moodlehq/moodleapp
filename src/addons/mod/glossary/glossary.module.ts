@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { conditionalRoutes } from '@/app/app-routing.module';
-import { APP_INITIALIZER, NgModule } from '@angular/core';
+import { NgModule, provideAppInitializer } from '@angular/core';
 import { Route, Routes } from '@angular/router';
 import { CoreContentLinksDelegate } from '@features/contentlinks/services/contentlinks-delegate';
 import { CORE_COURSE_CONTENTS_PATH } from '@features/course/constants';
@@ -133,22 +133,18 @@ const courseContentsRoutes: Routes = conditionalRoutes(
             useValue: [SITE_SCHEMA, OFFLINE_SITE_SCHEMA],
             multi: true,
         },
-        {
-            provide: APP_INITIALIZER,
-            multi: true,
-            useValue: () => {
-                CoreCourseModuleDelegate.registerHandler(AddonModGlossaryModuleHandler.instance);
-                CoreCourseModulePrefetchDelegate.registerHandler(AddonModGlossaryPrefetchHandler.instance);
-                CoreCronDelegate.register(AddonModGlossarySyncCronHandler.instance);
-                CoreContentLinksDelegate.registerHandler(AddonModGlossaryIndexLinkHandler.instance);
-                CoreContentLinksDelegate.registerHandler(AddonModGlossaryListLinkHandler.instance);
-                CoreContentLinksDelegate.registerHandler(AddonModGlossaryEditLinkHandler.instance);
-                CoreContentLinksDelegate.registerHandler(AddonModGlossaryEntryLinkHandler.instance);
-                CoreTagAreaDelegate.registerHandler(AddonModGlossaryTagAreaHandler.instance);
+        provideAppInitializer(() => {
+            CoreCourseModuleDelegate.registerHandler(AddonModGlossaryModuleHandler.instance);
+            CoreCourseModulePrefetchDelegate.registerHandler(AddonModGlossaryPrefetchHandler.instance);
+            CoreCronDelegate.register(AddonModGlossarySyncCronHandler.instance);
+            CoreContentLinksDelegate.registerHandler(AddonModGlossaryIndexLinkHandler.instance);
+            CoreContentLinksDelegate.registerHandler(AddonModGlossaryListLinkHandler.instance);
+            CoreContentLinksDelegate.registerHandler(AddonModGlossaryEditLinkHandler.instance);
+            CoreContentLinksDelegate.registerHandler(AddonModGlossaryEntryLinkHandler.instance);
+            CoreTagAreaDelegate.registerHandler(AddonModGlossaryTagAreaHandler.instance);
 
-                CoreCourseHelper.registerModuleReminderClick(ADDON_MOD_GLOSSARY_COMPONENT_LEGACY);
-            },
-        },
+            CoreCourseHelper.registerModuleReminderClick(ADDON_MOD_GLOSSARY_COMPONENT_LEGACY);
+        }),
     ],
 })
 export class AddonModGlossaryModule {}

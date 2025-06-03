@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { APP_INITIALIZER, NgModule, Type } from '@angular/core';
+import { NgModule, Type, provideAppInitializer } from '@angular/core';
 import { CoreStyles } from './services/styles';
 
 /**
@@ -30,13 +30,7 @@ export async function getStyleServices(): Promise<Type<unknown>[]> {
 
 @NgModule({
     providers: [
-        {
-            provide: APP_INITIALIZER,
-            multi: true,
-            useValue: async () => {
-                await CoreStyles.initialize();
-            },
-        },
+        provideAppInitializer(() =>  CoreStyles.initialize()),
     ],
 })
 export class CoreStylesModule {}

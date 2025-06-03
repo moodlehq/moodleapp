@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { APP_INITIALIZER, NgModule, Type } from '@angular/core';
+import { NgModule, Type, provideAppInitializer } from '@angular/core';
 import { Routes } from '@angular/router';
 import { CoreContentLinksDelegate } from '@features/contentlinks/services/contentlinks-delegate';
 import { CoreCourseHelper } from '@features/course/services/course-helper';
@@ -122,30 +122,26 @@ const routes: Routes = [
         CoreMainMenuTabRoutingModule.forChild(routes),
     ],
     providers: [
-        {
-            provide: APP_INITIALIZER,
-            multi: true,
-            useValue: () => {
-                CoreMainMenuHomeDelegate.registerHandler(CoreDashboardHomeHandler.instance);
-                CoreMainMenuDelegate.registerHandler(CoreCoursesMyCoursesHomeHandler.instance);
-                CoreContentLinksDelegate.registerHandler(CoreCoursesCourseLinkHandler.instance);
-                CoreContentLinksDelegate.registerHandler(CoreCoursesIndexLinkHandler.instance);
-                CoreContentLinksDelegate.registerHandler(CoreCoursesMyCoursesLinkHandler.instance);
-                CoreContentLinksDelegate.registerHandler(CoreCoursesDashboardLinkHandler.instance);
-                CoreContentLinksDelegate.registerHandler(CoreCoursesSectionLinkHandler.instance);
-                CorePushNotificationsDelegate.registerClickHandler(CoreCoursesEnrolPushClickHandler.instance);
-                CorePushNotificationsDelegate.registerClickHandler(CoreCoursesRequestPushClickHandler.instance);
+        provideAppInitializer(() => {
+            CoreMainMenuHomeDelegate.registerHandler(CoreDashboardHomeHandler.instance);
+            CoreMainMenuDelegate.registerHandler(CoreCoursesMyCoursesHomeHandler.instance);
+            CoreContentLinksDelegate.registerHandler(CoreCoursesCourseLinkHandler.instance);
+            CoreContentLinksDelegate.registerHandler(CoreCoursesIndexLinkHandler.instance);
+            CoreContentLinksDelegate.registerHandler(CoreCoursesMyCoursesLinkHandler.instance);
+            CoreContentLinksDelegate.registerHandler(CoreCoursesDashboardLinkHandler.instance);
+            CoreContentLinksDelegate.registerHandler(CoreCoursesSectionLinkHandler.instance);
+            CorePushNotificationsDelegate.registerClickHandler(CoreCoursesEnrolPushClickHandler.instance);
+            CorePushNotificationsDelegate.registerClickHandler(CoreCoursesRequestPushClickHandler.instance);
 
-                CoreLocalNotifications.registerClick<CoreRemindersPushNotificationData>(
-                    'course',
-                    async (notification) => {
-                        await ApplicationInit.donePromise;
+            CoreLocalNotifications.registerClick<CoreRemindersPushNotificationData>(
+                'course',
+                async (notification) => {
+                    await ApplicationInit.donePromise;
 
-                        CoreCourseHelper.getAndOpenCourse(notification.instanceId, {}, notification.siteId);
-                    },
-                );
-            },
-        },
+                    CoreCourseHelper.getAndOpenCourse(notification.instanceId, {}, notification.siteId);
+                },
+            );
+        }),
     ],
 })
 export class CoreCoursesModule {}

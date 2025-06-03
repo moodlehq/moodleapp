@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { APP_INITIALIZER, NgModule, Type } from '@angular/core';
+import { NgModule, Type, provideAppInitializer } from '@angular/core';
 import { Routes } from '@angular/router';
 import { CoreMainMenuDelegate } from '@features/mainmenu/services/mainmenu-delegate';
 import { CoreMainMenuRoutingModule } from '../mainmenu/mainmenu-routing.module';
@@ -53,15 +53,11 @@ const routes: Routes = [
         CoreMainMenuRoutingModule.forChild({ children: routes }),
     ],
     providers: [
-        {
-            provide: APP_INITIALIZER,
-            multi: true,
-            useValue: () => {
-                CoreMainMenuDelegate.registerHandler(CoreTagMainMenuHandler.instance);
-                CoreContentLinksDelegate.registerHandler(CoreTagIndexLinkHandler.instance);
-                CoreContentLinksDelegate.registerHandler(CoreTagSearchLinkHandler.instance);
-            },
-        },
+        provideAppInitializer(() => {
+            CoreMainMenuDelegate.registerHandler(CoreTagMainMenuHandler.instance);
+            CoreContentLinksDelegate.registerHandler(CoreTagIndexLinkHandler.instance);
+            CoreContentLinksDelegate.registerHandler(CoreTagSearchLinkHandler.instance);
+        }),
     ],
 })
 export class CoreTagModule {}

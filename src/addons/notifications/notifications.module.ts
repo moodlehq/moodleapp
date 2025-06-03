@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { APP_INITIALIZER, NgModule, Type } from '@angular/core';
+import { NgModule, Type, provideAppInitializer } from '@angular/core';
 import { Routes } from '@angular/router';
 
 import { CoreCronDelegate } from '@services/cron';
@@ -66,20 +66,16 @@ const preferencesRoutes: Routes = [
         CoreSitePreferencesRoutingModule.forChild(preferencesRoutes),
     ],
     providers: [
-        {
-            provide: APP_INITIALIZER,
-            multi: true,
-            useValue: () => {
-                CoreMainMenuDelegate.registerHandler(AddonNotificationsMainMenuHandler.instance);
-                CoreCronDelegate.register(AddonNotificationsCronHandler.instance);
-                CorePushNotificationsDelegate.registerClickHandler(AddonNotificationsPushClickHandler.instance);
-                CoreSettingsDelegate.registerHandler(AddonNotificationsSettingsHandler.instance);
-                CoreContentLinksDelegate.registerHandler(AddonNotificationsLinkHandler.instance);
-                CoreContentLinksDelegate.registerHandler(AddonNotificationsPreferencesLinkHandler.instance);
+        provideAppInitializer(() => {
+            CoreMainMenuDelegate.registerHandler(AddonNotificationsMainMenuHandler.instance);
+            CoreCronDelegate.register(AddonNotificationsCronHandler.instance);
+            CorePushNotificationsDelegate.registerClickHandler(AddonNotificationsPushClickHandler.instance);
+            CoreSettingsDelegate.registerHandler(AddonNotificationsSettingsHandler.instance);
+            CoreContentLinksDelegate.registerHandler(AddonNotificationsLinkHandler.instance);
+            CoreContentLinksDelegate.registerHandler(AddonNotificationsPreferencesLinkHandler.instance);
 
-                AddonNotificationsMainMenuHandler.initialize();
-            },
-        },
+            AddonNotificationsMainMenuHandler.initialize();
+        }),
     ],
 })
 export class AddonNotificationsModule {}

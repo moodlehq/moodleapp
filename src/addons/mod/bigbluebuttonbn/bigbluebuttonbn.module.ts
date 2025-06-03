@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { APP_INITIALIZER, NgModule } from '@angular/core';
+import { NgModule, provideAppInitializer } from '@angular/core';
 import { Routes } from '@angular/router';
 import { CoreContentLinksDelegate } from '@features/contentlinks/services/contentlinks-delegate';
 import { CoreCourseModuleDelegate } from '@features/course/services/module-delegate';
@@ -34,15 +34,11 @@ const routes: Routes = [
         CoreMainMenuTabRoutingModule.forChild(routes),
     ],
     providers: [
-        {
-            provide: APP_INITIALIZER,
-            multi: true,
-            useValue: () => {
-                CoreCourseModuleDelegate.registerHandler(AddonModBBBModuleHandler.instance);
-                CoreContentLinksDelegate.registerHandler(AddonModBBBIndexLinkHandler.instance);
-                CoreContentLinksDelegate.registerHandler(AddonModBBBListLinkHandler.instance);
-            },
-        },
+        provideAppInitializer(() => {
+            CoreCourseModuleDelegate.registerHandler(AddonModBBBModuleHandler.instance);
+            CoreContentLinksDelegate.registerHandler(AddonModBBBIndexLinkHandler.instance);
+            CoreContentLinksDelegate.registerHandler(AddonModBBBListLinkHandler.instance);
+        }),
     ],
 })
 export class AddonModBBBModule {}

@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { APP_INITIALIZER, NgModule } from '@angular/core';
+import { NgModule, provideAppInitializer } from '@angular/core';
 import { Routes } from '@angular/router';
 
 import { AppRoutingModule } from '@/app/app-routing.module';
@@ -46,20 +46,16 @@ const routes: Routes = [
         CoreMainMenuTabRoutingModule.forChild(routes),
     ],
     providers: [
-        {
-            provide: APP_INITIALIZER,
-            multi: true,
-            useValue: async () => {
-                CoreUserDelegate.registerHandler(CorePolicyUserHandler.instance);
-                CoreContentLinksDelegate.registerHandler(CorePolicyAcceptancesLinkHandler.instance);
+        provideAppInitializer(async () => {
+            CoreUserDelegate.registerHandler(CorePolicyUserHandler.instance);
+            CoreContentLinksDelegate.registerHandler(CorePolicyAcceptancesLinkHandler.instance);
 
-                CoreEvents.on(CoreEvents.SITE_POLICY_NOT_AGREED, async (data) => {
-                    const { CorePolicy } = await import('@features/policy/services/policy');
+            CoreEvents.on(CoreEvents.SITE_POLICY_NOT_AGREED, async (data) => {
+                const { CorePolicy } = await import('@features/policy/services/policy');
 
-                    CorePolicy.goToAcceptSitePolicies(data.siteId);
-                });
-            },
-        },
+                CorePolicy.goToAcceptSitePolicies(data.siteId);
+            });
+        }),
     ],
 })
 export class CorePolicyModule {}
