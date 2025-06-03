@@ -154,3 +154,12 @@ core-format-text ::ng-deep {
         display: none;
     }
 }
+
+:host-context(:root.dark) {
+    core-format-text ::ng-deep {
+        div.dragitems img.target,
+        div.draghomes img.target {
+            filter: brightness(0) invert(1);
+        }
+    }
+}
