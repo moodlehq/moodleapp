@@ -30,20 +30,23 @@
             </ion-item>
             <ng-container *ngIf="items && items.length">
                 <ng-container *ngFor="let item of items">
-                    <core-spacer *ngIf="item.typ === 'pagebreak'" />
-                    <ion-item class="ion-text-wrap" *ngIf="item.typ !== 'pagebreak'" [color]="item.dependitem > 0 ? 'light' : ''">
-                        <ion-label>
-                            <p class="item-heading" *ngIf="item.name" [core-mark-required]="item.required">
-                                <span *ngIf="feedback!.autonumbering && item.itemnumber">{{item.itemnumber}}. </span>
-                                <core-format-text [component]="component" [componentId]="cmId" [text]="item.name" contextLevel="module"
-                                    [contextInstanceId]="cmId" [courseId]="courseId" />
-                            </p>
-                            <p *ngIf="item.submittedValue">
-                                <core-format-text [component]="component" [componentId]="cmId" [text]="item.submittedValue"
-                                    contextLevel="module" [contextInstanceId]="cmId" [courseId]="courseId" />
-                            </p>
-                        </ion-label>
-                    </ion-item>
+                    @if (item.typ === 'pagebreak') {
+                        <core-spacer />
+                    } @else {
+                        <ion-item class="ion-text-wrap" [class.feedback_is_dependent]="item.dependitem > 0">
+                            <ion-label>
+                                <p class="item-heading" *ngIf="item.name" [core-mark-required]="item.required">
+                                    <span *ngIf="feedback!.autonumbering && item.itemnumber">{{item.itemnumber}}. </span>
+                                    <core-format-text [component]="component" [componentId]="cmId" [text]="item.name" contextLevel="module"
+                                        [contextInstanceId]="cmId" [courseId]="courseId" />
+                                </p>
+                                <p *ngIf="item.submittedValue">
+                                    <core-format-text [component]="component" [componentId]="cmId" [text]="item.submittedValue"
+                                        contextLevel="module" [contextInstanceId]="cmId" [courseId]="courseId" />
+                                </p>
+                            </ion-label>
+                        </ion-item>
+                    }
                 </ng-container>
             </ng-container>
         </ion-list>

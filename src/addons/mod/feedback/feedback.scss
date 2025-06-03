@@ -1,0 +1,12 @@
+:host {
+    --dependant-background: var(--gray-200);
+
+    .feedback_is_dependent {
+        --background: var(--dependant-background);
+    }
+
+}
+
+:host-context(:root.dark) {
+    --dependant-background: var(--gray-800);
+}
