@@ -58,7 +58,7 @@ export class AddonModFeedbackProvider {
      * @returns Return true if dependency is acomplished and it can be shown. False, otherwise.
      */
     protected checkDependencyItem(items: AddonModFeedbackItem[], item: AddonModFeedbackItem): boolean {
-        const depend = items.find((itemFind) => itemFind.id == item.dependitem);
+        const depend = items.find((itemFind) => itemFind.id === item.dependitem);
 
         // Item not found, looks like dependent item has been removed or is in the same or following pages.
         if (!depend) {
