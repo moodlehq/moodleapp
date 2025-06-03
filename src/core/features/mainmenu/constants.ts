@@ -19,3 +19,11 @@ export const MAIN_MENU_MORE_PAGE_NAME = 'more';
 
 export const MAIN_MENU_HANDLER_BADGE_UPDATED_EVENT = 'main_menu_handler_badge_updated';
 export const MAIN_MENU_VISIBILITY_UPDATED_EVENT = 'main_menu_visbility_updated';
+
+/**
+ * Pacement of the main menu in the app.
+ */
+export enum CoreMainMenuPlacement {
+    SIDE = 'side',
+    BOTTOM = 'bottom',
+}

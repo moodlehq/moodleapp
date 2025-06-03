@@ -23,6 +23,7 @@ import { CoreText } from '@singletons/text';
 import { CoreScreen } from '@services/screen';
 import { CorePlatform } from '@services/platform';
 import {
+    CoreMainMenuPlacement,
     MAIN_MENU_HANDLER_BADGE_UPDATED_EVENT,
     MAIN_MENU_ITEM_MIN_WIDTH,
     MAIN_MENU_MORE_PAGE_NAME,
@@ -271,8 +272,8 @@ export class CoreMainMenuProvider {
      *
      * @returns Tabs placement including side value.
      */
-    getTabPlacement(): 'bottom' | 'side' {
-        return CoreScreen.isTablet ? 'side' : 'bottom';
+    getTabPlacement(): CoreMainMenuPlacement {
+        return CoreScreen.isTablet ? CoreMainMenuPlacement.SIDE : CoreMainMenuPlacement.BOTTOM;
     }
 
     /**
