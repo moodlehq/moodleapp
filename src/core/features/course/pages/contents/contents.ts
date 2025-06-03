@@ -58,10 +58,9 @@ import { CoreSharedModule } from '@/core/shared.module';
     selector: 'page-core-course-contents',
     templateUrl: 'contents.html',
     providers: [{
-        provide: CORE_REFRESH_CONTEXT,
-        useExisting: forwardRef(() => CoreCourseContentsPage),
-    }],
-    standalone: true,
+            provide: CORE_REFRESH_CONTEXT,
+            useExisting: forwardRef(() => CoreCourseContentsPage),
+        }],
     imports: [
         CoreSharedModule,
         CoreCourseFormatComponent,

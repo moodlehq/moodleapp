@@ -31,7 +31,6 @@ import { CoreSharedModule } from '@/core/shared.module';
     selector: 'addon-mod-imscp-index',
     templateUrl: 'addon-mod-imscp-index.html',
     styleUrl: 'index.scss',
-    standalone: true,
     imports: [
         CoreSharedModule,
         CoreCourseModuleInfoComponent,

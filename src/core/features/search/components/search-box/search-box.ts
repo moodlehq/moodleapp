@@ -36,7 +36,6 @@ import { CoreSharedModule } from '@/core/shared.module';
     selector: 'core-search-box',
     templateUrl: 'core-search-box.html',
     styleUrl: 'search-box.scss',
-    standalone: true,
     imports: [
         CoreSharedModule,
     ],

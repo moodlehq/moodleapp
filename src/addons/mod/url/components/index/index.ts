@@ -35,7 +35,6 @@ import { ModResourceDisplay } from '@addons/mod/constants';
     selector: 'addon-mod-url-index',
     templateUrl: 'addon-mod-url-index.html',
     styleUrl: 'index.scss',
-    standalone: true,
     imports: [
         CoreSharedModule,
         CoreCourseModuleInfoComponent,

@@ -74,7 +74,6 @@ import { CoreRatingRateComponent } from '@features/rating/components/rate/rate';
     selector: 'addon-mod-forum-post',
     templateUrl: 'post.html',
     styleUrl: 'post.scss',
-    standalone: true,
     imports: [
         CoreSharedModule,
         CoreTagListComponent,

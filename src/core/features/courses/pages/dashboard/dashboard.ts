@@ -36,7 +36,6 @@ import { CoreSharedModule } from '@/core/shared.module';
 @Component({
     selector: 'page-core-courses-dashboard',
     templateUrl: 'dashboard.html',
-    standalone: true,
     imports: [
         CoreSharedModule,
         CoreBlockComponent,

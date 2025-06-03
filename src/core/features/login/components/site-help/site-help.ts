@@ -29,7 +29,6 @@ import { CoreWait } from '@singletons/wait';
     selector: 'core-login-site-help',
     templateUrl: 'site-help.html',
     styleUrl: 'site-help.scss',
-    standalone: true,
     imports: [
         CoreSharedModule,
     ],

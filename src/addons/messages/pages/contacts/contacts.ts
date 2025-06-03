@@ -34,7 +34,6 @@ import { CoreSharedModule } from '@/core/shared.module';
     selector: 'page-addon-messages-contacts',
     templateUrl: 'contacts.html',
     styleUrl: '../../messages-common.scss',
-    standalone: true,
     imports: [
         CoreSharedModule,
     ],

@@ -63,7 +63,6 @@ import { CoreCourseModuleNavigationComponent } from '@features/course/components
 @Component({
     selector: 'addon-mod-assign-index',
     templateUrl: 'addon-mod-assign-index.html',
-    standalone: true,
     imports: [
         CoreSharedModule,
         AddonModAssignSubmissionComponent,

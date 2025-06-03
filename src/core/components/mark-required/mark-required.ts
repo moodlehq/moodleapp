@@ -34,7 +34,6 @@ import { CoreFaIconDirective } from '@directives/fa-icon';
     selector: '[core-mark-required]',
     templateUrl: 'core-mark-required.html',
     styleUrl: 'mark-required.scss',
-    standalone: true,
     imports: [
         CoreBaseModule,
         CoreFaIconDirective,

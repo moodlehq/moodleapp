@@ -48,7 +48,6 @@ import { CoreCourseModuleHelper } from '@features/course/services/course-module-
     selector: 'core-course-module',
     templateUrl: 'core-course-module.html',
     styleUrl: 'module.scss',
-    standalone: true,
     imports: [
         CoreSharedModule,
         CoreCourseModuleCompletionLegacyComponent,

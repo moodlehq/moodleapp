@@ -40,7 +40,6 @@ import { CoreFileHelper } from '@services/file-helper';
     selector: 'core-h5p-player',
     templateUrl: 'core-h5p-player.html',
     styleUrl: 'h5p-player.scss',
-    standalone: true,
     imports: [
         CoreSharedModule,
         CoreH5PIframeComponent,

@@ -28,7 +28,6 @@ import { CoreSharedModule } from '@/core/shared.module';
     selector: 'core-block',
     templateUrl: 'core-block.html',
     styleUrl: 'block.scss',
-    standalone: true,
     imports: [
         CoreSharedModule,
     ],

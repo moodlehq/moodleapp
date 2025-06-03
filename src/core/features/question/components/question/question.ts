@@ -38,7 +38,6 @@ import { CoreSharedModule } from '@/core/shared.module';
     selector: 'core-question',
     templateUrl: 'core-question.html',
     styleUrl: '../../question.scss',
-    standalone: true,
     imports: [
         CoreSharedModule,
     ],

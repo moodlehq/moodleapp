@@ -28,7 +28,6 @@ import { CoreUrl } from '@singletons/url';
     selector: 'addon-mod-data-field-latlong',
     templateUrl: 'addon-mod-data-field-latlong.html',
     styleUrl: 'latlong.scss',
-    standalone: true,
     imports: [
         CoreSharedModule,
     ],

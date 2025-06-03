@@ -34,7 +34,6 @@ import { CoreSharedModule } from '@/core/shared.module';
 @Component({
     selector: 'addon-mod-assign-feedback-comments',
     templateUrl: 'addon-mod-assign-feedback-comments.html',
-    standalone: true,
     imports: [
         CoreSharedModule,
         CoreEditorRichTextEditorComponent,

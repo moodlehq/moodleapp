@@ -31,7 +31,6 @@ import { CoreFormatTextDirective } from '@directives/format-text';
 @Component({
     selector: 'core-files',
     templateUrl: 'core-files.html',
-    standalone: true,
     imports: [
         CoreBaseModule,
         CoreFileComponent,

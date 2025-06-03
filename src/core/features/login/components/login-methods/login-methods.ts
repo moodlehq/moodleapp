@@ -26,7 +26,6 @@ import { CoreLoginIdentityProviderComponent } from '../identity-provider/identit
     selector: 'core-login-methods',
     templateUrl: 'login-methods.html',
     styleUrl: '../../login.scss',
-    standalone: true,
     imports: [
         CoreSharedModule,
         CoreLoginIdentityProviderComponent,

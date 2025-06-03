@@ -5,8 +5,8 @@
     "outDir": "./dist/out-tsc",
     "sourceMap": true,
     "declaration": false,
+    "esModuleInterop": true,
     "skipLibCheck": true,
-    "downlevelIteration": true,
     "experimentalDecorators": true,
     "strictNullChecks": true,
     "strictPropertyInitialization": true,
@@ -17,7 +17,6 @@
     "importHelpers": true,
     "target": "es2022",
     "resolveJsonModule": true,
-    "allowSyntheticDefaultImports": true,
     "lib": [
       "es2018",
       "dom"

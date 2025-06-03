@@ -25,7 +25,6 @@ import { CoreSharedModule } from '@/core/shared.module';
 @Component({
     selector: 'addon-mod-quiz-access-password',
     templateUrl: 'addon-mod-quiz-access-password.html',
-    standalone: true,
     imports: [
         CoreSharedModule,
     ],

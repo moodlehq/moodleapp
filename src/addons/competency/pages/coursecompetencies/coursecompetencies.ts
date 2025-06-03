@@ -37,7 +37,6 @@ import { CoreSharedModule } from '@/core/shared.module';
 @Component({
     selector: 'page-addon-competency-coursecompetencies',
     templateUrl: 'coursecompetencies.html',
-    standalone: true,
     imports: [
         CoreSharedModule,
     ],

@@ -57,7 +57,6 @@ import { CoreRatingAggregateComponent } from '@features/rating/components/aggreg
 @Component({
     selector: 'page-addon-mod-glossary-entry',
     templateUrl: 'entry.html',
-    standalone: true,
     imports: [
         CoreSharedModule,
         CoreTagListComponent,

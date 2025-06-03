@@ -21,7 +21,6 @@ import { CoreTime } from '@singletons/time';
  */
 @Pipe({
     name: 'coreDuration',
-    standalone: true,
 })
 export class CoreDurationPipe implements PipeTransform {
 

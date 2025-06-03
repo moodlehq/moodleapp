@@ -26,7 +26,6 @@ import { CoreRemindersSetButtonComponent } from '../set-button/set-button';
     selector: 'core-reminders-date',
     templateUrl: 'date.html',
     styleUrl: 'date.scss',
-    standalone: true,
     imports: [
         CoreSharedModule,
         CoreRemindersSetButtonComponent,

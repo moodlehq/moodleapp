@@ -30,7 +30,6 @@ import { CoreSharedModule } from '@/core/shared.module';
 @Component({
     selector: 'core-shared-files-list',
     templateUrl: 'list.html',
-    standalone: true,
     imports: [
         CoreSharedModule,
     ],

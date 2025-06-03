@@ -22,7 +22,6 @@ import { CoreSharedModule } from '@/core/shared.module';
 @Component({
     selector: 'page-core-mainmenu-reload',
     templateUrl: 'reload.html',
-    standalone: true,
     imports: [
         CoreSharedModule,
     ],

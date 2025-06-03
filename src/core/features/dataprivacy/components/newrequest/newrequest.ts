@@ -32,7 +32,6 @@ import { CoreAlerts } from '@services/overlays/alerts';
 @Component({
     selector: 'core-data-privacy-new-request',
     templateUrl: 'newrequest.html',
-    standalone: true,
     imports: [
         CoreSharedModule,
     ],

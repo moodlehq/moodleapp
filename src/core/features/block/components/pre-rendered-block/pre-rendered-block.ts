@@ -23,7 +23,6 @@ import { CoreSharedModule } from '@/core/shared.module';
 @Component({
     selector: 'core-block-pre-rendered',
     templateUrl: 'core-block-pre-rendered.html',
-    standalone: true,
     imports: [
         CoreSharedModule,
     ],

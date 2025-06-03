@@ -23,7 +23,6 @@ import { AddonModH5PActivityAttempt } from '../../services/h5pactivity';
     selector: 'addon-mod-h5pactivity-attempt-success',
     templateUrl: 'attempt-success.html',
     styleUrl: 'attempt-success.scss',
-    standalone: true,
     imports: [
         CoreSharedModule,
     ],

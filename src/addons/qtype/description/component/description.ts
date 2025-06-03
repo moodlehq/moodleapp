@@ -22,7 +22,6 @@ import { CoreSharedModule } from '@/core/shared.module';
 @Component({
     selector: 'addon-qtype-description',
     templateUrl: 'addon-qtype-description.html',
-    standalone: true,
     imports: [
         CoreSharedModule,
     ],

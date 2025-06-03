@@ -25,7 +25,6 @@ import { Translate } from '@singletons';
  */
 @Directive({
     selector: '[core-download-file]',
-    standalone: true,
 })
 export class CoreDownloadFileDirective implements OnInit {
 

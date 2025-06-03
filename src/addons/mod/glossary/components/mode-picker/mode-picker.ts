@@ -23,7 +23,6 @@ import { CoreSharedModule } from '@/core/shared.module';
 @Component({
     selector: 'addon-mod-glossary-mode-picker-popover',
     templateUrl: 'addon-mod-glossary-mode-picker.html',
-    standalone: true,
     imports: [
         CoreSharedModule,
     ],

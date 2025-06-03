@@ -25,7 +25,6 @@ import { CoreSharedModule } from '@/core/shared.module';
 @Component({
     selector: 'addon-mod-quiz-access-offline-attempts',
     templateUrl: 'addon-mod-quiz-access-offline-attempts.html',
-    standalone: true,
     imports: [
         CoreSharedModule,
     ],

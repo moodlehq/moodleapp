@@ -73,7 +73,6 @@ import { CoreUtils } from '@singletons/utils';
     selector: 'addon-mod-assign-submission',
     templateUrl: 'addon-mod-assign-submission.html',
     styleUrl: 'submission.scss',
-    standalone: true,
     imports: [
         CoreSharedModule,
         AddonModAssignSubmissionPluginComponent,

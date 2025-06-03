@@ -35,7 +35,6 @@ import { CoreSearchBoxComponent } from '../../../search/components/search-box/se
     selector: 'page-core-tag-search',
     templateUrl: 'search.html',
     styleUrl: 'search.scss',
-    standalone: true,
     imports: [
         CoreSharedModule,
         CoreMainMenuUserButtonComponent,

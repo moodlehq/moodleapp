@@ -29,7 +29,6 @@ import { Translate } from '@singletons';
  */
 @Directive({
     selector: '[core-course-download-module-main-file]',
-    standalone: true,
 })
 export class CoreCourseDownloadModuleMainFileDirective implements OnInit {
 

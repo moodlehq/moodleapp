@@ -66,7 +66,6 @@ import { CoreSharedModule } from '@/core/shared.module';
     selector: 'page-addon-messages-discussion',
     templateUrl: 'discussion.html',
     styleUrls: ['../../../../theme/components/discussion.scss', 'discussion.scss'],
-    standalone: true,
     imports: [
         CoreSharedModule,
     ],

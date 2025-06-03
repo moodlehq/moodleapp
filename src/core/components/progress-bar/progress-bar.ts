@@ -28,7 +28,6 @@ import { CoreBaseModule } from '@/core/base.module';
     templateUrl: 'core-progress-bar.html',
     styleUrl: 'progress-bar.scss',
     changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: true,
     imports: [CoreBaseModule],
 })
 export class CoreProgressBarComponent implements OnChanges {

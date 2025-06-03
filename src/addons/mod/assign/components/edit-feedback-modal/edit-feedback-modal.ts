@@ -54,7 +54,6 @@ import { CoreFormFields, CoreForms } from '@singletons/form';
     selector: 'addon-mod-assign-edit-feedback-modal',
     templateUrl: 'edit-feedback-modal.html',
     styleUrl: 'edit-feedback-modal.scss',
-    standalone: true,
     imports: [
         CoreSharedModule,
         AddonModAssignFeedbackPluginComponent,

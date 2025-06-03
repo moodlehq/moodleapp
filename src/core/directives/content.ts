@@ -23,7 +23,6 @@ import { Directive, ElementRef, OnInit } from '@angular/core';
  */
 @Directive({
     selector: 'ion-content',
-    standalone: true,
 })
 export class CoreContentDirective implements OnInit {
 

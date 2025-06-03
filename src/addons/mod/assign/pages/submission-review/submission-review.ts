@@ -34,7 +34,6 @@ import { ADDON_MOD_ASSIGN_MODNAME, AddonModAssignListFilterName } from '../../co
 @Component({
     selector: 'page-addon-mod-assign-submission-review',
     templateUrl: 'submission-review.html',
-    standalone: true,
     imports: [
         CoreSharedModule,
         AddonModAssignSubmissionComponent,

@@ -25,7 +25,6 @@ import { CoreSharedModule } from '@/core/shared.module';
 @Component({
     selector: 'addon-qbehaviour-deferredcbm',
     templateUrl: 'addon-qbehaviour-deferredcbm.html',
-    standalone: true,
     imports: [
         CoreSharedModule,
     ],

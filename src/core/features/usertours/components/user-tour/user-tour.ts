@@ -47,7 +47,6 @@ import { BackButtonPriority } from '@/core/constants';
     selector: 'core-user-tours-user-tour',
     templateUrl: 'core-user-tours-user-tour.html',
     styleUrl: 'user-tour.scss',
-    standalone: true,
     imports: [
         CoreSharedModule,
     ],

@@ -30,7 +30,6 @@ import { CoreCourseModuleInfoComponent } from '@features/course/components/modul
 @Component({
     selector: 'addon-mod-book-index',
     templateUrl: 'addon-mod-book-index.html',
-    standalone: true,
     imports: [
         CoreSharedModule,
         CoreCourseModuleInfoComponent,

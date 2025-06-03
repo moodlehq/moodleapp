@@ -25,7 +25,6 @@ import { CoreSharedModule } from '@/core/shared.module';
 @Component({
     selector: 'addon-mod-assign-feedback-edit-pdf',
     templateUrl: 'addon-mod-assign-feedback-editpdf.html',
-    standalone: true,
     imports: [
         CoreSharedModule,
     ],

@@ -27,7 +27,6 @@ import { CoreSharedModule } from '@/core/shared.module';
     selector: 'core-site-plugins-block',
     templateUrl: 'core-siteplugins-block.html',
     styles: [':host { display: contents; }'],
-    standalone: true,
     imports: [
         CoreSharedModule,
         CoreSitePluginsPluginContentComponent,

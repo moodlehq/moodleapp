@@ -70,7 +70,6 @@ import { CoreSharedModule } from '@/core/shared.module';
     selector: 'page-addon-mod-quiz-player',
     templateUrl: 'player.html',
     styleUrl: 'player.scss',
-    standalone: true,
     imports: [
         CoreSharedModule,
         AddonModQuizQuestionCardComponent,

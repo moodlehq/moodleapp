@@ -38,7 +38,6 @@ import { CoreSharedModule } from '@/core/shared.module';
 @Component({
     selector: 'page-core-site-preferences',
     templateUrl: 'site.html',
-    standalone: true,
     imports: [
         CoreSharedModule,
     ],

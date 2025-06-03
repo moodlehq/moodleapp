@@ -35,7 +35,6 @@ import { CoreCourseModuleCompletionStatus, CORE_COURSE_ALL_SECTIONS_ID } from '@
     selector: 'core-course-course-index',
     templateUrl: 'course-index.html',
     styleUrl: 'course-index.scss',
-    standalone: true,
     imports: [
         CoreSharedModule,
     ],

@@ -47,7 +47,6 @@ import { CoreLoginIdentityProviderComponent } from '../../components/identity-pr
     selector: 'page-core-login-reconnect',
     templateUrl: 'reconnect.html',
     styleUrl: '../../login.scss',
-    standalone: true,
     imports: [
         CoreSharedModule,
         CoreSiteLogoComponent,

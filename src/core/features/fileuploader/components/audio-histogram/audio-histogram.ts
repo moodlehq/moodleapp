@@ -21,7 +21,6 @@ import { AfterViewInit, ChangeDetectionStrategy, Component, ElementRef, Input, O
     templateUrl: 'audio-histogram.html',
     styleUrl: 'audio-histogram.scss',
     changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: true,
     imports: [
         CoreSharedModule,
     ],

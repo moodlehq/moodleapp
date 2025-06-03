@@ -33,7 +33,6 @@ import { CoreCoursesMyPageName } from '@features/courses/constants';
     selector: 'core-block-side-blocks',
     templateUrl: 'side-blocks.html',
     styleUrl: 'side-blocks.scss',
-    standalone: true,
     imports: [
         CoreSharedModule,
         CoreBlockComponent,

@@ -23,7 +23,6 @@ import { CoreSharedModule } from '@/core/shared.module';
     selector: 'core-course-course-index-tour',
     templateUrl: 'course-index-tour.html',
     styleUrl: 'course-index-tour.scss',
-    standalone: true,
     imports: [
         CoreSharedModule,
     ],

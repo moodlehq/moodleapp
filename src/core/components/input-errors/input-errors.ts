@@ -39,7 +39,6 @@ import { CoreFaIconDirective } from '@directives/fa-icon';
     selector: 'core-input-errors',
     templateUrl: 'core-input-errors.html',
     styleUrl: 'input-errors.scss',
-    standalone: true,
     imports: [
         CoreBaseModule,
         CoreFaIconDirective,

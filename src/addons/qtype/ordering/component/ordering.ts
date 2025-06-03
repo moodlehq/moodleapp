@@ -29,7 +29,6 @@ import { CoreSharedModule } from '@/core/shared.module';
     selector: 'addon-qtype-ordering',
     templateUrl: 'addon-qtype-ordering.html',
     styleUrls: ['../../../../core/features/question/question.scss', 'ordering.scss'],
-    standalone: true,
     imports: [
         CoreSharedModule,
     ],

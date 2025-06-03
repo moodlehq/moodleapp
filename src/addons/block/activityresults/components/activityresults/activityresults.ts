@@ -23,7 +23,6 @@ import { CoreBlockPreRenderedComponent } from '@features/block/components/pre-re
     selector: 'addon-block-activity-results',
     templateUrl: '../../../../../core/features/block/components/pre-rendered-block/core-block-pre-rendered.html',
     styleUrl: 'activityresults.scss',
-    standalone: true,
     imports: [
         CoreSharedModule,
     ],

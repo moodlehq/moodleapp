@@ -45,7 +45,6 @@ import { ContextLevel } from '@/core/constants';
  */
 @Directive({
     selector: '[core-site-plugins-new-content]',
-    standalone: true,
 })
 export class CoreSitePluginsNewContentDirective implements OnInit {
 

@@ -45,10 +45,9 @@ import { CoreCoursesMyPageName } from '@features/courses/constants';
     templateUrl: 'my.html',
     styleUrl: 'my.scss',
     providers: [{
-        provide: PageLoadsManager,
-        useClass: PageLoadsManager,
-    }],
-    standalone: true,
+            provide: PageLoadsManager,
+            useClass: PageLoadsManager,
+        }],
     imports: [
         CoreSharedModule,
         CoreSiteLogoComponent,

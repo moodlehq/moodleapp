@@ -73,7 +73,6 @@ import { CoreCourseModuleInfoComponent } from '@features/course/components/modul
     selector: 'addon-mod-wiki-index',
     templateUrl: 'addon-mod-wiki-index.html',
     styleUrl: 'index.scss',
-    standalone: true,
     imports: [
         CoreSharedModule,
         CoreTagListComponent,

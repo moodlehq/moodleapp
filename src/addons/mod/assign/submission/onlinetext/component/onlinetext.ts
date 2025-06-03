@@ -34,7 +34,6 @@ import { CoreFileHelper } from '@services/file-helper';
 @Component({
     selector: 'addon-mod-assign-submission-online-text',
     templateUrl: 'addon-mod-assign-submission-onlinetext.html',
-    standalone: true,
     imports: [
         CoreSharedModule,
         CoreEditorRichTextEditorComponent,

@@ -33,7 +33,6 @@ import { CoreSearchBoxComponent } from '../../../search/components/search-box/se
 @Component({
     selector: 'page-core-user-participants',
     templateUrl: 'participants.html',
-    standalone: true,
     imports: [
         CoreSharedModule,
         CoreSearchBoxComponent,

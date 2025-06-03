@@ -22,7 +22,6 @@ import { CoreAlerts } from '@services/overlays/alerts';
 @Component({
     selector: 'core-identity-provider',
     templateUrl: 'identity-provider.html',
-    standalone: true,
     imports: [
         CoreSharedModule,
     ],

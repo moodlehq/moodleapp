@@ -33,7 +33,6 @@ const disabledScrollClass = 'disable-scroll-y';
     selector: 'core-split-view',
     templateUrl: 'split-view.html',
     styleUrl: 'split-view.scss',
-    standalone: true,
     imports: [
         CoreBaseModule,
         CoreEmptyBoxComponent,

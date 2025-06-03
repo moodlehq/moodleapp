@@ -54,7 +54,6 @@ import { CoreUpdateNonReactiveAttributesDirective } from '@directives/update-non
     selector: 'core-tabs-outlet',
     templateUrl: 'core-tabs-outlet.html',
     styleUrl: '../tabs/tabs.scss',
-    standalone: true,
     imports: [
         CoreBaseModule,
         CoreUpdateNonReactiveAttributesDirective,

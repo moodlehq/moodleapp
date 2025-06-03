@@ -35,7 +35,6 @@ import { toBoolean } from '../transforms/boolean';
  */
 @Directive({
     selector: '[collapsible-footer]',
-    standalone: true,
 })
 export class CoreCollapsibleFooterDirective implements OnInit, OnDestroy {
 

@@ -42,7 +42,6 @@ import { CoreAlerts } from '@services/overlays/alerts';
     selector: 'core-main-menu-user-menu',
     templateUrl: 'user-menu.html',
     styleUrl: 'user-menu.scss',
-    standalone: true,
     imports: [
         CoreSharedModule,
         CoreSiteLogoComponent,

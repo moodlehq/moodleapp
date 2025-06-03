@@ -78,7 +78,6 @@ type Post = AddonModForumPost & { children?: Post[] };
     selector: 'page-addon-mod-forum-discussion',
     templateUrl: 'discussion.html',
     styleUrl: 'discussion.scss',
-    standalone: true,
     imports: [
         CoreSharedModule,
         AddonModForumPostComponent,

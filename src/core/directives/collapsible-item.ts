@@ -38,7 +38,6 @@ const minMaxHeight = 56;
  */
 @Directive({
     selector: '[collapsible-item]',
-    standalone: true,
 })
 export class CoreCollapsibleItemDirective implements OnInit, OnDestroy {
 

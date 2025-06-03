@@ -57,7 +57,6 @@ import { CoreWS } from '@services/ws';
  */
 @Directive({
     selector: '[core-external-content]',
-    standalone: true,
 })
 export class CoreExternalContentDirective implements AfterViewInit, OnChanges, OnDestroy, AsyncDirective {
 

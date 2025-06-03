@@ -24,7 +24,6 @@ import { CoreSharedModule } from '@/core/shared.module';
 @Component({
     selector: 'addon-mod-data-field-date',
     templateUrl: 'addon-mod-data-field-date.html',
-    standalone: true,
     imports: [
         CoreSharedModule,
     ],

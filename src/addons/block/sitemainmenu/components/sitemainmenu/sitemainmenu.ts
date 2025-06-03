@@ -28,7 +28,6 @@ import { CoreCourseModuleComponent } from '@features/course/components/module/mo
 @Component({
     selector: 'addon-block-sitemainmenu',
     templateUrl: 'addon-block-sitemainmenu.html',
-    standalone: true,
     imports: [
         CoreSharedModule,
         CoreCourseModuleComponent,

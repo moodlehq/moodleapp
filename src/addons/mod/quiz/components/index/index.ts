@@ -64,7 +64,6 @@ import { CoreSharedModule } from '@/core/shared.module';
     selector: 'addon-mod-quiz-index',
     templateUrl: 'addon-mod-quiz-index.html',
     styleUrl: 'index.scss',
-    standalone: true,
     imports: [
         CoreSharedModule,
         CoreCourseModuleInfoComponent,

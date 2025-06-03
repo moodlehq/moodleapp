@@ -34,7 +34,6 @@ import { CoreLoginExceededAttemptsComponent } from '../../components/exceeded-at
 @Component({
     selector: 'page-core-login-forgotten-password',
     templateUrl: 'forgotten-password.html',
-    standalone: true,
     imports: [
         CoreSharedModule,
         CoreLoginExceededAttemptsComponent,

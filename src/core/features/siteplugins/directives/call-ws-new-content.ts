@@ -53,7 +53,6 @@ import { ContextLevel } from '@/core/constants';
  */
 @Directive({
     selector: '[core-site-plugins-call-ws-new-content]',
-    standalone: true,
 })
 export class CoreSitePluginsCallWSNewContentDirective extends CoreSitePluginsCallWSOnClickBaseDirective {
 

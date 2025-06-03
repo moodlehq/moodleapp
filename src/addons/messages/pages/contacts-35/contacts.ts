@@ -39,7 +39,6 @@ import { CoreSearchBoxComponent } from '@features/search/components/search-box/s
     selector: 'addon-messages-contacts',
     templateUrl: 'contacts.html',
     styleUrl: '../../messages-common.scss',
-    standalone: true,
     imports: [
         CoreSharedModule,
         CoreSearchBoxComponent,

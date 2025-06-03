@@ -31,7 +31,6 @@ import { CoreContentLinksHelper } from '@features/contentlinks/services/contentl
     selector: 'addon-block-recentlyaccesseditems',
     templateUrl: 'addon-block-recentlyaccesseditems.html',
     styleUrl: 'recentlyaccesseditems.scss',
-    standalone: true,
     imports: [
         CoreSharedModule,
     ],

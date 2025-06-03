@@ -69,7 +69,6 @@ import { CoreH5PIframeComponent } from '@features/h5p/components/h5p-iframe/h5p-
 @Component({
     selector: 'addon-mod-h5pactivity-index',
     templateUrl: 'addon-mod-h5pactivity-index.html',
-    standalone: true,
     imports: [
         CoreSharedModule,
         CoreCourseModuleInfoComponent,

@@ -63,7 +63,6 @@ import { CoreSharedModule } from '@/core/shared.module';
     selector: 'page-addon-calendar-event',
     templateUrl: 'event.html',
     styleUrls: ['../../calendar-common.scss', 'event.scss'],
-    standalone: true,
     imports: [
         CoreSharedModule,
     ],

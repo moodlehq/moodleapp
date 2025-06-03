@@ -29,7 +29,6 @@ import { CoreSitePluginsCompileInitComponent } from '@features/siteplugins/class
     selector: 'core-site-plugins-question-behaviour',
     templateUrl: 'core-siteplugins-question-behaviour.html',
     styles: [':host { display: contents; }'],
-    standalone: true,
     imports: [
         CoreSharedModule,
         CoreCompileHtmlComponent,

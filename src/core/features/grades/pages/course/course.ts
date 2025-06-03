@@ -44,7 +44,6 @@ import { CoreSharedModule } from '@/core/shared.module';
     selector: 'page-core-grades-course',
     templateUrl: 'course.html',
     styleUrl: 'course.scss',
-    standalone: true,
     imports: [
         CoreSharedModule,
     ],

@@ -39,7 +39,6 @@ import { CoreSearchGlobalSearchResultComponent } from '@features/search/componen
 @Component({
     selector: 'page-addon-mod-forum-search',
     templateUrl: 'search.html',
-    standalone: true,
     imports: [
         CoreSharedModule,
         CoreSearchBoxComponent,

@@ -25,7 +25,6 @@ import { CoreSharedModule } from '@/core/shared.module';
     selector: 'addon-qtype-gapselect',
     templateUrl: 'addon-qtype-gapselect.html',
     styleUrl: 'gapselect.scss',
-    standalone: true,
     imports: [
         CoreSharedModule,
     ],

@@ -34,7 +34,6 @@ import { CoreSharedModule } from '@/core/shared.module';
     selector: 'page-core-course-module-preview',
     templateUrl: 'module-preview.html',
     styleUrl: 'module-preview.scss',
-    standalone: true,
     imports: [
         CoreSharedModule,
         CoreCourseModuleInfoComponent,

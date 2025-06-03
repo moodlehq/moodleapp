@@ -28,7 +28,6 @@ import { CoreSharedModule } from '@/core/shared.module';
     selector: 'addon-qtype-ddwtos',
     templateUrl: 'addon-qtype-ddwtos.html',
     styleUrls: ['../../../../core/features/question/question.scss', 'ddwtos.scss'],
-    standalone: true,
     imports: [
         CoreSharedModule,
     ],

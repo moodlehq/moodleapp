@@ -24,7 +24,6 @@ import { CoreSharedModule } from '@/core/shared.module';
     selector: 'addon-qtype-match',
     templateUrl: 'addon-qtype-match.html',
     styleUrl: 'match.scss',
-    standalone: true,
     imports: [
         CoreSharedModule,
     ],

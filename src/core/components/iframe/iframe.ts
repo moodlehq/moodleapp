@@ -43,7 +43,6 @@ import { BackButtonPriority } from '@/core/constants';
     selector: 'core-iframe',
     templateUrl: 'core-iframe.html',
     styleUrl: 'iframe.scss',
-    standalone: true,
     imports: [
         CoreBaseModule,
         CoreLoadingComponent,

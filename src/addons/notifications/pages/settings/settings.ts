@@ -50,7 +50,6 @@ import { CoreSharedModule } from '@/core/shared.module';
     selector: 'page-addon-notifications-settings',
     templateUrl: 'settings.html',
     styleUrl: 'settings.scss',
-    standalone: true,
     imports: [
         CoreSharedModule,
     ],

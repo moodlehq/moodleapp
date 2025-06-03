@@ -34,7 +34,6 @@ import { CoreSharedModule } from '@/core/shared.module';
     selector: 'core-user-menu-button',
     templateUrl: 'user-menu-button.html',
     styleUrl: 'user-menu-button.scss',
-    standalone: true,
     imports: [
         CoreSharedModule,
     ],

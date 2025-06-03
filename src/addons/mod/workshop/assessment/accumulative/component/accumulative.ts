@@ -22,7 +22,6 @@ import { CoreSharedModule } from '@/core/shared.module';
 @Component({
     selector: 'addon-mod-workshop-assessment-strategy-accumulative',
     templateUrl: 'addon-mod-workshop-assessment-strategy-accumulative.html',
-    standalone: true,
     imports: [
         CoreSharedModule,
     ],

@@ -30,7 +30,6 @@ import { CoreAlerts } from '@services/overlays/alerts';
 @Component({
     selector: 'page-addon-mod-quiz-preflight-modal',
     templateUrl: 'preflight-modal.html',
-    standalone: true,
     imports: [
         CoreSharedModule,
     ],
