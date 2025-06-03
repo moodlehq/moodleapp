@@ -110,7 +110,7 @@ ion-tabs {
     &.placement-bottom {
         core-loading {
             --loading-placeholder-align-content: flex-start;
-            --loading-placeholder-justify: center;
+            --loading-placeholder-justify: space-around;
             --loading-placeholder-max-height: 52px;
         }
 

@@ -39,6 +39,7 @@ import {
     MAIN_MENU_MORE_PAGE_NAME,
     MAIN_MENU_HANDLER_BADGE_UPDATED_EVENT,
     MAIN_MENU_VISIBILITY_UPDATED_EVENT,
+    CoreMainMenuPlacement,
 } from '@features/mainmenu/constants';
 import { CoreSharedModule } from '@/core/shared.module';
 import { CoreMainMenuUserButtonComponent } from '../../components/user-menu-button/user-menu-button';
@@ -85,12 +86,13 @@ export default class CoreMainMenuPage implements OnInit, OnDestroy {
     allHandlers?: CoreMainMenuHandlerToDisplay[];
     loaded = false;
     showTabs = false;
-    tabsPlacement: 'bottom' | 'side' = 'bottom';
+    tabsPlacement: CoreMainMenuPlacement = CoreMainMenuPlacement.BOTTOM;
     morePageName = MAIN_MENU_MORE_PAGE_NAME;
     selectedTab?: string;
     isMainScreen = false;
     moreBadge = false;
     visibility = 'hidden';
+    loadingTabsLength = CoreMainMenu.getNumItems() + 1;
 
     protected subscription?: Subscription;
     protected navSubscription?: Subscription;
@@ -139,7 +141,7 @@ export default class CoreMainMenuPage implements OnInit, OnDestroy {
         });
 
         this.badgeUpdateObserver = CoreEvents.on(MAIN_MENU_HANDLER_BADGE_UPDATED_EVENT, (data) => {
-            if (data.siteId == CoreSites.getCurrentSiteId()) {
+            if (data.siteId === CoreSites.getCurrentSiteId()) {
                 this.updateMoreBadge();
             }
         });
@@ -178,9 +180,16 @@ export default class CoreMainMenuPage implements OnInit, OnDestroy {
         this.tabsPlacement = CoreMainMenu.getTabPlacement();
         this.updateVisibility();
 
+        const maxTabs = CoreMainMenu.getNumItems();
+        this.loadingTabsLength = maxTabs +
+            (this.tabsPlacement === CoreMainMenuPlacement.BOTTOM ? 1 : 2); // +1 for the "More" tab and user button.
+
         const handlers = this.allHandlers
             .filter((handler) => !handler.onlyInMore)
-            .slice(0, CoreMainMenu.getNumItems()); // Get main handlers.
+            .slice(0, maxTabs); // Get main handlers.
+
+        this.loadingTabsLength = handlers.length +
+            (this.tabsPlacement === CoreMainMenuPlacement.BOTTOM ? 1 : 2); // +1 for the "More" tab and user button.
 
         // Re-build the list of tabs. If a handler is already in the list, use existing object to prevent re-creating the tab.
         const newTabs: CoreMainMenuHandlerToDisplay[] = [];
@@ -189,7 +198,7 @@ export default class CoreMainMenuPage implements OnInit, OnDestroy {
             const handler = handlers[i];
 
             // Check if the handler is already in the tabs list. If so, use it.
-            const tab = this.tabs.find((tab) => tab.page == handler.page);
+            const tab = this.tabs.find((tab) => tab.page === handler.page);
 
             tab ? tab.hide = false : null;
             handler.hide = false;
@@ -277,7 +286,7 @@ export default class CoreMainMenuPage implements OnInit, OnDestroy {
             .slice(0, CoreMainMenu.getNumItems());
 
         // Use only the handlers that don't appear in the main view.
-        this.moreBadge = this.allHandlers.some((handler) => mainHandlers.indexOf(handler) == -1 && !!handler.badge);
+        this.moreBadge = this.allHandlers.some((handler) => mainHandlers.indexOf(handler) === -1 && !!handler.badge);
     }
 
     /**
@@ -307,7 +316,9 @@ export default class CoreMainMenuPage implements OnInit, OnDestroy {
      * Update menu visibility.
      */
     protected updateVisibility(): void {
-        const visibility = this.tabsPlacement == 'side' ? '' : (this.isMainScreen ? 'visible' : 'hidden');
+        const visibility = this.tabsPlacement === CoreMainMenuPlacement.SIDE
+            ? ''
+            : (this.isMainScreen ? 'visible' : 'hidden');
 
         if (visibility === this.visibility) {
             return;
@@ -406,7 +417,7 @@ class CoreMainMenuRoleTab extends CoreAriaRoleTab<CoreMainMenuPage> {
      * @inheritdoc
      */
     isHorizontal(): boolean {
-        return this.componentInstance.tabsPlacement == 'bottom';
+        return this.componentInstance.tabsPlacement === CoreMainMenuPlacement.BOTTOM;
     }
 
     /**
