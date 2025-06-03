@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { APP_INITIALIZER, NgModule, Type } from '@angular/core';
+import { NgModule, Type, provideAppInitializer } from '@angular/core';
 import { Routes } from '@angular/router';
 
 import { AppRoutingModule, conditionalRoutes } from '@/app/app-routing.module';
@@ -128,7 +128,7 @@ const mainMenuMoreRoutes: Routes = [
         CoreMainMenuTabRoutingModule.forChild(mainMenuMoreRoutes),
     ],
     providers: [
-        { provide: APP_INITIALIZER, multi: true, useValue: () => CoreSettingsHelper.initialize() },
+        provideAppInitializer(() => CoreSettingsHelper.initialize()),
     ],
 })
 export class CoreSettingsModule {}

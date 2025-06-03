@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { APP_INITIALIZER, NgModule, Type } from '@angular/core';
+import { NgModule, Type, provideAppInitializer } from '@angular/core';
 import { Routes } from '@angular/router';
 import { CoreMainMenuRoutingModule } from '@features/mainmenu/mainmenu-routing.module';
 
@@ -67,19 +67,15 @@ const mainMenuChildrenRoutes: Routes = [
             useValue: [CALENDAR_SITE_SCHEMA, CALENDAR_OFFLINE_SITE_SCHEMA],
             multi: true,
         },
-        {
-            provide: APP_INITIALIZER,
-            multi: true,
-            useValue: async () => {
-                CoreContentLinksDelegate.registerHandler(AddonCalendarViewLinkHandler.instance);
-                CoreMainMenuDelegate.registerHandler(AddonCalendarMainMenuHandler.instance);
-                CoreCronDelegate.register(AddonCalendarSyncCronHandler.instance);
+        provideAppInitializer(async () => {
+            CoreContentLinksDelegate.registerHandler(AddonCalendarViewLinkHandler.instance);
+            CoreMainMenuDelegate.registerHandler(AddonCalendarMainMenuHandler.instance);
+            CoreCronDelegate.register(AddonCalendarSyncCronHandler.instance);
 
-                await AddonCalendar.initialize();
+            await AddonCalendar.initialize();
 
-                AddonCalendar.updateAllSitesEventReminders();
-            },
-        },
+            AddonCalendar.updateAllSitesEventReminders();
+        }),
     ],
 })
 export class AddonCalendarModule {}

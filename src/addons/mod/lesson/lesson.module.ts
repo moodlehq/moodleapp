@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { APP_INITIALIZER, NgModule } from '@angular/core';
+import { NgModule, provideAppInitializer } from '@angular/core';
 import { Routes } from '@angular/router';
 import { CoreContentLinksDelegate } from '@features/contentlinks/services/contentlinks-delegate';
 import { CoreCourseHelper } from '@features/course/services/course-helper';
@@ -66,22 +66,18 @@ const routes: Routes = [
             useValue: [SITE_SCHEMA, OFFLINE_SITE_SCHEMA, SYNC_SITE_SCHEMA],
             multi: true,
         },
-        {
-            provide: APP_INITIALIZER,
-            multi: true,
-            useValue: () => {
-                CoreCourseModuleDelegate.registerHandler(AddonModLessonModuleHandler.instance);
-                CoreCourseModulePrefetchDelegate.registerHandler(AddonModLessonPrefetchHandler.instance);
-                CoreCronDelegate.register(AddonModLessonSyncCronHandler.instance);
-                CoreContentLinksDelegate.registerHandler(AddonModLessonGradeLinkHandler.instance);
-                CoreContentLinksDelegate.registerHandler(AddonModLessonIndexLinkHandler.instance);
-                CoreContentLinksDelegate.registerHandler(AddonModLessonListLinkHandler.instance);
-                CoreContentLinksDelegate.registerHandler(AddonModLessonReportLinkHandler.instance);
-                CorePushNotificationsDelegate.registerClickHandler(AddonModLessonPushClickHandler.instance);
+        provideAppInitializer(() => {
+            CoreCourseModuleDelegate.registerHandler(AddonModLessonModuleHandler.instance);
+            CoreCourseModulePrefetchDelegate.registerHandler(AddonModLessonPrefetchHandler.instance);
+            CoreCronDelegate.register(AddonModLessonSyncCronHandler.instance);
+            CoreContentLinksDelegate.registerHandler(AddonModLessonGradeLinkHandler.instance);
+            CoreContentLinksDelegate.registerHandler(AddonModLessonIndexLinkHandler.instance);
+            CoreContentLinksDelegate.registerHandler(AddonModLessonListLinkHandler.instance);
+            CoreContentLinksDelegate.registerHandler(AddonModLessonReportLinkHandler.instance);
+            CorePushNotificationsDelegate.registerClickHandler(AddonModLessonPushClickHandler.instance);
 
-                CoreCourseHelper.registerModuleReminderClick(ADDON_MOD_LESSON_COMPONENT_LEGACY);
-            },
-        },
+            CoreCourseHelper.registerModuleReminderClick(ADDON_MOD_LESSON_COMPONENT_LEGACY);
+        }),
     ],
 })
 export class AddonModLessonModule {}

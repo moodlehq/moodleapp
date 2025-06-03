@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { APP_INITIALIZER, NgModule } from '@angular/core';
+import { NgModule, provideAppInitializer } from '@angular/core';
 import { Routes } from '@angular/router';
 import { CoreContentLinksDelegate } from '@features/contentlinks/services/contentlinks-delegate';
 import { CoreCourseModuleDelegate } from '@features/course/services/module-delegate';
@@ -74,25 +74,21 @@ const routes: Routes = [
             useValue: [ADDON_MOD_DATA_OFFLINE_SITE_SCHEMA],
             multi: true,
         },
-        {
-            provide: APP_INITIALIZER,
-            multi: true,
-            useValue: () => {
-                CoreCourseModulePrefetchDelegate.registerHandler(getPrefetchHandlerInstance());
-                CoreCronDelegate.register(getCronHandlerInstance());
-                CoreContentLinksDelegate.registerHandler(getApproveLinkHandlerInstance());
-                CoreContentLinksDelegate.registerHandler(getDeleteLinkHandlerInstance());
-                CoreContentLinksDelegate.registerHandler(getShowLinkHandlerInstance());
-                CoreContentLinksDelegate.registerHandler(getEditLinkHandlerInstance());
+        provideAppInitializer(() => {
+            CoreCourseModulePrefetchDelegate.registerHandler(getPrefetchHandlerInstance());
+            CoreCronDelegate.register(getCronHandlerInstance());
+            CoreContentLinksDelegate.registerHandler(getApproveLinkHandlerInstance());
+            CoreContentLinksDelegate.registerHandler(getDeleteLinkHandlerInstance());
+            CoreContentLinksDelegate.registerHandler(getShowLinkHandlerInstance());
+            CoreContentLinksDelegate.registerHandler(getEditLinkHandlerInstance());
 
-                CoreCourseModuleDelegate.registerHandler(AddonModDataModuleHandler.instance);
-                CoreContentLinksDelegate.registerHandler(AddonModDataIndexLinkHandler.instance);
-                CoreContentLinksDelegate.registerHandler(AddonModDataListLinkHandler.instance);
-                CoreTagAreaDelegate.registerHandler(AddonModDataTagAreaHandler.instance);
+            CoreCourseModuleDelegate.registerHandler(AddonModDataModuleHandler.instance);
+            CoreContentLinksDelegate.registerHandler(AddonModDataIndexLinkHandler.instance);
+            CoreContentLinksDelegate.registerHandler(AddonModDataListLinkHandler.instance);
+            CoreTagAreaDelegate.registerHandler(AddonModDataTagAreaHandler.instance);
 
-                CoreCourseHelper.registerModuleReminderClick(ADDON_MOD_DATA_COMPONENT_LEGACY);
-            },
-        },
+            CoreCourseHelper.registerModuleReminderClick(ADDON_MOD_DATA_COMPONENT_LEGACY);
+        }),
     ],
 })
 export class AddonModDataModule {}

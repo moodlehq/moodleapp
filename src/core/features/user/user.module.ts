@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { APP_INITIALIZER, NgModule, Type } from '@angular/core';
+import { NgModule, Type, provideAppInitializer } from '@angular/core';
 import { Routes } from '@angular/router';
 
 import { CoreMainMenuTabRoutingModule } from '@features/mainmenu/mainmenu-tab-routing.module';
@@ -138,21 +138,17 @@ const courseIndexRoutes: Routes = [
             ],
             multi: true,
         },
-        {
-            provide: APP_INITIALIZER,
-            multi: true,
-            useValue: () => {
-                CoreUserDelegate.registerHandler(CoreUserProfileMailHandler.instance);
-                CoreContentLinksDelegate.registerHandler(CoreUserProfileLinkHandler.instance);
-                CoreCronDelegate.register(CoreUserSyncCronHandler.instance);
-                CoreTagAreaDelegate.registerHandler(CoreUserTagAreaHandler.instance);
-                CoreCourseOptionsDelegate.registerHandler(CoreUserCourseOptionHandler.instance);
+        provideAppInitializer(() => {
+            CoreUserDelegate.registerHandler(CoreUserProfileMailHandler.instance);
+            CoreContentLinksDelegate.registerHandler(CoreUserProfileLinkHandler.instance);
+            CoreCronDelegate.register(CoreUserSyncCronHandler.instance);
+            CoreTagAreaDelegate.registerHandler(CoreUserTagAreaHandler.instance);
+            CoreCourseOptionsDelegate.registerHandler(CoreUserCourseOptionHandler.instance);
 
-                CoreEvents.on(CoreEvents.USER_NOT_FULLY_SETUP, (data) => {
-                    CoreUserHelper.openCompleteProfile(data.siteId);
-                });
-            },
-        },
+            CoreEvents.on(CoreEvents.USER_NOT_FULLY_SETUP, (data) => {
+                CoreUserHelper.openCompleteProfile(data.siteId);
+            });
+        }),
     ],
 })
 export class CoreUserModule {}

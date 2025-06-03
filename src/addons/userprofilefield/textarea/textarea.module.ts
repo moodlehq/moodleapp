@@ -12,20 +12,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { APP_INITIALIZER, NgModule } from '@angular/core';
+import { NgModule, provideAppInitializer } from '@angular/core';
 
 import { AddonUserProfileFieldTextareaHandler } from './services/handlers/textarea';
 import { CoreUserProfileFieldDelegate } from '@features/user/services/user-profile-field-delegate';
 
 @NgModule({
     providers: [
-        {
-            provide: APP_INITIALIZER,
-            multi: true,
-            useValue: () => {
-                CoreUserProfileFieldDelegate.registerHandler(AddonUserProfileFieldTextareaHandler.instance);
-            },
-        },
+        provideAppInitializer(() => {
+            CoreUserProfileFieldDelegate.registerHandler(AddonUserProfileFieldTextareaHandler.instance);
+        }),
     ],
 })
 export class AddonUserProfileFieldTextareaModule {}

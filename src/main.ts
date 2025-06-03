@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { enableProdMode, APP_INITIALIZER, importProvidersFrom } from '@angular/core';
+import { enableProdMode, importProvidersFrom, provideAppInitializer } from '@angular/core';
 
 import { CoreConstants } from './core/constants';
 import { AppComponent } from './app/app.component';
@@ -67,13 +67,9 @@ bootstrapApplication(AppComponent, {
             TestingModule,
         ),
         { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
-        {
-            provide: APP_INITIALIZER,
-            multi: true,
-            useValue: () => {
-                CoreCronDelegate.register(CoreSiteInfoCronHandler.instance);
-            },
-        },
+        provideAppInitializer(() => {
+            CoreCronDelegate.register(CoreSiteInfoCronHandler.instance);
+        }),
         provideAnimations(),
         // HttpClient is used to make JSON requests. It fails for HEAD requests because there is no content.
         provideHttpClient(withInterceptorsFromDi()),
