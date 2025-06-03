@@ -92,7 +92,7 @@ export default class CoreMainMenuPage implements OnInit, OnDestroy {
     isMainScreen = false;
     moreBadge = false;
     visibility = 'hidden';
-    loadingTabsLength = CoreMainMenu.getNumItems() + 1;
+    loadingTabsLength = this.getLoadingTabsLength();
 
     protected subscription?: Subscription;
     protected navSubscription?: Subscription;
@@ -180,16 +180,11 @@ export default class CoreMainMenuPage implements OnInit, OnDestroy {
         this.tabsPlacement = CoreMainMenu.getTabPlacement();
         this.updateVisibility();
 
-        const maxTabs = CoreMainMenu.getNumItems();
-        this.loadingTabsLength = maxTabs +
-            (this.tabsPlacement === CoreMainMenuPlacement.BOTTOM ? 1 : 2); // +1 for the "More" tab and user button.
+        this.loadingTabsLength = this.getLoadingTabsLength();
 
         const handlers = this.allHandlers
             .filter((handler) => !handler.onlyInMore)
-            .slice(0, maxTabs); // Get main handlers.
-
-        this.loadingTabsLength = handlers.length +
-            (this.tabsPlacement === CoreMainMenuPlacement.BOTTOM ? 1 : 2); // +1 for the "More" tab and user button.
+            .slice(0, CoreMainMenu.getNumItems()); // Get main handlers.
 
         // Re-build the list of tabs. If a handler is already in the list, use existing object to prevent re-creating the tab.
         const newTabs: CoreMainMenuHandlerToDisplay[] = [];
@@ -238,6 +233,16 @@ export default class CoreMainMenuPage implements OnInit, OnDestroy {
                 params: tabPageParams,
             });
         }
+    }
+
+    /**
+     * Calculates the total number of loading placeholders to display in the main menu.
+     *
+     * @returns The total number of loading tabs to display.
+     */
+    protected getLoadingTabsLength(): number {
+        return CoreMainMenu.getNumItems() +
+            (this.tabsPlacement === CoreMainMenuPlacement.BOTTOM ? 1 : 2); // +1 for the "More" tab and user button.
     }
 
     /**
