@@ -14,6 +14,7 @@
 
 import { CoreSiteSchema } from '@services/sites';
 import { CoreUserBasicData } from '../user';
+import { getStoredCacheDBSchema } from '@classes/stored-cache';
 
 /**
  * Database variables for CoreUser service.
@@ -33,17 +34,20 @@ export const CORE_USER_CACHE_SITE_SCHEMA: CoreSiteSchema = {
                     primaryKey: true,
                 },
                 {
-                    name: 'fullname',
+                    name: 'data',
                     type: 'TEXT',
                 },
                 {
-                    name: 'profileimageurl',
-                    type: 'TEXT',
+                    name: 'timemodified',
+                    type: 'INTEGER',
                 },
             ],
         },
     ],
 };
+
+export const USERS_CACHE_TABLE_NAME = 'users_cache';
+export const CORE_USER_CACHE_SITE_SCHEMA = getStoredCacheDBSchema('CoreUser', USERS_CACHE_TABLE_NAME);
 
 /**
  * Database variables for CoreUserOffline service.
