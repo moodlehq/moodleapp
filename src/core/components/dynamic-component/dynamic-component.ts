@@ -80,7 +80,7 @@ export class CoreDynamicComponent<ComponentClass> implements OnChanges, DoCheck,
         setTimeout(() => this.createComponent());
     }
 
-    protected promisedInstance = new CorePromisedValue<any>(); // eslint-disable-line @typescript-eslint/no-explicit-any
+    promisedInstance = new CorePromisedValue<any>(); // eslint-disable-line @typescript-eslint/no-explicit-any
 
     container?: ViewContainerRef;
 
