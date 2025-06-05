@@ -120,7 +120,7 @@
                                 [isBranded]="modOrSubsection.branded" />
                             <ion-label class="ion-text-wrap">
                                 <p class="item-heading {{modOrSubsection.handlerData!.class}} addon-storagemanager-module-size">
-                                    <core-format-text [text]="modOrSubsection.handlerData.title" [courseId]="modOrSubsection.course"
+                                    <core-format-text [text]="modOrSubsection.name" [courseId]="modOrSubsection.course"
                                         contextLevel="module" [contextInstanceId]="modOrSubsection.id" [adaptImg]="false" />
                                 </p>
                                 <ion-badge [color]="modOrSubsection.downloadStatus === statusDownloaded ? 'success' : 'light'"
