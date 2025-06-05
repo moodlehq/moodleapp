@@ -1,5 +1,5 @@
 <ion-content>
-    <ion-list [id]="uniqueId" role="menu">
+    <ion-list role="menu">
         @for (item of items; track item.uniqueId) {
             <ion-item class="ion-text-wrap" lines="none" core-link [capture]="item.captureLink" [autoLogin]="item.autoLogin"
                 [href]="item.href" (click)="itemClicked($event, item)" [attr.aria-label]="item.ariaAction" [hidden]="item.hidden"
