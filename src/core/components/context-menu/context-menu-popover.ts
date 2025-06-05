@@ -36,14 +36,12 @@ import { CoreLinkDirective } from '@directives/link';
 })
 export class CoreContextMenuPopoverComponent {
 
-    uniqueId: string;
     items: CoreContextMenuItemComponent[];
 
     constructor() {
         const navParams = inject(NavParams);
 
         this.items = navParams.get('items') || [];
-        this.uniqueId = navParams.get('id');
     }
 
     /**
