@@ -606,7 +606,7 @@ export class CoreFileProvider {
         // Create file (and parent folders) to prevent errors.
         const fileEntry = await this.createFile(path);
 
-        if (this.isHTMLAPI && (typeof data == 'string' || data.toString() == '[object ArrayBuffer]')) {
+        if (this.isHTMLAPI && (typeof data === 'string' || data.toString() === '[object ArrayBuffer]')) {
             // We need to write Blobs.
             const extension = CoreMimetype.getFileExtension(path);
             const type = extension ? CoreMimetype.getMimeType(extension) : '';
