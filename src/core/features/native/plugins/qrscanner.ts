@@ -182,6 +182,6 @@ export class QRScanner {
 }
 
 export enum QRScannerCamera {
-    FRONT_CAMERA = 0,
-    BACK_CAMERA = 1,
+    BACK_CAMERA = 0,
+    FRONT_CAMERA = 1,
 }
