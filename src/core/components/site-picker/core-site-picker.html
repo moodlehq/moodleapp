@@ -1,8 +1,8 @@
-@if (sites && sites.length) {
+@if (sites().length) {
     <ion-item>
-        <ion-select [label]="'core.site' | translate" [(ngModel)]="selectedSite" (ngModelChange)="siteSelected.emit(selectedSite)"
+        <ion-select [label]="'core.site' | translate" [(ngModel)]="selectedSite" (ngModelChange)="siteSelected.emit($event)"
             interface="action-sheet" [cancelText]="'core.cancel' | translate" [interfaceOptions]="{header: 'core.site' | translate}">
-            @for (site of sites; track site.id) {
+            @for (site of sites(); track site.id) {
                 <ion-select-option [value]="site.id">{{ site.fullNameAndSiteName }}</ion-select-option>
             }
         </ion-select>

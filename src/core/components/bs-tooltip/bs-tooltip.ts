@@ -14,7 +14,7 @@
 
 import { CoreBaseModule } from '@/core/base.module';
 import { toBoolean } from '@/core/transforms/boolean';
-import { Component, Input } from '@angular/core';
+import { Component, input } from '@angular/core';
 import { CoreFormatTextDirective } from '../../directives/format-text';
 import { ContextLevel } from '@/core/constants';
 
@@ -31,10 +31,10 @@ import { ContextLevel } from '@/core/constants';
 })
 export class CoreBSTooltipComponent {
 
-    @Input() title?: string;
-    @Input() content = '';
-    @Input() formatTextOptions?: CoreFormatTextOptions;
-    @Input({ transform: toBoolean }) html = false;
+    title = input<string>();
+    content = input('');
+    formatTextOptions = input<CoreFormatTextOptions>();
+    html = input(false, { transform: toBoolean });
 
 }
 

@@ -1,5 +1,5 @@
-@if (loading) {
-    <ion-spinner @coreShowHideAnimation [attr.aria-label]="loadingLabel | translate" />
+@if (loading()) {
+    <ion-spinner @coreShowHideAnimation [attr.aria-label]="loadingLabel() | translate" />
 } @else {
     <div @coreShowHideAnimation>
         <ng-content />
