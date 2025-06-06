@@ -13,8 +13,7 @@
 // limitations under the License.
 
 import { CoreConstants } from '@/core/constants';
-import { Component, inject } from '@angular/core';
-import { NavParams } from '@ionic/angular';
+import { Component, input } from '@angular/core';
 import { PopoverController } from '@singletons';
 import { CoreContextMenuItemComponent } from './context-menu-item';
 import { CoreBaseModule } from '@/core/base.module';
@@ -36,13 +35,7 @@ import { CoreLinkDirective } from '@directives/link';
 })
 export class CoreContextMenuPopoverComponent {
 
-    items: CoreContextMenuItemComponent[];
-
-    constructor() {
-        const navParams = inject(NavParams);
-
-        this.items = navParams.get('items') || [];
-    }
+    items = input<CoreContextMenuItemComponent[]>([]);
 
     /**
      * Close the popover.
@@ -59,26 +52,26 @@ export class CoreContextMenuPopoverComponent {
      * @returns Return true if success, false if error.
      */
     itemClicked(event: Event, item: CoreContextMenuItemComponent): boolean {
-        if (item.iconAction == 'toggle' && !event.defaultPrevented) {
+        if (item.iconAction() === 'toggle' && !event.defaultPrevented) {
             event.preventDefault();
             event.stopPropagation();
-            item.toggle = !item.toggle;
+            item.toggle.set(!item.toggle);
         }
 
-        if (!!item.action && item.action.observed) {
+        if (item.action.observed) {
             event.preventDefault();
             event.stopPropagation();
 
-            if (item.iconAction == CoreConstants.ICON_LOADING) {
+            if (item.iconAction() === CoreConstants.ICON_LOADING) {
                 return false;
             }
 
-            if (item.closeOnClick) {
+            if (item.closeOnClick()) {
                 this.closeMenu(item);
             }
 
             item.action.emit(() => this.closeMenu(item));
-        } else if (item.closeOnClick && (item.href || (!!item.onClosed && item.onClosed.observed))) {
+        } else if (item.closeOnClick() && (item.effectiveHref() || (!!item.onClosed && item.onClosed.observed))) {
             this.closeMenu(item);
         }
 

@@ -1,33 +1,32 @@
 <ion-content>
     <ion-list role="menu">
-        @for (item of items; track item.uniqueId) {
-            <ion-item class="ion-text-wrap" lines="none" core-link [capture]="item.captureLink" [autoLogin]="item.autoLogin"
-                [href]="item.href" (click)="itemClicked($event, item)" [attr.aria-label]="item.ariaAction" [hidden]="item.hidden"
-                [detail]="!!(item.href && !item.iconAction)" role="menuitem" [button]="!!(item.href && !item.iconAction)"
-                [showBrowserWarning]="item.showBrowserWarning">
-                @if (item.iconAction === 'toggle') {
+        @for (item of items(); track item.uniqueId) {
+            <ion-item class="ion-text-wrap" lines="none" core-link [capture]="item.captureLink()" [autoLogin]="item.autoLogin()"
+                [href]="item.effectiveHref()" (click)="itemClicked($event, item)" [attr.aria-label]="item.ariaAction() || item.content()"
+                [hidden]="item.hidden()" [detail]="!!(item.effectiveHref() && !item.iconAction())" role="menuitem"
+                [button]="!!(item.effectiveHref() && !item.iconAction())" [showBrowserWarning]="item.showBrowserWarning()">
+                @if (item.iconAction() === 'toggle') {
                     <ion-toggle [(ngModel)]="item.toggle" (ionChange)="item.toggleChanged($event)">
-                        <p class="item-heading">{{ item.content }}</p>
+                        <p class="item-heading">{{ item.content() }}</p>
                     </ion-toggle>
                 } @else {
                     <ion-label>
-                        <p class="item-heading">{{ item.content }}</p>
+                        <p class="item-heading">{{ item.content() }}</p>
                     </ion-label>
-                    @if ((item.href || item.action) && item.iconAction) {
-                        @if (item.iconAction === 'spinner') {
-                            <ion-spinner slot="end" [attr.aria-label]="'core.loading' | translate" />
-                        } @else {
-                            <ion-icon [name]="item.iconAction" [class.icon-slash]="item.iconSlash" slot="end" aria-hidden="true" />
-                        }
+                    @if (item.iconAction() === 'spinner') {
+                        <ion-spinner slot="end" [attr.aria-label]="'core.loading' | translate" />
+                    } @else if (item.iconAction()) {
+                        <ion-icon [name]="item.iconAction()" [class.icon-slash]="item.iconSlash()" slot="end" aria-hidden="true" />
                     }
                 }
 
-                @if (item.badge) {
-                    <ion-badge class="{{item.badgeClass}}" slot="end">
-                        <span [attr.ara-hidden]="!!item.badgeA11yText">{{item.badge}}</span>
-                        @if (item.badgeA11yText) {
+                @if (item.badge()) {
+                    @let badgeA11yText = item.badgeA11yText();
+                    <ion-badge class="{{item.badgeClass()}}" slot="end">
+                        <span [attr.aria-hidden]="!!badgeA11yText">{{item.badge()}}</span>
+                        @if (badgeA11yText) {
                             <span class="sr-only">
-                                {{ item.badgeA11yText | translate: {$a : item.badge } }}
+                                {{ badgeA11yText | translate: { $a: item.badge() } }}
                             </span>
                         }
                     </ion-badge>
