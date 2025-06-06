@@ -1,11 +1,12 @@
-@if (groupInfo && groupInfo.groups.length > 0 && (groupInfo.separateGroups || groupInfo.visibleGroups)) {
+@let groupInfoValue = groupInfo();
+@if (groupInfoValue && groupInfoValue.groups.length > 0 && (groupInfoValue.separateGroups || groupInfoValue.visibleGroups)) {
 
-    @if (multipleGroupsMessage && groupInfo.groups && groupInfo.groups.length > 1) {
+    @if (multipleGroupsMessage() && groupInfoValue.groups && groupInfoValue.groups.length > 1) {
         <ion-card class="core-info-card">
             <ion-item class="ion-text-wrap">
                 <ion-icon name="fas-circle-question" slot="start" aria-hidden="true" />
                 <ion-label>
-                    <p class="item-label">{{ multipleGroupsMessage }}</p>
+                    <p class="item-label">{{ multipleGroupsMessage() }}</p>
                 </ion-label>
             </ion-item>
         </ion-card>
@@ -13,13 +14,14 @@
 
     <ion-item class="ion-text-wrap core-group-selector" lines="full">
         <ion-icon name="fas-user-group" slot="start" aria-hidden="true" />
-        <ion-select [(ngModel)]=" selected" (ionChange)="selectedChange.emit(selected)" interface="action-sheet"
-            [cancelText]="'core.cancel' | translate" [interfaceOptions]="{header: 'core.group' | translate}">
-            <p class="item-heading" slot="label">{{ (groupInfo.separateGroups ? 'core.groupsseparate': 'core.groupsvisible') | translate }}
+        <ion-select [(ngModel)]="selected" interface="action-sheet" [cancelText]="'core.cancel' | translate"
+            [interfaceOptions]="{header: 'core.group' | translate}">
+            <p class="item-heading" slot="label">
+                {{ (groupInfoValue.separateGroups ? 'core.groupsseparate': 'core.groupsvisible') | translate }}
             </p>
-            @for (group of groupInfo.groups; track group.id) {
+            @for (group of groupInfoValue.groups; track group.id) {
                 <ion-select-option [value]="group.id">
-                    <core-format-text [text]="group.name" contextLevel="course" [contextInstanceId]="courseId" [wsNotFiltered]="true" />
+                    <core-format-text [text]="group.name" contextLevel="course" [contextInstanceId]="courseId()" [wsNotFiltered]="true" />
                 </ion-select-option>
             }
         </ion-select>
