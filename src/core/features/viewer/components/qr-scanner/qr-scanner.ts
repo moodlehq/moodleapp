@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { CoreSharedModule } from '@/core/shared.module';
-import { Component, Input, OnDestroy, OnInit } from '@angular/core';
+import { Component, computed, input, OnDestroy, OnInit, signal } from '@angular/core';
 import { CoreErrorHelper } from '@services/error-helper';
 import { CoreAlerts } from '@services/overlays/alerts';
 import { CoreQRScan } from '@services/qrscan';
@@ -32,15 +32,30 @@ import { ModalController, Translate } from '@singletons';
 })
 export class CoreViewerQRScannerComponent implements OnInit, OnDestroy {
 
-    @Input() title?: string; // Page title.
+    readonly title = input(Translate.instant('core.viewer.qrscannertitle'), { transform: (value?: string) => {
+        if (value === undefined || value === null) {
+            return Translate.instant('core.viewer.qrscannertitle');
+        }
+
+        return value;
+    } });
+
+    canEnableTorch = false;
+    canSwitchCamera = false;
+    readonly torchEnabled = signal(false);
+
+    readonly torchText = computed(() =>
+        this.torchEnabled()
+            ? Translate.instant('core.viewer.qrscannerdisabletorch')
+            : Translate.instant('core.viewer.qrscannerenabletorch'));
 
     /**
      * @inheritdoc
      */
     async ngOnInit(): Promise<void> {
-        this.title = this.title || Translate.instant('core.scanqr');
-
         try {
+            this.canEnableTorch = await CoreQRScan.canEnableLight();
+            this.canSwitchCamera = await CoreQRScan.canSwitchCamera();
 
             let text = await CoreQRScan.startScanQR();
 
@@ -51,7 +66,7 @@ export class CoreViewerQRScannerComponent implements OnInit, OnDestroy {
         } catch (error) {
             if (!CoreErrorHelper.isCanceledError(error)) {
                 // Show error and stop scanning.
-                CoreAlerts.showError(error, { default: 'An error occurred.' });
+                CoreAlerts.showError(error, { default: 'An error occurred while scanning the QR code.' });
                 CoreQRScan.stopScanQR();
             }
 
@@ -81,6 +96,20 @@ export class CoreViewerQRScannerComponent implements OnInit, OnDestroy {
     ngOnDestroy(): void {
         // If this code is reached and scan hasn't been stopped yet it means the user clicked the back button, cancel.
         CoreQRScan.stopScanQR();
+    }
+
+    /**
+     * Toggle the light of the camera.
+     */
+    async toggleTorch(): Promise<void> {
+        this.torchEnabled.set(await CoreQRScan.toggleLight());
+    }
+
+    /**
+     * Toggle the camera.
+     */
+    toggleCamera(): void {
+        CoreQRScan.toggleCamera();
     }
 
 }
