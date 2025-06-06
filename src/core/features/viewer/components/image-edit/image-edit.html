@@ -1,0 +1,37 @@
+<ion-header>
+    <ion-toolbar>
+        <ion-title>
+            <h1>{{ 'core.viewer.editimage' | translate }}</h1>
+        </ion-title>
+    </ion-toolbar>
+</ion-header>
+<ion-content>
+    <div class="image-edit-container">
+        <image-cropper [imageFile]="image()" (loadImageFailed)="loadImageFailed()" [autoCrop]="false" [transform]="transform()"
+            [canvasRotation]="canvasRotation()" />
+    </div>
+</ion-content>
+<ion-footer class="gray-with-border">
+    <ion-row>
+        <ion-col class="ion-text-center">
+            <ion-button fill="clear" expand="block" (click)="discard()" [ariaLabel]="'core.discard' | translate">
+                <ion-icon name="fas-trash" slot="icon-only" aria-hidden="true" color="danger" />
+            </ion-button>
+        </ion-col>
+        <ion-col class="ion-text-center">
+            <ion-button fill="clear" expand="block" (click)="rotateLeft()" [ariaLabel]="'core.viewer.rotateleft' | translate">
+                <ion-icon name="fas-rotate-left" slot="icon-only" aria-hidden="true" />
+            </ion-button>
+        </ion-col>
+        <ion-col class="ion-text-center">
+            <ion-button fill="clear" expand="block" (click)="flipHorizontally()" [ariaLabel]="'core.viewer.fliphorizontally' | translate">
+                <ion-icon name="fas-arrows-left-right" slot="icon-only" aria-hidden="true" />
+            </ion-button>
+        </ion-col>
+        <ion-col class="ion-text-center">
+            <ion-button fill="clear" expand="block" (click)="done()" [ariaLabel]="'core.done' | translate">
+                <ion-icon name="fas-check" slot="icon-only" aria-hidden="true" />
+            </ion-button>
+        </ion-col>
+    </ion-row>
+</ion-footer>
