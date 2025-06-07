@@ -16,13 +16,13 @@ $gray-800:    #343a40 !default;
 $gray-900:    #282828 !default; // Copy text
 $black:       #000000 !default; // Avoid usage
 
-$blue:        #0f6cbf !default;
-$cyan:        #008196 !default; // Not used.
-$green:       #357a32 !default;
+$blue:        #4A9B8E !default;
+$cyan:        #76C8AA !default; // Secondary teal shade.
+$green:       #52B69A !default;
 $red:         #ca3120 !default;
 $yellow:      #f0ad4e !default;
 
-$brand-color: #f98012 !default;
+$brand-color: #4A9B8E !default;
 
 $text-color:               $gray-900 !default;
 $text-color-rgb:           color-to-rgb-list($text-color) !default;
@@ -40,7 +40,7 @@ $ion-item-background-dark: $gray-900 !default;
 $ion-item-background-dark-rgb: color-to-rgb-list($ion-item-background-dark) !default;
 
 $primary:      $brand-color !default;
-$primary-dark: $brand-color !default;
+$primary-dark: darken($brand-color, 10%) !default;
 $secondary:    $gray-300 !default;
 $danger:       $red !default;
 $warning:      $yellow !default;
@@ -83,7 +83,7 @@ $core-course-image-background: #81ecec, #74b9ff, #a29bfe, #dfe6e9, #00b894, #098
 $core-dd-question-colors: #FFFFFF, #B0C4DE, #DCDCDC, #D8BFD8, #87CEFA, #DAA520, #FFD700, #F0E68C !default;
 $core-text-hightlight-background-color: lighten($blue, 40%) !default;
 
-$core-fixed-url: false !default;
+$core-fixed-url: "https://learn.aspireschool.org" !default;
 $core-dashboard-logo: false !default;
 $core-always-show-main-menu: false !default;
 $core-format-text-never-shorten: false !default;

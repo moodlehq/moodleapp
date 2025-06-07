@@ -1,6 +1,6 @@
 {
-    "app_id": "com.moodle.moodlemobile",
-    "appname": "Moodle Mobile",
+    "app_id": "org.aspireschool.learn",
+    "appname": "Aspire School",
     "versioncode": 45002,
     "versionname": "4.5.0",
     "cache_update_frequency_usually": 420000,
@@ -72,12 +72,7 @@
         "student": {
             "url": "https://school.moodledemo.net",
             "username": "student",
-            "password": "moodle2024"
-        },
-        "teacher": {
-            "url": "https://school.moodledemo.net",
-            "username": "teacher",
-            "password": "moodle2024"
+            "password": "moodle"
         }
     },
     "defaultZoomLevel": "none",
@@ -87,20 +82,30 @@
         "high": 120
     },
     "customurlscheme": "moodlemobile",
-    "sites": [],
+    "siteurl": "https://school.moodledemo.net",
+    "sitename": "Aspire School Campus",
+    "sites": [
+        {
+            "id": "aspireschool",
+            "name": "Aspire School Campus",
+            "url": "https://school.moodledemo.net",
+            "imageurl": "",
+            "description": "Aspire School Learning Platform"
+        }
+    ],
     "multisitesdisplay": "",
     "sitefindersettings": {},
     "onlyallowlistedsites": false,
     "forcedefaultlanguage": false,
     "privacypolicy": "https://moodle.net/moodle-app-privacy/",
-    "notificoncolor": "#f98012",
+    "notificoncolor": "#4A9B8E",
     "enableanalytics": false,
     "enableonboarding": true,
     "forceColorScheme": "",
     "forceLoginLogo": false,
     "ioswebviewscheme": "moodleappfs",
     "appstores": {
-        "android": "com.moodle.moodlemobile",
+        "android": "org.aspireschool.learn",
         "ios": "id633359593"
     },
     "wsrequestqueuelimit": 10,
@@ -114,24 +119,13 @@
     "disableTokenFile": false,
     "iconsPrefixes": {
         "font-awesome": {
-            "brands": [
-                "fab"
-            ],
-            "regular": [
-                "far"
-            ],
-            "solid": [
-                "fa",
-                "fas"
-            ]
+            "brands": ["fab"],
+            "regular": ["far"],
+            "solid": ["fa", "fas"]
         },
         "moodle": {
-            "font-awesome": [
-                "fam"
-            ],
-            "moodle": [
-                "moodle"
-            ]
+            "font-awesome": ["fam"],
+            "moodle": ["moodle"]
         }
     },
     "clearIABSessionWhenAutoLogin": "android"

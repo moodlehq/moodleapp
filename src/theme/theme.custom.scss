@@ -4,12 +4,38 @@
  * Place here custom styles.
  */
 
+// Import Google Fonts
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+// Global Typography
+body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
 /*
  * Light Theme
  * -------------------------------------------
  */
 :root {
+    // Aspire School Custom Theme - Basic colors only
+    --ion-color-primary: #4A9B8E;
+    --ion-color-primary-rgb: 74, 155, 142;
+    --ion-color-primary-contrast: #ffffff;
+    --ion-color-primary-contrast-rgb: 255, 255, 255;
+    --ion-color-primary-shade: #41887d;
+    --ion-color-primary-tint: #5ca599;
 
+    // Secondary teal shade
+    --ion-color-secondary: #76C8AA;
+    --ion-color-secondary-rgb: 118, 200, 170;
+    --ion-color-secondary-contrast: #000000;
+    --ion-color-secondary-contrast-rgb: 0, 0, 0;
+    --ion-color-secondary-shade: #68b096;
+    --ion-color-secondary-tint: #84ceb3;
+
+    // Custom toolbar styling
+    --ion-toolbar-background: #4A9B8E;
+    --ion-toolbar-color: #ffffff;
 }
 
 /*
@@ -17,5 +43,15 @@
  * -------------------------------------------
  */
 :root.dark {
+    // Aspire School Dark Theme
+    --ion-color-primary: #52B69A;
+    --ion-color-primary-rgb: 82, 182, 154;
+    --ion-color-primary-contrast: #000000;
+    --ion-color-primary-contrast-rgb: 0, 0, 0;
+    --ion-color-primary-shade: #48a088;
+    --ion-color-primary-tint: #63bda4;
 
+    // Dark theme toolbar
+    --ion-toolbar-background: #2d5f55;
+    --ion-toolbar-color: #ffffff;
 }

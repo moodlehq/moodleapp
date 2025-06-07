@@ -1,8 +1,8 @@
 <?xml version='1.0' encoding='utf-8'?>
-<widget android-versionCode="45002" id="com.moodle.moodlemobile" ios-CFBundleVersion="4.5.0.2" version="4.5.0" versionCode="45002" xmlns="http://www.w3.org/ns/widgets" xmlns:android="http://schemas.android.com/apk/res/android" xmlns:cdv="http://cordova.apache.org/ns/1.0">
-    <name>Moodle</name>
-    <description>Moodle official app</description>
-    <author email="mobile@moodle.com" href="http://moodle.com">Moodle Mobile team</author>
+<widget android-versionCode="45002" id="org.aspireschool.learn" ios-CFBundleVersion="4.5.0.2" version="4.5.0" versionCode="45002" xmlns="http://www.w3.org/ns/widgets" xmlns:android="http://schemas.android.com/apk/res/android" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+    <name>Aspire School</name>
+    <description>Aspire School Learning Platform</description>
+    <author email="support@aspireschool.org" href="https://aspireschool.org">Aspire School</author>
     <content src="index.html" />
     <access origin="*" />
     <access launch-external="yes" origin="tel:*" />
@@ -28,7 +28,7 @@
     <preference name="UIWebViewBounce" value="false" />
     <preference name="DisallowOverscroll" value="true" />
     <preference name="prerendered-icon" value="true" />
-    <preference name="AppendUserAgent" value="MoodleMobile 4.5.0 (45002)" />
+    <preference name="AppendUserAgent" value="AspireSchoolApp 4.5.0 (45002)" />
     <preference name="BackupWebStorage" value="none" />
     <preference name="ScrollEnabled" value="false" />
     <preference name="KeyboardDisplayRequiresUserAction" value="false" />
@@ -52,15 +52,15 @@
     <preference name="GradlePluginGoogleServicesVersion" value="4.3.15" />
     <preference name="GradlePluginKotlinVersion" value="1.7.21" />
     <preference name="StatusBarOverlaysWebView" value="false" />
-    <preference name="StatusBarBackgroundColor" value="#FFFFFF" />
-    <preference name="NavigationBarBackgroundColor" value="#FFFFFF" />
+    <preference name="StatusBarBackgroundColor" value="#4A9B8E" />
+    <preference name="NavigationBarBackgroundColor" value="#4A9B8E" />
     <feature name="StatusBar">
         <param name="ios-package" onload="true" value="CDVStatusBar" />
     </feature>
     <platform name="android">
         <preference name="AndroidWindowSplashScreenAnimatedIcon" value="resources/android/android-splash.xml" />
-        <preference name="AndroidWindowSplashScreenBackground" value="#FFFFFF" />
-        <preference name="AndroidWindowSplashScreenIconBackgroundColor" value="#FFFFFF" />
+        <preference name="AndroidWindowSplashScreenBackground" value="#4A9B8E" />
+        <preference name="AndroidWindowSplashScreenIconBackgroundColor" value="#4A9B8E" />
         <resource-file src="google-services.json" target="app/google-services.json" />
         <resource-file src="resources/android/icon/drawable-ldpi-smallicon.png" target="app/src/main/res/mipmap-ldpi/smallicon.png" />
         <resource-file src="resources/android/icon/drawable-mdpi-smallicon.png" target="app/src/main/res/mipmap-mdpi/smallicon.png" />
@@ -506,4 +506,5 @@
             </array>
         </config-file>
     </platform>
+    <allow-navigation href="https://0.0.0.0:8100" sessionid="1c2905c6" />
 </widget>
