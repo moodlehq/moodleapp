@@ -12,21 +12,25 @@ body.core-reading-mode-enabled {
     &.core-reading-mode-theme-light {
         --reading-mode-background: #{$background-color};
         --reading-mode-text-color: #{$text-color};
+        --reading-mode-link-color: var(--info);
     }
 
     &.core-reading-mode-theme-dark {
         --reading-mode-background: #{$background-color-dark};
         --reading-mode-text-color: #{$text-color-dark};
+        --reading-mode-link-color: var(--info-tint);
     }
 
     &.core-reading-mode-theme-sepia {
         --reading-mode-background: var(--core-reading-mode-sepia-background);
         --reading-mode-text-color: var(--core-reading-mode-sepia-text-color);
+        --reading-mode-link-color: var(--info);
     }
 
     &.core-reading-mode-theme-hcm {
         --reading-mode-background: #000000;
         --reading-mode-text-color: #ffffff;
+        --reading-mode-link-color: var(--info-tint);
     }
 
     &.core-reading-mode-multimedia-hidden {
@@ -49,6 +53,7 @@ body.core-reading-mode-enabled {
                 --color: var(--reading-mode-text-color, --text-color);
                 --subdued-text-color: var(--text-color);
                 --core-input-text: var(--text-color);
+                --core-link-color: var(--reading-mode-link-color, --core-link-color);
                 color: var(--text-color) !important;
             }
 
