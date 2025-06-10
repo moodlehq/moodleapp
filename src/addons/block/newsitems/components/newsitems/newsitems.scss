@@ -1,4 +1,5 @@
 :host {
+    // Aspire School Community News & Events styling
     .core-block-content ::ng-deep {
         .unlist {
             list-style-type: none;
@@ -7,21 +8,132 @@
             -webkit-padding-start: 0;
 
             li.post {
-                padding-bottom: 16px;
+                padding: 16px;
+                margin-bottom: 12px;
+                background: #ffffff;
+                border-radius: 12px;
+                border: 1px solid #e0e0e0;
+                box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+                transition: all 0.3s ease;
+                
+                &:hover {
+                    box-shadow: 0 4px 12px rgba(76, 150, 209, 0.12);
+                    border-color: #4c96d1;
+                    transform: translateY(-2px);
+                }
+                
+                // News item title
+                .subject {
+                    font-size: 16px;
+                    font-weight: 600;
+                    color: #1a1a1a;
+                    margin-bottom: 6px;
+                    display: block;
+                    
+                    a {
+                        color: #4c96d1;
+                        text-decoration: none;
+                        
+                        &:hover {
+                            text-decoration: underline;
+                        }
+                    }
+                }
+                
+                // Author and date info
+                .author, .date {
+                    font-size: 13px;
+                    color: #6d6e71;
+                    margin-right: 12px;
+                }
+                
+                // News preview text
+                .summary {
+                    font-size: 14px;
+                    color: #5a5a5a;
+                    line-height: 1.5;
+                    margin-top: 8px;
+                }
             }
+            
             li.post:last-child {
-                padding-bottom: 0;
+                margin-bottom: 0;
+            }
+        }
+        
+        // Empty state
+        .block_news_items_no_news {
+            text-align: center;
+            padding: 32px 16px;
+            color: #6d6e71;
+            font-size: 15px;
+            
+            &::before {
+                content: '📰';
+                display: block;
+                font-size: 48px;
+                margin-bottom: 16px;
+                opacity: 0.5;
             }
         }
     }
 
-    // Hide RSS link.
+    // Style the footer link
     .core-block-footer ::ng-deep {
+        margin-top: 16px;
+        text-align: center;
+        
         a {
             display: none;
         }
         a:first-child {
-            display: inline;
+            display: inline-block;
+            color: #4c96d1;
+            font-weight: 600;
+            font-size: 14px;
+            padding: 8px 16px;
+            border-radius: 20px;
+            background: rgba(76, 150, 209, 0.1);
+            text-decoration: none;
+            transition: all 0.3s ease;
+            
+            &:hover {
+                background: #4c96d1;
+                color: white;
+            }
+        }
+    }
+}
+
+// Dark theme adjustments
+:host-context(.dark) {
+    .core-block-content ::ng-deep {
+        .unlist {
+            li.post {
+                background: #2a2a2a;
+                border-color: #3a3a3a;
+                
+                &:hover {
+                    box-shadow: 0 4px 12px rgba(94, 161, 214, 0.2);
+                    border-color: #5ea1d6;
+                }
+                
+                .subject {
+                    color: #ffffff;
+                    
+                    a {
+                        color: #5ea1d6;
+                    }
+                }
+                
+                .author, .date {
+                    color: #b0b0b0;
+                }
+                
+                .summary {
+                    color: #d0d0d0;
+                }
+            }
         }
     }
 }

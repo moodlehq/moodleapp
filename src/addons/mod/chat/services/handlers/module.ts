@@ -44,6 +44,14 @@ export class AddonModChatModuleHandlerService extends CoreModuleHandlerBase impl
     /**
      * @inheritdoc
      */
+    async isEnabled(): Promise<boolean> {
+        // Disabled for Aspire School - chat not appropriate for K-12 students
+        return false;
+    }
+
+    /**
+     * @inheritdoc
+     */
     async getMainComponent(): Promise<Type<unknown>> {
         const { AddonModChatIndexComponent } = await import('../../components/index');
 

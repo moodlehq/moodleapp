@@ -35,7 +35,8 @@ export class AddonBlockGlobalSearchHandlerService extends CoreBlockBaseHandler {
      * @inheritdoc
      */
     async isEnabled(): Promise<boolean> {
-        return CoreSearchGlobalSearch.isEnabled();
+        // Aspire School: Disable global search block - search is integrated in welcome banner
+        return false;
     }
 
     /**

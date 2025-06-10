@@ -44,6 +44,14 @@ export class AddonModWorkshopModuleHandlerService extends CoreModuleHandlerBase 
     /**
      * @inheritdoc
      */
+    async isEnabled(): Promise<boolean> {
+        // Disabled for Aspire School - peer assessment too complex for K-12
+        return false;
+    }
+
+    /**
+     * @inheritdoc
+     */
     async getMainComponent(): Promise<Type<unknown>> {
         const { AddonModWorkshopIndexComponent } = await import('../../components/index');
 

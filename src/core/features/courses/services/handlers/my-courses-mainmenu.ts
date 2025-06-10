@@ -30,7 +30,7 @@ export class CoreCoursesMyCoursesMainMenuHandlerService implements CoreMainMenuH
     static readonly PAGE_NAME = 'courses';
 
     name = 'CoreCoursesMyCourses';
-    priority = 900;
+    priority = 950;
 
     /**
      * @inheritdoc
@@ -69,7 +69,7 @@ export class CoreCoursesMyCoursesMainMenuHandlerService implements CoreMainMenuH
             title: 'core.courses.mycourses',
             page: CoreCoursesMyCoursesMainMenuHandlerService.PAGE_NAME,
             class: 'core-courses-my-courses-handler',
-            icon: 'fas-graduation-cap',
+            icon: 'book',  // Changed for Aspire School - more appropriate for K-12 classes
             priority: displayMyCourses ? this.priority + 200 : this.priority,
         };
     }

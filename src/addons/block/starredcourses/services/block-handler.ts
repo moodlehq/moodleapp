@@ -28,6 +28,16 @@ export class AddonBlockStarredCoursesHandlerService extends CoreBlockBaseHandler
     blockName = 'starredcourses';
 
     /**
+     * Whether or not the handler is enabled on a site level.
+     *
+     * @returns True or promise resolved with true if enabled.
+     */
+    async isEnabled(): Promise<boolean> {
+        // Aspire School: Disable starred courses block for K-12
+        return false;
+    }
+
+    /**
      * Returns the data needed to render the block.
      *
      * @returns Data or promise resolved with the data.

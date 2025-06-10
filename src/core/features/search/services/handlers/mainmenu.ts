@@ -32,7 +32,8 @@ export class CoreSearchMainMenuHandlerService implements CoreMainMenuHandler {
      * @inheritdoc
      */
     async isEnabled(): Promise<boolean> {
-        return CoreSearchGlobalSearch.isEnabled();
+        // Aspire School: Disable search tab as it's integrated in dashboard
+        return false;
     }
 
     /**

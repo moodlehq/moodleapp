@@ -36,7 +36,8 @@ export class CoreSiteHomeHomeHandlerService implements CoreMainMenuHomeHandler {
      * @returns Whether or not the handler is enabled on a site level.
      */
     isEnabled(): Promise<boolean> {
-        return this.isEnabledForSite();
+        // Aspire School: Disable site home, only use dashboard
+        return Promise.resolve(false);
     }
 
     /**

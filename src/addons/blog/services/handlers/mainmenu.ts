@@ -31,7 +31,9 @@ export class AddonBlogMainMenuHandlerService implements CoreMainMenuHandler {
      * @inheritdoc
      */
     async isEnabled(): Promise<boolean> {
-        return AddonBlog.isPluginEnabled();
+        // Disabled for Aspire School - not appropriate for K-12 students
+        return false;
+        // Original code: return AddonBlog.isPluginEnabled();
     }
 
     /**

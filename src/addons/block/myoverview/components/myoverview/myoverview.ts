@@ -81,7 +81,7 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
             hidden: true,
             custom: false,
         },
-        timeFilterSelected: 'inprogress',
+        timeFilterSelected: 'all', // Aspire School: Show all courses by default
         customFilters: [],
     };
 
@@ -705,6 +705,18 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
     async filterOptionsChanged(selected: AddonBlockMyOverviewTimeFilters): Promise<void> {
         this.filters.timeFilterSelected = selected;
         this.filterCourses();
+    }
+
+    /**
+     * Sort option selected save and apply sort.
+     *
+     * @param selected Sort option selected.
+     * @returns Promise resolved when done.
+     */
+    async sortOptionsChanged(selected: string): Promise<void> {
+        this.sort.selected = selected;
+        await this.saveSort(selected);
+        this.sortCourses(selected);
     }
 
     /**

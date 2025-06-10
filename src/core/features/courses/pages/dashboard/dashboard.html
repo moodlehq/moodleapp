@@ -1,12 +1,43 @@
-<core-navbar-buttons slot="end" prepend>
-    <ion-button *ngIf="searchEnabled" (click)="openSearch()" [ariaLabel]="'core.courses.searchcourses' | translate">
-        <ion-icon name="fas-magnifying-glass" slot="icon-only" aria-hidden="true" />
-    </ion-button>
-</core-navbar-buttons>
 <ion-content>
     <ion-refresher slot="fixed" [disabled]="!loaded" (ionRefresh)="refreshDashboard($event.target)">
         <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}" />
     </ion-refresher>
+
+    <!-- Aspire School Welcome Banner with Search -->
+    <div class="aspire-welcome-banner" *ngIf="loaded">
+        <div class="aspire-welcome-content">
+            <h1>
+                {{ 'core.courses.welcome_aspire' | translate }}
+                <button class="aspire-search-button" *ngIf="searchEnabled" (click)="openSearch()" [attr.aria-label]="'core.search.globalsearch' | translate">
+                    <ion-icon name="fas-magnifying-glass" aria-hidden="true" />
+                </button>
+            </h1>
+            <p class="aspire-welcome-subtitle">{{ 'core.courses.aspire_subtitle' | translate }}</p>
+        </div>
+    </div>
+
+    <!-- Quick Actions for Students -->
+    <div class="aspire-quick-section" *ngIf="loaded">
+        <h2 class="aspire-section-title">Quick Access</h2>
+        <div class="aspire-quick-actions">
+            <div class="aspire-action-card" [routerLink]="['/main/home/courses']">
+                <ion-icon name="book-outline"></ion-icon>
+                <span>Classes</span>
+            </div>
+            <div class="aspire-action-card" [routerLink]="['/main/calendar']">
+                <ion-icon name="calendar-outline"></ion-icon>
+                <span>Calendar</span>
+            </div>
+            <div class="aspire-action-card" (click)="scrollToNews()">
+                <ion-icon name="newspaper-outline"></ion-icon>
+                <span>News</span>
+            </div>
+            <div class="aspire-action-card" [routerLink]="['/main/grades']">
+                <ion-icon name="bar-chart-outline"></ion-icon>
+                <span>Grades</span>
+            </div>
+        </div>
+    </div>
 
     <core-loading [hideUntil]="loaded">
         <ion-list class="list-item-limited-width" *ngIf="hasMainBlocks">

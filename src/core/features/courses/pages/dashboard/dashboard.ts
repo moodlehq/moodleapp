@@ -27,6 +27,8 @@ import { CoreTime } from '@singletons/time';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 import { Translate } from '@singletons';
 import { CoreUtils } from '@services/utils/utils';
+import { CoreSiteHome } from '@features/sitehome/services/sitehome';
+import { CoreCourseHelper } from '@features/course/services/course-helper';
 
 /**
  * Page that displays the dashboard page.
@@ -99,7 +101,12 @@ export class CoreCoursesDashboardPage implements OnInit, OnDestroy {
             try {
                 const blocks = await CoreCoursesDashboard.getDashboardBlocks();
 
-                this.blocks = blocks.mainBlocks;
+                // Sort blocks to ensure timeline appears first for Aspire School
+                this.blocks = blocks.mainBlocks.sort((a, b) => {
+                    if (a.name === 'timeline') return -1;
+                    if (b.name === 'timeline') return 1;
+                    return 0;
+                });
 
                 this.hasMainBlocks = CoreBlockDelegate.hasSupportedBlock(blocks.mainBlocks);
                 this.hasSideBlocks = CoreBlockDelegate.hasSupportedBlock(blocks.sideBlocks);
@@ -128,11 +135,11 @@ export class CoreCoursesDashboardPage implements OnInit, OnDestroy {
     protected loadFallbackBlocks(): void {
         this.blocks = [
             {
-                name: 'myoverview',
+                name: 'timeline',
                 visible: true,
             },
             {
-                name: 'timeline',
+                name: 'myoverview',
                 visible: true,
             },
         ];
@@ -168,8 +175,36 @@ export class CoreCoursesDashboardPage implements OnInit, OnDestroy {
      * Go to search courses.
      */
     async openSearch(): Promise<void> {
-        CoreNavigator.navigateToSitePath('/courses/list', { params : { mode: 'search' } });
+        // Aspire School: Use global search instead of course search
+        CoreNavigator.navigateToSitePath('/search');
     }
+
+    /**
+     * Navigate to Community News & Events page.
+     */
+    async scrollToNews(): Promise<void> {
+        try {
+            // Get site home ID
+            const siteHomeId = CoreSites.getCurrentSiteHomeId();
+            
+            // Get the news forum
+            const newsForumData = await CoreSiteHome.getNewsForum(siteHomeId);
+            
+            if (newsForumData && newsForumData.cmid) {
+                // Navigate to the news forum
+                await CoreCourseHelper.navigateToModule(newsForumData.cmid, {
+                    courseId: newsForumData.course,
+                });
+            } else {
+                // Show message if no news forum exists
+                CoreDomUtils.showToast('addon.block_newsitems.pluginname', true);
+            }
+        } catch (error) {
+            // News forum might not exist or be accessible
+            CoreDomUtils.showErrorModalDefault(error, 'core.errorloadingcontent', true);
+        }
+    }
+
 
     /**
      * @inheritdoc

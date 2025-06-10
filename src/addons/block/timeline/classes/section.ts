@@ -124,7 +124,19 @@ export class AddonBlockTimelineSection {
             return filteredEvents;
         }, {} as Record<string, AddonBlockTimelineDayEvents>);
 
-        return Object.values(eventsByDates);
+        // Aspire School: Sort events when grouped by course
+        let dayEventsList = Object.values(eventsByDates);
+        if (this.course) {
+            // Sort days with most recent first (today, tomorrow, etc.)
+            dayEventsList.sort((a, b) => a.dayTimestamp - b.dayTimestamp);
+            
+            // Sort events within each day by time (earliest first for natural daily flow)
+            dayEventsList.forEach(dayEvents => {
+                dayEvents.events.sort((a, b) => a.timesort - b.timesort);
+            });
+        }
+
+        return dayEventsList;
     }
 
     /**

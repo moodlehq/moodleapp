@@ -34,7 +34,8 @@ export class CoreTagMainMenuHandlerService implements CoreMainMenuHandler {
      * @returns Whether or not the handler is enabled on a site level.
      */
     async isEnabled(): Promise<boolean> {
-        return await CoreTag.areTagsAvailable();
+        // Aspire School: Disable tags in main menu
+        return false;
     }
 
     /**

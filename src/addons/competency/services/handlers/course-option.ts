@@ -39,7 +39,9 @@ export class AddonCompetencyCourseOptionHandlerService implements CoreCourseOpti
      * @inheritdoc
      */
     async isEnabled(): Promise<boolean> {
-        return AddonCompetency.areCompetenciesEnabled();
+        // Disabled for Aspire School - too complex for K-12 students
+        return false;
+        // Original code: return AddonCompetency.areCompetenciesEnabled();
     }
 
     /**

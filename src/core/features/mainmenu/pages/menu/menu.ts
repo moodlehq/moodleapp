@@ -28,6 +28,7 @@ import { filter } from 'rxjs/operators';
 import { NavigationEnd } from '@angular/router';
 import { trigger, state, style, transition, animate } from '@angular/animations';
 import { CoreSites } from '@services/sites';
+import { CoreModals } from '@services/modals';
 import { CoreDom } from '@singletons/dom';
 import { CoreLogger } from '@singletons/logger';
 import { CorePlatform } from '@services/platform';
@@ -284,9 +285,40 @@ export class CoreMainMenuPage implements OnInit, OnDestroy {
      * @param event Event.
      */
     tabChanged(event: {tab: string}): void {
+        // Aspire School: Open user menu when More tab is clicked
+        if (event.tab === this.morePageName) {
+            // Don't actually select the more tab
+            const currentTab = this.selectedTab || this.tabs[0]?.page;
+            
+            // Immediately revert to the current tab
+            setTimeout(() => {
+                if (currentTab && this.mainTabs) {
+                    this.mainTabs.select(currentTab);
+                }
+            }, 0);
+            
+            // Open the user menu modal
+            setTimeout(() => {
+                this.openUserMenu();
+            }, 100);
+            
+            return;
+        }
+        
         this.selectedTab = event.tab;
         this.firstSelectedTab = this.firstSelectedTab ?? event.tab;
         this.selectHistory.push(event.tab);
+    }
+    
+    /**
+     * Open the user menu modal.
+     */
+    async openUserMenu(): Promise<void> {
+        const { CoreMainMenuUserMenuComponent } = await import('../../components/user-menu/user-menu');
+        
+        await CoreModals.openSideModal<void>({
+            component: CoreMainMenuUserMenuComponent,
+        });
     }
 
     /**

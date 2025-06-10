@@ -41,7 +41,7 @@ export class AddonMessagesMainMenuHandlerService implements CoreMainMenuHandler,
     priority = 700;
 
     protected handler: CoreMainMenuHandlerToDisplay = {
-        icon: 'fas-comments',
+        icon: 'mail-outline',  // Changed for Aspire School - more appropriate for school updates
         title: 'addon.messages.messages',
         page: AddonMessagesMainMenuHandlerService.PAGE_NAME,
         class: 'addon-messages-handler',

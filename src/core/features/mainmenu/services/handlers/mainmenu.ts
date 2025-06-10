@@ -28,7 +28,7 @@ export class CoreMainMenuHomeHandlerService implements CoreMainMenuHandler {
     static readonly PAGE_NAME = 'home';
 
     name = 'CoreHome';
-    priority = 1000;
+    priority = 1200;
 
     /**
      * @inheritdoc
@@ -47,7 +47,7 @@ export class CoreMainMenuHomeHandlerService implements CoreMainMenuHandler {
      */
     getDisplayData(): CoreMainMenuHandlerData {
         return {
-            icon: 'fas-gauge-high',
+            icon: 'fas-house',
             title: 'core.mainmenu.home',
             page: CoreMainMenuHomeHandlerService.PAGE_NAME,
             class: 'core-home-handler',

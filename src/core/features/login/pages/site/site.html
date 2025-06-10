@@ -19,6 +19,8 @@
     <div class="list-item-limited-width">
         <div class="ion-text-center ion-padding ion-margin-bottom core-login-site-logo" [class.hidden]="hasSites || enteredSiteUrl">
             <img src="assets/img/login_logo.png" class="avatar-full login-logo" role="presentation" alt="">
+            <h2 class="aspire-login-title">Aspire School</h2>
+            <p class="aspire-login-subtitle">British International School in Egypt</p>
         </div>
         <form [formGroup]="siteForm" (ngSubmit)="connect(siteForm.value.siteUrl, $event)" *ngIf="!fixedSites && siteForm" #siteFormEl>
             <!-- Form to input the site URL if there are no fixed sites. -->

@@ -39,6 +39,88 @@
         </ion-item>
     </ion-card>
 
+    <!-- Aspire School Events Section -->
+    <div class="aspire-school-events" *ngIf="!showCalendar">
+        <ion-card class="aspire-events-card">
+            <ion-card-header>
+                <ion-card-title>
+                    <ion-icon name="star-outline"></ion-icon>
+                    School Events This Week
+                </ion-card-title>
+            </ion-card-header>
+            <ion-card-content>
+                <ion-list lines="none">
+                    <ion-item class="aspire-event-item">
+                        <ion-avatar slot="start" class="aspire-event-icon aspire-sports">
+                            <ion-icon name="football-outline"></ion-icon>
+                        </ion-avatar>
+                        <ion-label>
+                            <h3>Sports Day</h3>
+                            <p>Friday, 9:00 AM - 3:00 PM</p>
+                            <p class="aspire-event-location">Main Sports Field</p>
+                        </ion-label>
+                        <ion-badge slot="end" color="tertiary">This Week</ion-badge>
+                    </ion-item>
+                    <ion-item class="aspire-event-item">
+                        <ion-avatar slot="start" class="aspire-event-icon aspire-academic">
+                            <ion-icon name="ribbon-outline"></ion-icon>
+                        </ion-avatar>
+                        <ion-label>
+                            <h3>Science Fair</h3>
+                            <p>Thursday, 2:00 PM - 5:00 PM</p>
+                            <p class="aspire-event-location">School Hall</p>
+                        </ion-label>
+                        <ion-badge slot="end">2 Days</ion-badge>
+                    </ion-item>
+                    <ion-item class="aspire-event-item">
+                        <ion-avatar slot="start" class="aspire-event-icon aspire-meeting">
+                            <ion-icon name="people-outline"></ion-icon>
+                        </ion-avatar>
+                        <ion-label>
+                            <h3>Parent-Teacher Conference</h3>
+                            <p>Wednesday, 4:00 PM - 7:00 PM</p>
+                            <p class="aspire-event-location">Individual Classrooms</p>
+                        </ion-label>
+                        <ion-badge slot="end">Tomorrow</ion-badge>
+                    </ion-item>
+                </ion-list>
+            </ion-card-content>
+        </ion-card>
+
+        <!-- School Terms Card -->
+        <ion-card class="aspire-terms-card">
+            <ion-card-header>
+                <ion-card-title>
+                    <ion-icon name="calendar-outline"></ion-icon>
+                    Term Dates 2024
+                </ion-card-title>
+            </ion-card-header>
+            <ion-card-content>
+                <ion-list lines="none">
+                    <ion-item class="aspire-term-item aspire-current-term">
+                        <ion-label>
+                            <h4>Spring Term</h4>
+                            <p>January 8 - March 28</p>
+                        </ion-label>
+                        <ion-badge slot="end" color="primary">Current</ion-badge>
+                    </ion-item>
+                    <ion-item class="aspire-term-item">
+                        <ion-label>
+                            <h4>Summer Term</h4>
+                            <p>April 15 - July 12</p>
+                        </ion-label>
+                    </ion-item>
+                    <ion-item class="aspire-term-item">
+                        <ion-label>
+                            <h4>Autumn Term</h4>
+                            <p>September 2 - December 20</p>
+                        </ion-label>
+                    </ion-item>
+                </ion-list>
+            </ion-card-content>
+        </ion-card>
+    </div>
+
     <addon-calendar-calendar [hidden]="!showCalendar" [initialYear]="year" [initialMonth]="month" [filter]="filter"
         [displayNavButtons]="showCalendar" (onEventClicked)="gotoEvent($event)" (onDayClicked)="gotoDay($event)" />
 

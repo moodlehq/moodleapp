@@ -180,6 +180,31 @@ export class CoreCoursesCourseListItemComponent implements OnInit, OnDestroy, On
     }
 
     /**
+     * Get name length category for Metro tile sizing.
+     * @returns The name length category
+     */
+    getNameLength(): 'short' | 'medium' | 'long' {
+        const name = this.course.displayname || this.course.fullname;
+        const length = name.length;
+        
+        if (length <= 15) {
+            return 'short';
+        } else if (length <= 30) {
+            return 'medium';
+        } else {
+            return 'long';
+        }
+    }
+
+    /**
+     * Check if course has last access information.
+     * @returns True if course has lastaccess property
+     */
+    hasLastAccess(): boolean {
+        return !!(this.course as any).lastaccess;
+    }
+
+    /**
      * Initialize prefetch course.
      *
      * @param forceInit Force initialization of prefetch course info.

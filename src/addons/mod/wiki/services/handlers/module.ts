@@ -46,6 +46,14 @@ export class AddonModWikiModuleHandlerService extends CoreModuleHandlerBase impl
     /**
      * @inheritdoc
      */
+    async isEnabled(): Promise<boolean> {
+        // Disabled for Aspire School - too complex for K-12 students
+        return false;
+    }
+
+    /**
+     * @inheritdoc
+     */
     async getMainComponent(): Promise<Type<unknown>> {
         const { AddonModWikiIndexComponent } = await import('../../components/index');
 

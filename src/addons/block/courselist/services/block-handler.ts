@@ -28,6 +28,16 @@ export class AddonBlockCourseListHandlerService extends CoreBlockBaseHandler {
     blockName = 'course_list';
 
     /**
+     * Whether or not the handler is enabled on a site level.
+     *
+     * @returns True or promise resolved with true if enabled.
+     */
+    async isEnabled(): Promise<boolean> {
+        // Aspire School: Disable course list block - using quick action instead
+        return false;
+    }
+
+    /**
      * @inheritdoc
      */
     getDisplayData(): CoreBlockHandlerData {

@@ -804,10 +804,9 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
         if (expandedSections === undefined) {
             this.accordionMultipleValue = [];
 
-            // Expand all sections if not defined.
+            // Collapse all sections by default for Aspire School.
             CoreCourseHelper.flattenSections(this.sections).forEach((section) => {
-                section.expanded = true;
-                this.accordionMultipleValue.push(section.id.toString());
+                section.expanded = false;
             });
 
             return;

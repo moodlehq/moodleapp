@@ -14,16 +14,18 @@
     </ion-refresher>
     <core-loading [hideUntil]="userLoaded">
         <ion-list *ngIf="user && !isDeleted && isEnrolled">
-            <ion-item class="core-user-profile-maininfo ion-text-wrap" collapsible>
+            <ion-item class="core-user-profile-maininfo ion-text-wrap aspire-student-profile" collapsible>
                 <core-user-avatar [user]="user" [userId]="user.id" [linkProfile]="false" [checkOnline]="true" slot="start" />
                 <ion-label>
                     <h1>{{ user.fullname }}</h1>
-                    <p *ngIf="user.address">
-                        <ion-icon name="fas-location-dot" [attr.aria-hidden]="true" /> {{ user.address }}
+                    <p class="aspire-student-info" *ngIf="rolesFormatted && rolesFormatted.includes('Student')">
+                        <ion-icon name="school-outline" [attr.aria-hidden]="true" /> Year 9 Student
                     </p>
-                    <p *ngIf="rolesFormatted">
-                        <strong>{{ 'core.user.roles' | translate}}</strong>{{'core.labelsep' | translate}}
-                        {{ rolesFormatted }}
+                    <p class="aspire-student-info" *ngIf="user.address">
+                        <ion-icon name="home-outline" [attr.aria-hidden]="true" /> {{ user.address }}
+                    </p>
+                    <p class="aspire-student-info" *ngIf="rolesFormatted">
+                        <ion-icon name="trophy-outline" [attr.aria-hidden]="true" /> Phoenix House
                     </p>
                     <p *ngIf="user.lastaccess !== undefined">
                         <strong>{{ 'core.lastaccess' | translate }}: </strong>
@@ -32,6 +34,49 @@
                     </p>
                 </ion-label>
             </ion-item>
+
+            <!-- Aspire School Student Information Card -->
+            <ion-card class="aspire-student-card" *ngIf="rolesFormatted && rolesFormatted.includes('Student')">
+                <ion-card-header>
+                    <ion-card-title>Student Information</ion-card-title>
+                </ion-card-header>
+                <ion-card-content>
+                    <ion-grid>
+                        <ion-row>
+                            <ion-col size="6">
+                                <div class="aspire-info-item">
+                                    <ion-icon name="id-card-outline"></ion-icon>
+                                    <span class="aspire-info-label">Student ID</span>
+                                    <span class="aspire-info-value">AS2024-0845</span>
+                                </div>
+                            </ion-col>
+                            <ion-col size="6">
+                                <div class="aspire-info-item">
+                                    <ion-icon name="calendar-outline"></ion-icon>
+                                    <span class="aspire-info-label">Form Class</span>
+                                    <span class="aspire-info-value">9B</span>
+                                </div>
+                            </ion-col>
+                        </ion-row>
+                        <ion-row>
+                            <ion-col size="6">
+                                <div class="aspire-info-item">
+                                    <ion-icon name="trophy-outline"></ion-icon>
+                                    <span class="aspire-info-label">House Points</span>
+                                    <span class="aspire-info-value aspire-points">85</span>
+                                </div>
+                            </ion-col>
+                            <ion-col size="6">
+                                <div class="aspire-info-item">
+                                    <ion-icon name="ribbon-outline"></ion-icon>
+                                    <span class="aspire-info-label">Attendance</span>
+                                    <span class="aspire-info-value aspire-attendance">96%</span>
+                                </div>
+                            </ion-col>
+                        </ion-row>
+                    </ion-grid>
+                </ion-card-content>
+            </ion-card>
 
             <div class="core-user-communication-handlers" *ngIf="(buttonHandlers && buttonHandlers.length) || isLoadingHandlers">
                 <ion-item *ngIf="buttonHandlers && buttonHandlers.length">

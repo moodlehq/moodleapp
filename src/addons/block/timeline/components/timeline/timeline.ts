@@ -48,10 +48,10 @@ import { AddonBlockTimelineEventsComponent } from '../events/events';
 })
 export class AddonBlockTimelineComponent implements OnInit, ICoreBlockComponent {
 
-    sort = new FormControl(AddonBlockTimelineSort.ByDates);
+    sort = new FormControl(AddonBlockTimelineSort.ByCourses); // Aspire School: Default to courses
     sort$!: Observable<AddonBlockTimelineSort>;
     sortOptions!: AddonBlockTimelineOption<AddonBlockTimelineSort>[];
-    filter = new FormControl(AddonBlockTimelineFilter.Next30Days);
+    filter = new FormControl(AddonBlockTimelineFilter.Next7Days); // Aspire School: Default to next 7 days
     filter$!: Observable<AddonBlockTimelineFilter>;
     statusFilterOptions!: AddonBlockTimelineOption<AddonBlockTimelineFilter>[];
     dateFilterOptions!: AddonBlockTimelineOption<AddonBlockTimelineFilter>[];
@@ -81,8 +81,9 @@ export class AddonBlockTimelineComponent implements OnInit, ICoreBlockComponent 
     async ngOnInit(): Promise<void> {
         const currentSite = CoreSites.getRequiredCurrentSite();
         const [sort, filter, search] = await Promise.all([
-            currentSite.getLocalSiteConfig('AddonBlockTimelineSort', AddonBlockTimelineSort.ByDates),
-            currentSite.getLocalSiteConfig('AddonBlockTimelineFilter', AddonBlockTimelineFilter.Next30Days),
+            // Aspire School: Default to sort by courses
+            currentSite.getLocalSiteConfig('AddonBlockTimelineSort', AddonBlockTimelineSort.ByCourses),
+            currentSite.getLocalSiteConfig('AddonBlockTimelineFilter', AddonBlockTimelineFilter.Next7Days),
             currentSite.isVersionGreaterEqualThan('4.0') ? '' : null,
         ]);
 
@@ -261,13 +262,25 @@ export class AddonBlockTimelineComponent implements OnInit, ICoreBlockComponent 
         const courseIds = courses.map(course => course.id);
         const gracePeriod = await this.getCoursesGracePeriod();
         const courseEvents = await AddonBlockTimeline.getActionEventsByCourses(courseIds, search ?? '');
-        const sectionObservables = courses
+        
+        // Aspire School: Sort courses by their most recent event
+        const filteredCourses = courses
             .filter(
                 course =>
                     !course.hidden &&
                     !CoreCoursesHelper.isFutureCourse(course, gracePeriod.after, gracePeriod.before) &&
                     courseEvents[course.id].events.length > 0,
             )
+            .sort((a, b) => {
+                // Get the nearest/most urgent event from each course
+                const aEvents = courseEvents[a.id].events;
+                const bEvents = courseEvents[b.id].events;
+                const aNearest = aEvents.length > 0 ? Math.min(...aEvents.map(e => e.timesort)) : Number.MAX_SAFE_INTEGER;
+                const bNearest = bEvents.length > 0 ? Math.min(...bEvents.map(e => e.timesort)) : Number.MAX_SAFE_INTEGER;
+                return aNearest - bNearest; // Most urgent/nearest deadline first
+            });
+            
+        const sectionObservables = filteredCourses
             .map(course => {
                 const section = new AddonBlockTimelineSection(
                     search,

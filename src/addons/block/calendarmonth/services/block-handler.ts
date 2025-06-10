@@ -32,6 +32,16 @@ export class AddonBlockCalendarMonthHandlerService extends CoreBlockBaseHandler 
     blockName = 'calendar_month';
 
     /**
+     * Whether or not the handler is enabled on a site level.
+     *
+     * @returns True or promise resolved with true if enabled.
+     */
+    async isEnabled(): Promise<boolean> {
+        // Aspire School: Disable calendar month block - using quick action instead
+        return false;
+    }
+
+    /**
      * Returns the data needed to render the block.
      *
      * @param block The block to render.
