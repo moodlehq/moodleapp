@@ -134,7 +134,7 @@ export default class AddonPrivateFilesIndexPage implements OnInit, OnDestroy {
         }
 
         if (this.root) {
-            this.rootChanged(this.root);
+            this.rootChanged();
         } else {
             this.filesLoaded = true;
         }
@@ -164,12 +164,8 @@ export default class AddonPrivateFilesIndexPage implements OnInit, OnDestroy {
 
     /**
      * Function called when the root has changed.
-     *
-     * @param root New root.
      */
-    rootChanged(root: 'my' | 'site'): void {
-        this.root = root;
-
+    rootChanged(): void {
         this.filesLoaded = false;
         this.component = this.root == 'my' ? AddonPrivateFilesProvider.PRIVATE_FILES_COMPONENT :
             AddonPrivateFilesProvider.SITE_FILES_COMPONENT;

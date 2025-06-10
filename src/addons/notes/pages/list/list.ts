@@ -178,11 +178,8 @@ export default class AddonNotesListPage implements OnInit, OnDestroy {
 
     /**
      * Function called when the type has changed.
-     *
-     * @param type New type.
      */
-    async typeChanged(type: AddonNotesPublishState): Promise<void> {
-        this.type = type;
+    async typeChanged(): Promise<void> {
         this.notesLoaded = false;
         this.refreshIcon = CoreConstants.ICON_LOADING;
         this.syncIcon = CoreConstants.ICON_LOADING;
@@ -222,7 +219,8 @@ export default class AddonNotesListPage implements OnInit, OnDestroy {
 
                 this.refreshNotes(false);
             } else if (modalData.type && modalData.type != this.type) {
-                this.typeChanged(modalData.type);
+                this.type = modalData.type;
+                this.typeChanged();
             }
         }
     }
