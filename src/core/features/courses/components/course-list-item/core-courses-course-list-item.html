@@ -3,24 +3,35 @@
     [class.item-dimmed]="course.hidden" (click)="openCourse()"
     button [attr.aria-label]="course.displayname || course.fullname">
 
+    <div *ngIf="layout === 'card' || layout === 'summarycard'" class="core-course-thumb" 
+         [ngClass]="{'course-icon': !course.courseimage}">
+        <img *ngIf="course.courseimage" [src]="course.courseimage" [alt]="" loading="lazy">
+        <ion-icon *ngIf="!course.courseimage" name="fas-graduation-cap" aria-hidden="true"
+                  class="aspire-course-icon"></ion-icon>
+    </div>
+
     <ion-item class="ion-text-wrap">
+        <ion-avatar *ngIf="layout === 'list' || layout === 'listwithenrol'" slot="start"
+                    class="core-course-thumb" [ngClass]="{'course-icon': !course.courseimage}">
+            <img *ngIf="course.courseimage" [src]="course.courseimage" [alt]="" loading="lazy">
+            <ion-icon *ngIf="!course.courseimage" name="fas-graduation-cap" aria-hidden="true"
+                      class="aspire-course-icon"></ion-icon>
+        </ion-avatar>
+
         <ion-label>
-            <!-- Favorite Star -->
-            <div class="metro-favorite" *ngIf="course.isfavourite">
-                <ion-icon name="fas-star" aria-hidden="true"></ion-icon>
-            </div>
-
-            <!-- Course Name - Clean and Simple -->
-            <div class="metro-course-title">
+            <h2 class="item-heading">
+                <ion-icon *ngIf="course.isfavourite" name="fas-star" aria-hidden="true"></ion-icon>
                 {{ course.displayname || course.fullname }}
-            </div>
+            </h2>
+            
+            <ion-chip *ngIf="course.categoryname" class="core-course-category">
+                {{ course.categoryname }}
+            </ion-chip>
 
-            <!-- Simple Category Tag -->
-            <div class="metro-stats" *ngIf="isEnrolled && course.categoryname">
-                <div class="metro-stat">
-                    <ion-icon name="fas-folder" aria-hidden="true"></ion-icon>
-                    <span>{{ course.categoryname }}</span>
-                </div>
+            <div *ngIf="layout !== 'summarycard' && isEnrolled && progress >= 0 && completionUserTracked !== false"
+                 class="core-course-progress">
+                <p>{{ 'core.courses.progress' | translate }}: {{ progress }}%</p>
+                <core-progress-bar [progress]="progress" a11yText="core.courses.aria:courseprogress"></core-progress-bar>
             </div>
         </ion-label>
     </ion-item>

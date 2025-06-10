@@ -96,6 +96,7 @@ h6 {
     // Clean backgrounds
     --ion-background-color: #fafafa;
     --ion-item-background: #ffffff;
+}
 
     // School-specific UI Elements
     // Hide the entire end buttons section in toolbar (where user avatar was)
@@ -1336,7 +1337,6 @@ h6 {
             }
         }
     }
-}
 
 // Notifications page improvements
 page-addon-notifications-list {
@@ -1628,204 +1628,44 @@ page-core-course-index {
     }
 }
 
-// Clean Modern Courses Page - Complete Redesign
-page-addon-block-myoverview,
+// Courses Page - Starting Fresh
+// Hide course progress and completion info in course lists
+page-core-courses-list,
 page-core-courses-my-courses,
-page-core-courses-categories,
-page-core-courses-my {
-    ion-content {
-        --background: #f8fafc;
-    }
-
-    // Hide ugly elements completely
-    .addon-block-myoverview-filter,
-    .core-courses-filter {
-        display: none !important;
-    }
-    
-    .addon-block-myoverview-filter-row {
-        display: none !important;
-    }
-    
-    // Hide search bar
-    ion-searchbar {
-        display: none !important;
-    }
-    
-    // Hide all filter selectors  
-    core-combobox {
-        display: none !important;
-    }
-    
-    // Clean header with just the page title
-    ion-header {
-        ion-toolbar {
-            --background: linear-gradient(135deg, #4c96d1 0%, #70c388 100%);
-            --color: white;
-            
-            ion-title {
-                font-size: 24px;
-                font-weight: 700;
-                color: white;
-                text-align: center;
-            }
-        }
-    }
-
-    // Clean Course Grid Layout
-    .addon-block-myoverview-courses,
-    core-courses-course-list {
-        display: grid !important;
-        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)) !important;
-        gap: 20px !important;
-        padding: 24px !important;
-        background: transparent !important;
-        
-        @media (max-width: 768px) {
-            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)) !important;
-            padding: 16px !important;
-            gap: 16px !important;
-        }
-    }
-
-    // Simple, Clean Course Cards
-    core-courses-course-list-item {
-        opacity: 1 !important;
-        visibility: visible !important;
-
-        ion-card {
-            border-radius: 16px !important;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08) !important;
-            border: none !important;
-            margin: 0 !important;
-            overflow: hidden !important;
-            background: white !important;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
-            position: relative !important;
-            height: 160px !important;
-
-            &:hover {
-                transform: translateY(-4px) scale(1.02) !important;
-                box-shadow: 0 12px 40px rgba(76, 150, 209, 0.15) !important;
-            }
-
-            &::before {
-                content: "" !important;
-                position: absolute !important;
-                top: 0 !important;
-                left: 0 !important;
-                right: 0 !important;
-                height: 4px !important;
-                background: linear-gradient(90deg, #4c96d1, #70c388, #d4af37) !important;
-            }
-
-            // Clean content layout
-            ion-item {
-                --background: transparent !important;
-                --color: #1a1a1a !important;
-                --padding-start: 20px !important;
-                --padding-end: 20px !important;
-                --padding-top: 20px !important;
-                --padding-bottom: 20px !important;
-                --inner-padding-end: 0 !important;
-                --border-style: none !important;
-                height: 100% !important;
-                background: transparent !important;
-
-                ion-label {
-                    margin: 0 !important;
-                    height: 100% !important;
-                    display: flex !important;
-                    flex-direction: column !important;
-                    justify-content: center !important;
-                    color: #1a1a1a !important;
-
-                    // Course Name - Clean and simple
-                    .metro-course-title {
-                        font-size: 20px !important;
-                        font-weight: 700 !important;
-                        color: #1a1a1a !important;
-                        line-height: 1.3 !important;
-                        margin-bottom: 8px !important;
-                        word-wrap: break-word !important;
-                        overflow-wrap: break-word !important;
-                        display: -webkit-box !important;
-                        -webkit-line-clamp: 2 !important;
-                        -webkit-box-orient: vertical !important;
-                        overflow: hidden !important;
-                    }
-
-                    // Simple category tag
-                    .metro-stats {
-                        display: flex !important;
-                        align-items: center !important;
-                        margin-top: 12px !important;
-
-                        .metro-stat {
-                            background: rgba(76, 150, 209, 0.1) !important;
-                            color: #4c96d1 !important;
-                            padding: 6px 12px !important;
-                            border-radius: 20px !important;
-                            font-size: 12px !important;
-                            font-weight: 600 !important;
-                            display: flex !important;
-                            align-items: center !important;
-                            gap: 6px !important;
-
-                            ion-icon {
-                                font-size: 14px !important;
-                                color: #4c96d1 !important;
-                            }
-                        }
-                    }
-
-                    // Hide all progress elements
-                    .metro-progress,
-                    .progress-text,
-                    core-progress-bar {
-                        display: none !important;
-                    }
-
-                    // Override text colors
-                    h1, h2, h3, h4, h5, h6, p, span, div {
-                        color: #1a1a1a !important;
-                    }
-                }
-
-                // Favorite star
-                .metro-favorite {
-                    position: absolute !important;
-                    top: 16px !important;
-                    right: 16px !important;
-                    width: 32px !important;
-                    height: 32px !important;
-                    background: rgba(255, 215, 0, 0.1) !important;
-                    border-radius: 50% !important;
-                    display: flex !important;
-                    align-items: center !important;
-                    justify-content: center !important;
-
-                    ion-icon {
-                        font-size: 16px !important;
-                        color: #ffd700 !important;
-                    }
-                }
-            }
-
-            // Force clean text styling
-            * {
-                color: #1a1a1a !important;
-            }
-        }
-    }
-
-    // Hide all progress related elements globally
-    core-progress-bar,
-    .progress-text,
-    .metro-progress,
+page-addon-block-myoverview,
+.core-courses-courses-list,
+.addon-block-myoverview-courses {
     .core-course-progress {
         display: none !important;
     }
+    
+    core-progress-bar {
+        display: none !important;
+    }
+    
+    // Hide progress text
+    .progress-text {
+        display: none !important;
+    }
+}
+
+// Global course list item progress hiding
+core-courses-course-list-item {
+    .core-course-progress {
+        display: none !important;
+    }
+    
+    core-progress-bar {
+        display: none !important;
+    }
+    
+    // Hide any paragraph containing progress percentage
+    ion-label p {
+        &[class*="progress"] {
+            display: none !important;
+        }
+    }
+}
 
     // Empty State
     .addon-block-myoverview-empty,
@@ -1866,7 +1706,6 @@ page-core-courses-my {
             font-weight: 600;
         }
     }
-}
 
 /*
  * Dark Theme
@@ -2026,101 +1865,3 @@ ion-modal.core-modal-lateral {
     }
 }
 
-// Global Progress Bar Hiding - Remove completion percentages everywhere
-core-progress-bar,
-.core-course-progress,
-.progress-text,
-.metro-progress,
-.addon-block-myoverview .progress,
-.core-course-list-item .progress,
-.core-course-card .progress {
-    display: none !important;
-}
-
-// Hide completion percentages in text format
-*:contains("% Complete"),
-*:contains("% complete"),
-*:contains("Progress:"),
-*:contains("Completion:") {
-    display: none !important;
-}
-
-// Clean up any remaining progress indicators
-[class*="progress"],
-[class*="completion"] {
-    &:not(ion-button):not(ion-icon):not(.metro-progress):not(.aspire-stats) {
-        display: none !important;
-    }
-}
-
-// Final Metro Course Tiles Override - Maximum Priority  
-core-courses-course-list-item[data-name-length].aspire-metro-tile {
-    ion-card.aspire-metro-tile {
-        background: linear-gradient(135deg, #4c96d1 0%, #70c388 100%) !important;
-        color: white !important;
-        
-        &:nth-child(2n) {
-            background: linear-gradient(135deg, #70c388 0%, #4c96d1 100%) !important;
-        }
-        
-        &:nth-child(3n) {
-            background: linear-gradient(135deg, #d4af37 0%, #e5c554 100%) !important;
-        }
-        
-        &:nth-child(4n) {
-            background: linear-gradient(135deg, #6b8dd6 0%, #8e7ce6 100%) !important;
-        }
-        
-        &:nth-child(5n) {
-            background: linear-gradient(135deg, #ff7b7b 0%, #ff9f9f 100%) !important;
-        }
-
-        ion-item {
-            background: transparent !important;
-            
-            ion-label {
-                color: white !important;
-                
-                .metro-course-title {
-                    color: white !important;
-                    font-size: 18px !important;
-                    font-weight: 700 !important;
-                    text-shadow: 0 1px 3px rgba(0,0,0,0.3) !important;
-                    display: block !important;
-                    visibility: visible !important;
-                    opacity: 1 !important;
-                }
-                
-                .metro-stats {
-                    color: white !important;
-                    
-                    .metro-stat {
-                        color: white !important;
-                        background: rgba(255, 255, 255, 0.2) !important;
-                        
-                        span, ion-icon {
-                            color: white !important;
-                        }
-                    }
-                }
-                
-                .metro-progress {
-                    color: white !important;
-                    
-                    .progress-text {
-                        color: rgba(255, 255, 255, 0.9) !important;
-                    }
-                }
-                
-                * {
-                    color: white !important;
-                }
-            }
-        }
-        
-        // Force all text to be white
-        * {
-            color: white !important;
-        }
-    }
-}
