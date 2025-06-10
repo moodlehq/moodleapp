@@ -1,13 +1,20 @@
 diff --git a/node_modules/@moodlehq/phonegap-plugin-push/src/ios/EncryptionHandler.m b/node_modules/@moodlehq/phonegap-plugin-push/src/ios/EncryptionHandler.m
-index 1ee2277..5f8f2eb 100644
+index 1ee2277..2f43c49 100644
 --- a/node_modules/@moodlehq/phonegap-plugin-push/src/ios/EncryptionHandler.m
 +++ b/node_modules/@moodlehq/phonegap-plugin-push/src/ios/EncryptionHandler.m
-@@ -6,7 +6,7 @@
+@@ -6,7 +6,14 @@
  //
  
  #import "EncryptionHandler.h"
 -#import "Moodle-Swift.h"
-+#import "Aspire School-Swift.h"
++
++// Forward declare the Swift class to avoid importing the Swift header
++@interface Crypto : NSObject
+++ (NSString *)decryptWithBase64CipherText:(NSString *)ciphertext;
+++ (NSString *)getPublicKey;
+++ (BOOL)keyExists;
+++ (void)generateKeypair;
++@end
  
  @implementation EncryptionHandler
  
