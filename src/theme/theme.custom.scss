@@ -1672,53 +1672,111 @@ core-courses-course-list-item {
         display: none !important;
     }
 
-    // Pastel color backgrounds for course cards
+    // Modern Tile UI for course cards
     ion-card {
         border: none !important;
-        border-radius: 16px !important;
+        border-radius: 0 !important; // Square tiles
         overflow: hidden !important;
-
-        // Pastel color classes based on course ID
+        height: 100% !important;
+        min-height: 150px !important; // Square/rectangle tiles
+        position: relative !important;
+        transition: all 0.2s ease !important;
+        cursor: pointer !important;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.12) !important;
+        
+        // Aspect ratios and grid spanning for different tile sizes
+        &.tile-small {
+            aspect-ratio: 1 !important; // Square
+            grid-column: span 1 !important;
+        }
+        
+        &.tile-medium {
+            aspect-ratio: 2 / 1 !important; // Rectangle
+            grid-column: span 2 !important;
+        }
+        
+        &.tile-large {
+            aspect-ratio: 3 / 1 !important; // Wide rectangle
+            grid-column: span 3 !important;
+            
+            @media (max-width: 768px) {
+                aspect-ratio: 2 / 1 !important;
+                grid-column: span 2 !important;
+            }
+            
+            @media (max-width: 480px) {
+                aspect-ratio: 1.5 / 1 !important;
+                grid-column: span 1 !important;
+            }
+        }
+        
+        // Tile hover/press effect
+        &:hover {
+            transform: scale(0.98) !important;
+            box-shadow: 0 0 0 2px rgba(255,255,255,0.8) inset !important;
+        }
+        
+        &:active {
+            transform: scale(0.96) !important;
+        }
+        
+        // Modern vibrant colors for tiles
         &.pastel-color-1 {
-            background: linear-gradient(135deg, #FFE5E5 0%, #FFD4D4 100%) !important; // Soft pink
+            background: #FF6B6B !important; // Vibrant red
         }
-
+        
         &.pastel-color-2 {
-            background: linear-gradient(135deg, #E5F3FF 0%, #D4E9FF 100%) !important; // Soft blue
+            background: #4ECDC4 !important; // Teal
         }
-
+        
         &.pastel-color-3 {
-            background: linear-gradient(135deg, #E5FFE5 0%, #D4FFD4 100%) !important; // Soft green
+            background: #45B7D1 !important; // Sky blue
         }
-
+        
         &.pastel-color-4 {
-            background: linear-gradient(135deg, #FFF5E5 0%, #FFE8D4 100%) !important; // Soft orange
+            background: #FFA502 !important; // Orange
         }
-
+        
         &.pastel-color-5 {
-            background: linear-gradient(135deg, #F5E5FF 0%, #E8D4FF 100%) !important; // Soft purple
+            background: #A29BFE !important; // Purple
         }
-
+        
         &.pastel-color-6 {
-            background: linear-gradient(135deg, #FFFFE5 0%, #FFFFD4 100%) !important; // Soft yellow
+            background: #FDA7DF !important; // Pink
         }
-
+        
         ion-item {
             --background: transparent !important;
             --padding-start: 20px !important;
+            --padding-end: 20px !important;
+            --padding-top: 20px !important;
+            --padding-bottom: 20px !important;
+            height: 100% !important;
+            --border-style: none !important;
+            --inner-padding-end: 0 !important;
 
             ion-label {
+                height: 100% !important;
+                display: flex !important;
+                flex-direction: column !important;
+                justify-content: center !important;
+                text-align: left !important; // Left-align like headers
+                
                 .item-heading {
-                    font-size: 18px !important;
-                    font-weight: 600 !important;
-                    color: #2d3436 !important;
-                }
-
-                ion-chip.core-course-category {
-                    --background: rgba(255, 255, 255, 0.6) !important;
-                    --color: #2d3436 !important;
-                    font-weight: 500 !important;
-                    backdrop-filter: blur(10px) !important;
+                    font-size: 28px !important; // Large header size
+                    font-weight: 800 !important; // Extra bold
+                    color: white !important;
+                    line-height: 1.1 !important; // Tight line height
+                    text-shadow: 0 2px 4px rgba(0,0,0,0.3) !important;
+                    letter-spacing: -1px !important; // Tighter letter spacing
+                    margin: 0 !important;
+                    word-break: break-word !important;
+                    text-transform: uppercase !important; // All caps for impact
+                    
+                    // Hide favorite star
+                    ion-icon {
+                        display: none !important;
+                    }
                 }
             }
         }
@@ -1751,6 +1809,30 @@ page-addon-block-myoverview {
                 border-color: #4c96d1;
                 box-shadow: 0 4px 16px rgba(76, 150, 209, 0.15);
             }
+        }
+    }
+    
+    // Tile grid layout - dynamic sizing
+    .addon-block-myoverview-courses {
+        display: grid !important;
+        grid-template-columns: repeat(3, 1fr) !important; // 3 column grid
+        grid-auto-rows: minmax(150px, auto) !important;
+        gap: 4px !important;
+        padding: 16px !important;
+        background: transparent !important;
+        
+        @media (max-width: 768px) {
+            grid-template-columns: repeat(2, 1fr) !important;
+            padding: 12px !important;
+        }
+        
+        @media (max-width: 480px) {
+            grid-template-columns: 1fr !important;
+        }
+        
+        core-courses-course-list-item {
+            margin: 0 !important;
+            display: contents !important; // Allow grid spanning
         }
     }
 }

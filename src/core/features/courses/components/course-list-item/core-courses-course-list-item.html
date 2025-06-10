@@ -1,7 +1,7 @@
 <ion-card [class.core-course-list-item]="layout === 'list' || layout === 'listwithenrol'"
     [class.core-course-list-card]="layout === 'card' || layout === 'summarycard'"
     [class.item-dimmed]="course.hidden" 
-    [ngClass]="getPastelColorClass()"
+    [ngClass]="[getPastelColorClass(), getTileSizeClass()]"
     (click)="openCourse()"
     button [attr.aria-label]="course.displayname || course.fullname">
 

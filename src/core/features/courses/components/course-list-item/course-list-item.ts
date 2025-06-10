@@ -115,6 +115,24 @@ export class CoreCoursesCourseListItemComponent implements OnInit, OnDestroy, On
     }
 
     /**
+     * Get tile size class based on clean course name length.
+     *
+     * @returns Tile size class name.
+     */
+    getTileSizeClass(): string {
+        const cleanName = this.getCleanCourseName();
+        const length = cleanName.length;
+        
+        if (length <= 10) {
+            return 'tile-small'; // Square - 1/3 width
+        } else if (length <= 20) {
+            return 'tile-medium'; // Rectangle - 2/3 width
+        } else {
+            return 'tile-large'; // Full width
+        }
+    }
+
+    /**
      * @inheritdoc
      */
     async ngOnInit(): Promise<void> {
