@@ -38,7 +38,7 @@
             </ion-item>
         }
 
-        <core-combobox [selection]="type" (onChange)="typeChanged($event)">
+        <core-combobox [(selection)]="type" (selectionChange)="typeChanged()">
             <ion-select-option class="ion-text-wrap" value="site">
                 {{ 'addon.notes.sitenotes' | translate }}
             </ion-select-option>

@@ -23,7 +23,7 @@
             </ion-col>
             @if (collections && collections.length > 1) {
                 <ion-col class="ion-no-padding" size="12" size-sm="6">
-                    <core-combobox [selection]="collectionId" (onChange)="searchTags(query, $event)" [disabled]="searching">
+                    <core-combobox [selection]="collectionId" (selectionChange)="searchTags(query, $event)" [disabled]="searching">
                         <ion-select-option class="ion-text-wrap" [value]="0">
                             {{ 'core.tag.inalltagcoll' | translate }}
                         </ion-select-option>

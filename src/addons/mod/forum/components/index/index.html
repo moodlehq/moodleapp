@@ -110,8 +110,8 @@
 
             @if (discussions && sortingAvailable && selectedSortOrder) {
                 <div class="ion-text-wrap">
-                    <core-combobox [label]="('core.sort' | translate)" (onChange)="setSortOrder($event)"
-                        [selection]="selectedSortOrder.value">
+                    <core-combobox [label]="('core.sort' | translate)" [selection]="selectedSortOrder.value"
+                        (selectionChange)="setSortOrder($event)">
                         <ion-select-option *ngFor="let order of sortOrders" class="ion-text-wrap" [value]="order.value">
                             {{ order.label | translate }}
                         </ion-select-option>

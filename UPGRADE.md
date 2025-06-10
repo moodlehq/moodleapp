@@ -6,6 +6,7 @@ For more information about upgrading, read the official documentation: https://m
 =====
 
  - "model" has been removed for site plugins because it isn't needed and it's not compatible with Angular 18. "model" is meant to support 2-way data binding in custom components, and site plugins cannot create components.
+- The (onChange) output in core-combobox has been deprecated, please use (selectionChange) instead.
 
 5.0.0
 =====

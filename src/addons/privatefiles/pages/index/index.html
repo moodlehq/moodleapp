@@ -31,7 +31,7 @@
         <core-loading [hideUntil]="filesLoaded">
             <!-- Allow selecting the files to see: private or site. -->
             @if (showPrivateFiles && showSiteFiles && !path) {
-                <core-combobox [selection]="root" (onChange)="rootChanged($event)">
+                <core-combobox [(selection)]="root" (onChange)="rootChanged()">
                     <ion-select-option class="ion-text-wrap" value="my">
                         {{ 'addon.privatefiles.privatefiles' | translate }}
                     </ion-select-option>
