@@ -84,9 +84,13 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
         timeFilterSelected: 'all', // Aspire School: Show all courses by default
         customFilters: [],
     };
+    
+    // Category filter for Aspire School
+    categoryFilter = 'all';
+    availableCategories: string[] = [];
 
     isLayoutSwitcherAvailable = false;
-    layout: AddonBlockMyOverviewLayouts = 'list';
+    layout: AddonBlockMyOverviewLayouts = 'card'; // Aspire School: Use card/block view by default
 
     sort: AddonBlockMyOverviewSortOptions = {
         shortnameEnabled: false,
@@ -287,13 +291,14 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
         this.allCourses = await loadWatcher.watchRequest(
             CoreCoursesHelper.getUserCoursesWithOptionsObservable({
                 sort: this.sort.selected,
-                loadCategoryNames: showCategories,
+                loadCategoryNames: true, // Always load category names for Aspire School
                 readingStrategy: this.isDirty ? CoreSitesReadingStrategy.PREFER_NETWORK : loadWatcher.getReadingStrategy(),
             }),
             (prevCourses, newCourses) => this.coursesHaveMeaningfulChanges(prevCourses, newCourses),
         );
 
         this.hasCourses = this.allCourses.length > 0;
+        this.updateAvailableCategories();
     }
 
     /**
@@ -396,35 +401,9 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
      * @param layouts Config available layouts.
      */
     protected loadLayouts(layouts?: string[]): void {
-        const layoutsOptions: AddonBlockMyOverviewLayouts[] = [];
-
-        if (layouts === undefined) {
-            this.isLayoutSwitcherAvailable = true;
-
-            return;
-        }
-
-        layouts.forEach((layout) => {
-            if (layout == '') {
-                return;
-            }
-
-            const validLayout: AddonBlockMyOverviewLayouts = layout == 'summary' ? 'list' : layout as AddonBlockMyOverviewLayouts;
-            if (!layoutsOptions.includes(validLayout)) {
-                layoutsOptions.push(validLayout);
-            }
-        });
-
-        // If no layout is available use list.
-        if (layoutsOptions.length == 0) {
-            layoutsOptions.push('list');
-        }
-
-        if (!layoutsOptions.includes(this.layout)) {
-            this.layout = layoutsOptions[0];
-        }
-
-        this.isLayoutSwitcherAvailable = layoutsOptions.length > 1;
+        // Aspire School: Always use card layout, no switching allowed
+        this.layout = 'card';
+        this.isLayoutSwitcherAvailable = false;
     }
 
     /**
@@ -620,12 +599,31 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
                     course.fullname.toLowerCase().indexOf(value) > -1);
             }
         }
+        
+        // Category filter for Aspire School
+        if (this.categoryFilter && this.categoryFilter !== 'all') {
+            this.filteredCourses = this.filteredCourses.filter((course) =>
+                course.categoryname === this.categoryFilter);
+        }
 
         this.sortCourses(this.sort.selected);
 
         // Refresh prefetch data (if enabled).
         this.prefetchIconsInitialized = false;
         this.initPrefetchCoursesIcons();
+    }
+    
+    /**
+     * Extract available categories from all courses.
+     */
+    protected updateAvailableCategories(): void {
+        const categoriesSet = new Set<string>();
+        this.allCourses.forEach(course => {
+            if (course.categoryname) {
+                categoriesSet.add(course.categoryname);
+            }
+        });
+        this.availableCategories = Array.from(categoriesSet).sort();
     }
 
     /**
@@ -717,6 +715,17 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
         this.sort.selected = selected;
         await this.saveSort(selected);
         this.sortCourses(selected);
+    }
+    
+    /**
+     * Category filter selected - apply filter.
+     *
+     * @param selected Category selected.
+     * @returns Promise resolved when done.
+     */
+    async categoryFilterChanged(selected: string): Promise<void> {
+        this.categoryFilter = selected;
+        await this.filterCourses();
     }
 
     /**

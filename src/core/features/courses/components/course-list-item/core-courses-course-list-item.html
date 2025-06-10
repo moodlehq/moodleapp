@@ -1,32 +1,16 @@
 <ion-card [class.core-course-list-item]="layout === 'list' || layout === 'listwithenrol'"
     [class.core-course-list-card]="layout === 'card' || layout === 'summarycard'"
-    [class.item-dimmed]="course.hidden" (click)="openCourse()"
+    [class.item-dimmed]="course.hidden" 
+    [ngClass]="getPastelColorClass()"
+    (click)="openCourse()"
     button [attr.aria-label]="course.displayname || course.fullname">
 
-    <div *ngIf="layout === 'card' || layout === 'summarycard'" class="core-course-thumb" 
-         [ngClass]="{'course-icon': !course.courseimage}">
-        <img *ngIf="course.courseimage" [src]="course.courseimage" [alt]="" loading="lazy">
-        <ion-icon *ngIf="!course.courseimage" name="fas-graduation-cap" aria-hidden="true"
-                  class="aspire-course-icon"></ion-icon>
-    </div>
-
     <ion-item class="ion-text-wrap">
-        <ion-avatar *ngIf="layout === 'list' || layout === 'listwithenrol'" slot="start"
-                    class="core-course-thumb" [ngClass]="{'course-icon': !course.courseimage}">
-            <img *ngIf="course.courseimage" [src]="course.courseimage" [alt]="" loading="lazy">
-            <ion-icon *ngIf="!course.courseimage" name="fas-graduation-cap" aria-hidden="true"
-                      class="aspire-course-icon"></ion-icon>
-        </ion-avatar>
-
         <ion-label>
             <h2 class="item-heading">
                 <ion-icon *ngIf="course.isfavourite" name="fas-star" aria-hidden="true"></ion-icon>
-                {{ course.displayname || course.fullname }}
+                {{ getCleanCourseName() }}
             </h2>
-            
-            <ion-chip *ngIf="course.categoryname" class="core-course-category">
-                {{ course.categoryname }}
-            </ion-chip>
 
             <div *ngIf="layout !== 'summarycard' && isEnrolled && progress >= 0 && completionUserTracked !== false"
                  class="core-course-progress">

@@ -20,70 +20,15 @@
 </ion-item-divider>
 <core-loading [hideUntil]="loaded">
 
-    <!-- Modern Compact Filter Section -->
-    <div class="addon-block-myoverview-filter" *ngIf="hasCourses">
-        <!-- Search Bar -->
-        <ion-searchbar [(ngModel)]="textFilter" (ionInput)="filterTextChanged($event.target)"
-            [placeholder]="'core.courses.searchcourses' | translate" />
-        
-        <!-- Filter Controls Row -->
-        <div class="addon-block-myoverview-filter-row">
-            <core-combobox *ngIf="filters.enabled" [selection]="filters.timeFilterSelected"
-                (onChange)="filterOptionsChanged($event)" class="filter-dropdown">
-                <ion-select-option class="ion-text-wrap" value="allincludinghidden"
-                    *ngIf="filters.show.allincludinghidden">
-                    {{ 'addon.block_myoverview.allincludinghidden' | translate }}
-                </ion-select-option>
-                <ion-select-option class="ion-text-wrap" value="all" *ngIf="filters.show.all">
-                    {{ 'addon.block_myoverview.all' | translate }}
-                </ion-select-option>
-                <ion-select-option class="ion-text-wrap" value="inprogress"
-                    *ngIf="filters.show.inprogress">
-                    {{ 'addon.block_myoverview.inprogress' | translate }}
-                </ion-select-option>
-                <ion-select-option class="ion-text-wrap" value="future"
-                    *ngIf="filters.show.future">
-                    {{ 'addon.block_myoverview.future' | translate }}
-                </ion-select-option>
-                <ion-select-option class="ion-text-wrap" value="past" *ngIf="filters.show.past">
-                    {{ 'addon.block_myoverview.past' | translate }}
-                </ion-select-option>
-                <ng-container *ngIf="filters.show.custom">
-                    <ng-container *ngFor="let customOption of filters.customFilters; let index = index">
-                        <ion-select-option class="ion-text-wrap" value="custom-{{index}}">
-                            {{ customOption.name }}
-                        </ion-select-option>
-                    </ng-container>
-                </ng-container>
-                <ion-select-option class="ion-text-wrap" value="favourite" *ngIf="filters.show.favourite">
-                    {{ 'addon.block_myoverview.favourites' | translate }}
-                </ion-select-option>
-                <ion-select-option class="ion-text-wrap" value="hidden" *ngIf="filters.show.hidden">
-                    {{ 'addon.block_myoverview.hiddencourses' | translate }}
-                </ion-select-option>
-            </core-combobox>
-
-            <core-combobox *ngIf="sort.enabled" [selection]="sort.selected" (onChange)="sortOptionsChanged($event)">
-                <ion-select-option class="ion-text-wrap" value="fullname">
-                    {{'addon.block_myoverview.title' | translate}}
-                </ion-select-option>
-                <ion-select-option class="ion-text-wrap" value="shortname" *ngIf="sort.shortnameEnabled">
-                    {{'addon.block_myoverview.shortname' | translate}}
-                </ion-select-option>
-                <ion-select-option class="ion-text-wrap" value="lastaccess">
-                    {{'addon.block_myoverview.lastaccessed' | translate}}
-                </ion-select-option>
-            </core-combobox>
-
-            <ion-button *ngIf="isLayoutSwitcherAvailable && layout === 'card'" fill="clear" size="small" (click)="toggleLayout('list')"
-                [ariaLabel]="'addon.block_myoverview.aria:list' | translate">
-                <ion-icon slot="icon-only" name="fas-list" aria-hidden="true" />
-            </ion-button>
-            <ion-button *ngIf="isLayoutSwitcherAvailable && layout === 'list'" fill="clear" size="small" (click)="toggleLayout('card')"
-                [ariaLabel]="'addon.block_myoverview.aria:card' | translate">
-                <ion-icon slot="icon-only" name="fas-table-cells-large" aria-hidden="true" />
-            </ion-button>
-        </div>
+    <!-- Category Filter for Aspire School -->
+    <div class="aspire-category-filter" *ngIf="hasCourses && availableCategories.length > 0">
+        <ion-select [(ngModel)]="categoryFilter" (ionChange)="categoryFilterChanged($event.detail.value)"
+            [placeholder]="'Filter by Category'" interface="popover">
+            <ion-select-option value="all">All Categories</ion-select-option>
+            <ion-select-option *ngFor="let category of availableCategories" [value]="category">
+                {{ category }}
+            </ion-select-option>
+        </ion-select>
     </div>
 
     <!-- Empty State -->

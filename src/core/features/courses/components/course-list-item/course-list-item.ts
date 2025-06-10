@@ -90,6 +90,31 @@ export class CoreCoursesCourseListItemComponent implements OnInit, OnDestroy, On
     }
 
     /**
+     * Get cleaned course name without year and term indicators.
+     *
+     * @returns Cleaned course name.
+     */
+    getCleanCourseName(): string {
+        const name = this.course.displayname || this.course.fullname || '';
+        // Remove Y1-Y13 and T1-T3 patterns
+        return name
+            .replace(/\bY([1-9]|1[0-3])\b/gi, '') // Remove Y1 to Y13
+            .replace(/\bT[1-3]\b/gi, '') // Remove T1, T2, T3
+            .trim() // Remove extra spaces
+            .replace(/\s+/g, ' '); // Replace multiple spaces with single space
+    }
+
+    /**
+     * Get pastel color class based on course ID.
+     *
+     * @returns Pastel color class name.
+     */
+    getPastelColorClass(): string {
+        const colorIndex = (this.course.id % 6) + 1;
+        return `pastel-color-${colorIndex}`;
+    }
+
+    /**
      * @inheritdoc
      */
     async ngOnInit(): Promise<void> {
