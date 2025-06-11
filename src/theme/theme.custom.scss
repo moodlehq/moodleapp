@@ -2254,18 +2254,67 @@ page-core-course-index {
 
 // Aspire School: Modern User Menu Design
 .aspire-user-menu-header {
-    ion-toolbar {
+    --background: transparent;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 10;
+    
+    .aspire-notch-toolbar {
         --background: transparent;
         --border-width: 0;
-        position: absolute;
-        top: 0;
-        z-index: 10;
+        --padding-top: env(safe-area-inset-top, 20px);
+        --min-height: calc(56px + env(safe-area-inset-top, 20px));
+        padding-top: env(safe-area-inset-top, 20px) !important;
+        
+        .aspire-logout-top-btn {
+            --color: white;
+            --background: rgba(255,255,255,0.15);
+            --background-hover: rgba(255,255,255,0.25);
+            --background-activated: rgba(255,255,255,0.2);
+            --background-focused: rgba(255,255,255,0.25);
+            --border-radius: 20px;
+            --padding-start: 16px;
+            --padding-end: 16px;
+            --box-shadow: none;
+            --ripple-color: transparent;
+            font-weight: 600;
+            font-size: 14px;
+            text-transform: none;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.2);
+            transition: all 0.3s ease;
+            overflow: hidden;
+            
+            // Remove focus outline
+            &:focus {
+                outline: none;
+                box-shadow: none;
+            }
+            
+            &::after {
+                display: none;
+            }
+            
+            ion-icon {
+                font-size: 18px;
+                margin-right: 6px;
+            }
+            
+            &:hover {
+                transform: scale(1.05);
+                box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            }
+        }
         
         .aspire-close-btn {
             --color: white;
             --background: rgba(0,0,0,0.2);
             border-radius: 50%;
             margin: 8px;
+            width: 40px;
+            height: 40px;
             
             &:hover {
                 --background: rgba(0,0,0,0.3);
@@ -2291,7 +2340,7 @@ page-core-course-index {
         top: 0;
         left: 0;
         right: 0;
-        height: 140px;
+        height: calc(140px + env(safe-area-inset-top, 20px));
         background: linear-gradient(135deg, #4c96d1 0%, #70c388 100%);
         border-radius: 0 0 24px 24px;
         
@@ -2306,7 +2355,7 @@ page-core-course-index {
     .aspire-profile-content {
         position: relative;
         text-align: center;
-        padding: 60px 20px 20px;
+        padding: calc(60px + env(safe-area-inset-top, 20px)) 20px 20px;
         
         .aspire-avatar-wrapper {
             position: relative;
@@ -2514,8 +2563,8 @@ page-core-course-index {
     padding: 0;
     
     .aspire-footer-actions {
-        display: flex;
-        flex-direction: column;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
         
         button {
             display: flex;
@@ -2535,6 +2584,10 @@ page-core-course-index {
                 font-size: 20px;
             }
             
+            &:not(:last-child) {
+                border-right: 1px solid #f1f3f4;
+            }
+            
             &.aspire-support-button {
                 color: #4c96d1;
                 
@@ -2545,19 +2598,9 @@ page-core-course-index {
             
             &.aspire-switch-button {
                 color: #70c388;
-                border-top: 1px solid #f1f3f4;
                 
                 &:hover {
                     background: #f0faf5;
-                }
-            }
-            
-            &.aspire-logout-button {
-                color: #ff6b6b;
-                border-top: 1px solid #f1f3f4;
-                
-                &:hover {
-                    background: #fff5f5;
                 }
             }
         }

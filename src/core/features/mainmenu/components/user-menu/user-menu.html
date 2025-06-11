@@ -1,5 +1,11 @@
 <ion-header class="aspire-user-menu-header">
-    <ion-toolbar>
+    <ion-toolbar class="aspire-notch-toolbar">
+        <ion-buttons slot="start">
+            <ion-button fill="clear" (click)="logout($event)" class="aspire-logout-top-btn">
+                <ion-icon name="log-out-outline" slot="start" aria-hidden="true" />
+                <span>{{ 'core.mainmenu.logout' | translate }}</span>
+            </ion-button>
+        </ion-buttons>
         <ion-buttons slot="end">
             <ion-button fill="clear" (click)="close($event)" [ariaLabel]="'core.close' | translate" class="aspire-close-btn">
                 <ion-icon name="fas-xmark" slot="icon-only" aria-hidden="true" />
@@ -142,7 +148,7 @@
     </core-loading>
 </ion-content>
 <ion-footer class="aspire-user-menu-footer">
-    <!-- Support & Logout Actions -->
+    <!-- Support & Switch Account Actions -->
     <div class="aspire-footer-actions">
         <button class="aspire-support-button" (click)="contactSupport($event)" *ngIf="displayContactSupport">
             <ion-icon name="help-circle-outline"></ion-icon>
@@ -152,11 +158,6 @@
         <button class="aspire-switch-button" (click)="switchAccounts($event)" *ngIf="displaySwitchAccount">
             <ion-icon name="swap-horizontal-outline"></ion-icon>
             <span>{{ 'core.mainmenu.switchaccount' | translate }}</span>
-        </button>
-        
-        <button class="aspire-logout-button" (click)="logout($event)">
-            <ion-icon name="log-out-outline"></ion-icon>
-            <span>{{ 'core.mainmenu.logout' | translate }}</span>
         </button>
     </div>
 </ion-footer>
