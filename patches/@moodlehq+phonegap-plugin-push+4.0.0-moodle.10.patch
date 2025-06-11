@@ -1,20 +1,29 @@
+diff --git a/node_modules/@moodlehq/phonegap-plugin-push/plugin.xml b/node_modules/@moodlehq/phonegap-plugin-push/plugin.xml
+index 71d0b02..749398a 100755
+--- a/node_modules/@moodlehq/phonegap-plugin-push/plugin.xml
++++ b/node_modules/@moodlehq/phonegap-plugin-push/plugin.xml
+@@ -123,6 +123,8 @@
+     <source-file src="src/ios/PushPlugin.m"/>
+     <source-file src="src/ios/EncryptionHandler.m"/>
+     <source-file src="src/ios/Crypto.swift"/>
++    
++    <dependency id="cordova-plugin-add-swift-support" version="^2.0.0"/>
+     <header-file src="src/ios/AppDelegate+notification.h"/>
+     <header-file src="src/ios/PushPlugin.h"/>
+     <header-file src="src/ios/EncryptionHandler.h"/>
 diff --git a/node_modules/@moodlehq/phonegap-plugin-push/src/ios/EncryptionHandler.m b/node_modules/@moodlehq/phonegap-plugin-push/src/ios/EncryptionHandler.m
-index 1ee2277..2f43c49 100644
+index 1ee2277..6ea599d 100644
 --- a/node_modules/@moodlehq/phonegap-plugin-push/src/ios/EncryptionHandler.m
 +++ b/node_modules/@moodlehq/phonegap-plugin-push/src/ios/EncryptionHandler.m
-@@ -6,7 +6,14 @@
+@@ -6,7 +6,10 @@
  //
  
  #import "EncryptionHandler.h"
 -#import "Moodle-Swift.h"
 +
-+// Forward declare the Swift class to avoid importing the Swift header
-+@interface Crypto : NSObject
-++ (NSString *)decryptWithBase64CipherText:(NSString *)ciphertext;
-++ (NSString *)getPublicKey;
-++ (BOOL)keyExists;
-++ (void)generateKeypair;
-+@end
++// Forward declare the Swift class
++// The actual implementation will be linked from Crypto.swift
++@class Crypto;
  
  @implementation EncryptionHandler
  
