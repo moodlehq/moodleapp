@@ -1,6 +1,6 @@
 {
     "name": "moodlemobile",
-    "version": "4.5.0",
+    "version": "4.5.1",
     "description": "The official app for Moodle.",
     "author": {
         "name": "Moodle Pty Ltd.",
@@ -154,6 +154,8 @@
         "circular-dependency-plugin": "5.2.2",
         "concurrently": "8.2.2",
         "cordova-android": "^13.0.0",
+        "cordova-plugin-ionic": "^5.5.3",
+        "cordova-plugin-ionic-webview": "^5.0.1",
         "cordova-plugin-moodleapp": "file:cordova-plugin-moodleapp",
         "cross-env": "7.0.3",
         "eslint": "8.57.1",
@@ -238,7 +240,15 @@
             "cordova-plugin-wkuserscript": {},
             "cordova-plugin-wkwebview-cookies": {},
             "cordova-sqlite-storage": {},
-            "nl.kingsquare.cordova.background-audio": {}
+            "nl.kingsquare.cordova.background-audio": {},
+            "cordova-plugin-ionic": {
+                "APP_ID": "f9e94571",
+                "CHANNEL_NAME": "Production",
+                "UPDATE_METHOD": "background",
+                "MAX_STORE": "2",
+                "MIN_BACKGROUND_DURATION": "30",
+                "UPDATE_API": "https://api.ionicjs.com"
+            }
         }
     }
 }
