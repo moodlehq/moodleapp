@@ -173,5 +173,7 @@ Feature: Test basic usage of BBB activity in app
     When I press "Presentation" in the app
     And I press "OK" in the app
     And I switch to the browser tab opened by the app
-    And I log in as "student1"
-    Then I should see "The recording URL is invalid"
+    # This part fails due to an issue in LSM.
+    # @TODO Uncomment when MDL-85704 is solved
+    # And I log in as "student1"
+    # Then I should see "The recording URL is invalid"
