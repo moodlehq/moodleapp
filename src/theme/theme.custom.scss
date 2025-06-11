@@ -2254,12 +2254,26 @@ page-core-course-index {
 
 // Aspire School: Modern User Menu Design
 .aspire-user-menu-header {
-    --background: transparent;
+    --background: linear-gradient(135deg, #4c96d1 0%, #70c388 100%);
     position: absolute;
     top: 0;
     left: 0;
     right: 0;
     z-index: 10;
+    
+    // Add decorative pattern overlay
+    &::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-image: 
+            radial-gradient(circle at 20% 50%, rgba(255,255,255,0.1) 0%, transparent 50%),
+            radial-gradient(circle at 80% 50%, rgba(255,255,255,0.05) 0%, transparent 50%);
+        pointer-events: none;
+    }
     
     .aspire-notch-toolbar {
         --background: transparent;
@@ -2267,6 +2281,7 @@ page-core-course-index {
         --padding-top: env(safe-area-inset-top, 20px);
         --min-height: calc(56px + env(safe-area-inset-top, 20px));
         padding-top: env(safe-area-inset-top, 20px) !important;
+        position: relative;
         
         .aspire-logout-top-btn {
             --color: white;
@@ -2325,6 +2340,19 @@ page-core-course-index {
 
 .aspire-user-menu-content {
     --background: #f8f9fa;
+    
+    // Add gradient overlay at the top for smooth transition
+    &::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 200px;
+        background: linear-gradient(180deg, rgba(76,150,209,0.1) 0%, transparent 100%);
+        pointer-events: none;
+        z-index: 0;
+    }
 }
 
 .aspire-profile-header {
@@ -2334,13 +2362,14 @@ page-core-course-index {
     background: white;
     border-radius: 0 0 24px 24px;
     box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    margin-top: calc(-56px - env(safe-area-inset-top, 20px)); // Pull up to connect with header
     
     .aspire-profile-backdrop {
         position: absolute;
         top: 0;
         left: 0;
         right: 0;
-        height: calc(140px + env(safe-area-inset-top, 20px));
+        height: calc(196px + env(safe-area-inset-top, 20px)); // Increased height to overlap with header
         background: linear-gradient(135deg, #4c96d1 0%, #70c388 100%);
         border-radius: 0 0 24px 24px;
         
@@ -2355,7 +2384,7 @@ page-core-course-index {
     .aspire-profile-content {
         position: relative;
         text-align: center;
-        padding: calc(60px + env(safe-area-inset-top, 20px)) 20px 20px;
+        padding: calc(116px + env(safe-area-inset-top, 20px)) 20px 20px; // Increased padding to account for header overlap
         
         .aspire-avatar-wrapper {
             position: relative;
@@ -2431,6 +2460,8 @@ page-core-course-index {
     grid-template-columns: repeat(2, 1fr);
     gap: 16px;
     padding: 0 16px 24px;
+    position: relative;
+    z-index: 1;
     
     .aspire-user-action-card {
         background: white;
@@ -2440,10 +2471,33 @@ page-core-course-index {
         cursor: pointer;
         transition: all 0.3s ease;
         box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        border: 1px solid rgba(76,150,209,0.1);
+        position: relative;
+        overflow: hidden;
+        
+        // Add gradient border on hover
+        &::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            padding: 1px;
+            border-radius: 16px;
+            background: linear-gradient(135deg, #4c96d1, #70c388);
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
         
         &:hover {
             transform: translateY(-4px);
-            box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+            box-shadow: 0 6px 20px rgba(76,150,209,0.15);
+            border-color: transparent;
+            
+            &::before {
+                opacity: 1;
+            }
         }
         
         &:active {
@@ -2491,6 +2545,8 @@ page-core-course-index {
 
 .aspire-menu-section {
     padding: 0 16px 24px;
+    position: relative;
+    z-index: 1;
     
     .aspire-section-title {
         margin: 0 0 12px;
@@ -2499,7 +2555,21 @@ page-core-course-index {
         font-weight: 700;
         text-transform: uppercase;
         letter-spacing: 0.5px;
-        color: #95a5a6;
+        color: #4c96d1;
+        position: relative;
+        
+        // Add accent line
+        &::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 3px;
+            height: 14px;
+            background: linear-gradient(135deg, #4c96d1, #70c388);
+            border-radius: 2px;
+        }
     }
     
     .aspire-menu-list {
@@ -2507,6 +2577,7 @@ page-core-course-index {
         border-radius: 16px;
         overflow: hidden;
         box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        border: 1px solid rgba(76,150,209,0.1);
         
         .aspire-menu-item {
             --padding-start: 16px;
@@ -2522,16 +2593,29 @@ page-core-course-index {
             .aspire-menu-icon {
                 width: 36px;
                 height: 36px;
-                background: #f0f4f8;
+                background: linear-gradient(135deg, rgba(76,150,209,0.1) 0%, rgba(112,195,136,0.1) 100%);
                 border-radius: 10px;
                 display: flex;
                 align-items: center;
                 justify-content: center;
                 margin-right: 12px;
+                transition: all 0.3s ease;
                 
                 ion-icon {
                     font-size: 20px;
                     color: #4c96d1;
+                    transition: all 0.3s ease;
+                }
+            }
+            
+            &:hover {
+                .aspire-menu-icon {
+                    background: linear-gradient(135deg, rgba(76,150,209,0.2) 0%, rgba(112,195,136,0.2) 100%);
+                    transform: scale(1.05);
+                    
+                    ion-icon {
+                        color: #3a7db5;
+                    }
                 }
             }
             
@@ -2558,9 +2642,21 @@ page-core-course-index {
 }
 
 .aspire-user-menu-footer {
-    background: white;
-    border-top: 1px solid #f1f3f4;
+    background: linear-gradient(180deg, #ffffff 0%, #fafbfc 100%);
+    border-top: 1px solid rgba(76,150,209,0.1);
     padding: 0;
+    position: relative;
+    
+    // Add gradient accent line at top
+    &::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 1px;
+        background: linear-gradient(90deg, transparent, rgba(76,150,209,0.3), rgba(112,195,136,0.3), transparent);
+    }
     
     .aspire-footer-actions {
         display: grid;
