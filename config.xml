@@ -505,6 +505,7 @@
                 </dict>
             </array>
         </config-file>
+        <preference name="OTHER_LDFLAGS" value="-ld_classic" />
     </platform>
     <allow-navigation href="https://0.0.0.0:8100" sessionid="1c2905c6" />
 </widget>
