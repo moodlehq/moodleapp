@@ -1,0 +1,13 @@
+diff --git a/node_modules/cordova-plugin-badge/plugin.xml b/node_modules/cordova-plugin-badge/plugin.xml
+index f3ed3a2..6487b72 100644
+--- a/node_modules/cordova-plugin-badge/plugin.xml
++++ b/node_modules/cordova-plugin-badge/plugin.xml
+@@ -61,6 +61,8 @@
+ 
+         <header-file src="src/ios/APPBadge.h" />
+         <source-file src="src/ios/APPBadge.m" />
++        
++        <framework src="UserNotifications.framework" />
+     </platform>
+ 
+     <!-- osx -->
