@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, ViewChild, ElementRef, Input } from '@angular/core';
+import { Component, ElementRef, viewChild, input, signal } from '@angular/core';
 
 import { CoreSites } from '@services/sites';
 import { CoreForms } from '@singletons/form';
@@ -44,15 +44,15 @@ import { CoreUpdateNonReactiveAttributesDirective } from '@directives/update-non
 })
 export class CorePasswordModalComponent {
 
-    @ViewChild('passwordForm') formElement?: ElementRef;
+    formElement = viewChild<ElementRef>('passwordForm');
 
-    @Input() title = 'core.login.password'; // Translatable string to be shown on modal title.
-    @Input() placeholder =  'core.login.password'; // Translatable string to be shown on password input as placeholder.
-    @Input() submit = 'core.submit'; // Translatable string to be shown on submit button.
-    @Input() validator?: (password?: string) => Promise<CorePasswordModalResponse>; // Function to validate the password.
+    title = input<CorePasswordModalInputs['title']>('core.login.password'); // Translatable string shown on modal title.
+    placeholder = input<CorePasswordModalInputs['placeholder']>('core.login.password'); // Translatable string shown as placeholder.
+    submit = input<CorePasswordModalInputs['submit']>('core.submit'); // Translatable string shown on submit button.
+    validator = input<CorePasswordModalInputs['validator']>(); // Function to validate the password.
 
-    password = ''; // Previous entered password.
-    error?: string; // Error message to be shown.
+    password = signal(''); // Previous entered password.
+    error = signal<string>(''); // Error message to be shown.
 
     /**
      * Send the password back.
@@ -63,9 +63,9 @@ export class CorePasswordModalComponent {
         e.preventDefault();
         e.stopPropagation();
 
-        CoreForms.triggerFormSubmittedEvent(this.formElement, false, CoreSites.getCurrentSiteId());
+        CoreForms.triggerFormSubmittedEvent(this.formElement(), false, CoreSites.getCurrentSiteId());
 
-        const response = await this.validatePassword(this.password);
+        const response = await this.validatePassword(this.password());
 
         if (response.validated === undefined) {
             ModalController.dismiss(response);
@@ -76,7 +76,7 @@ export class CorePasswordModalComponent {
         }
 
         if (typeof response.error === 'string') {
-            this.error = response.error;
+            this.error.set(response.error);
         } else if (response.error) {
             ModalController.dismiss(response.error);
         }
@@ -92,13 +92,14 @@ export class CorePasswordModalComponent {
     protected async validatePassword(password: string): Promise<CorePasswordModalResponse> {
         const response: CorePasswordModalResponse = { password };
 
-        if (!this.validator) {
+        const validator = this.validator();
+        if (!validator) {
             return response;
         }
 
         const modal = await CoreLoadings.show('core.loading', true);
         try {
-            return await this.validator(password);
+            return await validator(password);
         } catch (error) {
             response.validated = false;
             response.error = error;
@@ -114,14 +115,20 @@ export class CorePasswordModalComponent {
      * Close modal.
      */
     closeModal(): void {
-        CoreForms.triggerFormCancelledEvent(this.formElement, CoreSites.getCurrentSiteId());
+        CoreForms.triggerFormCancelledEvent(this.formElement(), CoreSites.getCurrentSiteId());
 
         ModalController.dismiss();
     }
 
 }
+type CorePasswordModalInputs = {
+    title: string;
+    placeholder: string;
+    submit: string;
+    validator: (password?: string) => Promise<CorePasswordModalResponse>;
+};
 
-export type CorePasswordModalParams = Partial<Pick<CorePasswordModalComponent, 'title' | 'placeholder' | 'submit' | 'validator'>>;
+export type CorePasswordModalParams = Partial<CorePasswordModalInputs>;
 
 export type CorePasswordModalResponse = {
     password: string;
