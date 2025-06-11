@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, ContentChild, Input, Output, TemplateRef, EventEmitter } from '@angular/core';
+import { Component, ContentChild, TemplateRef, input, output } from '@angular/core';
 
 import { CoreSiteBasicInfo } from '@services/sites';
 import { CoreAccountsList } from '@features/login/services/login-helper';
@@ -53,10 +53,11 @@ import { CoreLinkDirective } from '@directives/link';
 })
 export class CoreSitesListComponent<T extends CoreSiteBasicInfo> {
 
-    @Input({ required: true }) accountsList!: CoreAccountsList<T>;
-    @Input({ transform: toBoolean }) sitesClickable = false; // Whether the sites are clickable.
-    @Input({ transform: toBoolean }) currentSiteClickable?: boolean; // If set, set a different clickable value for current site.
-    @Output() onSiteClicked = new EventEmitter<T>();
+    accountsList = input.required<CoreAccountsList<T>>();
+    sitesClickable = input(false, { transform: toBoolean }); // Whether the sites are clickable.
+    currentSiteClickable = input<boolean, unknown>(undefined, { transform: toBoolean }); // If set, set a different clickable value
+                                                                                         // for current site.
+    onSiteClicked = output<T>();
 
     @ContentChild('siteItem') siteItemTemplate?: TemplateRef<{site: T; isCurrentSite: boolean}>;
     @ContentChild('siteLabel') siteLabelTemplate?: TemplateRef<{site: T; isCurrentSite: boolean}>;
@@ -68,7 +69,7 @@ export class CoreSitesListComponent<T extends CoreSiteBasicInfo> {
      * @returns Whether it's clickable.
      */
     isSiteClickable(isCurrentSite: boolean): boolean {
-        return isCurrentSite ? this.currentSiteClickable ?? this.sitesClickable : this.sitesClickable;
+        return isCurrentSite ? this.currentSiteClickable() ?? this.sitesClickable() : this.sitesClickable();
     }
 
     /**
