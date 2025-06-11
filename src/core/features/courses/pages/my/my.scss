@@ -13,3 +13,24 @@ core-block ::ng-deep ion-card.addon-block-myoverview {
     --border-width: 0;
     margin: 0;
 }
+
+// Ensure grid layout for courses
+:host ::ng-deep .addon-block-myoverview-courses {
+    display: grid !important;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)) !important;
+    grid-auto-rows: 160px !important;
+    gap: 12px !important;
+    padding: 16px !important;
+    
+    @media (max-width: 768px) {
+        grid-template-columns: repeat(2, 1fr) !important;
+        grid-auto-rows: 140px !important;
+    }
+    
+    core-courses-course-list-item {
+        display: block !important;
+        width: 100% !important;
+        height: 100% !important;
+        margin: 0 !important;
+    }
+}

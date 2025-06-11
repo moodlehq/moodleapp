@@ -1465,164 +1465,311 @@ page-addon-notifications-list {
     }
 }
 
-// Course detail page improvements
-page-core-course-index {
-    ion-content {
-        --background: #f5f7fa;
+// Refined course styling - lively but minimal
+page-core-course-index,
+page-core-course-contents {
+    .core-course-progress {
+        display: none !important;
     }
-
-    // Course header
-    .core-course-header {
-        background: linear-gradient(135deg, #4c96d1 0%, #70c388 100%);
-        color: white;
-        padding: 24px 20px 20px;
-        margin-bottom: 16px;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-
-        h1 {
-            color: white;
-            font-size: 24px;
-            margin: 0 0 8px 0;
+    
+    // Refined header with subtle pattern
+    ion-header {
+        display: block !important;
+        
+        ion-toolbar {
+            --background: linear-gradient(135deg, #4c96d1 0%, #70c388 100%);
+            --color: white;
+            position: relative;
+            overflow: hidden;
+            
+            // Add subtle pattern overlay
+            &::before {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background-image: 
+                    radial-gradient(circle at 20% 80%, rgba(255,255,255,0.1) 0%, transparent 50%),
+                    radial-gradient(circle at 80% 20%, rgba(255,255,255,0.1) 0%, transparent 50%);
+                pointer-events: none;
+            }
+            
+            ion-back-button {
+                --color: white;
+                --icon-font-size: 20px;
+                font-weight: 500;
+                position: relative;
+                z-index: 1;
+            }
+            
+            ion-title {
+                position: relative;
+                z-index: 1;
+                
+                h1 {
+                    color: white;
+                    font-size: 18px;
+                    font-weight: 600;
+                    margin: 0;
+                    text-shadow: 0 1px 2px rgba(0,0,0,0.1);
+                }
+            }
         }
-
-        .core-course-thumb {
+    }
+    
+    // Refined course header section
+    .core-course-header {
+        background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+        position: relative;
+        overflow: hidden;
+        
+        // Add decorative pattern
+        &::before {
+            content: '';
+            position: absolute;
+            top: -50px;
+            right: -50px;
+            width: 100px;
+            height: 100px;
+            background: radial-gradient(circle, rgba(76,150,209,0.1) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+        
+        &::after {
+            content: '';
+            position: absolute;
+            bottom: -30px;
+            left: -30px;
             width: 80px;
             height: 80px;
-            border-radius: 16px;
-            margin-bottom: 16px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            background: radial-gradient(circle, rgba(112,195,136,0.1) 0%, transparent 70%);
+            border-radius: 50%;
         }
-
-        core-progress-bar {
-            margin-top: 16px;
-            --height: 8px;
-            --progressbar-background: rgba(255, 255, 255, 0.3);
-            --progressbar-color: white;
-            --border-radius: 4px;
+        
+        ion-item {
+            --background: transparent;
+            position: relative;
+            z-index: 2;
+            
+            .core-course-thumb {
+                background: linear-gradient(135deg, #4c96d1 0%, #70c388 100%);
+                border-radius: 12px;
+                box-shadow: 0 4px 12px rgba(76,150,209,0.2);
+            }
+            
+            ion-avatar.core-course-thumb {
+                img {
+                    border-radius: 12px;
+                    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+                }
+            }
         }
     }
+}
 
-    // Course sections
+// Course contents refinements
+page-core-course-contents {
+    ion-content {
+        --background: linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%);
+        
+        // Add subtle background pattern
+        &::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: 
+                radial-gradient(circle at 25% 25%, rgba(76,150,209,0.03) 0%, transparent 50%),
+                radial-gradient(circle at 75% 75%, rgba(112,195,136,0.03) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: 0;
+        }
+    }
+    
+    // Refined section groups
     core-course-format {
         ion-accordion-group {
-            margin: 0 16px;
-        }
-
-        ion-accordion {
-            margin-bottom: 12px;
-            border-radius: 16px;
-            overflow: hidden;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
-            transition: all 0.3s ease;
-
-            &.accordion-expanded {
-                box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
-            }
-
-            ion-item[slot="header"] {
-                --background: #ffffff;
-                --padding-start: 20px;
-                --padding-end: 16px;
-                --padding-top: 16px;
-                --padding-bottom: 16px;
-                --border-style: none;
-
-                ion-label {
-                    h2 {
-                        font-size: 18px;
+            ion-accordion {
+                background: white;
+                border-radius: 16px;
+                margin-bottom: 16px;
+                box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+                border: 1px solid rgba(76,150,209,0.1);
+                overflow: hidden;
+                position: relative;
+                
+                // Add subtle inner glow
+                &::before {
+                    content: '';
+                    position: absolute;
+                    top: 0;
+                    left: 0;
+                    right: 0;
+                    height: 1px;
+                    background: linear-gradient(90deg, transparent, rgba(76,150,209,0.2), transparent);
+                }
+                
+                &.accordion-expanded {
+                    box-shadow: 0 4px 20px rgba(76,150,209,0.12);
+                    border-color: rgba(76,150,209,0.2);
+                }
+                
+                // Section header refinements
+                .course-section.divider {
+                    --background: linear-gradient(135deg, #fafbfc 0%, #f8fafc 100%);
+                    --padding-start: 16px;
+                    --padding-end: 16px;
+                    --padding-top: 12px;
+                    --padding-bottom: 12px;
+                    --min-height: 48px;
+                    
+                    ion-label h2.big {
+                        color: #1e293b;
+                        position: relative;
+                        font-size: 16px;
                         font-weight: 600;
-                        color: #1a1a1a;
                         margin: 0;
-                    }
-
-                    p {
-                        font-size: 14px;
-                        color: #6a737b;
-                        margin-top: 4px;
-                    }
-                }
-
-                ion-icon {
-                    font-size: 20px;
-                    color: #4c96d1;
-                    transition: transform 0.3s ease;
-                }
-            }
-
-            &.accordion-expanded ion-item[slot="header"] ion-icon {
-                transform: rotate(180deg);
-            }
-
-            .accordion-content {
-                background: #ffffff;
-                padding: 0 20px 20px;
-            }
-        }
-
-        // Course modules/activities
-        core-course-module {
-            margin-bottom: 12px;
-            border-radius: 12px;
-            background: #f8f9fa;
-            padding: 12px;
-            transition: all 0.2s ease;
-
-            &:hover {
-                background: #f0f2f5;
-                transform: translateX(4px);
-            }
-
-            ion-item {
-                --background: transparent;
-                --padding-start: 0;
-                --padding-end: 0;
-                --inner-padding-end: 0;
-
-                core-mod-icon {
-                    margin-right: 12px;
-
-                    img, ion-icon {
-                        width: 40px !important;
-                        height: 40px !important;
-                        padding: 8px;
-                        background: white;
-                        border-radius: 10px;
-                        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+                        
+                        // Add subtle accent
+                        &::before {
+                            content: '';
+                            position: absolute;
+                            left: -12px;
+                            top: 50%;
+                            transform: translateY(-50%);
+                            width: 3px;
+                            height: 16px;
+                            background: linear-gradient(135deg, #4c96d1, #70c388);
+                            border-radius: 2px;
+                        }
                     }
                 }
-
-                ion-label {
-                    h2 {
-                        font-size: 15px;
-                        font-weight: 600;
-                        color: #1a1a1a;
-                        line-height: 1.4;
-                    }
-
-                    p {
-                        font-size: 13px;
-                        color: #6a737b;
-                        margin-top: 4px;
-                    }
-                }
-
-                // Completion icon
-                ion-icon[slot="end"] {
-                    font-size: 24px;
-                    color: #70c388;
+                
+                // Ultra compact content area
+                div[slot="content"] {
+                    background: white;
+                    padding: 0;
                 }
             }
         }
     }
-
-    // Floating action button
+    
+    // Ultra compact activity cards
+    core-course-module {
+        background: white;
+        border-radius: 0;
+        margin: 0;
+        box-shadow: none;
+        border: none;
+        border-bottom: 1px solid rgba(0,0,0,0.05);
+        transition: all 0.2s ease;
+        position: relative;
+        overflow: hidden;
+        
+        // Add subtle gradient overlay
+        &::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(76,150,209,0.1), transparent);
+        }
+        
+        &:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 2px 8px rgba(76,150,209,0.06);
+            border-color: rgba(76,150,209,0.1);
+        }
+        
+        ion-item {
+            --background: transparent;
+            --padding-start: 12px;
+            --padding-end: 12px;
+            --padding-top: 2px;
+            --padding-bottom: 2px;
+            --min-height: 32px;
+            
+            // Ultra compact activity icons
+            core-mod-icon {
+                margin-right: 8px;
+                
+                img, ion-icon {
+                    width: 24px !important;
+                    height: 24px !important;
+                    border-radius: 4px;
+                    background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
+                    box-shadow: 0 1px 2px rgba(0,0,0,0.03);
+                    padding: 3px;
+                }
+            }
+            
+            // Ultra compact typography
+            ion-label {
+                h3 {
+                    color: #1e293b;
+                    font-weight: 500;
+                    font-size: 13px;
+                    margin: 0;
+                    line-height: 1.2;
+                }
+                
+                p {
+                    color: #64748b;
+                    font-size: 11px;
+                    margin: 0;
+                    line-height: 1.1;
+                    
+                    // Limit to single line for compactness
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                    white-space: nowrap;
+                }
+            }
+            
+            // Ultra compact completion icons
+            ion-icon[slot="end"] {
+                width: 20px !important;
+                height: 20px !important;
+                border-radius: 50%;
+                box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+                font-size: 12px !important;
+                
+                &[name*="checkmark"] {
+                    background: linear-gradient(135deg, #10b981, #34d399);
+                    color: white;
+                }
+                
+                &[name*="circle-outline"] {
+                    background: #f1f5f9;
+                    color: #94a3b8;
+                }
+            }
+        }
+    }
+    
+    // Refined course index FAB button
     ion-fab {
         ion-fab-button {
-            --background: #4c96d1;
-            --box-shadow: 0 4px 16px rgba(76, 150, 209, 0.3);
-
+            --background: linear-gradient(135deg, #4c96d1, #70c388);
+            --color: white;
+            --box-shadow: 0 4px 16px rgba(76,150,209,0.3);
+            width: 48px;
+            height: 48px;
+            
+            ion-icon {
+                font-size: 20px;
+                font-weight: 500;
+            }
+            
             &:hover {
-                --background: #5ea1d6;
+                --box-shadow: 0 6px 20px rgba(76,150,209,0.4);
+                transform: scale(1.05);
             }
         }
     }
@@ -1646,6 +1793,56 @@ page-addon-block-myoverview,
     // Hide progress text
     .progress-text {
         display: none !important;
+    }
+}
+
+// Apply grid layout to all course lists with high specificity
+page-core-courses-my .addon-block-myoverview-courses,
+page-core-courses-my core-block .addon-block-myoverview-courses,
+page-core-courses-my ion-list .addon-block-myoverview-courses,
+page-core-courses-list ion-list,
+.core-courses-list,
+core-block .addon-block-myoverview-courses,
+addon-block-myoverview .addon-block-myoverview-courses,
+.addon-block-myoverview .addon-block-myoverview-courses {
+    display: grid !important;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)) !important;
+    grid-auto-rows: 160px !important;
+    gap: 12px !important;
+    padding: 16px !important;
+    background: transparent !important;
+    
+    @media (min-width: 1200px) {
+        grid-template-columns: repeat(5, 1fr) !important;
+    }
+    
+    @media (max-width: 992px) {
+        grid-template-columns: repeat(4, 1fr) !important;
+    }
+    
+    @media (max-width: 768px) {
+        grid-template-columns: repeat(3, 1fr) !important;
+        grid-auto-rows: 140px !important;
+        padding: 12px !important;
+        gap: 8px !important;
+    }
+    
+    @media (max-width: 576px) {
+        grid-template-columns: repeat(2, 1fr) !important;
+        grid-auto-rows: 120px !important;
+    }
+    
+    @media (max-width: 360px) {
+        grid-template-columns: repeat(2, 1fr) !important;
+        grid-auto-rows: 100px !important;
+        gap: 6px !important;
+    }
+    
+    & > core-courses-course-list-item {
+        margin: 0 !important;
+        display: block !important;
+        width: 100% !important;
+        height: 100% !important;
     }
 }
 
@@ -1675,82 +1872,80 @@ core-courses-course-list-item {
     // Modern Tile UI for course cards
     ion-card {
         border: none !important;
-        border-radius: 0 !important; // Square tiles
+        border-radius: 8px !important; // Slightly rounded corners for modern look
         overflow: hidden !important;
         height: 100% !important;
-        min-height: 150px !important; // Square/rectangle tiles
+        width: 100% !important; // Ensure full width within grid cell
+        max-width: 100% !important; // Prevent overflow
         position: relative !important;
         transition: all 0.2s ease !important;
         cursor: pointer !important;
-        box-shadow: 0 1px 3px rgba(0,0,0,0.12) !important;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1) !important;
+        margin: 0 !important; // Remove any default margins
         
-        // Aspect ratios and grid spanning for different tile sizes
-        &.tile-small {
-            aspect-ratio: 1 !important; // Square
-            grid-column: span 1 !important;
-        }
-        
-        &.tile-medium {
-            aspect-ratio: 2 / 1 !important; // Rectangle
-            grid-column: span 2 !important;
-        }
-        
-        &.tile-large {
-            aspect-ratio: 3 / 1 !important; // Wide rectangle
-            grid-column: span 3 !important;
-            
-            @media (max-width: 768px) {
-                aspect-ratio: 2 / 1 !important;
-                grid-column: span 2 !important;
-            }
-            
-            @media (max-width: 480px) {
-                aspect-ratio: 1.5 / 1 !important;
-                grid-column: span 1 !important;
-            }
-        }
+        // Remove aspect ratio to let grid control height
+        min-height: 100% !important;
         
         // Tile hover/press effect
         &:hover {
-            transform: scale(0.98) !important;
-            box-shadow: 0 0 0 2px rgba(255,255,255,0.8) inset !important;
+            transform: translateY(-4px) !important;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.15) !important;
         }
         
         &:active {
-            transform: scale(0.96) !important;
+            transform: translateY(-2px) !important;
         }
         
-        // Modern vibrant colors for tiles
+        // Modern vibrant colors for tiles with gradients
         &.pastel-color-1 {
-            background: #FF6B6B !important; // Vibrant red
+            background: linear-gradient(135deg, #FF6B6B 0%, #FF8E8E 100%) !important; // Vibrant red gradient
         }
         
         &.pastel-color-2 {
-            background: #4ECDC4 !important; // Teal
+            background: linear-gradient(135deg, #4ECDC4 0%, #6EE7DF 100%) !important; // Teal gradient
         }
         
         &.pastel-color-3 {
-            background: #45B7D1 !important; // Sky blue
+            background: linear-gradient(135deg, #45B7D1 0%, #68C9E0 100%) !important; // Sky blue gradient
         }
         
         &.pastel-color-4 {
-            background: #FFA502 !important; // Orange
+            background: linear-gradient(135deg, #FFA502 0%, #FFB94E 100%) !important; // Orange gradient
         }
         
         &.pastel-color-5 {
-            background: #A29BFE !important; // Purple
+            background: linear-gradient(135deg, #A29BFE 0%, #B5AEFF 100%) !important; // Purple gradient
         }
         
         &.pastel-color-6 {
-            background: #FDA7DF !important; // Pink
+            background: linear-gradient(135deg, #FDA7DF 0%, #FFC1E8 100%) !important; // Pink gradient
+        }
+        
+        // Add a subtle pattern overlay for visual interest
+        &::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: 
+                repeating-linear-gradient(
+                    45deg,
+                    transparent,
+                    transparent 35px,
+                    rgba(255,255,255,.05) 35px,
+                    rgba(255,255,255,.05) 70px
+                );
+            pointer-events: none;
         }
         
         ion-item {
             --background: transparent !important;
-            --padding-start: 20px !important;
-            --padding-end: 20px !important;
-            --padding-top: 20px !important;
-            --padding-bottom: 20px !important;
+            --padding-start: 16px !important;
+            --padding-end: 16px !important;
+            --padding-top: 16px !important;
+            --padding-bottom: 16px !important;
             height: 100% !important;
             --border-style: none !important;
             --inner-padding-end: 0 !important;
@@ -1760,22 +1955,36 @@ core-courses-course-list-item {
                 display: flex !important;
                 flex-direction: column !important;
                 justify-content: center !important;
-                text-align: left !important; // Left-align like headers
+                text-align: center !important; // Center-align for better tile appearance
                 
                 .item-heading {
-                    font-size: 28px !important; // Large header size
-                    font-weight: 800 !important; // Extra bold
+                    font-size: 16px !important; // Smaller size to fit in tiles
+                    font-weight: 700 !important; // Bold but not extra bold
                     color: white !important;
-                    line-height: 1.1 !important; // Tight line height
-                    text-shadow: 0 2px 4px rgba(0,0,0,0.3) !important;
-                    letter-spacing: -1px !important; // Tighter letter spacing
+                    line-height: 1.2 !important; // Better line height for readability
+                    text-shadow: 0 1px 3px rgba(0,0,0,0.2) !important;
+                    letter-spacing: -0.5px !important; // Slight letter spacing
                     margin: 0 !important;
                     word-break: break-word !important;
                     text-transform: uppercase !important; // All caps for impact
+                    overflow: hidden !important;
+                    text-overflow: ellipsis !important;
+                    display: -webkit-box !important;
+                    -webkit-line-clamp: 3 !important; // Max 3 lines
+                    -webkit-box-orient: vertical !important;
                     
                     // Hide favorite star
                     ion-icon {
                         display: none !important;
+                    }
+                    
+                    @media (max-width: 768px) {
+                        font-size: 14px !important;
+                        -webkit-line-clamp: 2 !important; // Max 2 lines on smaller screens
+                    }
+                    
+                    @media (max-width: 360px) {
+                        font-size: 12px !important;
                     }
                 }
             }
@@ -1812,29 +2021,6 @@ page-addon-block-myoverview {
         }
     }
     
-    // Tile grid layout - dynamic sizing
-    .addon-block-myoverview-courses {
-        display: grid !important;
-        grid-template-columns: repeat(3, 1fr) !important; // 3 column grid
-        grid-auto-rows: minmax(150px, auto) !important;
-        gap: 4px !important;
-        padding: 16px !important;
-        background: transparent !important;
-        
-        @media (max-width: 768px) {
-            grid-template-columns: repeat(2, 1fr) !important;
-            padding: 12px !important;
-        }
-        
-        @media (max-width: 480px) {
-            grid-template-columns: 1fr !important;
-        }
-        
-        core-courses-course-list-item {
-            margin: 0 !important;
-            display: contents !important; // Allow grid spanning
-        }
-    }
 }
 
     // Empty State
@@ -1876,6 +2062,125 @@ page-addon-block-myoverview {
             font-weight: 600;
         }
     }
+
+// Animations for course page
+@keyframes slideInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes scaleIn {
+    from {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+// Course page animations
+page-core-course-index {
+    .aspire-course-hero {
+        animation: fadeIn 0.6s ease;
+        
+        .course-header-info {
+            animation: slideInUp 0.6s ease 0.2s both;
+        }
+        
+        .course-stats {
+            .stat-card {
+                animation: scaleIn 0.4s ease both;
+                
+                &:nth-child(1) {
+                    animation-delay: 0.3s;
+                }
+                
+                &:nth-child(2) {
+                    animation-delay: 0.4s;
+                }
+                
+                &:nth-child(3) {
+                    animation-delay: 0.5s;
+                }
+            }
+        }
+        
+        .course-progress-section {
+            animation: slideInUp 0.5s ease 0.6s both;
+        }
+    }
+    
+    .aspire-quick-actions-bar {
+        animation: slideInUp 0.5s ease 0.7s both;
+    }
+    
+    // Responsive adjustments
+    @media (max-width: 576px) {
+        .aspire-course-hero {
+            padding: 30px 16px 24px;
+            
+            .course-header-info {
+                h1 {
+                    font-size: 24px;
+                }
+            }
+            
+            .course-stats {
+                gap: 8px;
+                
+                .stat-card {
+                    padding: 12px 8px;
+                    
+                    .stat-value {
+                        font-size: 20px;
+                    }
+                    
+                    .stat-label {
+                        font-size: 11px;
+                    }
+                }
+            }
+        }
+        
+        .aspire-quick-actions-bar {
+            padding: 12px;
+            margin: -16px 12px 16px;
+            
+            .actions-grid {
+                gap: 8px;
+                
+                .action-button {
+                    padding: 10px 8px;
+                    
+                    ion-icon {
+                        font-size: 20px;
+                    }
+                    
+                    span {
+                        font-size: 10px;
+                    }
+                }
+            }
+        }
+    }
+}
 
 /*
  * Dark Theme
