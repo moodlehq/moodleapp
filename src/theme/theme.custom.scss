@@ -2377,13 +2377,13 @@ page-core-course-index {
     }
 }
 
-.aspire-quick-actions {
+.aspire-user-menu-actions-grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     gap: 16px;
     padding: 0 16px 24px;
     
-    .aspire-action-card {
+    .aspire-user-action-card {
         background: white;
         border-radius: 16px;
         padding: 20px;
@@ -2401,7 +2401,7 @@ page-core-course-index {
             transform: translateY(-2px);
         }
         
-        .aspire-action-icon {
+        .aspire-user-action-icon {
             width: 48px;
             height: 48px;
             margin: 0 auto 12px;

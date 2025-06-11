@@ -17,8 +17,8 @@
             </span>
         </ion-tab-button>
 
-        <ion-tab-button (keydown)="tabAction.keyDown(morePageName, $event)" (keyup)="tabAction.keyUp(morePageName, $event)"
-            [hidden]="!loaded" [tab]="morePageName" layout="label-hide" [tabindex]="selectedTab === morePageName ? 0 : -1"
+        <ion-tab-button (click)="openUserMenu($event)" (keydown)="tabAction.keyDown(morePageName, $event)" (keyup)="tabAction.keyUp(morePageName, $event)"
+            [hidden]="!loaded" layout="label-hide" [tabindex]="selectedTab === morePageName ? 0 : -1"
             [attr.aria-controls]="morePageName">
             <ion-icon class="core-tab-icon" name="ellipsis-horizontal" aria-hidden="true" />
             <ion-label aria-hidden="true">{{ 'core.more' | translate }}</ion-label>

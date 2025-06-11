@@ -35,30 +35,30 @@
         </div>
 
         <!-- Quick Actions Grid -->
-        <div class="aspire-quick-actions">
-            <div class="aspire-action-card" (click)="openUserProfile($event)">
-                <div class="aspire-action-icon profile">
+        <div class="aspire-user-menu-actions-grid">
+            <div class="aspire-user-action-card" (click)="openUserProfile($event)">
+                <div class="aspire-user-action-icon profile">
                     <ion-icon name="person-circle-outline"></ion-icon>
                 </div>
                 <span>{{ 'core.user.profile' | translate }}</span>
             </div>
             
-            <div class="aspire-action-card" (click)="openPreferences($event)" *ngIf="displayPreferences !== false">
-                <div class="aspire-action-icon settings">
+            <div class="aspire-user-action-card" (click)="openPreferences($event)" *ngIf="displayPreferences !== false">
+                <div class="aspire-user-action-icon settings">
                     <ion-icon name="settings-outline"></ion-icon>
                 </div>
                 <span>{{ 'core.settings.settings' | translate }}</span>
             </div>
             
-            <div class="aspire-action-card" (click)="openGrades($event)">
-                <div class="aspire-action-icon grades">
+            <div class="aspire-user-action-card" (click)="openGrades($event)">
+                <div class="aspire-user-action-icon grades">
                     <ion-icon name="stats-chart-outline"></ion-icon>
                 </div>
                 <span>{{ 'core.grades.grades' | translate }}</span>
             </div>
             
-            <div class="aspire-action-card" (click)="openMessages($event)">
-                <div class="aspire-action-icon messages">
+            <div class="aspire-user-action-card" (click)="openMessages($event)">
+                <div class="aspire-user-action-icon messages">
                     <ion-icon name="chatbubble-ellipses-outline"></ion-icon>
                 </div>
                 <span>{{ 'addon.messages.messages' | translate }}</span>

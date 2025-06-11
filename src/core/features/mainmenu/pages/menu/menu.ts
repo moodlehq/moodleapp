@@ -287,21 +287,10 @@ export class CoreMainMenuPage implements OnInit, OnDestroy {
     tabChanged(event: {tab: string}): void {
         // Aspire School: Open user menu when More tab is clicked
         if (event.tab === this.morePageName) {
-            // Don't actually select the more tab
-            const currentTab = this.selectedTab || this.tabs[0]?.page;
+            // Open the user menu modal immediately
+            this.openUserMenu();
             
-            // Immediately revert to the current tab
-            setTimeout(() => {
-                if (currentTab && this.mainTabs) {
-                    this.mainTabs.select(currentTab);
-                }
-            }, 0);
-            
-            // Open the user menu modal
-            setTimeout(() => {
-                this.openUserMenu();
-            }, 100);
-            
+            // Don't change the selected tab
             return;
         }
         
@@ -313,7 +302,12 @@ export class CoreMainMenuPage implements OnInit, OnDestroy {
     /**
      * Open the user menu modal.
      */
-    async openUserMenu(): Promise<void> {
+    async openUserMenu(event?: Event): Promise<void> {
+        if (event) {
+            event.preventDefault();
+            event.stopPropagation();
+        }
+        
         const { CoreMainMenuUserMenuComponent } = await import('../../components/user-menu/user-menu');
         
         await CoreModals.openSideModal<void>({
