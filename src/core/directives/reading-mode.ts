@@ -67,7 +67,7 @@ export class CoreReadingModeDirective implements AfterViewInit, OnDestroy {
         await this.addTextViewerButton();
         this.element.classList.add('core-reading-mode-ready');
 
-        this.enabled = document.body.classList.contains('core-reading-mode-enabled');
+        this.enabled = document.body.classList.contains('core-reading-mode-enable-on-enter');
         if (this.enabled) {
             await this.enterReadingMode();
         }
@@ -136,6 +136,7 @@ export class CoreReadingModeDirective implements AfterViewInit, OnDestroy {
         await this.header?.setEnabled(false);
 
         document.body.classList.add('core-reading-mode-enabled');
+        document.body.classList.add('core-reading-mode-enable-on-enter');
 
         const elements = document.body.querySelectorAll('[core-reading-mode].core-reading-mode-ready');
 
@@ -185,6 +186,7 @@ export class CoreReadingModeDirective implements AfterViewInit, OnDestroy {
 
         this.enabled = false;
         document.body.classList.remove('core-reading-mode-enabled');
+        document.body.classList.remove('core-reading-mode-enable-on-enter');
 
         // Enable all styles in element.
         this.disabledStyles.forEach((style) => {
@@ -236,6 +238,7 @@ export class CoreReadingModeDirective implements AfterViewInit, OnDestroy {
         this.viewportPromise?.cancel();
 
         // Disable reading mode should be done by the user.
+        document.body.classList.remove('core-reading-mode-enabled');
     }
 
 }

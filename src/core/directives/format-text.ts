@@ -997,7 +997,7 @@ export class CoreFormatTextDirective implements OnChanges, OnDestroy, AsyncDirec
     protected addIframeHelp(iframe: HTMLIFrameElement): void {
         const helpDiv = document.createElement('div');
 
-        helpDiv.classList.add('ion-text-center', 'ion-text-wrap');
+        helpDiv.classList.add('ion-text-center', 'ion-text-wrap', 'core-iframe-help');
 
         const button = document.createElement('ion-button');
         button.setAttribute('fill', 'clear');
