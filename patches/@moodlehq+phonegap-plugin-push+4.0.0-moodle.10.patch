@@ -1,16 +1,26 @@
 diff --git a/node_modules/@moodlehq/phonegap-plugin-push/plugin.xml b/node_modules/@moodlehq/phonegap-plugin-push/plugin.xml
-index 71d0b02..749398a 100755
+index 71d0b02..f98fb6d 100755
 --- a/node_modules/@moodlehq/phonegap-plugin-push/plugin.xml
 +++ b/node_modules/@moodlehq/phonegap-plugin-push/plugin.xml
-@@ -123,6 +123,8 @@
+@@ -98,6 +98,8 @@
+ 
+   <platform name="ios">
+     <preference name="IOS_FIREBASE_MESSAGING_VERSION" default="~> 10.23.0"/>
++    <preference name="SwiftVersion" default="5.0" />
++    <preference name="UseSwiftLanguageVersion" default="5" />
+ 
+     <config-file target="config.xml" parent="/*">
+       <feature name="PushNotification">
+@@ -122,6 +124,9 @@
+     <source-file src="src/ios/AppDelegate+notification.m"/>
      <source-file src="src/ios/PushPlugin.m"/>
      <source-file src="src/ios/EncryptionHandler.m"/>
-     <source-file src="src/ios/Crypto.swift"/>
 +    
 +    <dependency id="cordova-plugin-add-swift-support" version="^2.0.0"/>
++    
+     <source-file src="src/ios/Crypto.swift"/>
      <header-file src="src/ios/AppDelegate+notification.h"/>
      <header-file src="src/ios/PushPlugin.h"/>
-     <header-file src="src/ios/EncryptionHandler.h"/>
 diff --git a/node_modules/@moodlehq/phonegap-plugin-push/src/ios/EncryptionHandler.m b/node_modules/@moodlehq/phonegap-plugin-push/src/ios/EncryptionHandler.m
 index 1ee2277..5ba8d99 100644
 --- a/node_modules/@moodlehq/phonegap-plugin-push/src/ios/EncryptionHandler.m
