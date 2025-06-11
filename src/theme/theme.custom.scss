@@ -2252,91 +2252,343 @@ page-core-course-index {
     }
 }
 
-// Aspire School: Minimal user menu styles
-.aspire-user-menu-compact {
-    padding: 16px;
-
-    .aspire-user-profile {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        cursor: pointer;
-        padding: 12px;
-        border-radius: 12px;
-        transition: background-color 0.2s;
-
-        &:hover {
-            background-color: var(--ion-color-light);
-        }
-
-        core-user-avatar {
-            --core-avatar-size: 48px;
-        }
-
-        .aspire-user-info {
-            flex: 1;
-
-            h2 {
-                margin: 0;
-                font-size: 16px;
-                font-weight: 600;
-                color: var(--ion-text-color);
-            }
-
-            p {
-                margin: 4px 0 0;
-                font-size: 13px;
-                color: var(--ion-color-medium);
+// Aspire School: Modern User Menu Design
+.aspire-user-menu-header {
+    ion-toolbar {
+        --background: transparent;
+        --border-width: 0;
+        position: absolute;
+        top: 0;
+        z-index: 10;
+        
+        .aspire-close-btn {
+            --color: white;
+            --background: rgba(0,0,0,0.2);
+            border-radius: 50%;
+            margin: 8px;
+            
+            &:hover {
+                --background: rgba(0,0,0,0.3);
             }
         }
     }
 }
 
-.aspire-user-menu-actions {
-    padding: 16px;
-    border-top: 1px solid var(--ion-color-light);
+.aspire-user-menu-content {
+    --background: #f8f9fa;
+}
 
-    .aspire-logout-button {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 8px;
-        width: 100%;
-        padding: 12px 20px;
-        background-color: var(--ion-color-danger);
-        color: white;
-        border: none;
-        border-radius: 8px;
-        font-size: 15px;
-        font-weight: 500;
-        cursor: pointer;
-        transition: all 0.2s;
-
-        &:hover {
-            background-color: var(--ion-color-danger-shade);
-            transform: translateY(-1px);
+.aspire-profile-header {
+    position: relative;
+    padding-bottom: 24px;
+    margin-bottom: 24px;
+    background: white;
+    border-radius: 0 0 24px 24px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    
+    .aspire-profile-backdrop {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 140px;
+        background: linear-gradient(135deg, #4c96d1 0%, #70c388 100%);
+        border-radius: 0 0 24px 24px;
+        
+        &::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M0 40L40 0H20L0 20M40 40V20L20 40'/%3E%3C/g%3E%3C/svg%3E");
         }
+    }
+    
+    .aspire-profile-content {
+        position: relative;
+        text-align: center;
+        padding: 60px 20px 20px;
+        
+        .aspire-avatar-wrapper {
+            position: relative;
+            display: inline-block;
+            margin-bottom: 16px;
+            
+            .aspire-avatar-large {
+                --core-avatar-size: 96px;
+                border: 4px solid white;
+                border-radius: 50%;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            }
+            
+            .aspire-avatar-ring {
+                position: absolute;
+                inset: -8px;
+                border: 2px solid rgba(112, 195, 136, 0.3);
+                border-radius: 50%;
+                animation: pulse 2s infinite;
+            }
+        }
+        
+        .aspire-user-name {
+            margin: 0 0 4px;
+            font-size: 24px;
+            font-weight: 700;
+            color: #2c3e50;
+        }
+        
+        .aspire-user-email {
+            margin: 0 0 20px;
+            font-size: 14px;
+            color: #7f8c8d;
+        }
+        
+        .aspire-profile-stats {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            
+            .aspire-stat-item {
+                text-align: center;
+                
+                ion-icon {
+                    font-size: 24px;
+                    color: #4c96d1;
+                    margin-bottom: 4px;
+                }
+                
+                span {
+                    display: block;
+                    font-size: 24px;
+                    font-weight: 700;
+                    color: #2c3e50;
+                    line-height: 1;
+                }
+                
+                label {
+                    display: block;
+                    font-size: 12px;
+                    color: #95a5a6;
+                    margin-top: 4px;
+                    text-transform: uppercase;
+                    letter-spacing: 0.5px;
+                }
+            }
+        }
+    }
+}
 
+.aspire-quick-actions {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+    padding: 0 16px 24px;
+    
+    .aspire-action-card {
+        background: white;
+        border-radius: 16px;
+        padding: 20px;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        
+        &:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+        }
+        
         &:active {
-            transform: translateY(0);
+            transform: translateY(-2px);
         }
-
-        ion-icon {
-            font-size: 18px;
+        
+        .aspire-action-icon {
+            width: 48px;
+            height: 48px;
+            margin: 0 auto 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 12px;
+            
+            ion-icon {
+                font-size: 24px;
+                color: white;
+            }
+            
+            &.profile {
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            }
+            
+            &.settings {
+                background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            }
+            
+            &.grades {
+                background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            }
+            
+            &.messages {
+                background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+            }
+        }
+        
+        span {
+            font-size: 14px;
+            font-weight: 600;
+            color: #2c3e50;
         }
     }
 }
 
-// Make the user menu modal more compact
+.aspire-menu-section {
+    padding: 0 16px 24px;
+    
+    .aspire-section-title {
+        margin: 0 0 12px;
+        padding: 0 8px;
+        font-size: 12px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        color: #95a5a6;
+    }
+    
+    .aspire-menu-list {
+        background: white;
+        border-radius: 16px;
+        overflow: hidden;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        
+        .aspire-menu-item {
+            --padding-start: 16px;
+            --padding-end: 16px;
+            --min-height: 56px;
+            --border-width: 0;
+            --background-hover: #f8f9fa;
+            
+            &:not(:last-child) {
+                border-bottom: 1px solid #f1f3f4;
+            }
+            
+            .aspire-menu-icon {
+                width: 36px;
+                height: 36px;
+                background: #f0f4f8;
+                border-radius: 10px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                margin-right: 12px;
+                
+                ion-icon {
+                    font-size: 20px;
+                    color: #4c96d1;
+                }
+            }
+            
+            ion-label h4 {
+                margin: 0;
+                font-size: 15px;
+                font-weight: 600;
+                color: #2c3e50;
+            }
+            
+            .aspire-badge {
+                --background: #ff6b6b;
+                --color: white;
+                --padding-start: 8px;
+                --padding-end: 8px;
+                height: 22px;
+                min-width: 22px;
+                font-size: 12px;
+                font-weight: 600;
+                border-radius: 11px;
+            }
+        }
+    }
+}
+
+.aspire-user-menu-footer {
+    background: white;
+    border-top: 1px solid #f1f3f4;
+    padding: 0;
+    
+    .aspire-footer-actions {
+        display: flex;
+        flex-direction: column;
+        
+        button {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            padding: 16px;
+            background: none;
+            border: none;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            position: relative;
+            
+            ion-icon {
+                font-size: 20px;
+            }
+            
+            &.aspire-support-button {
+                color: #4c96d1;
+                
+                &:hover {
+                    background: #f0f8ff;
+                }
+            }
+            
+            &.aspire-switch-button {
+                color: #70c388;
+                border-top: 1px solid #f1f3f4;
+                
+                &:hover {
+                    background: #f0faf5;
+                }
+            }
+            
+            &.aspire-logout-button {
+                color: #ff6b6b;
+                border-top: 1px solid #f1f3f4;
+                
+                &:hover {
+                    background: #fff5f5;
+                }
+            }
+        }
+    }
+}
+
+// Make the user menu modal wider for the new design
 ion-modal.core-modal-lateral {
     &.core-user-menu-modal {
-        --width: 280px;
-        --max-width: 280px;
+        --width: 380px;
+        --max-width: 90vw;
 
         ion-content {
             --padding-top: 0;
             --padding-bottom: 0;
         }
+    }
+}
+
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+        opacity: 1;
+    }
+    50% {
+        transform: scale(1.05);
+        opacity: 0.6;
+    }
+    100% {
+        transform: scale(1);
+        opacity: 1;
     }
 }
 

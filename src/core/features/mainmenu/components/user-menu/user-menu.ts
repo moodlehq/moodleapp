@@ -35,6 +35,8 @@ import { CoreDomUtils } from '@services/utils/dom';
 import { CoreUtils } from '@services/utils/utils';
 import { ModalController, Translate } from '@singletons';
 import { Subscription } from 'rxjs';
+import { CoreCourses } from '@features/courses/services/courses';
+import { AddonBadges } from '@addons/badges/services/badges';
 
 /**
  * Component to display a user menu.
@@ -63,7 +65,10 @@ export class CoreMainMenuUserMenuComponent implements OnInit, OnDestroy {
     user?: CoreUserProfile;
     displaySwitchAccount = true;
     displayContactSupport = false;
+    displayPreferences = true;
     removeAccountOnLogout = false;
+    courseCount = 0;
+    badgeCount = 0;
 
     protected subscription!: Subscription;
 
@@ -96,6 +101,9 @@ export class CoreMainMenuUserMenuComponent implements OnInit, OnDestroy {
                 fullname: this.siteInfo.fullname,
             };
         }
+
+        // Load course and badge counts
+        this.loadUserStats();
 
         this.subscription = CoreUserDelegate.getProfileHandlersFor(this.user, CoreUserDelegateContext.USER_MENU)
             .subscribe((handlers) => {
@@ -147,6 +155,30 @@ export class CoreMainMenuUserMenuComponent implements OnInit, OnDestroy {
     }
 
     /**
+     * Load user statistics (course count, badge count).
+     */
+    protected async loadUserStats(): Promise<void> {
+        try {
+            // Load enrolled courses count
+            const courses = await CoreCourses.getUserCourses(true);
+            this.courseCount = courses.length;
+        } catch {
+            this.courseCount = 0;
+        }
+
+        try {
+            // Load badges count
+            if (this.user) {
+                // Get badges for all courses (courseId = 0)
+                const badges = await AddonBadges.getUserBadges(0, this.user.id);
+                this.badgeCount = badges.length;
+            }
+        } catch {
+            this.badgeCount = 0;
+        }
+    }
+
+    /**
      * Opens User profile page.
      *
      * @param event Click event.
@@ -174,6 +206,28 @@ export class CoreMainMenuUserMenuComponent implements OnInit, OnDestroy {
         await this.close(event);
 
         CoreNavigator.navigateToSitePath('preferences');
+    }
+
+    /**
+     * Opens grades page.
+     *
+     * @param event Click event.
+     */
+    async openGrades(event: Event): Promise<void> {
+        await this.close(event);
+
+        CoreNavigator.navigateToSitePath('grades');
+    }
+
+    /**
+     * Opens messages page.
+     *
+     * @param event Click event.
+     */
+    async openMessages(event: Event): Promise<void> {
+        await this.close(event);
+
+        CoreNavigator.navigateToSitePath('messages');
     }
 
     /**

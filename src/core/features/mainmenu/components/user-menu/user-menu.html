@@ -1,35 +1,91 @@
-<ion-header>
+<ion-header class="aspire-user-menu-header">
     <ion-toolbar>
-        <ion-title>
-            <h1>
-                {{'core.user.useraccount' | translate}}
-            </h1>
-        </ion-title>
         <ion-buttons slot="end">
-            <ion-button fill="clear" (click)="close($event)" [ariaLabel]="'core.close' | translate">
+            <ion-button fill="clear" (click)="close($event)" [ariaLabel]="'core.close' | translate" class="aspire-close-btn">
                 <ion-icon name="fas-xmark" slot="icon-only" aria-hidden="true" />
             </ion-button>
         </ion-buttons>
     </ion-toolbar>
 </ion-header>
-<ion-content>
+<ion-content class="aspire-user-menu-content">
     <core-loading [hideUntil]="siteLogoLoaded && handlersLoaded">
-        <ion-list>
-            <!-- Aspire School: Site info removed for minimal interface -->
-
-            <!-- Aspire School: Compact profile display -->
-            <div class="aspire-user-menu-compact" *ngIf="siteInfo">
-                <div class="aspire-user-profile" (click)="openUserProfile($event)">
-                    <core-user-avatar [site]="siteInfo" [userId]="siteInfo.userid" [linkProfile]="false" />
-                    <div class="aspire-user-info">
-                        <h2>{{ siteInfo.fullname }}</h2>
-                        <p>{{ 'core.user.profile' | translate }}</p>
+        <!-- Aspire School: Modern User Profile Card -->
+        <div class="aspire-profile-header" *ngIf="siteInfo">
+            <div class="aspire-profile-backdrop"></div>
+            <div class="aspire-profile-content">
+                <div class="aspire-avatar-wrapper">
+                    <core-user-avatar [site]="siteInfo" [userId]="siteInfo.userid" [linkProfile]="false" class="aspire-avatar-large" />
+                    <div class="aspire-avatar-ring"></div>
+                </div>
+                <h2 class="aspire-user-name">{{ siteInfo.fullname }}</h2>
+                <p class="aspire-user-email">{{ siteInfo.username }}</p>
+                <div class="aspire-profile-stats">
+                    <div class="aspire-stat-item">
+                        <ion-icon name="book-outline"></ion-icon>
+                        <span>{{ courseCount || 0 }}</span>
+                        <label>{{ 'core.courses.mycourses' | translate }}</label>
+                    </div>
+                    <div class="aspire-stat-item">
+                        <ion-icon name="trophy-outline"></ion-icon>
+                        <span>{{ badgeCount || 0 }}</span>
+                        <label>{{ 'addon.badges.badges' | translate }}</label>
                     </div>
                 </div>
             </div>
+        </div>
 
-            <!-- Aspire School: Hidden delegate handlers for minimal interface -->
-            <ng-container *ngIf="false">
+        <!-- Quick Actions Grid -->
+        <div class="aspire-quick-actions">
+            <div class="aspire-action-card" (click)="openUserProfile($event)">
+                <div class="aspire-action-icon profile">
+                    <ion-icon name="person-circle-outline"></ion-icon>
+                </div>
+                <span>{{ 'core.user.profile' | translate }}</span>
+            </div>
+            
+            <div class="aspire-action-card" (click)="openPreferences($event)" *ngIf="displayPreferences !== false">
+                <div class="aspire-action-icon settings">
+                    <ion-icon name="settings-outline"></ion-icon>
+                </div>
+                <span>{{ 'core.settings.settings' | translate }}</span>
+            </div>
+            
+            <div class="aspire-action-card" (click)="openGrades($event)">
+                <div class="aspire-action-icon grades">
+                    <ion-icon name="stats-chart-outline"></ion-icon>
+                </div>
+                <span>{{ 'core.grades.grades' | translate }}</span>
+            </div>
+            
+            <div class="aspire-action-card" (click)="openMessages($event)">
+                <div class="aspire-action-icon messages">
+                    <ion-icon name="chatbubble-ellipses-outline"></ion-icon>
+                </div>
+                <span>{{ 'addon.messages.messages' | translate }}</span>
+            </div>
+        </div>
+
+        <!-- Menu Items with Icons -->
+        <div class="aspire-menu-section" *ngIf="handlers && handlers.length > 0">
+            <h3 class="aspire-section-title">{{ 'core.more' | translate }}</h3>
+            <ion-list class="aspire-menu-list">
+                <ion-item *ngFor="let handler of handlers" button (click)="handlerClicked($event, handler)"
+                    [hidden]="handler.hidden" class="aspire-menu-item">
+                    <div class="aspire-menu-icon" slot="start">
+                        <ion-icon *ngIf="handler.icon" [name]="handler.icon"></ion-icon>
+                    </div>
+                    <ion-label>
+                        <h4>{{ handler.title | translate }}</h4>
+                    </ion-label>
+                    <ion-badge *ngIf="handler.showBadge && handler.badge" slot="end" class="aspire-badge">
+                        {{ handler.badge }}
+                    </ion-badge>
+                </ion-item>
+            </ion-list>
+        </div>
+
+        <!-- Aspire School: Hidden delegate handlers for minimal interface -->
+        <ng-container *ngIf="false">
                 <ion-item button *ngFor="let handler of handlers" class="ion-text-wrap" (click)="handlerClicked($event, handler)"
                     [ngClass]="['core-user-menu-handler', handler.class || '']" [hidden]="handler.hidden"
                     [attr.aria-label]="handler.title | translate" [detail]="true">
@@ -83,21 +139,23 @@
                     </ion-label>
                 </ion-item>
             </ng-container>
-        </ion-list>
     </core-loading>
 </ion-content>
-<ion-footer>
-    <!-- Aspire School: Hidden switch account for minimal interface -->
-    <ion-item *ngIf="displaySwitchAccount && false" button lines="full" (click)="switchAccounts($event)" [detail]="true" class="ion-text-wrap">
-        <ion-icon name="fas-right-left" slot="start" aria-hidden="true" />
-        <ion-label>
-            <p class="item-heading">{{ 'core.mainmenu.switchaccount' | translate }}</p>
-        </ion-label>
-    </ion-item>
-    <!-- Aspire School: Compact logout button -->
-    <div class="aspire-user-menu-actions">
-        <button class="aspire-logout-button" (click)="logout($event)" [attr.aria-label]="'core.mainmenu.logout' | translate">
-            <ion-icon name="fas-right-from-bracket" aria-hidden="true" />
+<ion-footer class="aspire-user-menu-footer">
+    <!-- Support & Logout Actions -->
+    <div class="aspire-footer-actions">
+        <button class="aspire-support-button" (click)="contactSupport($event)" *ngIf="displayContactSupport">
+            <ion-icon name="help-circle-outline"></ion-icon>
+            <span>{{ 'core.needhelp' | translate }}</span>
+        </button>
+        
+        <button class="aspire-switch-button" (click)="switchAccounts($event)" *ngIf="displaySwitchAccount">
+            <ion-icon name="swap-horizontal-outline"></ion-icon>
+            <span>{{ 'core.mainmenu.switchaccount' | translate }}</span>
+        </button>
+        
+        <button class="aspire-logout-button" (click)="logout($event)">
+            <ion-icon name="log-out-outline"></ion-icon>
             <span>{{ 'core.mainmenu.logout' | translate }}</span>
         </button>
     </div>
