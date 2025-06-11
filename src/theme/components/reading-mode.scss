@@ -35,7 +35,7 @@ body.core-reading-mode-enabled {
 
     &.core-reading-mode-multimedia-hidden {
         ion-content.core-reading-mode-content {
-            img, video, iframe {
+            img, video, iframe, core-iframe, .core-iframe-help {
                 display: none !important;
             }
         }
