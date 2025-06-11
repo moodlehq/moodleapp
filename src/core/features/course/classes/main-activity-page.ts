@@ -15,8 +15,11 @@
 import { Component, OnInit } from '@angular/core';
 import { CoreNavigator } from '@services/navigator';
 import { CoreDomUtils } from '@services/utils/dom';
-import { CoreCourseModuleData } from '../services/course-helper';
+import { CoreCourseModuleData, CoreCourseHelper } from '../services/course-helper';
 import { CoreCourseModuleMainResourceComponent } from './main-resource-component';
+import { CoreModals } from '@services/modals';
+import { CoreCourse } from '../services/course';
+import { CoreCourseIndexSectionWithModule } from '../components/course-index/course-index';
 
 /**
  * Template class to easily create CoreCourseModuleMainComponent of resources (or activities without syncing).
@@ -85,6 +88,55 @@ export class CoreCourseModuleMainActivityPage<ActivityType extends CoreCourseMod
      */
     ionViewWillLeave(): void {
         this.activityComponent?.ionViewWillLeave();
+    }
+
+    /**
+     * Open course index modal.
+     */
+    async openCourseIndex(): Promise<void> {
+        console.log('openCourseIndex called', this.courseId, this.module);
+        try {
+            // Get course sections first
+            const sections = await CoreCourse.getSections(this.courseId, false, true);
+            const courseResult = await CoreCourseHelper.getCourse(this.courseId);
+
+            const { CoreCourseCourseIndexComponent } = await import('../components/course-index/course-index');
+
+            const data = await CoreModals.openModal<CoreCourseIndexSectionWithModule>({
+                component: CoreCourseCourseIndexComponent,
+                initialBreakpoint: 1,
+                breakpoints: [0, 1],
+                componentProps: {
+                    course: courseResult.course,
+                    sections,
+                    selectedId: this.module.section,
+                },
+            });
+
+            if (!data) {
+                return;
+            }
+
+            // Navigate to the selected section/module
+            if (data.moduleId) {
+                // Navigate to the specific module
+                await CoreCourseHelper.navigateToModule(data.moduleId, {
+                    courseId: this.courseId,
+                    sectionId: data.sectionId,
+                });
+            } else {
+                // Navigate to section
+                await CoreNavigator.navigate(`/main/home/course/${this.courseId}`, {
+                    params: {
+                        selectedTab: 'course',
+                        sectionId: data.sectionId,
+                    },
+                });
+            }
+        } catch (error) {
+            console.error('Error opening course index:', error);
+            CoreDomUtils.showErrorModal(error);
+        }
     }
 
 }

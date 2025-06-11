@@ -19,3 +19,10 @@
 
     <addon-mod-assign-index [module]="module" [courseId]="courseId" (dataRetrieved)="updateData($event)" />
 </ion-content>
+
+<!-- Course Index FAB -->
+<ion-fab slot="fixed" vertical="bottom" horizontal="end">
+    <ion-fab-button (click)="openCourseIndex()" color="primary">
+        <ion-icon name="menu" />
+    </ion-fab-button>
+</ion-fab>
