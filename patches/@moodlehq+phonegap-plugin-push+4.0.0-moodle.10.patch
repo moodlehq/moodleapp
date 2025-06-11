@@ -12,18 +12,22 @@ index 71d0b02..749398a 100755
      <header-file src="src/ios/PushPlugin.h"/>
      <header-file src="src/ios/EncryptionHandler.h"/>
 diff --git a/node_modules/@moodlehq/phonegap-plugin-push/src/ios/EncryptionHandler.m b/node_modules/@moodlehq/phonegap-plugin-push/src/ios/EncryptionHandler.m
-index 1ee2277..6ea599d 100644
+index 1ee2277..5ba8d99 100644
 --- a/node_modules/@moodlehq/phonegap-plugin-push/src/ios/EncryptionHandler.m
 +++ b/node_modules/@moodlehq/phonegap-plugin-push/src/ios/EncryptionHandler.m
-@@ -6,7 +6,10 @@
+@@ -6,7 +6,14 @@
  //
  
  #import "EncryptionHandler.h"
 -#import "Moodle-Swift.h"
 +
-+// Forward declare the Swift class
-+// The actual implementation will be linked from Crypto.swift
-+@class Crypto;
++// Declare the Swift class interface to avoid importing the generated Swift header
++@interface Crypto : NSObject
+++ (NSString *)decryptWithBase64CipherText:(NSString *)ciphertext;
+++ (NSString *)getPublicKey;
+++ (BOOL)keyExists;
+++ (void)generateKeypair;
++@end
  
  @implementation EncryptionHandler
  
