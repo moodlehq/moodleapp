@@ -23,6 +23,11 @@
     background-color: transparent;
     line-height: var(--size);
 
+    /* Fix for iOS rendering bug: when combining filter and margin
+        with a nearby overflow: scroll element, the filter may render incorrectly.
+        Applying transform: translateZ(0) forces proper GPU compositing. */
+    transform: translateZ(0);
+
     &.colorize {
         &.version_current {
             @each $type, $value in $activity-icon-color-filters {
