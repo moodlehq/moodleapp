@@ -1,3 +1,16 @@
+diff --git a/node_modules/@ionic/core/components/ion-select.js b/node_modules/@ionic/core/components/ion-select.js
+index fe875d9..ff23640 100644
+--- a/node_modules/@ionic/core/components/ion-select.js
++++ b/node_modules/@ionic/core/components/ion-select.js
+@@ -186,7 +186,7 @@ const Select = /*@__PURE__*/ proxyCustomElement(class Select extends HTMLElement
+         const scrollSelectedIntoView = () => {
+             const indexOfSelected = this.childOpts.findIndex((o) => o.value === this.value);
+             if (indexOfSelected > -1) {
+-                const selectedItem = overlay.querySelector(`.select-interface-option:nth-child(${indexOfSelected + 1})`);
++                const selectedItem = overlay.querySelector(`.select-interface-option:nth-of-type(${indexOfSelected + 1})`);
+                 if (selectedItem) {
+                     /**
+                      * Browsers such as Firefox do not
 diff --git a/node_modules/@ionic/core/components/popover.js b/node_modules/@ionic/core/components/popover.js
 index df0b0f6..ffd1bac 100644
 --- a/node_modules/@ionic/core/components/popover.js
@@ -170,7 +183,7 @@ index d32e60c..491c281 100644
      const contentEl = root.querySelector('.popover-content');
      const referenceSizeEl = trigger || ((_a = ev === null || ev === void 0 ? void 0 : ev.detail) === null || _a === void 0 ? void 0 : _a.ionShadowTarget) || (ev === null || ev === void 0 ? void 0 : ev.target);
 diff --git a/node_modules/@ionic/core/hydrate/index.js b/node_modules/@ionic/core/hydrate/index.js
-index 6de5db2..e9c8ecc 100644
+index 6de5db2..bc73a84 100644
 --- a/node_modules/@ionic/core/hydrate/index.js
 +++ b/node_modules/@ionic/core/hydrate/index.js
 @@ -24183,8 +24183,10 @@ const iosEnterAnimation$1 = (baseEl, opts) => {
