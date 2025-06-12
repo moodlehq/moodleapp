@@ -1,55 +1,136 @@
-<ion-item-divider [sticky]="true">
-    <ion-label>
-        <h2>{{ 'addon.block_timeline.pluginname' | translate }}</h2>
-    </ion-label>
-</ion-item-divider>
-<core-loading [hideUntil]="loaded">
-    <ion-row class="ion-hide-md-up addon-block-timeline-filter" *ngIf="(search$ | async) !== null">
-        <ion-col>
-            <!-- Filter courses. -->
+<!-- Aspire School Timeline Component -->
+<div class="aspire-timeline-container">
+    <div class="aspire-timeline-header">
+        <div class="aspire-timeline-title-row">
+            <h2 class="aspire-section-title">{{ 'addon.block_timeline.pluginname' | translate }}</h2>
+            
+            <!-- Compact Filter Dropdown -->
+            <div class="aspire-compact-filters">
+                <button class="aspire-filter-trigger" (click)="toggleFilterDropdown()">
+                    <ion-icon name="fas-filter" aria-hidden="true"></ion-icon>
+                    <span *ngIf="(statusFilter$ | async) === filterOverdue">{{ 'addon.block_timeline.overdue' | translate }}</span>
+                    <span *ngIf="(statusFilter$ | async) === filterDone">{{ 'addon.block_timeline.done' | translate }}</span>
+                    <span *ngIf="(statusFilter$ | async) === filterAll && (dateFilter$ | async) === filterNext7Days">{{ 'addon.block_timeline.next7days' | translate }}</span>
+                    <span *ngIf="(statusFilter$ | async) === filterAll && (dateFilter$ | async) !== filterNext7Days">
+                        {{ getDateFilterLabel() | translate }}
+                    </span>
+                    <ion-icon name="fas-chevron-down" class="dropdown-arrow" aria-hidden="true"></ion-icon>
+                </button>
+                
+                <div class="aspire-filter-dropdown" [class.show]="showFilterDropdown">
+                    <div class="filter-section compact">
+                        <div class="filter-row">
+                            <label>View</label>
+                            <div class="filter-options inline">
+                                <button 
+                                    class="filter-option compact" 
+                                    [class.active]="(statusFilter$ | async) === filterAll"
+                                    (click)="selectFilter('status', filterAll)"
+                                    title="All Tasks">
+                                    All
+                                </button>
+                                <button 
+                                    class="filter-option compact icon-only" 
+                                    [class.active]="(statusFilter$ | async) === filterOverdue"
+                                    (click)="selectFilter('status', filterOverdue)"
+                                    title="Overdue">
+                                    <ion-icon name="fas-exclamation"></ion-icon>
+                                </button>
+                                <button 
+                                    class="filter-option compact icon-only" 
+                                    [class.active]="(statusFilter$ | async) === filterDone"
+                                    (click)="selectFilter('status', filterDone)"
+                                    title="Completed">
+                                    <ion-icon name="fas-check"></ion-icon>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="filter-row" *ngIf="(statusFilter$ | async) === filterAll">
+                            <label>Period</label>
+                            <div class="filter-options inline">
+                                <button 
+                                    class="filter-option compact"
+                                    [class.active]="(dateFilter$ | async) === filterNext7Days"
+                                    (click)="selectFilter('date', filterNext7Days)"
+                                    title="Next 7 Days">
+                                    7D
+                                </button>
+                                <button 
+                                    class="filter-option compact"
+                                    [class.active]="(dateFilter$ | async) === filterNext30Days"
+                                    (click)="selectFilter('date', filterNext30Days)"
+                                    title="Next 30 Days">
+                                    30D
+                                </button>
+                                <button 
+                                    class="filter-option compact"
+                                    [class.active]="(dateFilter$ | async) === filterNext3Months"
+                                    (click)="selectFilter('date', filterNext3Months)"
+                                    title="Next 3 Months">
+                                    3M
+                                </button>
+                                <button 
+                                    class="filter-option compact"
+                                    [class.active]="(dateFilter$ | async) === filterNext6Months"
+                                    (click)="selectFilter('date', filterNext6Months)"
+                                    title="Next 6 Months">
+                                    6M
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="filter-row">
+                            <label>Sort</label>
+                            <div class="filter-options inline">
+                                <button 
+                                    class="filter-option compact"
+                                    [class.active]="(sort$ | async) === AddonBlockTimelineSort.ByDates"
+                                    (click)="selectSort(AddonBlockTimelineSort.ByDates)"
+                                    title="Sort by Dates">
+                                    Dates
+                                </button>
+                                <button 
+                                    class="filter-option compact"
+                                    [class.active]="(sort$ | async) === AddonBlockTimelineSort.ByCourses"
+                                    (click)="selectSort(AddonBlockTimelineSort.ByCourses)"
+                                    title="Sort by Courses">
+                                    Courses
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Search Bar -->
+        <div class="aspire-timeline-search" *ngIf="(search$ | async) !== null">
             <core-search-box (onSubmit)="searchChanged($event)" (onClear)="searchChanged('')"
-                [placeholder]="'addon.block_timeline.searchevents' | translate" autocorrect="off" spellcheck="false" [lengthCheck]="2"
+                [placeholder]="'addon.block_timeline.searchevents' | translate" 
+                autocorrect="off" spellcheck="false" [lengthCheck]="2"
                 searchArea="AddonBlockTimeline" />
-        </ion-col>
-    </ion-row>
-    <ion-row class="ion-justify-content-between ion-align-items-center addon-block-timeline-filter">
-        <ion-col size="auto">
-            <core-combobox [formControl]="filter" (onChange)="filterChanged($event)"
-                [label]="'addon.block_timeline.ariadayfilter' | translate">
-                <ion-select-option *ngFor="let option of statusFilterOptions; last as last"
-                    [attr.class]="'ion-text-wrap' + last ? ' core-select-option-border-bottom' : ''" [value]="option.value">
-                    {{ option.name | translate }}
-                </ion-select-option>
-                <ion-select-option class="ion-text-wrap core-select-option-title" disabled value="disabled">
-                    {{ 'addon.block_timeline.duedate' | translate }}
-                </ion-select-option>
-                <ion-select-option *ngFor="let option of dateFilterOptions" class="ion-text-wrap" [value]="option.value">
-                    {{ option.name | translate }}
-                </ion-select-option>
-            </core-combobox>
-        </ion-col>
-        <ion-col class="ion-hide-md-down" *ngIf="(search$ | async) !== null">
-            <!-- Filter courses. -->
-            <core-search-box (onSubmit)="searchChanged($event)" (onClear)="searchChanged('')"
-                [placeholder]="'addon.block_timeline.searchevents' | translate" autocorrect="off" spellcheck="false" [lengthCheck]="2"
-                searchArea="AddonBlockTimeline" />
-        </ion-col>
-        <ion-col size="auto">
-            <core-combobox [label]="'core.sortby' | translate" [formControl]="sort" (onChange)="sortChanged($event)"
-                icon="fas-arrow-down-short-wide" class="no-border">
-                <ion-select-option *ngFor="let option of sortOptions" class="ion-text-wrap" [value]="option.value">
-                    {{ option.name | translate }}
-                </ion-select-option>
-            </core-combobox>
-        </ion-col>
-    </ion-row>
-    <ng-container *ngIf="sections$ | async as sections">
-        <ng-container *ngFor="let section of sections">
-            <addon-block-timeline-events *ngIf="section.data$ | async as data" [events]="data.events"
-                [showInlineCourse]="(sort$ | async) === AddonBlockTimelineSort.ByDates" [canLoadMore]="data.canLoadMore"
-                [loadingMore]="data.loadingMore" (loadMore)="section.loadMore()" [course]="section.course" />
-        </ng-container>
-        <core-empty-box *ngIf="sections && sections.length === 0" image="assets/img/icons/courses.svg"
-            [message]="'addon.block_timeline.noevents' | translate" />
-    </ng-container>
-</core-loading>
+        </div>
+    </div>
+
+    <core-loading [hideUntil]="loaded">
+        <div class="aspire-timeline-content">
+            <ng-container *ngIf="sections$ | async as sections">
+                <ng-container *ngFor="let section of sections">
+                    <addon-block-timeline-events *ngIf="section.data$ | async as data" 
+                        [events]="data.events"
+                        [showInlineCourse]="(sort$ | async) === AddonBlockTimelineSort.ByDates" 
+                        [canLoadMore]="data.canLoadMore"
+                        [loadingMore]="data.loadingMore" 
+                        (loadMore)="section.loadMore()" 
+                        [course]="section.course" />
+                </ng-container>
+                
+                <core-empty-box *ngIf="sections && sections.length === 0" 
+                    class="aspire-empty-timeline"
+                    image="assets/img/icons/calendar.svg"
+                    [message]="'addon.block_timeline.noevents' | translate" />
+            </ng-container>
+        </div>
+    </core-loading>
+</div>

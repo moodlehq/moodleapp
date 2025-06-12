@@ -27,6 +27,7 @@ export class AddonBlockTimelineSection {
 
     search: string | null;
     overdue: boolean;
+    done: boolean;
     dateRange: AddonBlockTimelineDateRange;
     course?: CoreEnrolledCourseDataWithOptions;
 
@@ -39,9 +40,11 @@ export class AddonBlockTimelineSection {
         course?: CoreEnrolledCourseDataWithOptions,
         courseEvents?: AddonCalendarEvent[],
         canLoadMore?: number,
+        done = false,
     ) {
         this.search = search;
         this.overdue = overdue;
+        this.done = done;
         this.dateRange = dateRange;
         this.course = course;
         this.dataSubject$ = new BehaviorSubject<AddonBlockTimelineSectionData>({
@@ -53,7 +56,7 @@ export class AddonBlockTimelineSection {
 
         if (courseEvents) {
             // eslint-disable-next-line promise/catch-or-return
-            this.reduceEvents(courseEvents, overdue, dateRange).then(events => this.dataSubject$.next({
+            this.reduceEvents(courseEvents, overdue, done, dateRange).then(events => this.dataSubject$.next({
                 ...this.dataSubject$.value,
                 events,
             }));
@@ -79,7 +82,7 @@ export class AddonBlockTimelineSection {
             : await AddonBlockTimeline.getActionEventsByTimesort(lastEventId, this.search ?? '');
 
         this.dataSubject$.next({
-            events: this.dataSubject$.value.events.concat(await this.reduceEvents(events, this.overdue, this.dateRange)),
+            events: this.dataSubject$.value.events.concat(await this.reduceEvents(events, this.overdue, this.done, this.dateRange)),
             lastEventId: canLoadMore,
             canLoadMore: canLoadMore !== undefined,
             loadingMore: false,
@@ -91,12 +94,14 @@ export class AddonBlockTimelineSection {
      *
      * @param events Events.
      * @param overdue Whether to filter overdue events or not.
+     * @param done Whether to filter done events or not.
      * @param dateRange Date range to filter events.
      * @returns Day events list.
      */
     private async reduceEvents(
         events: AddonCalendarEvent[],
         overdue: boolean,
+        done: boolean,
         { from, to }: AddonBlockTimelineDateRange,
     ): Promise<AddonBlockTimelineDayEvents[]> {
         const filterDates: AddonBlockTimelineFilterDates = {
@@ -107,7 +112,7 @@ export class AddonBlockTimelineSection {
         };
         const timelineEvents = await Promise.all(
             events
-                .filter((event) => this.filterEvent(event, overdue, filterDates))
+                .filter((event) => this.filterEvent(event, overdue, done, filterDates))
                 .map((event) => this.mapToTimelineEvent(event, filterDates.now)),
         );
 
@@ -144,16 +149,23 @@ export class AddonBlockTimelineSection {
      *
      * @param event Event.
      * @param overdue Whether to filter overdue events or not.
+     * @param done Whether to filter done events or not.
      * @param filterDates Filter dates.
      * @returns Whetehr to include the event or not.
      */
     private filterEvent(
         event: AddonCalendarEvent,
         overdue: boolean,
+        done: boolean,
         { now, midnight, start, end }: AddonBlockTimelineFilterDates,
     ): boolean {
         if (start > event.timesort || (end && event.timesort >= end)) {
             return false;
+        }
+
+        // Filter for done events - events that are not actionable anymore
+        if (done) {
+            return !!(event.action && !event.action.actionable);
         }
 
         // Already calculated on 4.0 onwards but this will be live.

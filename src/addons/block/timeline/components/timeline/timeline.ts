@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, HostListener } from '@angular/core';
 import { CoreSites } from '@services/sites';
 import { ICoreBlockComponent } from '@features/block/classes/base-block-component';
 import { AddonBlockTimeline } from '../../services/timeline';
@@ -53,6 +53,10 @@ export class AddonBlockTimelineComponent implements OnInit, ICoreBlockComponent 
     sortOptions!: AddonBlockTimelineOption<AddonBlockTimelineSort>[];
     filter = new FormControl(AddonBlockTimelineFilter.Next7Days); // Aspire School: Default to next 7 days
     filter$!: Observable<AddonBlockTimelineFilter>;
+    statusFilter = new FormControl(AddonBlockTimelineFilter.All); // Aspire School: Status filter (All/Overdue/Done)
+    statusFilter$!: Observable<AddonBlockTimelineFilter>;
+    dateFilter = new FormControl(AddonBlockTimelineFilter.Next7Days); // Aspire School: Date filter
+    dateFilter$!: Observable<AddonBlockTimelineFilter>;
     statusFilterOptions!: AddonBlockTimelineOption<AddonBlockTimelineFilter>[];
     dateFilterOptions!: AddonBlockTimelineOption<AddonBlockTimelineFilter>[];
     search$: Subject<string | null>;
@@ -68,6 +72,8 @@ export class AddonBlockTimelineComponent implements OnInit, ICoreBlockComponent 
         this.search$ = new BehaviorSubject<string | null>(null);
         this.initializeSort();
         this.initializeFilter();
+        this.initializeStatusFilter();
+        this.initializeDateFilter();
         this.initializeSections();
     }
 
@@ -75,20 +81,36 @@ export class AddonBlockTimelineComponent implements OnInit, ICoreBlockComponent 
         return AddonBlockTimelineSort;
     }
 
+    // Expose individual filter values for template use (const enums can't be used directly in templates)
+    readonly filterAll = AddonBlockTimelineFilter.All;
+    readonly filterOverdue = AddonBlockTimelineFilter.Overdue;
+    readonly filterDone = AddonBlockTimelineFilter.Done;
+    readonly filterNext7Days = AddonBlockTimelineFilter.Next7Days;
+    readonly filterNext30Days = AddonBlockTimelineFilter.Next30Days;
+    readonly filterNext3Months = AddonBlockTimelineFilter.Next3Months;
+    readonly filterNext6Months = AddonBlockTimelineFilter.Next6Months;
+    
+    // UI state
+    showFilterDropdown = false;
+
     /**
      * @inheritdoc
      */
     async ngOnInit(): Promise<void> {
         const currentSite = CoreSites.getRequiredCurrentSite();
-        const [sort, filter, search] = await Promise.all([
+        const [sort, filter, statusFilter, dateFilter, search] = await Promise.all([
             // Aspire School: Default to sort by courses
             currentSite.getLocalSiteConfig('AddonBlockTimelineSort', AddonBlockTimelineSort.ByCourses),
             currentSite.getLocalSiteConfig('AddonBlockTimelineFilter', AddonBlockTimelineFilter.Next7Days),
+            currentSite.getLocalSiteConfig('AddonBlockTimelineStatusFilter', AddonBlockTimelineFilter.All),
+            currentSite.getLocalSiteConfig('AddonBlockTimelineDateFilter', AddonBlockTimelineFilter.Next7Days),
             currentSite.isVersionGreaterEqualThan('4.0') ? '' : null,
         ]);
 
         this.sort.setValue(sort);
         this.filter.setValue(filter);
+        this.statusFilter.setValue(statusFilter);
+        this.dateFilter.setValue(dateFilter);
         this.search$.next(search);
     }
 
@@ -111,12 +133,89 @@ export class AddonBlockTimelineComponent implements OnInit, ICoreBlockComponent 
     }
 
     /**
+     * Status filter changed.
+     *
+     * @param filter New filter.
+     */
+    statusFilterChanged(filter: AddonBlockTimelineFilter): void {
+        CoreSites.getRequiredCurrentSite().setLocalSiteConfig('AddonBlockTimelineStatusFilter', filter);
+    }
+
+    /**
+     * Date filter changed.
+     *
+     * @param filter New filter.
+     */
+    dateFilterChanged(filter: AddonBlockTimelineFilter): void {
+        CoreSites.getRequiredCurrentSite().setLocalSiteConfig('AddonBlockTimelineDateFilter', filter);
+    }
+
+    /**
      * Search text changed.
      *
      * @param search New search.
      */
     searchChanged(search: string): void {
         this.search$.next(search);
+    }
+
+    /**
+     * Toggle filter dropdown visibility.
+     */
+    toggleFilterDropdown(): void {
+        this.showFilterDropdown = !this.showFilterDropdown;
+    }
+
+    /**
+     * Select a filter and close dropdown.
+     *
+     * @param type Filter type ('status' or 'date').
+     * @param value Filter value.
+     */
+    selectFilter(type: 'status' | 'date', value: AddonBlockTimelineFilter): void {
+        if (type === 'status') {
+            this.statusFilter.setValue(value);
+            this.statusFilterChanged(value);
+        } else {
+            this.dateFilter.setValue(value);
+            this.dateFilterChanged(value);
+        }
+        this.showFilterDropdown = false;
+    }
+
+    /**
+     * Select a sort option and close dropdown.
+     *
+     * @param value Sort value.
+     */
+    selectSort(value: AddonBlockTimelineSort): void {
+        this.sort.setValue(value);
+        this.sortChanged(value);
+        this.showFilterDropdown = false;
+    }
+
+    /**
+     * Handle clicks outside the filter dropdown.
+     */
+    @HostListener('document:click', ['$event'])
+    onDocumentClick(event: MouseEvent): void {
+        const target = event.target as HTMLElement;
+        const filterElement = target.closest('.aspire-compact-filters');
+        
+        if (!filterElement && this.showFilterDropdown) {
+            this.showFilterDropdown = false;
+        }
+    }
+
+    /**
+     * Get the label for the current date filter.
+     *
+     * @returns Translation key for the date filter.
+     */
+    getDateFilterLabel(): string {
+        const currentFilter = this.dateFilter.value;
+        const option = this.dateFilterOptions.find(opt => opt.value === currentFilter);
+        return option?.name || '';
     }
 
     /**
@@ -148,10 +247,25 @@ export class AddonBlockTimelineComponent implements OnInit, ICoreBlockComponent 
      */
     protected initializeFilter(): void {
         this.filter$ = formControlValue(this.filter);
+    }
+
+    /**
+     * Initialize status filter properties.
+     */
+    protected initializeStatusFilter(): void {
+        this.statusFilter$ = formControlValue(this.statusFilter);
         this.statusFilterOptions = [
             { value: AddonBlockTimelineFilter.All, name: 'core.all' },
             { value: AddonBlockTimelineFilter.Overdue, name: 'addon.block_timeline.overdue' },
+            { value: AddonBlockTimelineFilter.Done, name: 'addon.block_timeline.done' },
         ];
+    }
+
+    /**
+     * Initialize date filter properties.
+     */
+    protected initializeDateFilter(): void {
+        this.dateFilter$ = formControlValue(this.dateFilter);
         this.dateFilterOptions = [
             AddonBlockTimelineFilter.Next7Days,
             AddonBlockTimelineFilter.Next30Days,
@@ -171,6 +285,7 @@ export class AddonBlockTimelineComponent implements OnInit, ICoreBlockComponent 
         const filtersRange: Record<AddonBlockTimelineFilter, AddonBlockTimelineDateRange> = {
             all: { from: -14 },
             overdue: { from: -14, to: 1 },
+            done: { from: -365 }, // Show completed events from last year
             next7days: { from: 0, to: 7 },
             next30days: { from: 0, to: 30 },
             next3months: { from: 0, to: 90 },
@@ -195,16 +310,23 @@ export class AddonBlockTimelineComponent implements OnInit, ICoreBlockComponent 
             }),
         );
 
-        this.sections$ = combineLatest([this.filter$, sortValue, this.search$, courses]).pipe(
-            map(async ([filter, sort, search, courses]) => {
-                const includeOverdue = filter === AddonBlockTimelineFilter.Overdue;
-                const dateRange = filtersRange[filter];
+        this.sections$ = combineLatest([this.statusFilter$, this.dateFilter$, sortValue, this.search$, courses]).pipe(
+            map(async ([statusFilter, dateFilter, sort, search, courses]) => {
+                const includeOverdue = statusFilter === AddonBlockTimelineFilter.Overdue;
+                const includeDone = statusFilter === AddonBlockTimelineFilter.Done;
+                
+                // Use date filter range unless status filter is overdue or done
+                const dateRange = statusFilter === AddonBlockTimelineFilter.Overdue 
+                    ? filtersRange.overdue 
+                    : statusFilter === AddonBlockTimelineFilter.Done
+                    ? filtersRange.done
+                    : filtersRange[dateFilter];
 
                 switch (sort) {
                     case AddonBlockTimelineSort.ByDates:
-                        return this.getSectionsByDates(search, includeOverdue, dateRange);
+                        return this.getSectionsByDates(search, includeOverdue, includeDone, dateRange);
                     case AddonBlockTimelineSort.ByCourses:
-                        return this.getSectionsByCourse(search, includeOverdue, dateRange, courses);
+                        return this.getSectionsByCourse(search, includeOverdue, includeDone, dateRange, courses);
                 }
             }),
             resolved(),
@@ -228,15 +350,17 @@ export class AddonBlockTimelineComponent implements OnInit, ICoreBlockComponent 
      *
      * @param search Search string.
      * @param overdue Whether to filter overdue events or not.
+     * @param done Whether to filter done events or not.
      * @param dateRange Date range to filter events by.
      * @returns Sections.
      */
     protected async getSectionsByDates(
         search: string | null,
         overdue: boolean,
+        done: boolean,
         dateRange: AddonBlockTimelineDateRange,
     ): Promise<Observable<AddonBlockTimelineSection[]>> {
-        const section = new AddonBlockTimelineSection(search, overdue, dateRange);
+        const section = new AddonBlockTimelineSection(search, overdue, dateRange, undefined, undefined, undefined, done);
 
         await section.loadMore();
 
@@ -248,6 +372,7 @@ export class AddonBlockTimelineComponent implements OnInit, ICoreBlockComponent 
      *
      * @param search Search string.
      * @param overdue Whether to filter overdue events or not.
+     * @param done Whether to filter done events or not.
      * @param dateRange Date range to filter events by.
      * @param courses Courses.
      * @returns Sections.
@@ -255,6 +380,7 @@ export class AddonBlockTimelineComponent implements OnInit, ICoreBlockComponent 
     protected async getSectionsByCourse(
         search: string | null,
         overdue: boolean,
+        done: boolean,
         dateRange: AddonBlockTimelineDateRange,
         courses: CoreEnrolledCourseDataWithOptions[],
     ): Promise<Observable<AddonBlockTimelineSection[]>> {
@@ -289,6 +415,7 @@ export class AddonBlockTimelineComponent implements OnInit, ICoreBlockComponent 
                     course,
                     courseEvents[course.id].events,
                     courseEvents[course.id].canLoadMore,
+                    done,
                 );
 
                 return section.data$.pipe(map(({ events }) => events.length > 0 ? section : null));
@@ -339,6 +466,7 @@ export enum AddonBlockTimelineSort {
 export const enum AddonBlockTimelineFilter {
     All = 'all',
     Overdue = 'overdue',
+    Done = 'done',
     Next7Days = 'next7days',
     Next30Days = 'next30days',
     Next3Months = 'next3months',

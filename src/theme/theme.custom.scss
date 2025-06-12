@@ -2909,3 +2909,744 @@ ion-fab[vertical="bottom"][horizontal="end"] {
         }
     }
 }
+
+// Aspire School Timeline Component
+.aspire-timeline-container {
+    background: #f8fafc;
+    
+    .aspire-timeline-header {
+        background: white;
+        padding: 16px 20px;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        margin-bottom: 16px;
+        
+        .aspire-timeline-title-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+            
+            .aspire-section-title {
+                font-size: 20px;
+                font-weight: 700;
+                color: #1a1a1a;
+                margin: 0;
+                letter-spacing: -0.3px;
+            }
+            
+            .aspire-compact-filters {
+                position: relative;
+                
+                .aspire-filter-trigger {
+                    background: transparent;
+                    border: 1.5px solid #e9ecef;
+                    border-radius: 8px;
+                    padding: 6px 12px;
+                    font-size: 13px;
+                    font-weight: 600;
+                    color: #495057;
+                    cursor: pointer;
+                    display: flex;
+                    align-items: center;
+                    gap: 6px;
+                    transition: all 0.2s ease;
+                    height: 32px;
+                    
+                    &:hover {
+                        background: #f8f9fa;
+                        border-color: #dee2e6;
+                    }
+                    
+                    ion-icon {
+                        font-size: 14px;
+                        color: #6c757d;
+                        
+                        &.dropdown-arrow {
+                            font-size: 10px;
+                            margin-left: 2px;
+                            transition: transform 0.2s ease;
+                        }
+                    }
+                    
+                    span {
+                        max-width: 120px;
+                        overflow: hidden;
+                        text-overflow: ellipsis;
+                        white-space: nowrap;
+                        font-size: 12px;
+                    }
+                }
+                
+                .aspire-filter-dropdown {
+                    position: absolute;
+                    top: 100%;
+                    right: 0;
+                    margin-top: 6px;
+                    background: white;
+                    border-radius: 8px;
+                    box-shadow: 0 3px 12px rgba(0, 0, 0, 0.1);
+                    border: 1px solid #e9ecef;
+                    min-width: 220px;
+                    opacity: 0;
+                    visibility: hidden;
+                    transform: translateY(-8px);
+                    transition: all 0.2s ease;
+                    z-index: 1000;
+                    
+                    &.show {
+                        opacity: 1;
+                        visibility: visible;
+                        transform: translateY(0);
+                        
+                        & ~ .aspire-filter-trigger .dropdown-arrow {
+                            transform: rotate(180deg);
+                        }
+                    }
+                    
+                    .filter-section {
+                        padding: 12px;
+                        
+                        &.compact {
+                            padding: 10px;
+                        }
+                        
+                        .filter-row {
+                            display: flex;
+                            align-items: center;
+                            gap: 12px;
+                            
+                            &:not(:last-child) {
+                                margin-bottom: 8px;
+                            }
+                            
+                            label {
+                                font-size: 11px;
+                                font-weight: 700;
+                                color: #6c757d;
+                                text-transform: uppercase;
+                                letter-spacing: 0.5px;
+                                min-width: 50px;
+                                margin: 0;
+                            }
+                            
+                            .filter-options {
+                                display: flex;
+                                flex-wrap: wrap;
+                                gap: 6px;
+                                flex: 1;
+                                
+                                &.inline {
+                                    flex-wrap: nowrap;
+                                }
+                                
+                                .filter-option {
+                                    background: #f8f9fa;
+                                    border: 1.5px solid transparent;
+                                    border-radius: 6px;
+                                    padding: 5px 12px;
+                                    font-size: 12px;
+                                    font-weight: 600;
+                                    color: #495057;
+                                    cursor: pointer;
+                                    transition: all 0.15s ease;
+                                    display: inline-flex;
+                                    align-items: center;
+                                    gap: 4px;
+                                    white-space: nowrap;
+                                    
+                                    &.compact {
+                                        padding: 4px 10px;
+                                        font-size: 11px;
+                                        min-width: 32px;
+                                        justify-content: center;
+                                    }
+                                    
+                                    &.icon-only {
+                                        padding: 4px 8px;
+                                        min-width: 28px;
+                                        
+                                        ion-icon {
+                                            font-size: 12px;
+                                            margin: 0;
+                                        }
+                                    }
+                                    
+                                    ion-icon {
+                                        font-size: 13px;
+                                    }
+                                    
+                                    &:hover {
+                                        background: #e9ecef;
+                                        transform: translateY(-1px);
+                                    }
+                                    
+                                    &.active {
+                                        background: #4c96d1;
+                                        color: white;
+                                        border-color: #4c96d1;
+                                        
+                                        ion-icon {
+                                            color: white;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        
+        .aspire-timeline-search {
+            
+            core-search-box {
+                display: block;
+                position: relative;
+                
+                ::ng-deep {
+                    // Hide the default wrapper
+                    .core-searchbox-wrapper {
+                        margin: 0;
+                        padding: 0;
+                        background: none;
+                        box-shadow: none;
+                    }
+                    
+                    // Style the search container
+                    .searchbar-input-container {
+                        background: #f8f9fa;
+                        border-radius: 8px;
+                        border: none;
+                        transition: all 0.2s ease;
+                        height: 36px;
+                        overflow: hidden;
+                        
+                        &::before {
+                            content: '';
+                            position: absolute;
+                            inset: 0;
+                            border-radius: 8px;
+                            padding: 1.5px;
+                            background: transparent;
+                            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+                            -webkit-mask-composite: xor;
+                            mask-composite: exclude;
+                            transition: background 0.2s ease;
+                        }
+                        
+                        &:hover::before {
+                            background: #dee2e6;
+                        }
+                        
+                        &:focus-within {
+                            background: white;
+                            box-shadow: 0 0 0 1.5px #4c96d1, 0 2px 8px rgba(76, 150, 209, 0.15);
+                            
+                            &::before {
+                                background: transparent;
+                            }
+                            
+                            ion-searchbar {
+                                --icon-color: #4c96d1;
+                            }
+                        }
+                    }
+                    
+                    // Style the searchbar
+                    ion-searchbar {
+                        --background: transparent;
+                        --box-shadow: none;
+                        --border-radius: 8px;
+                        height: 100%;
+                        padding: 0;
+                        
+                        // Placeholder styling
+                        --placeholder-color: #6c757d;
+                        --placeholder-font-weight: 500;
+                        --placeholder-font-size: 13px;
+                        --placeholder-opacity: 0.8;
+                        
+                        // Icon styling
+                        --icon-color: #6c757d;
+                        
+                        // Input field
+                        input {
+                            font-size: 13px;
+                            font-weight: 500;
+                            color: #212529;
+                            padding: 0 12px !important;
+                            height: 36px !important;
+                            background: transparent !important;
+                            
+                            &::placeholder {
+                                color: #6c757d;
+                                opacity: 0.8;
+                            }
+                        }
+                        
+                        // Search icon
+                        .searchbar-search-icon {
+                            width: 16px;
+                            height: 16px;
+                            margin-left: 12px;
+                            margin-right: 0;
+                            color: var(--icon-color);
+                            
+                            ion-icon {
+                                font-size: 16px;
+                            }
+                        }
+                        
+                        // Clear button
+                        .searchbar-clear-button {
+                            margin-right: 8px;
+                            
+                            ion-icon {
+                                font-size: 16px;
+                                color: #adb5bd;
+                                
+                                &:hover {
+                                    color: #6c757d;
+                                }
+                            }
+                        }
+                        
+                        // Remove any default borders or shadows
+                        .searchbar-input {
+                            box-shadow: none !important;
+                            border: none !important;
+                        }
+                    }
+                    
+                    // Style any dropdown that might appear
+                    ion-list {
+                        margin-top: 4px;
+                        border-radius: 8px;
+                        box-shadow: 0 3px 12px rgba(0, 0, 0, 0.1);
+                        border: 1px solid #e9ecef;
+                        overflow: hidden;
+                        
+                        ion-item {
+                            --padding-start: 12px;
+                            --padding-end: 12px;
+                            --min-height: 36px;
+                            font-size: 13px;
+                            
+                            &:hover {
+                                --background: #f8f9fa;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    
+    .aspire-timeline-content {
+        padding: 0 20px 20px;
+    }
+}
+
+// Aspire Timeline Events Component
+addon-block-timeline-events {
+    .aspire-course-header {
+        background: white;
+        margin: 0 -20px 20px;
+        padding: 16px 20px;
+        border-bottom: 2px solid #e9ecef;
+        
+        .aspire-course-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: #212529;
+            margin: 0;
+            letter-spacing: -0.3px;
+        }
+    }
+    
+    .aspire-day-section {
+        margin-bottom: 28px;
+        
+        .aspire-day-header {
+            margin-bottom: 16px;
+            padding-left: 4px;
+            
+            h4 {
+                font-size: 13px;
+                font-weight: 700;
+                color: #6c757d;
+                text-transform: uppercase;
+                letter-spacing: 1px;
+                margin: 0;
+            }
+        }
+        
+        .aspire-events-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        
+        .aspire-event-card {
+            background: white;
+            border-radius: 12px;
+            padding: 16px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+            border: 1px solid rgba(0, 0, 0, 0.04);
+            transition: all 0.2s ease;
+            cursor: pointer;
+            position: relative;
+            
+            &:hover {
+                transform: translateY(-1px);
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+                border-color: rgba(76, 150, 209, 0.2);
+            }
+            
+            &:active {
+                transform: translateY(0);
+                box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+            }
+            
+            .aspire-event-header {
+                display: flex;
+                gap: 14px;
+                position: relative;
+                
+                .aspire-event-icon {
+                    flex-shrink: 0;
+                    width: 48px;
+                    height: 48px;
+                    background: linear-gradient(135deg, #e3f2fd, #e8f5e9);
+                    border-radius: 12px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    
+                    core-mod-icon {
+                        --size: 28px;
+                        
+                        ::ng-deep img {
+                            filter: saturate(1.2);
+                        }
+                    }
+                }
+                
+                .aspire-event-info {
+                    flex: 1;
+                    min-width: 0;
+                    
+                    .aspire-event-name {
+                        font-size: 16px;
+                        font-weight: 600;
+                        color: #212529;
+                        margin: 0 0 6px 0;
+                        line-height: 1.3;
+                    }
+                    
+                    .aspire-event-meta {
+                        display: flex;
+                        gap: 16px;
+                        flex-wrap: wrap;
+                        margin-bottom: 4px;
+                        
+                        span {
+                            display: flex;
+                            align-items: center;
+                            gap: 5px;
+                            font-size: 13px;
+                            color: #6c757d;
+                            font-weight: 500;
+                            
+                            ion-icon {
+                                font-size: 14px;
+                                color: #adb5bd;
+                            }
+                        }
+                    }
+                    
+                    .aspire-event-description {
+                        font-size: 14px;
+                        color: #6c757d;
+                        line-height: 1.5;
+                        margin: 0;
+                    }
+                }
+                
+                .aspire-overdue-badge {
+                    position: absolute;
+                    top: -6px;
+                    right: -6px;
+                    background: #dc3545;
+                    color: white;
+                    font-size: 10px;
+                    font-weight: 700;
+                    padding: 4px 8px;
+                    border-radius: 8px;
+                    text-transform: uppercase;
+                    letter-spacing: 0.5px;
+                    box-shadow: 0 2px 4px rgba(220, 53, 69, 0.3);
+                }
+            }
+            
+            .aspire-event-action {
+                margin-top: 12px;
+                padding-top: 12px;
+                border-top: 1px solid #f1f3f5;
+                
+                .aspire-action-button {
+                    background: linear-gradient(135deg, #4c96d1, #70c388);
+                    color: white;
+                    border: none;
+                    border-radius: 8px;
+                    padding: 8px 16px;
+                    font-size: 13px;
+                    font-weight: 600;
+                    cursor: pointer;
+                    transition: all 0.2s ease;
+                    display: inline-flex;
+                    align-items: center;
+                    gap: 8px;
+                    box-shadow: 0 2px 4px rgba(76, 150, 209, 0.2);
+                    
+                    &:hover {
+                        transform: translateY(-1px);
+                        box-shadow: 0 4px 8px rgba(76, 150, 209, 0.3);
+                    }
+                    
+                    &:active {
+                        transform: translateY(0);
+                        box-shadow: 0 2px 4px rgba(76, 150, 209, 0.2);
+                    }
+                    
+                    .aspire-action-count {
+                        background: rgba(255, 255, 255, 0.25);
+                        padding: 2px 8px;
+                        border-radius: 12px;
+                        font-size: 11px;
+                        font-weight: 700;
+                    }
+                }
+            }
+        }
+    }
+    
+    // Load more button
+    .ion-padding.ion-text-center {
+        padding: 20px;
+        
+        ion-button {
+            --border-radius: 10px;
+            --border-width: 2px;
+            --border-color: #dee2e6;
+            --color: #495057;
+            --background: white;
+            font-weight: 600;
+            text-transform: none;
+            font-size: 14px;
+            transition: all 0.2s ease;
+            
+            &:hover {
+                --border-color: #4c96d1;
+                --color: #4c96d1;
+                --background: rgba(76, 150, 209, 0.05);
+            }
+        }
+        
+        ion-spinner {
+            color: #4c96d1;
+        }
+    }
+}
+
+// Empty state
+.aspire-empty-timeline {
+    padding: 40px 20px;
+    text-align: center;
+    
+    ::ng-deep {
+        img {
+            opacity: 0.5;
+            max-width: 120px;
+        }
+        
+        p {
+            color: var(--ion-color-medium);
+            font-size: 16px;
+            margin-top: 16px;
+        }
+    }
+}
+
+// Responsive adjustments
+@media (max-width: 767px) {
+    .aspire-timeline-container {
+        .aspire-timeline-header {
+            padding: 16px;
+            margin-bottom: 16px;
+            
+            .aspire-timeline-title-row {
+                .aspire-section-title {
+                    font-size: 18px;
+                }
+                
+                .aspire-compact-filters {
+                    .aspire-filter-trigger {
+                        padding: 5px 10px;
+                        font-size: 12px;
+                        height: 30px;
+                        
+                        ion-icon {
+                            font-size: 12px;
+                        }
+                        
+                        span {
+                            font-size: 11px;
+                        }
+                    }
+                    
+                    .aspire-filter-dropdown {
+                        right: -16px;
+                        left: auto;
+                        max-width: calc(100vw - 32px);
+                    }
+                }
+            }
+        }
+        
+        .aspire-timeline-content {
+            padding: 0 16px 16px;
+        }
+    }
+    
+    addon-block-timeline-events {
+        .aspire-course-header {
+            margin: 0 -16px 16px;
+            padding: 12px 16px;
+            
+            .aspire-course-title {
+                font-size: 18px;
+            }
+        }
+        
+        .aspire-day-section {
+            margin-bottom: 20px;
+            
+            .aspire-event-card {
+                padding: 14px;
+                
+                .aspire-event-header {
+                    .aspire-event-icon {
+                        width: 40px;
+                        height: 40px;
+                        
+                        core-mod-icon {
+                            --size: 24px;
+                        }
+                    }
+                    
+                    .aspire-event-info {
+                        .aspire-event-name {
+                            font-size: 15px;
+                        }
+                        
+                        .aspire-event-meta {
+                            gap: 12px;
+                            
+                            span {
+                                font-size: 12px;
+                            }
+                        }
+                        
+                        .aspire-event-description {
+                            font-size: 13px;
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+// Search Box Styling
+core-search-box {
+    .searchbar-input-container {
+        background: #f8f9fa;
+        border-radius: 8px;
+        height: 36px;
+        border: 1px solid transparent;
+        transition: all 0.2s ease;
+        
+        &:hover {
+            background: #f3f4f6;
+        }
+        
+        &:focus-within {
+            background: white;
+            border-color: transparent;
+            box-shadow: 0 0 0 1.5px #4c96d1, 0 2px 8px rgba(76, 150, 209, 0.15);
+        }
+        
+        .searchbar-input {
+            padding: 0 12px;
+            font-size: 14px;
+            color: #1a1a1a;
+            
+            &::placeholder {
+                color: #9ca3af;
+                font-weight: 400;
+            }
+        }
+        
+        .searchbar-search-icon {
+            color: #6a737b;
+            margin-left: 12px;
+            font-size: 18px;
+        }
+        
+        .searchbar-clear-icon {
+            background: rgba(0, 0, 0, 0.08);
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 8px;
+            transition: all 0.15s ease;
+            
+            &:hover {
+                background: rgba(0, 0, 0, 0.15);
+            }
+            
+            ion-icon {
+                font-size: 12px;
+                color: #6a737b;
+            }
+        }
+    }
+    
+    // Remove default iOS/Android styling
+    &.searchbar-has-focus {
+        .searchbar-input-container {
+            background: white;
+        }
+    }
+    
+    // Compact mode for timeline
+    &.aspire-compact-search {
+        .searchbar-input-container {
+            height: 32px;
+            
+            .searchbar-input {
+                font-size: 13px;
+                padding: 0 10px;
+            }
+            
+            .searchbar-search-icon {
+                font-size: 16px;
+                margin-left: 10px;
+            }
+        }
+    }
+}
