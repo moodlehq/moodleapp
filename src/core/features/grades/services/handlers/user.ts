@@ -59,10 +59,8 @@ export class CoreGradesUserHandlerService implements CoreUserProfileHandler {
         }
 
         if (context === CoreUserDelegateContext.USER_MENU) {
-            // This option used to belong to main menu, check the original disabled feature value.
-            if (currentSite.isFeatureDisabled('CoreMainMenuDelegate_CoreGrades')) {
-                return false;
-            }
+            // Aspire School: Grades is already shown as a quick action tile, so hide it from the menu
+            return false;
         } else if (currentSite.isFeatureDisabled('CoreUserDelegate_CoreGrades:viewGrades')) {
             return false;
         }

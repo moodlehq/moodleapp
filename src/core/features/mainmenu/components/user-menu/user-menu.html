@@ -1,26 +1,22 @@
-<ion-header class="aspire-user-menu-header">
-    <ion-toolbar class="aspire-notch-toolbar">
-        <ion-buttons slot="start">
-            <ion-button fill="clear" (click)="logout($event)" class="aspire-logout-top-btn">
-                <ion-icon name="log-out-outline" slot="start" aria-hidden="true" />
-                <span>{{ 'core.mainmenu.logout' | translate }}</span>
-            </ion-button>
-        </ion-buttons>
-        <ion-buttons slot="end">
-            <ion-button fill="clear" (click)="close($event)" [ariaLabel]="'core.close' | translate" class="aspire-close-btn">
-                <ion-icon name="fas-xmark" slot="icon-only" aria-hidden="true" />
-            </ion-button>
-        </ion-buttons>
-    </ion-toolbar>
-</ion-header>
+<ion-header class="aspire-user-menu-header"> </ion-header>
 <ion-content class="aspire-user-menu-content">
     <core-loading [hideUntil]="siteLogoLoaded && handlersLoaded">
         <!-- Aspire School: Modern User Profile Card -->
         <div class="aspire-profile-header" *ngIf="siteInfo">
-            <div class="aspire-profile-backdrop"></div>
+            <div class="aspire-profile-backdrop">
+                <button class="aspire-logout-btn" (click)="logout($event)">
+                    <ion-icon name="log-out-outline"></ion-icon>
+                    <span>{{ 'core.mainmenu.logout' | translate }}</span>
+                </button>
+            </div>
             <div class="aspire-profile-content">
                 <div class="aspire-avatar-wrapper">
-                    <core-user-avatar [site]="siteInfo" [userId]="siteInfo.userid" [linkProfile]="false" class="aspire-avatar-large" />
+                    <core-user-avatar
+                        [site]="siteInfo"
+                        [userId]="siteInfo.userid"
+                        [linkProfile]="false"
+                        class="aspire-avatar-large"
+                    />
                     <div class="aspire-avatar-ring"></div>
                 </div>
                 <h2 class="aspire-user-name">{{ siteInfo.fullname }}</h2>
@@ -29,7 +25,9 @@
                     <div class="aspire-stat-item">
                         <ion-icon name="book-outline"></ion-icon>
                         <span>{{ courseCount || 0 }}</span>
-                        <label>{{ 'core.courses.mycourses' | translate }}</label>
+                        <label
+                            >{{ 'core.courses.mycourses' | translate }}</label
+                        >
                     </div>
                     <div class="aspire-stat-item">
                         <ion-icon name="trophy-outline"></ion-icon>
@@ -42,27 +40,34 @@
 
         <!-- Quick Actions Grid -->
         <div class="aspire-user-menu-actions-grid">
-            <div class="aspire-user-action-card" (click)="openUserProfile($event)">
+            <div
+                class="aspire-user-action-card"
+                (click)="openUserProfile($event)"
+            >
                 <div class="aspire-user-action-icon profile">
                     <ion-icon name="person-circle-outline"></ion-icon>
                 </div>
                 <span>{{ 'core.user.profile' | translate }}</span>
             </div>
-            
-            <div class="aspire-user-action-card" (click)="openPreferences($event)" *ngIf="displayPreferences !== false">
+
+            <div
+                class="aspire-user-action-card"
+                (click)="openPreferences($event)"
+                *ngIf="displayPreferences !== false"
+            >
                 <div class="aspire-user-action-icon settings">
                     <ion-icon name="settings-outline"></ion-icon>
                 </div>
                 <span>{{ 'core.settings.settings' | translate }}</span>
             </div>
-            
+
             <div class="aspire-user-action-card" (click)="openGrades($event)">
                 <div class="aspire-user-action-icon grades">
                     <ion-icon name="stats-chart-outline"></ion-icon>
                 </div>
                 <span>{{ 'core.grades.grades' | translate }}</span>
             </div>
-            
+
             <div class="aspire-user-action-card" (click)="openMessages($event)">
                 <div class="aspire-user-action-icon messages">
                     <ion-icon name="chatbubble-ellipses-outline"></ion-icon>
@@ -72,18 +77,33 @@
         </div>
 
         <!-- Menu Items with Icons -->
-        <div class="aspire-menu-section" *ngIf="handlers && handlers.length > 0">
+        <div
+            class="aspire-menu-section"
+            *ngIf="handlers && handlers.length > 0"
+        >
             <h3 class="aspire-section-title">{{ 'core.more' | translate }}</h3>
             <ion-list class="aspire-menu-list">
-                <ion-item *ngFor="let handler of handlers" button (click)="handlerClicked($event, handler)"
-                    [hidden]="handler.hidden" class="aspire-menu-item">
+                <ion-item
+                    *ngFor="let handler of handlers"
+                    button
+                    (click)="handlerClicked($event, handler)"
+                    [hidden]="handler.hidden"
+                    class="aspire-menu-item"
+                >
                     <div class="aspire-menu-icon" slot="start">
-                        <ion-icon *ngIf="handler.icon" [name]="handler.icon"></ion-icon>
+                        <ion-icon
+                            *ngIf="handler.icon"
+                            [name]="handler.icon"
+                        ></ion-icon>
                     </div>
                     <ion-label>
                         <h4>{{ handler.title | translate }}</h4>
                     </ion-label>
-                    <ion-badge *ngIf="handler.showBadge && handler.badge" slot="end" class="aspire-badge">
+                    <ion-badge
+                        *ngIf="handler.showBadge && handler.badge"
+                        slot="end"
+                        class="aspire-badge"
+                    >
                         {{ handler.badge }}
                     </ion-badge>
                 </ion-item>
@@ -92,70 +112,142 @@
 
         <!-- Aspire School: Hidden delegate handlers for minimal interface -->
         <ng-container *ngIf="false">
-                <ion-item button *ngFor="let handler of handlers" class="ion-text-wrap" (click)="handlerClicked($event, handler)"
-                    [ngClass]="['core-user-menu-handler', handler.class || '']" [hidden]="handler.hidden"
-                    [attr.aria-label]="handler.title | translate" [detail]="true">
-                    <ion-icon *ngIf="handler.icon" [name]="handler.icon" slot="start" aria-hidden="true" />
-                    <ion-label>
-                        <p class="item-heading">{{ handler.title | translate }}</p>
-                    </ion-label>
-                    <ion-badge slot="end" *ngIf="handler.showBadge" [hidden]="handler.loading || !handler.badge" aria-hidden="true">
-                        {{handler.badge}}
-                    </ion-badge>
-                    <span *ngIf="handler.showBadge && handler.badge && handler.badgeA11yText" class="sr-only">
-                        {{ handler.badgeA11yText | translate: {$a : handler.badge } }}
-                    </span>
-                    <ion-spinner slot="end" *ngIf="handler.showBadge && handler.loading" [attr.aria-label]="'core.loading' | translate" />
-                </ion-item>
+            <ion-item
+                button
+                *ngFor="let handler of handlers"
+                class="ion-text-wrap"
+                (click)="handlerClicked($event, handler)"
+                [ngClass]="['core-user-menu-handler', handler.class || '']"
+                [hidden]="handler.hidden"
+                [attr.aria-label]="handler.title | translate"
+                [detail]="true"
+            >
+                <ion-icon
+                    *ngIf="handler.icon"
+                    [name]="handler.icon"
+                    slot="start"
+                    aria-hidden="true"
+                />
+                <ion-label>
+                    <p class="item-heading">{{ handler.title | translate }}</p>
+                </ion-label>
+                <ion-badge
+                    slot="end"
+                    *ngIf="handler.showBadge"
+                    [hidden]="handler.loading || !handler.badge"
+                    aria-hidden="true"
+                >
+                    {{handler.badge}}
+                </ion-badge>
+                <span
+                    *ngIf="handler.showBadge && handler.badge && handler.badgeA11yText"
+                    class="sr-only"
+                >
+                    {{ handler.badgeA11yText | translate: {$a : handler.badge }
+                    }}
+                </span>
+                <ion-spinner
+                    slot="end"
+                    *ngIf="handler.showBadge && handler.loading"
+                    [attr.aria-label]="'core.loading' | translate"
+                />
+            </ion-item>
 
-                <ion-item button *ngFor="let handler of accountHandlers; let first = first" class="ion-text-wrap"
-                    (click)="handlerClicked($event, handler)"
-                    [ngClass]="['core-user-account-menu-handler', handler.class || '', first ? 'core-user-menu-separator' : '']"
-                    [hidden]="handler.hidden" [attr.aria-label]="handler.title | translate" [detail]="true">
-                    <ion-icon *ngIf="handler.icon" [name]="handler.icon" slot="start" aria-hidden="true" />
-                    <ion-label>
-                        <p class="item-heading">{{ handler.title | translate }}</p>
-                    </ion-label>
-                    <ion-badge slot="end" *ngIf="handler.showBadge" [hidden]="handler.loading || !handler.badge" aria-hidden="true">
-                        {{handler.badge}}
-                    </ion-badge>
-                    <span *ngIf="handler.showBadge && handler.badge && handler.badgeA11yText" class="sr-only">
-                        {{ handler.badgeA11yText | translate: {$a : handler.badge } }}
-                    </span>
-                    <ion-spinner slot="end" *ngIf="handler.showBadge && handler.loading" [attr.aria-label]="'core.loading' | translate" />
-                </ion-item>
-            </ng-container>
+            <ion-item
+                button
+                *ngFor="let handler of accountHandlers; let first = first"
+                class="ion-text-wrap"
+                (click)="handlerClicked($event, handler)"
+                [ngClass]="['core-user-account-menu-handler', handler.class || '', first ? 'core-user-menu-separator' : '']"
+                [hidden]="handler.hidden"
+                [attr.aria-label]="handler.title | translate"
+                [detail]="true"
+            >
+                <ion-icon
+                    *ngIf="handler.icon"
+                    [name]="handler.icon"
+                    slot="start"
+                    aria-hidden="true"
+                />
+                <ion-label>
+                    <p class="item-heading">{{ handler.title | translate }}</p>
+                </ion-label>
+                <ion-badge
+                    slot="end"
+                    *ngIf="handler.showBadge"
+                    [hidden]="handler.loading || !handler.badge"
+                    aria-hidden="true"
+                >
+                    {{handler.badge}}
+                </ion-badge>
+                <span
+                    *ngIf="handler.showBadge && handler.badge && handler.badgeA11yText"
+                    class="sr-only"
+                >
+                    {{ handler.badgeA11yText | translate: {$a : handler.badge }
+                    }}
+                </span>
+                <ion-spinner
+                    slot="end"
+                    *ngIf="handler.showBadge && handler.loading"
+                    [attr.aria-label]="'core.loading' | translate"
+                />
+            </ion-item>
+        </ng-container>
 
-            <!-- Aspire School: Hidden preferences and support for minimal interface -->
-            <ng-container *ngIf="false">
-                <ion-item button (click)="openPreferences($event)" [attr.aria-label]="'core.settings.preferences' | translate" [detail]="true"
-                    class="core-user-menu-preferences core-user-menu-separator">
-                    <ion-icon name="fas-wrench" slot="start" aria-hidden="true" />
-                    <ion-label>
-                        <p class="item-heading">{{ 'core.settings.preferences' | translate }}</p>
-                    </ion-label>
-                </ion-item>
+        <!-- Aspire School: Hidden preferences and support for minimal interface -->
+        <ng-container *ngIf="false">
+            <ion-item
+                button
+                (click)="openPreferences($event)"
+                [attr.aria-label]="'core.settings.preferences' | translate"
+                [detail]="true"
+                class="core-user-menu-preferences core-user-menu-separator"
+            >
+                <ion-icon name="fas-wrench" slot="start" aria-hidden="true" />
+                <ion-label>
+                    <p class="item-heading">
+                        {{ 'core.settings.preferences' | translate }}
+                    </p>
+                </ion-label>
+            </ion-item>
 
-                <ion-item *ngIf="displayContactSupport" button (click)="contactSupport($event)"
-                    [attr.aria-label]="'core.user.support' | translate" [detail]="true" detailIcon="open-outline"
-                    class="core-user-menu-support">
-                    <ion-icon name="fas-envelope" slot="start" aria-hidden="true" />
-                    <ion-label>
-                        <p class="item-heading">{{ 'core.user.support' | translate }}</p>
-                    </ion-label>
-                </ion-item>
-            </ng-container>
+            <ion-item
+                *ngIf="displayContactSupport"
+                button
+                (click)="contactSupport($event)"
+                [attr.aria-label]="'core.user.support' | translate"
+                [detail]="true"
+                detailIcon="open-outline"
+                class="core-user-menu-support"
+            >
+                <ion-icon name="fas-envelope" slot="start" aria-hidden="true" />
+                <ion-label>
+                    <p class="item-heading">
+                        {{ 'core.user.support' | translate }}
+                    </p>
+                </ion-label>
+            </ion-item>
+        </ng-container>
     </core-loading>
 </ion-content>
 <ion-footer class="aspire-user-menu-footer">
     <!-- Support & Switch Account Actions -->
     <div class="aspire-footer-actions">
-        <button class="aspire-support-button" (click)="contactSupport($event)" *ngIf="displayContactSupport">
+        <button
+            class="aspire-support-button"
+            (click)="contactSupport($event)"
+            *ngIf="displayContactSupport"
+        >
             <ion-icon name="help-circle-outline"></ion-icon>
             <span>{{ 'core.needhelp' | translate }}</span>
         </button>
-        
-        <button class="aspire-switch-button" (click)="switchAccounts($event)" *ngIf="displaySwitchAccount">
+
+        <button
+            class="aspire-switch-button"
+            (click)="switchAccounts($event)"
+            *ngIf="displaySwitchAccount"
+        >
             <ion-icon name="swap-horizontal-outline"></ion-icon>
             <span>{{ 'core.mainmenu.switchaccount' | translate }}</span>
         </button>

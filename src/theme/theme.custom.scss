@@ -45,7 +45,10 @@ ion-select,
 ion-badge,
 ion-tab-button,
 .item-heading,
-p, span, div, a {
+p,
+span,
+div,
+a {
     font-family: "Montserrat", sans-serif !important;
     letter-spacing: 0.01em;
 }
@@ -98,640 +101,806 @@ h6 {
     --ion-item-background: #ffffff;
 }
 
-    // School-specific UI Elements
-    // Hide the entire end buttons section in toolbar (where user avatar was)
-    ion-toolbar ion-buttons[slot="end"] {
-        display: none;
+// School-specific UI Elements
+// Hide the entire end buttons section in toolbar (where user avatar was)
+ion-toolbar ion-buttons[slot="end"] {
+    display: none;
+}
+
+page-core-mainmenu-home ion-header {
+    display: none;
+}
+
+// Aspire Bottom Navigation
+.mainmenu-tabs {
+    background: #ffffff;
+    border-top: none;
+    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.08);
+    padding: 8px 16px calc(4px + env(safe-area-inset-bottom, 0px)) 16px; // Added horizontal padding and safe area for iPhone
+    padding-left: calc(16px + env(safe-area-inset-left, 0px));
+    padding-right: calc(16px + env(safe-area-inset-right, 0px));
+    height: calc(64px + env(safe-area-inset-bottom, 0px));
+    position: relative;
+
+    &::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 1px;
+        background: linear-gradient(
+            90deg,
+            transparent,
+            rgba(76, 150, 209, 0.2),
+            transparent
+        );
     }
 
-    page-core-mainmenu-home ion-header {
-        display: none;
-    }
-
-    // Aspire Bottom Navigation
-    .mainmenu-tabs {
-        background: #ffffff;
-        border-top: none;
-        box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.08);
-        padding: 8px 0 4px;
-        height: 64px;
+    ion-tab-button {
+        --color: #8e8e93;
+        --color-selected: #4c96d1;
+        --padding-top: 8px;
+        --padding-bottom: 4px;
+        font-size: 10px;
+        font-weight: 600;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         position: relative;
 
-        &::before {
-            content: "";
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 1px;
-            background: linear-gradient(90deg, transparent, rgba(76, 150, 209, 0.2), transparent);
+        ion-icon {
+            font-size: 24px;
+            transition: all 0.3s ease;
+            position: relative;
         }
 
-        ion-tab-button {
-            --color: #8e8e93;
-            --color-selected: #4c96d1;
-            --padding-top: 8px;
-            --padding-bottom: 4px;
+        ion-label {
+            margin-top: 4px;
             font-size: 10px;
-            font-weight: 600;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            position: relative;
+            letter-spacing: 0.02em;
+            line-height: 1;
+            transition: all 0.3s ease;
+        }
 
+        &[aria-selected="true"] {
             ion-icon {
-                font-size: 24px;
-                transition: all 0.3s ease;
-                position: relative;
+                transform: scale(1.15) translateY(-2px);
+                color: #4c96d1;
+                filter: drop-shadow(0 2px 4px rgba(76, 150, 209, 0.3));
             }
 
             ion-label {
-                margin-top: 4px;
-                font-size: 10px;
-                letter-spacing: 0.02em;
-                line-height: 1;
-                transition: all 0.3s ease;
-            }
-
-            &[aria-selected="true"] {
-                ion-icon {
-                    transform: scale(1.15) translateY(-2px);
-                    color: #4c96d1;
-                    filter: drop-shadow(0 2px 4px rgba(76, 150, 209, 0.3));
-                }
-
-                ion-label {
-                    font-weight: 700;
-                    color: #4c96d1;
-                    transform: scale(1.05);
-                }
-
-                &::before {
-                    content: "";
-                    position: absolute;
-                    top: -8px;
-                    left: 50%;
-                    transform: translateX(-50%);
-                    width: 48px;
-                    height: 4px;
-                    background: linear-gradient(90deg, transparent, #4c96d1, transparent);
-                    border-radius: 0 0 4px 4px;
-                    animation: slideIn 0.3s ease;
-                }
-            }
-
-            // Badge styling for notifications
-            ion-badge {
-                position: absolute;
-                top: 4px;
-                right: calc(50% - 14px);
-                min-width: 18px;
-                height: 18px;
-                padding: 0 5px;
-                font-size: 10px;
                 font-weight: 700;
-                background: #ff3b30;
-                color: #ffffff;
-                border-radius: 9px;
+                color: #4c96d1;
+                transform: scale(1.05);
+            }
+
+            &::before {
+                content: "";
+                position: absolute;
+                top: -8px;
+                left: 50%;
+                transform: translateX(-50%);
+                width: 48px;
+                height: 4px;
+                background: linear-gradient(
+                    90deg,
+                    transparent,
+                    #4c96d1,
+                    transparent
+                );
+                border-radius: 0 0 4px 4px;
+                animation: slideIn 0.3s ease;
+            }
+        }
+
+        // Badge styling for notifications
+        ion-badge {
+            position: absolute;
+            top: 4px;
+            right: calc(50% - 14px);
+            min-width: 18px;
+            height: 18px;
+            padding: 0 5px;
+            font-size: 10px;
+            font-weight: 700;
+            background: #ff3b30;
+            color: #ffffff;
+            border-radius: 9px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid #ffffff;
+            box-shadow: 0 2px 6px rgba(255, 59, 48, 0.3);
+            animation: badgePulse 2s infinite;
+        }
+
+        &:active {
+            transform: scale(0.95);
+        }
+
+        // Style the More tab as Profile/Account
+        &[tab="more"] {
+            ion-icon.core-tab-icon {
+                display: none;
+            }
+
+            ion-label {
+                display: none;
+            }
+
+            &::before {
+                content: "";
+                width: 26px;
+                height: 26px;
+                border-radius: 50%;
+                background: #6d6e71;
+                display: block;
+                margin: 0 auto;
+                background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>');
+                background-size: 18px;
+                background-position: center;
+                background-repeat: no-repeat;
+            }
+
+            &[aria-selected="true"]::before {
+                background-color: #4c96d1;
+            }
+        }
+    }
+}
+
+// Hide extra buttons on dashboard
+page-core-courses-dashboard {
+    // Hide the floating side blocks button
+    core-block-side-blocks-button {
+        display: none;
+    }
+}
+
+// Course cards for classes
+core-courses-course-list-item {
+    ion-card {
+        border-radius: 20px;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+        border: none;
+        margin: 0 16px 20px;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        overflow: visible;
+        background: #ffffff;
+
+        &:hover {
+            box-shadow: 0 8px 28px rgba(76, 150, 209, 0.18);
+            transform: translateY(-4px) scale(1.01);
+        }
+
+        // Legacy card styles - simplified
+        &.core-course-list-card:not(.aspire-modern-course-card) {
+            .core-course-thumb {
+                height: 120px;
+                background: linear-gradient(135deg, #4c96d1 0%, #70c388 100%);
                 display: flex;
                 align-items: center;
                 justify-content: center;
-                border: 2px solid #ffffff;
-                box-shadow: 0 2px 6px rgba(255, 59, 48, 0.3);
-                animation: badgePulse 2s infinite;
+
+                .aspire-course-icon {
+                    font-size: 48px;
+                    color: white;
+                    opacity: 0.9;
+                }
+
+                img {
+                    object-fit: cover;
+                    height: 100%;
+                    width: 100%;
+                }
             }
 
-            &:active {
-                transform: scale(0.95);
+            .item-heading {
+                font-size: 18px;
+                font-weight: 600;
+                color: #1a1a1a;
+                margin-bottom: 8px;
+                line-height: 1.3;
             }
 
-            // Style the More tab as Profile/Account
-            &[tab="more"] {
-                ion-icon.core-tab-icon {
-                    display: none;
-                }
+            .core-course-category {
+                --background: rgba(76, 150, 209, 0.1);
+                --color: #4c96d1;
+                font-size: 12px;
+                padding: 4px 12px;
+                font-weight: 500;
+                border-radius: 20px;
+            }
 
-                ion-label {
-                    display: none;
-                }
+            .core-course-progress {
+                margin-top: 12px;
 
-                &::before {
-                    content: "";
-                    width: 26px;
-                    height: 26px;
-                    border-radius: 50%;
-                    background: #6d6e71;
-                    display: block;
-                    margin: 0 auto;
-                    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>');
-                    background-size: 18px;
-                    background-position: center;
-                    background-repeat: no-repeat;
-                }
-
-                &[aria-selected="true"]::before {
-                    background-color: #4c96d1;
+                core-progress-bar {
+                    --height: 8px;
+                    --progressbar-background: #e8f4f1;
+                    --progressbar-color: #4c96d1;
+                    --border-radius: 4px;
                 }
             }
         }
-    }
 
-    // Hide extra buttons on dashboard
-    page-core-courses-dashboard {
-        // Hide the floating side blocks button
-        core-block-side-blocks-button {
-            display: none;
-        }
-    }
-
-    // Course cards for classes
-    core-courses-course-list-item {
-        ion-card {
-            border-radius: 20px;
-            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
-            border: none;
-            margin: 0 16px 20px;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            overflow: visible;
-            background: #ffffff;
-
-            &:hover {
-                box-shadow: 0 8px 28px rgba(76, 150, 209, 0.18);
-                transform: translateY(-4px) scale(1.01);
+        &.core-course-list-item {
+            ion-item {
+                --padding-start: 20px;
+                --padding-end: 20px;
+                --padding-top: 20px;
+                --padding-bottom: 20px;
+                --inner-padding-end: 0;
             }
 
-            // Legacy card styles - simplified
-            &.core-course-list-card:not(.aspire-modern-course-card) {
-                .core-course-thumb {
-                    height: 120px;
+            .core-course-thumb {
+                &.course-icon {
                     background: linear-gradient(
                         135deg,
                         #4c96d1 0%,
                         #70c388 100%
                     );
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-
-                    .aspire-course-icon {
-                        font-size: 48px;
-                        color: white;
-                        opacity: 0.9;
-                    }
-
-                    img {
-                        object-fit: cover;
-                        height: 100%;
-                        width: 100%;
-                    }
-                }
-
-                .item-heading {
-                    font-size: 18px;
-                    font-weight: 600;
-                    color: #1a1a1a;
-                    margin-bottom: 8px;
-                    line-height: 1.3;
-                }
-
-                .core-course-category {
-                    --background: rgba(76, 150, 209, 0.1);
-                    --color: #4c96d1;
-                    font-size: 12px;
-                    padding: 4px 12px;
-                    font-weight: 500;
-                    border-radius: 20px;
-                }
-
-                .core-course-progress {
-                    margin-top: 12px;
-
-                    core-progress-bar {
-                        --height: 8px;
-                        --progressbar-background: #e8f4f1;
-                        --progressbar-color: #4c96d1;
-                        --border-radius: 4px;
-                    }
+                    color: white;
+                    padding: 14px;
+                    border-radius: 16px;
+                    font-size: 28px;
+                    box-shadow: 0 4px 12px rgba(76, 150, 209, 0.25);
                 }
             }
 
-            &.core-course-list-item {
-                ion-item {
-                    --padding-start: 20px;
-                    --padding-end: 20px;
-                    --padding-top: 20px;
-                    --padding-bottom: 20px;
-                    --inner-padding-end: 0;
-                }
+            ion-avatar {
+                width: 64px;
+                height: 64px;
+                margin-right: 16px;
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 
-                .core-course-thumb {
-                    &.course-icon {
-                        background: linear-gradient(
-                            135deg,
-                            #4c96d1 0%,
-                            #70c388 100%
-                        );
-                        color: white;
-                        padding: 14px;
-                        border-radius: 16px;
-                        font-size: 28px;
-                        box-shadow: 0 4px 12px rgba(76, 150, 209, 0.25);
-                    }
-                }
-
-                ion-avatar {
-                    width: 64px;
-                    height: 64px;
-                    margin-right: 16px;
-                    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-
-                    img {
-                        border-radius: 16px;
-                        object-fit: cover;
-                    }
-                }
-
-                .item-heading {
-                    font-size: 17px;
-                    font-weight: 600;
-                    color: #1a1a1a;
-                    margin-bottom: 6px;
-                    line-height: 1.4;
-                }
-
-                .core-course-category {
-                    font-size: 11px;
-                    font-weight: 600;
-                    text-transform: uppercase;
-                    letter-spacing: 0.5px;
-                    padding: 3px 10px;
-                    margin-top: 8px;
-                }
-
-                .core-course-progress {
-                    margin-top: 16px;
-
-                    core-progress-bar {
-                        --height: 6px;
-                        --border-radius: 3px;
-                    }
+                img {
+                    border-radius: 16px;
+                    object-fit: cover;
                 }
             }
-        }
-
-        // Favorite star styling
-        ion-icon[name="fas-star"] {
-            color: #d4af37;
-            font-size: 16px;
-            margin-right: 4px;
-        }
-    }
-
-    // Dashboard welcome section
-    .core-site-home-index-section {
-        background: linear-gradient(135deg, #4c96d1 0%, #70c388 100%);
-        color: white;
-        padding: 20px;
-        border-radius: 16px;
-        margin: 16px;
-
-        h1,
-        h2 {
-            color: white;
-            margin-bottom: 8px;
-        }
-    }
-
-    // Progress indicators
-    core-progress-bar {
-        --progressbar-color: #4c96d1;
-        --progressbar-background: #e8e8e8;
-        --height: 6px;
-    }
-
-    // Buttons
-    ion-button {
-        --border-radius: 8px;
-        font-weight: 500;
-        text-transform: none;
-        letter-spacing: 0.02em;
-
-        &.button-solid {
-            --box-shadow: 0 2px 6px rgba(76, 150, 209, 0.2);
-        }
-    }
-
-    // Cards and content
-    ion-card {
-        border-radius: 12px;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
-    }
-
-    // Input fields
-    ion-input,
-    ion-textarea,
-    ion-select {
-        --border-radius: 8px;
-        --padding-start: 12px;
-        --padding-end: 12px;
-    }
-
-    // Empty states
-    core-empty-box {
-        --image-size: 120px;
-        --icon-color: #e0e0e0;
-        padding: 60px 20px;
-
-        .core-empty-box-container {
-            max-width: 320px;
-            margin: 0 auto;
-            text-align: center;
-        }
-
-        img, ion-icon {
-            opacity: 0.4;
-            margin-bottom: 24px;
-        }
-
-        p {
-            color: #9e9e9e;
-            font-size: 16px;
-            line-height: 1.5;
-            font-weight: 500;
-            margin: 0;
-        }
-    }
-
-    // List headers
-    ion-list-header {
-        font-size: 12px;
-        font-weight: 600;
-        text-transform: uppercase;
-        letter-spacing: 0.08em;
-        color: #4c96d1;
-        padding-left: 16px;
-    }
-
-    // Activity icons
-    .activity-icon {
-        background: rgba(76, 150, 209, 0.08);
-        border-radius: 10px;
-        padding: 8px;
-
-        img,
-        ion-icon {
-            color: #4c96d1;
-        }
-    }
-
-    // Badges for achievements
-    ion-badge {
-        --background: #d4af37;
-        --color: #000000;
-        font-weight: 600;
-        font-size: 12px;
-        padding: 4px 8px;
-        border-radius: 6px;
-    }
-
-    // Calendar customization
-    .addon-calendar-calendar {
-        .calendar-event {
-            border-left: 3px solid #4c96d1;
-            background: rgba(76, 150, 209, 0.05);
-            border-radius: 8px;
-            padding: 12px;
-            margin-bottom: 8px;
-        }
-    }
-
-    // Messages/Updates styling
-    .addon-messages-discussion-item {
-        ion-item {
-            --padding-start: 12px;
-            --padding-end: 12px;
 
             .item-heading {
-                font-weight: 500;
+                font-size: 17px;
+                font-weight: 600;
+                color: #1a1a1a;
+                margin-bottom: 6px;
+                line-height: 1.4;
+            }
+
+            .core-course-category {
+                font-size: 11px;
+                font-weight: 600;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+                padding: 3px 10px;
+                margin-top: 8px;
+            }
+
+            .core-course-progress {
+                margin-top: 16px;
+
+                core-progress-bar {
+                    --height: 6px;
+                    --border-radius: 3px;
+                }
             }
         }
     }
 
-    // Messages page improvements
-    page-addon-messages-discussions,
-    page-addon-messages-contacts {
-        ion-content {
-            --background: #f8f9fa;
+    // Favorite star styling
+    ion-icon[name="fas-star"] {
+        color: #d4af37;
+        font-size: 16px;
+        margin-right: 4px;
+    }
+}
+
+// Dashboard welcome section
+.core-site-home-index-section {
+    background: linear-gradient(135deg, #4c96d1 0%, #70c388 100%);
+    color: white;
+    padding: 20px;
+    border-radius: 16px;
+    margin: 16px;
+
+    h1,
+    h2 {
+        color: white;
+        margin-bottom: 8px;
+    }
+}
+
+// Progress indicators
+core-progress-bar {
+    --progressbar-color: #4c96d1;
+    --progressbar-background: #e8e8e8;
+    --height: 6px;
+}
+
+// Buttons
+ion-button {
+    --border-radius: 8px;
+    font-weight: 500;
+    text-transform: none;
+    letter-spacing: 0.02em;
+
+    &.button-solid {
+        --box-shadow: 0 2px 6px rgba(76, 150, 209, 0.2);
+    }
+}
+
+// Cards and content
+ion-card {
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+// Input fields
+ion-input,
+ion-textarea,
+ion-select {
+    --border-radius: 8px;
+    --padding-start: 12px;
+    --padding-end: 12px;
+}
+
+// Empty states
+core-empty-box {
+    --image-size: 120px;
+    --icon-color: #e0e0e0;
+    padding: 60px 20px;
+
+    .core-empty-box-container {
+        max-width: 320px;
+        margin: 0 auto;
+        text-align: center;
+    }
+
+    img,
+    ion-icon {
+        opacity: 0.4;
+        margin-bottom: 24px;
+    }
+
+    p {
+        color: #9e9e9e;
+        font-size: 16px;
+        line-height: 1.5;
+        font-weight: 500;
+        margin: 0;
+    }
+}
+
+// List headers
+ion-list-header {
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #4c96d1;
+    padding-left: 16px;
+}
+
+// Activity icons
+.activity-icon {
+    background: rgba(76, 150, 209, 0.08);
+    border-radius: 10px;
+    padding: 8px;
+
+    img,
+    ion-icon {
+        color: #4c96d1;
+    }
+}
+
+// Badges for achievements
+ion-badge {
+    --background: #d4af37;
+    --color: #000000;
+    font-weight: 600;
+    font-size: 12px;
+    padding: 4px 8px;
+    border-radius: 6px;
+}
+
+// Calendar customization
+.addon-calendar-calendar {
+    .calendar-event {
+        border-left: 3px solid #4c96d1;
+        background: rgba(76, 150, 209, 0.05);
+        border-radius: 8px;
+        padding: 12px;
+        margin-bottom: 8px;
+    }
+}
+
+// Messages/Updates styling
+.addon-messages-discussion-item {
+    ion-item {
+        --padding-start: 12px;
+        --padding-end: 12px;
+
+        .item-heading {
+            font-weight: 500;
+        }
+    }
+}
+
+// Messages page improvements
+page-addon-messages-discussions,
+page-addon-messages-contacts {
+    ion-content {
+        --background: #f8f9fa;
+    }
+
+    ion-list {
+        background: transparent;
+        padding: 0;
+    }
+
+    ion-item {
+        --background: #ffffff;
+        --border-radius: 12px;
+        margin: 8px 16px;
+        --padding-start: 16px;
+        --padding-end: 16px;
+        --padding-top: 14px;
+        --padding-bottom: 14px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+        transition: all 0.2s ease;
+
+        &:hover {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            transform: translateY(-1px);
         }
 
-        ion-list {
-            background: transparent;
-            padding: 0;
+        core-user-avatar {
+            --core-avatar-size: 48px;
+            margin-right: 12px;
         }
 
-        ion-item {
-            --background: #ffffff;
-            --border-radius: 12px;
-            margin: 8px 16px;
-            --padding-start: 16px;
-            --padding-end: 16px;
-            --padding-top: 14px;
-            --padding-bottom: 14px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
-            transition: all 0.2s ease;
-
-            &:hover {
-                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-                transform: translateY(-1px);
-            }
-
-            core-user-avatar {
-                --core-avatar-size: 48px;
-                margin-right: 12px;
-            }
-
-            ion-label {
-                h2 {
-                    font-size: 16px;
-                    font-weight: 600;
-                    color: #1a1a1a;
-                    margin-bottom: 4px;
-                }
-
-                p {
-                    font-size: 14px;
-                    color: #6a737b;
-                }
-            }
-
-            ion-badge {
-                background: #4c96d1;
-                color: white;
+        ion-label {
+            h2 {
+                font-size: 16px;
                 font-weight: 600;
-                padding: 4px 8px;
-                border-radius: 12px;
-                font-size: 12px;
-            }
-        }
-
-        // Section headers
-        ion-item-divider {
-            --background: transparent;
-            --padding-start: 20px;
-            --padding-top: 20px;
-            --padding-bottom: 8px;
-            margin: 0;
-            border: none;
-            min-height: auto;
-
-            ion-label {
-                font-size: 14px;
-                font-weight: 600;
-                text-transform: uppercase;
-                color: #6a737b;
-                letter-spacing: 0.5px;
-            }
-        }
-
-        // No messages state
-        .addon-messages-no-messages {
-            padding: 60px 20px;
-            text-align: center;
-
-            ion-icon {
-                font-size: 80px;
-                color: #e0e0e0;
-                margin-bottom: 16px;
+                color: #1a1a1a;
+                margin-bottom: 4px;
             }
 
             p {
-                font-size: 16px;
-                color: #9e9e9e;
-                font-weight: 500;
+                font-size: 14px;
+                color: #6a737b;
             }
+        }
+
+        ion-badge {
+            background: #4c96d1;
+            color: white;
+            font-weight: 600;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 12px;
         }
     }
 
-    // Aspire School Welcome Banner
-    .aspire-welcome-banner {
-        background: linear-gradient(135deg, #4c96d1 0%, #70c388 100%);
+    // Section headers
+    ion-item-divider {
+        --background: transparent;
+        --padding-start: 20px;
+        --padding-top: 20px;
+        --padding-bottom: 8px;
         margin: 0;
-        padding: 24px 20px 20px;
-        position: relative;
-        overflow: hidden;
+        border: none;
+        min-height: auto;
 
-        &::before {
-            content: "";
-            position: absolute;
-            top: -50px;
-            right: -50px;
-            width: 150px;
-            height: 150px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 50%;
+        ion-label {
+            font-size: 14px;
+            font-weight: 600;
+            text-transform: uppercase;
+            color: #6a737b;
+            letter-spacing: 0.5px;
+        }
+    }
+
+    // No messages state
+    .addon-messages-no-messages {
+        padding: 60px 20px;
+        text-align: center;
+
+        ion-icon {
+            font-size: 80px;
+            color: #e0e0e0;
+            margin-bottom: 16px;
         }
 
-        .aspire-welcome-content {
-            position: relative;
-            z-index: 1;
+        p {
+            font-size: 16px;
+            color: #9e9e9e;
+            font-weight: 500;
+        }
+    }
+}
 
-            h1 {
-                color: #ffffff;
-                font-size: 26px;
-                margin: 0 0 6px 0;
-                font-family: "Montserrat", sans-serif;
+// Aspire School Welcome Banner
+.aspire-welcome-banner {
+    background: linear-gradient(135deg, #4c96d1 0%, #70c388 100%);
+    margin: 0;
+    padding: 24px 20px 20px;
+    position: relative;
+    overflow: hidden;
+
+    &::before {
+        content: "";
+        position: absolute;
+        top: -50px;
+        right: -50px;
+        width: 150px;
+        height: 150px;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 50%;
+    }
+
+    .aspire-welcome-content {
+        position: relative;
+        z-index: 1;
+
+        h1 {
+            color: #ffffff;
+            font-size: 26px;
+            margin: 0 0 6px 0;
+            font-family: "Montserrat", sans-serif;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            .aspire-search-button {
+                background: rgba(255, 255, 255, 0.2);
+                backdrop-filter: blur(10px);
+                border: 1px solid rgba(255, 255, 255, 0.3);
+                border-radius: 50%;
+                width: 40px;
+                height: 40px;
+                min-width: 40px;
                 display: flex;
                 align-items: center;
-                justify-content: space-between;
+                justify-content: center;
+                transition: all 0.3s ease;
+                cursor: pointer;
+                margin-left: 16px;
+                flex-shrink: 0;
 
-                .aspire-search-button {
-                    background: rgba(255, 255, 255, 0.2);
-                    backdrop-filter: blur(10px);
-                    border: 1px solid rgba(255, 255, 255, 0.3);
-                    border-radius: 50%;
-                    width: 40px;
-                    height: 40px;
-                    min-width: 40px;
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    transition: all 0.3s ease;
-                    cursor: pointer;
-                    margin-left: 16px;
-                    flex-shrink: 0;
+                ion-icon {
+                    font-size: 20px;
+                    color: white;
+                }
 
-                    ion-icon {
-                        font-size: 20px;
-                        color: white;
-                    }
+                &:hover,
+                &:focus {
+                    background: rgba(255, 255, 255, 0.3);
+                    transform: scale(1.05);
+                }
 
-                    &:hover,
-                    &:focus {
-                        background: rgba(255, 255, 255, 0.3);
-                        transform: scale(1.05);
-                    }
-
-                    &:active {
-                        transform: scale(0.95);
-                    }
+                &:active {
+                    transform: scale(0.95);
                 }
             }
+        }
 
-            .aspire-welcome-subtitle {
-                color: rgba(255, 255, 255, 0.9);
-                font-size: 15px;
-                margin: 0;
-                font-weight: 400;
-            }
+        .aspire-welcome-subtitle {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 15px;
+            margin: 0;
+            font-weight: 400;
+        }
 
-            .aspire-stats {
-                display: grid;
-                grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-                gap: 16px;
-                margin-top: 20px;
+        .aspire-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 16px;
+            margin-top: 20px;
 
-                .aspire-stat-item {
-                    background: rgba(255, 255, 255, 0.15);
-                    backdrop-filter: blur(10px);
-                    border-radius: 12px;
-                    padding: 16px;
-                    text-align: center;
-                    border: 1px solid rgba(255, 255, 255, 0.2);
-                    transition: all 0.3s ease;
+            .aspire-welcome-stat-item {
+                background: rgba(255, 255, 255, 0.15);
+                backdrop-filter: blur(10px);
+                border-radius: 12px;
+                padding: 16px;
+                text-align: center;
+                border: 1px solid rgba(255, 255, 255, 0.2);
+                transition: all 0.3s ease;
 
-                    &:hover {
-                        background: rgba(255, 255, 255, 0.2);
-                        transform: translateY(-2px);
-                    }
+                &:hover {
+                    background: rgba(255, 255, 255, 0.2);
+                    transform: translateY(-2px);
+                }
 
-                    .aspire-stat-value {
-                        font-size: 24px;
-                        font-weight: 700;
-                        color: #ffffff;
-                        margin-bottom: 4px;
-                    }
+                .aspire-stat-value {
+                    font-size: 24px;
+                    font-weight: 700;
+                    color: #ffffff;
+                    margin-bottom: 4px;
+                }
 
-                    .aspire-stat-label {
-                        font-size: 12px;
-                        color: rgba(255, 255, 255, 0.85);
-                        text-transform: uppercase;
-                        letter-spacing: 0.05em;
-                        font-weight: 500;
-                    }
+                .aspire-stat-label {
+                    font-size: 12px;
+                    color: rgba(255, 255, 255, 0.85);
+                    text-transform: uppercase;
+                    letter-spacing: 0.05em;
+                    font-weight: 500;
                 }
             }
         }
     }
+}
 
-    // Dashboard customization
-    core-courses-dashboard {
-        .core-dashboard-section {
-            margin-bottom: 24px;
+// Dashboard customization
+core-courses-dashboard {
+    .core-dashboard-section {
+        margin-bottom: 24px;
 
-            h2 {
-                font-size: 20px;
+        h2 {
+            font-size: 20px;
+            color: #3a6fa0;
+            margin-bottom: 16px;
+            padding-left: 16px;
+            position: relative;
+
+            &::before {
+                content: "";
+                position: absolute;
+                left: 0;
+                top: 50%;
+                transform: translateY(-50%);
+                width: 4px;
+                height: 24px;
+                background: #4c96d1;
+                border-radius: 2px;
+            }
+        }
+    }
+}
+
+// Quick Actions Section
+.aspire-quick-section {
+    padding: 20px 16px;
+
+    .aspire-section-title {
+        font-size: 18px;
+        font-weight: 600;
+        color: #1a1a1a;
+        margin: 0 0 16px 4px;
+        font-family: "Inter", sans-serif;
+    }
+}
+
+.aspire-quick-actions {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+
+    .aspire-action-card {
+        background: #ffffff;
+        border: 1px solid #e0e0e0;
+        border-radius: 16px;
+        padding: 20px 8px;
+        text-align: center;
+        transition: all 0.3s ease;
+        cursor: pointer;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 10px;
+        min-height: 90px;
+
+        &:hover {
+            box-shadow: 0 4px 12px rgba(76, 150, 209, 0.15);
+            border-color: #4c96d1;
+            transform: translateY(-2px);
+        }
+
+        ion-icon {
+            font-size: 28px;
+            color: #4c96d1;
+        }
+
+        span {
+            font-size: 13px;
+            color: #2d5f55;
+            font-weight: 500;
+            line-height: 1.2;
+        }
+    }
+}
+
+// Responsive adjustments
+@media (max-width: 360px) {
+    .aspire-quick-actions {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@keyframes pulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(212, 175, 55, 0.4);
+    }
+    70% {
+        box-shadow: 0 0 0 10px rgba(212, 175, 55, 0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(212, 175, 55, 0);
+    }
+}
+
+@keyframes slideIn {
+    0% {
+        width: 0;
+        opacity: 0;
+    }
+    100% {
+        width: 48px;
+        opacity: 1;
+    }
+}
+
+@keyframes badgePulse {
+    0%,
+    100% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.1);
+    }
+}
+
+// Timeline Block Customization for Aspire School
+core-block[block="timeline"],
+.addon-block-timeline {
+    ion-item-divider {
+        background: linear-gradient(135deg, #4c96d1 0%, #70c388 100%);
+        color: white;
+        margin-bottom: 16px;
+        border-radius: 12px 12px 0 0;
+
+        h2 {
+            color: white;
+            font-size: 20px;
+            font-weight: 600;
+            font-family: "Montserrat", sans-serif;
+        }
+    }
+
+    // Filter section
+    .addon-block-timeline-filter {
+        margin: 0 16px 16px 16px;
+
+        core-combobox {
+            --background: rgba(76, 150, 209, 0.05);
+            --border-radius: 12px;
+            --padding-start: 12px;
+            --padding-end: 12px;
+
+            ion-select {
+                --placeholder-color: #4c96d1;
+            }
+        }
+    }
+
+    // Event groups
+    ion-item-group {
+        margin-bottom: 24px;
+
+        // Day header
+        > ion-item:first-child {
+            --background: transparent;
+            --border-style: none;
+            margin-bottom: 12px;
+
+            ion-label h4 {
+                font-size: 18px;
+                font-weight: 600;
                 color: #3a6fa0;
-                margin-bottom: 16px;
-                padding-left: 16px;
                 position: relative;
+                padding-left: 20px;
 
                 &::before {
                     content: "";
@@ -739,317 +908,228 @@ h6 {
                     left: 0;
                     top: 50%;
                     transform: translateY(-50%);
-                    width: 4px;
-                    height: 24px;
+                    width: 12px;
+                    height: 12px;
                     background: #4c96d1;
-                    border-radius: 2px;
+                    border-radius: 50%;
                 }
             }
         }
     }
 
-    // Quick Actions Section
-    .aspire-quick-section {
-        padding: 20px 16px;
+    // Activity items
+    .addon-block-timeline-activity {
+        margin: 0 16px 12px 16px;
+        border-radius: 12px;
+        border: 1px solid #e0e0e0;
+        --background: #ffffff;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: visible;
 
-        .aspire-section-title {
-            font-size: 18px;
-            font-weight: 600;
-            color: #1a1a1a;
-            margin: 0 0 16px 4px;
-            font-family: "Inter", sans-serif;
+        &:hover {
+            box-shadow: 0 4px 12px rgba(76, 150, 209, 0.12);
+            border-color: #4c96d1;
+            transform: translateY(-2px);
+        }
+
+        // Timeline indicator
+        &::before {
+            content: "";
+            position: absolute;
+            left: -8px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 12px;
+            height: 12px;
+            background: #4c96d1;
+            border-radius: 50%;
+            border: 3px solid #ffffff;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .addon-block-timeline-activity-time {
+            small {
+                color: #6a737b;
+                font-weight: 500;
+                font-size: 13px;
+            }
+
+            core-mod-icon {
+                margin-left: 8px;
+
+                img,
+                ion-icon {
+                    width: 32px !important;
+                    height: 32px !important;
+                }
+            }
+        }
+
+        .addon-block-timeline-activity-name {
+            padding-left: 12px;
+
+            .item-heading {
+                font-size: 16px;
+                font-weight: 600;
+                color: #1a1a1a;
+                margin-bottom: 4px;
+
+                ion-badge {
+                    margin-left: 8px;
+                    font-size: 11px;
+                    padding: 4px 8px;
+                    border-radius: 12px;
+                    background: #d4af37;
+                    color: #000;
+                    font-weight: 600;
+                }
+            }
+
+            p {
+                font-size: 14px;
+                color: #5a5a5a;
+                margin: 2px 0;
+
+                &:first-of-type {
+                    color: #4c96d1;
+                    font-weight: 500;
+                }
+            }
+        }
+
+        .addon-block-timeline-activity-action {
+            margin-top: 12px;
+
+            ion-button {
+                --background: rgba(76, 150, 209, 0.1);
+                --color: #4c96d1;
+                --border-color: #4c96d1;
+                --border-radius: 20px;
+                font-size: 13px;
+                font-weight: 600;
+                height: 32px;
+
+                &:hover {
+                    --background: #4c96d1;
+                    --color: white;
+                }
+            }
         }
     }
 
-    .aspire-quick-actions {
-        display: grid;
-        grid-template-columns: repeat(4, 1fr);
-        gap: 12px;
+    // Load more button
+    ion-button[expand="block"] {
+        --border-color: #4c96d1;
+        --color: #4c96d1;
+        font-weight: 600;
+        margin: 16px;
 
-        .aspire-action-card {
-            background: #ffffff;
-            border: 1px solid #e0e0e0;
-            border-radius: 16px;
-            padding: 20px 8px;
+        &:hover {
+            --background: rgba(76, 150, 209, 0.05);
+        }
+    }
+}
+
+// Move timeline block to top of dashboard
+.core-dashboard-blocks {
+    ion-list {
+        .core-block-timeline {
+            order: -1;
+            margin-bottom: 24px;
+        }
+    }
+}
+
+// Student Profile Customization
+.aspire-student-profile {
+    .aspire-student-info {
+        margin: 6px 0;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        color: #5a5a5a;
+
+        ion-icon {
+            font-size: 18px;
+            color: #4c96d1;
+        }
+    }
+}
+
+.aspire-student-card {
+    margin: 16px;
+    border-radius: 16px;
+    box-shadow: 0 3px 12px rgba(0, 0, 0, 0.08);
+    border: 1px solid #e0e0e0;
+
+    ion-card-header {
+        background: linear-gradient(135deg, #4c96d1 0%, #70c388 100%);
+        color: white;
+        padding: 16px;
+
+        ion-card-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin: 0;
+        }
+    }
+
+    ion-card-content {
+        padding: 16px;
+
+        .aspire-info-item {
             text-align: center;
-            transition: all 0.3s ease;
-            cursor: pointer;
+            padding: 12px;
+            background: #f8f9fa;
+            border-radius: 12px;
+            min-height: 90px;
             display: flex;
             flex-direction: column;
-            align-items: center;
-            gap: 10px;
-            min-height: 90px;
-
-            &:hover {
-                box-shadow: 0 4px 12px rgba(76, 150, 209, 0.15);
-                border-color: #4c96d1;
-                transform: translateY(-2px);
-            }
+            justify-content: center;
+            gap: 4px;
 
             ion-icon {
                 font-size: 28px;
                 color: #4c96d1;
+                margin-bottom: 4px;
             }
 
-            span {
-                font-size: 13px;
-                color: #2d5f55;
-                font-weight: 500;
-                line-height: 1.2;
+            .aspire-info-label {
+                font-size: 12px;
+                color: #6a737b;
+                text-transform: uppercase;
+                letter-spacing: 0.05em;
             }
-        }
-    }
 
-    // Responsive adjustments
-    @media (max-width: 360px) {
-        .aspire-quick-actions {
-            grid-template-columns: repeat(2, 1fr);
-        }
-    }
-
-    @keyframes pulse {
-        0% {
-            box-shadow: 0 0 0 0 rgba(212, 175, 55, 0.4);
-        }
-        70% {
-            box-shadow: 0 0 0 10px rgba(212, 175, 55, 0);
-        }
-        100% {
-            box-shadow: 0 0 0 0 rgba(212, 175, 55, 0);
-        }
-    }
-
-    @keyframes slideIn {
-        0% {
-            width: 0;
-            opacity: 0;
-        }
-        100% {
-            width: 48px;
-            opacity: 1;
-        }
-    }
-
-    @keyframes badgePulse {
-        0%, 100% {
-            transform: scale(1);
-        }
-        50% {
-            transform: scale(1.1);
-        }
-    }
-
-    // Timeline Block Customization for Aspire School
-    core-block[block="timeline"],
-    .addon-block-timeline {
-        ion-item-divider {
-            background: linear-gradient(135deg, #4c96d1 0%, #70c388 100%);
-            color: white;
-            margin-bottom: 16px;
-            border-radius: 12px 12px 0 0;
-
-            h2 {
-                color: white;
+            .aspire-info-value {
                 font-size: 20px;
                 font-weight: 600;
-                font-family: "Montserrat", sans-serif;
-            }
-        }
+                color: #1a1a1a;
 
-        // Filter section
-        .addon-block-timeline-filter {
-            margin: 0 16px 16px 16px;
-
-            core-combobox {
-                --background: rgba(76, 150, 209, 0.05);
-                --border-radius: 12px;
-                --padding-start: 12px;
-                --padding-end: 12px;
-
-                ion-select {
-                    --placeholder-color: #4c96d1;
-                }
-            }
-        }
-
-        // Event groups
-        ion-item-group {
-            margin-bottom: 24px;
-
-            // Day header
-            > ion-item:first-child {
-                --background: transparent;
-                --border-style: none;
-                margin-bottom: 12px;
-
-                ion-label h4 {
-                    font-size: 18px;
-                    font-weight: 600;
-                    color: #3a6fa0;
-                    position: relative;
-                    padding-left: 20px;
-
-                    &::before {
-                        content: "";
-                        position: absolute;
-                        left: 0;
-                        top: 50%;
-                        transform: translateY(-50%);
-                        width: 12px;
-                        height: 12px;
-                        background: #4c96d1;
-                        border-radius: 50%;
-                    }
-                }
-            }
-        }
-
-        // Activity items
-        .addon-block-timeline-activity {
-            margin: 0 16px 12px 16px;
-            border-radius: 12px;
-            border: 1px solid #e0e0e0;
-            --background: #ffffff;
-            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: visible;
-
-            &:hover {
-                box-shadow: 0 4px 12px rgba(76, 150, 209, 0.12);
-                border-color: #4c96d1;
-                transform: translateY(-2px);
-            }
-
-            // Timeline indicator
-            &::before {
-                content: "";
-                position: absolute;
-                left: -8px;
-                top: 50%;
-                transform: translateY(-50%);
-                width: 12px;
-                height: 12px;
-                background: #4c96d1;
-                border-radius: 50%;
-                border: 3px solid #ffffff;
-                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            }
-
-            .addon-block-timeline-activity-time {
-                small {
-                    color: #6a737b;
-                    font-weight: 500;
-                    font-size: 13px;
+                &.aspire-points {
+                    color: #d4af37;
                 }
 
-                core-mod-icon {
-                    margin-left: 8px;
-
-                    img,
-                    ion-icon {
-                        width: 32px !important;
-                        height: 32px !important;
-                    }
+                &.aspire-attendance {
+                    color: #4c96d1;
                 }
-            }
-
-            .addon-block-timeline-activity-name {
-                padding-left: 12px;
-
-                .item-heading {
-                    font-size: 16px;
-                    font-weight: 600;
-                    color: #1a1a1a;
-                    margin-bottom: 4px;
-
-                    ion-badge {
-                        margin-left: 8px;
-                        font-size: 11px;
-                        padding: 4px 8px;
-                        border-radius: 12px;
-                        background: #d4af37;
-                        color: #000;
-                        font-weight: 600;
-                    }
-                }
-
-                p {
-                    font-size: 14px;
-                    color: #5a5a5a;
-                    margin: 2px 0;
-
-                    &:first-of-type {
-                        color: #4c96d1;
-                        font-weight: 500;
-                    }
-                }
-            }
-
-            .addon-block-timeline-activity-action {
-                margin-top: 12px;
-
-                ion-button {
-                    --background: rgba(76, 150, 209, 0.1);
-                    --color: #4c96d1;
-                    --border-color: #4c96d1;
-                    --border-radius: 20px;
-                    font-size: 13px;
-                    font-weight: 600;
-                    height: 32px;
-
-                    &:hover {
-                        --background: #4c96d1;
-                        --color: white;
-                    }
-                }
-            }
-        }
-
-        // Load more button
-        ion-button[expand="block"] {
-            --border-color: #4c96d1;
-            --color: #4c96d1;
-            font-weight: 600;
-            margin: 16px;
-
-            &:hover {
-                --background: rgba(76, 150, 209, 0.05);
             }
         }
     }
+}
 
-    // Move timeline block to top of dashboard
-    .core-dashboard-blocks {
-        ion-list {
-            .core-block-timeline {
-                order: -1;
-                margin-bottom: 24px;
-            }
-        }
-    }
+// School Calendar Events
+.aspire-school-events {
+    padding: 16px;
 
-    // Student Profile Customization
-    .aspire-student-profile {
-        .aspire-student-info {
-            margin: 6px 0;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            color: #5a5a5a;
-
-            ion-icon {
-                font-size: 18px;
-                color: #4c96d1;
-            }
-        }
-    }
-
-    .aspire-student-card {
-        margin: 16px;
+    .aspire-events-card,
+    .aspire-terms-card {
         border-radius: 16px;
         box-shadow: 0 3px 12px rgba(0, 0, 0, 0.08);
         border: 1px solid #e0e0e0;
+        margin-bottom: 16px;
 
         ion-card-header {
             background: linear-gradient(135deg, #4c96d1 0%, #70c388 100%);
@@ -1060,283 +1140,216 @@ h6 {
                 font-size: 18px;
                 font-weight: 600;
                 margin: 0;
-            }
-        }
-
-        ion-card-content {
-            padding: 16px;
-
-            .aspire-info-item {
-                text-align: center;
-                padding: 12px;
-                background: #f8f9fa;
-                border-radius: 12px;
-                min-height: 90px;
-                display: flex;
-                flex-direction: column;
-                justify-content: center;
-                gap: 4px;
-
-                ion-icon {
-                    font-size: 28px;
-                    color: #4c96d1;
-                    margin-bottom: 4px;
-                }
-
-                .aspire-info-label {
-                    font-size: 12px;
-                    color: #6a737b;
-                    text-transform: uppercase;
-                    letter-spacing: 0.05em;
-                }
-
-                .aspire-info-value {
-                    font-size: 20px;
-                    font-weight: 600;
-                    color: #1a1a1a;
-
-                    &.aspire-points {
-                        color: #d4af37;
-                    }
-
-                    &.aspire-attendance {
-                        color: #4c96d1;
-                    }
-                }
-            }
-        }
-    }
-
-    // School Calendar Events
-    .aspire-school-events {
-        padding: 16px;
-
-        .aspire-events-card,
-        .aspire-terms-card {
-            border-radius: 16px;
-            box-shadow: 0 3px 12px rgba(0, 0, 0, 0.08);
-            border: 1px solid #e0e0e0;
-            margin-bottom: 16px;
-
-            ion-card-header {
-                background: linear-gradient(135deg, #4c96d1 0%, #70c388 100%);
-                color: white;
-                padding: 16px;
-
-                ion-card-title {
-                    font-size: 18px;
-                    font-weight: 600;
-                    margin: 0;
-                    display: flex;
-                    align-items: center;
-                    gap: 8px;
-
-                    ion-icon {
-                        font-size: 24px;
-                    }
-                }
-            }
-
-            ion-card-content {
-                padding: 0;
-            }
-        }
-
-        .aspire-event-item {
-            padding: 16px;
-            margin-bottom: 8px;
-
-            &:last-child {
-                margin-bottom: 0;
-            }
-
-            .aspire-event-icon {
-                width: 48px;
-                height: 48px;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                border-radius: 12px;
-
-                ion-icon {
-                    font-size: 24px;
-                    color: white;
-                }
-
-                &.aspire-sports {
-                    background: linear-gradient(135deg, #4c96d1, #70c388);
-                }
-
-                &.aspire-academic {
-                    background: linear-gradient(135deg, #d4af37, #e5c554);
-                }
-
-                &.aspire-meeting {
-                    background: linear-gradient(135deg, #6b8dd6, #8e7ce6);
-                }
-            }
-
-            ion-label {
-                h3 {
-                    font-size: 16px;
-                    font-weight: 600;
-                    color: #1a1a1a;
-                    margin: 0 0 4px 0;
-                }
-
-                p {
-                    font-size: 14px;
-                    color: #5a5a5a;
-                    margin: 0;
-
-                    &.aspire-event-location {
-                        color: #4c96d1;
-                        font-size: 13px;
-                        margin-top: 2px;
-                    }
-                }
-            }
-
-            ion-badge {
-                font-size: 12px;
-                padding: 4px 8px;
-                border-radius: 12px;
-            }
-        }
-
-        .aspire-term-item {
-            padding: 16px;
-            transition: all 0.3s ease;
-
-            &.aspire-current-term {
-                background: rgba(76, 150, 209, 0.05);
-            }
-
-            ion-label {
-                h4 {
-                    font-size: 16px;
-                    font-weight: 600;
-                    color: #1a1a1a;
-                    margin: 0 0 4px 0;
-                }
-
-                p {
-                    font-size: 14px;
-                    color: #5a5a5a;
-                    margin: 0;
-                }
-            }
-        }
-    }
-
-    // Login page customization
-    .aspire-login-title {
-        font-family: "Montserrat", sans-serif;
-        font-size: 32px;
-        color: #3a6fa0;
-        margin: 16px 0 8px 0;
-        font-weight: 700;
-    }
-
-    .aspire-login-subtitle {
-        font-size: 16px;
-        color: #6a737b;
-        margin: 0 0 24px 0;
-        font-weight: 400;
-    }
-
-    // Login page styling
-    :host-context(page-core-login-site) {
-        ion-content {
-            --background: linear-gradient(180deg, #f8fafa 0%, #e8f4f1 100%);
-        }
-
-        .core-login-site-logo {
-            img.login-logo {
-                max-height: 120px;
-                margin-bottom: 16px;
-            }
-        }
-
-        ion-item {
-            --border-radius: 12px;
-            --background: rgba(255, 255, 255, 0.9);
-            margin-bottom: 16px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-        }
-
-        ion-button {
-            --border-radius: 12px;
-            font-weight: 600;
-            height: 48px;
-        }
-
-        .core-login-need-help {
-            color: #4c96d1;
-            text-decoration: underline;
-            text-decoration-color: #4c96d1;
-        }
-    }
-
-    :host-context(page-core-login-credentials) {
-        ion-content {
-            --background: linear-gradient(180deg, #f8fafa 0%, #e8f4f1 100%);
-        }
-
-        .core-login-info-box {
-            background: rgba(255, 255, 255, 0.9);
-            border-radius: 16px;
-            padding: 24px;
-            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
-        }
-
-        ion-item {
-            --border-radius: 12px;
-            --background: rgba(255, 255, 255, 0.9);
-            margin-bottom: 16px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-        }
-
-        ion-button {
-            --border-radius: 12px;
-            font-weight: 600;
-            height: 48px;
-        }
-
-        .core-login-forgotten-password {
-            color: #4c96d1;
-        }
-    }
-
-    // Community News & Events Block
-    core-block[block="news_items"],
-    addon-block-news-items {
-        display: block;
-        scroll-margin-top: 70px; // Account for fixed header
-
-        .core-block-header {
-            background: linear-gradient(135deg, #4c96d1 0%, #70c388 100%);
-            color: white;
-            margin: -1px -1px 16px -1px;
-            padding: 16px;
-            border-radius: 16px 16px 0 0;
-
-            h3 {
-                color: white !important;
-                font-size: 20px;
-                font-weight: 600;
-                margin: 0;
                 display: flex;
                 align-items: center;
                 gap: 8px;
 
-                &::before {
-                    content: "📰";
+                ion-icon {
                     font-size: 24px;
                 }
             }
         }
+
+        ion-card-content {
+            padding: 0;
+        }
     }
+
+    .aspire-event-item {
+        padding: 16px;
+        margin-bottom: 8px;
+
+        &:last-child {
+            margin-bottom: 0;
+        }
+
+        .aspire-event-icon {
+            width: 48px;
+            height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 12px;
+
+            ion-icon {
+                font-size: 24px;
+                color: white;
+            }
+
+            &.aspire-sports {
+                background: linear-gradient(135deg, #4c96d1, #70c388);
+            }
+
+            &.aspire-academic {
+                background: linear-gradient(135deg, #d4af37, #e5c554);
+            }
+
+            &.aspire-meeting {
+                background: linear-gradient(135deg, #6b8dd6, #8e7ce6);
+            }
+        }
+
+        ion-label {
+            h3 {
+                font-size: 16px;
+                font-weight: 600;
+                color: #1a1a1a;
+                margin: 0 0 4px 0;
+            }
+
+            p {
+                font-size: 14px;
+                color: #5a5a5a;
+                margin: 0;
+
+                &.aspire-event-location {
+                    color: #4c96d1;
+                    font-size: 13px;
+                    margin-top: 2px;
+                }
+            }
+        }
+
+        ion-badge {
+            font-size: 12px;
+            padding: 4px 8px;
+            border-radius: 12px;
+        }
+    }
+
+    .aspire-term-item {
+        padding: 16px;
+        transition: all 0.3s ease;
+
+        &.aspire-current-term {
+            background: rgba(76, 150, 209, 0.05);
+        }
+
+        ion-label {
+            h4 {
+                font-size: 16px;
+                font-weight: 600;
+                color: #1a1a1a;
+                margin: 0 0 4px 0;
+            }
+
+            p {
+                font-size: 14px;
+                color: #5a5a5a;
+                margin: 0;
+            }
+        }
+    }
+}
+
+// Login page customization
+.aspire-login-title {
+    font-family: "Montserrat", sans-serif;
+    font-size: 32px;
+    color: #3a6fa0;
+    margin: 16px 0 8px 0;
+    font-weight: 700;
+}
+
+.aspire-login-subtitle {
+    font-size: 16px;
+    color: #6a737b;
+    margin: 0 0 24px 0;
+    font-weight: 400;
+}
+
+// Login page styling
+:host-context(page-core-login-site) {
+    ion-content {
+        --background: linear-gradient(180deg, #f8fafa 0%, #e8f4f1 100%);
+    }
+
+    .core-login-site-logo {
+        img.login-logo {
+            max-height: 120px;
+            margin-bottom: 16px;
+        }
+    }
+
+    ion-item {
+        --border-radius: 12px;
+        --background: rgba(255, 255, 255, 0.9);
+        margin-bottom: 16px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    }
+
+    ion-button {
+        --border-radius: 12px;
+        font-weight: 600;
+        height: 48px;
+    }
+
+    .core-login-need-help {
+        color: #4c96d1;
+        text-decoration: underline;
+        text-decoration-color: #4c96d1;
+    }
+}
+
+:host-context(page-core-login-credentials) {
+    ion-content {
+        --background: linear-gradient(180deg, #f8fafa 0%, #e8f4f1 100%);
+    }
+
+    .core-login-info-box {
+        background: rgba(255, 255, 255, 0.9);
+        border-radius: 16px;
+        padding: 24px;
+        box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+    }
+
+    ion-item {
+        --border-radius: 12px;
+        --background: rgba(255, 255, 255, 0.9);
+        margin-bottom: 16px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    }
+
+    ion-button {
+        --border-radius: 12px;
+        font-weight: 600;
+        height: 48px;
+    }
+
+    .core-login-forgotten-password {
+        color: #4c96d1;
+    }
+}
+
+// Community News & Events Block
+core-block[block="news_items"],
+addon-block-news-items {
+    display: block;
+    scroll-margin-top: 70px; // Account for fixed header
+
+    .core-block-header {
+        background: linear-gradient(135deg, #4c96d1 0%, #70c388 100%);
+        color: white;
+        margin: -1px -1px 16px -1px;
+        padding: 16px;
+        border-radius: 16px 16px 0 0;
+
+        h3 {
+            color: white !important;
+            font-size: 20px;
+            font-weight: 600;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+
+            &::before {
+                content: "📰";
+                font-size: 24px;
+            }
+        }
+    }
+}
 
 // Notifications page improvements
 page-addon-notifications-list {
@@ -1471,31 +1484,39 @@ page-core-course-contents {
     .core-course-progress {
         display: none !important;
     }
-    
+
     // Refined header with subtle pattern
     ion-header {
         display: block !important;
-        
+
         ion-toolbar {
             --background: linear-gradient(135deg, #4c96d1 0%, #70c388 100%);
             --color: white;
             position: relative;
             overflow: hidden;
-            
+
             // Add subtle pattern overlay
             &::before {
-                content: '';
+                content: "";
                 position: absolute;
                 top: 0;
                 left: 0;
                 right: 0;
                 bottom: 0;
-                background-image: 
-                    radial-gradient(circle at 20% 80%, rgba(255,255,255,0.1) 0%, transparent 50%),
-                    radial-gradient(circle at 80% 20%, rgba(255,255,255,0.1) 0%, transparent 50%);
+                background-image:
+                    radial-gradient(
+                        circle at 20% 80%,
+                        rgba(255, 255, 255, 0.1) 0%,
+                        transparent 50%
+                    ),
+                    radial-gradient(
+                        circle at 80% 20%,
+                        rgba(255, 255, 255, 0.1) 0%,
+                        transparent 50%
+                    );
                 pointer-events: none;
             }
-            
+
             ion-back-button {
                 --color: white;
                 --icon-font-size: 20px;
@@ -1503,66 +1524,74 @@ page-core-course-contents {
                 position: relative;
                 z-index: 1;
             }
-            
+
             ion-title {
                 position: relative;
                 z-index: 1;
-                
+
                 h1 {
                     color: white;
                     font-size: 18px;
                     font-weight: 600;
                     margin: 0;
-                    text-shadow: 0 1px 2px rgba(0,0,0,0.1);
+                    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
                 }
             }
         }
     }
-    
+
     // Refined course header section
     .core-course-header {
         background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
         position: relative;
         overflow: hidden;
-        
+
         // Add decorative pattern
         &::before {
-            content: '';
+            content: "";
             position: absolute;
             top: -50px;
             right: -50px;
             width: 100px;
             height: 100px;
-            background: radial-gradient(circle, rgba(76,150,209,0.1) 0%, transparent 70%);
+            background: radial-gradient(
+                circle,
+                rgba(76, 150, 209, 0.1) 0%,
+                transparent 70%
+            );
             border-radius: 50%;
         }
-        
+
         &::after {
-            content: '';
+            content: "";
             position: absolute;
             bottom: -30px;
             left: -30px;
             width: 80px;
             height: 80px;
-            background: radial-gradient(circle, rgba(112,195,136,0.1) 0%, transparent 70%);
+            background: radial-gradient(
+                circle,
+                rgba(112, 195, 136, 0.1) 0%,
+                transparent 70%
+            );
             border-radius: 50%;
         }
-        
+
         ion-item {
             --background: transparent;
             position: relative;
             z-index: 2;
-            
+
             .core-course-thumb {
                 background: linear-gradient(135deg, #4c96d1 0%, #70c388 100%);
                 border-radius: 12px;
-                box-shadow: 0 4px 12px rgba(76,150,209,0.2);
+                box-shadow: 0 4px 12px rgba(76, 150, 209, 0.2);
             }
-            
+
             ion-avatar.core-course-thumb {
                 img {
                     border-radius: 12px;
-                    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+                    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
                 }
             }
         }
@@ -1573,23 +1602,31 @@ page-core-course-contents {
 page-core-course-contents {
     ion-content {
         --background: linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%);
-        
+
         // Add subtle background pattern
         &::before {
-            content: '';
+            content: "";
             position: fixed;
             top: 0;
             left: 0;
             right: 0;
             bottom: 0;
-            background-image: 
-                radial-gradient(circle at 25% 25%, rgba(76,150,209,0.03) 0%, transparent 50%),
-                radial-gradient(circle at 75% 75%, rgba(112,195,136,0.03) 0%, transparent 50%);
+            background-image:
+                radial-gradient(
+                    circle at 25% 25%,
+                    rgba(76, 150, 209, 0.03) 0%,
+                    transparent 50%
+                ),
+                radial-gradient(
+                    circle at 75% 75%,
+                    rgba(112, 195, 136, 0.03) 0%,
+                    transparent 50%
+                );
             pointer-events: none;
             z-index: 0;
         }
     }
-    
+
     // Refined section groups
     core-course-format {
         ion-accordion-group {
@@ -1597,58 +1634,71 @@ page-core-course-contents {
                 background: white;
                 border-radius: 16px;
                 margin-bottom: 16px;
-                box-shadow: 0 2px 12px rgba(0,0,0,0.06);
-                border: 1px solid rgba(76,150,209,0.1);
+                box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+                border: 1px solid rgba(76, 150, 209, 0.1);
                 overflow: hidden;
                 position: relative;
-                
+
                 // Add subtle inner glow
                 &::before {
-                    content: '';
+                    content: "";
                     position: absolute;
                     top: 0;
                     left: 0;
                     right: 0;
                     height: 1px;
-                    background: linear-gradient(90deg, transparent, rgba(76,150,209,0.2), transparent);
+                    background: linear-gradient(
+                        90deg,
+                        transparent,
+                        rgba(76, 150, 209, 0.2),
+                        transparent
+                    );
                 }
-                
+
                 &.accordion-expanded {
-                    box-shadow: 0 4px 20px rgba(76,150,209,0.12);
-                    border-color: rgba(76,150,209,0.2);
+                    box-shadow: 0 4px 20px rgba(76, 150, 209, 0.12);
+                    border-color: rgba(76, 150, 209, 0.2);
                 }
-                
+
                 // Section header refinements
                 .course-section.divider {
-                    --background: linear-gradient(135deg, #fafbfc 0%, #f8fafc 100%);
+                    --background: linear-gradient(
+                        135deg,
+                        #fafbfc 0%,
+                        #f8fafc 100%
+                    );
                     --padding-start: 16px;
                     --padding-end: 16px;
                     --padding-top: 12px;
                     --padding-bottom: 12px;
                     --min-height: 48px;
-                    
+
                     ion-label h2.big {
                         color: #1e293b;
                         position: relative;
                         font-size: 16px;
                         font-weight: 600;
                         margin: 0;
-                        
+
                         // Add subtle accent
                         &::before {
-                            content: '';
+                            content: "";
                             position: absolute;
                             left: -12px;
                             top: 50%;
                             transform: translateY(-50%);
                             width: 3px;
                             height: 16px;
-                            background: linear-gradient(135deg, #4c96d1, #70c388);
+                            background: linear-gradient(
+                                135deg,
+                                #4c96d1,
+                                #70c388
+                            );
                             border-radius: 2px;
                         }
                     }
                 }
-                
+
                 // Ultra compact content area
                 div[slot="content"] {
                     background: white;
@@ -1657,7 +1707,7 @@ page-core-course-contents {
             }
         }
     }
-    
+
     // Ultra compact activity cards
     core-course-module {
         background: white;
@@ -1665,28 +1715,33 @@ page-core-course-contents {
         margin: 0;
         box-shadow: none;
         border: none;
-        border-bottom: 1px solid rgba(0,0,0,0.05);
+        border-bottom: 1px solid rgba(0, 0, 0, 0.05);
         transition: all 0.2s ease;
         position: relative;
         overflow: hidden;
-        
+
         // Add subtle gradient overlay
         &::before {
-            content: '';
+            content: "";
             position: absolute;
             top: 0;
             left: 0;
             right: 0;
             height: 1px;
-            background: linear-gradient(90deg, transparent, rgba(76,150,209,0.1), transparent);
+            background: linear-gradient(
+                90deg,
+                transparent,
+                rgba(76, 150, 209, 0.1),
+                transparent
+            );
         }
-        
+
         &:hover {
             transform: translateY(-1px);
-            box-shadow: 0 2px 8px rgba(76,150,209,0.06);
-            border-color: rgba(76,150,209,0.1);
+            box-shadow: 0 2px 8px rgba(76, 150, 209, 0.06);
+            border-color: rgba(76, 150, 209, 0.1);
         }
-        
+
         ion-item {
             --background: transparent;
             --padding-start: 12px;
@@ -1694,21 +1749,26 @@ page-core-course-contents {
             --padding-top: 2px;
             --padding-bottom: 2px;
             --min-height: 32px;
-            
+
             // Ultra compact activity icons
             core-mod-icon {
                 margin-right: 8px;
-                
-                img, ion-icon {
+
+                img,
+                ion-icon {
                     width: 24px !important;
                     height: 24px !important;
                     border-radius: 4px;
-                    background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
-                    box-shadow: 0 1px 2px rgba(0,0,0,0.03);
+                    background: linear-gradient(
+                        135deg,
+                        #f1f5f9 0%,
+                        #e2e8f0 100%
+                    );
+                    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
                     padding: 3px;
                 }
             }
-            
+
             // Ultra compact typography
             ion-label {
                 h3 {
@@ -1718,33 +1778,33 @@ page-core-course-contents {
                     margin: 0;
                     line-height: 1.2;
                 }
-                
+
                 p {
                     color: #64748b;
                     font-size: 11px;
                     margin: 0;
                     line-height: 1.1;
-                    
+
                     // Limit to single line for compactness
                     overflow: hidden;
                     text-overflow: ellipsis;
                     white-space: nowrap;
                 }
             }
-            
+
             // Ultra compact completion icons
             ion-icon[slot="end"] {
                 width: 20px !important;
                 height: 20px !important;
                 border-radius: 50%;
-                box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+                box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
                 font-size: 12px !important;
-                
+
                 &[name*="checkmark"] {
                     background: linear-gradient(135deg, #10b981, #34d399);
                     color: white;
                 }
-                
+
                 &[name*="circle-outline"] {
                     background: #f1f5f9;
                     color: #94a3b8;
@@ -1752,23 +1812,23 @@ page-core-course-contents {
             }
         }
     }
-    
+
     // Refined course index FAB button
     ion-fab {
         ion-fab-button {
             --background: linear-gradient(135deg, #4c96d1, #70c388);
             --color: white;
-            --box-shadow: 0 4px 16px rgba(76,150,209,0.3);
+            --box-shadow: 0 4px 16px rgba(76, 150, 209, 0.3);
             width: 48px;
             height: 48px;
-            
+
             ion-icon {
                 font-size: 20px;
                 font-weight: 500;
             }
-            
+
             &:hover {
-                --box-shadow: 0 6px 20px rgba(76,150,209,0.4);
+                --box-shadow: 0 6px 20px rgba(76, 150, 209, 0.4);
                 transform: scale(1.05);
             }
         }
@@ -1811,33 +1871,33 @@ addon-block-myoverview .addon-block-myoverview-courses,
     gap: 12px !important;
     padding: 16px !important;
     background: transparent !important;
-    
+
     @media (min-width: 1200px) {
         grid-template-columns: repeat(5, 1fr) !important;
     }
-    
+
     @media (max-width: 992px) {
         grid-template-columns: repeat(4, 1fr) !important;
     }
-    
+
     @media (max-width: 768px) {
         grid-template-columns: repeat(3, 1fr) !important;
         grid-auto-rows: 140px !important;
         padding: 12px !important;
         gap: 8px !important;
     }
-    
+
     @media (max-width: 576px) {
         grid-template-columns: repeat(2, 1fr) !important;
         grid-auto-rows: 120px !important;
     }
-    
+
     @media (max-width: 360px) {
         grid-template-columns: repeat(2, 1fr) !important;
         grid-auto-rows: 100px !important;
         gap: 6px !important;
     }
-    
+
     & > core-courses-course-list-item {
         margin: 0 !important;
         display: block !important;
@@ -1880,47 +1940,71 @@ core-courses-course-list-item {
         position: relative !important;
         transition: all 0.2s ease !important;
         cursor: pointer !important;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.1) !important;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1) !important;
         margin: 0 !important; // Remove any default margins
-        
+
         // Remove aspect ratio to let grid control height
         min-height: 100% !important;
-        
+
         // Tile hover/press effect
         &:hover {
             transform: translateY(-4px) !important;
-            box-shadow: 0 4px 16px rgba(0,0,0,0.15) !important;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15) !important;
         }
-        
+
         &:active {
             transform: translateY(-2px) !important;
         }
-        
+
         // Modern vibrant colors for tiles with gradients
         &.pastel-color-1 {
-            background: linear-gradient(135deg, #FF6B6B 0%, #FF8E8E 100%) !important; // Vibrant red gradient
+            background: linear-gradient(
+                135deg,
+                #ff6b6b 0%,
+                #ff8e8e 100%
+            ) !important; // Vibrant red gradient
         }
-        
+
         &.pastel-color-2 {
-            background: linear-gradient(135deg, #4ECDC4 0%, #6EE7DF 100%) !important; // Teal gradient
+            background: linear-gradient(
+                135deg,
+                #4ecdc4 0%,
+                #6ee7df 100%
+            ) !important; // Teal gradient
         }
-        
+
         &.pastel-color-3 {
-            background: linear-gradient(135deg, #45B7D1 0%, #68C9E0 100%) !important; // Sky blue gradient
+            background: linear-gradient(
+                135deg,
+                #45b7d1 0%,
+                #68c9e0 100%
+            ) !important; // Sky blue gradient
         }
-        
+
         &.pastel-color-4 {
-            background: linear-gradient(135deg, #FFA502 0%, #FFB94E 100%) !important; // Orange gradient
+            background: linear-gradient(
+                135deg,
+                #ffa502 0%,
+                #ffb94e 100%
+            ) !important; // Orange gradient
         }
-        
+
         &.pastel-color-5 {
-            background: linear-gradient(135deg, #A29BFE 0%, #B5AEFF 100%) !important; // Purple gradient
+            background: linear-gradient(
+                135deg,
+                #a29bfe 0%,
+                #b5aeff 100%
+            ) !important; // Purple gradient
         }
-        
+
         &.pastel-color-6 {
-            background: linear-gradient(135deg, #FDA7DF 0%, #FFC1E8 100%) !important; // Pink gradient
+            background: linear-gradient(
+                135deg,
+                #fda7df 0%,
+                #ffc1e8 100%
+            ) !important; // Pink gradient
         }
-        
+
         // Add a subtle pattern overlay for visual interest
         &::before {
             content: "";
@@ -1929,17 +2013,16 @@ core-courses-course-list-item {
             left: 0;
             right: 0;
             bottom: 0;
-            background-image: 
-                repeating-linear-gradient(
-                    45deg,
-                    transparent,
-                    transparent 35px,
-                    rgba(255,255,255,.05) 35px,
-                    rgba(255,255,255,.05) 70px
-                );
+            background-image: repeating-linear-gradient(
+                45deg,
+                transparent,
+                transparent 35px,
+                rgba(255, 255, 255, 0.05) 35px,
+                rgba(255, 255, 255, 0.05) 70px
+            );
             pointer-events: none;
         }
-        
+
         ion-item {
             --background: transparent !important;
             --padding-start: 16px !important;
@@ -1956,13 +2039,13 @@ core-courses-course-list-item {
                 flex-direction: column !important;
                 justify-content: center !important;
                 text-align: center !important; // Center-align for better tile appearance
-                
+
                 .item-heading {
                     font-size: 16px !important; // Smaller size to fit in tiles
                     font-weight: 700 !important; // Bold but not extra bold
                     color: white !important;
                     line-height: 1.2 !important; // Better line height for readability
-                    text-shadow: 0 1px 3px rgba(0,0,0,0.2) !important;
+                    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.2) !important;
                     letter-spacing: -0.5px !important; // Slight letter spacing
                     margin: 0 !important;
                     word-break: break-word !important;
@@ -1972,17 +2055,17 @@ core-courses-course-list-item {
                     display: -webkit-box !important;
                     -webkit-line-clamp: 3 !important; // Max 3 lines
                     -webkit-box-orient: vertical !important;
-                    
+
                     // Hide favorite star
                     ion-icon {
                         display: none !important;
                     }
-                    
+
                     @media (max-width: 768px) {
                         font-size: 14px !important;
                         -webkit-line-clamp: 2 !important; // Max 2 lines on smaller screens
                     }
-                    
+
                     @media (max-width: 360px) {
                         font-size: 12px !important;
                     }
@@ -1997,7 +2080,7 @@ page-addon-block-myoverview {
     // Style the category filter
     .aspire-category-filter {
         margin: 20px 16px;
-        
+
         ion-select {
             --background: white;
             --border-radius: 16px;
@@ -2013,55 +2096,54 @@ page-addon-block-myoverview {
             box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
             border: 2px solid #f0f0f0;
             transition: all 0.3s ease;
-            
+
             &:hover {
                 border-color: #4c96d1;
                 box-shadow: 0 4px 16px rgba(76, 150, 209, 0.15);
             }
         }
     }
-    
 }
 
-    // Empty State
-    .addon-block-myoverview-empty,
-    .core-courses-empty {
-        padding: 60px 20px;
-        text-align: center;
-        background: white;
-        border-radius: 20px;
-        margin: 16px;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+// Empty State
+.addon-block-myoverview-empty,
+.core-courses-empty {
+    padding: 60px 20px;
+    text-align: center;
+    background: white;
+    border-radius: 20px;
+    margin: 16px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
 
-        ion-icon {
-            font-size: 80px;
-            color: #e0e0e0;
-            margin-bottom: 16px;
-        }
-
-        h3 {
-            font-size: 20px;
-            font-weight: 700;
-            color: #1a1a1a;
-            margin-bottom: 8px;
-        }
-
-        p {
-            font-size: 15px;
-            color: #6a737b;
-            line-height: 1.5;
-            max-width: 300px;
-            margin: 0 auto;
-        }
-
-        ion-button {
-            margin-top: 24px;
-            --border-radius: 12px;
-            --padding-start: 24px;
-            --padding-end: 24px;
-            font-weight: 600;
-        }
+    ion-icon {
+        font-size: 80px;
+        color: #e0e0e0;
+        margin-bottom: 16px;
     }
+
+    h3 {
+        font-size: 20px;
+        font-weight: 700;
+        color: #1a1a1a;
+        margin-bottom: 8px;
+    }
+
+    p {
+        font-size: 15px;
+        color: #6a737b;
+        line-height: 1.5;
+        max-width: 300px;
+        margin: 0 auto;
+    }
+
+    ion-button {
+        margin-top: 24px;
+        --border-radius: 12px;
+        --padding-start: 24px;
+        --padding-end: 24px;
+        font-weight: 600;
+    }
+}
 
 // Animations for course page
 @keyframes slideInUp {
@@ -2099,80 +2181,80 @@ page-addon-block-myoverview {
 page-core-course-index {
     .aspire-course-hero {
         animation: fadeIn 0.6s ease;
-        
+
         .course-header-info {
             animation: slideInUp 0.6s ease 0.2s both;
         }
-        
+
         .course-stats {
             .stat-card {
                 animation: scaleIn 0.4s ease both;
-                
+
                 &:nth-child(1) {
                     animation-delay: 0.3s;
                 }
-                
+
                 &:nth-child(2) {
                     animation-delay: 0.4s;
                 }
-                
+
                 &:nth-child(3) {
                     animation-delay: 0.5s;
                 }
             }
         }
-        
+
         .course-progress-section {
             animation: slideInUp 0.5s ease 0.6s both;
         }
     }
-    
+
     .aspire-quick-actions-bar {
         animation: slideInUp 0.5s ease 0.7s both;
     }
-    
+
     // Responsive adjustments
     @media (max-width: 576px) {
         .aspire-course-hero {
             padding: 30px 16px 24px;
-            
+
             .course-header-info {
                 h1 {
                     font-size: 24px;
                 }
             }
-            
+
             .course-stats {
                 gap: 8px;
-                
+
                 .stat-card {
                     padding: 12px 8px;
-                    
+
                     .stat-value {
                         font-size: 20px;
                     }
-                    
+
                     .stat-label {
                         font-size: 11px;
                     }
                 }
             }
         }
-        
+
         .aspire-quick-actions-bar {
             padding: 12px;
             margin: -16px 12px 16px;
-            
+
             .actions-grid {
                 gap: 8px;
-                
+
                 .action-button {
                     padding: 10px 8px;
-                    
+
                     ion-icon {
                         font-size: 20px;
                     }
-                    
+
                     span {
                         font-size: 10px;
                     }
@@ -2260,79 +2342,47 @@ page-core-course-index {
     left: 0;
     right: 0;
     z-index: 10;
-    
+
     // Add decorative pattern overlay
     &::before {
-        content: '';
+        content: "";
         position: absolute;
         top: 0;
         left: 0;
         right: 0;
         bottom: 0;
-        background-image: 
-            radial-gradient(circle at 20% 50%, rgba(255,255,255,0.1) 0%, transparent 50%),
-            radial-gradient(circle at 80% 50%, rgba(255,255,255,0.05) 0%, transparent 50%);
+        background-image:
+            radial-gradient(
+                circle at 20% 50%,
+                rgba(255, 255, 255, 0.1) 0%,
+                transparent 50%
+            ),
+            radial-gradient(
+                circle at 80% 50%,
+                rgba(255, 255, 255, 0.05) 0%,
+                transparent 50%
+            );
         pointer-events: none;
     }
-    
+
     .aspire-notch-toolbar {
         --background: transparent;
         --border-width: 0;
         --padding-top: env(safe-area-inset-top, 20px);
-        --min-height: calc(56px + env(safe-area-inset-top, 20px));
+        --min-height: calc(44px + env(safe-area-inset-top, 20px));
         padding-top: env(safe-area-inset-top, 20px) !important;
         position: relative;
-        
-        .aspire-logout-top-btn {
-            --color: white;
-            --background: rgba(255,255,255,0.15);
-            --background-hover: rgba(255,255,255,0.25);
-            --background-activated: rgba(255,255,255,0.2);
-            --background-focused: rgba(255,255,255,0.25);
-            --border-radius: 20px;
-            --padding-start: 16px;
-            --padding-end: 16px;
-            --box-shadow: none;
-            --ripple-color: transparent;
-            font-weight: 600;
-            font-size: 14px;
-            text-transform: none;
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255,255,255,0.2);
-            transition: all 0.3s ease;
-            overflow: hidden;
-            
-            // Remove focus outline
-            &:focus {
-                outline: none;
-                box-shadow: none;
-            }
-            
-            &::after {
-                display: none;
-            }
-            
-            ion-icon {
-                font-size: 18px;
-                margin-right: 6px;
-            }
-            
-            &:hover {
-                transform: scale(1.05);
-                box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-            }
-        }
-        
+
         .aspire-close-btn {
             --color: white;
-            --background: rgba(0,0,0,0.2);
+            --background: rgba(0, 0, 0, 0.2);
             border-radius: 50%;
             margin: 8px;
             width: 40px;
             height: 40px;
-            
+
             &:hover {
-                --background: rgba(0,0,0,0.3);
+                --background: rgba(0, 0, 0, 0.3);
             }
         }
     }
@@ -2340,16 +2390,20 @@ page-core-course-index {
 
 .aspire-user-menu-content {
     --background: #f8f9fa;
-    
+
     // Add gradient overlay at the top for smooth transition
     &::before {
-        content: '';
+        content: "";
         position: absolute;
         top: 0;
         left: 0;
         right: 0;
         height: 200px;
-        background: linear-gradient(180deg, rgba(76,150,209,0.1) 0%, transparent 100%);
+        background: linear-gradient(
+            180deg,
+            rgba(76, 150, 209, 0.1) 0%,
+            transparent 100%
+        );
         pointer-events: none;
         z-index: 0;
     }
@@ -2361,94 +2415,142 @@ page-core-course-index {
     margin-bottom: 24px;
     background: white;
     border-radius: 0 0 24px 24px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-    margin-top: calc(-56px - env(safe-area-inset-top, 20px)); // Pull up to connect with header
-    
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    margin-top: calc(
+        -44px - env(safe-area-inset-top, 20px)
+    ); // Pull up to connect with header
+
     .aspire-profile-backdrop {
         position: absolute;
         top: 0;
         left: 0;
         right: 0;
-        height: calc(196px + env(safe-area-inset-top, 20px)); // Increased height to overlap with header
+        height: calc(180px + env(safe-area-inset-top, 20px)); // Adjusted height
         background: linear-gradient(135deg, #4c96d1 0%, #70c388 100%);
         border-radius: 0 0 24px 24px;
-        
+
         &::after {
-            content: '';
+            content: "";
             position: absolute;
             inset: 0;
             background: url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M0 40L40 0H20L0 20M40 40V20L20 40'/%3E%3C/g%3E%3C/svg%3E");
         }
+
+        .aspire-logout-btn {
+            position: absolute;
+            top: calc(env(safe-area-inset-top, 20px) + 50px);
+            right: 16px;
+            background: transparent;
+            border: none;
+            border-radius: 16px;
+            padding: 8px 16px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            color: white;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            z-index: 10;
+            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+
+            ion-icon {
+                font-size: 18px;
+            }
+
+            &:hover {
+                background: rgba(255, 255, 255, 0.1);
+                transform: scale(1.05);
+            }
+
+            &:active {
+                transform: scale(0.98);
+            }
+        }
     }
-    
+
     .aspire-profile-content {
         position: relative;
         text-align: center;
-        padding: calc(116px + env(safe-area-inset-top, 20px)) 20px 20px; // Increased padding to account for header overlap
-        
+        padding: calc(88px + env(safe-area-inset-top, 20px)) 20px 20px; // Adjusted padding for single toolbar
+
         .aspire-avatar-wrapper {
             position: relative;
             display: inline-block;
             margin-bottom: 16px;
-            
+
             .aspire-avatar-large {
                 --core-avatar-size: 96px;
                 border: 4px solid white;
                 border-radius: 50%;
-                box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
             }
-            
+
             .aspire-avatar-ring {
                 position: absolute;
                 inset: -8px;
-                border: 2px solid rgba(112, 195, 136, 0.3);
+                border: 3px solid rgba(112, 195, 136, 0.5);
                 border-radius: 50%;
-                animation: pulse 2s infinite;
+                animation: avatarPulse 2s infinite;
+
+                &::before {
+                    content: "";
+                    position: absolute;
+                    inset: -4px;
+                    border: 2px solid rgba(76, 150, 209, 0.3);
+                    border-radius: 50%;
+                    animation: avatarPulse 2s infinite 0.5s;
+                }
             }
         }
-        
+
         .aspire-user-name {
             margin: 0 0 4px;
             font-size: 24px;
             font-weight: 700;
             color: #2c3e50;
         }
-        
+
         .aspire-user-email {
             margin: 0 0 20px;
             font-size: 14px;
             color: #7f8c8d;
         }
-        
+
         .aspire-profile-stats {
             display: flex;
             justify-content: center;
-            gap: 40px;
-            
+            gap: 60px;
+
             .aspire-stat-item {
                 text-align: center;
-                
-                ion-icon {
-                    font-size: 24px;
+
+                & > ion-icon {
+                    font-size: 26px !important;
                     color: #4c96d1;
-                    margin-bottom: 4px;
+                    margin-bottom: 8px;
+                    display: block;
+                    width: auto !important;
+                    height: auto !important;
                 }
-                
+
                 span {
                     display: block;
-                    font-size: 24px;
+                    font-size: 28px;
                     font-weight: 700;
                     color: #2c3e50;
                     line-height: 1;
+                    margin-bottom: 6px;
                 }
-                
+
                 label {
                     display: block;
                     font-size: 12px;
                     color: #95a5a6;
-                    margin-top: 4px;
                     text-transform: uppercase;
                     letter-spacing: 0.5px;
+                    font-weight: 600;
                 }
             }
         }
@@ -2462,48 +2564,55 @@ page-core-course-index {
     padding: 0 16px 24px;
     position: relative;
     z-index: 1;
-    
+
     .aspire-user-action-card {
         background: white;
         border-radius: 16px;
-        padding: 20px;
+        padding: 24px 16px;
         text-align: center;
         cursor: pointer;
         transition: all 0.3s ease;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-        border: 1px solid rgba(76,150,209,0.1);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        border: 1px solid rgba(76, 150, 209, 0.1);
         position: relative;
         overflow: hidden;
-        
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 4px;
+
         // Add gradient border on hover
         &::before {
-            content: '';
+            content: "";
             position: absolute;
             inset: 0;
             padding: 1px;
             border-radius: 16px;
             background: linear-gradient(135deg, #4c96d1, #70c388);
-            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask:
+                linear-gradient(#fff 0 0) content-box,
+                linear-gradient(#fff 0 0);
             -webkit-mask-composite: xor;
             mask-composite: exclude;
             opacity: 0;
             transition: opacity 0.3s ease;
         }
-        
+
         &:hover {
             transform: translateY(-4px);
-            box-shadow: 0 6px 20px rgba(76,150,209,0.15);
+            box-shadow: 0 6px 20px rgba(76, 150, 209, 0.15);
             border-color: transparent;
-            
+
             &::before {
                 opacity: 1;
             }
         }
-        
+
         &:active {
             transform: translateY(-2px);
         }
-        
+
         .aspire-user-action-icon {
             width: 48px;
             height: 48px;
@@ -2512,29 +2621,34 @@ page-core-course-index {
             align-items: center;
             justify-content: center;
             border-radius: 12px;
-            
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+
             ion-icon {
                 font-size: 24px;
                 color: white;
             }
-            
+
             &.profile {
                 background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
             }
-            
+
             &.settings {
                 background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+                box-shadow: 0 4px 12px rgba(240, 147, 251, 0.3);
             }
-            
+
             &.grades {
                 background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+                box-shadow: 0 4px 12px rgba(79, 172, 254, 0.3);
             }
-            
+
             &.messages {
                 background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+                box-shadow: 0 4px 12px rgba(250, 112, 154, 0.3);
             }
         }
-        
+
         span {
             font-size: 14px;
             font-weight: 600;
@@ -2547,85 +2661,97 @@ page-core-course-index {
     padding: 0 16px 24px;
     position: relative;
     z-index: 1;
-    
+
     .aspire-section-title {
         margin: 0 0 12px;
-        padding: 0 8px;
+        padding: 0 12px;
         font-size: 12px;
         font-weight: 700;
         text-transform: uppercase;
         letter-spacing: 0.5px;
         color: #4c96d1;
         position: relative;
-        
+        display: inline-block;
+
         // Add accent line
         &::before {
-            content: '';
+            content: "";
             position: absolute;
             left: 0;
             top: 50%;
             transform: translateY(-50%);
-            width: 3px;
-            height: 14px;
+            width: 4px;
+            height: 16px;
             background: linear-gradient(135deg, #4c96d1, #70c388);
             border-radius: 2px;
         }
     }
-    
+
     .aspire-menu-list {
         background: white;
         border-radius: 16px;
         overflow: hidden;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-        border: 1px solid rgba(76,150,209,0.1);
-        
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        border: 1px solid rgba(76, 150, 209, 0.1);
+
         .aspire-menu-item {
             --padding-start: 16px;
             --padding-end: 16px;
-            --min-height: 56px;
+            --min-height: 60px;
+            --padding-top: 12px;
+            --padding-bottom: 12px;
             --border-width: 0;
             --background-hover: #f8f9fa;
-            
+
             &:not(:last-child) {
                 border-bottom: 1px solid #f1f3f4;
             }
-            
+
             .aspire-menu-icon {
-                width: 36px;
-                height: 36px;
-                background: linear-gradient(135deg, rgba(76,150,209,0.1) 0%, rgba(112,195,136,0.1) 100%);
-                border-radius: 10px;
+                width: 40px;
+                height: 40px;
+                background: linear-gradient(
+                    135deg,
+                    rgba(76, 150, 209, 0.15) 0%,
+                    rgba(112, 195, 136, 0.15) 100%
+                );
+                border-radius: 12px;
                 display: flex;
                 align-items: center;
                 justify-content: center;
-                margin-right: 12px;
+                margin-right: 16px;
                 transition: all 0.3s ease;
-                
+                box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+
                 ion-icon {
                     font-size: 20px;
                     color: #4c96d1;
                     transition: all 0.3s ease;
                 }
             }
-            
+
             &:hover {
                 .aspire-menu-icon {
-                    background: linear-gradient(135deg, rgba(76,150,209,0.2) 0%, rgba(112,195,136,0.2) 100%);
+                    background: linear-gradient(
+                        135deg,
+                        rgba(76, 150, 209, 0.2) 0%,
+                        rgba(112, 195, 136, 0.2) 100%
+                    );
                     transform: scale(1.05);
-                    
+
                     ion-icon {
                         color: #3a7db5;
                     }
                 }
             }
-            
+
             ion-label h4 {
                 margin: 0;
                 font-size: 15px;
                 font-weight: 600;
                 color: #2c3e50;
             }
-            
+
             .aspire-badge {
                 --background: #ff6b6b;
                 --color: white;
@@ -2643,60 +2769,75 @@ page-core-course-index {
 
 .aspire-user-menu-footer {
     background: linear-gradient(180deg, #ffffff 0%, #fafbfc 100%);
-    border-top: 1px solid rgba(76,150,209,0.1);
+    border-top: 1px solid rgba(76, 150, 209, 0.1);
     padding: 0;
     position: relative;
-    
+
     // Add gradient accent line at top
     &::before {
-        content: '';
+        content: "";
         position: absolute;
         top: 0;
         left: 0;
         right: 0;
         height: 1px;
-        background: linear-gradient(90deg, transparent, rgba(76,150,209,0.3), rgba(112,195,136,0.3), transparent);
+        background: linear-gradient(
+            90deg,
+            transparent,
+            rgba(76, 150, 209, 0.3),
+            rgba(112, 195, 136, 0.3),
+            transparent
+        );
     }
-    
+
     .aspire-footer-actions {
         display: grid;
         grid-template-columns: 1fr 1fr;
-        
+        position: relative;
+
+        // Add vertical divider
+        &::after {
+            content: "";
+            position: absolute;
+            top: 20%;
+            bottom: 20%;
+            left: 50%;
+            width: 1px;
+            background: #e5e7eb;
+            transform: translateX(-50%);
+        }
+
         button {
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 12px;
-            padding: 16px;
+            gap: 8px;
+            padding: 20px 16px;
             background: none;
             border: none;
-            font-size: 15px;
+            font-size: 14px;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.2s;
             position: relative;
-            
+
             ion-icon {
-                font-size: 20px;
+                font-size: 18px;
             }
-            
-            &:not(:last-child) {
-                border-right: 1px solid #f1f3f4;
-            }
-            
+
             &.aspire-support-button {
                 color: #4c96d1;
-                
+
                 &:hover {
-                    background: #f0f8ff;
+                    background: rgba(76, 150, 209, 0.05);
                 }
             }
-            
+
             &.aspire-switch-button {
                 color: #70c388;
-                
+
                 &:hover {
-                    background: #f0faf5;
+                    background: rgba(112, 195, 136, 0.05);
                 }
             }
         }
@@ -2712,6 +2853,12 @@ ion-modal.core-modal-lateral {
         ion-content {
             --padding-top: 0;
             --padding-bottom: 0;
+        }
+
+        // Ensure proper sizing on mobile
+        @media (max-width: 400px) {
+            --width: 100vw;
+            --max-width: 100vw;
         }
     }
 }
@@ -2731,17 +2878,32 @@ ion-modal.core-modal-lateral {
     }
 }
 
+@keyframes avatarPulse {
+    0% {
+        transform: scale(1);
+        opacity: 0.8;
+    }
+    50% {
+        transform: scale(1.08);
+        opacity: 0.4;
+    }
+    100% {
+        transform: scale(1);
+        opacity: 0.8;
+    }
+}
+
 // Course index FAB for activity pages
 ion-fab[vertical="bottom"][horizontal="end"] {
     bottom: 20px;
     right: 20px;
-    
+
     ion-fab-button {
         --background: linear-gradient(135deg, #4c96d1, #70c388);
         --background-activated: linear-gradient(135deg, #3a7db5, #5a9d72);
         --background-hover: linear-gradient(135deg, #5aa4dd, #7ecb94);
         --box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-        
+
         &:hover {
             --box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
         }
