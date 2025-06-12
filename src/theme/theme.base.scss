@@ -108,14 +108,6 @@ ion-tabs.hide-header ion-header {
     display: none;
 }
 
-ion-footer {
-    background-color: var(--contrast-background);
-
-    > ion-toolbar:only-child {
-        top: 1px;
-    }
-}
-
 // Ionic list.
 ion-list {
     padding: 0 !important;

@@ -1,0 +1,12 @@
+ion-footer {
+    background-color: var(--contrast-background);
+
+    > ion-toolbar:only-child {
+        top: 1px;
+    }
+
+    &.gray-with-border {
+        background-color: var(--core-footer-gray-background);
+        border-top: 1px solid var(--core-footer-gray-border);
+    }
+}
