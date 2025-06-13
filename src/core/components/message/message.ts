@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { ContextLevel } from '@/core/constants';
-import { Component, EventEmitter, HostBinding, Input, OnInit, Output } from '@angular/core';
+import { Component, HostBinding, computed, input, output } from '@angular/core';
 import { CoreAnimations } from '@components/animations';
 import { CoreSites } from '@services/sites';
 import { CoreText } from '@singletons/text';
@@ -43,49 +43,33 @@ import { CoreFormatDatePipe } from '@pipes/format-date';
         CoreUpdateNonReactiveAttributesDirective,
         CoreFormatDatePipe,
     ],
+    host: {
+        '[@coreSlideInOut]': 'isMine() ? "" : "fromLeft"',
+        '[class.is-mine]': 'isMine()',
+    },
 })
-export class CoreMessageComponent implements OnInit {
+export class CoreMessageComponent {
 
-    @Input() message?: CoreMessageData; // The message object.
-    @Input() user?: CoreUserWithAvatar; // The user object.
+    message = input<CoreMessageData>(); // The message object.
+    user = input<CoreUserWithAvatar>(); // The user object.
 
-    @Input() text = ''; // Message text.
-    @Input() time = 0; // Message time.
-    @Input() instanceId = 0;
-    @Input() courseId?: number;
-    @Input() contextLevel: ContextLevel = ContextLevel.SYSTEM;
-    @Input({ transform: toBoolean }) showDelete = false;
-    @Output() onDeleteMessage = new EventEmitter<void>();
-    @Output() onUndoDeleteMessage = new EventEmitter<void>();
-    @Output() afterRender = new EventEmitter<void>();
+    text = input(''); // Message text.
+    time = input(0); // Message time.
+    instanceId = input(0);
+    courseId = input<number>();
+    contextLevel = input<ContextLevel>(ContextLevel.SYSTEM);
+    showDelete = input(false, { transform: toBoolean });
+    onDeleteMessage = output<void>();
+    onUndoDeleteMessage = output<void>();
+    afterRender = output<void>();
 
-    protected deleted = false; // Needed to fix animation to void in Behat tests.
+    userFullname = computed(() => this.user()?.fullname || this.user()?.userfullname);
 
-    @HostBinding('@coreSlideInOut') get animation(): string {
-        return this.isMine ? '' : 'fromLeft';
-    }
-
-    @HostBinding('class.is-mine') isMine = false;
+    protected userId = computed(() => this.user()?.userid || this.user()?.id);
+    protected isMine = computed(() => this.userId() === CoreSites.getCurrentSiteUserId());
 
     @HostBinding('class.no-user') get showUser(): boolean {
-        return !this.message?.showUserData;
-    }
-
-    get userId(): number | undefined {
-        return this.user && (this.user.userid || this.user.id);
-    }
-
-    get userFullname(): string | undefined {
-        return this.user && (this.user.fullname || this.user.userfullname);
-    }
-
-    /**
-     * @inheritdoc
-     */
-    async ngOnInit(): Promise<void> {
-        const currentUserId = CoreSites.getCurrentSiteUserId();
-
-        this.isMine = this.userId === currentUserId;
+        return !this.message()?.showUserData;
     }
 
     /**
@@ -115,13 +99,16 @@ export class CoreMessageComponent implements OnInit {
      * Copy message to clipboard.
      */
     copyMessage(): void {
-        CoreText.copyToClipboard(CoreText.decodeHTMLEntities(this.text));
+        CoreText.copyToClipboard(CoreText.decodeHTMLEntities(this.text()));
     }
 
 }
 
 /**
  * Conversation message with some calculated data.
+ *
+ * @todo: The properties that are used in the template should be signals, otherwise if they change the template might not
+ * update in some cases. E.g. showTail, pending, deleted, etc.
  */
 type CoreMessageData = {
     pending?: boolean; // Whether the message is pending to be sent.
