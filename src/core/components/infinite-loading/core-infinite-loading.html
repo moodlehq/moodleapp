@@ -1,8 +1,8 @@
-@if (!loadingMore && position !== 'top') {
+@if (!loadingMore() && position() !== 'top') {
 
-    @if (enabled || error) {
+    @if (enabled() || error()) {
         <div class="ion-padding-horizontal">
-            @if (error) {
+            @if (error()) {
                 <ion-button expand="block" (click)="loadMore(true)" fill="outline">
                     {{ 'core.tryagain' | translate }}
                 </ion-button>
@@ -18,16 +18,16 @@
 }
 
 <!-- Don't allow disabling infinite-scroll while loading more items on scroll, otherwise infinite scroll stops working. -->
-<ion-infinite-scroll [disabled]="(loadingMore && loadingForced) || (!loadingMore && (!enabled || error))" (ionInfinite)="loadMore()"
-    [position]="position">
+<ion-infinite-scroll [disabled]="(loadingMore() && loadingForced()) || (!loadingMore() && (!enabled() || error()))"
+    (ionInfinite)="loadMore()" [position]="position()">
     <ion-infinite-scroll-content />
 </ion-infinite-scroll>
 
-@if (!loadingMore && position === 'top') {
+@if (!loadingMore() && position() === 'top') {
 
-    @if (enabled || error) {
+    @if (enabled() || error()) {
         <div class="ion-padding-horizontal">
-            @if (error) {
+            @if (error()) {
                 <ion-button expand="block" (click)="loadMore(true)" fill="outline">
                     {{ 'core.tryagain' | translate }}
                 </ion-button>
@@ -39,7 +39,7 @@
         </div>
     }
 
-} @else if (loadingMore && loadingForced) {
+} @else if (loadingMore() && loadingForced()) {
     <div class="ion-padding ion-text-center">
         <ion-spinner [attr.aria-label]="'core.loading' | translate" />
     </div>
