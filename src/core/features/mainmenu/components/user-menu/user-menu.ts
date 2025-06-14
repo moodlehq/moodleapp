@@ -94,12 +94,19 @@ export class CoreMainMenuUserMenuComponent implements OnInit, OnDestroy {
 
         // Load the handlers.
         try {
-            this.user = await CoreUser.getProfile(this.siteInfo.userid);
+            // Try to get user profile with site home course context first (might include more fields)
+            const siteHomeId = currentSite.getSiteHomeId();
+            this.user = await CoreUser.getProfile(this.siteInfo.userid, siteHomeId);
         } catch {
-            this.user = {
-                id: this.siteInfo.userid,
-                fullname: this.siteInfo.fullname,
-            };
+            try {
+                // Fallback to regular profile
+                this.user = await CoreUser.getProfile(this.siteInfo.userid);
+            } catch {
+                this.user = {
+                    id: this.siteInfo.userid,
+                    fullname: this.siteInfo.fullname,
+                };
+            }
         }
 
         // Load course and badge counts
@@ -338,6 +345,44 @@ export class CoreMainMenuUserMenuComponent implements OnInit, OnDestroy {
         event.stopPropagation();
 
         await ModalController.dismiss();
+    }
+
+    /**
+     * Get the Sequence value from custom fields or other sources.
+     * 
+     * @returns The sequence value or null.
+     */
+    getSequenceValue(): string | null {
+        // First try to get from custom fields if they exist
+        if (this.user?.customfields) {
+            const sequenceField = this.user.customfields.find(field => 
+                field.shortname === 'ID' || 
+                field.shortname === 'id' || 
+                field.shortname === 'sequence' ||
+                field.shortname === 'Sequence'
+            );
+            if (sequenceField) {
+                return sequenceField.displayvalue || sequenceField.value || null;
+            }
+        }
+        
+        // Check if it might be in preferences
+        if (this.user?.preferences) {
+            const sequencePref = this.user.preferences.find(pref => 
+                pref.name === 'profile_field_ID' || 
+                pref.name === 'profile_field_sequence' ||
+                pref.name === 'profile_field_Sequence'
+            );
+            if (sequencePref) {
+                return sequencePref.value || null;
+            }
+        }
+        
+        // TODO: Remove this comment once API returns custom fields
+        // For testing purposes, you can uncomment the line below and set a test value
+        // return "TEST-SEQ-001";
+        
+        return null;
     }
 
     /**

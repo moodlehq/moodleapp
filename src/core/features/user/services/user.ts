@@ -400,6 +400,7 @@ export class CoreUserProvider {
         if (user.country) {
             user.country = CoreUtils.getCountryName(user.country);
         }
+        
         this.storeUser(user.id, user.fullname, user.profileimageurl);
 
         return user;

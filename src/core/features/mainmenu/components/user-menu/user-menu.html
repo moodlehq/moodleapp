@@ -21,6 +21,7 @@
                 </div>
                 <h2 class="aspire-user-name">{{ siteInfo.fullname }}</h2>
                 <p class="aspire-user-email">{{ siteInfo.username }}</p>
+                <p class="aspire-user-sequence" *ngIf="getSequenceValue()">{{ getSequenceValue() }}</p>
                 <div class="aspire-profile-stats">
                     <div class="aspire-stat-item">
                         <ion-icon name="book-outline"></ion-icon>

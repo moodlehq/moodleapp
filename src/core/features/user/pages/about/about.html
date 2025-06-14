@@ -104,6 +104,13 @@
                             <p>{{ user.idnumber }}</p>
                         </ion-label>
                     </ion-item>
+                    <!-- Temporary: Show Sequence field if available -->
+                    <ion-item class="ion-text-wrap" *ngIf="getSequenceValue()">
+                        <ion-label>
+                            <p class="item-heading">Sequence</p>
+                            <p>{{ getSequenceValue() }}</p>
+                        </ion-label>
+                    </ion-item>
                 </ng-container>
             </ion-item-group>
             <ion-item-group *ngIf="hasDetails">
