@@ -173,12 +173,20 @@ export class AddonModAssignIndexComponent extends CoreCourseModuleMainActivityCo
      * @inheritdoc
      */
     protected async fetchContent(refresh?: boolean, sync = false, showErrors = false): Promise<void> {
+        console.log('[AssignIndex] fetchContent called, courseId:', this.courseId, 'moduleId:', this.module.id);
+        console.log('[AssignIndex] module data:', this.module);
 
-        // Get assignment data.
-        this.assign = await AddonModAssign.getAssignment(this.courseId, this.module.id);
+        try {
+            // Get assignment data.
+            this.assign = await AddonModAssign.getAssignment(this.courseId, this.module.id);
+            console.log('[AssignIndex] Assignment loaded:', this.assign);
 
-        this.dataRetrieved.emit(this.assign);
-        this.description = this.assign.intro;
+            this.dataRetrieved.emit(this.assign);
+            this.description = this.assign.intro;
+        } catch (error) {
+            console.error('[AssignIndex] Error loading assignment:', error);
+            throw error;
+        }
 
         if (sync) {
             // Try to synchronize the assign.
@@ -189,7 +197,9 @@ export class AddonModAssignIndexComponent extends CoreCourseModuleMainActivityCo
         this.hasOffline = await AddonModAssignOffline.hasAssignOfflineData(this.assign.id);
 
         // Get assignment submissions.
+        console.log('[AssignIndex] Getting submissions for assign:', this.assign.id);
         const submissions = await AddonModAssign.getSubmissions(this.assign.id, { cmId: this.module.id });
+        console.log('[AssignIndex] Submissions response:', submissions);
         const time = CoreTimeUtils.timestamp();
 
         this.canViewAllSubmissions = submissions.canviewsubmissions;
@@ -231,14 +241,31 @@ export class AddonModAssignIndexComponent extends CoreCourseModuleMainActivityCo
 
         try {
             // Check if the user can view their own submission.
-            await AddonModAssign.getSubmissionStatus(this.assign.id, { cmId: this.module.id });
-            this.canViewOwnSubmission = true;
+            console.log('[AssignIndex] Getting submission status for assign:', this.assign.id);
+            const status = await AddonModAssign.getSubmissionStatus(this.assign.id, { cmId: this.module.id });
+            
+            // Check if there's a nopermission warning (parent viewing mentee)
+            const hasNoPermissionWarning = status.warnings?.some(warning => 
+                warning.warningcode === 'nopermission'
+            );
+            
+            if (hasNoPermissionWarning) {
+                console.log('[AssignIndex] Parent viewing mentee - no permission to view submission');
+                this.canViewOwnSubmission = false;
+            } else {
+                console.log('[AssignIndex] Can view own submission: true');
+                this.canViewOwnSubmission = true;
+            }
         } catch (error) {
+            console.log('[AssignIndex] Error getting submission status:', error);
+            console.log('[AssignIndex] Error code:', error.errorcode);
             this.canViewOwnSubmission = false;
 
             if (error.errorcode !== 'nopermission') {
+                console.log('[AssignIndex] Re-throwing error because errorcode is not nopermission');
                 throw error;
             }
+            console.log('[AssignIndex] Ignoring nopermission error for parent viewing');
         }
     }
 

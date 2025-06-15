@@ -815,9 +815,15 @@ export class AddonModQuizProvider {
 
         const site = await CoreSites.getSite(options.siteId);
 
-        const params: AddonModQuizGetQuizzesByCoursesWSParams = {
-            courseids: [courseId],
-        };
+        // Check if viewing as mentee
+        const { CoreUserParentModuleHelper } = await import('@features/user/services/parent-module-helper');
+        const parentWS = await CoreUserParentModuleHelper.getParentViewingWS(
+            'mod_quiz_get_quizzes_by_courses',
+            { courseids: [courseId] },
+            'local_aspireparent_get_mentee_quizzes',
+            site.getId()
+        );
+
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getQuizDataCacheKey(courseId),
             updateFrequency: CoreSite.FREQUENCY_RARELY,
@@ -826,8 +832,8 @@ export class AddonModQuizProvider {
         };
 
         const response = await site.read<AddonModQuizGetQuizzesByCoursesWSResponse>(
-            'mod_quiz_get_quizzes_by_courses',
-            params,
+            parentWS.wsName,
+            parentWS.params,
             preSets,
         );
 
@@ -1111,12 +1117,21 @@ export class AddonModQuizProvider {
         const site = await CoreSites.getSite(options.siteId);
 
         const userId = options.userId || site.getUserId();
-        const params: AddonModQuizGetUserAttemptsWSParams = {
-            quizid: quizId,
-            userid: userId,
-            status: status,
-            includepreviews: !!includePreviews,
-        };
+        
+        // Check if viewing as mentee
+        const { CoreUserParentModuleHelper } = await import('@features/user/services/parent-module-helper');
+        const parentWS = await CoreUserParentModuleHelper.getParentViewingWS(
+            'mod_quiz_get_user_attempts',
+            {
+                quizid: quizId,
+                userid: userId,
+                status: status,
+                includepreviews: !!includePreviews,
+            },
+            'local_aspireparent_get_mentee_quiz_attempts',
+            site.getId()
+        );
+        
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getUserAttemptsCacheKey(quizId, userId),
             updateFrequency: CoreSite.FREQUENCY_SOMETIMES,
@@ -1125,7 +1140,7 @@ export class AddonModQuizProvider {
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
         };
 
-        const response = await site.read<AddonModQuizGetUserAttemptsWSResponse>('mod_quiz_get_user_attempts', params, preSets);
+        const response = await site.read<AddonModQuizGetUserAttemptsWSResponse>(parentWS.wsName, parentWS.params, preSets);
 
         return response.attempts;
     }

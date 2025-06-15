@@ -23,13 +23,13 @@ import { CoreGrades } from '@features/grades/services/grades';
 import { CoreTimeUtils } from '@services/utils/time';
 import { CoreCourseLogHelper } from '@features/course/services/log-helper';
 import { CoreError } from '@classes/errors/error';
+import { CoreWSError } from '@classes/errors/wserror';
 import { CoreNetwork } from '@services/network';
 import { CoreUtils } from '@services/utils/utils';
 import { AddonModAssignOffline } from './assign-offline';
 import { AddonModAssignSubmissionDelegate } from './submission-delegate';
 import { CoreComments } from '@features/comments/services/comments';
 import { AddonModAssignSubmissionFormatted } from './assign-helper';
-import { CoreWSError } from '@classes/errors/wserror';
 import { AddonModAssignAutoSyncData, AddonModAssignManualSyncData } from './assign-sync';
 import { CoreFormFields } from '@singletons/form';
 import { CoreFileHelper } from '@services/file-helper';
@@ -147,6 +147,7 @@ export class AddonModAssignProvider {
      * @returns Promise resolved with the assignment.
      */
     getAssignment(courseId: number, cmId: number, options: CoreSitesCommonWSOptions = {}): Promise<AddonModAssignAssign> {
+        console.log('[AddonModAssign] getAssignment called, courseId:', courseId, 'cmId:', cmId);
         return this.getAssignmentByField(courseId, 'cmid', cmId, options);
     }
 
@@ -165,12 +166,28 @@ export class AddonModAssignProvider {
         value: number,
         options: CoreSitesCommonWSOptions = {},
     ): Promise<AddonModAssignAssign> {
+        console.log('[AddonModAssign] getAssignmentByField called, courseId:', courseId, 'key:', key, 'value:', value);
         const site = await CoreSites.getSite(options.siteId);
 
-        const params: AddonModAssignGetAssignmentsWSParams = {
+        // Check if viewing as mentee and use custom WS if available
+        const { CoreUserParent } = await import('@features/user/services/parent');
+        const selectedMenteeId = await CoreUserParent.getSelectedMentee(site.getId());
+        
+        let wsName = 'mod_assign_get_assignments';
+        let params: any = {
             courseids: [courseId],
             includenotenrolledcourses: true,
         };
+        
+        if (selectedMenteeId && selectedMenteeId !== site.getUserId()) {
+            console.log('[AddonModAssign] Parent viewing mentee assignments');
+            const hasCustomWS = await site.wsAvailable('local_aspireparent_get_mentee_assignments');
+            if (hasCustomWS) {
+                console.log('[AddonModAssign] Using custom WS for mentee assignments');
+                wsName = 'local_aspireparent_get_mentee_assignments';
+                params.userid = selectedMenteeId;
+            }
+        }
 
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getAssignmentCacheKey(courseId),
@@ -182,24 +199,35 @@ export class AddonModAssignProvider {
         let response: AddonModAssignGetAssignmentsWSResponse;
 
         try {
-            response = await site.read<AddonModAssignGetAssignmentsWSResponse>('mod_assign_get_assignments', params, preSets);
-        } catch {
+            console.log('[AddonModAssign] Calling', wsName, 'with params:', params);
+            response = await site.read<AddonModAssignGetAssignmentsWSResponse>(wsName, params, preSets);
+            console.log('[AddonModAssign] Response received:', response);
+        } catch (error) {
+            console.log('[AddonModAssign] First attempt failed, retrying without includenotenrolledcourses');
             // In 3.6 we added a new parameter includenotenrolledcourses that could cause offline data not to be found.
             // Retry again without the param to check if the request is already cached.
             delete params.includenotenrolledcourses;
 
-            response = await site.read('mod_assign_get_assignments', params, preSets);
+            response = await site.read(wsName, params, preSets);
         }
 
         // Search the assignment to return.
+        console.log('[AddonModAssign] Searching for assignment with', key, '=', value);
+        console.log('[AddonModAssign] Number of courses in response:', response.courses.length);
+        
         if (response.courses.length) {
+            console.log('[AddonModAssign] Assignments in first course:', response.courses[0].assignments);
             const assignment = response.courses[0].assignments.find((assignment) => assignment[key] == value);
 
             if (assignment) {
+                console.log('[AddonModAssign] Assignment found:', assignment);
                 return assignment;
+            } else {
+                console.log('[AddonModAssign] Assignment not found with', key, '=', value);
             }
         }
 
+        console.log('[AddonModAssign] Throwing modulenotfound error');
         throw new CoreError(Translate.instant('core.course.modulenotfound'));
     }
 
@@ -449,7 +477,22 @@ export class AddonModAssignProvider {
         assignId: number,
         options: CoreCourseCommonModWSOptions = {},
     ): Promise<{ canviewsubmissions: boolean; submissions?: AddonModAssignSubmission[] }> {
+        console.log('[AddonModAssign] getSubmissions called for assignId:', assignId);
         const site = await CoreSites.getSite(options.siteId);
+
+        // Check if viewing as mentee
+        const { CoreUserParent } = await import('@features/user/services/parent');
+        const selectedMenteeId = await CoreUserParent.getSelectedMentee(site.getId());
+        
+        if (selectedMenteeId && selectedMenteeId !== site.getUserId()) {
+            console.log('[AddonModAssign] Parent viewing mentee submissions, returning view-only access');
+            // For parents viewing mentees, we'll use a simplified approach
+            // They can view but not see detailed submissions
+            return {
+                canviewsubmissions: true,
+                submissions: []
+            };
+        }
 
         const params: AddonModAssignGetSubmissionsWSParams = {
             assignmentids: [assignId],
@@ -499,7 +542,26 @@ export class AddonModAssignProvider {
         assignId: number,
         options: AddonModAssignSubmissionStatusOptions = {},
     ): Promise<AddonModAssignGetSubmissionStatusWSResponse> {
+        console.log('[AddonModAssign] getSubmissionStatus called for assignId:', assignId);
         const site = await CoreSites.getSite(options.siteId);
+
+        // Check if viewing as mentee
+        const { CoreUserParent } = await import('@features/user/services/parent');
+        const selectedMenteeId = await CoreUserParent.getSelectedMentee(site.getId());
+        
+        if (selectedMenteeId && selectedMenteeId !== site.getUserId()) {
+            console.log('[AddonModAssign] Parent viewing mentee submission status, returning minimal response');
+            // For parents viewing mentees, return a minimal response instead of throwing an error
+            // This prevents the error modal from being shown
+            return {
+                warnings: [{
+                    item: 'assign',
+                    itemid: assignId,
+                    warningcode: 'nopermission',
+                    message: 'Parents cannot view submission details'
+                }]
+            };
+        }
 
         options = {
             filter: true,

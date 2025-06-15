@@ -614,6 +614,18 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy, Can
             // Get submission status.
             const submissionStatus =
                 await AddonModAssign.getSubmissionStatusWithRetry(this.assign, { userId: this.submitId, isBlind });
+            
+            // Check if there's a nopermission warning (parent viewing mentee)
+            const hasNoPermissionWarning = submissionStatus.warnings?.some(warning => 
+                warning.warningcode === 'nopermission'
+            );
+            
+            if (hasNoPermissionWarning) {
+                console.log('[AssignSubmission] Parent viewing mentee - no permission to view submission details');
+                // Return early since parent cannot view submission details
+                this.loaded = true;
+                return;
+            }
 
             this.submissionStatusAvailable = true;
             this.lastAttempt = submissionStatus.lastattempt;

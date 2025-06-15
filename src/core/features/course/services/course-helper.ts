@@ -1515,7 +1515,149 @@ export class CoreCourseHelperProvider {
      * @returns True if module can be opened, false otherwise.
      */
     async openModule(module: CoreCourseModuleData, courseId: number, options: CoreCourseOpenModuleOptions = {}): Promise<boolean> {
+        console.log('[CourseHelper] openModule called for module:', module.id, module.name, module.modname);
+        
+        // Check if viewing as mentee
+        const { CoreUserParent } = await import('@features/user/services/parent');
+        const site = CoreSites.getCurrentSite();
+        console.log('[CourseHelper] Current site:', site?.getId());
+        
+        if (site) {
+            const selectedMenteeId = await CoreUserParent.getSelectedMentee(site.getId());
+            console.log('[CourseHelper] Selected mentee ID:', selectedMenteeId);
+            console.log('[CourseHelper] Current user ID:', site.getUserId());
+            
+            if (selectedMenteeId && selectedMenteeId !== site.getUserId()) {
+                console.log('[CourseHelper] Parent viewing mentee activity - using custom handler');
+                // Parent viewing mentee's activity - show custom parent view
+                try {
+                    // Check if custom WS is available
+                    const hasCustomWS = await site.wsAvailable('local_aspireparent_get_mentee_activity_info');
+                    console.log('[CourseHelper] Custom WS available:', hasCustomWS);
+                    
+                    if (hasCustomWS) {
+                        console.log('[CourseHelper] Calling custom WS with params:', {
+                            cmid: module.id,
+                            userid: selectedMenteeId,
+                        });
+                        
+                        // Fetch activity info using custom WS
+                        const activityInfo: any = await site.read('local_aspireparent_get_mentee_activity_info', {
+                            cmid: module.id,
+                            userid: selectedMenteeId,
+                        });
+                        
+                        console.log('[CourseHelper] Activity info received:', activityInfo);
+                        
+                        // Build HTML content to display
+                        let content = `<h2>${activityInfo.name}</h2>`;
+                        content += `<p><strong>Activity Type:</strong> ${CoreCourse.translateModuleName(activityInfo.modname)}</p>`;
+                        
+                        if (activityInfo.intro) {
+                            content += `<div class="activity-intro">${activityInfo.intro}</div>`;
+                        }
+                        
+                        // Add module-specific content
+                        if (activityInfo.duedate) {
+                            const dueDate = new Date(activityInfo.duedate * 1000);
+                            content += `<p><strong>Due Date:</strong> ${dueDate.toLocaleString()}</p>`;
+                        }
+                        
+                        if (activityInfo.grade) {
+                            content += `<p><strong>Grade:</strong> ${activityInfo.grade}</p>`;
+                        }
+                        
+                        // Show submissions for assignments
+                        if (activityInfo.submissions && activityInfo.submissions.length > 0) {
+                            content += '<h3>Submission Status</h3>';
+                            activityInfo.submissions.forEach((sub: any) => {
+                                content += `<p>Status: ${sub.status}`;
+                                if (sub.grade !== undefined) {
+                                    content += ` | Grade: ${sub.grade}`;
+                                }
+                                content += '</p>';
+                            });
+                        }
+                        
+                        // Show attempts for quizzes
+                        if (activityInfo.attempts && activityInfo.attempts.length > 0) {
+                            content += '<h3>Quiz Attempts</h3>';
+                            content += '<ul>';
+                            activityInfo.attempts.forEach((attempt: any) => {
+                                const startDate = new Date(attempt.timestart * 1000);
+                                content += `<li>Attempt ${attempt.attempt}: Started ${startDate.toLocaleString()}`;
+                                if (attempt.state === 'finished' && attempt.grade !== undefined) {
+                                    content += ` | Grade: ${attempt.grade}`;
+                                }
+                                content += '</li>';
+                            });
+                            content += '</ul>';
+                        }
+                        
+                        // Show files for resources
+                        if (activityInfo.files && activityInfo.files.length > 0) {
+                            content += '<h3>Files</h3>';
+                            content += '<ul>';
+                            activityInfo.files.forEach((file: any) => {
+                                content += `<li><a href="${file.fileurl}" target="_blank">${file.filename}</a> (${Math.round(file.filesize / 1024)} KB)</li>`;
+                            });
+                            content += '</ul>';
+                        }
+                        
+                        // Show page content
+                        if (activityInfo.content) {
+                            if (activityInfo.modname === 'url') {
+                                content += `<p><strong>URL:</strong> <a href="${activityInfo.content}" target="_blank">${activityInfo.content}</a></p>`;
+                            } else {
+                                content += `<div class="activity-content">${activityInfo.content}</div>`;
+                            }
+                        }
+                        
+                        // Show completion status
+                        if (module.completiondata) {
+                            content += '<h3>Completion Status</h3>';
+                            const completion = module.completiondata;
+                            if (completion.state === 0) {
+                                content += '<p>Not completed</p>';
+                            } else if (completion.state === 1) {
+                                content += '<p>Completed</p>';
+                            } else if (completion.state === 2) {
+                                content += '<p>Completed (Passed)</p>';
+                            } else if (completion.state === 3) {
+                                content += '<p>Completed (Failed)</p>';
+                            }
+                        }
+                        
+                        if (activityInfo.message) {
+                            content += `<p class="alert alert-info">${activityInfo.message}</p>`;
+                        }
+                        
+                        // Show the content in a modal
+                        await CoreDomUtils.showAlert('Activity Details', content, undefined, 3000);
+                        return true;
+                    } else {
+                        console.log('[CourseHelper] Custom WS not available, falling back to default handler');
+                    }
+                } catch (error) {
+                    // Fall back to showing basic info if custom WS fails
+                    console.error('[CourseHelper] Error fetching mentee activity info:', error);
+                    console.error('[CourseHelper] Error details:', {
+                        message: error.message,
+                        code: error.code,
+                        debuginfo: error.debuginfo
+                    });
+                }
+            } else {
+                console.log('[CourseHelper] Not viewing as mentee, using default handler');
+            }
+        } else {
+            console.log('[CourseHelper] No site available');
+        }
+        
+        console.log('[CourseHelper] Using default module handler');
+        
         if (!module.handlerData) {
+            console.log('[CourseHelper] Getting module handler data for:', module.modname);
             module.handlerData = await CoreCourseModuleDelegate.getModuleDataFor(
                 module.modname,
                 module,
@@ -1523,9 +1665,11 @@ export class CoreCourseHelperProvider {
                 options.sectionId,
                 false,
             );
+            console.log('[CourseHelper] Module handler data:', module.handlerData);
         }
 
         if (module.handlerData?.action) {
+            console.log('[CourseHelper] Calling module handler action');
             module.handlerData.action(new Event('click'), module, courseId, {
                 animated: false,
                 ...options.modNavOptions,
@@ -1534,6 +1678,7 @@ export class CoreCourseHelperProvider {
             return true;
         }
 
+        console.log('[CourseHelper] No handler action available for module');
         return false;
     }
 

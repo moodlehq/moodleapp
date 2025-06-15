@@ -48,10 +48,15 @@ export class CoreCourseModulePreviewPage implements OnInit {
      * @inheritdoc
      */
     async ngOnInit(): Promise<void> {
+        console.log('[ModulePreview] ngOnInit called');
+        
         try {
             this.module = CoreNavigator.getRequiredRouteParam<CoreCourseModuleData>('module');
+            console.log('[ModulePreview] Module loaded:', this.module?.id, this.module?.name);
             this.courseId = CoreNavigator.getRequiredRouteNumberParam('courseId');
+            console.log('[ModulePreview] Course ID:', this.courseId);
         } catch (error) {
+            console.error('[ModulePreview] Error getting route params:', error);
             CoreDomUtils.showErrorModal(error);
 
             CoreNavigator.back();
@@ -73,13 +78,24 @@ export class CoreCourseModulePreviewPage implements OnInit {
      * @returns Promise resolved when done.
      */
     protected async fetchModule(refresh = false): Promise<void> {
+        console.log('[ModulePreview] fetchModule called, refresh:', refresh);
+        
         if (refresh) {
-            this.module = await CoreCourse.getModule(this.module.id, this.courseId);
+            console.log('[ModulePreview] Refreshing module data for ID:', this.module.id);
+            try {
+                this.module = await CoreCourse.getModule(this.module.id, this.courseId);
+                console.log('[ModulePreview] Module refreshed:', this.module);
+            } catch (error) {
+                console.error('[ModulePreview] Error refreshing module:', error);
+                throw error;
+            }
         }
 
         await CoreCourseHelper.loadModuleOfflineCompletion(this.courseId, this.module);
 
         this.unsupported = !CoreCourseModuleDelegate.getHandlerName(this.module.modname);
+        console.log('[ModulePreview] Module supported:', !this.unsupported, 'modname:', this.module.modname);
+        
         if (!this.unsupported) {
             this.module.handlerData =
                 await CoreCourseModuleDelegate.getModuleDataFor(this.module.modname, this.module, this.courseId);

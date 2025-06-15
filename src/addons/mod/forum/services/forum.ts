@@ -424,9 +424,15 @@ export class AddonModForumProvider {
     ): Promise<AddonModForumGetForumsByCoursesWSResponse> {
         const site = await CoreSites.getSite(options.siteId);
 
-        const params: AddonModForumGetForumsByCoursesWSParams = {
-            courseids: [courseId],
-        };
+        // Check if viewing as mentee
+        const { CoreUserParentModuleHelper } = await import('@features/user/services/parent-module-helper');
+        const parentWS = await CoreUserParentModuleHelper.getParentViewingWS(
+            'mod_forum_get_forums_by_courses',
+            { courseids: [courseId] },
+            'local_aspireparent_get_mentee_forums',
+            site.getId()
+        );
+
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getForumDataCacheKey(courseId),
             updateFrequency: CoreSite.FREQUENCY_RARELY,
@@ -434,7 +440,7 @@ export class AddonModForumProvider {
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy),
         };
 
-        return site.read('mod_forum_get_forums_by_courses', params, preSets);
+        return site.read(parentWS.wsName, parentWS.params, preSets);
     }
 
     /**
@@ -528,6 +534,46 @@ export class AddonModForumProvider {
         options: CoreCourseCommonModWSOptions = {},
     ): Promise<AddonModForumAccessInformation> {
         const site = await CoreSites.getSite(options.siteId);
+
+        // Check if parent viewing scenario
+        const { CoreUserParent } = await import('@features/user/services/parent');
+        const selectedMenteeId = await CoreUserParent.getSelectedMentee(site.getId());
+        
+        if (selectedMenteeId && selectedMenteeId !== site.getUserId()) {
+            // Parent viewing - return basic access info to avoid permission errors
+            console.log('[AddonModForum] Parent viewing detected, returning default access info');
+            return {
+                canaddinstance: false,
+                canviewdiscussion: true,
+                canviewhiddentimedposts: false,
+                canstartdiscussion: false,
+                canreplypost: false,
+                canaddnews: false,
+                canreplynews: false,
+                canviewrating: true,
+                canviewanyrating: false,
+                canviewallratings: false,
+                canrate: false,
+                canpostprivatereply: false,
+                canreadprivatereplies: false,
+                cancreateattachment: false,
+                candeleteownpost: false,
+                candeleteanypost: false,
+                cansplitdiscussions: false,
+                canmovediscussions: false,
+                canpindiscussions: false,
+                caneditanypost: false,
+                canviewqandawithoutposting: false,
+                canviewsubscribers: false,
+                canmanagesubscriptions: false,
+                canpostwithoutthrottling: false,
+                canexportdiscussion: false,
+                canexportforum: false,
+                canexportpost: false,
+                canexportownpost: false,
+                canaddquestion: false,
+            };
+        }
 
         if (!site.wsAvailable('mod_forum_get_forum_access_information')) {
             // Access information not available for 3.6 or older sites.
@@ -760,6 +806,19 @@ export class AddonModForumProvider {
         options.page = options.page || 0;
 
         const site = await CoreSites.getSite(options.siteId);
+        
+        // Check if parent viewing scenario
+        const { CoreUserParent } = await import('@features/user/services/parent');
+        const selectedMenteeId = await CoreUserParent.getSelectedMentee(site.getId());
+        
+        if (selectedMenteeId && selectedMenteeId !== site.getUserId()) {
+            // Parent viewing - return empty discussions to avoid permission errors
+            console.log('[AddonModForum] Parent viewing detected, returning empty discussions');
+            return {
+                discussions: [],
+                canLoadMore: false,
+            };
+        }
         let method = 'mod_forum_get_forum_discussions_paginated';
         const params: AddonModForumGetForumDiscussionsPaginatedWSParams | AddonModForumGetForumDiscussionsWSParams = {
             forumid: forumId,

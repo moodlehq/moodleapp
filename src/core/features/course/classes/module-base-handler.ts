@@ -52,6 +52,7 @@ export class CoreModuleHandlerBase implements Partial<CoreCourseModuleHandler> {
                 courseId: number,
                 options?: CoreNavigationOptions,
             ): Promise<void> => {
+                console.log('[CoreModuleHandlerBase] action called for module:', module.id, module.name, module.modname);
                 await this.openActivityPage(module, courseId, options);
             },
         };
@@ -66,7 +67,12 @@ export class CoreModuleHandlerBase implements Partial<CoreCourseModuleHandler> {
      * @returns Promise resolved when done.
      */
     async openActivityPage(module: CoreCourseModuleData, courseId: number, options?: CoreNavigationOptions): Promise<void> {
+        console.log('[CoreModuleHandlerBase] openActivityPage called for module:', module.id, module.name, module.modname);
+        console.log('[CoreModuleHandlerBase] pageName:', this.pageName);
+        console.log('[CoreModuleHandlerBase] moduleHasView:', CoreCourse.moduleHasView(module));
+        
         if (!CoreCourse.moduleHasView(module)) {
+            console.log('[CoreModuleHandlerBase] Module has no view, returning');
             return;
         }
 
@@ -75,8 +81,10 @@ export class CoreModuleHandlerBase implements Partial<CoreCourseModuleHandler> {
         Object.assign(options.params, { module });
 
         const routeParams = '/' + courseId + '/' + module.id;
-
-        await CoreNavigator.navigateToSitePath(this.pageName + routeParams, options);
+        const fullPath = this.pageName + routeParams;
+        
+        console.log('[CoreModuleHandlerBase] Navigating to:', fullPath, 'with options:', options);
+        await CoreNavigator.navigateToSitePath(fullPath, options);
     }
 
     /**

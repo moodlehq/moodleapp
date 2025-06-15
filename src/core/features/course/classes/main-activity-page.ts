@@ -39,10 +39,15 @@ export class CoreCourseModuleMainActivityPage<ActivityType extends CoreCourseMod
      * @inheritdoc
      */
     ngOnInit(): void {
+        console.log('[MainActivityPage] ngOnInit called');
+        
         try {
             this.module = CoreNavigator.getRequiredRouteParam<CoreCourseModuleData>('module');
+            console.log('[MainActivityPage] Module loaded:', this.module?.id, this.module?.name);
             this.courseId = CoreNavigator.getRequiredRouteNumberParam('courseId');
+            console.log('[MainActivityPage] Course ID:', this.courseId);
         } catch (error) {
+            console.error('[MainActivityPage] Error getting route params:', error);
             CoreDomUtils.showErrorModal(error);
 
             CoreNavigator.back();

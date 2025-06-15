@@ -32,7 +32,13 @@ $services = array(
             'local_aspireparent_get_mentee_courses',
             'local_aspireparent_get_mentee_course_contents',
             'local_aspireparent_get_mentee_module',
-            'local_aspireparent_get_mentee_grades'
+            'local_aspireparent_get_mentee_grades',
+            'local_aspireparent_get_mentee_activity_info',
+            'local_aspireparent_get_mentee_assignments',
+            'local_aspireparent_get_mentee_quizzes',
+            'local_aspireparent_get_mentee_quiz_attempts',
+            'local_aspireparent_get_mentee_assignment_submissions',
+            'local_aspireparent_get_mentee_forums'
         ),
         'restrictedusers' => 0,
         'enabled' => 1,
@@ -92,6 +98,60 @@ $functions = array(
         'classname' => 'local_aspireparent\external\get_mentee_grades',
         'methodname' => 'execute',
         'description' => 'Get grades for a mentee user',
+        'type' => 'read',
+        'ajax' => true,
+        'capabilities' => '',
+        'services' => array('local_aspireparent_service', MOODLE_OFFICIAL_MOBILE_SERVICE)
+    ),
+    'local_aspireparent_get_mentee_activity_info' => array(
+        'classname' => 'local_aspireparent\external\get_mentee_activity_info',
+        'methodname' => 'execute',
+        'description' => 'Get activity information for a mentee user',
+        'type' => 'read',
+        'ajax' => true,
+        'capabilities' => '',
+        'services' => array('local_aspireparent_service', MOODLE_OFFICIAL_MOBILE_SERVICE)
+    ),
+    'local_aspireparent_get_mentee_assignments' => array(
+        'classname' => 'local_aspireparent\external\get_mentee_assignments',
+        'methodname' => 'execute',
+        'description' => 'Get assignments for a mentee user',
+        'type' => 'read',
+        'ajax' => true,
+        'capabilities' => '',
+        'services' => array('local_aspireparent_service', MOODLE_OFFICIAL_MOBILE_SERVICE)
+    ),
+    'local_aspireparent_get_mentee_quizzes' => array(
+        'classname' => 'local_aspireparent\external\get_mentee_quizzes',
+        'methodname' => 'execute',
+        'description' => 'Get quizzes for a mentee user',
+        'type' => 'read',
+        'ajax' => true,
+        'capabilities' => '',
+        'services' => array('local_aspireparent_service', MOODLE_OFFICIAL_MOBILE_SERVICE)
+    ),
+    'local_aspireparent_get_mentee_quiz_attempts' => array(
+        'classname' => 'local_aspireparent\external\get_mentee_quiz_attempts',
+        'methodname' => 'execute',
+        'description' => 'Get quiz attempts for a mentee user',
+        'type' => 'read',
+        'ajax' => true,
+        'capabilities' => '',
+        'services' => array('local_aspireparent_service', MOODLE_OFFICIAL_MOBILE_SERVICE)
+    ),
+    'local_aspireparent_get_mentee_assignment_submissions' => array(
+        'classname' => 'local_aspireparent\external\get_mentee_assignment_submissions',
+        'methodname' => 'execute',
+        'description' => 'Get assignment submissions for a mentee user',
+        'type' => 'read',
+        'ajax' => true,
+        'capabilities' => '',
+        'services' => array('local_aspireparent_service', MOODLE_OFFICIAL_MOBILE_SERVICE)
+    ),
+    'local_aspireparent_get_mentee_forums' => array(
+        'classname' => 'local_aspireparent\external\get_mentee_forums',
+        'methodname' => 'execute',
+        'description' => 'Get forums for a mentee user',
         'type' => 'read',
         'ajax' => true,
         'capabilities' => '',

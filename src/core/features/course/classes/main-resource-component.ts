@@ -207,7 +207,19 @@ export class CoreCourseModuleMainResourceComponent implements OnInit, OnDestroy,
                 return await this.refreshContent();
             }
 
-            CoreDomUtils.showErrorModalDefault(error, this.fetchContentDefaultError, true);
+            // Check if parent viewing scenario before showing error
+            const { CoreUserParent } = await import('@features/user/services/parent');
+            const site = CoreSites.getCurrentSite();
+            const selectedMenteeId = site ? await CoreUserParent.getSelectedMentee(site.getId()) : null;
+            
+            if (selectedMenteeId && selectedMenteeId !== site?.getUserId()) {
+                // Parent viewing, don't show error immediately as parent viewing logic may handle it
+                console.log('[MainResourceComponent] Suppressing error for parent viewing scenario:', error);
+                // Re-throw the error so the component can handle it, but without showing the modal
+                throw error;
+            } else {
+                CoreDomUtils.showErrorModalDefault(error, this.fetchContentDefaultError, true);
+            }
         } finally {
             this.showLoading = false;
         }

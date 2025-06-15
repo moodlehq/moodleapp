@@ -176,7 +176,12 @@ export class CoreCourseModuleComponent implements OnInit, OnDestroy {
      * @param event Click event.
      */
     moduleClicked(event: Event): void {
+        console.log('[Module] moduleClicked:', this.module.id, this.module.name, this.module.modname);
+        console.log('[Module] canUserViewModule:', CoreCourseHelper.canUserViewModule(this.module, this.section));
+        console.log('[Module] handlerData?.action exists:', !!this.module.handlerData?.action);
+        
         if (CoreCourseHelper.canUserViewModule(this.module, this.section) && this.module.handlerData?.action) {
+            console.log('[Module] Calling handlerData.action');
             this.module.handlerData.action(event, this.module, this.module.course);
         }
     }

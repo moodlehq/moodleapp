@@ -49,6 +49,7 @@ export class CoreCourseModuleDefaultHandler implements CoreCourseModuleHandler {
             title: module.name,
             class: 'core-course-default-handler core-course-module-' + module.modname + '-handler',
             action: async (event: Event, module: CoreCourseModuleData, courseId: number, options?: CoreNavigationOptions) => {
+                console.log('[DefaultHandler] action called for module:', module.id, module.name, module.modname);
                 event.preventDefault();
                 event.stopPropagation();
 
@@ -95,11 +96,14 @@ export class CoreCourseModuleDefaultHandler implements CoreCourseModuleHandler {
      * @inheritdoc
      */
     async openActivityPage(module: CoreCourseModuleData, courseId: number, options?: CoreNavigationOptions): Promise<void> {
+        console.log('[DefaultHandler] openActivityPage called for module:', module.id, module.name, module.modname);
         options = options || {};
         options.params = options.params || {};
         Object.assign(options.params, { module });
 
-        await CoreNavigator.navigateToSitePath('course/' + courseId + '/' + module.id +'/module-preview', options);
+        const path = 'course/' + courseId + '/' + module.id +'/module-preview';
+        console.log('[DefaultHandler] Navigating to:', path, 'with options:', options);
+        await CoreNavigator.navigateToSitePath(path, options);
     }
 
 }

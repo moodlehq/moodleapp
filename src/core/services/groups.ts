@@ -72,6 +72,19 @@ export class CoreGroupsProvider {
 
         userId = userId || site.getUserId();
 
+        // Check if parent viewing scenario
+        const { CoreUserParent } = await import('@features/user/services/parent');
+        const selectedMenteeId = await CoreUserParent.getSelectedMentee(site.getId());
+        
+        if (selectedMenteeId && selectedMenteeId !== site.getUserId()) {
+            // Parent viewing - return empty groups to avoid access issues
+            console.log('[CoreGroups] Parent viewing detected, returning empty groups');
+            return {
+                groups: [],
+                canaccessallgroups: false,
+            };
+        }
+
         const params: CoreGroupGetActivityAllowedGroupsWSParams = {
             cmid: cmId,
             userid: userId,
@@ -197,6 +210,17 @@ export class CoreGroupsProvider {
      */
     async getActivityGroupMode(cmId: number, siteId?: string, ignoreCache?: boolean): Promise<number> {
         const site = await CoreSites.getSite(siteId);
+        
+        // Check if parent viewing scenario
+        const { CoreUserParent } = await import('@features/user/services/parent');
+        const selectedMenteeId = await CoreUserParent.getSelectedMentee(site.getId());
+        
+        if (selectedMenteeId && selectedMenteeId !== site.getUserId()) {
+            // Parent viewing - return no groups mode to avoid access issues
+            console.log('[CoreGroups] Parent viewing detected, returning NOGROUPS mode');
+            return CoreGroupsProvider.NOGROUPS;
+        }
+        
         const params: CoreGroupGetActivityGroupmodeWSParams = {
             cmid: cmId,
         };
