@@ -22,6 +22,39 @@
                 <h2 class="aspire-user-name">{{ siteInfo.fullname }}</h2>
                 <p class="aspire-user-email">{{ siteInfo.username }}</p>
                 <p class="aspire-user-sequence" *ngIf="getSequenceValue()">{{ getSequenceValue() }}</p>
+                
+                <!-- Parent/Mentee Selector -->
+                <div class="aspire-mentee-selector" *ngIf="isParentUser && mentees.length > 0">
+                    <button class="aspire-mentee-button" (click)="toggleMenteeSelector()">
+                        <ion-icon name="people-outline"></ion-icon>
+                        <span *ngIf="!selectedMentee">{{ 'core.user.viewingas' | translate }}: {{ 'core.yourself' | translate }}</span>
+                        <span *ngIf="selectedMentee">{{ 'core.user.viewingas' | translate }}: {{ selectedMentee.fullname }}</span>
+                        <ion-icon name="chevron-down-outline" [class.rotated]="showMenteeSelector"></ion-icon>
+                    </button>
+                    
+                    <div class="aspire-mentee-dropdown" *ngIf="showMenteeSelector">
+                        <button class="aspire-mentee-option" (click)="clearMenteeSelection()" [class.selected]="!selectedMenteeId">
+                            <core-user-avatar
+                                [userId]="siteInfo.userid"
+                                [linkProfile]="false"
+                            />
+                            <span>{{ 'core.yourself' | translate }}</span>
+                            <ion-icon name="checkmark" *ngIf="!selectedMenteeId"></ion-icon>
+                        </button>
+                        
+                        <button class="aspire-mentee-option" *ngFor="let mentee of mentees" 
+                            (click)="selectMentee(mentee)" 
+                            [class.selected]="selectedMenteeId === mentee.id">
+                            <core-user-avatar
+                                [user]="mentee"
+                                [userId]="mentee.id"
+                                [linkProfile]="false"
+                            />
+                            <span>{{ mentee.fullname }}</span>
+                            <ion-icon name="checkmark" *ngIf="selectedMenteeId === mentee.id"></ion-icon>
+                        </button>
+                    </div>
+                </div>
                 <div class="aspire-profile-stats">
                     <div class="aspire-stat-item">
                         <ion-icon name="book-outline"></ion-icon>

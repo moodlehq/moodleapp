@@ -2513,9 +2513,103 @@ page-core-course-index {
         }
 
         .aspire-user-email {
-            margin: 0 0 20px;
+            margin: 0 0 8px;
             font-size: 14px;
             color: #7f8c8d;
+        }
+
+        .aspire-user-sequence {
+            margin: 0 0 8px;
+            font-size: 12px;
+            color: #4c96d1;
+            font-weight: 600;
+            background: rgba(76, 150, 209, 0.1);
+            padding: 4px 12px;
+            border-radius: 12px;
+            display: inline-block;
+        }
+
+        // Parent/Mentee Selector
+        .aspire-mentee-selector {
+            margin: 0 0 20px;
+            position: relative;
+            
+            .aspire-mentee-button {
+                display: inline-flex;
+                align-items: center;
+                gap: 8px;
+                padding: 8px 16px;
+                background: rgba(76, 150, 209, 0.1);
+                border: 1px solid rgba(76, 150, 209, 0.2);
+                border-radius: 20px;
+                font-size: 14px;
+                color: #2c3e50;
+                cursor: pointer;
+                transition: all 0.2s;
+                
+                &:hover {
+                    background: rgba(76, 150, 209, 0.15);
+                    border-color: rgba(76, 150, 209, 0.3);
+                }
+                
+                ion-icon {
+                    font-size: 18px;
+                    
+                    &:last-child {
+                        transition: transform 0.2s;
+                        
+                        &.rotated {
+                            transform: rotate(180deg);
+                        }
+                    }
+                }
+            }
+            
+            .aspire-mentee-dropdown {
+                position: absolute;
+                top: 100%;
+                left: 50%;
+                transform: translateX(-50%);
+                margin-top: 8px;
+                background: white;
+                border-radius: 12px;
+                box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+                min-width: 250px;
+                z-index: 1000;
+                overflow: hidden;
+                
+                .aspire-mentee-option {
+                    display: flex;
+                    align-items: center;
+                    gap: 12px;
+                    padding: 12px 16px;
+                    width: 100%;
+                    border: none;
+                    background: none;
+                    cursor: pointer;
+                    transition: background 0.2s;
+                    
+                    &:hover {
+                        background: #f8f9fa;
+                    }
+                    
+                    &.selected {
+                        background: rgba(76, 150, 209, 0.05);
+                    }
+                    
+                    span {
+                        flex: 1;
+                        text-align: left;
+                        font-size: 14px;
+                        color: #2c3e50;
+                    }
+                    
+                    ion-icon {
+                        color: #4c96d1;
+                        font-size: 20px;
+                    }
+                }
+            }
         }
 
         .aspire-profile-stats {
@@ -3565,6 +3659,21 @@ addon-block-timeline-events {
                 }
             }
         }
+    }
+}
+
+// Mentee Indicator Styling
+.aspire-mentee-indicator {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin: 4px 0 0;
+    font-size: 13px;
+    color: #4c96d1;
+    font-weight: 500;
+    
+    ion-icon {
+        font-size: 16px;
     }
 }
 

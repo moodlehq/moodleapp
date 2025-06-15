@@ -38,6 +38,8 @@ import { PageLoadsManager } from '@classes/page-loads-manager';
 import { DownloadStatus } from '@/core/constants';
 import { CoreSharedModule } from '@/core/shared.module';
 import { CoreCoursesComponentsModule } from '@features/courses/components/components.module';
+import { CoreUserParent } from '@features/user/services/parent';
+import { CoreUserProfile } from '@features/user/services/user';
 
 const FILTER_PRIORITY: AddonBlockMyOverviewTimeFilters[] =
     ['all', 'inprogress', 'future', 'past', 'favourite', 'allincludinghidden', 'hidden'];
@@ -101,6 +103,11 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
     textFilter = '';
     hasCourses = false;
     searchEnabled = false;
+    
+    // Parent/mentee properties
+    isParentUser = false;
+    selectedMentee?: CoreUserProfile;
+    viewingMenteeCourses = false;
 
     protected currentSite!: CoreSite;
     protected allCourses: CoreEnrolledCourseDataWithExtraInfoAndOptions[] = [];
@@ -149,6 +156,9 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
         );
 
         this.currentSite = CoreSites.getRequiredCurrentSite();
+
+        // Check if user is a parent and load mentee data
+        this.loadParentData();
 
         const promises: Promise<void>[] = [];
 
@@ -789,6 +799,32 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
         const newIds = newCourses.map(course => course.id).sort();
 
         return previousIds.some((previousId, index) => previousId !== newIds[index]);
+    }
+
+    /**
+     * Load parent data including selected mentee.
+     */
+    protected async loadParentData(): Promise<void> {
+        try {
+            // Check if user is a parent
+            this.isParentUser = await CoreUserParent.isParentUser();
+            
+            if (!this.isParentUser) {
+                return;
+            }
+            
+            // Get selected mentee
+            const selectedMenteeId = await CoreUserParent.getSelectedMentee();
+            
+            if (selectedMenteeId) {
+                // Get mentee details
+                const mentees = await CoreUserParent.getMentees();
+                this.selectedMentee = mentees.find(m => m.id === selectedMenteeId);
+                this.viewingMenteeCourses = !!this.selectedMentee;
+            }
+        } catch (error) {
+            console.error('Error loading parent data:', error);
+        }
     }
 
     /**

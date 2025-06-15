@@ -36,6 +36,8 @@ import { CoreGradesCoursesSource } from '@features/grades/classes/grades-courses
 import { CoreDom } from '@singletons/dom';
 import { CoreTime } from '@singletons/time';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
+import { CoreUserParent } from '@features/user/services/parent';
+import { CoreUserProfile } from '@features/user/services/user';
 
 /**
  * Page that displays a course grades.
@@ -60,6 +62,11 @@ export class CoreGradesCoursePage implements AfterViewInit, OnDestroy {
     totalColumnsSpan?: number;
     withinSplitView?: boolean;
     loaded = false;
+    
+    // Parent viewing properties
+    isParentUser = false;
+    viewingAsMentee = false;
+    selectedMentee?: CoreUserProfile;
 
     protected useLegacyLayout?: boolean; // Whether to use the layout before 4.1.
     protected logView: () => void;
@@ -112,6 +119,9 @@ export class CoreGradesCoursePage implements AfterViewInit, OnDestroy {
      */
     async ngAfterViewInit(): Promise<void> {
         this.withinSplitView = !!this.element.nativeElement.parentElement?.closest('core-split-view');
+
+        // Check if viewing as parent/mentee
+        await this.checkParentContext();
 
         await this.swipeManager?.start();
         await this.fetchInitialGrades();
@@ -189,6 +199,39 @@ export class CoreGradesCoursePage implements AfterViewInit, OnDestroy {
         await CoreUtils.ignoreErrors(this.fetchGrades());
 
         refresher?.complete();
+    }
+
+    /**
+     * Check if viewing as parent and update context accordingly.
+     */
+    private async checkParentContext(): Promise<void> {
+        try {
+            // Check if user is a parent
+            this.isParentUser = await CoreUserParent.isParentUser();
+            
+            if (!this.isParentUser) {
+                return;
+            }
+            
+            // Check if a mentee is selected
+            const selectedMenteeId = await CoreUserParent.getSelectedMentee();
+            
+            if (selectedMenteeId && this.userId === CoreSites.getCurrentSiteUserId()) {
+                // Only override userId if we're viewing our own grades (not another user's)
+                const canView = await CoreUserParent.canViewUserData(selectedMenteeId);
+                
+                if (canView) {
+                    this.userId = selectedMenteeId;
+                    this.viewingAsMentee = true;
+                    
+                    // Get mentee details for display
+                    const mentees = await CoreUserParent.getMentees();
+                    this.selectedMentee = mentees.find(m => m.id === selectedMenteeId);
+                }
+            }
+        } catch (error) {
+            console.error('Error checking parent context:', error);
+        }
     }
 
     /**

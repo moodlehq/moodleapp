@@ -22,6 +22,7 @@ import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
 import { CoreError } from '@classes/errors/error';
 import { SafeNumber } from '@/core/utils/types';
 import { CoreGradeType } from '../constants';
+import { CoreUserParent } from '@features/user/services/parent';
 
 /**
  * Service to provide grade functionalities.

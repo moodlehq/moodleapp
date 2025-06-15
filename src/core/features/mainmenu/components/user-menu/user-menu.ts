@@ -21,7 +21,7 @@ import { CoreFilter } from '@features/filter/services/filter';
 import { CoreLoginHelper } from '@features/login/services/login-helper';
 import { CoreUserAuthenticatedSupportConfig } from '@features/user/classes/support/authenticated-support-config';
 import { CoreUserSupport } from '@features/user/services/support';
-import { CoreUser, CoreUserProfile } from '@features/user/services/user';
+import { CoreUser, CoreUserProfile, USER_PROFILE_REFRESHED } from '@features/user/services/user';
 import {
     CoreUserProfileHandlerData,
     CoreUserDelegate,
@@ -35,8 +35,10 @@ import { CoreDomUtils } from '@services/utils/dom';
 import { CoreUtils } from '@services/utils/utils';
 import { ModalController, Translate } from '@singletons';
 import { Subscription } from 'rxjs';
-import { CoreCourses } from '@features/courses/services/courses';
+import { CoreCourses, CoreCoursesProvider } from '@features/courses/services/courses';
 import { AddonBadges } from '@addons/badges/services/badges';
+import { CoreUserParent } from '@features/user/services/parent';
+import { CoreEvents } from '@singletons/events';
 
 /**
  * Component to display a user menu.
@@ -69,6 +71,13 @@ export class CoreMainMenuUserMenuComponent implements OnInit, OnDestroy {
     removeAccountOnLogout = false;
     courseCount = 0;
     badgeCount = 0;
+    
+    // Parent role properties
+    isParentUser = false;
+    mentees: CoreUserProfile[] = [];
+    selectedMenteeId?: number;
+    selectedMentee?: CoreUserProfile;
+    showMenteeSelector = false;
 
     protected subscription!: Subscription;
 
@@ -111,6 +120,9 @@ export class CoreMainMenuUserMenuComponent implements OnInit, OnDestroy {
 
         // Load course and badge counts
         this.loadUserStats();
+        
+        // Check if user is a parent and load mentees
+        this.loadParentData();
 
         this.subscription = CoreUserDelegate.getProfileHandlersFor(this.user, CoreUserDelegateContext.USER_MENU)
             .subscribe((handlers) => {
@@ -383,6 +395,99 @@ export class CoreMainMenuUserMenuComponent implements OnInit, OnDestroy {
         // return "TEST-SEQ-001";
         
         return null;
+    }
+
+    /**
+     * Load parent data including mentees if user is a parent.
+     */
+    protected async loadParentData(): Promise<void> {
+        console.log('[User Menu] Loading parent data...');
+        try {
+            // Check if user is a parent
+            this.isParentUser = await CoreUserParent.isParentUser();
+            console.log('[User Menu] Is parent user:', this.isParentUser);
+            
+            if (!this.isParentUser) {
+                console.log('[User Menu] User is not a parent, skipping mentee loading');
+                return;
+            }
+            
+            // Load mentees
+            console.log('[User Menu] Loading mentees...');
+            this.mentees = await CoreUserParent.getMentees();
+            console.log('[User Menu] Loaded mentees:', this.mentees);
+            
+            // Get selected mentee
+            this.selectedMenteeId = await CoreUserParent.getSelectedMentee() || undefined;
+            console.log('[User Menu] Selected mentee ID:', this.selectedMenteeId);
+            
+            if (this.selectedMenteeId && this.mentees.length > 0) {
+                this.selectedMentee = this.mentees.find(m => m.id === this.selectedMenteeId);
+                console.log('[User Menu] Selected mentee:', this.selectedMentee);
+            }
+        } catch (error) {
+            console.error('[User Menu] Error loading parent data:', error);
+            // Show more details about the error
+            if (error && typeof error === 'object') {
+                console.error('[User Menu] Error details:', {
+                    message: error.message || 'Unknown error',
+                    name: error.name || 'Unknown',
+                    stack: error.stack || 'No stack trace'
+                });
+            }
+        }
+    }
+
+    /**
+     * Toggle mentee selector dropdown.
+     */
+    toggleMenteeSelector(): void {
+        this.showMenteeSelector = !this.showMenteeSelector;
+    }
+
+    /**
+     * Select a mentee.
+     * 
+     * @param mentee The mentee to select.
+     */
+    async selectMentee(mentee: CoreUserProfile): Promise<void> {
+        this.selectedMentee = mentee;
+        this.selectedMenteeId = mentee.id;
+        this.showMenteeSelector = false;
+        
+        // Save selection
+        await CoreUserParent.setSelectedMentee(mentee.id);
+        
+        // Invalidate courses cache to force refresh
+        await CoreCourses.invalidateUserCourses(this.siteId);
+        
+        // Trigger a general refresh event
+        CoreEvents.trigger(USER_PROFILE_REFRESHED, { userId: mentee.id }, this.siteId);
+        
+        // Close the modal to trigger navigation refresh
+        await this.close(new Event('click'));
+    }
+
+    /**
+     * Clear mentee selection (view own data).
+     */
+    async clearMenteeSelection(): Promise<void> {
+        this.selectedMentee = undefined;
+        this.selectedMenteeId = undefined;
+        this.showMenteeSelector = false;
+        
+        await CoreUserParent.clearSelectedMentee();
+        
+        // Invalidate courses cache to force refresh
+        await CoreCourses.invalidateUserCourses(this.siteId);
+        
+        // Trigger a general refresh event
+        if (this.siteInfo) {
+            CoreEvents.trigger(USER_PROFILE_REFRESHED, { userId: this.siteInfo.userid }, this.siteId);
+        }
+        
+        // Close the modal to trigger navigation refresh
+        await this.close(new Event('click'));
     }
 
     /**

@@ -26,6 +26,7 @@ import { AddonEnrolGuest, AddonEnrolGuestInfo } from '@addons/enrol/guest/servic
 import { AddonEnrolSelf } from '@addons/enrol/self/services/self';
 import { CoreEnrol, CoreEnrolEnrolmentInfo, CoreEnrolEnrolmentMethod } from '@features/enrol/services/enrol';
 import { CoreSiteWSPreSets, WSObservable } from '@classes/sites/authenticated-site';
+import { CoreUserParent } from '@features/user/services/parent';
 
 declare module '@singletons/events' {
 
@@ -902,13 +903,35 @@ export class CoreCoursesProvider {
         return asyncObservable(async () => {
             const site = await CoreSites.getSite(options.siteId);
 
-            const userId = site.getUserId();
+            // Check if viewing as a mentee
+            let userId = site.getUserId();
+            const selectedMenteeId = await CoreUserParent.getSelectedMentee(site.getId());
+            
+            console.log('[Courses] Getting courses for user. Selected mentee ID:', selectedMenteeId);
+            
+            if (selectedMenteeId) {
+                // Check if user can view mentee data
+                const canView = await CoreUserParent.canViewUserData(selectedMenteeId, site.getId());
+                console.log('[Courses] Can view mentee data:', canView);
+                if (canView) {
+                    userId = selectedMenteeId;
+                    console.log('[Courses] Switched to mentee user ID:', userId);
+                }
+            }
+            
+            console.log('[Courses] Final user ID for course fetch:', userId);
+            
             const wsParams: CoreEnrolGetUsersCoursesWSParams = {
                 userid: userId,
             };
 
+            // Use different cache key for mentee courses
+            const cacheKey = userId === site.getUserId() 
+                ? this.getUserCoursesCacheKey() 
+                : `${CoreCoursesProvider.ROOT_CACHE_KEY}usercourses:${userId}`;
+            
             const preSets: CoreSiteWSPreSets = {
-                cacheKey: this.getUserCoursesCacheKey(),
+                cacheKey: cacheKey,
                 getCacheUsingCacheKey: true,
                 updateFrequency: CoreSite.FREQUENCY_RARELY,
                 ...CoreSites.getReadingStrategyPreSets(options.readingStrategy),
