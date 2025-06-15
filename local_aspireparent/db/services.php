@@ -28,7 +28,11 @@ $services = array(
     'Aspire Parent Service' => array(
         'functions' => array(
             'local_aspireparent_get_mentees',
-            'local_aspireparent_get_parent_info'
+            'local_aspireparent_get_parent_info',
+            'local_aspireparent_get_mentee_courses',
+            'local_aspireparent_get_mentee_course_contents',
+            'local_aspireparent_get_mentee_module',
+            'local_aspireparent_get_mentee_grades'
         ),
         'restrictedusers' => 0,
         'enabled' => 1,
@@ -52,6 +56,42 @@ $functions = array(
         'classname' => 'local_aspireparent\external\get_parent_info',
         'methodname' => 'execute',
         'description' => 'Get parent role information for current user',
+        'type' => 'read',
+        'ajax' => true,
+        'capabilities' => '',
+        'services' => array('local_aspireparent_service', MOODLE_OFFICIAL_MOBILE_SERVICE)
+    ),
+    'local_aspireparent_get_mentee_courses' => array(
+        'classname' => 'local_aspireparent\external\get_mentee_courses',
+        'methodname' => 'execute',
+        'description' => 'Get courses for a mentee user',
+        'type' => 'read',
+        'ajax' => true,
+        'capabilities' => '',
+        'services' => array('local_aspireparent_service', MOODLE_OFFICIAL_MOBILE_SERVICE)
+    ),
+    'local_aspireparent_get_mentee_course_contents' => array(
+        'classname' => 'local_aspireparent\external\get_mentee_course_contents',
+        'methodname' => 'execute',
+        'description' => 'Get course contents for a mentee user',
+        'type' => 'read',
+        'ajax' => true,
+        'capabilities' => '',
+        'services' => array('local_aspireparent_service', MOODLE_OFFICIAL_MOBILE_SERVICE)
+    ),
+    'local_aspireparent_get_mentee_module' => array(
+        'classname' => 'local_aspireparent\external\get_mentee_module',
+        'methodname' => 'execute',
+        'description' => 'Get module information for a mentee user',
+        'type' => 'read',
+        'ajax' => true,
+        'capabilities' => '',
+        'services' => array('local_aspireparent_service', MOODLE_OFFICIAL_MOBILE_SERVICE)
+    ),
+    'local_aspireparent_get_mentee_grades' => array(
+        'classname' => 'local_aspireparent\external\get_mentee_grades',
+        'methodname' => 'execute',
+        'description' => 'Get grades for a mentee user',
         'type' => 'read',
         'ajax' => true,
         'capabilities' => '',

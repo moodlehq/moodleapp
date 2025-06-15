@@ -195,6 +195,20 @@ export class CoreGradesProvider {
 
         this.logger.debug(`Get grades for course '${courseId}' and user '${userId}'`);
 
+        // Check if viewing as mentee
+        let wsName = 'gradereport_user_get_grades_table';
+        const selectedMenteeId = await CoreUserParent.getSelectedMentee(site.getId());
+        
+        if (selectedMenteeId && selectedMenteeId !== site.getUserId()) {
+            // Parent viewing mentee's grades
+            const hasCustomWS = await site.wsAvailable('local_aspireparent_get_mentee_grades');
+            if (hasCustomWS) {
+                wsName = 'local_aspireparent_get_mentee_grades';
+                userId = selectedMenteeId;
+                this.logger.debug(`Using custom WS for parent viewing mentee grades in course ${courseId}`);
+            }
+        }
+
         const params: CoreGradesGetUserGradesTableWSParams = {
             courseid: courseId,
             userid: userId,
@@ -208,13 +222,61 @@ export class CoreGradesProvider {
             preSets.emergencyCache = false;
         }
 
-        const table = await site.read<CoreGradesGetUserGradesTableWSResponse>('gradereport_user_get_grades_table', params, preSets);
+        if (wsName === 'local_aspireparent_get_mentee_grades') {
+            // Custom WS returns different format, need to transform it
+            const response = await site.read<any>(wsName, params, preSets);
+            
+            if (!response?.usergrades?.[0]) {
+                throw new CoreError('Couldn\'t get course grades table');
+            }
+            
+            // Transform to expected format
+            const usergrade = response.usergrades[0];
+            const tableData: CoreGradesTable = {
+                courseid: usergrade.courseid,
+                userid: usergrade.userid,
+                userfullname: usergrade.userfullname,
+                maxdepth: usergrade.maxdepth || 1,
+                tabledata: usergrade.gradeitems.map((item: any) => ({
+                    itemname: {
+                        class: item.itemtype === 'category' ? 'category' : 'item',
+                        content: item.itemname,
+                        celltype: 'item',
+                        id: item.id,
+                    },
+                    grade: {
+                        class: '',
+                        content: item.gradeformatted || '-',
+                        celltype: 'grade',
+                    },
+                    range: {
+                        class: '',
+                        content: item.rangeformatted || '',
+                        celltype: 'range',
+                    },
+                    percentage: {
+                        class: '',
+                        content: item.percentageformatted || '',
+                        celltype: 'percentage',
+                    },
+                    feedback: item.feedback ? {
+                        class: '',
+                        content: item.feedback,
+                        celltype: 'feedback',
+                    } : undefined,
+                })),
+            };
+            
+            return tableData;
+        } else {
+            const table = await site.read<CoreGradesGetUserGradesTableWSResponse>(wsName, params, preSets);
 
-        if (!table?.tables?.[0]) {
-            throw new CoreError('Couldn\'t get course grades table');
+            if (!table?.tables?.[0]) {
+                throw new CoreError('Couldn\'t get course grades table');
+            }
+
+            return table.tables[0];
         }
-
-        return table.tables[0];
     }
 
     /**

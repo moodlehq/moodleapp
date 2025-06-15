@@ -395,12 +395,14 @@ export class AddonBlockTimelineComponent implements OnInit, ICoreBlockComponent 
                 course =>
                     !course.hidden &&
                     !CoreCoursesHelper.isFutureCourse(course, gracePeriod.after, gracePeriod.before) &&
+                    courseEvents[course.id] && 
+                    courseEvents[course.id].events && 
                     courseEvents[course.id].events.length > 0,
             )
             .sort((a, b) => {
                 // Get the nearest/most urgent event from each course
-                const aEvents = courseEvents[a.id].events;
-                const bEvents = courseEvents[b.id].events;
+                const aEvents = courseEvents[a.id]?.events || [];
+                const bEvents = courseEvents[b.id]?.events || [];
                 const aNearest = aEvents.length > 0 ? Math.min(...aEvents.map(e => e.timesort)) : Number.MAX_SAFE_INTEGER;
                 const bNearest = bEvents.length > 0 ? Math.min(...bEvents.map(e => e.timesort)) : Number.MAX_SAFE_INTEGER;
                 return aNearest - bNearest; // Most urgent/nearest deadline first
@@ -413,8 +415,8 @@ export class AddonBlockTimelineComponent implements OnInit, ICoreBlockComponent 
                     overdue,
                     dateRange,
                     course,
-                    courseEvents[course.id].events,
-                    courseEvents[course.id].canLoadMore,
+                    courseEvents[course.id]?.events || [],
+                    courseEvents[course.id]?.canLoadMore,
                     done,
                 );
 

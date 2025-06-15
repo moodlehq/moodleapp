@@ -21,7 +21,7 @@ import { CoreEvents } from '@singletons/events';
 import { CoreCourseAnyCourseDataWithExtraInfoAndOptions, CoreCourseWithImageAndColor } from './courses-helper';
 import { asyncObservable, ignoreErrors, zipIncludingComplete } from '@/core/utils/rxjs';
 import { of, firstValueFrom } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { map, catchError } from 'rxjs/operators';
 import { AddonEnrolGuest, AddonEnrolGuestInfo } from '@addons/enrol/guest/services/guest';
 import { AddonEnrolSelf } from '@addons/enrol/self/services/self';
 import { CoreEnrol, CoreEnrolEnrolmentInfo, CoreEnrolEnrolmentMethod } from '@features/enrol/services/enrol';
@@ -905,21 +905,31 @@ export class CoreCoursesProvider {
 
             // Check if viewing as a mentee
             let userId = site.getUserId();
-            const selectedMenteeId = await CoreUserParent.getSelectedMentee(site.getId());
+            console.log('[Courses] getUserCoursesObservable - Starting course fetch');
+            console.log('[Courses] Current site user ID:', site.getUserId());
+            console.log('[Courses] Site ID:', site.getId());
             
-            console.log('[Courses] Getting courses for user. Selected mentee ID:', selectedMenteeId);
+            const selectedMenteeId = await CoreUserParent.getSelectedMentee(site.getId());
+            console.log('[Courses] Selected mentee ID from storage:', selectedMenteeId);
             
             if (selectedMenteeId) {
+                console.log('[Courses] Mentee selected, checking permissions...');
                 // Check if user can view mentee data
                 const canView = await CoreUserParent.canViewUserData(selectedMenteeId, site.getId());
                 console.log('[Courses] Can view mentee data:', canView);
+                
                 if (canView) {
                     userId = selectedMenteeId;
-                    console.log('[Courses] Switched to mentee user ID:', userId);
+                    console.log('[Courses] Permission granted - Switched to mentee user ID:', userId);
+                } else {
+                    console.log('[Courses] Permission denied - Using original user ID:', userId);
                 }
+            } else {
+                console.log('[Courses] No mentee selected - Using current user ID:', userId);
             }
             
             console.log('[Courses] Final user ID for course fetch:', userId);
+            console.log('[Courses] Is viewing mentee courses:', userId !== site.getUserId());
             
             const wsParams: CoreEnrolGetUsersCoursesWSParams = {
                 userid: userId,
@@ -941,13 +951,73 @@ export class CoreCoursesProvider {
                 wsParams.returnusercount = false;
             }
 
+            console.log('[Courses] Web service params:', JSON.stringify(wsParams));
+            console.log('[Courses] Cache key:', cacheKey);
+            
+            // Use custom web service for mentee courses if available
+            let wsName = 'core_enrol_get_users_courses';
+            if (userId !== site.getUserId()) {
+                console.log('[Courses] Fetching mentee courses - checking for custom web service...');
+                // Check if custom web service exists
+                try {
+                    const hasCustomWS = await site.wsAvailable('local_aspireparent_get_mentee_courses');
+                    if (hasCustomWS) {
+                        wsName = 'local_aspireparent_get_mentee_courses';
+                        console.log('[Courses] Using custom web service for mentee courses');
+                        
+                        // Debug: Also try the standard web service to compare
+                        console.log('[Courses] DEBUG: Testing standard web service for comparison...');
+                        try {
+                            const standardResult = await site.read('core_enrol_get_users_courses', wsParams);
+                            console.log('[Courses] DEBUG: Standard WS returned', Array.isArray(standardResult) ? standardResult.length : 0, 'courses');
+                        } catch (standardError) {
+                            console.log('[Courses] DEBUG: Standard WS error:', standardError.message);
+                        }
+                    } else {
+                        console.log('[Courses] Custom web service not available, using default');
+                    }
+                } catch {
+                    console.log('[Courses] Error checking for custom web service, using default');
+                }
+            }
+            
+            console.log('[Courses] Calling web service:', wsName);
+
             const observable = site.readObservable<CoreEnrolGetUsersCoursesWSResponse>(
-                'core_enrol_get_users_courses',
+                wsName,
                 wsParams,
                 preSets,
+            ).pipe(
+                catchError((error) => {
+                    console.error('[Courses] Web service error:', error);
+                    console.error('[Courses] Error details:', {
+                        code: error.code,
+                        message: error.message,
+                        debuginfo: error.debuginfo,
+                        wsName: wsName,
+                        params: wsParams
+                    });
+                    if (error.code === 'nopermission' || error.code === 'invalidparameter') {
+                        console.error('[Courses] Permission denied or invalid parameter. The web service might not support fetching other users courses.');
+                    }
+                    throw error;
+                })
             );
 
             return observable.pipe(map(courses => {
+                console.log('[Courses] Web service response - Number of courses:', courses.length);
+                console.log('[Courses] Web service used:', wsName);
+                console.log('[Courses] User ID requested:', userId);
+                console.log('[Courses] Current user ID:', site.getUserId());
+                console.log('[Courses] Courses received:', courses.map(c => ({ id: c.id, fullname: c.fullname })));
+                
+                if (courses.length === 0) {
+                    console.warn('[Courses] No courses returned for user ID:', userId);
+                    console.warn('[Courses] This could mean:');
+                    console.warn('[Courses] 1. The user has no enrolled courses');
+                    console.warn('[Courses] 2. Permission checks are blocking access');
+                    console.warn('[Courses] 3. The web service is not returning the expected data');
+                }
                 if (this.userCoursesIds) {
                     // Check if the list of courses has changed.
                     const added: number[] = [];

@@ -146,10 +146,18 @@ export class CoreUserParentService {
         const site = await CoreSites.getSite(siteId);
         const key = this.getSelectedMenteeKey(site.getId());
         
+        console.log('[Parent Service] Getting selected mentee with key:', key);
+        console.log('[Parent Service] Site ID:', site.getId());
+        console.log('[Parent Service] Current user ID:', site.getUserId());
+        
         try {
             const value = await site.getLocalSiteConfig(key);
-            return value ? parseInt(String(value), 10) : null;
-        } catch {
+            console.log('[Parent Service] Raw stored value:', value);
+            const menteeId = value ? parseInt(String(value), 10) : null;
+            console.log('[Parent Service] Parsed mentee ID:', menteeId);
+            return menteeId;
+        } catch (error) {
+            console.error('[Parent Service] Error getting selected mentee:', error);
             return null;
         }
     }
@@ -165,7 +173,16 @@ export class CoreUserParentService {
         const site = await CoreSites.getSite(siteId);
         const key = this.getSelectedMenteeKey(site.getId());
         
+        console.log('[Parent Service] Setting selected mentee:', menteeId);
+        console.log('[Parent Service] Storage key:', key);
+        console.log('[Parent Service] Site ID:', site.getId());
+        
         await site.setLocalSiteConfig(key, String(menteeId));
+        
+        // Verify it was saved
+        const saved = await site.getLocalSiteConfig(key);
+        console.log('[Parent Service] Verified saved value:', saved);
+        console.log('[Parent Service] Successfully set mentee ID:', menteeId);
     }
 
     /**

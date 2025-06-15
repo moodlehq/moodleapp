@@ -613,7 +613,24 @@ export class CoreCourseProvider {
             }
 
             try {
-                const sections = await site.read<CoreCourseGetContentsWSResponse>('core_course_get_contents', params, preSets);
+                // Check if viewing as mentee and use custom WS if available
+                let wsName = 'core_course_get_contents';
+                let wsParams: any = params;
+                const { CoreUserParent } = await import('@features/user/services/parent');
+                const selectedMenteeId = await CoreUserParent.getSelectedMentee(site.getId());
+                
+                if (selectedMenteeId && selectedMenteeId !== site.getUserId()) {
+                    const hasCustomWS = await site.wsAvailable('local_aspireparent_get_mentee_course_contents');
+                    if (hasCustomWS) {
+                        wsName = 'local_aspireparent_get_mentee_course_contents';
+                        wsParams = {
+                            ...params,
+                            userid: selectedMenteeId,
+                        };
+                    }
+                }
+                
+                const sections = await site.read<CoreCourseGetContentsWSResponse>(wsName, wsParams, preSets);
 
                 return sections;
             } catch {
@@ -1005,35 +1022,58 @@ export class CoreCourseProvider {
         courseId: number,
         options: CoreCourseGetSectionsOptions = {},
     ): WSObservable<CoreCourseGetContentsWSSection[]> {
-        const preSets: CoreSiteWSPreSets = {
-            ...options.preSets,
-            cacheKey: this.getSectionsCacheKey(courseId),
-            updateFrequency: CoreSite.FREQUENCY_RARELY,
-            ...CoreSites.getReadingStrategyPreSets(options.readingStrategy),
-        };
+        return asyncObservable(async () => {
+            // Check if viewing as mentee
+            const { CoreUserParent } = await import('@features/user/services/parent');
+            const selectedMenteeId = await CoreUserParent.getSelectedMentee(site.getId());
+            let wsName = 'core_course_get_contents';
+            let userId = 0; // Default for current user
+            
+            if (selectedMenteeId && selectedMenteeId !== site.getUserId()) {
+                // Parent viewing mentee's course
+                const hasCustomWS = await site.wsAvailable('local_aspireparent_get_mentee_course_contents');
+                if (hasCustomWS) {
+                    wsName = 'local_aspireparent_get_mentee_course_contents';
+                    userId = selectedMenteeId;
+                    this.logger.debug(`Using custom WS for parent viewing mentee course ${courseId}`);
+                }
+            }
+            
+            const preSets: CoreSiteWSPreSets = {
+                ...options.preSets,
+                cacheKey: this.getSectionsCacheKey(courseId) + (userId ? ':' + userId : ''),
+                updateFrequency: CoreSite.FREQUENCY_RARELY,
+                ...CoreSites.getReadingStrategyPreSets(options.readingStrategy),
+            };
 
-        const params: CoreCourseGetContentsParams = {
-            courseid: courseId,
-        };
-        params.options = [
-            {
-                name: 'excludemodules',
-                value: !!options.excludeModules,
-            },
-            {
-                name: 'excludecontents',
-                value: !!options.excludeContents,
-            },
-        ];
+            const params: any = {
+                courseid: courseId,
+            };
+            
+            if (wsName === 'local_aspireparent_get_mentee_course_contents') {
+                params.userid = userId;
+            }
+            
+            params.options = [
+                {
+                    name: 'excludemodules',
+                    value: !!options.excludeModules,
+                },
+                {
+                    name: 'excludecontents',
+                    value: !!options.excludeContents,
+                },
+            ];
 
-        if (this.canRequestStealthModules(site)) {
-            params.options.push({
-                name: 'includestealthmodules',
-                value: !!(options.includeStealthModules ?? true),
-            });
-        }
+            if (this.canRequestStealthModules(site)) {
+                params.options.push({
+                    name: 'includestealthmodules',
+                    value: !!(options.includeStealthModules ?? true),
+                });
+            }
 
-        return site.readObservable<CoreCourseGetContentsWSSection[]>('core_course_get_contents', params, preSets);
+            return site.readObservable<CoreCourseGetContentsWSSection[]>(wsName, params, preSets);
+        });
     }
 
     /**
