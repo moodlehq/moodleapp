@@ -18,8 +18,8 @@ import {
   Component,
   signal,
   input,
-  effect,
   computed,
+  linkedSignal,
 } from '@angular/core';
 import { CoreCourseModuleHelper } from '@features/course/services/course-module-helper';
 import { CoreCourseModuleDelegate } from '@features/course/services/module-delegate';
@@ -70,9 +70,14 @@ export class CoreModIconComponent {
     colorize = input(true, { transform: toBoolean }); // Colorize the icon. Only applies on 4.0+.
     isBranded = input(false, { transform: toBoolean }); // If icon is branded and no colorize will be applied.
 
-    iconUrl = signal('');
-    isLocalUrl = signal(false);
-    linkIconWithComponent = signal(false);
+    iconUrl = linkedSignal(() => CoreText.decodeHTMLEntities(this.modicon() || this.getFallbackIcon()));
+    isLocalUrl = computed(() => this.iconUrl().startsWith(assetsPath));
+
+    // Cache icon if the url is not the theme generic one.
+    // If modname is not set icon won't be cached.
+    // Also if the url matches the regexp (the theme will manage the image so it's not cached).
+    linkIconWithComponent = computed(() => !!this.computedModName() && !!this.componentId() && !this.isLocalUrl() &&
+            this.getComponentNameFromIconUrl(this.iconUrl()) !== this.computedModName());
 
     computedModName = computed(() => this.modname() || this.getComponentNameFromIconUrl(this.modicon() ?? ''));
     modNameTranslated = computed(() =>
@@ -80,130 +85,85 @@ export class CoreModIconComponent {
 
     protected iconVersion = signal(IconVersion.LEGACY_VERSION);
     protected purposeClass = computed(() => this.calculatePurposeClass());
-    protected addBrandedClass = signal<boolean|undefined>(undefined);
+    protected addBrandedClass = computed(() => this.calculateAddBranded());
     protected addColorizeClass = computed(() => this.colorize() && this.iconVersion() !== IconVersion.LEGACY_VERSION);
 
     constructor() {
         this.iconVersion.set(this.getIconVersion());
-
-        effect(() => {
-            // @todo: Move as much code from this effect to computed properties.
-            this.setIcon(this.modicon());
-        });
     }
 
     /**
-     * Sets the isBranded property when undefined.
+     * Calculates whether the branded class should be added or not.
+     *
+     * @returns Whether the branded class should be added.
      */
-    protected async setBrandedClass(): Promise<void> {
+    protected calculateAddBranded(): boolean {
         if (!this.colorize()) {
-            this.addBrandedClass.set(false);
-
             // It doesn't matter.
-            return;
+            return false;
         }
 
         if (this.iconVersion() === IconVersion.LEGACY_VERSION) {
-            this.addBrandedClass.set(false);
-
-            return;
+            return false;
         }
-
-        // Reset the branded class to the original value.
-        this.addBrandedClass.set(this.isBranded());
 
         // Exception for bigbluebuttonbn, it's the only one that has a branded icon.
         if (this.iconVersion() === IconVersion.VERSION_4_0 && this.computedModName() === 'bigbluebuttonbn') {
             // Known issue, if the icon is overriden by theme it won't be colorized.
-            this.addBrandedClass.set(true);
-
-            return;
+            return true;
         }
 
-        // No icon or local icon (not legacy), colorize it.
+        const isBranded = this.isBranded();
+
+        // No icon or local icon (not legacy), use the input.
         if (!this.iconUrl() || this.isLocalUrl()) {
-            this.addBrandedClass.update(addBrandedClass => addBrandedClass ?? false);
-
-            return;
+            return isBranded ?? false;
         }
 
-        this.iconUrl.update(value => CoreText.decodeHTMLEntities(value));
-        if (this.addBrandedClass() !== undefined) {
-            return;
+        if (isBranded !== undefined) {
+            return isBranded;
         }
 
-        // If it's an Moodle Theme icon, check if filtericon is set and use it.
+        // If it's a Moodle Theme icon, check if filtericon is set and use it.
         if (CoreUrl.isThemeImageUrl(this.iconUrl())) {
             const filter = CoreUrl.getThemeImageUrlParam(this.iconUrl(), 'filtericon');
             if (filter === '1') {
-                this.addBrandedClass.set(false);
-
-                return;
+                return false;
             }
 
             // filtericon was introduced in 4.2 and backported to 4.1.3 and 4.0.8.
             if (this.computedModName() && !CoreSites.getCurrentSite()?.isVersionGreaterEqualThan(['4.0.8', '4.1.3', '4.2'])) {
                 // If version is prior to that, check if the url is a module icon and filter it.
                 if (this.getComponentNameFromIconUrl(this.iconUrl()) === this.computedModName()) {
-                    this.addBrandedClass.set(false);
-
-                    return;
+                    return false;
                 }
             }
         }
 
         // External icons, or non monologo, do not filter.
-        this.addBrandedClass.set(true);
+        return true;
     }
 
     /**
-     * Set icon.
+     * Get icon to load on error.
      *
-     * @param modicon Mod icon to use.
+     * @returns Icon URL.
      */
-    async setIcon(modicon?: string): Promise<void> {
-        this.iconUrl.update(value => modicon || value);
-
-        if (!this.iconUrl()) {
-            this.loadFallbackIcon();
-            this.setBrandedClass();
-
-            return;
-        }
-
-        this.isLocalUrl.set(this.iconUrl().startsWith(assetsPath));
-
-        // Cache icon if the url is not the theme generic one.
-        // If modname is not set icon won't be cached.
-        // Also if the url matches the regexp (the theme will manage the image so it's not cached).
-        this.linkIconWithComponent.set(
-            !!this.computedModName() &&
-            !!this.componentId() &&
-            !this.isLocalUrl() &&
-            this.getComponentNameFromIconUrl(this.iconUrl()) !== this.computedModName(),
-        );
-
-        this.setBrandedClass();
-    }
-
-    /**
-     * Icon to load on error.
-     */
-    async loadFallbackIcon(): Promise<void> {
-        if (this.isLocalUrl()) {
-            return;
-        }
-
-        this.isLocalUrl.set(true);
-        this.linkIconWithComponent.set(false);
-
+    getFallbackIcon(): string {
         const moduleName = !this.computedModName() || !CoreCourseModuleHelper.isCoreModule(this.computedModName())
             ? fallbackModName
             : this.computedModName();
 
         const path = CoreCourseModuleHelper.getModuleIconsPath();
 
-        this.iconUrl.set(`${path + moduleName  }.svg`);
+        return `${path + moduleName}.svg`;
+    }
+
+    /**
+     * Load fallback icon.
+     */
+    loadFallbackIcon(): void {
+        this.iconUrl.set(this.getFallbackIcon());
     }
 
     /**
