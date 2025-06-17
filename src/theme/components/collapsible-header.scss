@@ -118,3 +118,11 @@ body:not(.core-iframe-fullscreen):not(.core-reading-mode-enabled) .collapsible-h
     }
 
 }
+
+body.core-reading-mode-enabled .collapsible-header-page {
+    .collapsible-header-original-title {
+        pointer-events: none;
+        user-select: none;
+        visibility: hidden;
+    }
+}

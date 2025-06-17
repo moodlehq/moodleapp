@@ -33,6 +33,9 @@ import {
 @Injectable({ providedIn: 'root' })
 export class CoreViewerService {
 
+    protected readingModeEnabledOnEnter = false;
+    protected readingModeInstancesCounter = 0;
+
     /**
      * View an image in a modal.
      *
@@ -146,6 +149,54 @@ export class CoreViewerService {
         await CoreConfig.setJSON(CORE_READING_MODE_SETTINGS, settings);
 
         this.applyReadingModeSettings(settings);
+    }
+
+    /**
+     * Set whether reading mode was enabled on enter.
+     *
+     * @param enabled Whether reading mode was enabled on enter.
+     */
+    setReadingModeEnabledOnEnter(enabled: boolean): void {
+        this.readingModeEnabledOnEnter = enabled;
+    }
+
+    /**
+     * Increase the reading mode counter.
+     * This should be only called by the reading mode directive.
+     */
+    increaseReadingModeCounter(): void {
+        this.readingModeInstancesCounter++;
+    }
+
+    /**
+     * Decrease the reading mode counter.
+     * If the counter goes below 0, it will be set to 0.
+     * This should be only called by the reading mode directive.
+     */
+    decreaseReadingModeCounter(): void {
+        this.readingModeInstancesCounter--;
+
+        if (this.readingModeInstancesCounter < 0) {
+            this.readingModeInstancesCounter = 0;
+        }
+    }
+
+    /**
+     * Check if reading mode was enabled on enter.
+     *
+     * @returns Whether reading mode was enabled on enter.
+     */
+    isReadingModeEnabledOnEnter(): boolean {
+        return this.readingModeEnabledOnEnter;
+    }
+
+    /**
+     * Check if reading mode is enabled.
+     *
+     * @returns Whether reading mode is enabled.
+     */
+    isReadingModeEnabled(): boolean {
+        return this.readingModeEnabledOnEnter && this.readingModeInstancesCounter > 0;
     }
 
 }
