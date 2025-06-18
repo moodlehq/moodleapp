@@ -153,7 +153,7 @@ export class CoreEditorClassicEditorComponent extends CoreEditorBaseComponent im
         this.textareaElement = await this.textarea?.getInputElement();
 
         // Use paragraph on enter.
-        // eslint-disable-next-line deprecation/deprecation
+        // eslint-disable-next-line @typescript-eslint/no-deprecated
         document.execCommand('DefaultParagraphSeparator', false, 'p');
 
         document.addEventListener('selectionchange', this.selectionChangeFunction);
@@ -322,7 +322,7 @@ export class CoreEditorClassicEditorComponent extends CoreEditorBaseComponent im
      */
     protected executeCommand({ name: command, parameters }: EditorCommand): void {
         if (parameters === 'block') {
-            // eslint-disable-next-line deprecation/deprecation
+            // eslint-disable-next-line @typescript-eslint/no-deprecated
             document.execCommand('formatBlock', false, '<' + command + '>');
 
             return;
@@ -332,7 +332,7 @@ export class CoreEditorClassicEditorComponent extends CoreEditorBaseComponent im
             this.toolbarStyles[parameters] = this.toolbarStyles[parameters] == 'true' ? 'false' : 'true';
         }
 
-        // eslint-disable-next-line deprecation/deprecation
+        // eslint-disable-next-line @typescript-eslint/no-deprecated
         document.execCommand(command, false);
     }
 
@@ -561,7 +561,7 @@ export class CoreEditorClassicEditorComponent extends CoreEditorBaseComponent im
 
         if (text) {
             this.focusRTE(event); // Make sure the editor is focused.
-            // eslint-disable-next-line deprecation/deprecation
+            // eslint-disable-next-line @typescript-eslint/no-deprecated
             document.execCommand('insertText', false, text);
         }
     }

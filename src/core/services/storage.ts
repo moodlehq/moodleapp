@@ -77,7 +77,7 @@ export class CoreStorageService {
             const { value } = await this.table.getOneByPrimaryKey({ key });
 
             return JSON.parse(value);
-        } catch (error) {
+        } catch {
             return defaultValue;
         }
     }
@@ -97,7 +97,7 @@ export class CoreStorageService {
             const { value } = await db.getRecord<CoreStorageRecord>(TABLE_NAME, { key });
 
             return JSON.parse(value);
-        } catch (error) {
+        } catch {
             return defaultValue;
         }
     }

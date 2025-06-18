@@ -198,7 +198,7 @@ export class CoreIframeUtilsProvider {
 /**
  * @deprecated since 5.0. Use CoreIframe instead.
  */
-// eslint-disable-next-line deprecation/deprecation
+// eslint-disable-next-line @typescript-eslint/no-deprecated
 export const CoreIframeUtils = makeSingleton(CoreIframeUtilsProvider);
 
 /**

@@ -46,13 +46,13 @@ export class ClipboardMock extends Clipboard {
             this.copyTextarea.select();
 
             try {
-                // eslint-disable-next-line deprecation/deprecation
+                // eslint-disable-next-line @typescript-eslint/no-deprecated
                 if (document.execCommand('copy')) {
                     resolve();
                 } else {
                     reject();
                 }
-            } catch (err) {
+            } catch {
                 reject();
             }
 
@@ -72,13 +72,13 @@ export class ClipboardMock extends Clipboard {
             this.copyTextarea.select();
 
             try {
-                // eslint-disable-next-line deprecation/deprecation
+                // eslint-disable-next-line @typescript-eslint/no-deprecated
                 if (document.execCommand('paste')) {
                     resolve(this.copyTextarea.innerHTML);
                 } else {
                     reject();
                 }
-            } catch (err) {
+            } catch {
                 reject();
             }
 

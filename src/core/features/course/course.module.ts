@@ -126,7 +126,7 @@ export async function getCourseExportedDirectives(): Promise<Type<unknown>[]> {
 
     const { CoreCourseDownloadModuleMainFileDirective } = await import('@features/course/directives/download-module-main-file');
 
-    // eslint-disable-next-line deprecation/deprecation
+    // eslint-disable-next-line @typescript-eslint/no-deprecated
     const { CoreCourseModuleDescriptionComponent } =
         await import('@features/course/components/module-description/module-description');
 

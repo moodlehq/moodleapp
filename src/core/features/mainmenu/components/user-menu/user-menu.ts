@@ -192,7 +192,7 @@ export class CoreMainMenuUserMenuComponent implements OnInit, OnDestroy {
 
             try {
                 await CoreAlerts.confirmDelete(Translate.instant('core.login.confirmdeletesite', { sitename: siteName }));
-            } catch (error) {
+            } catch {
                 // User cancelled, stop.
                 return;
             }

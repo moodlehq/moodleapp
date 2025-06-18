@@ -363,7 +363,7 @@ export default class AddonModForumNewDiscussionPage implements OnInit, OnDestroy
         // We first check if the user can post to all the groups.
         try {
             response = await AddonModForum.canAddDiscussionToAll(this.forumId, { cmId: this.cmId });
-        } catch (error) {
+        } catch {
             // The call failed, let's assume he can't.
             response = {
                 status: false,
@@ -631,7 +631,7 @@ export default class AddonModForumNewDiscussionPage implements OnInit, OnDestroy
             CoreForms.triggerFormCancelledEvent(this.formElement, CoreSites.getCurrentSiteId());
 
             this.returnToDiscussions();
-        } catch (error) {
+        } catch {
             // Cancelled.
         }
     }

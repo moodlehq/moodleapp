@@ -416,7 +416,7 @@ export class AddonModH5PActivityIndexComponent extends CoreCourseModuleMainActiv
         try {
             // Confirm the download if needed.
             await CoreAlerts.confirmDownloadSize({ size: this.deployedFile.filesize || 0, total: true });
-        } catch (error) {
+        } catch {
             return;
         }
 

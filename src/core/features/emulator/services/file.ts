@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-/* eslint-disable deprecation/deprecation */
+/* eslint-disable @typescript-eslint/no-deprecated */
 
 import { Injectable } from '@angular/core';
 import {
@@ -314,7 +314,7 @@ export class FileMock extends File {
     private fillErrorMessageMock(error: FileError): void {
         try {
             error.message = this.cordovaFileError[error.code];
-        } catch (e) {
+        } catch {
             // Ignore errors.
         }
     }

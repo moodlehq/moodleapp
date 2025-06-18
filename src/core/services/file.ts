@@ -568,6 +568,7 @@ export class CoreFileProvider {
                     reader.readAsDataURL(fileData);
                     break;
                 case CoreFileFormat.FORMATBINARYSTRING:
+                    // eslint-disable-next-line @typescript-eslint/no-deprecated
                     reader.readAsBinaryString(fileData);
                     break;
                 case CoreFileFormat.FORMATARRAYBUFFER:
@@ -1119,7 +1120,7 @@ export class CoreFileProvider {
             }
 
             return this.calculateUniqueName(files, fileNameWithoutExtension + extension);
-        } catch (error) {
+        } catch {
             // Folder doesn't exist, name is unique. Clean it and return it.
             return CoreText.removeSpecialCharactersForFiles(CoreUrl.decodeURIComponent(fileName));
         }

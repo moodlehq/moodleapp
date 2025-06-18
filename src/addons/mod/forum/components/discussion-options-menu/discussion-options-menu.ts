@@ -56,7 +56,7 @@ export class AddonModForumDiscussionOptionsMenuComponent implements OnInit {
             const response = await AddonModForum.canAddDiscussionToAll(this.forumId, { cmId: this.cmId });
 
             this.canPin = !!response.canpindiscussions;
-        } catch (error) {
+        } catch {
             this.canPin = false;
         }
     }

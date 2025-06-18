@@ -365,7 +365,7 @@ export default class AddonModForumDiscussionPage implements OnInit, AfterViewIni
             const value = await CoreSites.getRequiredCurrentSite().getLocalSiteConfig<SortType>('AddonModForumDiscussionSort');
 
             return value;
-        } catch (error) {
+        } catch {
             try {
                 const value = await CoreUser.getUserPreference('forum_displaymode');
 
@@ -567,7 +567,7 @@ export default class AddonModForumDiscussionPage implements OnInit, AfterViewIni
                     const response = await AddonModForum.canAddDiscussionToAll(this.forumId, { cmId: this.cmId });
 
                     this.canPin = !!response.canpindiscussions;
-                } catch (error) {
+                } catch {
                     this.canPin = false;
                 }
             } else {

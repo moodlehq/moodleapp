@@ -180,7 +180,7 @@ export class CoreH5PIframeComponent implements OnChanges, OnDestroy {
             );
 
             return url;
-        } catch (error) {
+        } catch {
             // Index file doesn't exist, probably deleted because a lib was updated. Try to create it again.
             try {
                 const path = await CoreFilepool.getInternalUrlByUrl(this.siteId, this.fileUrl!);

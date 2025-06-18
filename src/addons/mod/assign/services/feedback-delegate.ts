@@ -196,7 +196,6 @@ export interface AddonModAssignFeedbackHandler extends CoreDelegateHandler {
      * @param submitId The submission ID.
      * @param feedback The feedback.
      * @param plugin The plugin object.
-     * @param plugin The plugin object.
      * @returns Whether the submission can contain filters.
      */
     canContainFiltersWhenEditing?(

@@ -69,7 +69,7 @@ export class CoreTimerComponent implements OnInit, OnDestroy {
      * @inheritdoc
      */
     async ngOnInit(): Promise<void> {
-        // eslint-disable-next-line deprecation/deprecation
+        // eslint-disable-next-line @typescript-eslint/no-deprecated
         if (this.hiddable && !this.hidable) {
 
             this.hidable = true;

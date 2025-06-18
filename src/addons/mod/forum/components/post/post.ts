@@ -201,7 +201,7 @@ export class AddonModForumPostComponent implements OnInit, OnDestroy, OnChanges 
             } finally {
                 modal.dismiss();
             }
-        } catch (error) {
+        } catch {
             // Do nothing.
         }
     }
@@ -592,7 +592,7 @@ export class AddonModForumPostComponent implements OnInit, OnDestroy, OnChanges 
             CoreForms.triggerFormCancelledEvent(this.formElement, CoreSites.getCurrentSiteId());
 
             this.unblockOperation();
-        } catch (error) {
+        } catch {
             // Cancelled.
         }
     }

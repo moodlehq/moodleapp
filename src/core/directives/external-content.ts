@@ -159,19 +159,19 @@ export class CoreExternalContentDirective implements AfterViewInit, OnChanges, O
 
         if (tagName === 'A' || tagName == 'IMAGE') {
             targetAttr = 'href';
-            url = this.url ?? this.href ?? ''; // eslint-disable-line deprecation/deprecation
+            url = this.url ?? this.href ?? ''; // eslint-disable-line @typescript-eslint/no-deprecated
 
         } else if (tagName === 'IMG') {
             targetAttr = 'src';
-            url = this.url ?? this.src ?? ''; // eslint-disable-line deprecation/deprecation
+            url = this.url ?? this.src ?? ''; // eslint-disable-line @typescript-eslint/no-deprecated
 
         } else if (tagName === 'AUDIO' || tagName === 'VIDEO' || tagName === 'SOURCE' || tagName === 'TRACK') {
             targetAttr = 'src';
-            url = this.url ?? this.src ?? ''; // eslint-disable-line deprecation/deprecation
+            url = this.url ?? this.src ?? ''; // eslint-disable-line @typescript-eslint/no-deprecated
 
-            if (tagName === 'VIDEO' && (this.posterUrl || this.poster)) { // eslint-disable-line deprecation/deprecation
+            if (tagName === 'VIDEO' && (this.posterUrl || this.poster)) { // eslint-disable-line @typescript-eslint/no-deprecated
                 // Handle poster.
-                // eslint-disable-next-line deprecation/deprecation
+                // eslint-disable-next-line @typescript-eslint/no-deprecated
                 this.handleExternalContent('poster', this.posterUrl ?? this.poster ?? '').catch(() => {
                     // Ignore errors.
                 });
@@ -186,7 +186,7 @@ export class CoreExternalContentDirective implements AfterViewInit, OnChanges, O
 
         try {
             await this.handleExternalContent(targetAttr, url);
-        } catch (error) {
+        } catch {
             // Error handling content. Make sure the original URL is set.
            this.setElementUrl(targetAttr, url);
         } finally {
@@ -264,8 +264,8 @@ export class CoreExternalContentDirective implements AfterViewInit, OnChanges, O
             this.element.setAttribute(targetAttr, url);
 
             const originalUrl = targetAttr === 'poster' ?
-                (this.posterUrl ?? this.poster) : // eslint-disable-line deprecation/deprecation
-                (this.url ?? this.src ?? this.href); // eslint-disable-line deprecation/deprecation
+                (this.posterUrl ?? this.poster) : // eslint-disable-line @typescript-eslint/no-deprecated
+                (this.url ?? this.src ?? this.href); // eslint-disable-line @typescript-eslint/no-deprecated
             if (originalUrl && originalUrl !== url) {
                 this.element.setAttribute(`data-original-${targetAttr}`, originalUrl);
             }
@@ -317,7 +317,7 @@ export class CoreExternalContentDirective implements AfterViewInit, OnChanges, O
             await CorePromiseUtils.allPromises(promises);
 
             this.element.setAttribute('style', inlineStyles);
-        } catch (error) {
+        } catch {
             this.logger.error('Error treating inline styles.', this.element);
         }
     }

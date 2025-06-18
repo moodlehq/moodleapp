@@ -84,7 +84,7 @@ export default class CoreLoginSitesPage implements OnInit {
 
         try {
             await CoreAlerts.confirmDelete(Translate.instant('core.login.confirmdeletesite', { sitename: siteName }));
-        } catch (error) {
+        } catch {
             // User cancelled, stop.
             return;
         }

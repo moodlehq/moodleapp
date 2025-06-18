@@ -325,5 +325,5 @@ export class CoreMimetypeUtilsProvider {
 /**
  * @deprecated since 5.0. Use CoreMimetype instead.
  */
-// eslint-disable-next-line deprecation/deprecation
+// eslint-disable-next-line @typescript-eslint/no-deprecated
 export const CoreMimetypeUtils = makeSingleton(CoreMimetypeUtilsProvider);

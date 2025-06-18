@@ -136,7 +136,7 @@ export function makeSingleton<Service extends object = object>(
             }
 
             // @todo Check type to avoid deprecation.
-            // eslint-disable-next-line deprecation/deprecation
+            // eslint-disable-next-line @typescript-eslint/no-deprecated
             const instance = injector.get(injectionToken);
 
             singleton.setInstance(instance);

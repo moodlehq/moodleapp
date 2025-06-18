@@ -186,7 +186,7 @@ export default class AddonModQuizPlayerPage implements OnInit, OnDestroy, CanLea
             await this.processAttempt(false, false);
 
             modal.dismissWithStatus('core.sent', true);
-        } catch (error) {
+        } catch {
             // Save attempt failed. Show confirmation.
             modal.dismiss();
 
