@@ -110,6 +110,17 @@ div.core-iframe-network-error {
     }
 }
 
+:root.dark {
+    ion-alert.core-alert-network-error .alert-head,
+    div.core-iframe-network-error {
+        filter: invert(1);
+
+        &::after {
+            filter: invert(1); // Invert the color because it's inverted by the filter above.
+        }
+    }
+}
+
 [dir=rtl] ion-alert.core-alert-network-error .alert-head::after,
 [dir=rtl] div.core-iframe-network-error::after {
     right: unset;
