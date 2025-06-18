@@ -1,19 +1,21 @@
+@use "sass:list";
+
 @mixin box-shadow($shadow...) {
   @if $enable-shadows {
     $result: ();
 
-    @if (length($shadow) == 1) {
+    @if (list.length($shadow) == 1) {
       // We can pass `@include box-shadow(none);`
       $result: $shadow;
     } @else {
       // Filter to avoid invalid properties for example `box-shadow: none, 1px 1px black;`
-      @for $i from 1 through length($shadow) {
-        @if nth($shadow, $i) != "none" {
-          $result: append($result, nth($shadow, $i), "comma");
+      @for $i from 1 through list.length($shadow) {
+        @if list.nth($shadow, $i) != "none" {
+          $result: list.append($result, list.nth($shadow, $i), "comma");
         }
       }
     }
-    @if (length($result) > 0) {
+    @if (list.length($result) > 0) {
       box-shadow: $result;
     }
   }

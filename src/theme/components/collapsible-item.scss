@@ -21,12 +21,11 @@
             position: relative;
             padding-bottom: var(--toggle-size); // So the Show less button can fit.
             --display-toggle: block;
-            @include core-transition(height, 300ms);
             height: calc(var(--collapsible-height, auto) + var(--toggle-size));
+            @include core-transition(height, 300ms);
 
             .collapsible-toggle {
                 position: absolute;
-                @include position (null, 0, 0, null);
                 text-align: center;
                 z-index: 7;
                 text-transform: none;
@@ -42,6 +41,7 @@
                 --padding-start: 0px;
                 --padding-end: 0px;
                 margin: 0px;
+                @include position (null, 0, 0, null);
 
                 .collapsible-toggle-arrow {
                     width: var(--toggle-size);
@@ -75,9 +75,9 @@
                     content: '';
                     height: 100%;
                     position: absolute;
-                    @include position(null, 0, 0, 0);
                     background: linear-gradient(to bottom, rgba(var(--background-gradient-rgb), 0) calc(100% - var(--gradient-size)), rgba(var(--background-gradient-rgb), 1) calc(100% - 4px));
                     z-index: 6;
+                    @include position(null, 0, 0, 0);
                 }
             }
         }
