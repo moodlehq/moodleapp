@@ -247,7 +247,7 @@ export default class CorePolicyAcceptancesPage implements OnInit, OnDestroy {
             }
 
             policy.acceptance = newPolicy.acceptance;
-        } catch (error) {
+        } catch {
             // Error updating the acceptance, calculate it in the app.
             policy.acceptance = {
                 status: accepted ? 1 : 0,

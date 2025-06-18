@@ -516,7 +516,7 @@ export class CoreDomUtilsProvider {
         needsTranslate?: boolean,
         autoCloseTime?: number,
     ): Promise<HTMLIonAlertElement | null> {
-        // eslint-disable-next-line deprecation/deprecation
+        // eslint-disable-next-line @typescript-eslint/no-deprecated
         return this.showErrorModalDefault(warnings?.[0], defaultError, needsTranslate, autoCloseTime);
     }
 
@@ -845,5 +845,5 @@ export class CoreDomUtilsProvider {
 /**
  * @deprecated since 4.5. Use CoreDom instead.
  */
-// eslint-disable-next-line deprecation/deprecation
+// eslint-disable-next-line @typescript-eslint/no-deprecated
 export const CoreDomUtils = makeSingleton(CoreDomUtilsProvider);

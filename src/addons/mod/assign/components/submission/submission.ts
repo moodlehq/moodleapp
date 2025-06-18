@@ -573,7 +573,7 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy {
                 (submission.submissionstatement === undefined || submission.submissionstatement === null);
             this.editedOffline = submission && !this.removedOffline;
             this.submittedOffline = !!submission?.submitted && !this.removedOffline;
-        } catch (error) {
+        } catch {
             // No offline data found.
             this.editedOffline = false;
             this.submittedOffline = false;

@@ -181,7 +181,7 @@ export default class CoreSearchGlobalSearchPage implements OnInit, OnDestroy, Af
     async loadMoreResults(complete: () => void ): Promise<void> {
         try {
             await this.resultsSource?.load();
-        } catch (error) {
+        } catch {
             this.loadMoreError = true;
         } finally {
             complete();

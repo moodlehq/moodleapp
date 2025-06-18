@@ -291,7 +291,7 @@ export class CoreCourseModulePrefetchDelegateService extends CoreDelegate<CoreCo
             CorePromiseUtils.ignoreErrors(site.getDb().insertRecord(CHECK_UPDATES_TIMES_TABLE, entry));
 
             return this.treatCheckUpdatesResult(data.toCheck, response, result);
-        } catch (error) {
+        } catch {
             // Cannot get updates.
             // Get cached entries but discard modules with a download time higher than the last execution of check updates.
             let entry: CoreCourseCheckUpdatesDBRecord | undefined;

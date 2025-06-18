@@ -42,7 +42,7 @@ export interface AddonModDataFieldHandler extends CoreDelegateHandler {
      * Return the Component to use to display the plugin data.
      * It's recommended to return the class of the component, but you can also return an instance of the component.
      *
-     * @param field The field object.
+     * @param plugin The field plugin object.
      * @returns The component to use, undefined if not found.
      */
     getComponent?(plugin: AddonModDataField): Promise<Type<AddonModDataFieldPluginBaseComponent> | undefined>;

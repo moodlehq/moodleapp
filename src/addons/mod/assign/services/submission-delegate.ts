@@ -335,10 +335,10 @@ export class AddonModAssignSubmissionDelegateService extends CoreDelegate<AddonM
     ): Promise<boolean | undefined> {
         const handler = this.getHandler(plugin.type);
 
-        // eslint-disable-next-line deprecation/deprecation
+        // eslint-disable-next-line @typescript-eslint/no-deprecated
         if (handler && !handler.canContainFiltersWhenEditing && handler.canEditOffline) {
             // Plugin implements the old callback but not the new one. Use the old one.
-            // eslint-disable-next-line deprecation/deprecation
+            // eslint-disable-next-line @typescript-eslint/no-deprecated
             const canEditOffline = await handler.canEditOffline(assign, submission, plugin);
 
             // If cannot edit offline, assume it can contain filters.

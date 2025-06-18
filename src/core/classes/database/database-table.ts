@@ -238,7 +238,7 @@ export class CoreDatabaseTable<
             await this.getOneByPrimaryKey(primaryKey);
 
             return true;
-        } catch (error) {
+        } catch {
             // Couldn't get the record.
             return false;
         }
@@ -426,6 +426,7 @@ export class CoreDatabaseTable<
 /**
  * Database configuration.
  */
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export interface CoreDatabaseConfiguration {
     // This definition is augmented in subclasses.
 }

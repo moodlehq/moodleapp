@@ -218,7 +218,7 @@ export class CoreSharedFilesProvider {
         try {
             // Check if it's already marked.
             await this.isFileTreated(fileId);
-        } catch (err) {
+        } catch {
             // Doesn't exist, insert it.
             await this.sharedFilesTable.insert({ id: fileId });
         }

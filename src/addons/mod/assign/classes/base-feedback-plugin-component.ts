@@ -47,7 +47,7 @@ export class AddonModAssignFeedbackPluginBaseComponent implements IAddonModAssig
             throw new CoreError('Cannot edit feedback');
         }
 
-        // eslint-disable-next-line deprecation/deprecation
+        // eslint-disable-next-line @typescript-eslint/no-deprecated
         const { AddonModAssignEditPluginFeedbackModalComponent } =
             await import('@addons/mod/assign/components/edit-feedback-plugin-modal/edit-feedback-plugin-modal');
 

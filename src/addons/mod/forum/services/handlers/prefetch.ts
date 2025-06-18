@@ -54,7 +54,7 @@ export class AddonModForumPrefetchHandlerService extends CoreCourseActivityPrefe
             files = files.concat(this.getPostsFiles(posts));
 
             return files;
-        } catch (error) {
+        } catch {
             // Forum not found, return empty list.
             return [];
         }

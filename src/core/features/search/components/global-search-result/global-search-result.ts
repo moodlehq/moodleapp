@@ -49,7 +49,7 @@ export class CoreSearchGlobalSearchResultComponent implements OnChanges {
      * @returns Rendered context.
      */
     private computeRenderedContext(): CoreSearchGlobalSearchResultContext | null {
-        const context = { ...this.result.context } ?? {};
+        const context = { ...this.result.context };
 
         if (!this.showCourse) {
             delete context.courseName;

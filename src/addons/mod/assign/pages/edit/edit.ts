@@ -392,7 +392,7 @@ export default class AddonModAssignEditPage implements OnInit, OnDestroy, CanLea
         // Get size to ask for confirmation.
         try {
             size = await AddonModAssignHelper.getSubmissionSizeForEdit(this.assign!, this.userSubmission!, inputData);
-        } catch (error) {
+        } catch {
             // Error calculating size, return -1.
             size = -1;
         }

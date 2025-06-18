@@ -339,8 +339,8 @@ export class CoreCompileProvider {
         /**
          * @deprecated since 5.0, geolocation is deprecated and will be removed in future versions.
          */
-        instance['CoreGeolocationError'] = CoreGeolocationError; // eslint-disable-line deprecation/deprecation
-        instance['CoreGeolocationErrorReason'] = CoreGeolocationErrorReason; // eslint-disable-line deprecation/deprecation
+        instance['CoreGeolocationError'] = CoreGeolocationError; // eslint-disable-line @typescript-eslint/no-deprecated
+        instance['CoreGeolocationErrorReason'] = CoreGeolocationErrorReason; // eslint-disable-line @typescript-eslint/no-deprecated
 
         // Inject exported objects.
         for (const name in this.exportedObjects) {

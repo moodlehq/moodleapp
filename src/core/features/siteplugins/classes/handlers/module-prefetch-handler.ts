@@ -43,7 +43,7 @@ export class CoreSitePluginsModulePrefetchHandler extends CoreCourseActivityPref
         if (handlerSchema.updatesnames) {
             try {
                 this.updatesNames = new RegExp(handlerSchema.updatesnames);
-            } catch (ex) {
+            } catch {
                 // Ignore errors.
             }
         }

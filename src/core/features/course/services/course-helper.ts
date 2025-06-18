@@ -803,7 +803,7 @@ export class CoreCourseHelperProvider {
             try {
                 // Get the local file URL.
                 path = await CoreFilepool.getInternalUrlByUrl(siteId, mainFile.fileurl);
-            } catch (error){
+            } catch {
                 // File not found, mark the module as not downloaded.
                 await CoreFilepool.storePackageStatus(siteId, DownloadStatus.DOWNLOADABLE_NOT_DOWNLOADED, component, componentId);
             }

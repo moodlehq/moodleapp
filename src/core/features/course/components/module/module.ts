@@ -198,7 +198,6 @@ export class CoreCourseModuleComponent implements OnInit, OnDestroy {
      * @param event Click event.
      */
     buttonClicked(event: Event): void {
-        // eslint-disable-next-line deprecation/deprecation
         const button = this.module.handlerData?.button;
         if (!button || !button.action) {
             return;

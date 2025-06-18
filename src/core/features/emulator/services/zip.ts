@@ -114,7 +114,7 @@ export class ZipMock extends Zip {
             }));
 
             return 0;
-        } catch (error) {
+        } catch {
             // Error.
             return -1;
         }

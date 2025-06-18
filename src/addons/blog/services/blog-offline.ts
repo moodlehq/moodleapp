@@ -170,7 +170,7 @@ export class AddonBlogOfflineService {
             const folderPath = await AddonBlogOffline.getOfflineEntryFilesFolderPath(folderName, siteId);
 
             return await CoreFileUploader.getStoredFiles(folderPath);
-        } catch (error) {
+        } catch {
             return [];
         }
     }

@@ -160,7 +160,7 @@ export default class AddonModForumSearchPage implements OnInit {
     async loadMoreResults(complete: () => void ): Promise<void> {
         try {
             await this.resultsSource?.load();
-        } catch (error) {
+        } catch {
             this.loadMoreError = true;
         } finally {
             complete();

@@ -372,7 +372,7 @@ export class CoreEditorRichTextEditorComponent implements AfterViewInit, OnDestr
                         this.elementId || '',
                         this.draftExtraParams || {},
                     );
-                } catch (error) {
+                } catch {
                     // Error deleting draft. Shouldn't happen.
                 }
             }

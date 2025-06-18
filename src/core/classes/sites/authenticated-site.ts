@@ -1029,7 +1029,7 @@ export class CoreAuthenticatedSite extends CoreUnauthenticatedSite {
                 CoreErrorLogs.addErrorLog({
                     method: request.method,
                     type: 'CoreSiteError',
-                    message: String(error) ?? '',
+                    message: String(error),
                     time: new Date().getTime(),
                     data: request.data,
                 });

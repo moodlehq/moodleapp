@@ -50,7 +50,7 @@ export async function getNativeServices(): Promise<Type<unknown>[]> {
         Device,
         File,
         FileOpener,
-        Geolocation, // eslint-disable-line deprecation/deprecation
+        Geolocation, // eslint-disable-line @typescript-eslint/no-deprecated
         HTTP,
         InAppBrowser,
         Keyboard,
@@ -76,7 +76,7 @@ export async function getNativeServices(): Promise<Type<unknown>[]> {
         Device,
         File,
         FileOpener,
-        Geolocation, // eslint-disable-line deprecation/deprecation
+        Geolocation, // eslint-disable-line @typescript-eslint/no-deprecated
         HTTP,
         InAppBrowser,
         Keyboard,
