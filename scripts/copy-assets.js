@@ -23,6 +23,7 @@ const ASSETS = {
     '/node_modules/mathjax/es5/input/mml/extensions': '/lib/mathjax/input/mml/extensions',
     '/node_modules/mathjax/es5/input/tex/extensions': '/lib/mathjax/input/tex/extensions',
     '/node_modules/mathjax/es5/output/chtml/fonts/woff-v2': '/lib/mathjax/output/chtml/fonts/woff-v2',
+    '/node_modules/mathjax/es5/ui/safe.js': '/lib/mathjax/ui/safe.js',
     '/node_modules/mp3-mediarecorder/dist/vmsg.wasm': '/lib/vmsg/vmsg.wasm',
     '/src/core/features/h5p/assets': '/lib/h5p',
     '/node_modules/ogv/dist': '/lib/ogv',
