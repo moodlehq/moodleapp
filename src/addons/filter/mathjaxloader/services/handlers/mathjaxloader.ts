@@ -21,7 +21,6 @@ import { CoreText } from '@singletons/text';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreSite } from '@classes/sites/site';
 import { makeSingleton } from '@singletons';
-import { CoreWait } from '@singletons/wait';
 import { CoreDom } from '@singletons/dom';
 import { CoreLogger } from '@singletons/logger';
 
@@ -40,9 +39,11 @@ export class AddonFilterMathJaxLoaderHandlerService extends CoreFilterDefaultHan
     /**
      * Initialize MathJax.
      */
-    initialize(): void {
+    async initialize(): Promise<void> {
         if (document.head.querySelector('#core-filter-mathjax-script')) {
             // Script already added, don't add it again.
+            await this.window.MathJax?.startup.promise;
+
             return;
         }
 
@@ -58,12 +59,26 @@ export class AddonFilterMathJaxLoaderHandlerService extends CoreFilterDefaultHan
         };
 
         // Add the script to the header.
-        const script = document.createElement('script');
-        script.id = 'core-filter-mathjax-script';
-        script.src = 'assets/lib/mathjax/tex-mml-chtml.js';
-        document.head.appendChild(script);
+        await this.loadMathJax();
+
+        await this.window.MathJax?.startup.promise;
 
         // @todo: Once MathJax supports locale, set current language and listen for CoreEvents.LANGUAGE_CHANGED events.
+    }
+
+    /**
+     * Load the MathJax script.
+     */
+    protected loadMathJax(): Promise<void> {
+        return new Promise((resolve, reject) => {
+            const script = document.createElement('script');
+            script.onload = () => resolve();
+            script.onerror = (error) => reject(error);
+            script.id = 'core-filter-mathjax-script';
+            script.src = 'assets/lib/mathjax/tex-mml-chtml.js';
+            script.type = 'text/javascript';
+            document.head.appendChild(script);
+        });
     }
 
     /**
@@ -152,8 +167,7 @@ export class AddonFilterMathJaxLoaderHandlerService extends CoreFilterDefaultHan
             return;
         }
 
-        this.initialize();
-        await this.waitForReady();
+        await this.initialize();
 
         await Promise.all(equations.map((node) => this.typesetNode(node)));
     }
@@ -181,22 +195,6 @@ export class AddonFilterMathJaxLoaderHandlerService extends CoreFilterDefaultHan
             // the app, but they work in LMS. Please see the comments in MOBILE-4769 for more details.
             this.logger.error(error);
         }
-    }
-
-    /**
-     * Wait for the MathJax library and our JS object to be loaded.
-     *
-     * @param retries Number of times this has been retried.
-     * @returns Promise resolved when ready or if it took too long to load.
-     */
-    protected async waitForReady(retries: number = 0): Promise<void> {
-        if (this.window.MathJax?.typesetPromise || retries >= 25) {
-            // Loaded or too many retries, stop.
-            return;
-        }
-
-        await CoreWait.wait(20 + 10 * retries);
-        await CorePromiseUtils.ignoreErrors(this.waitForReady(retries + 1));
     }
 
     /**
