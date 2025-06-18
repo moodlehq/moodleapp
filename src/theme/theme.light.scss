@@ -4,6 +4,7 @@
  * Ionic Variables and Theming. For more info, please see:
  * http://ionicframework.com/docs/theming/
  */
+@use "sass:list";
 
 :root {
 
@@ -217,14 +218,14 @@
     --core-table-even-cell-hover: var(--light);
     --core-table-border-color: var(--stroke);
 
-    @for $i from 0 to length($core-course-image-background) {
-        --core-course-color-#{$i}: #{nth($core-course-image-background, $i + 1)};
-        --core-course-color-#{$i}-tint: #{get-color-tint-percent(nth($core-course-image-background, $i + 1))};
+    @for $i from 0 to list.length($core-course-image-background) {
+        --core-course-color-#{$i}: #{list.nth($core-course-image-background, $i + 1)};
+        --core-course-color-#{$i}-tint: #{get-color-tint-percent(list.nth($core-course-image-background, $i + 1))};
     }
 
-    @for $i from 0 to length($core-dd-question-colors) {
-        --core-dd-question-color-#{$i + 1}: #{nth($core-dd-question-colors, $i + 1)};
-        --core-dd-question-color-#{$i + 1}-contrast: #{get_contrast_color(nth($core-dd-question-colors, $i + 1))};
+    @for $i from 0 to list.length($core-dd-question-colors) {
+        --core-dd-question-color-#{$i + 1}: #{list.nth($core-dd-question-colors, $i + 1)};
+        --core-dd-question-color-#{$i + 1}-contrast: #{get_contrast_color(list.nth($core-dd-question-colors, $i + 1))};
     }
 
     // Make activtity colours available for custom modules.

@@ -4,10 +4,11 @@
     .core-login-onboarding-step {
         padding: 10px 20px;
         text-align: center;
+        margin: 0 auto;
+
         @include media-breakpoint-up(md) {
             max-width: 80%;
         }
-        margin: 0 auto;
 
         p {
             margin-bottom: 10px;

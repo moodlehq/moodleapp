@@ -1,4 +1,5 @@
 @use "theme/globals" as *;
+@use "sass:list";
 
 :host {
     --thumb-height: 180px;
@@ -16,7 +17,7 @@
         z-index: -1;
         width: 100%;
 
-        @for $i from 0 to length($core-course-image-background) {
+        @for $i from 0 to list.length($core-course-image-background) {
             &.course-color-#{$i} {
                 --course-color: var(--core-course-color-#{$i});
                 --course-color-tint: var(--core-course-color-#{$i}-tint);

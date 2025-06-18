@@ -1,3 +1,5 @@
+@use "sass:map";
+
 // Framework grid generation
 //
 // Used only by Bootstrap to generate the correct number of grid classes given
@@ -12,7 +14,7 @@
     padding-left: $gutter * .5;
   }
 
-  @each $breakpoint in map-keys($breakpoints) {
+  @each $breakpoint in map.keys($breakpoints) {
     $infix: breakpoint-infix($breakpoint, $breakpoints);
 
     @if $columns > 0 {
