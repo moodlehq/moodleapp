@@ -49,12 +49,16 @@ export class AddonFilterMathJaxLoaderHandlerService extends CoreFilterDefaultHan
 
         // The MathJax configuration needs to be created before loading the MathJax script. Changing the options
         // after MathJax is initialized doesn't work (e.g. chaning window.MathJax.options or window.MathJax.config.options).
+        // @todo: Obtain mathjaxconfig from the site.
         this.window.MathJax = {
             options: {
                 enableMenu: false, // Disable right-click menu on equations.
             },
             startup: {
                 typeset: false, // Don't run typeset automatically on the whole page when MathJax is loaded.
+            },
+            loader: {
+                load: ['ui/safe'], // Prevent XSS.
             },
         };
 
