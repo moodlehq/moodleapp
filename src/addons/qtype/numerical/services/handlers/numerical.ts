@@ -238,7 +238,9 @@ export class AddonQtypeNumericalHandlerService implements CoreQuestionHandler {
         if (question.parsedSettings.unitdisplay === AddonQtypeNumericalHandlerService.UNITINPUT &&
             question.parsedSettings.unitgradingtype === AddonQtypeNumericalHandlerService.UNITGRADED &&
             !this.isValidValue(unit)) {
-                return Translate.instant('addon.qtype_numerical.invalidnumber');
+                // It would be great to return an error if the unit is required and not supplied.
+                // But in LMS this is not implemented.
+                return;
         }
 
         return;
