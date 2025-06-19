@@ -737,7 +737,11 @@ export class CoreAuthenticatedSite extends CoreUnauthenticatedSite {
 
                 if (preSets.saveToCache) {
                     // Save the error instead of deleting the cache entry so the same content is displayed in offline.
-                    this.saveToCache(method, data, error, preSets);
+                    // Create a new error object when storing, otherwise the message is not stored with CoreWSError.
+                    this.saveToCache(method, data, {
+                        ...error,
+                        message: error.message,
+                    }, preSets);
                 }
 
                 throw new CoreWSError(error);
