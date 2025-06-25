@@ -452,7 +452,7 @@ export class AddonModAssignHelperProvider {
                 submission.userfullname = participant.fullname;
                 submission.userprofileimageurl = participant.profileimageurl;
             } else {
-                submission.blindid = participant.id;
+                submission.blindid = participant.recordid ?? participant.id;
             }
 
             submission.manyGroups = !!participant.groups && participant.groups.length > 1;
