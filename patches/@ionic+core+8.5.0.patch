@@ -71,6 +71,19 @@ index c644264..175df2e 100644
      const root = helpers.getElementRoot(baseEl);
      const contentEl = root.querySelector('.popover-content');
      const referenceSizeEl = trigger || ((_a = ev === null || ev === void 0 ? void 0 : ev.detail) === null || _a === void 0 ? void 0 : _a.ionShadowTarget) || (ev === null || ev === void 0 ? void 0 : ev.target);
+diff --git a/node_modules/@ionic/core/dist/cjs/ion-select_3.cjs.entry.js b/node_modules/@ionic/core/dist/cjs/ion-select_3.cjs.entry.js
+index eccb0c4..e35156c 100644
+--- a/node_modules/@ionic/core/dist/cjs/ion-select_3.cjs.entry.js
++++ b/node_modules/@ionic/core/dist/cjs/ion-select_3.cjs.entry.js
+@@ -172,7 +172,7 @@ const Select = class {
+         const scrollSelectedIntoView = () => {
+             const indexOfSelected = this.childOpts.findIndex((o) => o.value === this.value);
+             if (indexOfSelected > -1) {
+-                const selectedItem = overlay.querySelector(`.select-interface-option:nth-child(${indexOfSelected + 1})`);
++                const selectedItem = overlay.querySelector(`.select-interface-option:nth-of-type(${indexOfSelected + 1})`);
+                 if (selectedItem) {
+                     /**
+                      * Browsers such as Firefox do not
 diff --git a/node_modules/@ionic/core/dist/collection/components/popover/animations/ios.enter.js b/node_modules/@ionic/core/dist/collection/components/popover/animations/ios.enter.js
 index 84b30ff..528af87 100644
 --- a/node_modules/@ionic/core/dist/collection/components/popover/animations/ios.enter.js
@@ -105,6 +118,19 @@ index 603923a..ff10a25 100644
      const root = getElementRoot(baseEl);
      const contentEl = root.querySelector('.popover-content');
      const referenceSizeEl = trigger || ((_a = ev === null || ev === void 0 ? void 0 : ev.detail) === null || _a === void 0 ? void 0 : _a.ionShadowTarget) || (ev === null || ev === void 0 ? void 0 : ev.target);
+diff --git a/node_modules/@ionic/core/dist/collection/components/select/select.js b/node_modules/@ionic/core/dist/collection/components/select/select.js
+index 51bc22a..68a5eb5 100644
+--- a/node_modules/@ionic/core/dist/collection/components/select/select.js
++++ b/node_modules/@ionic/core/dist/collection/components/select/select.js
+@@ -165,7 +165,7 @@ export class Select {
+         const scrollSelectedIntoView = () => {
+             const indexOfSelected = this.childOpts.findIndex((o) => o.value === this.value);
+             if (indexOfSelected > -1) {
+-                const selectedItem = overlay.querySelector(`.select-interface-option:nth-child(${indexOfSelected + 1})`);
++                const selectedItem = overlay.querySelector(`.select-interface-option:nth-of-type(${indexOfSelected + 1})`);
+                 if (selectedItem) {
+                     /**
+                      * Browsers such as Firefox do not
 diff --git a/node_modules/@ionic/core/dist/esm/input-shims-3070628a.js b/node_modules/@ionic/core/dist/esm/input-shims-3070628a.js
 index cc59b33..2c24dc3 100644
 --- a/node_modules/@ionic/core/dist/esm/input-shims-3070628a.js
@@ -182,8 +208,21 @@ index d32e60c..491c281 100644
      const root = getElementRoot(baseEl);
      const contentEl = root.querySelector('.popover-content');
      const referenceSizeEl = trigger || ((_a = ev === null || ev === void 0 ? void 0 : ev.detail) === null || _a === void 0 ? void 0 : _a.ionShadowTarget) || (ev === null || ev === void 0 ? void 0 : ev.target);
+diff --git a/node_modules/@ionic/core/dist/esm/ion-select_3.entry.js b/node_modules/@ionic/core/dist/esm/ion-select_3.entry.js
+index 1eb51c3..0b889ab 100644
+--- a/node_modules/@ionic/core/dist/esm/ion-select_3.entry.js
++++ b/node_modules/@ionic/core/dist/esm/ion-select_3.entry.js
+@@ -168,7 +168,7 @@ const Select = class {
+         const scrollSelectedIntoView = () => {
+             const indexOfSelected = this.childOpts.findIndex((o) => o.value === this.value);
+             if (indexOfSelected > -1) {
+-                const selectedItem = overlay.querySelector(`.select-interface-option:nth-child(${indexOfSelected + 1})`);
++                const selectedItem = overlay.querySelector(`.select-interface-option:nth-of-type(${indexOfSelected + 1})`);
+                 if (selectedItem) {
+                     /**
+                      * Browsers such as Firefox do not
 diff --git a/node_modules/@ionic/core/hydrate/index.js b/node_modules/@ionic/core/hydrate/index.js
-index 6de5db2..bc73a84 100644
+index 6de5db2..ff80abd 100644
 --- a/node_modules/@ionic/core/hydrate/index.js
 +++ b/node_modules/@ionic/core/hydrate/index.js
 @@ -24183,8 +24183,10 @@ const iosEnterAnimation$1 = (baseEl, opts) => {
@@ -212,3 +251,26 @@ index 6de5db2..bc73a84 100644
      const root = getElementRoot(baseEl);
      const contentEl = root.querySelector('.popover-content');
      const referenceSizeEl = trigger || ((_a = ev === null || ev === void 0 ? void 0 : ev.detail) === null || _a === void 0 ? void 0 : _a.ionShadowTarget) || (ev === null || ev === void 0 ? void 0 : ev.target);
+@@ -30118,7 +30122,8 @@ class Select {
+         const scrollSelectedIntoView = () => {
+             const indexOfSelected = this.childOpts.findIndex((o) => o.value === this.value);
+             if (indexOfSelected > -1) {
+-                const selectedItem = overlay.querySelector(`.select-interface-option:nth-child(${indexOfSelected + 1})`);
++
++                const selectedItem = overlay.querySelector(`.select-interface-option:nth-of-type(${indexOfSelected + 1})`);
+                 if (selectedItem) {
+                     /**
+                      * Browsers such as Firefox do not
+diff --git a/node_modules/@ionic/core/hydrate/index.mjs b/node_modules/@ionic/core/hydrate/index.mjs
+index 2a2b33d..65002bb 100644
+--- a/node_modules/@ionic/core/hydrate/index.mjs
++++ b/node_modules/@ionic/core/hydrate/index.mjs
+@@ -30114,7 +30114,7 @@ class Select {
+         const scrollSelectedIntoView = () => {
+             const indexOfSelected = this.childOpts.findIndex((o) => o.value === this.value);
+             if (indexOfSelected > -1) {
+-                const selectedItem = overlay.querySelector(`.select-interface-option:nth-child(${indexOfSelected + 1})`);
++                const selectedItem = overlay.querySelector(`.select-interface-option:nth-of-type(${indexOfSelected + 1})`);
+                 if (selectedItem) {
+                     /**
+                      * Browsers such as Firefox do not
