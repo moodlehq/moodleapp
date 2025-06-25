@@ -109,7 +109,7 @@
         "cordova-plugin-screen-orientation": "^3.0.4",
         "cordova-plugin-wkuserscript": "^1.0.1",
         "cordova-plugin-wkwebview-cookies": "^1.0.1",
-        "cordova-sqlite-storage": "^6.1.0",
+        "cordova-sqlite-storage": "^7.0.0",
         "core-js": "^3.41.0",
         "dayjs": "^1.11.13",
         "es6-promise-plugin": "^4.2.2",
