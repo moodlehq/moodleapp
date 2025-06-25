@@ -27,11 +27,18 @@
                 <ng-container *ngFor="let submission of submissions.items">
                     <ion-item class="ion-text-wrap" (click)="submissions.select(submission)" button
                         [attr.aria-current]="submissions.getItemAriaCurrent(submission)" [detail]="true">
-                        <core-user-avatar [user]="submission" [linkProfile]="false" slot="start" />
+                        @if (submission.userfullname) {
+                            <core-user-avatar [user]="submission" [linkProfile]="false" slot="start" />
+                        } @else {
+                            <core-user-avatar [linkProfile]="false" slot="start" />
+                        }
                         <ion-label>
-                            <p class="item-heading" *ngIf="submission.userfullname">{{submission.userfullname}}</p>
-                            <p class="item-heading" *ngIf="!submission.userfullname">
-                                {{ 'addon.mod_assign.hiddenuser' | translate }}{{submission.blindid}}
+                            <p class="item-heading">
+                                @if (submission.userfullname) {
+                                    {{submission.userfullname}}
+                                } @else {
+                                    {{ 'addon.mod_assign.hiddenuser' | translate }} {{submission.blindid}}
+                                }
                             </p>
                             <p *ngIf="assign && assign!.teamsubmission">
                                 <span *ngIf="submission.groupname" class="core-groupname">
