@@ -11,7 +11,7 @@
     "completeenrolmentbrowser": "Complete enrolment in browser",
     "courses": "Courses",
     "downloadcourses": "Download all courses",
-    "enrolme": "Enrol me",
+    "enrolme": "Enrol me in this course",
     "errorloadcategories": "An error occurred while loading categories.",
     "errorloadcourses": "An error occurred while loading courses.",
     "errorloadplugins": "The plugins required by this course could not be loaded correctly. Please reload the app to try again.",
