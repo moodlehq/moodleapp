@@ -25,6 +25,7 @@ import { AlertButton } from '@ionic/angular';
 import { CoreLang } from '@services/lang';
 import { CoreUserNullSupportConfig } from '@features/user/classes/support/null-support-config';
 import { CoreAlerts } from '@services/overlays/alerts';
+import { CoreOpener } from '@singletons/opener';
 
 /**
  * Handle site support.
@@ -40,7 +41,10 @@ export class CoreUserSupportService {
     async contact(options: CoreUserSupportContactOptions = {}): Promise<void> {
         const supportConfig = options.supportConfig ?? CoreUserAuthenticatedSupportConfig.forCurrentSite();
         const supportPageUrl = supportConfig.getSupportPageUrl();
-        const browser = await CoreSites.getCurrentSite()?.openInAppWithAutoLogin(supportPageUrl);
+        const currentSite = CoreSites.getCurrentSite();
+        const browser = await (currentSite ?
+            currentSite.openInAppWithAutoLogin(supportPageUrl) :
+            CoreOpener.openInApp(supportPageUrl));
 
         if (browser && supportPageUrl.endsWith('/user/contactsitesupport.php')) {
             this.populateSupportForm(browser, options.subject, options.message);

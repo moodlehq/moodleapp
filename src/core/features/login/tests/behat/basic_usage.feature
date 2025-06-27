@@ -185,3 +185,34 @@ Feature: Test basic usage of login in app
       | Password | student1 |
     And I press "Log in" near "Lost password?" in the app
     Then the header should be "Acceptance test site" in the app
+
+  Scenario: Exceeded login attempts
+    Given the following config values are set as admin:
+      | supportavailability | 2 |
+    When I launch the app
+    And I set the field "Your site" to "$WWWROOT" in the app
+    And I press "Connect to your site" in the app
+    And I set the following fields to these values in the app:
+      | Username | wrong       |
+      | Password | credentials |
+    And I press "Log in" near "Lost password?" in the app
+    Then I should find "Invalid login" in the app
+
+    When I press "OK" in the app
+    Then I should not find "Need help logging in?" in the app
+
+    When I press "Log in" near "Lost password?" in the app
+    And I press "OK" in the app
+    Then I should not find "Need help logging in?" in the app
+
+    When I press "Log in" near "Lost password?" in the app
+    And I press "OK" in the app
+    Then I should find "Need help logging in?" in the app
+
+    When I press "recovering your password" in the app
+    Then I should find "Forgotten password" in the app
+    And I should find "To reset your password" in the app
+
+    When I go back in the app
+    And I press "Contact support" in the app
+    Then the app should have opened a browser tab with url ".*\/user\/contactsitesupport\.php"
