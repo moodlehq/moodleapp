@@ -1,8 +1,8 @@
 {
     "app_id": "br.edu.ufr.ava",
     "appname": "AVA UFR",
-    "versioncode": 50000,
-    "versionname": "5.0.0",
+    "versioncode": 50006,
+    "versionname": "5.0.6",
     "cache_update_frequency_usually": 420000,
     "cache_update_frequency_often": 1200000,
     "cache_update_frequency_sometimes": 3600000,

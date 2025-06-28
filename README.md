@@ -11,6 +11,16 @@ This is the primary repository of source code for the official mobile app for Mo
 
 This project is tested with BrowserStack.
 
+## Troubleshooting
+
+Se você encontrar problemas durante o desenvolvimento ou build da aplicação, consulte o arquivo [TROUBLESHOOTING.md](TROUBLESHOOTING.md) que contém soluções para problemas comuns, incluindo:
+
+- Conflitos de dependências Kotlin no build Android
+- Problemas de memória durante o build
+- Configuração de requisitos do sistema
+- Comandos de limpeza de cache
+- E muito mais...
+
 License
 -------
 
