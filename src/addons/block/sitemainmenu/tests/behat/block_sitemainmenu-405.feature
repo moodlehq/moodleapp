@@ -1,4 +1,4 @@
-@addon_block_site_main_menu @app @block @block_site_main_menu @javascript @lms_from5.0
+@addon_block_site_main_menu @app @block @block_site_main_menu @javascript @lms_upto4.5
 Feature: Basic tests of Main menu block
 
   Background:
@@ -31,7 +31,7 @@ Feature: Basic tests of Main menu block
     And I log in as "admin"
     And I am on site homepage
     And I turn editing mode on
-    And I open "My forum name" actions menu
+    And I open "My forum name" actions menu in site main menu block
     And I choose "Availability > Make available but don't show on course page" in the open action menu
     And I entered the app as "student1"
     When I press "Site home" in the app
