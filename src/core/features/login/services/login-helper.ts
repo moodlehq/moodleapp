@@ -145,26 +145,6 @@ export class CoreLoginHelperProvider {
     }
 
     /**
-     * Open a browser to perform SSO login.
-     *
-     * @param siteUrl URL of the site where the SSO login will be performed.
-     * @param typeOfLogin TypeOfLogin.BROWSER or TypeOfLogin.EMBEDDED.
-     * @param service The service to use. If not defined, core service will be used.
-     * @param launchUrl The URL to open for SSO. If not defined, default tool mobile launch URL will be used.
-     * @param redirectData Data of the path/url to open once authenticated. If not defined, site initial page.
-     * @deprecated since 4.3. Use openBrowserForSSOLogin instead.
-     */
-    async confirmAndOpenBrowserForSSOLogin(
-        siteUrl: string,
-        typeOfLogin: TypeOfLogin,
-        service?: string,
-        launchUrl?: string,
-        redirectData?: CoreRedirectPayload,
-    ): Promise<void> {
-        this.openBrowserForSSOLogin(siteUrl, typeOfLogin, service, launchUrl, redirectData);
-    }
-
-    /**
      * Helper function to act when the forgotten password is clicked.
      *
      * @param siteUrl Site URL.
@@ -923,17 +903,6 @@ export class CoreLoginHelperProvider {
         }
 
         return true;
-    }
-
-    /**
-     * Check if a confirm should be shown to open a SSO authentication.
-     *
-     * @param typeOfLogin TypeOfLogin.BROWSER or TypeOfLogin.EMBEDDED.
-     * @returns True if confirm modal should be shown, false otherwise.
-     * @deprecated since 4.3. Not used anymore. See shouldSkipCredentialsScreenOnSSO.
-     */
-    shouldShowSSOConfirm(typeOfLogin: TypeOfLogin): boolean {
-        return !this.isSSOEmbeddedBrowser(typeOfLogin) && !this.shouldSkipCredentialsScreenOnSSO();
     }
 
     /**

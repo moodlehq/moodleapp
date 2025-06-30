@@ -200,7 +200,7 @@ export class CoreCourseModuleComponent implements OnInit, OnDestroy {
      */
     buttonClicked(event: Event): void {
         // eslint-disable-next-line deprecation/deprecation
-        const button = this.module.handlerData?.button ?? this.module.handlerData?.buttons?.[0];
+        const button = this.module.handlerData?.button;
         if (!button || !button.action) {
             return;
         }

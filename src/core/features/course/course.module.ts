@@ -129,13 +129,9 @@ export async function getCourseExportedDirectives(): Promise<Type<unknown>[]> {
     // eslint-disable-next-line deprecation/deprecation
     const { CoreCourseModuleDescriptionComponent } =
         await import('@features/course/components/module-description/module-description');
-    // eslint-disable-next-line deprecation/deprecation
-    const { CoreCourseModuleManualCompletionComponent } =
-        await import('@features/course/components/module-manual-completion/module-manual-completion');
 
     return [
         CoreCourseModuleDescriptionComponent,
-        CoreCourseModuleManualCompletionComponent,
         CoreCourseFormatComponent,
         CoreCourseSectionComponent,
         CoreCourseModuleComponent,

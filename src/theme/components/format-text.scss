@@ -367,8 +367,7 @@ core-rich-text-editor .core-rte-editor {
     }
 
     @import "theme/components/atto.scss";
-    // @TODO on 4.5 Remove the comment below.
-    // @import "theme/components/moodle.scss";
+    @import "theme/components/moodle.scss";
     @import "theme/components/bootstrap/bootstrap.scss";
 }
 

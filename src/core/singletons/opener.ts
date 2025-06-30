@@ -179,8 +179,7 @@ export class CoreOpener {
      * @param options Options.
      */
     static async openInBrowser(url: string, options: CoreOpenerOpenInBrowserOptions = {}): Promise<void> {
-        // eslint-disable-next-line deprecation/deprecation
-        const originaUrl = CoreUrl.unfixPluginfileURL(options.originalUrl ?? options.browserWarningUrl ?? url);
+        const originaUrl = CoreUrl.unfixPluginfileURL(options.originalUrl ?? url);
         if (options.showBrowserWarning || options.showBrowserWarning === undefined) {
             try {
                 await CoreOpener.confirmOpenBrowserIfNeeded(originaUrl);
@@ -430,10 +429,6 @@ export type CoreOpenerOpenFileOptions = {
 export type CoreOpenerOpenInBrowserOptions = {
     showBrowserWarning?: boolean; // Whether to display a warning before opening in browser. Defaults to true.
     originalUrl?: string; // Original URL to open (in case the URL was treated, e.g. to add a token or an auto-login).
-    /**
-     * @deprecated since 4.3. Use originalUrl instead.
-     */
-    browserWarningUrl?: string;
 };
 
 /**

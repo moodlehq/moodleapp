@@ -80,13 +80,6 @@ export class CoreTimerComponent implements OnInit, OnDestroy {
         const endTime = Math.round(this.endTime);
         this.underTimeClassThresholds.sort((a, b) => a - b); // Sort by increase order.
 
-        // @deprecated since 4.3. Use start/end instead.
-        if (this.align === 'left') {
-            this.align = 'start';
-        } else if (this.align === 'right') {
-            this.align = 'end';
-        }
-
         if (this.hidable && this.timerHiddenPreferenceName) {
             try {
                 const hidden = await CoreUser.getUserPreference(this.timerHiddenPreferenceName);
