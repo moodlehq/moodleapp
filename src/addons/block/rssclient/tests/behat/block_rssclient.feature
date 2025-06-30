@@ -1,8 +1,9 @@
-@addon_block_rss_client @app @block @block_rss_client @javascript
+@addon_block_rss_client @app @block @block_rss_client @javascript @lms_from4.5
 Feature: Basic tests of rss client block
 
   Background:
-    Given the following "users" exist:
+    Given the Moodle site is compatible with this feature
+    And the following "users" exist:
       | username | firstname | lastname | email |
       | student1 | Student | 1 | student1@example.com |
     And I log in as "admin"
