@@ -123,7 +123,7 @@ async function renderAngularComponent<T>(component: Type<T>, config: RenderConfi
 
     const fixture = TestBed.createComponent(component);
 
-    fixture.autoDetectChanges(true);
+    fixture.autoDetectChanges();
 
     await fixture.whenRenderingDone();
     await fixture.whenStable();

@@ -281,13 +281,17 @@ function recorderAudioRecording(): OperatorFunction<AudioRecorderMedia | null, A
             });
         };
         const subscription = source.subscribe(media => {
-            previousRecorder?.removeEventListener('dataavailable', onDataAvailable);
-            previousRecorder?.removeEventListener('error', onError);
-            previousRecorder?.removeEventListener('stop', onStop);
+            if (previousRecorder) {
+                previousRecorder.ondataavailable = null;
+                previousRecorder.onerror = null;
+                previousRecorder.onstop = null;
+            }
 
-            media?.recorder.addEventListener('dataavailable', onDataAvailable);
-            media?.recorder.addEventListener('error', onError);
-            media?.recorder.addEventListener('stop', onStop);
+            if (media?.recorder) {
+                media.recorder.ondataavailable = onDataAvailable;
+                media.recorder.onerror = onError;
+                media.recorder.onstop = onStop;
+            }
 
             audioChunks = [];
             previousRecorder = media?.recorder;
@@ -300,9 +304,11 @@ function recorderAudioRecording(): OperatorFunction<AudioRecorderMedia | null, A
         return () => {
             subscription.unsubscribe();
 
-            previousRecorder?.removeEventListener('dataavailable', onDataAvailable);
-            previousRecorder?.removeEventListener('error', onError);
-            previousRecorder?.removeEventListener('stop', onStop);
+            if (previousRecorder) {
+                previousRecorder.ondataavailable = null;
+                previousRecorder.onerror = null;
+                previousRecorder.onstop = null;
+            }
         };
     });
 }
@@ -320,19 +326,23 @@ function recorderStatus(): OperatorFunction<AudioRecorderMedia | null, Recording
         const onResume = () => subscriber.next('recording');
         const onStop = () => subscriber.next('inactive');
         const subscription = source.subscribe(media => {
-            previousRecorder?.removeEventListener('start', onStart);
-            previousRecorder?.removeEventListener('pause', onPause);
-            previousRecorder?.removeEventListener('resume', onResume);
-            previousRecorder?.removeEventListener('stop', onStop);
+            if (previousRecorder) {
+                previousRecorder.onstart = null;
+                previousRecorder.onpause = null;
+                previousRecorder.onresume = null;
+                previousRecorder.onstop = null;
+            }
 
-            media?.recorder.addEventListener('start', onStart);
-            media?.recorder.addEventListener('pause', onPause);
-            media?.recorder.addEventListener('resume', onResume);
-            media?.recorder.addEventListener('stop', onStop);
+            if (media?.recorder) {
+                media.recorder.onstart = onStart;
+                media.recorder.onpause = onPause;
+                media.recorder.onresume = onResume;
+                media.recorder.onstop = onStop;
+            }
 
             previousRecorder = media?.recorder;
 
-            subscriber.next(media?.recorder.state ?? 'inactive');
+            subscriber.next(media?.recorder?.state ?? 'inactive');
         });
 
         subscriber.next('inactive');
@@ -340,10 +350,12 @@ function recorderStatus(): OperatorFunction<AudioRecorderMedia | null, Recording
         return () => {
             subscription.unsubscribe();
 
-            previousRecorder?.removeEventListener('start', onStart);
-            previousRecorder?.removeEventListener('pause', onPause);
-            previousRecorder?.removeEventListener('resume', onResume);
-            previousRecorder?.removeEventListener('stop', onStop);
+            if (previousRecorder) {
+                previousRecorder.onstart = null;
+                previousRecorder.onpause = null;
+                previousRecorder.onresume = null;
+                previousRecorder.onstop = null;
+            }
         };
     });
 }

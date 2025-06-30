@@ -13,10 +13,16 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
-import { ActivatedRoute, ActivatedRouteSnapshot, Data, NavigationEnd, Params, UrlSegment } from '@angular/router';
-
-import { NavigationOptions } from '@ionic/angular/common/providers/nav-controller';
-
+import {
+    ActivatedRoute,
+    ActivatedRouteSnapshot,
+    Data,
+    NavigationBehaviorOptions,
+    NavigationEnd,
+    Params,
+    UrlCreationOptions,
+    UrlSegment,
+} from '@angular/router';
 import { CoreConstants } from '@/core/constants';
 import { CoreMainMenu } from '@features/mainmenu/services/mainmenu';
 import { CoreObject } from '@singletons/object';
@@ -34,6 +40,7 @@ import { CorePromisedValue } from '@classes/promised-value';
 import { BehaviorSubject } from 'rxjs';
 import { CoreLoadings } from './overlays/loadings';
 import { CorePromiseUtils } from '@singletons/promise-utils';
+import { AnimationBuilder } from '@ionic/angular';
 
 /**
  * Redirect payload.
@@ -47,7 +54,7 @@ export type CoreRedirectPayload = {
 /**
  * Navigation options.
  */
-export type CoreNavigationOptions = Pick<NavigationOptions, 'animated'|'animation'|'animationDirection'> & {
+export type CoreNavigationOptions = AnimationOptions & {
     params?: Params;
     reset?: boolean;
     replace?: boolean;
@@ -842,3 +849,18 @@ export class CoreNavigatorService {
 }
 
 export const CoreNavigator = makeSingleton(CoreNavigatorService);
+
+/**
+ * Copied from: @ionic/angular/common/providers/nav-controller
+ * because the import of NavigationOptions was not working.
+ */
+interface AnimationOptions {
+    animated?: boolean;
+    animation?: AnimationBuilder;
+    animationDirection?: 'forward' | 'back';
+};
+
+interface NavigationOptions extends NavigationExtras, AnimationOptions {
+}
+interface NavigationExtras extends UrlCreationOptions, NavigationBehaviorOptions {
+}
