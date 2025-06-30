@@ -24,7 +24,6 @@ import { CoreSites } from '@services/sites';
 import { makeSingleton } from '@singletons';
 import { CoreCourseModuleData } from './course-helper';
 import { CoreNavigationOptions } from '@services/navigator';
-import { CoreIonicColorNames } from '@singletons/colors';
 import { DownloadStatus } from '@/core/constants';
 import { CORE_COURSE_MODULE_FEATURE_PREFIX } from '../constants';
 import { ModFeature } from '@addons/mod/constants';
@@ -88,16 +87,6 @@ export interface CoreCourseModuleHandler extends CoreDelegateHandler {
      * @returns The icon src.
      */
     getIconSrc?(module?: CoreCourseModuleData, modicon?: string): Promise<string | undefined> | string | undefined;
-
-    /**
-     * Check whether the icon should be treated as a shape or a rich image.
-     *
-     * @param module Module to get the icon from.
-     * @param modicon The mod icon string.
-     * @returns Whether the icon should be treated as a shape.
-     * @deprecated since 4.3. Now it uses platform information. This function is not used anymore.
-     */
-    iconIsShape?(module?: CoreCourseModuleData, modicon?: string): Promise<boolean | undefined> | boolean | undefined;
 
     /**
      * Check if this type of module supports a certain feature.
@@ -166,13 +155,6 @@ export interface CoreCourseModuleHandlerData {
     extraBadge?: string;
 
     /**
-     * The color of the extra badge. Default: primary.
-     *
-     * @deprecated since 4.3 Not used anymore.
-     */
-    extraBadgeColor?: CoreIonicColorNames;
-
-    /**
      * Whether to display a button to download/refresh the module if it's downloadable.
      * If it's set to true, the app will show a download/refresh button when needed and will handle the download of the
      * module using CoreCourseModulePrefetchDelegate.
@@ -186,13 +168,6 @@ export interface CoreCourseModuleHandlerData {
      * displayed as a custom course item instead of a tipical activity card.
      */
     hasCustomCmListItem?: boolean;
-
-    /**
-     * The buttons to display in the module item.
-     *
-     * @deprecated since 4.3 Use button instead. It will only display the first.
-     */
-    buttons?: CoreCourseModuleHandlerButton[];
 
     /**
      * The button to display in the module item.
@@ -417,19 +392,6 @@ export class CoreCourseModuleDelegateService extends CoreDelegate<CoreCourseModu
         const icon = await this.executeFunctionOnEnabled<Promise<string>>(modname, 'getIconSrc', [module, modicon]);
 
         return icon ?? CoreCourseModuleHelper.getModuleIconSrc(modname, modicon) ?? '';
-    }
-
-    /**
-     * Get whether the icon for the given module should be treated as a shape or a rich image.
-     *
-     * @param modname The name of the module type.
-     * @param modicon The mod icon string.
-     * @param module The module to use.
-     * @returns Whether the icon should be treated as a shape.
-     * @deprecated since 4.3. Now it uses platform information. This function is not used anymore.
-     */
-    async moduleIconIsShape(modname: string, modicon?: string, module?: CoreCourseModuleData): Promise<boolean | undefined> {
-        return await this.executeFunctionOnEnabled<Promise<boolean>>(modname, 'iconIsShape', [module, modicon]);
     }
 
     /**

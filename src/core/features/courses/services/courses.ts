@@ -22,8 +22,6 @@ import { CoreCourseAnyCourseDataWithExtraInfoAndOptions, CoreCourseWithImageAndC
 import { asyncObservable, ignoreErrors, zipIncludingComplete } from '@/core/utils/rxjs';
 import { of, firstValueFrom } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { AddonEnrolGuestInfo } from '@addons/enrol/guest/services/guest';
-import { CoreEnrolEnrolmentInfo, CoreEnrolEnrolmentMethod } from '@features/enrol/services/enrol';
 import { CoreSiteWSPreSets, WSObservable } from '@classes/sites/authenticated-site';
 import { CoreCacheUpdateFrequency } from '@/core/constants';
 import {
@@ -340,34 +338,6 @@ export class CoreCoursesProvider {
         }
 
         throw Error('Course not found on core_course_get_courses');
-    }
-
-    /**
-     * Get the enrolment methods from a course.
-     *
-     * @param courseId ID of the course.
-     * @param siteId Site ID. If not defined, use current site.
-     * @returns Promise resolved with the methods.
-     * @deprecated since 4.3. Use CoreEnrol.getSupportedCourseEnrolmentMethods instead.
-     */
-    async getCourseEnrolmentMethods(courseId: number, siteId?: string): Promise<CoreEnrolEnrolmentMethod[]> {
-        const { CoreEnrol } = await import('@features/enrol/services/enrol');
-
-        return CoreEnrol.getSupportedCourseEnrolmentMethods(courseId, { siteId });
-    }
-
-    /**
-     * Get info from a course guest enrolment method.
-     *
-     * @param instanceId Guest instance ID.
-     * @param siteId Site ID. If not defined, use current site.
-     * @returns Promise resolved when the info is retrieved.
-     * @deprecated since 4.3 use AddonEnrolGuest.getCourseGuestEnrolmentInfo instead.
-     */
-    async getCourseGuestEnrolmentInfo(instanceId: number, siteId?: string): Promise<AddonEnrolGuestInfo> {
-        const { AddonEnrolGuest } = await import('@addons/enrol/guest/services/guest');
-
-        return AddonEnrolGuest.getGuestEnrolmentInfo(instanceId, siteId);
     }
 
     /**
@@ -1056,32 +1026,6 @@ export class CoreCoursesProvider {
     }
 
     /**
-     * Invalidates get course enrolment methods WS call.
-     *
-     * @param courseId Course ID.
-     * @param siteId Site Id. If not defined, use current site.
-     * @deprecated since 4.3 use CoreEnrol.invalidateCourseEnrolmentMethods instead.
-     */
-    async invalidateCourseEnrolmentMethods(courseId: number, siteId?: string): Promise<void> {
-        const { CoreEnrol } = await import('@features/enrol/services/enrol');
-
-        await CoreEnrol.invalidateCourseEnrolmentMethods(courseId, siteId);
-    }
-
-    /**
-     * Invalidates get course guest enrolment info WS call.
-     *
-     * @param instanceId Guest instance ID.
-     * @param siteId Site Id. If not defined, use current site.
-     * @deprecated since 4.3 use CoreEnrolDelegate.invalidate instead.
-     */
-    async invalidateCourseGuestEnrolmentInfo(instanceId: number, siteId?: string): Promise<void> {
-        const { AddonEnrolGuest } = await import('@addons/enrol/guest/services/guest');
-
-        await AddonEnrolGuest.invalidateGuestEnrolmentInfo(instanceId, siteId);
-    }
-
-    /**
      * Invalidates the navigation and administration options for the given courses.
      *
      * @param courseIds IDs of courses to get.
@@ -1251,23 +1195,6 @@ export class CoreCoursesProvider {
         const response = await site.read<CoreCourseSearchCoursesWSResponse>('core_course_search_courses', params, preSets);
 
         return ({ total: response.total, courses: response.courses });
-    }
-
-    /**
-     * Self enrol current user in a certain course.
-     *
-     * @param courseId Course ID.
-     * @param password Password to use.
-     * @param instanceId Enrol instance ID.
-     * @param siteId Site ID. If not defined, use current site.
-     * @returns Promise resolved if the user is enrolled. If the password is invalid, the promise is rejected
-     *         with an object with errorcode = CORE_COURSES_ENROL_INVALID_KEY.
-     * @deprecated since 4.3 use CoreEnrolDelegate.enrol instead.
-     */
-    async selfEnrol(courseId: number, password: string = '', instanceId?: number, siteId?: string): Promise<boolean> {
-        const { AddonEnrolSelf } = await import('@addons/enrol/self/services/self');
-
-        return AddonEnrolSelf.selfEnrol(courseId, password, instanceId, siteId);
     }
 
     /**
@@ -1724,20 +1651,6 @@ export type CoreCourseUserAdminOrNavOptionIndexed = {
     [name: string]: // Option name.
     boolean; // Whether the option is available or not.
 };
-
-/**
- * Course enrolment basic info.
- *
- * @deprecated since 4.3. Use CoreEnrolEnrolmentInfo instead.
- */
-export type CoreCourseEnrolmentInfo = CoreEnrolEnrolmentInfo;
-
-/**
- * Course enrolment method.
- *
- * @deprecated since 4.3. Use CoreEnrolEnrolmentMethod instead.
- */
-export type CoreCourseEnrolmentMethod = CoreEnrolEnrolmentMethod;
 
 /**
  * Params of core_course_get_recent_courses WS.
