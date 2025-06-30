@@ -276,17 +276,6 @@ export class CorePushNotificationsProvider {
     }
 
     /**
-     * Enable or disable analytics.
-     *
-     * @param enable Whether to enable or disable.
-     * @returns Promise resolved when done.
-     * @deprecated since 4.3. Use CoreAnalytics.enableAnalytics instead.
-     */
-    async enableAnalytics(enable: boolean): Promise<void> {
-        return CoreAnalytics.enableAnalytics(enable);
-    }
-
-    /**
      * Returns options for push notifications based on device.
      *
      * @returns Promise with the push options resolved when done.
@@ -353,84 +342,6 @@ export class CorePushNotificationsProvider {
      */
     getSiteCounter(siteId: string): Promise<number> {
         return this.getAddonBadge(siteId);
-    }
-
-    /**
-     * Log an analytics event.
-     *
-     * @param eventName Name of the event.
-     * @param data Data of the event.
-     * @returns Promise resolved when done. This promise is never rejected.
-     * @deprecated since 4.3. Use CoreAnalytics.logEvent instead.
-     */
-    async logEvent(eventName: string, data: Record<string, string | number | boolean | undefined>): Promise<void> {
-        if (eventName !== 'view_item' && eventName !== 'view_item_list') {
-            return CoreAnalytics.logEvent({
-                type: CoreAnalyticsEventType.PUSH_NOTIFICATION,
-                eventName,
-                data,
-            });
-        }
-
-        const name = data.name ? String(data.name) : '';
-        delete data.name;
-
-        return CoreAnalytics.logEvent({
-            type: eventName === 'view_item' ? CoreAnalyticsEventType.VIEW_ITEM : CoreAnalyticsEventType.VIEW_ITEM_LIST,
-            ws: <string> data.moodleaction ?? '',
-            name,
-            data,
-        });
-    }
-
-    /**
-     * Log an analytics VIEW_ITEM_LIST event.
-     *
-     * @param itemId The item ID.
-     * @param itemName The item name.
-     * @param itemCategory The item category.
-     * @param wsName Name of the WS.
-     * @param data Other data to pass to the event.
-     * @returns Promise resolved when done. This promise is never rejected.
-     * @deprecated since 4.3. Use CoreAnalytics.logEvent instead.
-     */
-    logViewEvent(
-        itemId: number | string | undefined,
-        itemName: string | undefined,
-        itemCategory: string | undefined,
-        wsName: string,
-        data?: Record<string, string | number | boolean | undefined>,
-    ): Promise<void> {
-        data = data || {};
-        data.id = itemId;
-        data.name = itemName;
-        data.category = itemCategory;
-        data.moodleaction = wsName;
-
-        // eslint-disable-next-line deprecation/deprecation
-        return this.logEvent('view_item', data);
-    }
-
-    /**
-     * Log an analytics view item list event.
-     *
-     * @param itemCategory The item category.
-     * @param wsName Name of the WS.
-     * @param data Other data to pass to the event.
-     * @returns Promise resolved when done. This promise is never rejected.
-     * @deprecated since 4.3. Use CoreAnalytics.logEvent instead.
-     */
-    logViewListEvent(
-        itemCategory: string,
-        wsName: string,
-        data?: Record<string, string | number | boolean | undefined>,
-    ): Promise<void> {
-        data = data || {};
-        data.moodleaction = wsName;
-        data.category = itemCategory;
-
-        // eslint-disable-next-line deprecation/deprecation
-        return this.logEvent('view_item_list', data);
     }
 
     /**

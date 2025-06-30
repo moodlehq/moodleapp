@@ -156,14 +156,6 @@ export class CoreConstants {
     static readonly WS_TIMEOUT_WIFI = 30000; // Timeout when in WiFi.
 
     // Login constants.
-    /**
-     * @deprecated since 4.3 Use TypeOfLogin.BROWSER instead.
-     */
-    static readonly LOGIN_SSO_CODE = 2; // SSO in browser window is required.
-    /**
-     * @deprecated since 4.3 Use TypeOfLogin.EMBEDDED instead.
-     */
-    static readonly LOGIN_SSO_INAPP_CODE = 3; // SSO in embedded browser is required.
     static readonly LOGIN_LAUNCH_DATA = 'CoreLoginLaunchData';
 
     // Download status constants.

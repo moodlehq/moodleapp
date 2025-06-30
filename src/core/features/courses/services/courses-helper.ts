@@ -210,14 +210,11 @@ export class CoreCoursesHelperProvider {
         }
 
         if (course.courseimage !== undefined) {
-            course.courseImage = course.courseimage; // @deprecated since 4.3 use courseimage instead.
-
             return;
         }
 
         if (course.overviewfiles && course.overviewfiles[0]) {
             course.courseimage = course.overviewfiles[0].fileurl;
-            course.courseImage = course.courseimage; // @deprecated since 4.3 use courseimage instead.
 
             return;
         }
@@ -459,7 +456,6 @@ export type CoreCourseWithImageAndColor = {
     overviewfiles?: CoreWSExternalFile[];
     colorNumber?: number; // Color index number.
     color?: string; // Color RGB.
-    courseImage?: string; // Course thumbnail. @deprecated since 4.3, use courseimage instead.
     courseimage?: string; // Course thumbnail.
 };
 
