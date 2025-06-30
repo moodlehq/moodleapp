@@ -44,14 +44,14 @@
         "lang:create-langindex": "./scripts/create_langindex.sh"
     },
     "dependencies": {
-        "@angular/animations": "^19.2.14",
-        "@angular/common": "^19.2.14",
-        "@angular/compiler": "^19.2.14",
-        "@angular/core": "^19.2.14",
-        "@angular/forms": "^19.2.14",
-        "@angular/platform-browser": "^19.2.14",
-        "@angular/platform-browser-dynamic": "^19.2.14",
-        "@angular/router": "^19.2.14",
+        "@angular/animations": "^20.0.6",
+        "@angular/common": "^20.0.6",
+        "@angular/compiler": "^20.0.6",
+        "@angular/core": "^20.0.6",
+        "@angular/forms": "^20.0.6",
+        "@angular/platform-browser": "^20.0.6",
+        "@angular/platform-browser-dynamic": "^20.0.6",
+        "@angular/router": "^20.0.6",
         "@awesome-cordova-plugins/badge": "^8.0.2",
         "@awesome-cordova-plugins/camera": "^8.0.2",
         "@awesome-cordova-plugins/clipboard": "^8.0.2",
@@ -128,11 +128,11 @@
         "zone.js": "^0.15.1"
     },
     "devDependencies": {
-        "@angular-builders/custom-webpack": "^19.0.1",
-        "@angular/build": "^19.2.14",
-        "@angular/cli": "^19.2.15",
-        "@angular/compiler-cli": "^19.2.14",
-        "@angular/language-service": "^19.2.14",
+        "@angular-builders/custom-webpack": "^20.0.0",
+        "@angular/build": "^20.0.5",
+        "@angular/cli": "^20.0.5",
+        "@angular/compiler-cli": "^20.0.6",
+        "@angular/language-service": "^20.0.6",
         "@eslint/js": "^9.29.0",
         "@ionic/angular-toolkit": "^12.2.0",
         "@ionic/cli": "^7.2.1",
@@ -170,12 +170,12 @@
         "terser-webpack-plugin": "^5.3.14",
         "ts-jest": "^29.2.6",
         "ts-node": "^8.10.2",
-        "typescript": "~5.5.4",
+        "typescript": "~5.8.3",
         "typescript-eslint": "^8.34.1",
         "vinyl": "^3.0.0"
     },
     "engines": {
-        "node": ">=v20.18 <21"
+        "node": ">=v22.17 <23"
     },
     "cordova": {
         "platforms": [
