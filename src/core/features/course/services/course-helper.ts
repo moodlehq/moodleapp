@@ -568,9 +568,6 @@ export class CoreCourseHelperProvider {
                 }
             });
 
-            // eslint-disable-next-line deprecation/deprecation
-            accessData.passwordRequired = accessData.requiresUserInput; // For backwards compatibility.
-
             return accessData;
         } catch {
             return accessData;
@@ -2347,8 +2344,4 @@ export type CoreCourseOpenModuleOptions = {
 export type CoreCourseGuestAccessInfo = {
     guestAccess: boolean; // Whether guest access is enabled for a course.
     requiresUserInput?: boolean; // Whether the first guest access enrolment method requires user input.
-    /**
-     * @deprecated since 4.3. Use requiresUserInput instead.
-     */
-    passwordRequired?: boolean;
 };

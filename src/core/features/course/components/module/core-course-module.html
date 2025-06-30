@@ -61,14 +61,6 @@
                             [attr.aria-label]="module.handlerData.button.label | translate:{$a: module.handlerData.title}">
                             <ion-icon [name]="module.handlerData.button.icon" slot="icon-only" aria-hidden="true" />
                         </ion-button>
-
-                        <!-- @deprecated since 4.3. Buttons defined by the module handler. -->
-                        <ion-button fill="clear" class="core-module-button-more core-animate-show-hide"
-                            *ngIf="!module.handlerData.button && module.handlerData.buttons &&  module.handlerData.buttons[0]"
-                            [hidden]="module.handlerData.buttons[0].hidden || module.handlerData.spinner" (click)="buttonClicked($event)"
-                            [attr.aria-label]="module.handlerData.buttons[0].label | translate:{$a: module.handlerData.title}">
-                            <ion-icon [name]="module.handlerData.buttons[0].icon" slot="icon-only" aria-hidden="true" />
-                        </ion-button>
                     </div>
                 </div>
 

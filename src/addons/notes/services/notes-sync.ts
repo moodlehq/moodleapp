@@ -15,7 +15,6 @@
 import { Injectable } from '@angular/core';
 import { CoreSyncBaseProvider } from '@classes/base-sync';
 import { CoreNetworkError } from '@classes/errors/network-error';
-import { CoreCourses } from '@features/courses/services/courses';
 import { CoreNetwork } from '@services/network';
 import { CoreSites } from '@services/sites';
 import { CoreWSError } from '@classes/errors/wserror';
@@ -230,12 +229,8 @@ export class AddonNotesSyncProvider extends CoreSyncBaseProvider<AddonNotesSyncR
         await CorePromiseUtils.ignoreErrors(AddonNotes.getNotes(courseId, undefined, false, true, siteId));
 
         if (errors && errors.length) {
-            // At least an error occurred, get course name and add errors to warnings array.
-            const course = await CorePromiseUtils.ignoreErrors(CoreCourses.getUserCourse(courseId, true, siteId), {});
-
             result.warnings = errors.map((error) =>
                 Translate.instant('addon.notes.warningnotenotsent', {
-                    course: 'fullname' in course ? course.fullname : courseId, // @deprecated since 4.3.
                     error: CoreErrorHelper.getErrorMessageFromError(error),
                 }));
         }
