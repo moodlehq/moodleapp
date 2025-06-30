@@ -33,7 +33,7 @@ Feature: Users can auto-enrol themself in courses where self enrolment is allowe
     And I press "Enrol me" in the app
     And I wait loading to finish in the app
     Then the header should be "Course 1" in the app
-    And I should find "Section 1" in the app
+    And I should find "General" in the app
     And I should not find "Enrol me" in the app
 
   Scenario: Self-enrolment enabled requiring an enrolment key
@@ -54,7 +54,7 @@ Feature: Users can auto-enrol themself in courses where self enrolment is allowe
     And I press "Enrol me" in the app
     And I wait loading to finish in the app
     Then the header should be "Course 1" in the app
-    And I should find "Section 1" in the app
+    And I should find "General" in the app
     And I should not find "Enrol me" in the app
 
   Scenario: Self-enrolment disabled
@@ -93,7 +93,7 @@ Feature: Users can auto-enrol themself in courses where self enrolment is allowe
     And I press "Enrol me" in the app
     And I wait loading to finish in the app
     Then the header should be "Course 1" in the app
-    And I should find "Section 1" in the app
+    And I should find "General" in the app
     And I should not find "Enrol me" in the app
 
     When I entered the app as "student2"
@@ -108,7 +108,7 @@ Feature: Users can auto-enrol themself in courses where self enrolment is allowe
     And I press "Enrol me" in the app
     And I wait loading to finish in the app
     Then the header should be "Course 1" in the app
-    And I should find "Section 1" in the app
+    And I should find "General" in the app
     And I should not find "Enrol me" in the app
 
     # Check the groups on website
