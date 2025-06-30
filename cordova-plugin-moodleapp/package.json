@@ -14,6 +14,6 @@
     "chokidar-cli": "^3.0.0",
     "concurrently": "^8.2.2",
     "esbuild": "^0.18.20",
-    "typescript": "^5.5.4"
+    "typescript": "~5.8.3"
   }
 }

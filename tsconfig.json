@@ -13,7 +13,7 @@
     "forceConsistentCasingInFileNames": true,
     "useDefineForClassFields": false,
     "module": "esnext",
-    "moduleResolution": "node",
+    "moduleResolution": "bundler",
     "importHelpers": true,
     "target": "es2022",
     "resolveJsonModule": true,
@@ -22,30 +22,52 @@
       "dom"
     ],
     "types": [
-        "@moodlehq/cordova-plugin-file-transfer",
-        "@moodlehq/cordova-plugin-inappbrowser",
-        "@moodlehq/phonegap-plugin-push",
-        "cordova-plugin-moodleapp",
-        "cordova",
-        "dom-mediacapture-record",
-        "faker",
-        "jest",
-        "node",
-        "resize-observer-browser",
-        "webpack-env"
+      "@moodlehq/cordova-plugin-file-transfer",
+      "@moodlehq/cordova-plugin-inappbrowser",
+      "@moodlehq/phonegap-plugin-push",
+      "cordova-plugin-moodleapp",
+      "cordova",
+      "dom-mediacapture-record",
+      "faker",
+      "jest",
+      "node",
+      "resize-observer-browser",
+      "webpack-env"
     ],
     "paths": {
-      "@addons/*": ["./addons/*"],
-      "@classes/*": ["./core/classes/*"],
-      "@components/*": ["./core/components/*"],
-      "@directives/*": ["./core/directives/*"],
-      "@features/*": ["./core/features/*"],
-      "@guards/*": ["./core/guards/*"],
-      "@pipes/*": ["./core/pipes/*"],
-      "@services/*": ["./core/services/*"],
-      "@singletons": ["./core/singletons/index"],
-      "@singletons/*": ["./core/singletons/*"],
-      "@/*": ["./*"]
+      "@addons/*": [
+        "./addons/*"
+      ],
+      "@classes/*": [
+        "./core/classes/*"
+      ],
+      "@components/*": [
+        "./core/components/*"
+      ],
+      "@directives/*": [
+        "./core/directives/*"
+      ],
+      "@features/*": [
+        "./core/features/*"
+      ],
+      "@guards/*": [
+        "./core/guards/*"
+      ],
+      "@pipes/*": [
+        "./core/pipes/*"
+      ],
+      "@services/*": [
+        "./core/services/*"
+      ],
+      "@singletons": [
+        "./core/singletons/index"
+      ],
+      "@singletons/*": [
+        "./core/singletons/*"
+      ],
+      "@/*": [
+        "./*"
+      ]
     }
   },
   "angularCompilerOptions": {
