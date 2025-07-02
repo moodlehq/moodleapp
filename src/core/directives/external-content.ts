@@ -369,6 +369,20 @@ export class CoreExternalContentDirective implements AfterViewInit, OnChanges, O
         }
 
         const tagName = this.element.tagName;
+        const openIn = tagName === 'A' && this.element.getAttribute('data-open-in');
+
+        if (openIn === 'app' || openIn === 'browser') {
+            // The file is meant to be opened in browser or InAppBrowser, don't use the downloaded URL because it won't work.
+            if (!site.isSitePluginFileUrl(url)) {
+                return url;
+            }
+
+            // Treat the pluginfile URL so it can be opened and the file is displayed instead of downloaded.
+            const finalUrl = await site.checkAndFixPluginfileURL(url);
+
+            return finalUrl.replace('forcedownload=1', 'forcedownload=0');
+        }
+
         let finalUrl: string;
 
         // Download images, tracks and posters if size is unknown.
