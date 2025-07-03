@@ -113,7 +113,6 @@
         "cordova-sqlite-storage": "^7.0.0",
         "core-js": "^3.41.0",
         "dayjs": "^1.11.13",
-        "es6-promise-plugin": "^4.2.2",
         "ionicons": "^7.4.0",
         "jszip": "^3.10.1",
         "mathjax": "3.2.2",
