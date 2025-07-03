@@ -1,8 +1,9 @@
-@addon_block_globalsearch @app @block @block_globalsearch @javascript
+@addon_block_globalsearch @app @block @block_globalsearch @javascript @lms_from4.3
 Feature: View the global search block and check it links to the page
 
   Background:
-    Given the following "users" exist:
+    Given the Moodle site is compatible with this feature
+    And the following "users" exist:
       | username | firstname | lastname | email | idnumber |
       | student1 | Student | 1 | student1@example.com | S1 |
     And the following config values are set as admin:
