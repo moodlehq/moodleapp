@@ -56,10 +56,10 @@ core-user-menu-button {
 }
 
 ion-tab-button {
-    color: var(--ion-text-color-step-400);
+    color: var(--color);
 
     &.tab-selected {
-        color: var(--dark);
+        color: var(--color-selected);
         background: var(--background-selected);
     }
 
