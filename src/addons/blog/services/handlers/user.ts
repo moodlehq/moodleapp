@@ -38,7 +38,9 @@ export class AddonBlogUserHandlerService implements CoreUserProfileHandler {
      * @inheritdoc
      */
     isEnabled(): Promise<boolean> {
-        return AddonBlog.isPluginEnabled();
+        // Blog entries disabled as per requirement
+        return Promise.resolve(false);
+        // Original: return AddonBlog.isPluginEnabled();
     }
 
     /**

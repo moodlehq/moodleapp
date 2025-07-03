@@ -153,8 +153,22 @@ export class CoreUserParentService {
         try {
             const value = await site.getLocalSiteConfig(key);
             console.log('[Parent Service] Raw stored value:', value);
-            const menteeId = value ? parseInt(String(value), 10) : null;
+            
+            // Handle empty string as null (cleared value)
+            if (!value || value === '') {
+                console.log('[Parent Service] No mentee selected (empty or null value)');
+                return null;
+            }
+            
+            const menteeId = parseInt(String(value), 10);
             console.log('[Parent Service] Parsed mentee ID:', menteeId);
+            
+            // Check if parsing resulted in a valid number
+            if (isNaN(menteeId)) {
+                console.log('[Parent Service] Invalid mentee ID, returning null');
+                return null;
+            }
+            
             return menteeId;
         } catch (error) {
             console.error('[Parent Service] Error getting selected mentee:', error);
@@ -195,7 +209,18 @@ export class CoreUserParentService {
         const site = await CoreSites.getSite(siteId);
         const key = this.getSelectedMenteeKey(site.getId());
         
-        await site.deleteSiteConfig(key);
+        console.log('[Parent Service] Clearing selected mentee...');
+        console.log('[Parent Service] Storage key:', key);
+        
+        // Set to empty string to clear the value (there's no delete method for local site config)
+        await site.setLocalSiteConfig(key, '');
+        
+        // Verify it was cleared
+        const clearedValue = await site.getLocalSiteConfig(key);
+        console.log('[Parent Service] Value after clearing:', clearedValue);
+        if (!clearedValue || clearedValue === '') {
+            console.log('[Parent Service] Successfully cleared mentee selection');
+        }
     }
 
     /**

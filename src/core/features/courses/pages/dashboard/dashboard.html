@@ -22,7 +22,7 @@
         <div class="aspire-quick-actions">
             <div class="aspire-action-card" [routerLink]="['/main/home/courses']">
                 <ion-icon name="book-outline"></ion-icon>
-                <span>Classes</span>
+                <span>{{ 'core.courses.courses' | translate }}</span>
             </div>
             <div class="aspire-action-card" [routerLink]="['/main/calendar']">
                 <ion-icon name="calendar-outline"></ion-icon>
@@ -32,7 +32,7 @@
                 <ion-icon name="newspaper-outline"></ion-icon>
                 <span>News</span>
             </div>
-            <div class="aspire-action-card" [routerLink]="['/main/grades']">
+            <div class="aspire-action-card" (click)="openGrades()">
                 <ion-icon name="bar-chart-outline"></ion-icon>
                 <span>Grades</span>
             </div>

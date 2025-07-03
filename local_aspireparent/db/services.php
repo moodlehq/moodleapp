@@ -38,7 +38,8 @@ $services = array(
             'local_aspireparent_get_mentee_quizzes',
             'local_aspireparent_get_mentee_quiz_attempts',
             'local_aspireparent_get_mentee_assignment_submissions',
-            'local_aspireparent_get_mentee_forums'
+            'local_aspireparent_get_mentee_forums',
+            'local_aspireparent_get_mentee_course_teachers'
         ),
         'restrictedusers' => 0,
         'enabled' => 1,
@@ -152,6 +153,15 @@ $functions = array(
         'classname' => 'local_aspireparent\external\get_mentee_forums',
         'methodname' => 'execute',
         'description' => 'Get forums for a mentee user',
+        'type' => 'read',
+        'ajax' => true,
+        'capabilities' => '',
+        'services' => array('local_aspireparent_service', MOODLE_OFFICIAL_MOBILE_SERVICE)
+    ),
+    'local_aspireparent_get_mentee_course_teachers' => array(
+        'classname' => 'local_aspireparent\external\get_mentee_course_teachers',
+        'methodname' => 'execute',
+        'description' => 'Get teachers in a course for a mentee user',
         'type' => 'read',
         'ajax' => true,
         'capabilities' => '',

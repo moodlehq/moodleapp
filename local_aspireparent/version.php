@@ -25,7 +25,7 @@
 defined('MOODLE_INTERNAL') || die();
 
 $plugin->component = 'local_aspireparent';
-$plugin->version = 2024011509; // YYYYMMDDXX format - Added forum/announcement support
+$plugin->version = 2024011511; // YYYYMMDDXX format - Added forum/announcement support
 $plugin->release = '1.0.0';
 $plugin->requires = 2022041900; // Moodle 4.0 or later
 $plugin->maturity = MATURITY_STABLE;

@@ -58,6 +58,7 @@ export class CoreCoursesMyPage implements OnInit, OnDestroy, AsyncDirective {
     hasSideBlocks = false;
 
     protected updateSiteObserver: CoreEventObserver;
+    protected profileRefreshObserver?: CoreEventObserver;
     protected onReadyPromise = new CorePromisedValue<void>();
     protected loadsManagerSubscription: Subscription;
     protected logView: () => void;
@@ -76,6 +77,13 @@ export class CoreCoursesMyPage implements OnInit, OnDestroy, AsyncDirective {
             this.loaded = false;
             this.loadContent();
         });
+
+        // Listen for profile refresh events (e.g., when switching between parent/mentee view)
+        this.profileRefreshObserver = CoreEvents.on('user_profile_refreshed', () => {
+            console.log('[My Courses] Profile refreshed, reloading courses...');
+            this.loaded = false;
+            this.loadContent();
+        }, CoreSites.getCurrentSiteId());
 
         this.logView = CoreTime.once(async () => {
             await CoreUtils.ignoreErrors(CoreCourses.logView('my'));
@@ -184,6 +192,9 @@ export class CoreCoursesMyPage implements OnInit, OnDestroy, AsyncDirective {
         const promises: Promise<void>[] = [];
 
         promises.push(CoreCoursesDashboard.invalidateDashboardBlocks(CoreCoursesDashboardProvider.MY_PAGE_COURSES));
+        
+        // Invalidate all user courses caches to ensure fresh data
+        promises.push(CoreCourses.invalidateAllUserCourses());
 
         // Invalidate the blocks.
         if (this.myOverviewBlock) {
@@ -202,6 +213,7 @@ export class CoreCoursesMyPage implements OnInit, OnDestroy, AsyncDirective {
      */
     ngOnDestroy(): void {
         this.updateSiteObserver?.off();
+        this.profileRefreshObserver?.off();
         this.loadsManagerSubscription.unsubscribe();
     }
 

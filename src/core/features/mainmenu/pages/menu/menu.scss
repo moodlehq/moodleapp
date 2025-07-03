@@ -70,10 +70,11 @@ ion-tab-button {
     ion-badge.core-tab-badge {
         font-size: var(--mdl-typography-body-fontSize-sm);
         font-weight: bold;
-        border-radius: 10px;
-        padding-left: 6px;
-        padding-right: 6px;
-        line-height: 14px;
+        border-radius: 12px;
+        padding-left: 8px;
+        padding-right: 8px;
+        line-height: 16px;
+        min-width: 24px;
         --background: var(--core-bottom-tabs-badge-color);
         --color: var(--core-bottom-tabs-badge-text-color);
     }

@@ -911,8 +911,9 @@ export class CoreCoursesProvider {
             
             const selectedMenteeId = await CoreUserParent.getSelectedMentee(site.getId());
             console.log('[Courses] Selected mentee ID from storage:', selectedMenteeId);
+            console.log('[Courses] Type of selectedMenteeId:', typeof selectedMenteeId);
             
-            if (selectedMenteeId) {
+            if (selectedMenteeId && selectedMenteeId !== null) {
                 console.log('[Courses] Mentee selected, checking permissions...');
                 // Check if user can view mentee data
                 const canView = await CoreUserParent.canViewUserData(selectedMenteeId, site.getId());
@@ -926,6 +927,8 @@ export class CoreCoursesProvider {
                 }
             } else {
                 console.log('[Courses] No mentee selected - Using current user ID:', userId);
+                // Ensure we're really using the current user's ID
+                userId = site.getUserId();
             }
             
             console.log('[Courses] Final user ID for course fetch:', userId);
@@ -1239,6 +1242,68 @@ export class CoreCoursesProvider {
         const site = await CoreSites.getSite(siteId);
 
         await site.invalidateWsCacheForKey(this.getUserCoursesCacheKey());
+    }
+
+    /**
+     * Invalidates user courses for a specific user ID (used for mentee courses).
+     *
+     * @param userId User ID to invalidate courses for.
+     * @param siteId Site ID to invalidate. If not defined, use current site.
+     * @returns Promise resolved when the data is invalidated.
+     */
+    async invalidateUserCoursesForUser(userId: number, siteId?: string): Promise<void> {
+        const site = await CoreSites.getSite(siteId);
+        const cacheKey = `${CoreCoursesProvider.ROOT_CACHE_KEY}usercourses:${userId}`;
+        
+        console.log('[Courses] Invalidating courses cache for user:', userId);
+        console.log('[Courses] Cache key:', cacheKey);
+        
+        await site.invalidateWsCacheForKey(cacheKey);
+    }
+
+    /**
+     * Invalidates all user courses caches (both current user and any mentees).
+     *
+     * @param siteId Site ID to invalidate. If not defined, use current site.
+     * @returns Promise resolved when the data is invalidated.
+     */
+    async invalidateAllUserCourses(siteId?: string): Promise<void> {
+        const site = await CoreSites.getSite(siteId);
+        
+        console.log('[Courses] Invalidating all user courses caches');
+        
+        // Invalidate all caches starting with the user courses prefix
+        await site.invalidateWsCacheForKeyStartingWith(`${CoreCoursesProvider.ROOT_CACHE_KEY}usercourses`);
+        
+        // Also invalidate the enrollment web service cache directly
+        const currentUserId = site.getUserId();
+        const wsKeys = [
+            `core_enrol_get_users_courses:userid=${currentUserId}:returnusercount=0`,
+            `core_enrol_get_users_courses:userid=${currentUserId}:returnusercount=false`,
+            `core_enrol_get_users_courses:userid=${currentUserId}`,
+        ];
+        
+        for (const key of wsKeys) {
+            console.log('[Courses] Invalidating WS cache key:', key);
+            await site.invalidateWsCacheForKey(key);
+        }
+        
+        // Check if there's a selected mentee and invalidate their cache too
+        const { CoreUserParent } = await import('@features/user/services/parent');
+        const selectedMenteeId = await CoreUserParent.getSelectedMentee(site.getId());
+        if (selectedMenteeId) {
+            const menteeWsKeys = [
+                `core_enrol_get_users_courses:userid=${selectedMenteeId}:returnusercount=0`,
+                `core_enrol_get_users_courses:userid=${selectedMenteeId}:returnusercount=false`,
+                `core_enrol_get_users_courses:userid=${selectedMenteeId}`,
+                `local_aspireparent_get_mentee_courses:userid=${selectedMenteeId}`,
+            ];
+            
+            for (const key of menteeWsKeys) {
+                console.log('[Courses] Invalidating mentee WS cache key:', key);
+                await site.invalidateWsCacheForKey(key);
+            }
+        }
     }
 
     /**

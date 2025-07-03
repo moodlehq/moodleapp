@@ -25,6 +25,7 @@ import { Translate, makeSingleton } from '@singletons';
 import { CoreCourseModuleDelegate } from '@features/course/services/module-delegate';
 import { AddonNotificationsPushNotification } from './handlers/push-click';
 import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
+import { AddonBadges } from '@addons/badges/services/badges';
 
 declare module '@singletons/events' {
 
@@ -157,6 +158,23 @@ export class AddonNotificationsProvider {
                 if (notification.eventtype !== 'newlogin') {
                     const imgUrl = notification.customdata?.notificationpictureurl || notification.customdata?.notificationiconurl;
                     notification.imgUrl = imgUrl ? String(imgUrl) : undefined;
+
+                    // For badge notifications, try to get the badge image
+                    if (notification.eventtype === 'badgerecipientnotice') {
+                        if (notification.customdata?.badgeimage) {
+                            notification.imgUrl = String(notification.customdata.badgeimage);
+                        } else if (notification.customdata?.hash) {
+                            // Try to fetch the badge image using the hash
+                            try {
+                                const badge = await AddonBadges.getUserBadgeByHash(String(notification.customdata.hash));
+                                if (badge?.badgeurl) {
+                                    notification.imgUrl = badge.badgeurl;
+                                }
+                            } catch {
+                                // Ignore errors, badge image won't be shown
+                            }
+                        }
+                    }
                 }
             }
 

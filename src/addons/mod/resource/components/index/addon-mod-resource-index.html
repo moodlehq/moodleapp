@@ -39,6 +39,8 @@
     </div>
 
     <ng-container *ngIf="mode === 'external'">
+        <!-- File details hidden as per requirement -->
+        <!--
         <ion-list>
             <ion-item class="ion-text-wrap" *ngIf="type">
                 <ion-label>
@@ -68,7 +70,12 @@
                         <p>{{ timemodified | coreFormatDate }}</p>
                     </ion-label>
                 </ion-item>
+            </ng-container>
+        </ion-list>
+        -->
 
+        <ion-list>
+            <ng-container *ngIf="!isExternalFile">
                 <ion-item class="ion-text-wrap" *ngIf="downloadTimeReadable">
                     <ion-label>
                         <p class="item-heading">{{ 'core.lastdownloaded' | translate }}</p>

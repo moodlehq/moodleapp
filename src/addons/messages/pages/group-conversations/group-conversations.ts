@@ -29,7 +29,7 @@ import {
     AddonMessagesOfflineAnyMessagesFormatted,
 } from '../../services/messages-offline';
 import { CoreDomUtils } from '@services/utils/dom';
-import { CoreUser } from '@features/user/services/user';
+import { CoreUser, CoreUserParticipant } from '@features/user/services/user';
 import { CorePushNotificationsDelegate } from '@features/pushnotifications/services/push-delegate';
 import { Translate } from '@singletons';
 import { Subscription } from 'rxjs';
@@ -40,11 +40,37 @@ import { CoreNavigator } from '@services/navigator';
 import { CoreScreen } from '@services/screen';
 import { CorePlatform } from '@services/platform';
 import { CoreSplitViewComponent } from '@components/split-view/split-view';
+import { CoreCourses } from '@features/courses/services/courses';
+import { CoreUserParent } from '@features/user/services/parent';
+import { CoreEnrolledCourseData } from '@features/courses/services/courses';
 
 const enum AddonMessagesGroupConversationOptionNames {
     FAVOURITES = 'favourites',
     GROUP = 'group',
     INDIVIDUAL = 'individual',
+    TEACHERS_BY_COURSE = 'teachersByCourse',
+}
+
+/**
+ * Teacher conversation group structure.
+ */
+interface TeacherConversationGroup {
+    courseId: number;
+    courseName: string;
+    courseImage?: string;
+    teachers: AddonMessagesConversationFormatted[];
+    expanded?: boolean;
+}
+
+/**
+ * Child teacher conversations structure.
+ */
+interface ChildTeacherConversations {
+    childId: number;
+    childName: string;
+    childAvatar?: any;
+    courses: TeacherConversationGroup[];
+    expanded?: boolean;
 }
 
 /**
@@ -66,6 +92,12 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
     selectedConversationId?: number;
     selectedUserId?: number;
     contactRequestsCount = 0;
+    
+    // Teacher conversations data
+    isParent = false;
+    teacherConversations: TeacherConversationGroup[] = [];
+    childTeacherConversations: ChildTeacherConversations[] = [];
+    showTeachersByCourse = false;
 
     groupConversations: AddonMessagesGroupConversationOption[] = [
         {
@@ -93,6 +125,16 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
             titleString: 'addon.messages.individualconversations',
             emptyString: 'addon.messages.noindividualconversations',
             type: AddonMessagesProvider.MESSAGE_CONVERSATION_TYPE_INDIVIDUAL,
+            favourites: false,
+            count: 0,
+            unread: 0,
+            conversations: [],
+        },
+        {
+            optionName: AddonMessagesGroupConversationOptionNames.TEACHERS_BY_COURSE,
+            titleString: 'addon.messages.teachersbycourse',
+            emptyString: 'addon.messages.noteachers',
+            type: undefined,
             favourites: false,
             count: 0,
             unread: 0,
@@ -311,6 +353,19 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
             }
         });
 
+        // Check if user is a parent
+        this.isParent = await CoreUserParent.isParentUser();
+        
+        // Show teachers by course section for students and parents
+        this.showTeachersByCourse = true;
+        
+        // Remove the teachers option if not needed
+        if (!this.showTeachersByCourse) {
+            this.groupConversations = this.groupConversations.filter(
+                option => option.optionName !== AddonMessagesGroupConversationOptionNames.TEACHERS_BY_COURSE
+            );
+        }
+
         await this.fetchData();
 
         if (!this.selectedConversationId && !this.selectedUserId && CoreScreen.isTablet) {
@@ -343,6 +398,11 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
         promises.push(AddonMessages.getContactRequestsCount(this.siteId));
         if (refreshUnreadCounts) {
             promises.push(AddonMessages.refreshUnreadConversationCounts(this.siteId));
+        }
+        
+        // Fetch teacher conversations to get the count
+        if (this.showTeachersByCourse) {
+            promises.push(this.fetchTeacherConversations());
         }
 
         try {
@@ -406,6 +466,241 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
     }
 
     /**
+     * Fetch teacher conversations grouped by course.
+     */
+    protected async fetchTeacherConversations(): Promise<void> {
+        try {
+            console.log('[AddonMessagesGroupConversations] Fetching teacher conversations, isParent:', this.isParent);
+            
+            if (this.isParent) {
+                // For parents, get mentees first
+                const mentees = await CoreUserParent.getMentees();
+                this.childTeacherConversations = [];
+                console.log('[AddonMessagesGroupConversations] Found mentees:', mentees.length);
+
+                for (const mentee of mentees) {
+                    const childCourses = await CoreCourses.getUserCourses(true, this.siteId, mentee.id);
+                    console.log('[AddonMessagesGroupConversations] Courses for mentee', mentee.id, ':', childCourses.length);
+                    const childTeachers: ChildTeacherConversations = {
+                        childId: mentee.id,
+                        childName: mentee.fullname || '',
+                        childAvatar: mentee,
+                        courses: [],
+                        expanded: false,
+                    };
+
+                    // Group teachers by course for this child
+                    for (const course of childCourses) {
+                        const teachers = await this.getTeachersInCourse(course.id);
+                        if (teachers.length > 0) {
+                            // Get course image from overviewfiles
+                            let courseImage: string | undefined;
+                            if (course.overviewfiles && course.overviewfiles.length > 0) {
+                                courseImage = course.overviewfiles[0].fileurl;
+                            }
+                            
+                            childTeachers.courses.push({
+                                courseId: course.id,
+                                courseName: course.fullname || course.shortname || '',
+                                courseImage: courseImage,
+                                teachers: teachers,
+                                expanded: false,
+                            });
+                        }
+                    }
+
+                    if (childTeachers.courses.length > 0) {
+                        this.childTeacherConversations.push(childTeachers);
+                    }
+                }
+            } else {
+                // For students, get their own courses
+                const courses = await CoreCourses.getUserCourses(true);
+                this.teacherConversations = [];
+                console.log('[AddonMessagesGroupConversations] Student courses:', courses.length);
+
+                for (const course of courses) {
+                    const teachers = await this.getTeachersInCourse(course.id);
+                    if (teachers.length > 0) {
+                        // Get course image from overviewfiles
+                        let courseImage: string | undefined;
+                        if (course.overviewfiles && course.overviewfiles.length > 0) {
+                            courseImage = course.overviewfiles[0].fileurl;
+                        }
+                        
+                        this.teacherConversations.push({
+                            courseId: course.id,
+                            courseName: course.fullname || course.shortname || '',
+                            courseImage: courseImage,
+                            teachers: teachers,
+                            expanded: false,
+                        });
+                    }
+                }
+            }
+
+            // Update the count for the teachers option
+            const teachersOption = this.getConversationGroupByName(AddonMessagesGroupConversationOptionNames.TEACHERS_BY_COURSE);
+            if (this.isParent) {
+                teachersOption.count = this.childTeacherConversations.reduce((total, child) => 
+                    total + child.courses.reduce((courseTotal, course) => courseTotal + course.teachers.length, 0), 0);
+            } else {
+                teachersOption.count = this.teacherConversations.reduce((total, course) => 
+                    total + course.teachers.length, 0);
+            }
+            console.log('[AddonMessagesGroupConversations] Teacher conversations count:', teachersOption.count);
+        } catch (error) {
+            CoreDomUtils.showErrorModalDefault(error, 'addon.messages.errorwhileretrievingteachers', true);
+        }
+    }
+
+    /**
+     * Get teachers in a specific course.
+     * 
+     * @param courseId The course ID.
+     * @returns Promise resolved with the list of teachers.
+     */
+    protected async getTeachersInCourse(courseId: number): Promise<AddonMessagesConversationFormatted[]> {
+        try {
+            // Check if user is viewing as parent
+            const selectedMenteeId = await CoreUserParent.getSelectedMentee();
+            let participants: CoreUserParticipant[] = [];
+            
+            if (selectedMenteeId && selectedMenteeId !== this.currentUserId) {
+                // Parent viewing - use custom web service
+                console.log('[AddonMessagesGroupConversations] Parent viewing detected, using custom web service');
+                
+                try {
+                    const site = await CoreSites.getSite(this.siteId);
+                    const hasCustomWS = await site.wsAvailable('local_aspireparent_get_mentee_course_teachers');
+                    
+                    if (hasCustomWS) {
+                        const result = await site.read<{teachers: Array<{
+                            id: number;
+                            fullname: string;
+                            firstname: string;
+                            lastname: string;
+                            email: string;
+                            profileimageurl: string;
+                            roleid: number;
+                        }>}>('local_aspireparent_get_mentee_course_teachers', {
+                            courseid: courseId,
+                            menteeid: selectedMenteeId,
+                        });
+                        
+                        // Convert teachers to participant format
+                        participants = result.teachers.map((teacher) => ({
+                            id: teacher.id,
+                            fullname: teacher.fullname,
+                            profileimageurl: teacher.profileimageurl,
+                            roles: [{ shortname: 'teacher', name: 'Teacher' }],
+                        } as CoreUserParticipant));
+                    } else {
+                        console.error('[AddonMessagesGroupConversations] Custom WS not available');
+                        return [];
+                    }
+                } catch (error) {
+                    console.error('[AddonMessagesGroupConversations] Error getting mentee course teachers', error);
+                    return [];
+                }
+            } else {
+                // Regular user - get participants normally
+                const result = await CoreUser.getParticipants(courseId, 0, 100, this.siteId);
+                participants = result.participants;
+            }
+            
+            // Filter for teachers/instructors based on roles
+            const teachers: AddonMessagesConversationFormatted[] = [];
+            
+            for (const participant of participants) {
+                // For parent viewing, we already have teachers from the custom WS
+                if (selectedMenteeId && selectedMenteeId !== this.currentUserId) {
+                    // Already filtered - add all participants
+                } else {
+                    // Regular user - check if participant has teacher-like roles
+                    if (!participant.roles || participant.roles.length === 0) {
+                        continue;
+                    }
+                    
+                    // Check for teacher/instructor roles using common shortnames
+                    const teacherRoleNames = ['teacher', 'editingteacher', 'instructor', 'tutor', 'trainer', 'facilitator'];
+                    const isTeacher = participant.roles.some(role => 
+                        teacherRoleNames.includes(role.shortname.toLowerCase())
+                    );
+                    
+                    if (!isTeacher) {
+                        continue;
+                    }
+                }
+                
+                // Check if there's an existing conversation with this teacher
+                const existingConv = await this.findExistingConversation(participant.id);
+                
+                // Create a conversation object for each teacher
+                const conversation: AddonMessagesConversationFormatted = {
+                    id: existingConv?.id || 0, // Use existing conversation ID if available
+                    type: AddonMessagesProvider.MESSAGE_CONVERSATION_TYPE_INDIVIDUAL,
+                    membercount: 2,
+                    ismuted: false,
+                    isfavourite: false,
+                    isread: true,
+                    members: [],
+                    messages: [],
+                    candeletemessagesforallusers: false,
+                    userid: participant.id,
+                    name: participant.fullname || '',
+                    imageurl: participant.profileimageurl || '',
+                    unreadcount: existingConv?.unreadcount || 0,
+                };
+                
+                // Set otherUser for avatar display if we have the info
+                if (participant.id && participant.fullname) {
+                    (conversation as any).otherUser = {
+                        id: participant.id,
+                        fullname: participant.fullname,
+                        profileimageurl: participant.profileimageurl || '',
+                    };
+                }
+                
+                teachers.push(conversation);
+            }
+            
+            return teachers;
+        } catch (error) {
+            console.error('[AddonMessagesGroupConversations] Error getting teachers in course', courseId, error);
+            return [];
+        }
+    }
+
+    /**
+     * Find existing conversation with a user.
+     * 
+     * @param userId The user ID to find conversation with.
+     * @returns Promise resolved with the conversation if found.
+     */
+    protected async findExistingConversation(userId: number): Promise<AddonMessagesConversationFormatted | undefined> {
+        try {
+            // Try to find in already loaded conversations
+            const existingConv = this.findConversation(undefined, userId);
+            if (existingConv) {
+                return existingConv;
+            }
+            
+            // If not found, try to get from server
+            const conversations = await AddonMessages.getConversations(
+                AddonMessagesProvider.MESSAGE_CONVERSATION_TYPE_INDIVIDUAL,
+                false,
+                0,
+                this.siteId
+            );
+            
+            return conversations.conversations.find(conv => conv.userid === userId);
+        } catch {
+            return undefined;
+        }
+    }
+
+    /**
      * Fetch data for a certain option.
      *
      * @param option The option to fetch data for.
@@ -419,6 +714,14 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
         getCounts = false,
     ): Promise<void> {
         option.loadMoreError = false;
+
+        // Handle teachers by course option differently
+        if (option.optionName === AddonMessagesGroupConversationOptionNames.TEACHERS_BY_COURSE) {
+            if (!loadingMore) {
+                await this.fetchTeacherConversations();
+            }
+            return;
+        }
 
         const limitFrom = loadingMore ? option.conversations.length : 0;
         const promises: Promise<unknown>[] = [];
@@ -567,6 +870,8 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
      * @param messageId Message to scroll after loading the discussion. Used when searching.
      */
     async gotoConversation(conversationId?: number, userId?: number, messageId?: number): Promise<void> {
+        console.log('[AddonMessagesGroupConversations] gotoConversation called with:', { conversationId, userId, messageId });
+        
         this.selectedConversationId = conversationId;
         this.selectedUserId = userId;
 
@@ -577,6 +882,8 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
 
         const path = CoreNavigator.getRelativePathToParent('/messages/group-conversations') + 'discussion/' +
             (conversationId ? conversationId : `user/${userId}`);
+        
+        console.log('[AddonMessagesGroupConversations] Navigating to:', path);
 
         await CoreNavigator.navigate(path, {
             params,

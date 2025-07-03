@@ -140,6 +140,15 @@
                 background-color: $value;
             }
         }
+        
+        // Custom colors for overdue and upcoming events
+        &.calendar_event_overdue {
+            background-color: #dc3545; // Red for overdue
+        }
+        
+        &.calendar_event_upcoming {
+            background-color: #fd7e14; // Orange for upcoming
+        }
     }
 
     swiper-slide {

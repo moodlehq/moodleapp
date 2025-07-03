@@ -205,6 +205,13 @@ export class CoreCoursesDashboardPage implements OnInit, OnDestroy {
         }
     }
 
+    /**
+     * Navigate to Grades page.
+     */
+    openGrades(): void {
+        CoreNavigator.navigateToSitePath('grades');
+    }
+
 
     /**
      * @inheritdoc

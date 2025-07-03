@@ -458,36 +458,71 @@ export class CoreMainMenuUserMenuComponent implements OnInit, OnDestroy {
         // Save selection
         await CoreUserParent.setSelectedMentee(mentee.id);
         
-        // Invalidate courses cache to force refresh
-        await CoreCourses.invalidateUserCourses(this.siteId);
+        // Comprehensive cache invalidation
+        const site = await CoreSites.getSite(this.siteId);
+        
+        // Invalidate all courses-related caches
+        await CoreCourses.invalidateAllUserCourses(this.siteId);
+        
+        // Invalidate dashboard blocks
+        const { CoreCoursesDashboard, CoreCoursesDashboardProvider } = await import('@features/courses/services/dashboard');
+        await CoreCoursesDashboard.invalidateDashboardBlocks(CoreCoursesDashboardProvider.MY_PAGE_COURSES);
+        
+        // Force reload after view change
+        console.log('[User Menu] View changed to mentee, forcing reload');
         
         // Trigger a general refresh event
         CoreEvents.trigger(USER_PROFILE_REFRESHED, { userId: mentee.id }, this.siteId);
         
-        // Close the modal to trigger navigation refresh
+        // Close the modal and force navigation to home
         await this.close(new Event('click'));
+        
+        // Force reload by navigating to home
+        await CoreNavigator.navigate('/main/home', { 
+            reset: true,
+            animated: false 
+        });
     }
 
     /**
      * Clear mentee selection (view own data).
      */
     async clearMenteeSelection(): Promise<void> {
+        // Store the mentee ID before clearing
+        const previousMenteeId = this.selectedMenteeId;
+        
         this.selectedMentee = undefined;
         this.selectedMenteeId = undefined;
         this.showMenteeSelector = false;
         
         await CoreUserParent.clearSelectedMentee();
         
-        // Invalidate courses cache to force refresh
-        await CoreCourses.invalidateUserCourses(this.siteId);
+        // Comprehensive cache invalidation
+        const site = await CoreSites.getSite(this.siteId);
+        
+        // Invalidate all courses-related caches
+        await CoreCourses.invalidateAllUserCourses(this.siteId);
+        
+        // Invalidate dashboard blocks
+        const { CoreCoursesDashboard, CoreCoursesDashboardProvider } = await import('@features/courses/services/dashboard');
+        await CoreCoursesDashboard.invalidateDashboardBlocks(CoreCoursesDashboardProvider.MY_PAGE_COURSES);
+        
+        // Force reload the home page after cache invalidation
+        console.log('[User Menu] View changed back to self, forcing reload');
         
         // Trigger a general refresh event
         if (this.siteInfo) {
             CoreEvents.trigger(USER_PROFILE_REFRESHED, { userId: this.siteInfo.userid }, this.siteId);
         }
         
-        // Close the modal to trigger navigation refresh
+        // Close the modal and force navigation to home
         await this.close(new Event('click'));
+        
+        // Force reload by navigating to home
+        await CoreNavigator.navigate('/main/home', { 
+            reset: true,
+            animated: false 
+        });
     }
 
     /**
