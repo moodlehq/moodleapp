@@ -12,9 +12,15 @@
                 <ion-icon slot="icon-only" name="fas-filter" aria-hidden="true" />
             </ion-button>
             <core-context-menu>
+                <core-context-menu-item *ngIf="showCalendar && calendarView === 'month'" [priority]="900" 
+                    [content]="'addon.calendar.weeklyview' | translate"
+                    iconAction="fas-calendar-week" (action)="switchToWeekView()" />
+                <core-context-menu-item *ngIf="showCalendar && calendarView === 'week'" [priority]="900" 
+                    [content]="'addon.calendar.monthlyview' | translate"
+                    iconAction="fas-calendar-days" (action)="switchToMonthView()" />
                 <core-context-menu-item *ngIf="showCalendar" [priority]="800" [content]="'addon.calendar.upcomingevents' | translate"
                     iconAction="fas-table-list" (action)="toggleDisplay()" />
-                <core-context-menu-item *ngIf="!showCalendar" [priority]="800" [content]="'addon.calendar.monthlyview' | translate"
+                <core-context-menu-item *ngIf="!showCalendar" [priority]="800" [content]="'addon.calendar.calendarview' | translate"
                     iconAction="fas-calendar-days" (action)="toggleDisplay()" />
                 <core-context-menu-item [priority]="600" [content]="'core.settings.settings' | translate" (action)="openSettings()"
                     iconAction="fas-gears" />
@@ -121,8 +127,73 @@
         </ion-card>
     </div>
 
-    <addon-calendar-calendar [hidden]="!showCalendar" [initialYear]="year" [initialMonth]="month" [filter]="filter"
+    <addon-calendar-calendar [hidden]="!showCalendar || calendarView !== 'month'" [initialYear]="year" [initialMonth]="month" [filter]="filter"
         [displayNavButtons]="showCalendar" (onEventClicked)="gotoEvent($event)" (onDayClicked)="gotoDay($event)" />
+
+    <!-- Weekly Calendar View -->
+    <div class="addon-calendar-weekly" *ngIf="showCalendar && calendarView === 'week'">
+        <ion-grid class="ion-no-padding addon-calendar-navigation">
+            <ion-row class="ion-align-items-center">
+                <ion-col class="ion-text-start">
+                    <ion-button fill="clear" (click)="loadPreviousWeek()" [ariaLabel]="'addon.calendar.weekprev' | translate">
+                        <ion-icon name="fas-chevron-left" slot="icon-only" aria-hidden="true" />
+                    </ion-button>
+                </ion-col>
+                <ion-col class="ion-text-center addon-calendar-period">
+                    <h2>{{ weekPeriodName }}</h2>
+                </ion-col>
+                <ion-col class="ion-text-end">
+                    <ion-button fill="clear" (click)="loadNextWeek()" [ariaLabel]="'addon.calendar.weeknext' | translate">
+                        <ion-icon name="fas-chevron-right" slot="icon-only" aria-hidden="true" />
+                    </ion-button>
+                </ion-col>
+            </ion-row>
+        </ion-grid>
+
+        <ion-list class="addon-calendar-week-events">
+            <ng-container *ngFor="let day of weekDays">
+                <ion-item-group>
+                    <ion-item-divider sticky>
+                        <ion-label>
+                            <h2 [class.today]="day.isToday">{{ day.dayName }}, {{ day.displayDate }}</h2>
+                        </ion-label>
+                    </ion-item-divider>
+                    
+                    <ion-item *ngIf="!day.events || day.events.length === 0" class="no-events">
+                        <ion-label class="ion-text-center">
+                            <p>{{ 'addon.calendar.noevents' | translate }}</p>
+                        </ion-label>
+                    </ion-item>
+                    
+                    <ion-item *ngFor="let event of day.events" class="addon-calendar-event-item" 
+                        (click)="gotoEvent(event.id)" button [detail]="false"
+                        [class.past-event]="event.ispast">
+                        <ion-icon *ngIf="event.moduleIcon" [name]="event.moduleIcon" slot="start" 
+                            class="calendar_event_type calendar_event_{{event.formattedType}}" />
+                        <span *ngIf="!event.moduleIcon" slot="start" 
+                            class="event-dot calendar_event_type calendar_event_{{event.formattedType}}"></span>
+                        <ion-label class="ion-text-wrap">
+                            <h3>{{ event.name }}</h3>
+                            <p>
+                                <ion-icon name="fas-clock" size="small" />
+                                {{ event.timestart * 1000 | coreFormatDate: 'strftimetime' }}
+                                <span *ngIf="event.timeduration > 0"> - {{ getEventEndTime(event) | coreFormatDate: 'strftimetime' }}</span>
+                            </p>
+                            <p *ngIf="event.course && event.course.fullname">
+                                <ion-icon name="fas-graduation-cap" size="small" />
+                                {{ event.course.fullname }}
+                            </p>
+                            <p *ngIf="event.location">
+                                <ion-icon name="fas-location-dot" size="small" />
+                                {{ event.location }}
+                            </p>
+                        </ion-label>
+                        <ion-badge slot="end" *ngIf="event.timeduration === 0">{{ 'addon.calendar.allday' | translate }}</ion-badge>
+                    </ion-item>
+                </ion-item-group>
+            </ng-container>
+        </ion-list>
+    </div>
 
     <addon-calendar-upcoming-events *ngIf="loadUpcoming" [hidden]="showCalendar" [filter]="filter" (onEventClicked)="gotoEvent($event)" />
 

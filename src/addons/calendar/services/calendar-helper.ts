@@ -77,6 +77,16 @@ export class AddonCalendarHelperProvider {
     }
 
     /**
+     * Get icon for a module.
+     *
+     * @param moduleName Module name.
+     * @returns Icon name.
+     */
+    async getModuleIcon(moduleName: string): Promise<string | undefined> {
+        return CoreCourseModuleDelegate.getModuleIconSrc(moduleName);
+    }
+
+    /**
      * Calculate some day data based on a list of events for that day.
      *
      * @param day Day.

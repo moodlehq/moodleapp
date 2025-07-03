@@ -31,6 +31,9 @@ import { AddonCalendarUpcomingEventsComponent } from '../../components/upcoming-
 import { CoreNavigator } from '@services/navigator';
 import { CoreConstants } from '@/core/constants';
 import { CoreModals } from '@services/modals';
+import moment from 'moment-timezone';
+import { AddonCalendarEventToDisplay } from '../../services/calendar';
+import { CoreTimeUtils } from '@services/utils/time';
 
 /**
  * Page that displays the calendar events.
@@ -67,6 +70,16 @@ export class AddonCalendarIndexPage implements OnInit, OnDestroy {
     syncIcon = CoreConstants.ICON_LOADING;
     showCalendar = true;
     loadUpcoming = false;
+    calendarView: 'month' | 'week' = 'week'; // Default to week view for parents
+    weekDays: {
+        date: moment.Moment;
+        dayName: string;
+        displayDate: string;
+        isToday: boolean;
+        events: any[];
+    }[] = [];
+    weekPeriodName = '';
+    currentWeekStart?: moment.Moment;
     filter: AddonCalendarFilter = {
         filtered: false,
         courseId: undefined,
@@ -174,6 +187,11 @@ export class AddonCalendarIndexPage implements OnInit, OnDestroy {
 
             if (this.year !== undefined && this.month !== undefined && this.calendarComponent) {
                 this.calendarComponent.viewMonth(this.month, this.year);
+            }
+            
+            // Load week events if in week view
+            if (this.calendarView === 'week' && this.showCalendar) {
+                await this.loadWeekEvents();
             }
         });
 
@@ -371,6 +389,113 @@ export class AddonCalendarIndexPage implements OnInit, OnDestroy {
         if (!this.showCalendar) {
             this.loadUpcoming = true;
         }
+    }
+
+    /**
+     * Switch to week view.
+     */
+    async switchToWeekView(): Promise<void> {
+        this.calendarView = 'week';
+        await this.loadWeekEvents();
+    }
+
+    /**
+     * Switch to month view.
+     */
+    switchToMonthView(): void {
+        this.calendarView = 'month';
+    }
+
+    /**
+     * Load events for the current week.
+     */
+    async loadWeekEvents(): Promise<void> {
+        if (!this.currentWeekStart) {
+            this.currentWeekStart = moment().startOf('week');
+        }
+
+        // Calculate week period name
+        const weekEnd = moment(this.currentWeekStart).endOf('week');
+        this.weekPeriodName = `${this.currentWeekStart.format('MMM D')} - ${weekEnd.format('MMM D, YYYY')}`;
+
+        // Initialize week days
+        this.weekDays = [];
+        for (let i = 0; i < 7; i++) {
+            const day = moment(this.currentWeekStart).add(i, 'days');
+            this.weekDays.push({
+                date: day,
+                dayName: day.format('dddd'),
+                displayDate: day.format('MMMM D'),
+                isToday: day.isSame(moment(), 'day'),
+                events: []
+            });
+        }
+
+        try {
+            // Get events for the week
+            const start = this.currentWeekStart.unix();
+            const end = weekEnd.unix();
+            
+            const events = await AddonCalendar.getEventsList(start, 0, 7, this.currentSiteId);
+
+            // Group events by day
+            if (events && events.length > 0) {
+                for (const event of events) {
+                    const eventDay = moment(event.timestart * 1000).startOf('day');
+                    const dayIndex = eventDay.diff(this.currentWeekStart, 'days');
+                    
+                    if (dayIndex >= 0 && dayIndex < 7) {
+                        // Create event to display with additional properties
+                        const eventToDisplay: any = {
+                            ...event,
+                            formattedType: event.eventtype || 'user',
+                            ispast: moment().isAfter(moment(event.timestart * 1000))
+                        };
+                        
+                        // Add module icon if available
+                        if (event.modulename) {
+                            eventToDisplay.moduleIcon = await AddonCalendarHelper.getModuleIcon(event.modulename);
+                        }
+                        
+                        this.weekDays[dayIndex].events.push(eventToDisplay);
+                    }
+                }
+            }
+
+            // Apply filters
+            this.weekDays.forEach(day => {
+                day.events = AddonCalendarHelper.getFilteredEvents(day.events, this.filter, {});
+            });
+
+        } catch (error) {
+            CoreDomUtils.showErrorModal(error);
+        }
+    }
+
+    /**
+     * Load previous week.
+     */
+    async loadPreviousWeek(): Promise<void> {
+        this.currentWeekStart = moment(this.currentWeekStart).subtract(1, 'week');
+        await this.loadWeekEvents();
+    }
+
+    /**
+     * Load next week.
+     */
+    async loadNextWeek(): Promise<void> {
+        this.currentWeekStart = moment(this.currentWeekStart).add(1, 'week');
+        await this.loadWeekEvents();
+    }
+
+    /**
+     * Get event end time.
+     * 
+     * @param event Event to get end time for.
+     * @returns Event end time.
+     */
+    getEventEndTime(event: AddonCalendarEventToDisplay): number {
+        return (event.timestart + event.timeduration) * 1000;
     }
 
     /**

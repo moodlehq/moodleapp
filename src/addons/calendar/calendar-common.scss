@@ -24,4 +24,77 @@
         }
     }
 
+    // Weekly calendar view styles
+    .addon-calendar-weekly {
+        ion-list {
+            background: var(--ion-background-color);
+        }
+
+        ion-item-divider {
+            font-weight: 600;
+            
+            h2.today {
+                color: var(--core-color-primary);
+            }
+        }
+
+        .no-events {
+            ion-label {
+                color: var(--ion-text-color-step-400);
+                font-style: italic;
+            }
+        }
+
+        .addon-calendar-event-item {
+            .event-dot {
+                width: 12px;
+                height: 12px;
+                border-radius: 50%;
+                margin-right: 12px;
+                flex-shrink: 0;
+            }
+
+            ion-label {
+                h3 {
+                    font-weight: 600;
+                    margin-bottom: 4px;
+                }
+
+                p {
+                    font-size: 14px;
+                    color: var(--ion-text-color-step-550);
+                    margin: 2px 0;
+
+                    ion-icon {
+                        font-size: 14px;
+                        margin-right: 4px;
+                        vertical-align: text-bottom;
+                    }
+                }
+            }
+
+            &.past-event {
+                opacity: 0.6;
+            }
+        }
+
+        .calendar_event_type {
+            &.calendar_event_site {
+                background-color: map-get($calendar-event-category-colors, site);
+            }
+            &.calendar_event_course {
+                background-color: map-get($calendar-event-category-colors, course);
+            }
+            &.calendar_event_group {
+                background-color: map-get($calendar-event-category-colors, group);
+            }
+            &.calendar_event_user {
+                background-color: map-get($calendar-event-category-colors, user);
+            }
+            &.calendar_event_category {
+                background-color: map-get($calendar-event-category-colors, category);
+            }
+        }
+    }
+
 }
