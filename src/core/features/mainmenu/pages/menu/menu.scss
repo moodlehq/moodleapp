@@ -119,7 +119,7 @@ ion-tabs {
             border-bottom: 4px solid transparent;
 
             &.tab-selected {
-                border-top-color: var(--core-tab-border-color-active);
+                border-top-color: var(--core-bottom-tabs-border-color-active);
             }
 
             ion-icon.core-tab-icon {
