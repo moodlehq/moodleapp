@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit, Type } from '@angular/core';
+import { Component, OnInit, Type, inject } from '@angular/core';
 import { CoreTag } from '@features/tag/services/tag';
 import { ActivatedRoute } from '@angular/router';
 import { CoreTagAreaDelegate } from '../../services/tag-area-delegate';
@@ -33,6 +33,8 @@ import { CoreSharedModule } from '@/core/shared.module';
 })
 export default class CoreTagIndexAreaPage implements OnInit {
 
+    protected route = inject(ActivatedRoute);
+
     tagId = 0;
     tagName = '';
     collectionId = 0;
@@ -50,10 +52,6 @@ export default class CoreTagIndexAreaPage implements OnInit {
     canLoadMore = false;
     areaComponent?: Type<unknown>;
     loadMoreError = false;
-
-    constructor(
-        protected route: ActivatedRoute,
-    ) { }
 
     /**
      * @inheritdoc

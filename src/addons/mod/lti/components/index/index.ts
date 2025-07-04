@@ -12,10 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, Optional, OnInit } from '@angular/core';
-import { IonContent } from '@ionic/angular';
+import { Component, OnInit } from '@angular/core';
 import { CoreCourseModuleMainActivityComponent } from '@features/course/classes/main-activity-component';
-import CoreCourseContentsPage from '@features/course/pages/contents/contents';
 import { AddonModLti, AddonModLtiLti } from '../../services/lti';
 import { AddonModLtiHelper } from '../../services/lti-helper';
 import { ADDON_MOD_LTI_COMPONENT_LEGACY } from '../../constants';
@@ -44,13 +42,6 @@ export class AddonModLtiIndexComponent extends CoreCourseModuleMainActivityCompo
     lti?: AddonModLtiLti; // The LTI object.
 
     protected fetchContentDefaultError = 'addon.mod_lti.errorgetlti';
-
-    constructor(
-        protected content?: IonContent,
-        @Optional() courseContentsPage?: CoreCourseContentsPage,
-    ) {
-        super('AddonModLtiIndexComponent', content, courseContentsPage);
-    }
 
     /**
      * @inheritdoc

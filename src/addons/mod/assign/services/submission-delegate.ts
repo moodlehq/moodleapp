@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Injectable, Type } from '@angular/core';
+import { Injectable, Type, inject } from '@angular/core';
 import { CoreDelegate, CoreDelegateHandler } from '@classes/delegate';
 import { AddonModAssignDefaultSubmissionHandler } from './handlers/default-submission';
 import { AddonModAssignAssign, AddonModAssignSubmission, AddonModAssignPlugin, AddonModAssignSavePluginData } from './assign';
@@ -305,12 +305,12 @@ export interface AddonModAssignSubmissionHandler extends CoreDelegateHandler {
 @Injectable({ providedIn: 'root' })
 export class AddonModAssignSubmissionDelegateService extends CoreDelegate<AddonModAssignSubmissionHandler> {
 
+    protected defaultHandler = inject(AddonModAssignDefaultSubmissionHandler);
+
     protected handlerNameProperty = 'type';
 
-    constructor(
-        protected defaultHandler: AddonModAssignDefaultSubmissionHandler,
-    ) {
-        super('AddonModAssignSubmissionDelegate');
+    constructor() {
+        super();
     }
 
     /**

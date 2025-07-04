@@ -130,7 +130,7 @@ export class AddonModQuizAccessRuleDelegateService extends CoreDelegate<AddonMod
     protected handlerNameProperty = 'ruleName';
 
     constructor() {
-        super('AddonModQuizAccessRulesDelegate');
+        super();
     }
 
     /**

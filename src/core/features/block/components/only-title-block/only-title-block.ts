@@ -30,10 +30,6 @@ import { CoreSharedModule } from '@/core/shared.module';
 })
 export class CoreBlockOnlyTitleComponent extends CoreBlockBaseComponent implements OnInit {
 
-    constructor() {
-        super('CoreBlockOnlyTitleComponent');
-    }
-
     /**
      * @inheritdoc
      */

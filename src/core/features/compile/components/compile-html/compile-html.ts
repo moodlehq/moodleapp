@@ -38,6 +38,7 @@ import {
     EffectRef,
     EffectCleanupRegisterFn,
     CreateEffectOptions,
+    inject,
 } from '@angular/core';
 import { CorePromisedValue } from '@classes/promised-value';
 
@@ -72,6 +73,9 @@ import { CoreSharedModule } from '@/core/shared.module';
 })
 export class CoreCompileHtmlComponent implements OnChanges, OnDestroy, DoCheck {
 
+    protected changeDetector = inject(ChangeDetectorRef);
+    protected injector = inject(Injector);
+
     @Input({ required: true }) text!: string; // The HTML text to display.
     @Input() javascript?: string; // The Javascript to execute in the component.
     @Input() jsData?: Record<string, unknown>; // Data to pass to the fake component.
@@ -96,12 +100,10 @@ export class CoreCompileHtmlComponent implements OnChanges, OnDestroy, DoCheck {
     protected pendingCalls = {};
     protected componentStyles = '';
 
-    constructor(
-        protected changeDetector: ChangeDetectorRef,
-        protected injector: Injector,
-        element: ElementRef,
-        differs: KeyValueDiffers,
-    ) {
+    constructor() {
+        const element = inject(ElementRef);
+        const differs = inject(KeyValueDiffers);
+
         this.element = element.nativeElement;
         this.differ = differs.find([]).create();
     }

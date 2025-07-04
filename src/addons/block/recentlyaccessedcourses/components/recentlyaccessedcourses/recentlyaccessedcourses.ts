@@ -62,8 +62,7 @@ export class AddonBlockRecentlyAccessedCoursesComponent extends CoreBlockBaseCom
     protected fetchContentDefaultError = 'Error getting recent courses data.';
 
     constructor() {
-        super('AddonBlockRecentlyAccessedCoursesComponent');
-
+        super();
         this.site = CoreSites.getRequiredCurrentSite();
     }
 

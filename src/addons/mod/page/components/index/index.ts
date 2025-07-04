@@ -12,9 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit, Optional } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CoreCourseModuleMainResourceComponent } from '@features/course/classes/main-resource-component';
-import CoreCourseContentsPage from '@features/course/pages/contents/contents';
 import { CoreText } from '@singletons/text';
 import { CoreUtils } from '@singletons/utils';
 import { AddonModPagePage, AddonModPage } from '../../services/page';
@@ -48,10 +47,6 @@ export class AddonModPageIndexComponent extends CoreCourseModuleMainResourceComp
     page?: AddonModPagePage;
 
     protected fetchContentDefaultError = 'addon.mod_page.errorwhileloadingthepage';
-
-    constructor(@Optional() courseContentsPage?: CoreCourseContentsPage) {
-        super('AddonModPageIndexComponent', courseContentsPage);
-    }
 
     /**
      * @inheritdoc

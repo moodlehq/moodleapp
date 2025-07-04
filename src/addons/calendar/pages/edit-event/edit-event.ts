@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit, OnDestroy, ViewChild, ElementRef } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, ElementRef, inject } from '@angular/core';
 import { FormControl, FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { CoreEvents } from '@singletons/events';
 import { CoreGroup, CoreGroups } from '@services/groups';
@@ -71,6 +71,8 @@ import { DEFAULT_TEXT_FORMAT } from '@singletons/text';
 })
 export default class AddonCalendarEditEventPage implements OnInit, OnDestroy, CanLeave {
 
+    protected fb = inject(FormBuilder);
+
     @ViewChild(CoreEditorRichTextEditorComponent) descriptionEditor!: CoreEditorRichTextEditorComponent;
     @ViewChild('editEventForm') formElement!: ElementRef;
 
@@ -109,9 +111,7 @@ export default class AddonCalendarEditEventPage implements OnInit, OnDestroy, Ca
     protected isDestroyed = false;
     protected gotEventData = false;
 
-    constructor(
-        protected fb: FormBuilder,
-    ) {
+    constructor() {
         this.currentSite = CoreSites.getRequiredCurrentSite();
         this.remindersEnabled = CoreReminders.isEnabled();
 

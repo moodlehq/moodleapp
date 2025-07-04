@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, inject } from '@angular/core';
 import {
     AddonCalendar,
     AddonCalendarEventToDisplay,
@@ -69,6 +69,8 @@ import { CoreSharedModule } from '@/core/shared.module';
 })
 export default class AddonCalendarEventPage implements OnInit, OnDestroy {
 
+    protected route = inject(ActivatedRoute);
+
     protected eventId!: number;
     protected siteHomeId: number;
     protected newEventObserver: CoreEventObserver;
@@ -100,9 +102,7 @@ export default class AddonCalendarEventPage implements OnInit, OnDestroy {
     canScheduleExactAlarms = true;
     scheduleExactWarningHidden = false;
 
-    constructor(
-        protected route: ActivatedRoute,
-    ) {
+    constructor() {
         this.remindersEnabled = CoreReminders.isEnabled();
         this.siteHomeId = CoreSites.getCurrentSiteHomeId();
         this.currentSiteId = CoreSites.getCurrentSiteId();

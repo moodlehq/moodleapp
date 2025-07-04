@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit, OnDestroy, ViewChild, ElementRef } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, ElementRef, inject } from '@angular/core';
 import { FormControl, FormGroup, FormBuilder } from '@angular/forms';
 import { CoreError } from '@classes/errors/error';
 import { CoreCourse } from '@features/course/services/course';
@@ -57,6 +57,8 @@ import { CoreSharedModule } from '@/core/shared.module';
 })
 export default class AddonModWikiEditPage implements OnInit, OnDestroy, CanLeave {
 
+    protected formBuilder = inject(FormBuilder);
+
     @ViewChild('editPageForm') formElement?: ElementRef;
 
     cmId?: number; // Course module ID.
@@ -87,9 +89,7 @@ export default class AddonModWikiEditPage implements OnInit, OnDestroy, CanLeave
     protected forceLeave = false; // To allow leaving the page without checking for changes.
     protected isDestroyed = false; // Whether the page has been destroyed.
 
-    constructor(
-        protected formBuilder: FormBuilder,
-    ) {
+    constructor() {
         this.contentControl = this.formBuilder.control('', { nonNullable: true });
         this.pageForm = this.formBuilder.group({});
     }

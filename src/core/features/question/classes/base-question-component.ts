@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Input, Output, EventEmitter, Component, Optional, Inject, ElementRef, OnInit } from '@angular/core';
+import { Input, Output, EventEmitter, Component, ElementRef, OnInit, inject } from '@angular/core';
 import { CoreFileHelper } from '@services/file-helper';
 
 import { CoreSites } from '@services/sites';
@@ -58,9 +58,10 @@ export class CoreQuestionBaseComponent<T extends AddonModQuizQuestion = AddonMod
     protected hostElement: HTMLElement;
     protected onReadyPromise = new CorePromisedValue<void>();
 
-    constructor(@Optional() @Inject('') logName: string, elementRef: ElementRef) {
-        this.logger = CoreLogger.getInstance(logName);
-        this.hostElement = elementRef.nativeElement;
+    constructor() {
+        this.logger = CoreLogger.getInstance(this.constructor.name);
+
+        this.hostElement = inject(ElementRef).nativeElement;
     }
 
     /**

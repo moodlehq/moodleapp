@@ -12,9 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, Optional, OnInit, OnDestroy, ViewChild, AfterViewInit } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, AfterViewInit, inject } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { IonContent } from '@ionic/angular';
 import { CoreCourseModuleMainActivityComponent } from '@features/course/classes/main-activity-component';
 import {
     AddonModForum,
@@ -26,7 +25,6 @@ import {
 } from '@addons/mod/forum/services/forum';
 import { AddonModForumOffline } from '@addons/mod/forum/services/forum-offline';
 import { Translate } from '@singletons';
-import CoreCourseContentsPage from '@features/course/pages/contents/contents';
 import { AddonModForumHelper } from '@addons/mod/forum/services/forum-helper';
 import { CoreGroupInfo } from '@services/groups';
 import { CoreEvents, CoreEventObserver } from '@singletons/events';
@@ -86,12 +84,14 @@ import { CoreCourseModuleInfoComponent } from '@features/course/components/modul
 })
 export class AddonModForumIndexComponent extends CoreCourseModuleMainActivityComponent implements OnInit, AfterViewInit, OnDestroy {
 
+    route = inject(ActivatedRoute);
+
     @ViewChild(CoreSplitViewComponent) splitView!: CoreSplitViewComponent;
 
     component = ADDON_MOD_FORUM_COMPONENT_LEGACY;
     pluginName = 'forum';
     descriptionNote?: string;
-    promisedDiscussions: CorePromisedValue<AddonModForumDiscussionsManager>;
+    promisedDiscussions = new CorePromisedValue<AddonModForumDiscussionsManager>();
     discussionsItems: AddonModForumDiscussionItem[] = [];
     fetchFailed = false;
     canAddDiscussion = false;
@@ -115,16 +115,6 @@ export class AddonModForumIndexComponent extends CoreCourseModuleMainActivityCom
     protected ratingSyncObserver?: CoreEventObserver;
     protected sourceUnsubscribe?: () => void;
     protected checkCompletionAfterLog = false; // Use CoreListItemsManager log system instead.
-
-    constructor(
-        public route: ActivatedRoute,
-        @Optional() protected content?: IonContent,
-        @Optional() courseContentsPage?: CoreCourseContentsPage,
-    ) {
-        super('AddonModForumIndexComponent', content, courseContentsPage);
-
-        this.promisedDiscussions = new CorePromisedValue();
-    }
 
     get discussions(): AddonModForumDiscussionsManager | null {
         return this.promisedDiscussions.value;

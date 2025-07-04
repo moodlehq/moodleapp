@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { Constructor } from '@/core/utils/types';
-import { AfterViewInit, Component, ElementRef, Input, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, inject, Input, ViewChild } from '@angular/core';
 import { CoreModalComponent } from '@classes/modal-component';
 import { CorePromisedValue } from '@classes/promised-value';
 import { CoreModals } from '@services/overlays/modals';
@@ -34,14 +34,12 @@ export class CoreSheetModalComponent<T extends CoreModalComponent> implements Af
     @Input() componentProps?: Record<string, unknown>;
     @ViewChild('wrapper') wrapper?: ElementRef<HTMLElement>;
 
-    private element: HTMLElement;
+    private element: HTMLElement = inject(ElementRef).nativeElement;
     private wrapperElement = new CorePromisedValue<HTMLElement>();
     private content?: HTMLElement;
 
-    constructor({ nativeElement: element }: ElementRef<HTMLElement>) {
-        this.element = element;
-
-        CoreDirectivesRegistry.register(element, this);
+    constructor() {
+        CoreDirectivesRegistry.register(this.element, this);
     }
 
     /**

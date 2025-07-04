@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { DownloadStatus } from '@/core/constants';
-import { Component, ElementRef, HostBinding, Input, OnChanges, OnDestroy, OnInit } from '@angular/core';
+import { Component, ElementRef, HostBinding, Input, OnChanges, OnDestroy, OnInit, inject } from '@angular/core';
 import {
     CoreCourseDownloadStatusHelper,
     CoreEventCourseStatusChanged,
@@ -92,15 +92,14 @@ export class CoreCoursesCourseListItemComponent implements OnInit, OnDestroy, On
     protected isDestroyed = false;
     protected courseStatusObserver?: CoreEventObserver;
 
-    protected element: HTMLElement;
+    protected element: HTMLElement = inject(ElementRef).nativeElement;
     protected progressObserver: CoreEventObserver;
 
     @HostBinding('attr.data-course-id') protected get courseId(): number {
         return this.course.id;
     }
 
-    constructor(element: ElementRef) {
-        this.element = element.nativeElement;
+    constructor() {
         const siteId = CoreSites.getCurrentSiteId();
         this.progressObserver = CoreEvents.on(CORE_COURSE_PROGRESS_UPDATED_EVENT, (data) => {
             if (!this.course || this.course.id !== data.courseId || !('progress' in this.course)) {

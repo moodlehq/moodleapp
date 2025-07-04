@@ -23,6 +23,7 @@ import {
     OnInit,
     SimpleChange,
     signal,
+    inject,
 } from '@angular/core';
 import { CoreCourseModuleHelper } from '@features/course/services/course-module-helper';
 import { CoreCourseModuleDelegate } from '@features/course/services/module-delegate';
@@ -85,11 +86,7 @@ export class CoreModIconComponent implements OnInit, OnChanges {
 
     protected iconVersion: IconVersion = IconVersion.LEGACY_VERSION;
     protected purposeClass = '';
-    protected element: HTMLElement;
-
-    constructor(element: ElementRef) {
-        this.element = element.nativeElement;
-    }
+    protected element: HTMLElement = inject(ElementRef).nativeElement;
 
     /**
      * @inheritdoc

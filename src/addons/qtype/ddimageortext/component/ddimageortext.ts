@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnDestroy, ElementRef } from '@angular/core';
+import { Component, OnDestroy } from '@angular/core';
 
 import { AddonModQuizQuestionBasicData, CoreQuestionBaseComponent } from '@features/question/classes/base-question-component';
 import { CoreQuestionHelper } from '@features/question/services/question-helper';
@@ -40,10 +40,6 @@ export class AddonQtypeDdImageOrTextComponent
     protected destroyed = false;
     protected textIsRendered = false;
     protected ddAreaisRendered = false;
-
-    constructor(elementRef: ElementRef) {
-        super('AddonQtypeDdImageOrTextComponent', elementRef);
-    }
 
     /**
      * @inheritdoc

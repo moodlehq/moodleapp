@@ -33,10 +33,6 @@ export class CoreBlockPreRenderedComponent extends CoreBlockBaseComponent implem
 
     @HostBinding('attr.id') id?: string;
 
-    constructor() {
-        super('CoreBlockPreRenderedComponent');
-    }
-
     /**
      * @inheritdoc
      */

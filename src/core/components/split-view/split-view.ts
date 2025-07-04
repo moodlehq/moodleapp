@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { AfterViewInit, Component, ElementRef, Input, OnDestroy, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, Input, OnDestroy, ViewChild, inject } from '@angular/core';
 import { ActivatedRouteSnapshot } from '@angular/router';
 import { IonContent, IonRouterOutlet } from '@ionic/angular';
 import { CoreScreen } from '@services/screen';
@@ -41,6 +41,8 @@ const disabledScrollClass = 'disable-scroll-y';
 })
 export class CoreSplitViewComponent implements AfterViewInit, OnDestroy {
 
+    protected element: HTMLElement = inject(ElementRef).nativeElement;
+
     @ViewChild(IonContent) menuContent!: IonContent;
     @ViewChild(IonRouterOutlet) contentOutlet!: IonRouterOutlet;
     @Input() placeholderText = 'core.emptysplit';
@@ -50,8 +52,6 @@ export class CoreSplitViewComponent implements AfterViewInit, OnDestroy {
 
     private outletRouteSubject = new BehaviorSubject<ActivatedRouteSnapshot | null>(null);
     private subscriptions?: Subscription[];
-
-    constructor(private element: ElementRef<HTMLElement>) {}
 
     get outletRoute(): ActivatedRouteSnapshot | null {
         return this.outletRouteSubject.value;
@@ -66,14 +66,14 @@ export class CoreSplitViewComponent implements AfterViewInit, OnDestroy {
     }
 
     get nativeElement(): HTMLElement {
-        return this.element.nativeElement;
+        return this.element;
     }
 
     /**
      * @inheritdoc
      */
     ngAfterViewInit(): void {
-        this.isNested = !!this.element.nativeElement.parentElement?.closest('core-split-view');
+        this.isNested = !!this.element.parentElement?.closest('core-split-view');
 
         this.disableScrollOnParent();
 
@@ -120,7 +120,7 @@ export class CoreSplitViewComponent implements AfterViewInit, OnDestroy {
             classes.push('nested');
         }
 
-        this.element.nativeElement.setAttribute('class', classes.join(' '));
+        this.element.setAttribute('class', classes.join(' '));
     }
 
     /**
@@ -153,7 +153,7 @@ export class CoreSplitViewComponent implements AfterViewInit, OnDestroy {
      * Another manual solution is to add scroll-y=false on the ion-contents outside the split view.
      */
     protected disableScrollOnParent(): void {
-        const outerContent = this.element.nativeElement.parentElement?.closest('ion-content');
+        const outerContent = this.element.parentElement?.closest('ion-content');
         if (outerContent) {
             if (outerContent?.getAttribute('scroll-y') != 'false' && !outerContent?.classList.contains(disabledScrollClass)) {
                 outerContent.classList.add(disabledScrollClass);

@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, ViewChild, OnDestroy, OnInit, ElementRef } from '@angular/core';
+import { Component, ViewChild, OnDestroy, OnInit, ElementRef, inject } from '@angular/core';
 import { ActivatedRoute, Params } from '@angular/router';
 
 import { CoreTabsOutletTab, CoreTabsOutletComponent } from '@components/tabs-outlet/tabs-outlet';
@@ -46,6 +46,8 @@ import { CoreSharedModule } from '@/core/shared.module';
 })
 export default class CoreCourseIndexPage implements OnInit, OnDestroy {
 
+    protected route = inject(ActivatedRoute);
+
     @ViewChild(CoreTabsOutletComponent) tabsComponent?: CoreTabsOutletComponent;
     @ViewChild('courseThumb') courseThumb?: ElementRef;
 
@@ -73,7 +75,7 @@ export default class CoreCourseIndexPage implements OnInit, OnDestroy {
         pageParams: {},
     };
 
-    constructor(private route: ActivatedRoute) {
+    constructor() {
         this.selectTabObserver = CoreEvents.on(CoreEvents.SELECT_COURSE_TAB, (data) => {
             if (!data.name) {
                 // If needed, set sectionId and sectionNumber. They'll only be used if the content tabs hasn't been loaded yet.

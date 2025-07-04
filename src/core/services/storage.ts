@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Inject, Injectable, Optional } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 
 import { AsyncInstance, asyncInstance } from '@/core/utils/async-instance';
 import { CoreAppDB } from './app-db';
@@ -39,7 +39,12 @@ export class CoreStorageService {
 
     table: AsyncInstance<CoreStorageTable>;
 
-    constructor(@Optional() @Inject(NULL_INJECTION_TOKEN) lazyTableConstructor?: () => Promise<CoreStorageTable>) {
+    constructor() {
+        // Retrieving the value using the same token instance
+        const lazyTableConstructor =
+            inject<() => Promise<CoreStorageTable>>(NULL_INJECTION_TOKEN, {
+                optional: true }) || undefined;
+
         this.table = asyncInstance(lazyTableConstructor);
     }
 
@@ -216,4 +221,4 @@ function getStorageTable(database: SQLiteDB): Promise<CoreStorageTable> {
 /**
  * Storage table.
  */
-type CoreStorageTable = CoreDatabaseTable<CoreStorageRecord, 'key'>;
+export type CoreStorageTable = CoreDatabaseTable<CoreStorageRecord, 'key'>;

@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { CoreSharedModule } from '@/core/shared.module';
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, inject } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import {
     CoreDataPrivacy,
@@ -38,6 +38,8 @@ import { CoreAlerts } from '@services/overlays/alerts';
 })
 export class CoreDataPrivacyNewRequestComponent implements OnInit {
 
+    protected fb = inject(FormBuilder);
+
     @Input() accessInfo?: CoreDataPrivacyGetAccessInformationWSResponse;
     @Input() createType?: CoreDataPrivacyDataRequestType;
 
@@ -47,9 +49,7 @@ export class CoreDataPrivacyNewRequestComponent implements OnInit {
     form: FormGroup;
     typeControl: FormControl<CoreDataPrivacyDataRequestType>;
 
-    constructor(
-        protected fb: FormBuilder,
-    ) {
+    constructor() {
         this.form = new FormGroup({});
 
         // Initialize form variables.

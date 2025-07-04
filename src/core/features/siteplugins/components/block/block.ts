@@ -42,10 +42,6 @@ export class CoreSitePluginsBlockComponent extends CoreBlockBaseComponent implem
     jsData?: Record<string, unknown>; // Data to pass to the component.
     initResult?: CoreSitePluginsContent | null;
 
-    constructor() {
-        super('CoreSitePluginsBlockComponent');
-    }
-
     /**
      * Detect changes on input properties.
      */

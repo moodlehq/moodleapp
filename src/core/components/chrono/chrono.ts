@@ -23,6 +23,7 @@ import {
     EventEmitter,
     SimpleChange,
     ChangeDetectorRef,
+    inject,
 } from '@angular/core';
 import { CoreBaseModule } from '@/core/base.module';
 import { CoreSecondsToHMSPipe } from '@pipes/seconds-to-hms';
@@ -49,6 +50,8 @@ import { CoreSecondsToHMSPipe } from '@pipes/seconds-to-hms';
 })
 export class CoreChronoComponent implements OnInit, OnChanges, OnDestroy {
 
+    protected changeDetectorRef = inject(ChangeDetectorRef);
+
     @Input({ transform: toBoolean }) running = false; // Set it to true to start the chrono. Set it to false to stop it.
     @Input() startTime = 0; // Number of milliseconds to put in the chrono before starting.
     @Input() endTime?: number; // Number of milliseconds to stop the chrono.
@@ -59,7 +62,7 @@ export class CoreChronoComponent implements OnInit, OnChanges, OnDestroy {
     time = 0;
     protected interval?: number;
 
-    constructor(protected changeDetectorRef: ChangeDetectorRef) {
+    constructor() {
         this.onEnd = new EventEmitter();
     }
 

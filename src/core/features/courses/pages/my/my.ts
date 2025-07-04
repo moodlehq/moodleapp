@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { AddonBlockMyOverviewComponent } from '@addons/block/myoverview/components/myoverview/myoverview';
-import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Component, OnDestroy, OnInit, ViewChild, inject } from '@angular/core';
 import { AsyncDirective } from '@classes/async-directive';
 import { PageLoadsManager } from '@classes/page-loads-manager';
 import { CorePromisedValue } from '@classes/promised-value';
@@ -58,6 +58,8 @@ import { CoreCoursesMyPageName } from '@features/courses/constants';
 })
 export default class CoreCoursesMyPage implements OnInit, OnDestroy, AsyncDirective {
 
+    protected loadsManager = inject(PageLoadsManager);
+
     @ViewChild(CoreBlockComponent) block!: CoreBlockComponent;
 
     downloadCoursesEnabled = false;
@@ -73,7 +75,7 @@ export default class CoreCoursesMyPage implements OnInit, OnDestroy, AsyncDirect
     protected loadsManagerSubscription: Subscription;
     protected logView: () => void;
 
-    constructor(protected loadsManager: PageLoadsManager) {
+    constructor() {
         // Refresh the enabled flags if site is updated.
         this.updateSiteObserver = CoreEvents.on(CoreEvents.SITE_UPDATED, async () => {
             this.downloadCoursesEnabled = !CoreCourses.isDownloadCoursesDisabledInSite();

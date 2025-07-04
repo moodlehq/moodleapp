@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Component, OnDestroy, OnInit, ViewChild, inject } from '@angular/core';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { CoreSites } from '@services/sites';
 import {
@@ -53,6 +53,8 @@ import { CoreMainMenuUserButtonComponent } from '@features/mainmenu/components/u
 })
 export default class AddonMessagesDiscussions35Page implements OnInit, OnDestroy {
 
+    protected route = inject(ActivatedRoute);
+
     @ViewChild(CoreSplitViewComponent) splitView!: CoreSplitViewComponent;
 
     protected newMessagesObserver: CoreEventObserver;
@@ -74,9 +76,7 @@ export default class AddonMessagesDiscussions35Page implements OnInit, OnDestroy
         text: '',
     };
 
-    constructor(
-        protected route: ActivatedRoute,
-    ) {
+    constructor() {
 
         this.search.loading = Translate.instant('core.searching');
         this.loadingMessages = Translate.instant('core.loading');

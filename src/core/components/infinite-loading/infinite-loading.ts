@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { toBoolean } from '@/core/transforms/boolean';
-import { Component, Input, Output, EventEmitter, OnChanges, SimpleChange, ViewChild, ElementRef } from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnChanges, SimpleChange, ViewChild, ElementRef, inject } from '@angular/core';
 import { IonInfiniteScroll } from '@ionic/angular';
 import { CoreWait } from '@singletons/wait';
 import { CoreBaseModule } from '@/core/base.module';
@@ -46,11 +46,10 @@ export class CoreInfiniteLoadingComponent implements OnChanges {
 
     loadingMore = false; // Hide button and avoid loading more.
     loadingForced = false; // Whether loading is forced or happened on scroll.
-    hostElement: HTMLElement;
+    hostElement: HTMLElement = inject(ElementRef).nativeElement;
 
-    constructor(element: ElementRef<HTMLElement>) {
+    constructor() {
         this.action = new EventEmitter();
-        this.hostElement = element.nativeElement;
     }
 
     /**

@@ -12,10 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit, Optional } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CoreError } from '@classes/errors/error';
 import { CoreCourseModuleMainResourceComponent } from '@features/course/classes/main-resource-component';
-import CoreCourseContentsPage from '@features/course/pages/contents/contents';
 import { CoreCourse } from '@features/course/services/course';
 import { CoreMimetype } from '@singletons/mimetype';
 import { CoreText } from '@singletons/text';
@@ -59,10 +58,6 @@ export class AddonModUrlIndexComponent extends CoreCourseModuleMainResourceCompo
     displayDescription = true;
 
     protected checkCompletionAfterLog = false;
-
-    constructor(@Optional() courseContentsPage?: CoreCourseContentsPage) {
-        super('AddonModUrlIndexComponent', courseContentsPage);
-    }
 
     /**
      * @inheritdoc

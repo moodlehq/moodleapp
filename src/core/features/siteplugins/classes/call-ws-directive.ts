@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Input, OnInit, OnDestroy, ElementRef, Output, EventEmitter, Directive } from '@angular/core';
+import { Input, OnInit, OnDestroy, ElementRef, Output, EventEmitter, Directive, inject } from '@angular/core';
 import { Subscription } from 'rxjs';
 
 import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
@@ -27,6 +27,8 @@ import { CoreFormFields, CoreForms } from '@singletons/form';
 @Directive()
 export class CoreSitePluginsCallWSBaseDirective implements OnInit, OnDestroy {
 
+    protected parentContent = inject(CoreSitePluginsPluginContentComponent);
+
     @Input({ required: true }) name!: string; // The name of the WS to call.
     @Input() params?: Record<string, unknown>; // The params for the WS call.
     @Input() preSets?: CoreSiteWSPreSets; // The preSets for the WS call.
@@ -40,11 +42,8 @@ export class CoreSitePluginsCallWSBaseDirective implements OnInit, OnDestroy {
     protected element: HTMLElement;
     protected invalidateObserver?: Subscription;
 
-    constructor(
-        element: ElementRef,
-        protected parentContent: CoreSitePluginsPluginContentComponent | null,
-    ) {
-        this.element = element.nativeElement || element;
+    constructor() {
+        this.element = inject(ElementRef).nativeElement;
         this.logger = CoreLogger.getInstance('CoreSitePluginsCallWS');
     }
 

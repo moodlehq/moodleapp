@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef, inject } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { CoreError } from '@classes/errors/error';
@@ -57,6 +57,8 @@ import { CoreSharedModule } from '@/core/shared.module';
 })
 export default class AddonModGlossaryEditPage implements OnInit, CanLeave {
 
+    protected route = inject(ActivatedRoute);
+
     @ViewChild('editFormEl') formElement?: ElementRef;
 
     component = ADDON_MOD_GLOSSARY_COMPONENT_LEGACY;
@@ -88,8 +90,6 @@ export default class AddonModGlossaryEditPage implements OnInit, CanLeave {
     protected syncObserver?: CoreEventObserver;
     protected isDestroyed = false;
     protected saved = false;
-
-    constructor(protected route: ActivatedRoute) {}
 
     /**
      * @inheritdoc

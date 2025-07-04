@@ -32,7 +32,7 @@ export class CorePluginFileDelegateService extends CoreDelegate<CorePluginFileHa
     protected handlerNameProperty = 'component';
 
     constructor() {
-        super('CorePluginFileDelegate');
+        super();
     }
 
     /**

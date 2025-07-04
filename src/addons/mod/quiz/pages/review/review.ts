@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild, inject } from '@angular/core';
 import { CoreQuestionQuestionForView } from '@features/question/services/question';
 import { CoreQuestionHelper } from '@features/question/services/question-helper';
 import { IonContent } from '@ionic/angular';
@@ -59,6 +59,8 @@ import { CoreLoadings } from '@services/overlays/loadings';
 })
 export default class AddonModQuizReviewPage implements OnInit {
 
+    protected element: HTMLElement = inject(ElementRef).nativeElement;
+
     @ViewChild(IonContent) content?: IonContent;
 
     protected static readonly QUESTIONS_PER_LOAD_WHEN_SHOW_ALL = 10;
@@ -89,9 +91,7 @@ export default class AddonModQuizReviewPage implements OnInit {
     protected options?: AddonModQuizCombinedReviewOptions; // Review options.
     protected logView: () => void;
 
-    constructor(
-        protected elementRef: ElementRef,
-    ) {
+    constructor() {
         this.logView = CoreTime.once(() => this.performLogView(true, {
             showAllDisabled: !this.showAll,
             page: this.currentPage,
@@ -301,7 +301,7 @@ export default class AddonModQuizReviewPage implements OnInit {
         }
 
         CoreDom.scrollToElement(
-            this.elementRef.nativeElement,
+            this.element,
             `#addon-mod_quiz-question-${slot}`,
         );
     }

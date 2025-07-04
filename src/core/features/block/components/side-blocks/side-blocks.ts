@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, ViewChildren, Input, OnInit, QueryList, ElementRef } from '@angular/core';
+import { Component, ViewChildren, Input, OnInit, QueryList, ElementRef, inject } from '@angular/core';
 import { ModalController } from '@singletons';
 import { CoreCourse, CoreCourseBlock } from '@features/course/services/course';
 import { CoreBlockHelper } from '../../services/block-helper';
@@ -40,6 +40,8 @@ import { CoreCoursesMyPageName } from '@features/courses/constants';
 })
 export class CoreBlockSideBlocksComponent implements OnInit {
 
+    protected element: HTMLElement = inject(ElementRef).nativeElement;
+
     @Input({ required: true }) contextLevel!: ContextLevel;
     @Input({ required: true }) instanceId!: number;
     @Input() initialBlockInstanceId?: number;
@@ -49,8 +51,6 @@ export class CoreBlockSideBlocksComponent implements OnInit {
 
     loaded = false;
     blocks: CoreCourseBlock[] = [];
-
-    constructor(protected elementRef: ElementRef<HTMLElement>) {}
 
     /**
      * @inheritdoc
@@ -140,10 +140,10 @@ export class CoreBlockSideBlocksComponent implements OnInit {
 
         const selector = `#block-${this.initialBlockInstanceId}`;
 
-        await CoreWait.waitFor(() => !!this.elementRef.nativeElement.querySelector(selector));
+        await CoreWait.waitFor(() => !!this.element.querySelector(selector));
         await CoreWait.wait(200);
 
-        CoreDom.scrollToElement(this.elementRef.nativeElement, selector, { addYAxis: -10 });
+        CoreDom.scrollToElement(this.element, selector, { addYAxis: -10 });
     }
 
 }

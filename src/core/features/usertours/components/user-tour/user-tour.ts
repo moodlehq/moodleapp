@@ -19,6 +19,7 @@ import {
     ElementRef,
     EventEmitter,
     HostBinding,
+    inject,
     Input,
     OnDestroy,
     Output,
@@ -85,10 +86,10 @@ export class CoreUserToursUserTourComponent implements AfterViewInit, OnDestroy 
     protected content?: HTMLIonContentElement | null;
     protected lastActivatedTime = 0;
 
-    constructor({ nativeElement: element }: ElementRef<HTMLElement>) {
-        this.element = element;
+    constructor() {
+        this.element = inject(ElementRef).nativeElement;
 
-        CoreDirectivesRegistry.register(element, this);
+        CoreDirectivesRegistry.register(this.element, this);
 
         this.element.addEventListener('click', (event) =>
             this.dismissOnBackOrBackdrop(event.target as HTMLElement));

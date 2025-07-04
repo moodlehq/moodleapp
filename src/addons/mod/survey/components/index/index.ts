@@ -12,12 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit, Optional } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CoreError } from '@classes/errors/error';
 import { CoreIonLoadingElement } from '@classes/ion-loading';
 import { CoreCourseModuleMainActivityComponent } from '@features/course/classes/main-activity-component';
-import CoreCourseContentsPage from '@features/course/pages/contents/contents';
-import { IonContent } from '@ionic/angular';
 import { CoreSites } from '@services/sites';
 import { CoreText } from '@singletons/text';
 import { Translate } from '@singletons';
@@ -66,13 +64,6 @@ export class AddonModSurveyIndexComponent extends CoreCourseModuleMainActivityCo
 
     protected currentUserId?: number;
     protected syncEventName = ADDON_MOD_SURVEY_AUTO_SYNCED;
-
-    constructor(
-        protected content?: IonContent,
-        @Optional() courseContentsPage?: CoreCourseContentsPage,
-    ) {
-        super('AddonModSurveyIndexComponent', content, courseContentsPage);
-    }
 
     /**
      * @inheritdoc

@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, Input, Output, ElementRef, OnChanges, SimpleChange, EventEmitter, OnDestroy } from '@angular/core';
+import { Component, Input, Output, OnChanges, SimpleChange, EventEmitter, OnDestroy, inject } from '@angular/core';
 import { NavigationEnd, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { filter } from 'rxjs/operators';
@@ -69,10 +69,9 @@ export class CoreH5PIframeComponent implements OnChanges, OnDestroy {
     protected subscription: Subscription;
     protected iframeLoadedOnce = false;
 
-    constructor(
-        public elementRef: ElementRef,
-        router: Router,
-    ) {
+    constructor() {
+        const router = inject(Router);
+
         this.logger = CoreLogger.getInstance('CoreH5PIframeComponent');
         this.site = CoreSites.getRequiredCurrentSite();
         this.siteId = this.site.getId();

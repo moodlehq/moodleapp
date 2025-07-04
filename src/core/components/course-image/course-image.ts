@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { toBoolean } from '@/core/transforms/boolean';
-import { Component, ElementRef, HostBinding, input, effect } from '@angular/core';
+import { Component, ElementRef, HostBinding, input, effect, inject } from '@angular/core';
 import { CoreCourseListItem } from '@features/courses/services/courses';
 import { CoreCoursesHelper } from '@features/courses/services/courses-helper';
 import { CoreColors } from '@singletons/colors';
@@ -36,11 +36,9 @@ export class CoreCourseImageComponent {
     course = input.required<CoreCourseListItem>();
     fill = input(false, { transform: toBoolean });
 
-    protected element: HTMLElement;
+    protected element: HTMLElement = inject(ElementRef).nativeElement;
 
-    constructor(element: ElementRef) {
-        this.element = element.nativeElement;
-
+    constructor() {
         effect(() => {
             this.setCourseColor();
         });

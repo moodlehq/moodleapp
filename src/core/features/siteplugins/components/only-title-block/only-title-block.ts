@@ -32,10 +32,6 @@ import { CoreSharedModule } from '@/core/shared.module';
 })
 export class CoreSitePluginsOnlyTitleBlockComponent extends CoreBlockBaseComponent implements OnInit {
 
-    constructor() {
-        super('CoreSitePluginsOnlyTitleBlockComponent');
-    }
-
     /**
      * @inheritdoc
      */

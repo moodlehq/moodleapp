@@ -22,8 +22,6 @@ import { makeSingleton } from '@singletons';
 import { CoreDirectivesRegistry } from '@singletons/directives-registry';
 import { CoreEvents } from '@singletons/events';
 import type videojs from 'video.js';
-
-// eslint-disable-next-line no-duplicate-imports
 import type { VideoJSOptions, VideoJSPlayer } from 'video.js';
 
 declare module '@singletons/events' {

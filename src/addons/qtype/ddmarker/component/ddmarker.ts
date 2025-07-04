@@ -47,10 +47,6 @@ export class AddonQtypeDdMarkerComponent
     protected textIsRendered = false;
     protected ddAreaisRendered = false;
 
-    constructor(elementRef: ElementRef) {
-        super('AddonQtypeDdMarkerComponent', elementRef);
-    }
-
     /**
      * @inheritdoc
      */

@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, ElementRef } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { FormBuilder, FormControl } from '@angular/forms';
 import { FileEntry } from '@awesome-cordova-plugins/file/ngx';
 
@@ -39,13 +39,11 @@ import { CoreSharedModule } from '@/core/shared.module';
 })
 export class AddonQtypeEssayComponent extends CoreQuestionBaseComponent<AddonModQuizEssayQuestion> {
 
+    protected fb = inject(FormBuilder);
+
     formControl?: FormControl<string | null>;
     attachments?: CoreFileEntry[];
     uploadFilesSupported = false;
-
-    constructor(elementRef: ElementRef, protected fb: FormBuilder) {
-        super('AddonQtypeEssayComponent', elementRef);
-    }
 
     /**
      * @inheritdoc

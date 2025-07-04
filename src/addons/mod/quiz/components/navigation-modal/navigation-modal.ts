@@ -14,7 +14,7 @@
 
 import { CoreSharedModule } from '@/core/shared.module';
 import { toBoolean } from '@/core/transforms/boolean';
-import { Component, ElementRef, Input, OnInit } from '@angular/core';
+import { Component, ElementRef, Input, OnInit, inject } from '@angular/core';
 
 import { CoreQuestionQuestionParsed } from '@features/question/services/question';
 import { CoreQuestionHelper } from '@features/question/services/question-helper';
@@ -34,6 +34,8 @@ import { CoreDom } from '@singletons/dom';
 })
 export class AddonModQuizNavigationModalComponent implements OnInit {
 
+    protected element: HTMLElement = inject(ElementRef).nativeElement;
+
     @Input() navigation?: AddonModQuizNavigationQuestion[]; // Whether the user is reviewing the attempt.
     @Input({ transform: toBoolean }) summaryShown = false; // Whether summary is currently being shown.
     @Input() nextPage?: number; // Next page.
@@ -45,10 +47,6 @@ export class AddonModQuizNavigationModalComponent implements OnInit {
     incorrectIcon = '';
     partialCorrectIcon = '';
 
-    constructor(protected elementRef: ElementRef) {
-        // Nothing to do.
-    }
-
     /**
      * @inheritdoc
      */
@@ -58,7 +56,7 @@ export class AddonModQuizNavigationModalComponent implements OnInit {
         this.partialCorrectIcon = CoreQuestionHelper.getPartiallyCorrectIcon().fullName;
 
         await CoreDom.scrollToElement(
-            this.elementRef.nativeElement,
+            this.element,
             'ion-item[aria-current="page"]',
         );
     }

@@ -92,9 +92,9 @@ export class CoreExternalContentDirective implements AfterViewInit, OnChanges, O
     protected fileEventObserver?: CoreEventObserver;
     protected onReadyPromise = new CorePromisedValue<void>();
 
+    // eslint-disable-next-line @angular-eslint/prefer-inject
     constructor(element: ElementRef) {
-
-        this.element = element.nativeElement;
+        this.element = element.nativeElement; // This is done that way to let format text create a directive.
         this.logger = CoreLogger.getInstance('CoreExternalContentDirective');
 
         CoreDirectivesRegistry.register(this.element, this);

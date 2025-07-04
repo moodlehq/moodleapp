@@ -22,6 +22,7 @@ import {
     AfterViewInit,
     OnDestroy,
     HostBinding,
+    inject,
 } from '@angular/core';
 import { CoreUtils } from '@singletons/utils';
 import { CoreAnimations } from '@components/animations';
@@ -77,7 +78,7 @@ export class CoreLoadingComponent implements OnInit, OnChanges, AfterViewInit, A
     uniqueId: string;
     loaded = false;
 
-    protected element: HTMLElement; // Current element.
+    protected element: HTMLElement = inject(ElementRef).nativeElement;
     protected lastScrollPosition = Promise.resolve<number | undefined>(undefined);
     protected onReadyPromise = new CorePromisedValue<void>();
     protected mutationObserver: MutationObserver;
@@ -102,8 +103,7 @@ export class CoreLoadingComponent implements OnInit, OnChanges, AfterViewInit, A
         return this.loaded;
     }
 
-    constructor(element: ElementRef) {
-        this.element = element.nativeElement;
+    constructor() {
         CoreDirectivesRegistry.register(this.element, this);
 
         // Calculate the unique ID.

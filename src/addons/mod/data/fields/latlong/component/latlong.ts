@@ -15,7 +15,6 @@
 import { AddonModDataFieldPluginBaseComponent } from '@addons/mod/data/classes/base-field-plugin-component';
 import { AddonModDataEntryField } from '@addons/mod/data/services/data';
 import { Component } from '@angular/core';
-import { FormBuilder } from '@angular/forms';
 import { SafeUrl } from '@angular/platform-browser';
 import { DomSanitizer } from '@singletons';
 import { CoreSharedModule } from '@/core/shared.module';
@@ -37,10 +36,6 @@ export class AddonModDataFieldLatlongComponent extends AddonModDataFieldPluginBa
     north?: number;
     east?: number;
     mapsUrl = '';
-
-    constructor(fb: FormBuilder) {
-        super(fb);
-    }
 
     /**
      * Format latitude and longitude in a simple text.

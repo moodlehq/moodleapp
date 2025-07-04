@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, ViewChild, OnInit, OnDestroy, forwardRef, ChangeDetectorRef } from '@angular/core';
+import { Component, ViewChild, OnInit, OnDestroy, forwardRef, ChangeDetectorRef, inject } from '@angular/core';
 import { IonContent } from '@ionic/angular';
 
 import { CoreUtils } from '@singletons/utils';
@@ -68,6 +68,8 @@ import { CoreSharedModule } from '@/core/shared.module';
 })
 export default class CoreCourseContentsPage implements OnInit, OnDestroy, CoreRefreshContext {
 
+    protected changeDetectorRef = inject(ChangeDetectorRef);
+
     @ViewChild(IonContent) content?: IonContent;
     @ViewChild(CoreCourseFormatComponent) formatComponent?: CoreCourseFormatComponent;
 
@@ -90,9 +92,7 @@ export default class CoreCourseContentsPage implements OnInit, OnDestroy, CoreRe
     protected syncObserver?: CoreEventObserver;
     protected isDestroyed = false;
     protected modulesHaveCompletion = false;
-    protected debouncedUpdateCachedCompletion?: () => void; // Update the cached completion after a certain time.
-
-    constructor(protected changeDetectorRef: ChangeDetectorRef) {}
+    protected debouncedUpdateCachedCompletion?: () => void;
 
     /**
      * @inheritdoc

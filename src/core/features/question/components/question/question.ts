@@ -14,7 +14,18 @@
 
 import { ContextLevel } from '@/core/constants';
 import { toBoolean } from '@/core/transforms/boolean';
-import { Component, Input, Output, OnInit, EventEmitter, ChangeDetectorRef, Type, ElementRef, ViewChild } from '@angular/core';
+import {
+    Component,
+    Input,
+    Output,
+    OnInit,
+    EventEmitter,
+    ChangeDetectorRef,
+    Type,
+    ElementRef,
+    ViewChild,
+    inject,
+} from '@angular/core';
 import { CorePromisedValue } from '@classes/promised-value';
 import { CoreQuestionBehaviourDelegate } from '@features/question/services/behaviour-delegate';
 import { CoreQuestionDelegate } from '@features/question/services/question-delegate';
@@ -43,6 +54,9 @@ import { CoreSharedModule } from '@/core/shared.module';
     ],
 })
 export class CoreQuestionComponent implements OnInit, AsyncDirective {
+
+    protected changeDetector = inject(ChangeDetectorRef);
+    protected element = inject(ElementRef);
 
     @Input() question?: CoreQuestionQuestion; // The question to render.
     @Input() component?: string; // The component the question belongs to.
@@ -93,7 +107,7 @@ export class CoreQuestionComponent implements OnInit, AsyncDirective {
         return dynamicComponent.ready();
     }
 
-    constructor(protected changeDetector: ChangeDetectorRef, private element: ElementRef) {
+    constructor() {
         this.logger = CoreLogger.getInstance('CoreQuestionComponent');
         CoreDirectivesRegistry.register(this.element.nativeElement, this);
     }

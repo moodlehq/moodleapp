@@ -12,12 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import {
-    AfterViewInit,
-    Directive,
-    ElementRef,
-    OnDestroy,
-} from '@angular/core';
+import { AfterViewInit, Directive, ElementRef, OnDestroy, inject } from '@angular/core';
 
 import { Translate } from '@singletons';
 import { CoreIcons } from '@singletons/icons';
@@ -41,7 +36,7 @@ import { CoreLogger } from '@singletons/logger';
 })
 export class CoreReadingModeDirective implements AfterViewInit, OnDestroy {
 
-    protected element: HTMLElement;
+    protected element: HTMLElement = inject(ElementRef).nativeElement;
     protected viewportPromise?: CoreCancellablePromise<void>;
     protected disabledStyles: HTMLStyleElement[] = [];
     protected hiddenElements: HTMLElement[] = [];
@@ -50,10 +45,7 @@ export class CoreReadingModeDirective implements AfterViewInit, OnDestroy {
     protected header?: CoreCollapsibleHeaderDirective;
     protected logger = CoreLogger.getInstance('CoreReadingModeDirective');
 
-    constructor(
-        element: ElementRef,
-    ) {
-        this.element = element.nativeElement;
+    constructor() {
         this.viewportPromise = CoreDom.waitToBeInViewport(this.element);
     }
 

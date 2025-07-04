@@ -25,6 +25,7 @@ import {
     computed,
     effect,
     untracked,
+    inject,
 } from '@angular/core';
 import {
     ActionSheetController,
@@ -141,7 +142,9 @@ import { CoreError } from '@classes/errors/error';
 @Injectable({ providedIn: 'root' })
 export class CoreCompileProvider {
 
-    protected logger: CoreLogger;
+    protected injector = inject(Injector);
+
+    protected logger = CoreLogger.getInstance('CoreCompileProvider');
 
     // Other Ionic/Angular providers that don't depend on where they are injected.
     protected readonly OTHER_SERVICES: unknown[] = [
@@ -170,10 +173,6 @@ export class CoreCompileProvider {
     protected componentId = 0;
     protected libraries?: unknown[];
     protected exportedObjects?: Record<string, unknown>;
-
-    constructor(protected injector: Injector) {
-        this.logger = CoreLogger.getInstance('CoreCompileProvider');
-    }
 
     /**
      * Create and compile a dynamic component.

@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Component, OnDestroy, OnInit, ViewChild, inject } from '@angular/core';
 import { CoreSites } from '@services/sites';
 import {
     AddonMessagesGetContactsWSResponse,
@@ -46,6 +46,8 @@ import { CoreSearchBoxComponent } from '@features/search/components/search-box/s
 })
 export default class AddonMessagesContacts35Page implements OnInit, OnDestroy {
 
+    protected route = inject(ActivatedRoute);
+
     @ViewChild(CoreSplitViewComponent) splitView!: CoreSplitViewComponent;
 
     protected searchingMessages: string;
@@ -69,9 +71,7 @@ export default class AddonMessagesContacts35Page implements OnInit, OnDestroy {
 
     searchString = '';
 
-    constructor(
-        protected route: ActivatedRoute,
-    ) {
+    constructor() {
         this.siteId = CoreSites.getCurrentSiteId();
         this.searchingMessages = Translate.instant('core.searching');
         this.loadingMessages = Translate.instant('core.loading');

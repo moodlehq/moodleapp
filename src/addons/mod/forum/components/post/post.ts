@@ -23,6 +23,7 @@ import {
     Output,
     SimpleChange,
     ViewChild,
+    inject,
 } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { CoreEvents } from '@singletons/events';
@@ -84,6 +85,8 @@ import { CoreRatingRateComponent } from '@features/rating/components/rate/rate';
 })
 export class AddonModForumPostComponent implements OnInit, OnDestroy, OnChanges {
 
+    protected element: HTMLElement = inject(ElementRef).nativeElement;
+
     @Input({ required: true }) post!: AddonModForumPost; // Post.
     @Input({ required: true }) courseId!: number; // Post's course ID.
     @Input({ required: true }) discussionId!: number; // Post's' discussion ID.
@@ -113,10 +116,6 @@ export class AddonModForumPostComponent implements OnInit, OnDestroy, OnChanges 
     optionsMenuEnabled = false;
 
     protected preparePostData?: AddonModForumPrepareDraftAreaForPostWSResponse;
-
-    constructor(
-        protected elementRef: ElementRef,
-    ) {}
 
     get showForm(): boolean {
         return this.post.id > 0
@@ -679,7 +678,7 @@ export class AddonModForumPostComponent implements OnInit, OnDestroy, OnChanges 
      */
     protected async scrollToForm(): Promise<void> {
         await CoreDom.scrollToElement(
-            this.elementRef.nativeElement,
+            this.element,
             `#addon-forum-reply-edit-form-${this.uniqueId}`,
         );
     }

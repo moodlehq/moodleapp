@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { toBoolean } from '@/core/transforms/boolean';
-import { Component, Input, AfterViewInit, ElementRef } from '@angular/core';
+import { Component, Input, AfterViewInit, ElementRef, inject } from '@angular/core';
 
 import { CoreText } from '@singletons/text';
 import { Translate } from '@singletons';
@@ -43,14 +43,8 @@ export class CoreMarkRequiredComponent implements AfterViewInit {
 
     @Input({ alias: 'core-mark-required', transform: toBoolean }) coreMarkRequired = true;
 
-    protected hostElement: HTMLElement;
+    protected hostElement: HTMLElement = inject(ElementRef).nativeElement;
     requiredLabel = Translate.instant('core.required');
-
-    constructor(
-        element: ElementRef,
-    ) {
-        this.hostElement = element.nativeElement;
-    }
 
     /**
      * @inheritdoc

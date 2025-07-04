@@ -12,12 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, Optional, OnInit, OnDestroy, Output, EventEmitter } from '@angular/core';
-import { IonContent } from '@ionic/angular';
+import { Component, OnInit, OnDestroy, Output, EventEmitter } from '@angular/core';
 import { DownloadStatus } from '@/core/constants';
 import { CoreSite } from '@classes/sites/site';
 import { CoreCourseModuleMainActivityComponent } from '@features/course/classes/main-activity-component';
-import CoreCourseContentsPage from '@features/course/pages/contents/contents';
 import { CoreH5PDisplayOptions } from '@features/h5p/classes/core';
 import { CoreH5PHelper } from '@features/h5p/classes/helper';
 import { CoreH5P } from '@features/h5p/services/h5p';
@@ -119,11 +117,8 @@ export class AddonModH5PActivityIndexComponent extends CoreCourseModuleMainActiv
     protected onlineObserver: Subscription;
     protected offlineErrorAlert: HTMLIonAlertElement | null = null;
 
-    constructor(
-        protected content?: IonContent,
-        @Optional() courseContentsPage?: CoreCourseContentsPage,
-    ) {
-        super('AddonModH5PActivityIndexComponent', content, courseContentsPage);
+    constructor() {
+        super();
 
         this.site = CoreSites.getRequiredCurrentSite();
         this.siteCanDownload = this.site.canDownloadFiles() && !CoreH5P.isOfflineDisabledInSite();

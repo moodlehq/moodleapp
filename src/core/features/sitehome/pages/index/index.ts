@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, inject } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 
 import { CoreSite, CoreSiteConfig } from '@classes/sites/site';
@@ -52,6 +52,8 @@ import { CoreBlockSideBlocksButtonComponent } from '../../../block/components/si
 })
 export default class CoreSiteHomeIndexPage implements OnInit, OnDestroy {
 
+    protected route = inject(ActivatedRoute);
+
     dataLoaded = false;
     section?: CoreCourseWSSection & {
         hasContent?: boolean;
@@ -69,7 +71,7 @@ export default class CoreSiteHomeIndexPage implements OnInit, OnDestroy {
     protected updateSiteObserver: CoreEventObserver;
     protected logView: () => void;
 
-    constructor(protected route: ActivatedRoute) {
+    constructor() {
         // Refresh the enabled flags if site is updated.
         this.updateSiteObserver = CoreEvents.on(CoreEvents.SITE_UPDATED, () => {
             this.searchEnabled = !CoreCourses.isSearchCoursesDisabledInSite();

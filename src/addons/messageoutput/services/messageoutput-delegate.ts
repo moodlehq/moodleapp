@@ -75,7 +75,7 @@ export class AddonMessageOutputDelegateService extends CoreDelegate<AddonMessage
     protected handlerNameProperty = 'processorName';
 
     constructor() {
-        super('AddonMessageOutputDelegate');
+        super();
     }
 
     /**

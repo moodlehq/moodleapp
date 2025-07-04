@@ -44,10 +44,6 @@ export class AddonBlockActivityModulesComponent extends CoreBlockBaseComponent i
 
     protected fetchContentDefaultError = 'Error getting activity modules data.';
 
-    constructor() {
-        super('AddonBlockActivityModulesComponent');
-    }
-
     /**
      * Perform the invalidate content function.
      *

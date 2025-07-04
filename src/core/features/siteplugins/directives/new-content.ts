@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Directive, Input, OnInit, ElementRef, Optional } from '@angular/core';
+import { Directive, Input, OnInit, ElementRef, inject } from '@angular/core';
 import { Md5 } from 'ts-md5';
 
 import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
@@ -48,6 +48,8 @@ import { ContextLevel } from '@/core/constants';
 })
 export class CoreSitePluginsNewContentDirective implements OnInit {
 
+    protected parentContent = inject(CoreSitePluginsPluginContentComponent, { optional: true });
+
     @Input() component?: string; // The component of the new content. If not provided, use the same component as current page.
     @Input() method?: string; // The method to get the new content. If not provided, use the same method as current page.
     @Input() args?: Record<string, unknown>; // The params to get the new content.
@@ -66,11 +68,8 @@ export class CoreSitePluginsNewContentDirective implements OnInit {
 
     protected element: HTMLElement;
 
-    constructor(
-        element: ElementRef,
-        @Optional() protected parentContent: CoreSitePluginsPluginContentComponent,
-    ) {
-        this.element = element.nativeElement || element;
+    constructor() {
+        this.element = inject(ElementRef).nativeElement;
     }
 
     /**

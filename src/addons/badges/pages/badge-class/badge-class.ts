@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreNavigator } from '@services/navigator';
 import { ActivatedRoute } from '@angular/router';
@@ -34,6 +34,8 @@ import { CoreSharedModule } from '@/core/shared.module';
 })
 export default class AddonBadgesBadgeClassPage implements OnInit {
 
+    protected route = inject(ActivatedRoute);
+
     protected badgeId = 0;
     protected logView: (badge: AddonBadgesBadgeClass) => void;
 
@@ -41,7 +43,7 @@ export default class AddonBadgesBadgeClassPage implements OnInit {
     badgeLoaded = false;
     currentTime = 0;
 
-    constructor(protected route: ActivatedRoute) {
+    constructor() {
         this.badgeId = CoreNavigator.getRequiredRouteNumberParam('badgeId');
 
         this.logView = CoreTime.once((badge) => {

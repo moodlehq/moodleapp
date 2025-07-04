@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { CoreConstants } from '@/core/constants';
-import {  AfterViewInit, Directive, ElementRef, Input, OnDestroy } from '@angular/core';
+import { AfterViewInit, Directive, ElementRef, Input, OnDestroy, inject } from '@angular/core';
 import { CoreSwipeNavigationItemsManager } from '@classes/items-management/swipe-navigation-items-manager';
 import { CoreSwipeNavigationTourComponent } from '@components/swipe-navigation-tour/swipe-navigation-tour';
 import { CoreUserTours } from '@features/usertours/services/user-tours';
@@ -38,12 +38,10 @@ export class CoreSwipeNavigationDirective implements AfterViewInit, OnDestroy {
 
     @Input('core-swipe-navigation') manager?: CoreSwipeNavigationItemsManager;
 
-    protected element: HTMLElement;
+    protected element: HTMLElement = inject(ElementRef).nativeElement;
     protected swipeGesture?: Gesture;
 
-    constructor(el: ElementRef) {
-        this.element = el.nativeElement;
-
+    constructor() {
         if (CoreConstants.enableDevTools()) {
             this.element['swipeNavigation'] = this;
             this.element.classList.add('uses-swipe-navigation');

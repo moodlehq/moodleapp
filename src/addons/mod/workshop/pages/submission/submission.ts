@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit, OnDestroy, Optional, ViewChild, ElementRef } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, ElementRef, inject } from '@angular/core';
 import { FormGroup, FormBuilder } from '@angular/forms';
 import { Params } from '@angular/router';
 import { CoreCourse } from '@features/course/services/course';
@@ -79,6 +79,9 @@ import { CoreErrorHelper } from '@services/error-helper';
 })
 export default class AddonModWorkshopSubmissionPage implements OnInit, OnDestroy, CanLeave {
 
+    protected fb = inject(FormBuilder);
+    protected content = inject(IonContent, { optional: true });
+
     @ViewChild(AddonModWorkshopAssessmentStrategyComponent) assessmentStrategy?: AddonModWorkshopAssessmentStrategyComponent;
 
     @ViewChild('feedbackFormEl') formElement?: ElementRef;
@@ -127,10 +130,7 @@ export default class AddonModWorkshopSubmissionPage implements OnInit, OnDestroy
     protected isDestroyed = false;
     protected logView: () => void;
 
-    constructor(
-        protected fb: FormBuilder,
-        @Optional() protected content: IonContent,
-    ) {
+    constructor() {
         this.currentUserId = CoreSites.getCurrentSiteUserId();
         this.siteId = CoreSites.getCurrentSiteId();
 

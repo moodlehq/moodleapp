@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Injectable, Type } from '@angular/core';
+import { Injectable, Type, inject } from '@angular/core';
 import { SafeUrl } from '@angular/platform-browser';
 
 import { CoreSite } from '@classes/sites/site';
@@ -259,11 +259,13 @@ export interface CoreCourseModuleHandlerButton {
 @Injectable({ providedIn: 'root' })
 export class CoreCourseModuleDelegateService extends CoreDelegate<CoreCourseModuleHandler> {
 
+    protected defaultHandler = inject(CoreCourseModuleDefaultHandler);
+
     protected featurePrefix = CORE_COURSE_MODULE_FEATURE_PREFIX;
     protected handlerNameProperty = 'modName';
 
-    constructor(protected defaultHandler: CoreCourseModuleDefaultHandler) {
-        super('CoreCourseModuleDelegate');
+    constructor() {
+        super();
     }
 
     /**

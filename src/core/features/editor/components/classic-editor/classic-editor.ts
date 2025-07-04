@@ -12,15 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import {
-    AfterViewInit,
-    Component,
-    CUSTOM_ELEMENTS_SCHEMA,
-    ViewChild,
-    ElementRef,
-    OnInit,
-    OnDestroy,
-} from '@angular/core';
+import { AfterViewInit, Component, CUSTOM_ELEMENTS_SCHEMA, ViewChild, ElementRef, OnInit, OnDestroy, inject } from '@angular/core';
 import { IonTextarea } from '@ionic/angular';
 import { CoreUtils } from '@singletons/utils';
 import { CoreDirectivesRegistry } from '@singletons/directives-registry';
@@ -84,7 +76,7 @@ export class CoreEditorClassicEditorComponent extends CoreEditorBaseComponent im
     protected readonly RESTORE_MESSAGE_CLEAR_TIME = 6000;
     protected readonly SAVE_MESSAGE_CLEAR_TIME = 2000;
 
-    protected element: HTMLElement;
+    protected element: HTMLElement = inject(ElementRef).nativeElement;
 
     protected contentObserver?: MutationObserver;
     protected isCurrentView = true;
@@ -125,13 +117,6 @@ export class CoreEditorClassicEditorComponent extends CoreEditorBaseComponent im
         centerInsufficientSlides: true,
         watchSlidesProgress: true,
     };
-
-    constructor(
-        elementRef: ElementRef,
-    ) {
-        super();
-        this.element = elementRef.nativeElement;
-    }
 
     /**
      * @inheritdoc

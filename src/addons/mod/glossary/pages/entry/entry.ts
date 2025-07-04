@@ -14,7 +14,7 @@
 
 import { AddonModGlossaryHelper } from '@addons/mod/glossary/services/glossary-helper';
 import { AddonModGlossaryOffline, AddonModGlossaryOfflineEntry } from '@addons/mod/glossary/services/glossary-offline';
-import { Component, OnDestroy, OnInit, Optional, ViewChild } from '@angular/core';
+import { Component, OnDestroy, OnInit, ViewChild, inject } from '@angular/core';
 import { ActivatedRoute, ActivatedRouteSnapshot } from '@angular/router';
 import { CoreRoutedItemsManagerSourcesTracker } from '@classes/items-management/routed-items-manager-sources-tracker';
 import { CoreSwipeNavigationItemsManager } from '@classes/items-management/swipe-navigation-items-manager';
@@ -67,6 +67,10 @@ import { CoreRatingAggregateComponent } from '@features/rating/components/aggreg
 })
 export default class AddonModGlossaryEntryPage implements OnInit, OnDestroy {
 
+    protected splitView = inject(CoreSplitViewComponent, { optional: true });
+    protected route = inject(ActivatedRoute);
+    protected courseContentsPage = inject(CoreCourseContentsPage, { optional: true });
+
     @ViewChild(CoreCommentsCommentsComponent) comments?: CoreCommentsCommentsComponent;
 
     component = ADDON_MOD_GLOSSARY_COMPONENT_LEGACY;
@@ -91,11 +95,7 @@ export default class AddonModGlossaryEntryPage implements OnInit, OnDestroy {
     protected entrySlug!: string;
     protected logView: () => void;
 
-    constructor(
-        @Optional() protected splitView: CoreSplitViewComponent,
-        protected route: ActivatedRoute,
-        @Optional() protected courseContentsPage?: CoreCourseContentsPage,
-    ) {
+    constructor() {
         this.logView = CoreTime.once(async () => {
             if (!this.onlineEntry || !this.glossary || !this.componentId) {
                 return;

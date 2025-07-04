@@ -12,13 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Directive, Input, ElementRef, Optional } from '@angular/core';
+import { Directive, Input } from '@angular/core';
 
 import { Translate } from '@singletons';
 import { CoreToasts } from '@services/overlays/toasts';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSitePluginsCallWSOnClickBaseDirective } from '../classes/call-ws-click-directive';
-import { CoreSitePluginsPluginContentComponent } from '../components/plugin-content/plugin-content';
 import { toBoolean } from '@/core/transforms/boolean';
 
 /**
@@ -54,13 +53,6 @@ export class CoreSitePluginsCallWSDirective extends CoreSitePluginsCallWSOnClick
     @Input() successMessage?: string; // Message to show on success. If not supplied, no message. If empty, default message.
     @Input({ transform: toBoolean }) goBackOnSuccess = false; // Whether to go back if the WS call is successful.
     @Input({ transform: toBoolean }) refreshOnSuccess = false; // Whether to refresh the current view if the WS call is successful.
-
-    constructor(
-        element: ElementRef,
-        @Optional() parentContent: CoreSitePluginsPluginContentComponent,
-    ) {
-        super(element, parentContent);
-    }
 
     /**
      * @inheritdoc
