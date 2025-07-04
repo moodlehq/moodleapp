@@ -42,10 +42,6 @@ export class AddonBlockSiteMainMenuComponent extends CoreBlockBaseComponent impl
 
     protected fetchContentDefaultError = 'Error getting main menu data.';
 
-    constructor() {
-        super('AddonBlockSiteMainMenuComponent');
-    }
-
     /**
      * @inheritdoc
      */

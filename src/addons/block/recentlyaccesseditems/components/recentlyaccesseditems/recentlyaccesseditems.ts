@@ -42,10 +42,6 @@ export class AddonBlockRecentlyAccessedItemsComponent extends CoreBlockBaseCompo
 
     protected fetchContentDefaultError = 'Error getting recently accessed items data.';
 
-    constructor() {
-        super('AddonBlockRecentlyAccessedItemsComponent');
-    }
-
     /**
      * @inheritdoc
      */

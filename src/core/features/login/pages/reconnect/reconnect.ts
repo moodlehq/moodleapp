@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit, OnDestroy, ViewChild, ElementRef } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, ElementRef, inject } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 
 import { CoreNetwork } from '@services/network';
@@ -57,6 +57,8 @@ import { CoreLoginIdentityProviderComponent } from '../../components/identity-pr
 })
 export default class CoreLoginReconnectPage implements OnInit, OnDestroy {
 
+    protected fb = inject(FormBuilder);
+
     @ViewChild('reconnectForm') formElement?: ElementRef;
     @ViewChild(CoreLoginMethodsComponent) set loginMethods(loginMethods: CoreLoginMethodsComponent) {
         if (loginMethods && !this.currentLogin) {
@@ -95,13 +97,11 @@ export default class CoreLoginReconnectPage implements OnInit, OnDestroy {
     protected alwaysShowLoginFormObserver?: CoreEventObserver;
     protected loginObserver?: CoreEventObserver;
 
-    constructor(
-        protected fb: FormBuilder,
-    ) {
+    constructor() {
         const currentSite = CoreSites.getCurrentSite();
 
         this.isLoggedOut = !currentSite || currentSite.isLoggedOut();
-        this.credForm = fb.group({
+        this.credForm = this.fb.group({
             password: ['', Validators.required],
         });
 

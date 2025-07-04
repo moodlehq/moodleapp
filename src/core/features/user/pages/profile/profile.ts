@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { ActivatedRoute, ActivatedRouteSnapshot } from '@angular/router';
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, inject } from '@angular/core';
 import { Subscription } from 'rxjs';
 
 import { CoreSite } from '@classes/sites/site';
@@ -50,6 +50,8 @@ import { CORE_USER_PROFILE_REFRESHED } from '@features/user/constants';
 })
 export default class CoreUserProfilePage implements OnInit, OnDestroy {
 
+    protected route = inject(ActivatedRoute);
+
     protected courseId?: number;
     protected userId!: number;
     protected site!: CoreSite;
@@ -69,7 +71,7 @@ export default class CoreUserProfilePage implements OnInit, OnDestroy {
 
     users?: CoreUserSwipeItemsManager;
 
-    constructor(private route: ActivatedRoute) {
+    constructor() {
         this.obsProfileRefreshed = CoreEvents.on(CORE_USER_PROFILE_REFRESHED, (data) => {
             if (!this.user || !data.user) {
                 return;

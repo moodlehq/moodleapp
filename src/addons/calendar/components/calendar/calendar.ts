@@ -24,6 +24,7 @@ import {
     KeyValueDiffer,
     ViewChild,
     HostBinding,
+    inject,
 } from '@angular/core';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { CoreSites } from '@services/sites';
@@ -91,7 +92,9 @@ export class AddonCalendarCalendarComponent implements OnInit, DoCheck, OnDestro
     protected managerUnsubscribe?: () => void;
     protected logView: () => void;
 
-    constructor(differs: KeyValueDiffers) {
+    constructor() {
+        const differs = inject(KeyValueDiffers);
+
         this.currentSiteId = CoreSites.getCurrentSiteId();
 
         // Listen for events "undeleted" (offline).

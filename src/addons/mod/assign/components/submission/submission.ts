@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, Input, OnInit, Optional, ViewChildren, QueryList, OnDestroy } from '@angular/core';
+import { Component, Input, OnInit, ViewChildren, QueryList, OnDestroy, inject } from '@angular/core';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { CoreSites } from '@services/sites';
 import {
@@ -82,6 +82,8 @@ import { CoreUtils } from '@singletons/utils';
 })
 export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy {
 
+    protected splitviewCtrl = inject(CoreSplitViewComponent, { optional: true });
+
     @ViewChildren(AddonModAssignSubmissionPluginComponent) submissionComponents!:
         QueryList<AddonModAssignSubmissionPluginComponent>;
 
@@ -146,9 +148,7 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy {
 
     protected hasOfflineGrade = false;
 
-    constructor(
-        @Optional() protected splitviewCtrl: CoreSplitViewComponent,
-    ) {
+    constructor() {
         this.siteId = CoreSites.getCurrentSiteId();
         this.currentUserId = CoreSites.getCurrentSiteUserId();
 

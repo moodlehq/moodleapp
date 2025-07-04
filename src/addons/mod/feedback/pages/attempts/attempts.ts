@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { AfterViewInit, Component, OnDestroy, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, OnDestroy, ViewChild, inject } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { CoreRoutedItemsManagerSourcesTracker } from '@classes/items-management/routed-items-manager-sources-tracker';
 import { CoreListItemsManager } from '@classes/items-management/list-items-manager';
@@ -41,6 +41,8 @@ import { CoreSharedModule } from '@/core/shared.module';
 })
 export default class AddonModFeedbackAttemptsPage implements AfterViewInit, OnDestroy {
 
+    protected route = inject(ActivatedRoute);
+
     @ViewChild(CoreSplitViewComponent) splitView!: CoreSplitViewComponent;
 
     promisedAttempts: CorePromisedValue<AddonModFeedbackAttemptsManager>;
@@ -49,7 +51,7 @@ export default class AddonModFeedbackAttemptsPage implements AfterViewInit, OnDe
 
     protected logView: () => void;
 
-    constructor(protected route: ActivatedRoute) {
+    constructor() {
         this.promisedAttempts = new CorePromisedValue();
 
         this.logView = CoreTime.once(() => {

@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { CoreSharedModule } from '@/core/shared.module';
-import { ChangeDetectionStrategy, Component, ElementRef, Input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 import { CoreModalComponent } from '@classes/modal-component';
 
 @Component({
@@ -30,10 +30,6 @@ export class AddonPrivateFilesFileActionsComponent extends CoreModalComponent<Ad
     @Input({ required: false }) isDownloaded = false;
     @Input({ required: true }) filename = '';
     @Input({ required: true }) icon = '';
-
-    constructor(elementRef: ElementRef<HTMLElement>) {
-        super(elementRef);
-    }
 
 }
 

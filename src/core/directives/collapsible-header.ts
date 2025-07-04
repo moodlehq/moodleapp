@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Directive, ElementRef, Input, OnChanges, OnDestroy, OnInit, SimpleChange } from '@angular/core';
+import { Directive, ElementRef, Input, OnChanges, OnDestroy, OnInit, SimpleChange, inject } from '@angular/core';
 import { CoreCancellablePromise } from '@classes/cancellable-promise';
 import { CorePromisedValue } from '@classes/promised-value';
 import { CoreLoadingComponent } from '@components/loading/loading';
@@ -79,7 +79,7 @@ export class CoreCollapsibleHeaderDirective implements OnInit, OnChanges, OnDest
     @Input({ transform: toBoolean }) collapsible = true;
 
     protected page?: HTMLElement;
-    protected collapsedHeader: HTMLIonHeaderElement;
+    protected collapsedHeader: HTMLIonHeaderElement = inject(ElementRef).nativeElement;
     protected collapsedFontStyles?: Partial<CSSStyleDeclaration>;
     protected expandedHeader?: HTMLIonItemElement;
     protected expandedHeaderHeight?: number;
@@ -100,8 +100,7 @@ export class CoreCollapsibleHeaderDirective implements OnInit, OnChanges, OnDest
     protected visiblePromise?: CoreCancellablePromise<void>;
     protected onReadyPromise = new CorePromisedValue<void>();
 
-    constructor(el: ElementRef) {
-        this.collapsedHeader = el.nativeElement;
+    constructor() {
         CoreDirectivesRegistry.register(this.collapsedHeader, this);
     }
 

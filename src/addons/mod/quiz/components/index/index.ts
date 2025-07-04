@@ -14,12 +14,10 @@
 
 import { DownloadStatus } from '@/core/constants';
 import { isSafeNumber, safeNumber, SafeNumber } from '@/core/utils/types';
-import { Component, OnDestroy, OnInit, Optional } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 
 import { CoreCourseModuleMainActivityComponent } from '@features/course/classes/main-activity-component';
-import CoreCourseContentsPage from '@features/course/pages/contents/contents';
 import { CoreQuestionBehaviourDelegate } from '@features/question/services/behaviour-delegate';
-import { IonContent } from '@ionic/angular';
 import { CoreNavigator } from '@services/navigator';
 import { CoreText } from '@singletons/text';
 import { CorePromiseUtils } from '@singletons/promise-utils';
@@ -113,13 +111,6 @@ export class AddonModQuizIndexComponent extends CoreCourseModuleMainActivityComp
     protected finishedObserver?: CoreEventObserver; // It will observe attempt finished events.
     protected hasPlayed = false; // Whether the user has gone to the quiz player (attempted).
     protected candidateQuiz?: AddonModQuizQuizData;
-
-    constructor(
-        protected content?: IonContent,
-        @Optional() courseContentsPage?: CoreCourseContentsPage,
-    ) {
-        super('AddonModQuizIndexComponent', content, courseContentsPage);
-    }
 
     /**
      * @inheritdoc

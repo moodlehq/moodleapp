@@ -42,10 +42,6 @@ export class AddonQtypeDdwtosComponent extends CoreQuestionBaseComponent<AddonMo
     protected textIsRendered = false;
     protected answerAreRendered = false;
 
-    constructor(elementRef: ElementRef) {
-        super('AddonQtypeDdwtosComponent', elementRef);
-    }
-
     /**
      * @inheritdoc
      */

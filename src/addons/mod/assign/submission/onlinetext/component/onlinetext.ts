@@ -15,7 +15,7 @@
 import { AddonModAssignSubmissionPluginBaseComponent } from '@addons/mod/assign/classes/base-submission-plugin-component';
 import { AddonModAssign } from '@addons/mod/assign/services/assign';
 import { AddonModAssignOffline } from '@addons/mod/assign/services/assign-offline';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { FormBuilder, FormControl } from '@angular/forms';
 import { CoreSites } from '@services/sites';
 import { CoreText } from '@singletons/text';
@@ -41,6 +41,8 @@ import { CoreFileHelper } from '@services/file-helper';
 })
 export class AddonModAssignSubmissionOnlineTextComponent extends AddonModAssignSubmissionPluginBaseComponent implements OnInit {
 
+    protected fb = inject(FormBuilder);
+
     control?: FormControl<string>;
     words = 0;
     component = ADDON_MOD_ASSIGN_COMPONENT_LEGACY;
@@ -53,9 +55,7 @@ export class AddonModAssignSubmissionOnlineTextComponent extends AddonModAssignS
 
     protected wordCountTimeout?: number;
 
-    constructor(
-        protected fb: FormBuilder,
-    ) {
+    constructor() {
         super();
         this.currentUserId = CoreSites.getCurrentSiteUserId();
     }

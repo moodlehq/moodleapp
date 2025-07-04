@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { ChangeDetectorRef, Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, ElementRef, OnDestroy, OnInit, ViewChild, inject } from '@angular/core';
 
 import { CoreSites, CoreSitesReadingStrategy } from '@services/sites';
 import { CoreMimetype } from '@singletons/mimetype';
@@ -48,6 +48,9 @@ import { CoreSharedModule } from '@/core/shared.module';
 })
 export default class CorePolicySitePolicyPage implements OnInit, OnDestroy {
 
+    protected elementRef = inject(ElementRef);
+    protected changeDetector = inject(ChangeDetectorRef);
+
     @ViewChild(IonContent) content?: IonContent;
 
     siteName?: string;
@@ -76,8 +79,6 @@ export default class CorePolicySitePolicyPage implements OnInit, OnDestroy {
     protected siteId?: string;
     protected currentSite!: CoreSite;
     protected layoutSubscription?: Subscription;
-
-    constructor(protected elementRef: ElementRef, protected changeDetector: ChangeDetectorRef) {}
 
     /**
      * @inheritdoc

@@ -12,10 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Directive, OnInit, ElementRef, Optional } from '@angular/core';
+import { Directive, OnInit } from '@angular/core';
 
 import { CoreSitePluginsCallWSBaseDirective } from '../classes/call-ws-directive';
-import { CoreSitePluginsPluginContentComponent } from '../components/plugin-content/plugin-content';
 
 /**
  * Directive to call a WS as soon as its loaded.
@@ -34,13 +33,6 @@ import { CoreSitePluginsPluginContentComponent } from '../components/plugin-cont
     selector: '[core-site-plugins-call-ws-on-load]',
 })
 export class CoreSitePluginsCallWSOnLoadDirective extends CoreSitePluginsCallWSBaseDirective implements OnInit {
-
-    constructor(
-        element: ElementRef,
-        @Optional() parentContent: CoreSitePluginsPluginContentComponent,
-    ) {
-        super(element, parentContent);
-    }
 
     /**
      * @inheritdoc

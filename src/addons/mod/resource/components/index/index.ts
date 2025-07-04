@@ -13,10 +13,9 @@
 // limitations under the License.
 
 import { DownloadStatus } from '@/core/constants';
-import { Component, OnDestroy, OnInit, Optional } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { CoreError } from '@classes/errors/error';
 import { CoreCourseModuleMainResourceComponent } from '@features/course/classes/main-resource-component';
-import CoreCourseContentsPage from '@features/course/pages/contents/contents';
 import { CoreCourse } from '@features/course/services/course';
 import { CoreCourseModulePrefetchDelegate } from '@features/course/services/module-prefetch-delegate';
 import { CoreNetwork } from '@services/network';
@@ -78,10 +77,6 @@ export class AddonModResourceIndexComponent extends CoreCourseModuleMainResource
     outdatedStatus = DownloadStatus.OUTDATED;
 
     protected onlineObserver?: Subscription;
-
-    constructor(@Optional() courseContentsPage?: CoreCourseContentsPage) {
-        super('AddonModResourceIndexComponent', courseContentsPage);
-    }
 
     /**
      * @inheritdoc

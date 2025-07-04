@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Injectable, Type } from '@angular/core';
+import { Injectable, Type, inject } from '@angular/core';
 import { CoreDelegate, CoreDelegateHandler } from '@classes/delegate';
 import { AddonModDataDefaultFieldHandler } from './handlers/default-field';
 import { makeSingleton } from '@singletons';
@@ -129,12 +129,12 @@ export interface AddonModDataFieldHandler extends CoreDelegateHandler {
 @Injectable({ providedIn: 'root' })
 export class AddonModDataFieldsDelegateService extends CoreDelegate<AddonModDataFieldHandler> {
 
+    protected defaultHandler = inject(AddonModDataDefaultFieldHandler);
+
     protected handlerNameProperty = 'type';
 
-    constructor(
-        protected defaultHandler: AddonModDataDefaultFieldHandler,
-    ) {
-        super('AddonModDataFieldsDelegate');
+    constructor() {
+        super();
     }
 
     /**

@@ -129,7 +129,7 @@ export class CoreEnrolDelegateService extends CoreDelegate<CoreEnrolHandler> {
     protected featurePrefix = 'CoreEnrolDelegate_';
 
     constructor() {
-        super('CoreEnrolDelegate');
+        super();
     }
 
     /**

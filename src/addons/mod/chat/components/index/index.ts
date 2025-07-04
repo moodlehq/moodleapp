@@ -12,10 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit, Optional } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CoreCourseModuleMainActivityComponent } from '@features/course/classes/main-activity-component';
-import CoreCourseContentsPage from '@features/course/pages/contents/contents';
-import { IonContent } from '@ionic/angular';
 import { CoreNavigator } from '@services/navigator';
 import { CoreTime } from '@singletons/time';
 import { AddonModChat, AddonModChatChat } from '../../services/chat';
@@ -42,13 +40,6 @@ export class AddonModChatIndexComponent extends CoreCourseModuleMainActivityComp
     pluginName = 'chat';
     chat?: AddonModChatChat;
     chatTime?: string;
-
-    constructor(
-        protected content?: IonContent,
-        @Optional() courseContentsPage?: CoreCourseContentsPage,
-    ) {
-        super('AddonModChatIndexComponent', content, courseContentsPage);
-    }
 
     /**
      * @inheritdoc

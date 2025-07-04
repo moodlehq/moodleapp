@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { CoreSharedModule } from '@/core/shared.module';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { CoreDataPrivacy } from '@features/dataprivacy/services/dataprivacy';
 import { CoreUser } from '@features/user/services/user';
@@ -37,15 +37,15 @@ import { CoreAlerts } from '@services/overlays/alerts';
 })
 export class CoreDataPrivacyContactDPOComponent implements OnInit {
 
+    protected fb = inject(FormBuilder);
+
     message = '';
     email = '';
 
     // Form variables.
     form: FormGroup;
 
-    constructor(
-        protected fb: FormBuilder,
-    ) {
+    constructor() {
         this.form = new FormGroup({});
 
         // Initialize form variables.

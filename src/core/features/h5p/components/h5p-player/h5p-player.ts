@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, Input, ElementRef, OnInit, OnDestroy, OnChanges, SimpleChange } from '@angular/core';
+import { Component, Input, ElementRef, OnInit, OnDestroy, OnChanges, SimpleChange, inject } from '@angular/core';
 
 import { CoreNetwork } from '@services/network';
 import { CoreFilepool } from '@services/filepool';
@@ -68,10 +68,8 @@ export class CoreH5PPlayerComponent implements OnInit, OnChanges, OnDestroy {
     protected logger: CoreLogger;
     protected nativeElement: HTMLElement;
 
-    constructor(
-        elementRef: ElementRef,
-    ) {
-        this.nativeElement = elementRef.nativeElement;
+    constructor() {
+        this.nativeElement = inject(ElementRef).nativeElement;
 
         this.logger = CoreLogger.getInstance('CoreH5PPlayerComponent');
         this.site = CoreSites.getRequiredCurrentSite();

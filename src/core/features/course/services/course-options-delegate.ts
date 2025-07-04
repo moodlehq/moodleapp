@@ -235,7 +235,7 @@ export class CoreCourseOptionsDelegateService extends CoreDelegate<CoreCourseOpt
     protected featurePrefix = 'CoreCourseOptionsDelegate_';
 
     constructor() {
-        super('CoreCourseOptionsDelegate');
+        super();
 
         CoreEvents.on(CoreEvents.LOGOUT, () => {
             this.clearCoursesHandlers();

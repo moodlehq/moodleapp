@@ -12,7 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit, OnDestroy, ViewChild, ChangeDetectorRef, ViewChildren, QueryList, ElementRef } from '@angular/core';
+import {
+    Component,
+    OnInit,
+    OnDestroy,
+    ViewChild,
+    ChangeDetectorRef,
+    ViewChildren,
+    QueryList,
+    ElementRef,
+    inject,
+} from '@angular/core';
 import { IonContent } from '@ionic/angular';
 import { Subscription } from 'rxjs';
 
@@ -78,6 +88,9 @@ import { CoreSharedModule } from '@/core/shared.module';
 })
 export default class AddonModQuizPlayerPage implements OnInit, OnDestroy, CanLeave {
 
+    protected changeDetector = inject(ChangeDetectorRef);
+    protected element: HTMLElement = inject(ElementRef).nativeElement;
+
     @ViewChild(IonContent) content?: IonContent;
     @ViewChildren(CoreQuestionComponent) questionComponents?: QueryList<CoreQuestionComponent>;
     @ViewChild('quizForm') formElement?: ElementRef;
@@ -117,13 +130,7 @@ export default class AddonModQuizPlayerPage implements OnInit, OnDestroy, CanLea
     protected autoSave!: AddonModQuizAutoSave; // Class to auto-save answers every certain time.
     protected autoSaveErrorSubscription?: Subscription; // To be notified when an error happens in auto-save.
     protected forceLeave = false; // If true, don't perform any check when leaving the view.
-    protected reloadNavigation = false; // Whether navigation needs to be reloaded because some data was sent to server.
-
-    constructor(
-        protected changeDetector: ChangeDetectorRef,
-        protected elementRef: ElementRef,
-    ) {
-    }
+    protected reloadNavigation = false;
 
     /**
      * @inheritdoc
@@ -838,9 +845,9 @@ export default class AddonModQuizPlayerPage implements OnInit, OnDestroy, CanLea
      */
     protected async scrollToQuestion(slot: number): Promise<void> {
         await CoreWait.nextTick();
-        await CoreDirectivesRegistry.waitDirectivesReady(this.elementRef.nativeElement, 'core-question');
+        await CoreDirectivesRegistry.waitDirectivesReady(this.element, 'core-question');
         await CoreDom.scrollToElement(
-            this.elementRef.nativeElement,
+            this.element,
             `#addon-mod_quiz-question-${slot}`,
         );
     }

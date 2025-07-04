@@ -18,12 +18,13 @@ import {
     CUSTOM_ELEMENTS_SCHEMA,
     ElementRef,
     OnDestroy,
-    Optional,
     Type,
-    ViewChild, OnInit,
+    ViewChild,
+    OnInit,
     Input,
     Output,
     EventEmitter,
+    inject,
 } from '@angular/core';
 import { IonContent } from '@ionic/angular';
 import { CoreSharedModule } from '@/core/shared.module';
@@ -67,6 +68,8 @@ import { convertTextToHTMLElement } from '@/core/utils/create-html-element';
 })
 export class CoreEditorRichTextEditorComponent implements AfterViewInit, OnDestroy, OnInit {
 
+    protected content = inject(IonContent);
+
     private static readonly MIN_HEIGHT = 200; // Minimum height of the editor.
     private static readonly DRAFT_AUTOSAVE_FREQUENCY = 30000;
 
@@ -101,13 +104,10 @@ export class CoreEditorRichTextEditorComponent implements AfterViewInit, OnDestr
     protected resetObserver?: CoreEventObserver;
     protected element: HTMLElement;
 
-    constructor(
-        @Optional() protected content: IonContent,
-        elementRef: ElementRef<HTMLElement>,
-    ) {
+    constructor() {
          // Generate a "unique" ID based on timestamp.
         this.pageInstance = `app_${Date.now()}`;
-        this.element = elementRef.nativeElement;
+        this.element = inject(ElementRef).nativeElement;
     }
 
     /**

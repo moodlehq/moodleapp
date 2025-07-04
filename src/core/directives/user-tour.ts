@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Directive, ElementRef, Input, OnDestroy, OnInit } from '@angular/core';
+import { Directive, ElementRef, Input, OnDestroy, OnInit, inject } from '@angular/core';
 import { CoreCancellablePromise } from '@classes/cancellable-promise';
 import { CoreUserTours, CoreUserToursFocusedOptions, CoreUserToursUserTour } from '@features/usertours/services/user-tours';
 import { CoreDom } from '@singletons/dom';
@@ -28,12 +28,8 @@ export class CoreUserTourDirective implements OnInit, OnDestroy {
     @Input({ required: true }) userTour!: CoreUserTourDirectiveOptions;
 
     private tour?: CoreUserToursUserTour | null;
-    private element: HTMLElement;
+    private element: HTMLElement = inject(ElementRef).nativeElement;
     protected visiblePromise?: CoreCancellablePromise<void>;
-
-    constructor(element: ElementRef) {
-        this.element = element.nativeElement;
-    }
 
     /**
      * @inheritdoc

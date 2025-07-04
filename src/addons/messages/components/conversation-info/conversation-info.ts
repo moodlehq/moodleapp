@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, inject } from '@angular/core';
 import {
     AddonMessagesConversationFormatted,
     AddonMessagesConversationMember,
@@ -35,6 +35,8 @@ import { CoreSharedModule } from '@/core/shared.module';
 })
 export class AddonMessagesConversationInfoComponent implements OnInit {
 
+    protected route = inject(ActivatedRoute);
+
     @Input() conversationId = 0;
 
     loaded = false;
@@ -42,11 +44,6 @@ export class AddonMessagesConversationInfoComponent implements OnInit {
     members: AddonMessagesConversationMember[] = [];
     canLoadMore = false;
     loadMoreError = false;
-
-    constructor(
-        protected route: ActivatedRoute,
-    ) {
-    }
 
     /**
      * @inheritdoc

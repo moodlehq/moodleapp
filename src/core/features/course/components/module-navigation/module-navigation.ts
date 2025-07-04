@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, ElementRef, Input, OnDestroy, OnInit } from '@angular/core';
+import { Component, ElementRef, Input, OnDestroy, OnInit, inject } from '@angular/core';
 import { CoreCourse, CoreCourseWSSection } from '@features/course/services/course';
 import { CoreCourseHelper, CoreCourseModuleData } from '@features/course/services/course-helper';
 import { CoreCourseModuleDelegate } from '@features/course/services/module-delegate';
@@ -43,19 +43,20 @@ import { CoreCourseModuleHelper } from '@features/course/services/course-module-
 })
 export class CoreCourseModuleNavigationComponent implements OnInit, OnDestroy {
 
+    protected ionContent = inject(IonContent);
+
     @Input({ required: true }) courseId!: number; // Course ID.
     @Input({ required: true }) currentModuleId!: number; // Current module Id.
 
     nextModule?: CoreCourseModuleData;
     previousModule?: CoreCourseModuleData;
     loaded = false;
-    element: HTMLElement;
+    element: HTMLElement = inject(ElementRef).nativeElement;
 
     protected completionObserver: CoreEventObserver;
 
-    constructor(protected ionContent: IonContent, element: ElementRef) {
+    constructor() {
         const siteId = CoreSites.getCurrentSiteId();
-        this.element = element.nativeElement;
 
         this.completionObserver = CoreEvents.on(CoreEvents.COMPLETION_MODULE_VIEWED, async (data) => {
             if (data && data.courseId == this.courseId) {

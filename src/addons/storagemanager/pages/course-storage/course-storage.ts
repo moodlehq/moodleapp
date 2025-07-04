@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { CoreConstants, DownloadStatus } from '@/core/constants';
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, OnDestroy, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, OnDestroy, OnInit, inject } from '@angular/core';
 import {
     CORE_COURSE_ALL_COURSES_CLEARED,
     CORE_COURSE_ALL_SECTIONS_ID,
@@ -59,6 +59,9 @@ import { CoreCourseDownloadStatusHelper } from '@features/course/services/course
 })
 export default class AddonStorageManagerCourseStoragePage implements OnInit, OnDestroy {
 
+    protected element = inject(ElementRef).nativeElement;
+    protected changeDetectorRef = inject(ChangeDetectorRef);
+
     courseId!: number;
     title = '';
     loaded = false;
@@ -86,7 +89,7 @@ export default class AddonStorageManagerCourseStoragePage implements OnInit, OnD
     protected isDestroyed = false;
     protected isGuest = false;
 
-    constructor(protected elementRef: ElementRef, protected changeDetectorRef: ChangeDetectorRef) {
+    constructor() {
         // Refresh the enabled flags if site is updated.
         this.siteUpdatedObserver = CoreEvents.on(CoreEvents.SITE_UPDATED, () => {
             this.downloadCourseEnabled = !CoreCourses.isDownloadCourseDisabledInSite();
@@ -144,7 +147,7 @@ export default class AddonStorageManagerCourseStoragePage implements OnInit, OnD
             });
 
             CoreDom.scrollToElement(
-                this.elementRef.nativeElement,
+                this.element,
                 `#addons-course-storage-${initialSectionId}`,
                 { addYAxis: -10 },
             );

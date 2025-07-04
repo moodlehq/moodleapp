@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Directive, ElementRef, OnDestroy, OnInit } from '@angular/core';
+import { Directive, ElementRef, OnDestroy, OnInit, inject } from '@angular/core';
 
 /**
  * Directive to observe mutations on some attributes and propagate them inside.
@@ -27,11 +27,11 @@ import { Directive, ElementRef, OnDestroy, OnInit } from '@angular/core';
 })
 export class CoreUpdateNonReactiveAttributesDirective implements OnInit, OnDestroy {
 
-    protected element: HTMLIonButtonElement | HTMLElement;
+    protected element: HTMLIonButtonElement = inject(ElementRef).nativeElement;
+
     protected mutationObserver: MutationObserver;
 
-    constructor(element: ElementRef<HTMLIonButtonElement>) {
-        this.element = element.nativeElement;
+    constructor() {
         this.mutationObserver = new MutationObserver(() => {
             const button = this.element.shadowRoot?.querySelector('button');
 

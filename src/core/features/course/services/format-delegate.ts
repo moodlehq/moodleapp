@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Injectable, Type } from '@angular/core';
+import { Injectable, Type, inject } from '@angular/core';
 
 import { CoreDelegate, CoreDelegateHandler } from '@classes/delegate';
 import { CoreCourseAnyCourseData } from '@features/courses/services/courses';
@@ -161,11 +161,13 @@ export interface CoreCourseFormatHandler extends CoreDelegateHandler {
 @Injectable({ providedIn: 'root' })
 export class CoreCourseFormatDelegateService extends CoreDelegate<CoreCourseFormatHandler> {
 
+    protected defaultHandler = inject(CoreCourseFormatDefaultHandler);
+
     protected featurePrefix = 'CoreCourseFormatDelegate_';
     protected handlerNameProperty = 'format';
 
-    constructor(protected defaultHandler: CoreCourseFormatDefaultHandler) {
-        super('CoreCoursesCourseFormatDelegate');
+    constructor() {
+        super();
     }
 
     /**

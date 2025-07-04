@@ -25,6 +25,7 @@ import {
     SimpleChange,
     TemplateRef,
     ViewChild,
+    inject,
 } from '@angular/core';
 import { AsyncDirective } from '@classes/async-directive';
 import { CoreSwipeSlidesItemsManager } from '@classes/items-management/swipe-slides-items-manager';
@@ -51,6 +52,8 @@ import { CoreBaseModule } from '@/core/base.module';
     schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
 export class CoreSwipeSlidesComponent<Item = unknown> implements OnChanges, OnDestroy, AsyncDirective {
+
+    protected content? = inject(IonContent);
 
     @Input() manager?: CoreSwipeSlidesItemsManager<Item>;
     @Input() options: CoreSwipeSlidesOptions = {};
@@ -84,19 +87,14 @@ export class CoreSwipeSlidesComponent<Item = unknown> implements OnChanges, OnDe
 
     @ContentChild(TemplateRef) template?: TemplateRef<{item: Item; active: boolean}>; // Template defined by the content.
 
-    protected hostElement: HTMLElement;
+    protected hostElement: HTMLElement = inject(ElementRef).nativeElement;
     protected unsubscribe?: () => void;
     protected resizeListener: CoreEventObserver;
     protected activeSlideIndex?: number;
     protected onReadyPromise = new CorePromisedValue<void>();
     protected onUpdatePromise: CorePromisedValue<void> | null = null;
 
-    constructor(
-        elementRef: ElementRef<HTMLElement>,
-        protected content?: IonContent,
-    ) {
-        this.hostElement = elementRef.nativeElement;
-
+    constructor() {
         this.resizeListener = CoreDom.onWindowResize(() => {
             this.updateSlidesComponent();
         });

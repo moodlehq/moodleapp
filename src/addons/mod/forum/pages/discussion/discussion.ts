@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { ContextLevel, CoreConstants } from '@/core/constants';
-import { Component, OnDestroy, ViewChild, OnInit, AfterViewInit, ElementRef, Optional } from '@angular/core';
+import { Component, OnDestroy, ViewChild, OnInit, AfterViewInit, ElementRef, inject } from '@angular/core';
 import { ActivatedRoute, ActivatedRouteSnapshot } from '@angular/router';
 import { CoreRoutedItemsManagerSourcesTracker } from '@classes/items-management/routed-items-manager-sources-tracker';
 import { CoreSplitViewComponent } from '@components/split-view/split-view';
@@ -85,6 +85,11 @@ type Post = AddonModForumPost & { children?: Post[] };
 })
 export default class AddonModForumDiscussionPage implements OnInit, AfterViewInit, OnDestroy, CanLeave {
 
+    protected splitView = inject(CoreSplitViewComponent, { optional: true });
+    protected element: HTMLElement = inject(ElementRef).nativeElement;
+    protected route = inject(ActivatedRoute);
+    protected courseContentsPage = inject(CoreCourseContentsPage, { optional: true });
+
     @ViewChild(IonContent) content!: IonContent;
 
     courseId?: number;
@@ -140,13 +145,6 @@ export default class AddonModForumDiscussionPage implements OnInit, AfterViewIni
     protected ratingOfflineObserver?: CoreEventObserver;
     protected ratingSyncObserver?: CoreEventObserver;
     protected changeDiscObserver?: CoreEventObserver;
-
-    constructor(
-        @Optional() protected splitView: CoreSplitViewComponent,
-        protected elementRef: ElementRef,
-        protected route: ActivatedRoute,
-        @Optional() protected courseContentsPage?: CoreCourseContentsPage,
-    ) {}
 
     get isMobile(): boolean {
         return CoreScreen.isMobile;
@@ -213,7 +211,7 @@ export default class AddonModForumDiscussionPage implements OnInit, AfterViewIni
         if (scrollTo) {
             // Scroll to the post.
             CoreDom.scrollToElement(
-                this.elementRef.nativeElement,
+                this.element,
                 `#addon-mod_forum-post-${scrollTo}`,
             );
         }

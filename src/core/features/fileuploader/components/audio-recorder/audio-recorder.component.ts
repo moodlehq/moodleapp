@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { ChangeDetectionStrategy, Component, ElementRef, OnDestroy } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnDestroy } from '@angular/core';
 import { CoreModalComponent } from '@classes/modal-component';
 import { CorePlatform } from '@services/platform';
 import { DomSanitizer, Translate } from '@singletons';
@@ -51,8 +51,8 @@ export class CoreFileUploaderAudioRecorderComponent extends CoreModalComponent<C
     protected media$: BehaviorSubject<AudioRecorderMedia | null>;
     protected recording$: Observable<AudioRecording | null>;
 
-    constructor(elementRef: ElementRef<HTMLElement>) {
-        super(elementRef);
+    constructor() {
+        super();
 
         this.recording = null;
         this.media$ = new BehaviorSubject<AudioRecorderMedia | null>(null);

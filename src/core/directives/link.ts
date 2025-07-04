@@ -50,9 +50,10 @@ export class CoreLinkDirective implements OnInit {
     protected element: HTMLElement | HTMLIonFabButtonElement | HTMLIonButtonElement | HTMLIonItemElement;
 
     constructor(
+        // eslint-disable-next-line @angular-eslint/prefer-inject
         element: ElementRef,
     ) {
-        this.element = element.nativeElement;
+        this.element = element.nativeElement;  // This is done that way to let format text create a directive.
     }
 
     /**

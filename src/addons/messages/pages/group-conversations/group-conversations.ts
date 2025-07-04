@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, inject } from '@angular/core';
 import { AccordionGroupChangeEventDetail, IonAccordionGroup, IonContent } from '@ionic/angular';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { CoreSites } from '@services/sites';
@@ -72,6 +72,8 @@ const enum AddonMessagesGroupConversationOptionNames {
 })
 export default class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
 
+    protected route = inject(ActivatedRoute);
+
     @ViewChild(CoreSplitViewComponent) splitView!: CoreSplitViewComponent;
     @ViewChild(IonContent) content?: IonContent;
     @ViewChild('accordionGroup', { static: true }) accordionGroup!: IonAccordionGroup;
@@ -130,9 +132,7 @@ export default class AddonMessagesGroupConversationsPage implements OnInit, OnDe
     protected memberInfoObserver: CoreEventObserver;
     protected firstExpand = false;
 
-    constructor(
-        protected route: ActivatedRoute,
-    ) {
+    constructor() {
         this.loadingMessage = Translate.instant('core.loading');
         this.siteId = CoreSites.getCurrentSiteId();
         this.currentUserId = CoreSites.getCurrentSiteUserId();

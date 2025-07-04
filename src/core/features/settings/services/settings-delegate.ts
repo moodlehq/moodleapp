@@ -91,7 +91,7 @@ export type CoreSettingsPageHandlerToDisplay = CoreDelegateToDisplay & CoreSetti
 export class CoreSettingsDelegateService extends CoreSortedDelegate<CoreSettingsHandlerToDisplay, CoreSettingsHandler> {
 
     constructor() {
-        super('CoreSettingsDelegate');
+        super();
     }
 
 }

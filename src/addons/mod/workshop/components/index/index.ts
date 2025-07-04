@@ -12,12 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, Input, OnDestroy, OnInit, Optional } from '@angular/core';
+import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { Params } from '@angular/router';
 import { CoreError } from '@classes/errors/error';
 import { CoreCourseModuleMainActivityComponent } from '@features/course/classes/main-activity-component';
-import CoreCourseContentsPage from '@features/course/pages/contents/contents';
-import { IonContent } from '@ionic/angular';
 import { CoreGroupInfo, CoreGroups } from '@services/groups';
 import { CoreNavigator } from '@services/navigator';
 import { CorePlatform } from '@services/platform';
@@ -119,11 +117,8 @@ export class AddonModWorkshopIndexComponent extends CoreCourseModuleMainActivity
     protected syncObserver?: CoreEventObserver;
     protected syncEventName = ADDON_MOD_WORKSHOP_AUTO_SYNCED;
 
-    constructor (
-    @Optional() content: IonContent,
-        @Optional() courseContentsPage?: CoreCourseContentsPage,
-    ) {
-        super('AddonModWorkshopIndexComponent', content, courseContentsPage);
+    constructor () {
+        super();
 
         // Listen to submission and assessment changes.
         this.obsSubmissionChanged = CoreEvents.on(ADDON_MOD_WORKSHOP_SUBMISSION_CHANGED, (data) => {

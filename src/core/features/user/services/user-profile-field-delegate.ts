@@ -80,7 +80,7 @@ export class CoreUserProfileFieldDelegateService extends CoreDelegate<CoreUserPr
     protected handlerNameProperty = 'type';
 
     constructor() {
-        super('CoreUserProfileFieldDelegate');
+        super();
     }
 
     /**

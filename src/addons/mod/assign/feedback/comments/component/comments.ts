@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit, ElementRef } from '@angular/core';
+import { Component, OnInit, ElementRef, inject } from '@angular/core';
 import { FormBuilder, FormControl } from '@angular/forms';
 import { AddonModAssign } from '@addons/mod/assign/services/assign';
 import { CoreFileHelper } from '@services/file-helper';
@@ -41,21 +41,15 @@ import { CoreSharedModule } from '@/core/shared.module';
 })
 export class AddonModAssignFeedbackCommentsComponent extends AddonModAssignFeedbackPluginBaseComponent implements OnInit {
 
+    protected fb = inject(FormBuilder);
+
     control?: FormControl<string>;
     component = ADDON_MOD_ASSIGN_COMPONENT_LEGACY;
     text = '';
     isSent = false;
     loaded = false;
 
-    protected element: HTMLElement;
-
-    constructor(
-        element: ElementRef,
-        protected fb: FormBuilder,
-    ) {
-        super();
-        this.element = element.nativeElement;
-    }
+    protected element: HTMLElement = inject(ElementRef).nativeElement;
 
     /**
      * @inheritdoc

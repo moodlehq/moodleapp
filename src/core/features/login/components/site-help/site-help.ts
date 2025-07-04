@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { AfterViewInit, Component, ElementRef, HostBinding, OnDestroy } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, HostBinding, OnDestroy, inject } from '@angular/core';
 
 import { CoreQRScan } from '@services/qrscan';
 import { ModalController, Translate } from '@singletons';
@@ -35,13 +35,15 @@ import { CoreWait } from '@singletons/wait';
 })
 export class CoreLoginSiteHelpComponent implements AfterViewInit, OnDestroy {
 
+    protected el = inject<ElementRef<HTMLElement>>(ElementRef);
+
     openQuestion?: number;
     questions: Question[] = [];
     @HostBinding('class.hydrated') hydrated = false;
 
     private promises: CoreCancellablePromise[] = [];
 
-    constructor(protected el: ElementRef<HTMLElement>) {
+    constructor() {
         const getStartedTitle = Translate.instant('core.login.faqsetupsitelinktitle');
         const canScanQR = CoreQRScan.canScanQR();
         const urlImageHtml = FAQ_URL_IMAGE_HTML;

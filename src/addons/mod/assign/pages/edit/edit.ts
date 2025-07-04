@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit, OnDestroy, ViewChild, ElementRef } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, ElementRef, inject } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { CoreError } from '@classes/errors/error';
 import { CoreFileUploaderHelper } from '@features/fileuploader/services/fileuploader-helper';
@@ -66,6 +66,8 @@ import { CoreSharedModule } from '@/core/shared.module';
 })
 export default class AddonModAssignEditPage implements OnInit, OnDestroy, CanLeave {
 
+    protected route = inject(ActivatedRoute);
+
     @ViewChild('editSubmissionForm') formElement?: ElementRef;
 
     title: string; // Title to display.
@@ -90,9 +92,7 @@ export default class AddonModAssignEditPage implements OnInit, OnDestroy, CanLea
     protected forceLeave = false; // To allow leaving the page without checking for changes.
     protected timeUpToast?: HTMLIonToastElement;
 
-    constructor(
-        protected route: ActivatedRoute,
-    ) {
+    constructor() {
         this.userId = CoreSites.getCurrentSiteUserId(); // Right now we can only edit current user's submissions.
         this.editText = Translate.instant('addon.mod_assign.editsubmission');
         this.title = this.editText;

@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit, OnDestroy, ViewChild, ElementRef } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, ElementRef, inject } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Subscription } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
@@ -63,6 +63,8 @@ import { CoreSharedModule } from '@/core/shared.module';
 })
 export default class CoreLoginCredentialsPage implements OnInit, OnDestroy {
 
+    protected fb = inject(FormBuilder);
+
     @ViewChild('credentialsForm') formElement?: ElementRef<HTMLFormElement>;
 
     credForm!: FormGroup;
@@ -89,9 +91,7 @@ export default class CoreLoginCredentialsPage implements OnInit, OnDestroy {
     protected alwaysShowLoginFormObserver?: CoreEventObserver;
     protected loginObserver?: CoreEventObserver;
 
-    constructor(
-        protected fb: FormBuilder,
-    ) {
+    constructor() {
         // Listen to LOGIN event to determine if login was successful, since the login can be done using QR, SSO, etc.
         this.loginObserver = CoreEvents.on(CoreEvents.LOGIN, ({ siteId }) => {
             this.siteId = siteId;
