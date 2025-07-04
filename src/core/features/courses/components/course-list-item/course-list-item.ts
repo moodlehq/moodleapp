@@ -96,9 +96,9 @@ export class CoreCoursesCourseListItemComponent implements OnInit, OnDestroy, On
      */
     getCleanCourseName(): string {
         const name = this.course.displayname || this.course.fullname || '';
-        // Remove Y1-Y13 and T1-T3 patterns
+        // Remove PN, FS1, FS2, Y1-Y12 and T1-T3 patterns
         return name
-            .replace(/\bY([1-9]|1[0-3])\b/gi, '') // Remove Y1 to Y13
+            .replace(/\b(PN|FS[12]|Y([1-9]|1[0-2]))\b/gi, '') // Remove PN, FS1, FS2, Y1 to Y12
             .replace(/\bT[1-3]\b/gi, '') // Remove T1, T2, T3
             .trim() // Remove extra spaces
             .replace(/\s+/g, ' '); // Replace multiple spaces with single space
