@@ -1,0 +1,44 @@
+<ion-header>
+    <ion-toolbar>
+        <ion-buttons slot="start">
+            <ion-back-button [text]="'core.back' | translate" />
+        </ion-buttons>
+        <ion-title>
+            <h1>{{ 'core.activities' | translate }}</h1>
+        </ion-title>
+    </ion-toolbar>
+</ion-header>
+<ion-content class="limited-width">
+    <ion-refresher slot="fixed" [disabled]="!loaded()" (ionRefresh)="refreshData($event.target)">
+        <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}" />
+    </ion-refresher>
+    <core-loading [hideUntil]="loaded()">
+        <ion-item class="ion-text-wrap">
+            <ion-label>
+                {{ 'core.course.overview_info' | translate }}
+            </ion-label>
+        </ion-item>
+
+        @if (modTypes().length) {
+            <ion-accordion-group>
+                @for (modType of modTypes(); track modType.modName) {
+                    <ion-accordion [value]="modType.modName" toggleIconSlot="start">
+                        <ion-item class="ion-text-wrap divider" slot="header">
+                            <ion-label>
+                                <core-mod-icon [modicon]="modType.icon" [modname]="modType.iconModName" [showAlt]="false"
+                                    [colorize]="true" [isBranded]="modType.branded" />
+                                {{ modType.name }}
+                            </ion-label>
+                        </ion-item>
+                        <div slot="content">
+                            <!-- TODO -->
+                        </div>
+                    </ion-accordion>
+                }
+            </ion-accordion-group>
+        } @else {
+            <core-empty-box icon="fas-box-open" [message]="'core.course.nocontentavailable' | translate" />
+        }
+
+    </core-loading>
+</ion-content>
