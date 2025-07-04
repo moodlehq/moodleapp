@@ -1,5 +1,6 @@
 {
     "accounts": "Accounts",
+    "activities": "Activities",
     "add": "Add",
     "agelocationverification": "Age and location verification",
     "ago": "{{$a}} ago",

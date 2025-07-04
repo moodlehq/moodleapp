@@ -31,7 +31,9 @@ import { CoreCourseModulesTagAreaHandler } from './services/handlers/modules-tag
 import { CoreCourse } from './services/course';
 import { buildRegExpUrlMatcher } from '@/app/app-routing.module';
 import { CoreCourseIndexRoutingModule } from '@features/course/course-routing.module';
-import { CORE_COURSE_PAGE_NAME, CORE_COURSE_CONTENTS_PAGE_NAME } from './constants';
+import { CORE_COURSE_PAGE_NAME, CORE_COURSE_CONTENTS_PAGE_NAME, CORE_COURSE_OVERVIEW_PAGE_NAME } from './constants';
+import { CoreCourseOptionsDelegate } from '@features/course/services/course-options-delegate';
+import { CoreCourseOverviewOptionHandler } from './services/handlers/overview-option';
 
 /**
  * Get course services.
@@ -155,6 +157,10 @@ const courseIndexRoutes: Routes = [
         path: CORE_COURSE_CONTENTS_PAGE_NAME,
         loadChildren: () => import('@features/course/course-contents-lazy.module'),
     },
+    {
+        path: CORE_COURSE_OVERVIEW_PAGE_NAME,
+        loadComponent: () => import('@features/course/pages/overview/overview'),
+    },
 ];
 
 @NgModule({
@@ -174,6 +180,7 @@ const courseIndexRoutes: Routes = [
             CoreCronDelegate.register(CoreCourseLogCronHandler.instance);
             CoreTagAreaDelegate.registerHandler(CoreCourseTagAreaHandler.instance);
             CoreTagAreaDelegate.registerHandler(CoreCourseModulesTagAreaHandler.instance);
+            CoreCourseOptionsDelegate.registerHandler(CoreCourseOverviewOptionHandler.instance);
 
             CoreCourse.initialize();
             CoreCourseModulePrefetchDelegate.initialize();

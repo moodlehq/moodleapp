@@ -1,0 +1,6 @@
+@use "theme/globals" as *;
+
+ion-accordion ion-item core-mod-icon {
+    --margin-vertical: 0;
+    --margin-end: 0;
+}
