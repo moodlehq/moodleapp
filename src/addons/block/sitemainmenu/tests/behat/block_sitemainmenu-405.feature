@@ -21,6 +21,7 @@ Feature: Basic tests of Main menu block
     When I press "My forum name" in the app
     Then the header should be "My forum name" in the app
 
+  @lms_from4.3
   Scenario: Activities in main menu block can be made available but not visible on a course page
     Given the following config values are set as admin:
       | allowstealth | 1 |
