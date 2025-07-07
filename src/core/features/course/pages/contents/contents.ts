@@ -232,6 +232,14 @@ export default class CoreCourseContentsPage implements OnInit, OnDestroy, CoreRe
 
         if (refresh) {
             // Invalidate the recently downloaded module list. To ensure info can be prefetched.
+            for (const section of sections) {
+                for (const content of section.contents) {
+                    if ('modname' in content && content.modname === 'url') {
+                        await CoreCourse.loadModuleContents(content, this.course.id, section.id, false);
+                    }
+                }
+            }
+
             modules = CoreCourse.getSectionsModules(sections);
 
             await CoreCourseModulePrefetchDelegate.invalidateModules(modules, this.course.id);
@@ -393,6 +401,14 @@ export default class CoreCourseContentsPage implements OnInit, OnDestroy, CoreRe
 
         if (this.sections) {
             promises.push(CoreCourseModulePrefetchDelegate.invalidateCourseUpdates(this.course.id));
+
+            for (const section of this.sections) {
+                for (const content of section.contents) {
+                    if ('modname' in content && content.modname === 'url') {
+                        promises.push(CoreCourse.invalidateModule(content.id));
+                    }
+                }
+            }
         }
 
         await Promise.all(promises);
