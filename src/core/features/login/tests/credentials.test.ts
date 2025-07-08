@@ -82,7 +82,6 @@ describe('Credentials page', () => {
         // Act.
         const fixture = await renderPageComponent(CoreLoginCredentialsPage, {
             routeParams: { siteUrl },
-            standalone: true,
         });
 
         // Assert.
@@ -132,7 +131,6 @@ describe('Credentials page', () => {
 
         const fixture = await renderPageComponent(CoreLoginCredentialsPage, {
             routeParams: { siteUrl, siteCheck },
-            standalone: true,
         });
 
         // Act.
