@@ -157,8 +157,10 @@ Feature: Test disabled text is shown when opening a disabled activity.
     And I should find "This content is not available in the app" in the app
 
   # This is a very strange case, but we test this for now...
+  @lms_from4.3
   Scenario: View disabled label activity
-    Given the following "activities" exist:
+    Given the Moodle site is compatible with this feature
+    And the following "activities" exist:
       | activity   | course | name            | intro                  | content | showdescription |
       | label      | C1     | Test label name | Test label description | CONTENT | 1               |
     And the following config values are set as admin:
