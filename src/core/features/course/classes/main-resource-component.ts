@@ -97,7 +97,8 @@ export class CoreCourseModuleMainResourceComponent implements OnInit, OnDestroy,
         this.showCompletion = !!CoreSites.getRequiredCurrentSite().isVersionGreaterEqualThan('3.11');
 
         if (this.showCompletion) {
-            CoreCourseHelper.loadModuleOfflineCompletion(this.courseId, this.module);
+            this.module.completiondata =
+                await CoreCourseHelper.loadOfflineCompletionData(this.module.id, this.module.completiondata);
 
             this.completionObserver = CoreEvents.on(CoreEvents.COMPLETION_MODULE_VIEWED, async (data) => {
                 if (data && data.cmId == this.module.id) {
@@ -402,7 +403,7 @@ export class CoreCourseModuleMainResourceComponent implements OnInit, OnDestroy,
 
         const module = await CoreCourse.getModule(this.module.id, this.courseId);
 
-        await CoreCourseHelper.loadModuleOfflineCompletion(this.courseId, module);
+        this.module.completiondata = await CoreCourseHelper.loadOfflineCompletionData(this.module.id, this.module.completiondata);
 
         this.module = module;
 

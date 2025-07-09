@@ -1,0 +1,27 @@
+<p class="item-heading">
+    <a [href]="item.parsedData.activityurl" core-link [capture]="true">
+        <core-format-text [text]="item.parsedData.activityname" contextLevel="module" [contextInstanceId]="activity.cmid"
+            [courseId]="courseId" />
+    </a>
+</p>
+
+@if (item.parsedData.sectiontitle) {
+    <p>
+        <core-format-text [text]="item.parsedData.sectiontitle" contextLevel="course" [contextInstanceId]="courseId"
+            [courseId]="courseId" />
+    </p>
+}
+
+@if (item.parsedData.hidden) {
+    <ion-badge color="secondary" class="ion-text-wrap">
+        <ion-icon name="far-eye-slash" aria-hidden="true" />
+        {{ 'core.course.hiddenfromstudents' | translate }}
+    </ion-badge>
+}
+
+@if (item.parsedData.stealth) {
+    <ion-badge color="secondary" class="ion-text-wrap">
+        <ion-icon name="fas-eye-low-vision" aria-hidden="true" />
+        {{ 'core.course.hiddenoncoursepage' | translate }}
+    </ion-badge>
+}

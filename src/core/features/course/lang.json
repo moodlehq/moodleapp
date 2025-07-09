@@ -51,6 +51,7 @@
     "nocontentavailable": "No content available at the moment.",
     "overriddennotice": "Your final grade from this activity was manually adjusted.",
     "overview_info": "An overview of all activities in the course, with dates and other information.",
+    "overview_missing_title": "{{$a}} information not available.",
     "previousactivity": "Previous activity",
     "previousactivitynotfound": "Previous activity not found. It's possible that it has been hidden or deleted.",
     "refreshcourse": "Refresh course",
