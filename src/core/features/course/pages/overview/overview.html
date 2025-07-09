@@ -8,7 +8,7 @@
         </ion-title>
     </ion-toolbar>
 </ion-header>
-<ion-content class="limited-width">
+<ion-content>
     <ion-refresher slot="fixed" [disabled]="!loaded()" (ionRefresh)="refreshData($event.target)">
         <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}" />
     </ion-refresher>
@@ -20,7 +20,7 @@
         </ion-item>
 
         @if (modTypes().length) {
-            <ion-accordion-group>
+            <ion-accordion-group (ionChange)="accordionChanged($event.detail.value)">
                 @for (modType of modTypes(); track modType.modName) {
                     <ion-accordion [value]="modType.modName" toggleIconSlot="start">
                         <ion-item class="ion-text-wrap divider" slot="header">
@@ -31,7 +31,9 @@
                             </ion-label>
                         </ion-item>
                         <div slot="content">
-                            <!-- TODO -->
+                            <core-loading [hideUntil]="modType.loaded()" [fullscreen]="false">
+                                <ng-container *ngTemplateOutlet="tabletOverviewTemplate; context: { modType }" />
+                            </core-loading>
                         </div>
                     </ion-accordion>
                 }
@@ -42,3 +44,51 @@
 
     </core-loading>
 </ion-content>
+
+<ng-template #tabletOverviewTemplate let-modTypeUntyped="modType">
+    @let modType = toModType(modTypeUntyped);
+    @let overview = modType.overview();
+
+    @if (overview) {
+        @if (!overview.hasintegration || !overview.isSupportedInApp) {
+            <ion-card class="core-info-card">
+                <ion-item class="ion-text-wrap">
+                    <ion-icon name="fas-circle-info" slot="start" aria-hidden="true" />
+                    <ion-label>
+                        <p>{{ 'core.course.overview_missing_title' | translate:{ $a: modType.modNameTranslated } }}</p>
+                    </ion-label>
+                </ion-item>
+            </ion-card>
+        }
+
+        <!-- @todo: Support haserror once it's fully implemented in WS. -->
+        <table class="core-table">
+            <thead>
+                <tr>
+                    @for (header of overview.headers; track header.key) {
+                        <th [ngClass]="header.classes">{{ header.name }}</th>
+                    }
+                </tr>
+            </thead>
+
+            <tbody class="auto-striped">
+                @for (activity of overview.activities; track activity.cmid) {
+                    <tr>
+                        @for (item of activity.itemsToRender; track item.key) {
+                            <th [ngClass]="item.classes">
+                                @if (item.component) {
+                                    <core-dynamic-component [component]="item.component" [data]="item.componentData" />
+                                } @else if (item.content !== null) {
+                                    <core-format-text [text]="item.content" contextLevel="module" [contextInstanceId]="activity.cmid"
+                                        [courseId]="courseId" />
+                                } @else {
+                                    -
+                                }
+                            </th>
+                        }
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+</ng-template>
