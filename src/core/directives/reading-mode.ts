@@ -18,7 +18,6 @@ import { Translate } from '@singletons';
 import { CoreIcons } from '@singletons/icons';
 import { CoreDom } from '@singletons/dom';
 import { CoreWait } from '@singletons/wait';
-import { CoreCancellablePromise } from '@classes/cancellable-promise';
 import { CoreModals } from '@services/overlays/modals';
 import { CoreViewer } from '@features/viewer/services/viewer';
 import { CoreDirectivesRegistry } from '@singletons/directives-registry';
@@ -37,17 +36,13 @@ import { CoreLogger } from '@singletons/logger';
 export class CoreReadingModeDirective implements AfterViewInit, OnDestroy {
 
     protected element: HTMLElement = inject(ElementRef).nativeElement;
-    protected viewportPromise?: CoreCancellablePromise<void>;
+    protected viewportPromise = CoreDom.waitToBeInViewport(this.element);
     protected disabledStyles: HTMLStyleElement[] = [];
     protected hiddenElements: HTMLElement[] = [];
     protected renamedStyles: HTMLElement[] = [];
     protected enabled = false;
     protected header?: CoreCollapsibleHeaderDirective;
     protected logger = CoreLogger.getInstance('CoreReadingModeDirective');
-
-    constructor() {
-        this.viewportPromise = CoreDom.waitToBeInViewport(this.element);
-    }
 
     /**
      * @inheritdoc
@@ -104,7 +99,7 @@ export class CoreReadingModeDirective implements AfterViewInit, OnDestroy {
         const src = CoreIcons.getIconSrc('font-awesome', 'solid', iconName);
         // Add an ion-icon item to apply the right styles, but the ion-icon component won't be executed.
         button.innerHTML = `<ion-icon name="fas-${iconName}" aria-hidden="true" src="${src}"></ion-icon>`;
-        buttonsContainer.appendChild(button);
+        buttonsContainer.prepend(button);
 
         button.addEventListener('click', (e: Event) => {
             e.preventDefault();
@@ -227,7 +222,7 @@ export class CoreReadingModeDirective implements AfterViewInit, OnDestroy {
      * @inheritdoc
      */
     ngOnDestroy(): void {
-        this.viewportPromise?.cancel();
+        this.viewportPromise.cancel();
 
         // Disable reading mode should be done by the user.
         CoreViewer.decreaseReadingModeCounter();
