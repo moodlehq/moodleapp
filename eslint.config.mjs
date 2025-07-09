@@ -358,6 +358,7 @@ export default defineConfig([
             '@angular-eslint/template/prefer-self-closing-tags': 'error',
             '@angular-eslint/template/table-scope': 'error',
             '@angular-eslint/template/valid-aria': 'error',
+            '@angular-eslint/template/prefer-control-flow': 'warn',
             'max-len': ['warn', { code: 140 }],
         },
     },
