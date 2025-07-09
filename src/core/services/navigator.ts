@@ -41,6 +41,7 @@ import { BehaviorSubject } from 'rxjs';
 import { CoreLoadings } from './overlays/loadings';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { AnimationBuilder } from '@ionic/angular';
+import { CorePath } from '@singletons/path';
 
 /**
  * Redirect payload.
@@ -93,7 +94,10 @@ export class CoreNavigatorService {
      * @returns Whether the active route is using the given path.
      */
     isCurrent(path: string): boolean {
-        return CoreText.matchesGlob(this.getCurrentPath(), path);
+        const currentPath = this.getCurrentPath();
+        path = CorePath.resolveRelativePath(currentPath, path);
+
+        return CoreText.matchesGlob(currentPath, path);
     }
 
     /**
@@ -141,6 +145,7 @@ export class CoreNavigatorService {
      */
     async navigate(path: string, options: CoreNavigationOptions = {}): Promise<boolean> {
         const url: string[] = [/^[./]/.test(path) ? path : `./${path}`];
+
         const navigationOptions: NavigationOptions = CoreObject.withoutEmpty({
             animated: options.animated,
             animation: options.animation,
@@ -153,9 +158,15 @@ export class CoreNavigatorService {
         // Remove objects from queryParams and replace them with an ID.
         this.replaceObjectParams(navigationOptions.queryParams);
 
-        const navigationResult = (options.reset ?? false)
+        let navigationResult = (options.reset ?? false)
             ? await NavController.navigateRoot(url, navigationOptions)
             : await NavController.navigateForward(url, navigationOptions);
+
+        if (navigationResult === false && this.isCurrent(url[0])) {
+            // Navigation failed, because we are already on the same page.
+            // This can happen if the page is already loaded. Continue as if the navigation was successful.
+            navigationResult = true;
+        }
 
         // This is done to exit full screen if the user navigate.
         if (document.exitFullscreen) {
