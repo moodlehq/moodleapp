@@ -18,24 +18,28 @@
             [spellcheck]="false" [autoFocus]="true" [lengthCheck]="1" searchArea="AddonMessagesSearch" />
 
         <core-loading [hideUntil]="!displaySearching" [message]="'core.searching' | translate">
-            <ion-list *ngIf="displayResults">
-                <ng-container *ngTemplateOutlet="resultsTemplate; context: {item: contacts}" />
-                <ng-container *ngTemplateOutlet="resultsTemplate; context: {item: nonContacts}" />
-                <ng-container *ngTemplateOutlet="resultsTemplate; context: {item: messages}" />
-                <!-- The infinite loading cannot be inside the ng-template, it fails because it doesn't find ion-content. -->
-                <core-infinite-loading [enabled]="messages.canLoadMore" (action)="search(query, 'messages', $event)"
-                    [error]="messages.loadMoreError" />
-            </ion-list>
+            @if (displayResults) {
+                <ion-list>
+                    <ng-container *ngTemplateOutlet="resultsTemplate; context: {item: contacts}" />
+                    <ng-container *ngTemplateOutlet="resultsTemplate; context: {item: nonContacts}" />
+                    <ng-container *ngTemplateOutlet="resultsTemplate; context: {item: messages}" />
+                    <!-- The infinite loading cannot be inside the ng-template, it fails because it doesn't find ion-content. -->
+                    <core-infinite-loading [enabled]="messages.canLoadMore" (action)="search(query, 'messages', $event)"
+                        [error]="messages.loadMoreError" />
+                </ion-list>
+            }
 
-            <core-empty-box *ngIf="displayResults && !contacts.results.length && !nonContacts.results.length && !messages.results.length"
-                icon="fas-magnifying-glass" [message]="'core.noresults' | translate" role="alert" />
+            @if (displayResults && !contacts.results.length && !nonContacts.results.length && !messages.results.length) {
+                <core-empty-box icon="fas-magnifying-glass" [message]="'core.noresults' | translate" role="alert" />
+            }
         </core-loading>
     </core-split-view>
 </ion-content>
 
 <!-- Template to render a list of results -->
 <ng-template #resultsTemplate let-item="item">
-    <ng-container *ngIf="item.results.length > 0">
+    @if (item.results.length > 0) {
+
         <ion-item-divider class="ion-text-wrap">
             <ion-label>
                 <h2>{{ item.titleString | translate }}</h2>
@@ -49,15 +53,21 @@
             <ion-label>
                 <p class="item-heading">
                     <core-format-text [text]="result.fullname" [highlight]="result.highlightName" [filter]="false" />
-                    <ion-icon name="fas-ban" *ngIf="result.isblocked" [attr.aria-label]="'addon.messages.contactblocked' | translate" />
+                    @if (result.isblocked) {
+                        <ion-icon name="fas-ban" [attr.aria-label]="'addon.messages.contactblocked' | translate" />
+                    }
                 </p>
-                <ion-note *ngIf="result.lastmessagedate > 0">
-                    {{result.lastmessagedate | coreDateDayOrTime}}
-                </ion-note>
+                @if (result.lastmessagedate > 0) {
+                    <ion-note>
+                        {{result.lastmessagedate | coreDateDayOrTime}}
+                    </ion-note>
+                }
                 <p class="addon-message-last-message">
-                    <span *ngIf="result.sentfromcurrentuser" class="addon-message-last-message-user">
-                        {{ 'addon.messages.you' | translate }}
-                    </span>
+                    @if (result.sentfromcurrentuser) {
+                        <span class="addon-message-last-message-user">
+                            {{ 'addon.messages.you' | translate }}
+                        </span>
+                    }
                     <core-format-text clean="true" singleLine="true" [text]="result.lastmessage" [highlight]="result.highlightMessage"
                         contextLevel="system" [contextInstanceId]="0" class="addon-message-last-message-text" />
                 </p>
@@ -65,15 +75,22 @@
         </ion-item>
 
         <!-- Load more button for contacts and non-contacts -->
-        <ng-container *ngIf="item.type !== 'messages'">
-            <div class="ion-padding-horizontal" *ngIf="item.canLoadMore && !item.loadingMore">
-                <ion-button expand="block" fill="outline" (click)="search(query, item.type)">
-                    {{ 'core.loadmore' | translate }}
-                </ion-button>
-            </div>
-            <div *ngIf="item.loadingMore" class="ion-padding ion-text-center">
-                <ion-spinner [attr.aria-label]="'core.loading' | translate" />
-            </div>
-        </ng-container>
-    </ng-container>
+        @if (item.type !== 'messages') {
+
+            @if (item.canLoadMore && !item.loadingMore) {
+                <div class="ion-padding-horizontal">
+                    <ion-button expand="block" fill="outline" (click)="search(query, item.type)">
+                        {{ 'core.loadmore' | translate }}
+                    </ion-button>
+                </div>
+            }
+            @if (item.loadingMore) {
+                <div class="ion-padding ion-text-center">
+                    <ion-spinner [attr.aria-label]="'core.loading' | translate" />
+                </div>
+            }
+
+        }
+
+    }
 </ng-template>

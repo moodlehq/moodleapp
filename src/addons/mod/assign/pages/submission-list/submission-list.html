@@ -40,39 +40,55 @@
                                     {{ 'addon.mod_assign.hiddenuser' | translate }} {{submission.blindid}}
                                 }
                             </p>
-                            <p *ngIf="assign && assign!.teamsubmission">
-                                <span *ngIf="submission.groupname" class="core-groupname">
-                                    <core-format-text [text]="submission.groupname" contextLevel="course" [contextInstanceId]="courseId" />
-                                </span>
-                                <span *ngIf="assign!.preventsubmissionnotingroup && !submission.groupname && submission.noGroups
-                                    && !submission.blindid" class="text-danger">
-                                    {{ 'addon.mod_assign.noteam' | translate }}
-                                </span>
-                                <span *ngIf="assign!.preventsubmissionnotingroup && !submission.groupname && submission.manyGroups
-                                    && !submission.blindid" class="text-danger">
-                                    {{ 'addon.mod_assign.multipleteams' | translate }}
-                                </span>
-                                <span *ngIf="!assign!.preventsubmissionnotingroup && !submission.groupname">
-                                    {{ 'addon.mod_assign.defaultteam' | translate }}
-                                </span>
-                            </p>
-                            <p *ngIf="submission.statusTranslated">
-                                <ion-badge class="ion-text-start ion-text-wrap" [color]="submission.statusColor">
-                                    {{ submission.statusTranslated }}
-                                </ion-badge>
-                            </p>
-                            <p *ngIf="submission.gradingStatusTranslationId">
-                                <ion-badge class="ion-text-start ion-text-wrap" [color]="submission.gradingColor">
-                                    {{ submission.gradingStatusTranslationId | translate }}
-                                </ion-badge>
-                            </p>
+                            @if (assign && assign!.teamsubmission) {
+                                <p>
+                                    @if (submission.groupname) {
+                                        <span class="core-groupname">
+                                            <core-format-text [text]="submission.groupname" contextLevel="course"
+                                                [contextInstanceId]="courseId" />
+                                        </span>
+                                    }
+                                    @if (assign!.preventsubmissionnotingroup && !submission.groupname && submission.noGroups
+                                    && !submission.blindid) {
+                                        <span class="text-danger">
+                                            {{ 'addon.mod_assign.noteam' | translate }}
+                                        </span>
+                                    }
+                                    @if (assign!.preventsubmissionnotingroup && !submission.groupname && submission.manyGroups
+                                    && !submission.blindid) {
+                                        <span class="text-danger">
+                                            {{ 'addon.mod_assign.multipleteams' | translate }}
+                                        </span>
+                                    }
+                                    @if (!assign!.preventsubmissionnotingroup && !submission.groupname) {
+                                        <span>
+                                            {{ 'addon.mod_assign.defaultteam' | translate }}
+                                        </span>
+                                    }
+                                </p>
+                            }
+                            @if (submission.statusTranslated) {
+                                <p>
+                                    <ion-badge class="ion-text-start ion-text-wrap" [color]="submission.statusColor">
+                                        {{ submission.statusTranslated }}
+                                    </ion-badge>
+                                </p>
+                            }
+                            @if (submission.gradingStatusTranslationId) {
+                                <p>
+                                    <ion-badge class="ion-text-start ion-text-wrap" [color]="submission.gradingColor">
+                                        {{ submission.gradingStatusTranslationId | translate }}
+                                    </ion-badge>
+                                </p>
+                            }
                         </ion-label>
                     </ion-item>
                 </ng-container>
             </ion-list>
 
-            <core-empty-box *ngIf="!submissions || submissions.empty" icon="fas-file-signature"
-                [message]="'addon.mod_assign.submissionstatus_' | translate" />
+            @if (!submissions || submissions.empty) {
+                <core-empty-box icon="fas-file-signature" [message]="'addon.mod_assign.submissionstatus_' | translate" />
+            }
         </core-loading>
     </core-split-view>
 </ion-content>

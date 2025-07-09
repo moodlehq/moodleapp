@@ -9,9 +9,11 @@
             </h1>
         </ion-title>
         <ion-buttons slot="end">
-            <ion-button (click)="showToc()" [ariaLabel]="'addon.mod_book.toc' | translate" aria-haspopup="true" *ngIf="loaded">
-                <ion-icon name="fas-list-ul" slot="icon-only" aria-hidden="true" />
-            </ion-button>
+            @if (loaded) {
+                <ion-button (click)="showToc()" [ariaLabel]="'addon.mod_book.toc' | translate" aria-haspopup="true">
+                    <ion-icon name="fas-list-ul" slot="icon-only" aria-hidden="true" />
+                </ion-button>
+            }
         </ion-buttons>
     </ion-toolbar>
 </ion-header>
@@ -27,17 +29,20 @@
                     <div class="ion-padding" core-reading-mode>
                         <core-format-text [component]="component" [componentId]="cmId" [text]="chapter.content" contextLevel="module"
                             [contextInstanceId]="cmId" [courseId]="courseId" [disabled]="!active" />
-                        <div class="ion-margin-top" *ngIf="chapter.tags?.length > 0">
-                            <strong>{{ 'core.tag.tags' | translate }}: </strong>
-                            <core-tag-list [tags]="chapter.tags" />
-                        </div>
+                        @if (chapter.tags?.length > 0) {
+                            <div class="ion-margin-top">
+                                <strong>{{ 'core.tag.tags' | translate }}: </strong>
+                                <core-tag-list [tags]="chapter.tags" />
+                            </div>
+                        }
                     </div>
                 </ng-template>
             </core-swipe-slides>
         </div>
     </core-loading>
 
-    <core-navigation-bar collapsible-footer appearOnBottom *ngIf="loaded && displayNavBar && navigationItems.length > 1"
-        [items]="navigationItems" previousTranslate="addon.mod_book.navprevtitle" nextTranslate="addon.mod_book.navnexttitle"
-        (action)="changeChapter($event.id)" slot="fixed" />
+    @if (loaded && displayNavBar && navigationItems.length > 1) {
+        <core-navigation-bar collapsible-footer appearOnBottom [items]="navigationItems" previousTranslate="addon.mod_book.navprevtitle"
+            nextTranslate="addon.mod_book.navnexttitle" (action)="changeChapter($event.id)" slot="fixed" />
+    }
 </ion-content>

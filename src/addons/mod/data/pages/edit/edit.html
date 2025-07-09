@@ -9,9 +9,11 @@
             </h1>
         </ion-title>
         <ion-buttons slot="end">
-            <ion-button *ngIf="entry" fill="clear" (click)="save($event)">
-                {{ 'core.save' | translate }}
-            </ion-button>
+            @if (entry) {
+                <ion-button fill="clear" (click)="save($event)">
+                    {{ 'core.save' | translate }}
+                </ion-button>
+            }
         </ion-buttons>
     </ion-toolbar>
 </ion-header>
@@ -20,11 +22,13 @@
         <core-group-selector [groupInfo]="groupInfo" [(selected)]="selectedGroup" (selectedChange)="setGroup(selectedGroup)"
             [courseId]="database?.course" />
 
-        <div class="addon-data-contents addon-data-edit-entry {{cssClass}}" *ngIf="database">
-            <form (ngSubmit)="save($event)" [formGroup]="editForm" #editFormEl>
-                <core-compile-html [text]="editFormRender" [jsData]="jsData" [extraImports]="extraImports"
-                    [cssCode]="database.csstemplate" />
-            </form>
-        </div>
+        @if (database) {
+            <div class="addon-data-contents addon-data-edit-entry {{cssClass}}">
+                <form (ngSubmit)="save($event)" [formGroup]="editForm" #editFormEl>
+                    <core-compile-html [text]="editFormRender" [jsData]="jsData" [extraImports]="extraImports"
+                        [cssCode]="database.csstemplate" />
+                </form>
+            </div>
+        }
     </core-loading>
 </ion-content>

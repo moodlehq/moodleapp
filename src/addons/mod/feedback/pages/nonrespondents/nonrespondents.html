@@ -22,22 +22,28 @@
                     <h2>{{ 'addon.mod_feedback.non_respondents_students' | translate : {$a: total } }}</h2>
                 </ion-label>
             </ion-item-divider>
-            <ng-container *ngIf="total > 0">
+            @if (total > 0) {
+
                 <ion-item *ngFor="let user of users" class="ion-text-wrap">
                     <core-user-avatar [user]="user" slot="start" />
                     <ion-label>
                         <p class="item-heading">{{ user.fullname }}</p>
                         <p>
-                            <ion-badge color="success" *ngIf="user.started">
-                                {{ 'addon.mod_feedback.started' | translate}}
-                            </ion-badge>
-                            <ion-badge color="danger" *ngIf="!user.started">
-                                {{ 'addon.mod_feedback.not_started' | translate}}
-                            </ion-badge>
+                            @if (user.started) {
+                                <ion-badge color="success">
+                                    {{ 'addon.mod_feedback.started' | translate}}
+                                </ion-badge>
+                            }
+                            @if (!user.started) {
+                                <ion-badge color="danger">
+                                    {{ 'addon.mod_feedback.not_started' | translate}}
+                                </ion-badge>
+                            }
                         </p>
                     </ion-label>
                 </ion-item>
-            </ng-container>
+
+            }
 
             <core-infinite-loading [enabled]="canLoadMore" (action)="loadAttempts(undefined, $event)" [error]="loadMoreError" />
         </ion-list>

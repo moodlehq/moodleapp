@@ -19,12 +19,15 @@
                 <ion-item *ngFor="let handler of handlerItems" class="core-settings-handler" lines="none" [ngClass]="handler.class"
                     [attr.aria-label]="handler.title | translate" (click)="!handler.toggle && handlers.select(handler)"
                     [button]="!handler.toggle" [detail]="!handler.toggle" [attr.aria-current]="handlers.getItemAriaCurrent(handler)">
-                    <ion-icon [name]="handler.icon" slot="start" *ngIf="handler.icon" aria-hidden="true" />
+                    @if (handler.icon) {
+                        <ion-icon [name]="handler.icon" slot="start" aria-hidden="true" />
+                    }
                     <ion-label>
                         <p class="item-heading">{{ handler.title | translate}}</p>
                     </ion-label>
-                    <ion-toggle *ngIf="handler.toggle" [(ngModel)]="handler.toggleChecked"
-                        (ionChange)="handler.toggle($event.detail.checked)" slot="end" />
+                    @if (handler.toggle) {
+                        <ion-toggle [(ngModel)]="handler.toggleChecked" (ionChange)="handler.toggle($event.detail.checked)" slot="end" />
+                    }
                 </ion-item>
             </ion-list>
 
@@ -43,14 +46,20 @@
                         </ion-button>
                     </core-button-with-spinner>
                 </ion-item>
-                <ion-item class="core-warning-item ion-text-wrap" *ngIf="!isOnline || (dataSaver && limitedConnection)">
-                    <ion-icon name="fas-triangle-exclamation" slot="start" aria-hidden="true" />
-                    <ion-label>
-                        <ng-container *ngIf="isOnline && dataSaver && limitedConnection">
-                            {{ 'core.settings.connectwifitosync' | translate }}</ng-container>
-                        <ng-container *ngIf="!isOnline">{{ 'core.settings.connecttosync' | translate }}</ng-container>
-                    </ion-label>
-                </ion-item>
+                @if (!isOnline || (dataSaver && limitedConnection)) {
+                    <ion-item class="core-warning-item ion-text-wrap">
+                        <ion-icon name="fas-triangle-exclamation" slot="start" aria-hidden="true" />
+                        <ion-label>
+                            @if (isOnline && dataSaver && limitedConnection) {
+
+                                {{ 'core.settings.connectwifitosync' | translate }}
+                            }
+                            @if (!isOnline) {
+                                {{ 'core.settings.connecttosync' | translate }}
+                            }
+                        </ion-label>
+                    </ion-item>
+                }
             </ion-card>
         </core-loading>
     </core-split-view>

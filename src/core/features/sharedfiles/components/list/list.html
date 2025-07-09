@@ -3,7 +3,9 @@
 </ion-refresher>
 
 <!-- Allow selecting the site to view. -->
-<core-site-picker *ngIf="showSitePicker" [hidden]="!filesLoaded" [initialSite]="siteId" (siteSelected)="changeSite($event)" />
+@if (showSitePicker) {
+    <core-site-picker [hidden]="!filesLoaded" [initialSite]="siteId" (siteSelected)="changeSite($event)" />
+}
 
 <core-loading [hideUntil]="filesLoaded" [fullscreen]="false">
     @if (files && files.length > 0) {

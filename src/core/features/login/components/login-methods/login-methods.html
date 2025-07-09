@@ -1,27 +1,36 @@
-<div *ngIf="(showLoginForm || isBrowserSSO) && (loginMethods.length || identityProviders.length || showScanQR)"
-    class="ion-text-center ion-padding core-login-methods-separator">
-    <span>{{ 'core.login.or' | translate }}</span>
-</div>
+@if ((showLoginForm || isBrowserSSO) && (loginMethods.length || identityProviders.length || showScanQR)) {
+    <div class="ion-text-center ion-padding core-login-methods-separator">
+        <span>{{ 'core.login.or' | translate }}</span>
+    </div>
+}
 
-<div class="core-login-methods" *ngIf="loginMethods.length">
-    <ion-button [fill]="'outline'" class="ion-text-wrap ion-margin ion-no-margin-horizontal" *ngFor="let method of loginMethods"
-        (click)="method.action()" [ariaLabel]="method.name" expand="block">
-        <ion-icon *ngIf="method.icon" [name]="method.icon" slot="start" />
-        <ion-label>{{ method.name }}</ion-label>
-    </ion-button>
-</div>
+@if (loginMethods.length) {
+    <div class="core-login-methods">
+        <ion-button [fill]="'outline'" class="ion-text-wrap ion-margin ion-no-margin-horizontal" *ngFor="let method of loginMethods"
+            (click)="method.action()" [ariaLabel]="method.name" expand="block">
+            @if (method.icon) {
+                <ion-icon [name]="method.icon" slot="start" />
+            }
+            <ion-label>{{ method.name }}</ion-label>
+        </ion-button>
+    </div>
+}
 
-<ng-container *ngIf="showScanQR">
+@if (showScanQR) {
+
     <ion-button expand="block" fill="outline" class="ion-margin core-login-site-qrcode ion-no-margin-horizontal"
         (click)="showInstructionsAndScanQR()">
         <ion-icon slot="start" name="fas-qrcode" aria-hidden="true" />
         {{ 'core.scanqr' | translate }}
     </ion-button>
-</ng-container>
+
+}
 
 <!-- Identity providers. -->
-<ion-list *ngIf="identityProviders.length" class="core-login-identity-providers">
-    <h2 class="item-heading">{{ 'core.login.potentialidps' | translate }}</h2>
-    <core-identity-provider *ngFor="let provider of identityProviders" [provider]="provider" [launchurl]="siteConfig?.launchurl"
-        [redirectData]="redirectData" [siteUrl]="siteUrl" />
-</ion-list>
+@if (identityProviders.length) {
+    <ion-list class="core-login-identity-providers">
+        <h2 class="item-heading">{{ 'core.login.potentialidps' | translate }}</h2>
+        <core-identity-provider *ngFor="let provider of identityProviders" [provider]="provider" [launchurl]="siteConfig?.launchurl"
+            [redirectData]="redirectData" [siteUrl]="siteUrl" />
+    </ion-list>
+}

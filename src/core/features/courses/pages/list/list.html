@@ -4,14 +4,19 @@
             <ion-back-button [text]="'core.back' | translate" />
         </ion-buttons>
         <ion-title>
-            <h1 *ngIf="!showOnlyEnrolled">{{ 'core.courses.availablecourses' | translate }}</h1>
-            <h1 *ngIf="showOnlyEnrolled">{{ 'core.courses.mycourses' | translate }}</h1>
+            @if (!showOnlyEnrolled) {
+                <h1>{{ 'core.courses.availablecourses' | translate }}</h1>
+            }
+            @if (showOnlyEnrolled) {
+                <h1>{{ 'core.courses.mycourses' | translate }}</h1>
+            }
         </ion-title>
         <ion-buttons slot="end">
             <core-context-menu>
-                <core-context-menu-item *ngIf="downloadCourseEnabled || downloadCoursesEnabled" [priority]="1000"
-                    [content]="'core.settings.showdownloadoptions' | translate" (action)="toggleDownload()" iconAction="toggle"
-                    [(toggle)]="downloadEnabled" />
+                @if (downloadCourseEnabled || downloadCoursesEnabled) {
+                    <core-context-menu-item [priority]="1000" [content]="'core.settings.showdownloadoptions' | translate"
+                        (action)="toggleDownload()" iconAction="toggle" [(toggle)]="downloadEnabled" />
+                }
                 <core-context-menu-item [priority]="900" [content]="'core.courses.showonlyenrolled' | translate" (action)="toggleEnrolled()"
                     iconAction="toggle" [(toggle)]="showOnlyEnrolled" />
             </core-context-menu>
@@ -24,18 +29,21 @@
         <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}" />
     </ion-refresher>
 
-    <core-search-box *ngIf="searchEnabled" (onSubmit)="search($event)" (onClear)="clearSearch()"
-        [placeholder]="'core.courses.search' | translate" [searchLabel]="'core.courses.search' | translate" [autoFocus]="searchMode"
-        searchArea="CoreCoursesSearch" [lengthCheck]="1" />
+    @if (searchEnabled) {
+        <core-search-box (onSubmit)="search($event)" (onClear)="clearSearch()" [placeholder]="'core.courses.search' | translate"
+            [searchLabel]="'core.courses.search' | translate" [autoFocus]="searchMode" searchArea="CoreCoursesSearch" [lengthCheck]="1" />
+    }
 
     <core-loading [hideUntil]="loaded" [message]="loadingMessage" placeholderType="column" placeholderHeight="108px">
-        <ng-container *ngIf="searchMode && searchTotal > 0">
+        @if (searchMode && searchTotal > 0) {
+
             <ion-item-divider>
                 <ion-label>
                     <h2 role="status">{{ 'core.courses.totalcoursesearchresults' | translate:{$a: searchTotal} }}</h2>
                 </ion-label>
             </ion-item-divider>
-        </ng-container>
+
+        }
 
         <ion-list class="list-item-limited-width core-course-list">
             <core-courses-course-list-item *ngFor="let course of courses" [course]="course" [showDownload]="downloadEnabled" />
@@ -44,10 +52,13 @@
         <core-infinite-loading [enabled]="canLoadMore" (action)="loadMoreCourses($event)" [error]="loadMoreError" />
 
 
-        <core-empty-box *ngIf="searchMode && !courses.length" icon="fas-magnifying-glass"
-            [message]="'core.courses.nosearchresults' | translate" role="alert" />
+        @if (searchMode && !courses.length) {
+            <core-empty-box icon="fas-magnifying-glass" [message]="'core.courses.nosearchresults' | translate" role="alert" />
+        }
 
-        <core-empty-box *ngIf="!searchMode && !courses.length" icon="fas-graduation-cap" [message]="'core.courses.nocourses' | translate" />
+        @if (!searchMode && !courses.length) {
+            <core-empty-box icon="fas-graduation-cap" [message]="'core.courses.nocourses' | translate" />
+        }
 
     </core-loading>
 </ion-content>

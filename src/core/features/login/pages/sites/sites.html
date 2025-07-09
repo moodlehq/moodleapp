@@ -9,10 +9,11 @@
         </ion-title>
 
         <ion-buttons slot="end">
-            <ion-button fill="clear" *ngIf="accountsList.count > 0" (click)="toggleDelete()"
-                [ariaLabel]="'core.login.toggleremove' | translate">
-                <ion-icon slot="icon-only" name="fas-pen" aria-hidden="true" />
-            </ion-button>
+            @if (accountsList.count > 0) {
+                <ion-button fill="clear" (click)="toggleDelete()" [ariaLabel]="'core.login.toggleremove' | translate">
+                    <ion-icon slot="icon-only" name="fas-pen" aria-hidden="true" />
+                </ion-button>
+            }
             <ion-button (click)="openSettings()" [ariaLabel]="'core.settings.appsettings' | translate">
                 <ion-icon slot="icon-only" name="fas-gear" aria-hidden="true" />
             </ion-button>
@@ -23,15 +24,19 @@
     <core-loading [hideUntil]="loaded">
         <core-sites-list [accountsList]="accountsList" [sitesClickable]="true" (onSiteClicked)="login($event)">
             <ng-template #siteItem let-site="site" let-isCurrentSite="isCurrentSite">
-                <ion-badge slot="end" *ngIf="!showDelete && site.badge" @coreShowHideAnimation>
-                    <span aria-hidden="true">{{site.badge}}</span>
-                    <span class="sr-only">{{ 'core.login.sitebadgedescription' | translate:{ count: site.badge }
+                @if (!showDelete && site.badge) {
+                    <ion-badge slot="end" @coreShowHideAnimation>
+                        <span aria-hidden="true">{{site.badge}}</span>
+                        <span class="sr-only">{{ 'core.login.sitebadgedescription' | translate:{ count: site.badge }
                         }}</span>
-                </ion-badge>
-                <ion-button *ngIf="showDelete" slot="end" fill="clear" color="danger" (click)="deleteSite($event, site)"
-                    [ariaLabel]="'core.login.removeaccount' | translate" [@coreSlideInOut]="'fromRight'">
-                    <ion-icon name="fas-trash" slot="icon-only" aria-hidden="true" />
-                </ion-button>
+                    </ion-badge>
+                }
+                @if (showDelete) {
+                    <ion-button slot="end" fill="clear" color="danger" (click)="deleteSite($event, site)"
+                        [ariaLabel]="'core.login.removeaccount' | translate" [@coreSlideInOut]="'fromRight'">
+                        <ion-icon name="fas-trash" slot="icon-only" aria-hidden="true" />
+                    </ion-button>
+                }
             </ng-template>
         </core-sites-list>
     </core-loading>

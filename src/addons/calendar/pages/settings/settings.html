@@ -10,12 +10,14 @@
 </ion-header>
 <ion-content>
     <ion-list>
-        <ion-item *ngIf="defaultTimeLabel">
+        @if (defaultTimeLabel) {
+            <ion-item>
 
-            <ion-select [(ngModel)]="defaultTimeLabel" (click)="changeDefaultTime($event)"
-                [label]="'addon.calendar.defaultnotificationtime' | translate">
-                <ion-select-option [value]="defaultTimeLabel">{{ defaultTimeLabel }}</ion-select-option>
-            </ion-select>
-        </ion-item>
+                <ion-select [(ngModel)]="defaultTimeLabel" (click)="changeDefaultTime($event)"
+                    [label]="'addon.calendar.defaultnotificationtime' | translate">
+                    <ion-select-option [value]="defaultTimeLabel">{{ defaultTimeLabel }}</ion-select-option>
+                </ion-select>
+            </ion-item>
+        }
     </ion-list>
 </ion-content>

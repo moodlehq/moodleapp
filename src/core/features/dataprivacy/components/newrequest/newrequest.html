@@ -24,12 +24,16 @@
         </ion-item>
         <ion-item class="ion-text-wrap">
             <ion-radio-group name="type" formControlName="type">
-                <ion-radio [value]="1" *ngIf="accessInfo?.cancreatedatadownloadrequest">
-                    {{ 'core.dataprivacy.requesttypeexport' | translate }}
-                </ion-radio>
-                <ion-radio [value]="2" *ngIf="accessInfo?.cancreatedatadeletionrequest">
-                    {{ 'core.dataprivacy.requesttypedelete' | translate }}
-                </ion-radio>
+                @if (accessInfo?.cancreatedatadownloadrequest) {
+                    <ion-radio [value]="1">
+                        {{ 'core.dataprivacy.requesttypeexport' | translate }}
+                    </ion-radio>
+                }
+                @if (accessInfo?.cancreatedatadeletionrequest) {
+                    <ion-radio [value]="2">
+                        {{ 'core.dataprivacy.requesttypedelete' | translate }}
+                    </ion-radio>
+                }
             </ion-radio-group>
         </ion-item>
         <ion-item>

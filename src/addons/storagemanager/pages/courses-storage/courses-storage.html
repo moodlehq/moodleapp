@@ -10,22 +10,28 @@
 </ion-header>
 <ion-content class="limited-width">
     <core-loading [hideUntil]="loaded" placeholderType="column" placeholderHeight="84px">
-        <div class="ion-padding-horizontal ion-text-wrap" *ngIf="spaceUsage">
-            <h2>{{ 'addon.storagemanager.alldata' | translate }}</h2>
-        </div>
-        <ion-card *ngIf="spaceUsage">
-            <ion-item class="ion-text-wrap total">
-                <ion-label>
-                    <p class="item-heading ion-text-wrap">{{ 'addon.storagemanager.totalspaceusage' | translate }}</p>
-                    <ion-badge color="light" *ngIf="spaceUsage.spaceUsage">{{ spaceUsage.spaceUsage | coreBytesToSize }}</ion-badge>
-                </ion-label>
-                <ion-button fill="clear" color="danger" slot="end" (click)="deleteSiteStorage($event)"
-                    [hidden]="spaceUsage.spaceUsage! + spaceUsage.cacheEntries! <= 0"
-                    [attr.aria-label]="'addon.storagemanager.deleteallsitedata' | translate">
-                    <ion-icon name="fas-trash" slot="icon-only" aria-hidden="true" />
-                </ion-button>
-            </ion-item>
-        </ion-card>
+        @if (spaceUsage) {
+            <div class="ion-padding-horizontal ion-text-wrap">
+                <h2>{{ 'addon.storagemanager.alldata' | translate }}</h2>
+            </div>
+        }
+        @if (spaceUsage) {
+            <ion-card>
+                <ion-item class="ion-text-wrap total">
+                    <ion-label>
+                        <p class="item-heading ion-text-wrap">{{ 'addon.storagemanager.totalspaceusage' | translate }}</p>
+                        @if (spaceUsage.spaceUsage) {
+                            <ion-badge color="light">{{ spaceUsage.spaceUsage | coreBytesToSize }}</ion-badge>
+                        }
+                    </ion-label>
+                    <ion-button fill="clear" color="danger" slot="end" (click)="deleteSiteStorage($event)"
+                        [hidden]="spaceUsage.spaceUsage! + spaceUsage.cacheEntries! <= 0"
+                        [attr.aria-label]="'addon.storagemanager.deleteallsitedata' | translate">
+                        <ion-icon name="fas-trash" slot="icon-only" aria-hidden="true" />
+                    </ion-button>
+                </ion-item>
+            </ion-card>
+        }
 
         <div class="ion-padding-horizontal ion-text-wrap">
             <h2>{{ 'addon.storagemanager.downloadedcourses' | translate }}</h2>
@@ -48,9 +54,11 @@
                     <p class="item-heading">
                         <core-format-text [text]="course.title" contextLevel="course" [contextInstanceId]="course.id" [adaptImg]="false" />
                     </p>
-                    <p class="item-heading item-heading-secondary" *ngIf="course.isDownloading">
-                        {{ 'core.downloading' | translate }}
-                    </p>
+                    @if (course.isDownloading) {
+                        <p class="item-heading item-heading-secondary">
+                            {{ 'core.downloading' | translate }}
+                        </p>
+                    }
                     <ion-badge color="light">
                         {{ course.totalSize | coreBytesToSize }}
                     </ion-badge>

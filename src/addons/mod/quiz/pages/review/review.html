@@ -8,10 +8,11 @@
         </ion-title>
 
         <ion-buttons slot="end">
-            <ion-button fill="clear" *ngIf="navigation.length" [ariaLabel]="'addon.mod_quiz.opentoc' | translate" (click)="openNavigation()"
-                aria-haspopup="true">
-                <ion-icon name="fas-list-ul" slot="icon-only" aria-hidden="true" />
-            </ion-button>
+            @if (navigation.length) {
+                <ion-button fill="clear" [ariaLabel]="'addon.mod_quiz.opentoc' | translate" (click)="openNavigation()" aria-haspopup="true">
+                    <ion-icon name="fas-list-ul" slot="icon-only" aria-hidden="true" />
+                </ion-button>
+            }
         </ion-buttons>
     </ion-toolbar>
 </ion-header>
@@ -22,14 +23,17 @@
     <core-loading [hideUntil]="loaded">
 
         <!-- Review summary -->
-        <ion-card *ngIf="attempt">
-            <ion-list>
-                <addon-mod-quiz-attempt-info [quiz]="quiz" [attempt]="attempt" [additionalData]="additionalData" />
-            </ion-list>
-        </ion-card>
+        @if (attempt) {
+            <ion-card>
+                <ion-list>
+                    <addon-mod-quiz-attempt-info [quiz]="quiz" [attempt]="attempt" [additionalData]="additionalData" />
+                </ion-list>
+            </ion-card>
+        }
 
         <!-- Questions -->
-        <ng-container *ngIf="attempt && questions.length">
+        @if (attempt && questions.length) {
+
 
             <!-- Questions. -->
             <ng-container *ngFor="let question of questions">
@@ -40,31 +44,46 @@
                 </addon-mod-quiz-question-card>
             </ng-container>
 
-            <core-infinite-loading *ngIf="showAll" [enabled]="canLoadMore" (action)="loadMore($event)" />
-        </ng-container>
+            @if (showAll) {
+                <core-infinite-loading [enabled]="canLoadMore" (action)="loadMore($event)" />
+            }
 
-        <div collapsible-footer appearOnBottom *ngIf="loaded && numPages > 1" slot="fixed">
-            <ion-row class="ion-justify-content-between ion-align-items-center ion-no-padding ion-wrap">
-                <ion-col class="ion-text-start ion-no-padding core-navigation-arrow" size="auto" *ngIf="!showAll">
-                    <ion-button [disabled]="previousPage < 0" fill="clear" [ariaLabel]="'core.previous' | translate"
-                        (click)="changePage(previousPage)">
-                        <ion-icon name="fas-chevron-left" slot="icon-only" aria-hidden="true" />
-                    </ion-button>
-                </ion-col>
-                <ion-col class="ion-text-center">
-                    <!-- In review we can toggle between all questions in same page or one page at a time. -->
-                    <ion-button class="ion-text-wrap" *ngIf="numPages > 1" (click)="switchMode()" fill="outline">
-                        <span *ngIf="!showAll">{{ 'addon.mod_quiz.showall' | translate }}</span>
-                        <span *ngIf="showAll">{{ 'addon.mod_quiz.showeachpage' | translate }}</span>
-                    </ion-button>
-                </ion-col>
-                <ion-col class="ion-text-end ion-no-padding core-navigation-arrow" size="auto" *ngIf="!showAll">
-                    <ion-button [disabled]="nextPage >= numPages" fill="clear" [ariaLabel]="'core.next' | translate"
-                        (click)="changePage(nextPage)">
-                        <ion-icon name="fas-chevron-right" slot="icon-only" aria-hidden="true" />
-                    </ion-button>
-                </ion-col>
-            </ion-row>
-        </div>
+        }
+
+        @if (loaded && numPages > 1) {
+            <div collapsible-footer appearOnBottom slot="fixed">
+                <ion-row class="ion-justify-content-between ion-align-items-center ion-no-padding ion-wrap">
+                    @if (!showAll) {
+                        <ion-col class="ion-text-start ion-no-padding core-navigation-arrow" size="auto">
+                            <ion-button [disabled]="previousPage < 0" fill="clear" [ariaLabel]="'core.previous' | translate"
+                                (click)="changePage(previousPage)">
+                                <ion-icon name="fas-chevron-left" slot="icon-only" aria-hidden="true" />
+                            </ion-button>
+                        </ion-col>
+                    }
+                    <ion-col class="ion-text-center">
+                        <!-- In review we can toggle between all questions in same page or one page at a time. -->
+                        @if (numPages > 1) {
+                            <ion-button class="ion-text-wrap" (click)="switchMode()" fill="outline">
+                                @if (!showAll) {
+                                    <span>{{ 'addon.mod_quiz.showall' | translate }}</span>
+                                }
+                                @if (showAll) {
+                                    <span>{{ 'addon.mod_quiz.showeachpage' | translate }}</span>
+                                }
+                            </ion-button>
+                        }
+                    </ion-col>
+                    @if (!showAll) {
+                        <ion-col class="ion-text-end ion-no-padding core-navigation-arrow" size="auto">
+                            <ion-button [disabled]="nextPage >= numPages" fill="clear" [ariaLabel]="'core.next' | translate"
+                                (click)="changePage(nextPage)">
+                                <ion-icon name="fas-chevron-right" slot="icon-only" aria-hidden="true" />
+                            </ion-button>
+                        </ion-col>
+                    }
+                </ion-row>
+            </div>
+        }
     </core-loading>
 </ion-content>

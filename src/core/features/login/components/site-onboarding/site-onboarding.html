@@ -23,43 +23,49 @@
             {{'core.login.onboardingwelcome' | translate}}
         </h1>
 
-        <div *ngIf="step === 0" class="core-login-onboarding-step">
-            <ion-button expand="block" (click)="skip($event)" class="ion-margin-bottom" fill="outline">
-                {{'core.login.onboardingimalearner' | translate}}
-            </ion-button>
-            <ion-button expand="block" (click)="next($event)" class="ion-margin-bottom" fill="outline">
-                {{'core.login.onboardingimaneducator' | translate}}
-            </ion-button>
-        </div>
+        @if (step === 0) {
+            <div class="core-login-onboarding-step">
+                <ion-button expand="block" (click)="skip($event)" class="ion-margin-bottom" fill="outline">
+                    {{'core.login.onboardingimalearner' | translate}}
+                </ion-button>
+                <ion-button expand="block" (click)="next($event)" class="ion-margin-bottom" fill="outline">
+                    {{'core.login.onboardingimaneducator' | translate}}
+                </ion-button>
+            </div>
+        }
 
-        <div *ngIf="step === 1" class="core-login-onboarding-step">
-            <p class="core-login-onboarding-text">
-                {{ 'core.login.onboardingtoconnect' | translate }}
-            </p>
-            <ion-button expand="block" (click)="skip($event)" class="ion-margin-bottom" fill="outline">
-                {{ 'core.login.onboardingialreadyhaveasite' | translate }}
-            </ion-button>
-            <ion-button expand="block" (click)="next($event)" class="ion-margin-bottom">
-                {{ 'core.login.onboardingineedasite' | translate }}
-            </ion-button>
-        </div>
+        @if (step === 1) {
+            <div class="core-login-onboarding-step">
+                <p class="core-login-onboarding-text">
+                    {{ 'core.login.onboardingtoconnect' | translate }}
+                </p>
+                <ion-button expand="block" (click)="skip($event)" class="ion-margin-bottom" fill="outline">
+                    {{ 'core.login.onboardingialreadyhaveasite' | translate }}
+                </ion-button>
+                <ion-button expand="block" (click)="next($event)" class="ion-margin-bottom">
+                    {{ 'core.login.onboardingineedasite' | translate }}
+                </ion-button>
+            </div>
+        }
 
-        <div *ngIf="step === 2" class="core-login-onboarding-step">
-            <ul class="core-login-onboarding-text ion-text-start">
-                <li>
-                    <ion-icon name="far-circle-check" aria-hidden="true" /> {{ 'core.login.onboardingcreatemanagecourses' | translate }}
-                </li>
-                <li>
-                    <ion-icon name="far-circle-check" aria-hidden="true" /> {{ 'core.login.onboardingenrolmanagestudents' | translate }}
-                </li>
-                <li>
-                    <ion-icon name="far-circle-check" aria-hidden="true" /> {{ 'core.login.onboardingprovidefeedback' | translate }}
-                </li>
-            </ul>
+        @if (step === 2) {
+            <div class="core-login-onboarding-step">
+                <ul class="core-login-onboarding-text ion-text-start">
+                    <li>
+                        <ion-icon name="far-circle-check" aria-hidden="true" /> {{ 'core.login.onboardingcreatemanagecourses' | translate }}
+                    </li>
+                    <li>
+                        <ion-icon name="far-circle-check" aria-hidden="true" /> {{ 'core.login.onboardingenrolmanagestudents' | translate }}
+                    </li>
+                    <li>
+                        <ion-icon name="far-circle-check" aria-hidden="true" /> {{ 'core.login.onboardingprovidefeedback' | translate }}
+                    </li>
+                </ul>
 
-            <ion-button expand="block" (click)="gotoWeb($event)" class="ion-margin-bottom">
-                {{ 'core.login.onboardinggetstarted' | translate }}
-            </ion-button>
-        </div>
+                <ion-button expand="block" (click)="gotoWeb($event)" class="ion-margin-bottom">
+                    {{ 'core.login.onboardinggetstarted' | translate }}
+                </ion-button>
+            </div>
+        }
     </div>
 </ion-content>

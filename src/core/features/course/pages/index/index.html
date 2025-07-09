@@ -28,22 +28,30 @@
 </ion-header>
 <div class="core-course-header">
     <ion-item class="core-format-progress-list ion-text-wrap list-item-limited-width" collapsible>
-        <ng-container *ngIf="course">
-            <div *ngIf="!course.courseimage" #courseThumb slot="start" class="core-course-thumb">
-                <ion-icon name="fas-graduation-cap" class="course-icon" aria-hidden="true" />
-            </div>
-            <ion-avatar *ngIf="course.courseimage" slot="start" class="core-course-thumb">
-                <img [url]="course.courseimage" core-external-content alt="" />
-            </ion-avatar>
-        </ng-container>
+        @if (course) {
+
+            @if (!course.courseimage) {
+                <div #courseThumb slot="start" class="core-course-thumb">
+                    <ion-icon name="fas-graduation-cap" class="course-icon" aria-hidden="true" />
+                </div>
+            }
+            @if (course.courseimage) {
+                <ion-avatar slot="start" class="core-course-thumb">
+                    <img [url]="course.courseimage" core-external-content alt="" />
+                </ion-avatar>
+            }
+
+        }
 
         <ion-label>
             <h1>
                 <core-format-text [text]="title" contextLevel="course" [contextInstanceId]="course?.id" />
             </h1>
-            <div class="core-course-progress" *ngIf="progress !== undefined">
-                <core-progress-bar [progress]="progress" a11yText="core.course.aria:sectionprogress" />
-            </div>
+            @if (progress !== undefined) {
+                <div class="core-course-progress">
+                    <core-progress-bar [progress]="progress" a11yText="core.course.aria:sectionprogress" />
+                </div>
+            }
         </ion-label>
     </ion-item>
 </div>

@@ -1,13 +1,19 @@
 <!-- Buttons to add to the header. -->
 <core-navbar-buttons slot="end">
-    <ion-button *ngIf="canSearch" (click)="showSearch()" [ariaLabel]="'addon.mod_data.search' | translate">
-        <ion-icon name="fas-magnifying-glass" slot="icon-only" aria-hidden="true" />
-    </ion-button>
+    @if (canSearch) {
+        <ion-button (click)="showSearch()" [ariaLabel]="'addon.mod_data.search' | translate">
+            <ion-icon name="fas-magnifying-glass" slot="icon-only" aria-hidden="true" />
+        </ion-button>
+    }
     <core-context-menu>
-        <core-context-menu-item [priority]="500" *ngIf="canAdd" [content]="'addon.mod_data.add' | translate" iconAction="fas-plus"
-            (action)="gotoAddEntry()" />
-        <core-context-menu-item [priority]="400" *ngIf="firstEntry" [content]="'addon.mod_data.single' | translate" iconAction="fas-file"
-            (action)="gotoEntry(firstEntry)" />
+        @if (canAdd) {
+            <core-context-menu-item [priority]="500" [content]="'addon.mod_data.add' | translate" iconAction="fas-plus"
+                (action)="gotoAddEntry()" />
+        }
+        @if (firstEntry) {
+            <core-context-menu-item [priority]="400" [content]="'addon.mod_data.single' | translate" iconAction="fas-file"
+                (action)="gotoEntry(firstEntry)" />
+        }
 
         @if (courseContentsPage) {
             <core-context-menu-item [priority]="5000" [content]="'core.info' | translate" (action)="openModuleSummary()"
@@ -32,94 +38,123 @@
     <core-group-selector [groupInfo]="groupInfo" [(selected)]="selectedGroup" (selectedChange)="setGroup(selectedGroup)"
         [courseId]="database?.course" />
 
-    <ion-card class="core-info-card" *ngIf="!access?.timeavailable && timeAvailableFrom">
-        <ion-item>
-            <ion-icon name="fas-circle-info" slot="start" aria-hidden="true" />
-            <ion-label>{{ 'addon.mod_data.notopenyet' | translate:{$a: timeAvailableFromReadable} }}</ion-label>
-        </ion-item>
-    </ion-card>
+    @if (!access?.timeavailable && timeAvailableFrom) {
+        <ion-card class="core-info-card">
+            <ion-item>
+                <ion-icon name="fas-circle-info" slot="start" aria-hidden="true" />
+                <ion-label>{{ 'addon.mod_data.notopenyet' | translate:{$a: timeAvailableFromReadable} }}</ion-label>
+            </ion-item>
+        </ion-card>
+    }
 
-    <ion-card class="core-info-card" *ngIf="!access?.timeavailable && timeAvailableTo">
-        <ion-item>
-            <ion-icon name="fas-circle-info" slot="start" aria-hidden="true" />
-            <ion-label>{{ 'addon.mod_data.expired' | translate:{$a: timeAvailableToReadable} }}</ion-label>
-        </ion-item>
-    </ion-card>
+    @if (!access?.timeavailable && timeAvailableTo) {
+        <ion-card class="core-info-card">
+            <ion-item>
+                <ion-icon name="fas-circle-info" slot="start" aria-hidden="true" />
+                <ion-label>{{ 'addon.mod_data.expired' | translate:{$a: timeAvailableToReadable} }}</ion-label>
+            </ion-item>
+        </ion-card>
+    }
 
-    <ion-card class="core-info-card" *ngIf="access && access.entrieslefttoview">
-        <ion-item>
-            <ion-icon name="fas-circle-info" slot="start" aria-hidden="true" />
-            <ion-label>
-                {{ 'addon.mod_data.entrieslefttoaddtoview' | translate:{$a: {entrieslefttoview: access.entrieslefttoview} } }}
-            </ion-label>
-        </ion-item>
-    </ion-card>
-
-    <ion-card class="core-info-card" *ngIf="access && access.entrieslefttoadd">
-        <ion-item>
-            <ion-icon name="fas-circle-info" slot="start" aria-hidden="true" />
-            <ion-label>
-                {{ 'addon.mod_data.entrieslefttoadd' | translate:{$a: {entriesleft: access.entrieslefttoadd} } }}
-            </ion-label>
-        </ion-item>
-    </ion-card>
-
-    <!-- Reset search. -->
-    <ng-container *ngIf="search.searching && !isEmpty">
-        <ion-item (click)="searchReset($event)" button [detail]="false" *ngIf="!foundRecordsTranslationData">
-            <ion-label color="info">
-                {{ 'addon.mod_data.resetsettings' | translate}}
-            </ion-label>
-        </ion-item>
-
-        <ion-card class="core-success-card" *ngIf="foundRecordsTranslationData">
-            <ion-item (click)="searchReset($event)" button [detail]="false">
+    @if (access && access.entrieslefttoview) {
+        <ion-card class="core-info-card">
+            <ion-item>
+                <ion-icon name="fas-circle-info" slot="start" aria-hidden="true" />
                 <ion-label>
-                    <p [innerHTML]="'addon.mod_data.foundrecords' | translate:{$a: foundRecordsTranslationData}"></p>
+                    {{ 'addon.mod_data.entrieslefttoaddtoview' | translate:{$a: {entrieslefttoview: access.entrieslefttoview} } }}
                 </ion-label>
             </ion-item>
         </ion-card>
-    </ng-container>
+    }
 
-    <div class="addon-data-contents addon-data-entries addon-data-entries-{{database.id}}" *ngIf="!isEmpty && database">
-        <core-compile-html [text]="entriesRendered" [jsData]="jsData" [extraImports]="extraImports" [cssCode]="database.csstemplate" />
-    </div>
+    @if (access && access.entrieslefttoadd) {
+        <ion-card class="core-info-card">
+            <ion-item>
+                <ion-icon name="fas-circle-info" slot="start" aria-hidden="true" />
+                <ion-label>
+                    {{ 'addon.mod_data.entrieslefttoadd' | translate:{$a: {entriesleft: access.entrieslefttoadd} } }}
+                </ion-label>
+            </ion-item>
+        </ion-card>
+    }
+
+    <!-- Reset search. -->
+    @if (search.searching && !isEmpty) {
+
+        @if (!foundRecordsTranslationData) {
+            <ion-item (click)="searchReset($event)" button [detail]="false">
+                <ion-label color="info">
+                    {{ 'addon.mod_data.resetsettings' | translate}}
+                </ion-label>
+            </ion-item>
+        }
+
+        @if (foundRecordsTranslationData) {
+            <ion-card class="core-success-card">
+                <ion-item (click)="searchReset($event)" button [detail]="false">
+                    <ion-label>
+                        <p [innerHTML]="'addon.mod_data.foundrecords' | translate:{$a: foundRecordsTranslationData}"></p>
+                    </ion-label>
+                </ion-item>
+            </ion-card>
+        }
+
+    }
+
+    @if (!isEmpty && database) {
+        <div class="addon-data-contents addon-data-entries addon-data-entries-{{database.id}}">
+            <core-compile-html [text]="entriesRendered" [jsData]="jsData" [extraImports]="extraImports" [cssCode]="database.csstemplate" />
+        </div>
+    }
 
 
 
-    <core-empty-box *ngIf="isEmpty && !search.searching" icon="fas-database" [message]="'addon.mod_data.norecords' | translate" />
+    @if (isEmpty && !search.searching) {
+        <core-empty-box icon="fas-database" [message]="'addon.mod_data.norecords' | translate" />
+    }
 
-    <core-empty-box *ngIf="isEmpty && search.searching" icon="fas-database" [message]="'addon.mod_data.nomatch' | translate"
-        class="core-empty-box-clickable">
-        <button class="as-link" (click)="searchReset($event)">{{ 'addon.mod_data.resetsettings' | translate}}</button>
-    </core-empty-box>
+    @if (isEmpty && search.searching) {
+        <core-empty-box icon="fas-database" [message]="'addon.mod_data.nomatch' | translate" class="core-empty-box-clickable">
+            <button class="as-link" (click)="searchReset($event)">{{ 'addon.mod_data.resetsettings' | translate}}</button>
+        </core-empty-box>
+    }
 
-    <div collapsible-footer appearOnBottom *ngIf="!showLoading" slot="fixed">
-        <ion-grid *ngIf="search.page > 0 || hasNextPage">
-            <ion-row class="ion-align-items-center">
-                <ion-col *ngIf="search.page > 0">
-                    <ion-button expand="block" fill="outline" (click)="searchEntries(search.page - 1)">
-                        <ion-icon name="fas-chevron-left" slot="start" aria-hidden="true" />
-                        {{ 'core.previous' | translate }}
-                    </ion-button>
-                </ion-col>
-                <ion-col *ngIf="hasNextPage">
-                    <ion-button expand="block" (click)="searchEntries(search.page + 1)">
-                        {{ 'core.next' | translate }}
-                        <ion-icon name="fas-chevron-right" slot="end" aria-hidden="true" />
-                    </ion-button>
-                </ion-col>
-            </ion-row>
-        </ion-grid>
+    @if (!showLoading) {
+        <div collapsible-footer appearOnBottom slot="fixed">
+            @if (search.page > 0 || hasNextPage) {
+                <ion-grid>
+                    <ion-row class="ion-align-items-center">
+                        @if (search.page > 0) {
+                            <ion-col>
+                                <ion-button expand="block" fill="outline" (click)="searchEntries(search.page - 1)">
+                                    <ion-icon name="fas-chevron-left" slot="start" aria-hidden="true" />
+                                    {{ 'core.previous' | translate }}
+                                </ion-button>
+                            </ion-col>
+                        }
+                        @if (hasNextPage) {
+                            <ion-col>
+                                <ion-button expand="block" (click)="searchEntries(search.page + 1)">
+                                    {{ 'core.next' | translate }}
+                                    <ion-icon name="fas-chevron-right" slot="end" aria-hidden="true" />
+                                </ion-button>
+                            </ion-col>
+                        }
+                    </ion-row>
+                </ion-grid>
+            }
 
-        <core-course-module-navigation [courseId]="courseId" [currentModuleId]="module.id" />
-    </div>
+            <core-course-module-navigation [courseId]="courseId" [currentModuleId]="module.id" />
+        </div>
+    }
 </core-loading>
 
 
-<ion-fab slot="fixed" core-fab vertical="bottom" horizontal="end" *ngIf="canAdd">
-    <ion-fab-button (click)="gotoAddEntry()" [attr.aria-label]="'addon.mod_data.add' | translate">
-        <ion-icon name="fas-plus" aria-hidden="true" />
-        <span class="sr-only">{{ 'addon.mod_data.add' | translate }}</span>
-    </ion-fab-button>
-</ion-fab>
+@if (canAdd) {
+    <ion-fab slot="fixed" core-fab vertical="bottom" horizontal="end">
+        <ion-fab-button (click)="gotoAddEntry()" [attr.aria-label]="'addon.mod_data.add' | translate">
+            <ion-icon name="fas-plus" aria-hidden="true" />
+            <span class="sr-only">{{ 'addon.mod_data.add' | translate }}</span>
+        </ion-fab-button>
+    </ion-fab>
+}

@@ -5,16 +5,20 @@
         <ion-button slot="end" fill="clear" type="submit" [ariaLabel]="searchLabel" [disabled]="disabled || !searchText">
             <ion-icon name="fas-magnifying-glass" slot="icon-only" aria-hidden="true" />
         </ion-button>
-        <ion-button *ngIf="showClear" slot="end" fill="clear" [ariaLabel]="'core.clearsearch' | translate"
-            [disabled]="searched === '' || disabled" (click)="clearForm()">
-            <ion-icon name="fas-delete-left" slot="icon-only" aria-hidden="true" flip-rtl />
-        </ion-button>
+        @if (showClear) {
+            <ion-button slot="end" fill="clear" [ariaLabel]="'core.clearsearch' | translate" [disabled]="searched === '' || disabled"
+                (click)="clearForm()">
+                <ion-icon name="fas-delete-left" slot="icon-only" aria-hidden="true" flip-rtl />
+            </ion-button>
+        }
     </ion-input>
-    <ion-item *ngIf="showLengthAlert()" class="core-search-alert text-danger ion-text-wrap" role="alert">
-        <ion-label>
-            {{ 'core.search.err_minlength' | translate : {'$a': {'format': lengthCheck} } }}
-        </ion-label>
-    </ion-item>
+    @if (showLengthAlert()) {
+        <ion-item class="core-search-alert text-danger ion-text-wrap" role="alert">
+            <ion-label>
+                {{ 'core.search.err_minlength' | translate : {'$a': {'format': lengthCheck} } }}
+            </ion-label>
+        </ion-item>
+    }
     <ion-list class="core-search-history" [hidden]="!historyShown()">
         <ion-item button class="ion-text-wrap" *ngFor="let item of history" (click)="historyClicked($event, item.searchedtext)"
             [detail]="true">
