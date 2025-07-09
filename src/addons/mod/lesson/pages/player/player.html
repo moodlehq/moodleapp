@@ -67,17 +67,15 @@
                     </ion-item-divider>
 
                     <!-- Render a different input depending on the type of the question. -->
-                    <ng-container [ngSwitch]="question.template">
-
-                        <!-- Short answer. -->
-                        <ion-item class="ion-text-wrap" *ngSwitchCase="'shortanswer'">
-                            <ion-input [type]="question.input!.type" placeholder="{{ 'addon.mod_lesson.youranswer' | translate }}"
-                                [ariaLabel]="'addon.mod_lesson.youranswer' | translate" [id]="question.input!.id"
-                                [formControlName]="question.input!.name" autocorrect="off" [maxlength]="question.input!.maxlength" />
-                        </ion-item>
-
-                        <!-- Essay. -->
-                        <ng-container *ngSwitchCase="'essay'">
+                    @switch (question.template) {
+                        @case ('shortanswer') {
+                            <ion-item class="ion-text-wrap">
+                                <ion-input [type]="question.input!.type" placeholder="{{ 'addon.mod_lesson.youranswer' | translate }}"
+                                    [ariaLabel]="'addon.mod_lesson.youranswer' | translate" [id]="question.input!.id"
+                                    [formControlName]="question.input!.name" autocorrect="off" [maxlength]="question.input!.maxlength" />
+                            </ion-item>
+                        }
+                        @case ('essay') {
                             <ion-item *ngIf="question.textarea">
                                 <ion-label class="sr-only">{{ 'core.content' | translate }}</ion-label>
                                 <core-rich-text-editor placeholder="{{ 'addon.mod_lesson.youranswer' | translate }}"
@@ -95,10 +93,8 @@
                                     </p>
                                 </ion-label>
                             </ion-item>
-                        </ng-container>
-
-                        <!-- Multichoice. -->
-                        <ng-container *ngSwitchCase="'multichoice'">
+                        }
+                        @case ('multichoice') {
                             <!-- Single choice. -->
                             <ion-radio-group *ngIf="!question.multi" [formControlName]="question.controlName">
                                 <ion-item class="ion-text-wrap" *ngFor="let option of question.options">
@@ -108,7 +104,6 @@
                                     </ion-radio>
                                 </ion-item>
                             </ion-radio-group>
-
                             <!-- Multiple choice. -->
                             <ng-container *ngIf="question.multi">
                                 <ion-item class="ion-text-wrap" *ngFor="let option of question.options">
@@ -118,10 +113,8 @@
                                     </ion-checkbox>
                                 </ion-item>
                             </ng-container>
-                        </ng-container>
-
-                        <!-- Matching. -->
-                        <ng-container *ngSwitchCase="'matching'">
+                        }
+                        @case ('matching') {
                             <ion-item class="ion-text-wrap" *ngFor="let row of question.rows">
                                 <ion-select [id]="row.id" [formControlName]="row.name" [cancelText]="'core.cancel' | translate"
                                     interface="action-sheet">
@@ -133,8 +126,8 @@
                                     </ion-select-option>
                                 </ion-select>
                             </ion-item>
-                        </ng-container>
-                    </ng-container>
+                        }
+                    }
 
                     <ion-button expand="block" type="submit" class="ion-text-wrap ion-margin">
                         {{ question.submitLabel }}

@@ -169,28 +169,28 @@
                             <core-format-text [component]="component" [componentId]="componentId" [text]="item.label" contextLevel="module"
                                 [contextInstanceId]="module.id" [courseId]="courseId" />
                         </p>
-                        <ng-container [ngSwitch]="item.templateName">
-                            <ng-container *ngSwitchCase="'numeric'">
+                        @switch (item.templateName) {
+                            @case ('numeric') {
                                 <ul>
                                     <li *ngFor="let data of item.data">{{ data }}</li>
                                 </ul>
                                 <p>{{ 'addon.mod_feedback.average' | translate }}: {{item.average | number : '1.2-2'}}</p>
-                            </ng-container>
-                            <ng-container *ngSwitchCase="'list'">
+                            }
+                            @case ('list') {
                                 <ul>
                                     <ng-container *ngFor="let data of item.data">
                                         <li *ngIf="data">{{ data }}</li>
                                     </ng-container>
                                 </ul>
-                            </ng-container>
-                            <ng-container *ngSwitchCase="'chart'">
+                            }
+                            @case ('chart') {
                                 <core-chart [type]="item.chartType" [data]="item.chartData" [labels]="item.labels" height="300"
                                     contextLevel="module" [contextInstanceId]="module.id" [wsNotFiltered]="true" [courseId]="courseId" />
                                 <p *ngIf="item.average">
                                     {{ 'addon.mod_feedback.average' | translate }}: {{item.average | number : '1.2-2'}}
                                 </p>
-                            </ng-container>
-                        </ng-container>
+                            }
+                        }
                     </ion-label>
                 </ion-item>
             </ion-list>
