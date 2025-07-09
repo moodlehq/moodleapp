@@ -22,17 +22,26 @@
                 </p>
 
 
-                <p *ngIf="fileSizeReadable || showTime">
-                    <ng-container *ngIf="fileSizeReadable">{{ fileSizeReadable }}</ng-container>
-                    <ng-container *ngIf="fileSizeReadable && showTime"> · </ng-container>
-                    <ng-container *ngIf="showTime">{{ timemodified * 1000 | coreFormatDate }}</ng-container>
-                </p>
+                @if (fileSizeReadable || showTime) {
+                    <p>
+                        @if (fileSizeReadable) {
+                            {{ fileSizeReadable }}
+                        }
+                        @if (fileSizeReadable && showTime) {
+                            ·
+                        }
+                        @if (showTime) {
+                            {{ timemodified * 1000 | coreFormatDate }}
+                        }
+                    </p>
+                }
             </ion-label>
             <div slot="end" class="flex-row">
-                <ion-button fill="clear" *ngIf="isDownloaded && isIOS" (click)="openFile($event, true)"
-                    [title]="openButtonLabel | translate">
-                    <ion-icon slot="icon-only" [name]="openButtonIcon" aria-hidden="true" />
-                </ion-button>
+                @if (isDownloaded && isIOS) {
+                    <ion-button fill="clear" (click)="openFile($event, true)" [title]="openButtonLabel | translate">
+                        <ion-icon slot="icon-only" [name]="openButtonIcon" aria-hidden="true" />
+                    </ion-button>
+                }
 
                 @if (!showCheckbox) {
 

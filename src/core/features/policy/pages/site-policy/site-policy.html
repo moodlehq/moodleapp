@@ -4,9 +4,11 @@
             <ion-back-button [text]="'core.back' | translate" />
         </ion-buttons>
 
-        <ion-title *ngIf="siteName">
-            <h1><core-format-text [text]="siteName" contextLevel="system" [contextInstanceId]="0" /></h1>
-        </ion-title>
+        @if (siteName) {
+            <ion-title>
+                <h1><core-format-text [text]="siteName" contextLevel="system" [contextInstanceId]="0" /></h1>
+            </ion-title>
+        }
 
         <ion-buttons slot="end">
             <ion-button fill="clear" (click)="cancel()" [ariaLabel]="'core.cancel' | translate">
@@ -17,144 +19,181 @@
 </ion-header>
 <ion-content class="limited-width">
     <core-loading [hideUntil]="policyLoaded">
-        <form *ngIf="policiesForm" [formGroup]="policiesForm" (ngSubmit)="submitAcceptances($event)">
-            <ion-item class="core-site-policy-top-bar" *ngIf="stepData">
-                <ion-label>
-                    <p>{{ 'core.policy.steppolicies' | translate:{ $a:stepData } }}</p>
-                </ion-label>
-            </ion-item>
+        @if (policiesForm) {
+            <form [formGroup]="policiesForm" (ngSubmit)="submitAcceptances($event)">
+                @if (stepData) {
+                    <ion-item class="core-site-policy-top-bar">
+                        <ion-label>
+                            <p>{{ 'core.policy.steppolicies' | translate:{ $a:stepData } }}</p>
+                        </ion-label>
+                    </ion-item>
+                }
 
-            <ion-item class="ion-text-wrap" *ngIf="title">
-                <ion-label>
-                    <h2>{{ title }}</h2>
-                    <p *ngIf="subTitle">{{ subTitle }}</p>
-                </ion-label>
-            </ion-item>
-            <hr>
-
-            <!-- Accepting all policies at once, using a URL to view them. -->
-            <ng-container *ngIf="isPoliciesURL && sitePoliciesURL">
-                <ion-card class="core-info-card">
+                @if (title) {
                     <ion-item class="ion-text-wrap">
-                        <ion-icon name="fas-circle-info" slot="start" aria-hidden="true" />
                         <ion-label>
-                            <p>{{ 'core.policy.policyagree' | translate }}</p>
+                            <h2>{{ title }}</h2>
+                            @if (subTitle) {
+                                <p>{{ subTitle }}</p>
+                            }
                         </ion-label>
                     </ion-item>
-                </ion-card>
-                <ion-item class="ion-text-wrap core-site-policy-link">
-                    <ion-label>
-                        <p>
-                            <a [href]="sitePoliciesURL" core-link [capture]="false">
-                                {{ 'core.policy.policyagreementclick' | translate }}<ion-icon name="fas-up-right-from-square"
-                                    aria-hidden="true" />
-                            </a>
-                        </p>
-                    </ion-label>
-                </ion-item>
-                <div class="core-site-policy-iframe-container" [class.core-policy-has-iframe]="showInline">
-                    <core-iframe *ngIf="showInline" [src]="sitePoliciesURL" />
-                </div>
-                <ion-item class="ion-text-wrap">
-                    <ion-checkbox name="agreepolicy" formControlName="agreepolicy">
-                        <p *ngIf="isManageAcceptancesAvailable" [core-mark-required]="true">
-                            {{ 'core.policy.havereadandagreepolicy' | translate:{ policyname:'core.policy.policyagreement' | translate } }}
-                        </p>
-                        <p *ngIf="!isManageAcceptancesAvailable" [core-mark-required]="true">
-                            {{ 'core.policy.policyacceptmandatory' | translate }}
-                        </p>
-                    </ion-checkbox>
-                </ion-item>
-            </ng-container>
+                }
+                <hr>
 
-            <!-- Accepting policies one by one , either in same page or using a consent form at the end. -->
-            <ng-container *ngIf="!isPoliciesURL && (currentPolicy || showConsentForm)">
-                <ng-container *ngIf="currentPolicy">
-                    <ion-item class="ion-text-wrap core-site-policy-summary">
-                        <ion-label>
-                            <core-format-text [text]="currentPolicy.summary" contextLevel="system" [contextInstanceId]="0"
-                                (afterRender)="checkScroll()" />
-                        </ion-label>
-                    </ion-item>
-                    <ion-item class="ion-text-wrap core-site-policy-content">
-                        <ion-label>
-                            <core-format-text [text]="currentPolicy.content" contextLevel="system" [contextInstanceId]="0"
-                                (afterRender)="checkScroll()" />
-                        </ion-label>
-                    </ion-item>
-                </ng-container>
+                <!-- Accepting all policies at once, using a URL to view them. -->
+                @if (isPoliciesURL && sitePoliciesURL) {
 
-                <ng-container *ngIf="showConsentForm">
-                    <ng-container *ngFor="let policy of pendingPolicies">
+                    <ion-card class="core-info-card">
                         <ion-item class="ion-text-wrap">
+                            <ion-icon name="fas-circle-info" slot="start" aria-hidden="true" />
                             <ion-label>
-                                <h2>{{ policy.name }}</h2>
-                                <div [collapsible-item]="64">
-                                    <core-format-text [text]="policy.summary" contextLevel="system" [contextInstanceId]="0"
-                                        (afterRender)="checkScroll()" />
-                                </div>
+                                <p>{{ 'core.policy.policyagree' | translate }}</p>
                             </ion-label>
                         </ion-item>
-                        <ion-item *ngIf="policy.referToFullPolicyText" class="ion-text-wrap" button detail="false"
-                            (click)="viewFullPolicy(policy)">
+                    </ion-card>
+                    <ion-item class="ion-text-wrap core-site-policy-link">
+                        <ion-label>
+                            <p>
+                                <a [href]="sitePoliciesURL" core-link [capture]="false">
+                                    {{ 'core.policy.policyagreementclick' | translate }}<ion-icon name="fas-up-right-from-square"
+                                        aria-hidden="true" />
+                                </a>
+                            </p>
+                        </ion-label>
+                    </ion-item>
+                    <div class="core-site-policy-iframe-container" [class.core-policy-has-iframe]="showInline">
+                        @if (showInline) {
+                            <core-iframe [src]="sitePoliciesURL" />
+                        }
+                    </div>
+                    <ion-item class="ion-text-wrap">
+                        <ion-checkbox name="agreepolicy" formControlName="agreepolicy">
+                            @if (isManageAcceptancesAvailable) {
+                                <p [core-mark-required]="true">
+                                    {{ 'core.policy.havereadandagreepolicy' | translate:{ policyname:'core.policy.policyagreement' | translate } }}
+                                </p>
+                            }
+                            @if (!isManageAcceptancesAvailable) {
+                                <p [core-mark-required]="true">
+                                    {{ 'core.policy.policyacceptmandatory' | translate }}
+                                </p>
+                            }
+                        </ion-checkbox>
+                    </ion-item>
+
+                }
+
+                <!-- Accepting policies one by one , either in same page or using a consent form at the end. -->
+                @if (!isPoliciesURL && (currentPolicy || showConsentForm)) {
+
+                    @if (currentPolicy) {
+
+                        <ion-item class="ion-text-wrap core-site-policy-summary">
                             <ion-label>
-                                <p [innerHTML]="policy.referToFullPolicyText"></p>
+                                <core-format-text [text]="currentPolicy.summary" contextLevel="system" [contextInstanceId]="0"
+                                    (afterRender)="checkScroll()" />
                             </ion-label>
                         </ion-item>
-                        <ng-container *ngTemplateOutlet="policyForm; context: {policy: policy}" />
-                    </ng-container>
-                </ng-container>
+                        <ion-item class="ion-text-wrap core-site-policy-content">
+                            <ion-label>
+                                <core-format-text [text]="currentPolicy.content" contextLevel="system" [contextInstanceId]="0"
+                                    (afterRender)="checkScroll()" />
+                            </ion-label>
+                        </ion-item>
 
-                <ion-item class="core-site-policy-bottom-bar" *ngIf="stepData || hasScroll">
-                    <ion-label>
-                        <p *ngIf="stepData">{{ 'core.policy.steppolicies' | translate:{ $a:stepData } }}</p>
-                    </ion-label>
-                    <ion-button *ngIf="hasScroll" class="core-site-policy-go-top-button" color="secondary" slot="end"
-                        (click)="scrollTop($event)" [ariaLabel]="'core.policy.backtotop' | translate">
-                        <ion-icon name="fas-chevron-up" slot="icon-only" aria-hidden="true" />
-                    </ion-button>
-                </ion-item>
+                    }
 
-                <ng-container *ngIf="agreeInOwnPage">
-                    <ng-container *ngTemplateOutlet="policyForm; context: {policy: currentPolicy}" />
-                </ng-container>
-            </ng-container>
+                    @if (showConsentForm) {
 
-            <div class="core-site-policy-buttons ion-margin-horizontal">
-                <ion-button *ngIf="(isPoliciesURL && sitePoliciesURL) || showConsentForm || agreeInOwnPage" type="submit"
-                    class="ion-text-wrap" [expand]="isTablet ? null : 'block'"
-                    [disabled]="(isPoliciesURL || agreeInOwnPage) && !policiesForm.valid">
-                    {{ 'core.continue' | translate }}
-                </ion-button>
-                <ion-button *ngIf="!isPoliciesURL && currentPolicy && !agreeInOwnPage" class="ion-text-wrap"
-                    [expand]="isTablet ? null : 'block'" (click)="nextPolicy($event)">
-                    {{ 'core.next' | translate }}
-                </ion-button>
-            </div>
-        </form>
+                        <ng-container *ngFor="let policy of pendingPolicies">
+                            <ion-item class="ion-text-wrap">
+                                <ion-label>
+                                    <h2>{{ policy.name }}</h2>
+                                    <div [collapsible-item]="64">
+                                        <core-format-text [text]="policy.summary" contextLevel="system" [contextInstanceId]="0"
+                                            (afterRender)="checkScroll()" />
+                                    </div>
+                                </ion-label>
+                            </ion-item>
+                            @if (policy.referToFullPolicyText) {
+                                <ion-item class="ion-text-wrap" button detail="false" (click)="viewFullPolicy(policy)">
+                                    <ion-label>
+                                        <p [innerHTML]="policy.referToFullPolicyText"></p>
+                                    </ion-label>
+                                </ion-item>
+                            }
+                            <ng-container *ngTemplateOutlet="policyForm; context: {policy: policy}" />
+                        </ng-container>
+
+                    }
+
+                    @if (stepData || hasScroll) {
+                        <ion-item class="core-site-policy-bottom-bar">
+                            <ion-label>
+                                @if (stepData) {
+                                    <p>{{ 'core.policy.steppolicies' | translate:{ $a:stepData } }}</p>
+                                }
+                            </ion-label>
+                            @if (hasScroll) {
+                                <ion-button class="core-site-policy-go-top-button" color="secondary" slot="end" (click)="scrollTop($event)"
+                                    [ariaLabel]="'core.policy.backtotop' | translate">
+                                    <ion-icon name="fas-chevron-up" slot="icon-only" aria-hidden="true" />
+                                </ion-button>
+                            }
+                        </ion-item>
+                    }
+
+                    @if (agreeInOwnPage) {
+
+                        <ng-container *ngTemplateOutlet="policyForm; context: {policy: currentPolicy}" />
+
+                    }
+
+                }
+
+                <div class="core-site-policy-buttons ion-margin-horizontal">
+                    @if ((isPoliciesURL && sitePoliciesURL) || showConsentForm || agreeInOwnPage) {
+                        <ion-button type="submit" class="ion-text-wrap" [expand]="isTablet ? null : 'block'"
+                            [disabled]="(isPoliciesURL || agreeInOwnPage) && !policiesForm.valid">
+                            {{ 'core.continue' | translate }}
+                        </ion-button>
+                    }
+                    @if (!isPoliciesURL && currentPolicy && !agreeInOwnPage) {
+                        <ion-button class="ion-text-wrap" [expand]="isTablet ? null : 'block'" (click)="nextPolicy($event)">
+                            {{ 'core.next' | translate }}
+                        </ion-button>
+                    }
+                </div>
+            </form>
+        }
     </core-loading>
 </ion-content>
 
 <ng-template #policyForm let-policy="policy">
-    <ion-item class="ion-text-wrap" *ngIf="!policy.optional && policiesForm">
-        <ion-checkbox [formControl]="policiesForm.controls['agreepolicy' + policy.versionid]">
-            <p [core-mark-required]="true">
-                {{ 'core.policy.havereadandagreepolicy' | translate:{ policyname:policy.name } }}
-            </p>
-        </ion-checkbox>
-        <core-input-errors [control]="policiesForm.controls['agreepolicy' + policy.versionid]" [errorMessages]="policiesErrors" />
-    </ion-item>
-    <ion-radio-group *ngIf="policy.optional && policiesForm" [formControl]="policiesForm.controls['agreepolicy' + policy.versionid]">
+    @if (!policy.optional && policiesForm) {
         <ion-item class="ion-text-wrap">
-            <ion-radio [value]="1">
-                <p>{{ 'core.policy.havereadandagreepolicy' | translate:{ policyname:policy.name } }}</p>
-            </ion-radio>
-        </ion-item>
-        <ion-item class="ion-text-wrap">
-            <ion-radio [value]="0">
-                <p>{{ 'core.policy.idontagree' | translate:{ $a:policy.name } }}</p>
-            </ion-radio>
+            <ion-checkbox [formControl]="policiesForm.controls['agreepolicy' + policy.versionid]">
+                <p [core-mark-required]="true">
+                    {{ 'core.policy.havereadandagreepolicy' | translate:{ policyname:policy.name } }}
+                </p>
+            </ion-checkbox>
             <core-input-errors [control]="policiesForm.controls['agreepolicy' + policy.versionid]" [errorMessages]="policiesErrors" />
         </ion-item>
-    </ion-radio-group>
+    }
+    @if (policy.optional && policiesForm) {
+        <ion-radio-group [formControl]="policiesForm.controls['agreepolicy' + policy.versionid]">
+            <ion-item class="ion-text-wrap">
+                <ion-radio [value]="1">
+                    <p>{{ 'core.policy.havereadandagreepolicy' | translate:{ policyname:policy.name } }}</p>
+                </ion-radio>
+            </ion-item>
+            <ion-item class="ion-text-wrap">
+                <ion-radio [value]="0">
+                    <p>{{ 'core.policy.idontagree' | translate:{ $a:policy.name } }}</p>
+                </ion-radio>
+                <core-input-errors [control]="policiesForm.controls['agreepolicy' + policy.versionid]" [errorMessages]="policiesErrors" />
+            </ion-item>
+        </ion-radio-group>
+    }
 </ng-template>

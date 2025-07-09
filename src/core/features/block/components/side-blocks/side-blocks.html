@@ -12,12 +12,18 @@
         <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}" />
     </ion-refresher>
     <core-loading [hideUntil]="loaded" placeholderType="column" placeholderHeight="120px">
-        <ion-list *ngIf="blocks.length > 0">
-            <ng-container *ngFor="let block of blocks">
-                <core-block *ngIf="block.visible" [block]="block" [contextLevel]="contextLevel" [instanceId]="instanceId" />
-            </ng-container>
-        </ion-list>
+        @if (blocks.length > 0) {
+            <ion-list>
+                <ng-container *ngFor="let block of blocks">
+                    @if (block.visible) {
+                        <core-block [block]="block" [contextLevel]="contextLevel" [instanceId]="instanceId" />
+                    }
+                </ng-container>
+            </ion-list>
+        }
 
-        <core-empty-box *ngIf="blocks.length === 0" icon="fas-table-cells-large" [message]="'core.block.noblocks' | translate" />
+        @if (blocks.length === 0) {
+            <core-empty-box icon="fas-table-cells-large" [message]="'core.block.noblocks' | translate" />
+        }
     </core-loading>
 </ion-content>

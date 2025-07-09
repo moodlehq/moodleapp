@@ -1,106 +1,161 @@
 <core-loading [hideUntil]="loaded">
-    <div *ngIf="!summary">
-        <ion-item class="ion-text-wrap addon-workshop-submission-title">
-            <core-user-avatar [user]="profile" [courseId]="courseId" [userId]="profile?.id" slot="start" />
-            <ion-label>
-                <h2 *ngIf="submission.title">
-                    <core-format-text [text]="submission.title" contextLevel="module" [contextInstanceId]="module.id" [courseId]="courseId"
-                        [sanitize]="submission.offline" [wsNotFiltered]="true" />
-                </h2>
-                <p *ngIf="profile && profile?.fullname">{{profile.fullname}}</p>
-                <p *ngIf="showGrade(submission.grade)" [class.addon-has-overriden-grade]="showGrade(submission.gradeover)">
-                    {{ 'addon.mod_workshop.submissiongradeof' | translate:{$a: workshop.grade } }}: {{submission.grade}}
-                </p>
-                <p *ngIf="showGrade(submission.gradeover)" class="addon-overriden-grade">
-                    {{ 'addon.mod_workshop.gradeover' | translate }}: {{submission.gradeover}}
-                </p>
-                <p *ngIf="access.canviewallsubmissions && showGrade(submission.gradinggrade)">
-                    {{ 'addon.mod_workshop.gradinggradeof' | translate:{$a: workshop.gradinggrade } }}: {{submission.gradinggrade}}
-                </p>
-            </ion-label>
-            <ion-note slot="end" *ngIf="!submission.timemodified">
-                <ion-icon name="fas-clock" aria-hidden="true" /> {{ 'core.notsent' | translate }}
-            </ion-note>
-            <ion-note slot="end" *ngIf="submission.timemodified">
-                {{submission.timemodified | coreDateDayOrTime}}
-                <div *ngIf="submission.offline">
-                    <ion-icon name="fas-clock" aria-hidden="true" /> {{ 'core.notsent' | translate }}
-                </div>
-                <div *ngIf="submission.deleted">
-                    <ion-icon name="fas-trash" aria-hidden="true" /> {{ 'core.deletedoffline' | translate }}
-                </div>
-            </ion-note>
-        </ion-item>
-        <ion-item class="ion-text-wrap" *ngIf="submission.content">
-            <ion-label>
-                <core-format-text [component]="component" [componentId]="componentId" [text]="submission.content" contextLevel="module"
-                    [contextInstanceId]="module.id" [courseId]="courseId" [sanitize]="submission.offline" />
-            </ion-label>
-        </ion-item>
-        <core-files [files]="submission.attachmentfiles" [component]="component" [componentId]="componentId" />
-        <ion-item class="ion-text-wrap" *ngIf="viewDetails && submission.feedbackauthor">
-            <core-user-avatar *ngIf="evaluateByProfile" [user]="evaluateByProfile" slot="start" [courseId]="courseId"
-                [userId]="evaluateByProfile.id" />
+    @if (!summary) {
+        <div>
+            <ion-item class="ion-text-wrap addon-workshop-submission-title">
+                <core-user-avatar [user]="profile" [courseId]="courseId" [userId]="profile?.id" slot="start" />
+                <ion-label>
+                    @if (submission.title) {
+                        <h2>
+                            <core-format-text [text]="submission.title" contextLevel="module" [contextInstanceId]="module.id"
+                                [courseId]="courseId" [sanitize]="submission.offline" [wsNotFiltered]="true" />
+                        </h2>
+                    }
+                    @if (profile && profile?.fullname) {
+                        <p>{{profile.fullname}}</p>
+                    }
+                    @if (showGrade(submission.grade)) {
+                        <p [class.addon-has-overriden-grade]="showGrade(submission.gradeover)">
+                            {{ 'addon.mod_workshop.submissiongradeof' | translate:{$a: workshop.grade } }}: {{submission.grade}}
+                        </p>
+                    }
+                    @if (showGrade(submission.gradeover)) {
+                        <p class="addon-overriden-grade">
+                            {{ 'addon.mod_workshop.gradeover' | translate }}: {{submission.gradeover}}
+                        </p>
+                    }
+                    @if (access.canviewallsubmissions && showGrade(submission.gradinggrade)) {
+                        <p>
+                            {{ 'addon.mod_workshop.gradinggradeof' | translate:{$a: workshop.gradinggrade } }}: {{submission.gradinggrade}}
+                        </p>
+                    }
+                </ion-label>
+                @if (!submission.timemodified) {
+                    <ion-note slot="end">
+                        <ion-icon name="fas-clock" aria-hidden="true" /> {{ 'core.notsent' | translate }}
+                    </ion-note>
+                }
+                @if (submission.timemodified) {
+                    <ion-note slot="end">
+                        {{submission.timemodified | coreDateDayOrTime}}
+                        @if (submission.offline) {
+                            <div>
+                                <ion-icon name="fas-clock" aria-hidden="true" /> {{ 'core.notsent' | translate }}
+                            </div>
+                        }
+                        @if (submission.deleted) {
+                            <div>
+                                <ion-icon name="fas-trash" aria-hidden="true" /> {{ 'core.deletedoffline' | translate }}
+                            </div>
+                        }
+                    </ion-note>
+                }
+            </ion-item>
+            @if (submission.content) {
+                <ion-item class="ion-text-wrap">
+                    <ion-label>
+                        <core-format-text [component]="component" [componentId]="componentId" [text]="submission.content"
+                            contextLevel="module" [contextInstanceId]="module.id" [courseId]="courseId" [sanitize]="submission.offline" />
+                    </ion-label>
+                </ion-item>
+            }
+            <core-files [files]="submission.attachmentfiles" [component]="component" [componentId]="componentId" />
+            @if (viewDetails && submission.feedbackauthor) {
+                <ion-item class="ion-text-wrap">
+                    @if (evaluateByProfile) {
+                        <core-user-avatar [user]="evaluateByProfile" slot="start" [courseId]="courseId" [userId]="evaluateByProfile.id" />
+                    }
 
+                    <ion-label>
+                        @if (evaluateByProfile && evaluateByProfile.fullname) {
+                            <p class="item-heading">
+                                {{ 'addon.mod_workshop.feedbackby' | translate : {$a: evaluateByProfile.fullname} }}
+                            </p>
+                        }
+                        <core-format-text [text]="submission.feedbackauthor" contextLevel="module" [contextInstanceId]="module.id"
+                            [courseId]="courseId" />
+                    </ion-label>
+                </ion-item>
+            }
+            @if (viewDetails) {
+                <ion-item>
+                    <ion-label>
+                        <ion-button expand="block" (click)="gotoSubmission()">
+                            {{ 'core.showmore' | translate }}
+                            <ion-icon name="fas-chevron-right" slot="end" aria-hidden="true" />
+                        </ion-button>
+                    </ion-label>
+                </ion-item>
+            }
+        </div>
+    }
+
+    @if (summary) {
+        <ion-item class="ion-text-wrap" [detail]="submission.timemodified" (click)="gotoSubmission()" [button]="submission.timemodified">
+            <core-user-avatar [user]="profile" slot="start" [courseId]="courseId" [userId]="profile?.id" />
             <ion-label>
-                <p class="item-heading" *ngIf="evaluateByProfile && evaluateByProfile.fullname">
-                    {{ 'addon.mod_workshop.feedbackby' | translate : {$a: evaluateByProfile.fullname} }}
-                </p>
-                <core-format-text [text]="submission.feedbackauthor" contextLevel="module" [contextInstanceId]="module.id"
-                    [courseId]="courseId" />
+                @if (submission.title) {
+                    <h2>
+                        <core-format-text [text]="submission.title" contextLevel="module" [contextInstanceId]="module.id"
+                            [courseId]="courseId" [sanitize]="submission.offline" [wsNotFiltered]="true" />
+                    </h2>
+                }
+                @if (profile && profile.fullname) {
+                    <p>{{profile.fullname}}</p>
+                }
+                @if (submission.reviewedbydone) {
+                    <p>
+                        {{ 'addon.mod_workshop.receivedgrades' | translate }}: {{submission.reviewedbydone}} /
+                        {{submission.reviewedbycount}}
+                    </p>
+                }
+                @if (submission.reviewerofdone) {
+                    <p>
+                        {{ 'addon.mod_workshop.givengrades' | translate }}: {{submission.reviewerofdone}} / {{submission.reviewerofcount}}
+                    </p>
+                }
+                @if (!showGrade(submission.gradeover) && showGrade(submission.grade)) {
+                    <p>
+                        {{ 'addon.mod_workshop.submissiongradeof' | translate:{$a: workshop.grade } }}: {{submission.grade}}
+                    </p>
+                }
+                @if (showGrade(submission.gradeover)) {
+                    <p class="addon-overriden-grade">
+                        {{ 'addon.mod_workshop.submissiongradeof' | translate:{$a: workshop.grade } }}: {{submission.gradeover}}
+                    </p>
+                }
+                @if (access.canviewallsubmissions && showGrade(submission.gradinggrade)) {
+                    <p>
+                        {{ 'addon.mod_workshop.gradinggradeof' | translate:{$a: workshop.gradinggrade } }}: {{submission.gradinggrade}}
+                    </p>
+                }
+
+                @if (assessment && (showGrade(assessment.grade) || assessment.offline)) {
+                    <ion-badge color="success" class="ion-text-wrap">
+                        {{ 'addon.mod_workshop.assessedsubmission' | translate }}
+                    </ion-badge>
+                }
+                @if (assessment && !showGrade(assessment.grade) && !assessment.offline) {
+                    <ion-badge color="danger" class="ion-text-wrap">
+                        {{ 'addon.mod_workshop.notassessed' | translate }}
+                    </ion-badge>
+                }
+
             </ion-label>
+            @if (submission.timemodified) {
+                <ion-note slot="end">
+                    {{submission.timemodified | coreDateDayOrTime}}
+                    @if (offline) {
+                        <div>
+                            <ion-icon name="fas-clock" aria-hidden="true" /> {{ 'core.notsent' | translate }}
+                        </div>
+                    }
+                    @if (submission.deleted) {
+                        <div>
+                            <ion-icon name="fas-trash" aria-hidden="true" /> {{ 'core.deletedoffline' | translate }}
+                        </div>
+                    }
+                </ion-note>
+            }
         </ion-item>
-        <ion-item *ngIf="viewDetails">
-            <ion-label>
-                <ion-button expand="block" (click)="gotoSubmission()">
-                    {{ 'core.showmore' | translate }}
-                    <ion-icon name="fas-chevron-right" slot="end" aria-hidden="true" />
-                </ion-button>
-            </ion-label>
-        </ion-item>
-    </div>
-
-    <ion-item class="ion-text-wrap" *ngIf="summary" [detail]="submission.timemodified" (click)="gotoSubmission()"
-        [button]="submission.timemodified">
-        <core-user-avatar [user]="profile" slot="start" [courseId]="courseId" [userId]="profile?.id" />
-        <ion-label>
-            <h2 *ngIf="submission.title">
-                <core-format-text [text]="submission.title" contextLevel="module" [contextInstanceId]="module.id" [courseId]="courseId"
-                    [sanitize]="submission.offline" [wsNotFiltered]="true" />
-            </h2>
-            <p *ngIf="profile && profile.fullname">{{profile.fullname}}</p>
-            <p *ngIf="submission.reviewedbydone">
-                {{ 'addon.mod_workshop.receivedgrades' | translate }}: {{submission.reviewedbydone}} / {{submission.reviewedbycount}}
-            </p>
-            <p *ngIf="submission.reviewerofdone">
-                {{ 'addon.mod_workshop.givengrades' | translate }}: {{submission.reviewerofdone}} / {{submission.reviewerofcount}}
-            </p>
-            <p *ngIf="!showGrade(submission.gradeover) && showGrade(submission.grade)">
-                {{ 'addon.mod_workshop.submissiongradeof' | translate:{$a: workshop.grade } }}: {{submission.grade}}
-            </p>
-            <p *ngIf="showGrade(submission.gradeover)" class="addon-overriden-grade">
-                {{ 'addon.mod_workshop.submissiongradeof' | translate:{$a: workshop.grade } }}: {{submission.gradeover}}
-            </p>
-            <p *ngIf="access.canviewallsubmissions && showGrade(submission.gradinggrade)">
-                {{ 'addon.mod_workshop.gradinggradeof' | translate:{$a: workshop.gradinggrade } }}: {{submission.gradinggrade}}
-            </p>
-
-            <ion-badge *ngIf="assessment && (showGrade(assessment.grade) || assessment.offline)" color="success" class="ion-text-wrap">
-                {{ 'addon.mod_workshop.assessedsubmission' | translate }}
-            </ion-badge>
-            <ion-badge *ngIf="assessment && !showGrade(assessment.grade) && !assessment.offline" color="danger" class="ion-text-wrap">
-                {{ 'addon.mod_workshop.notassessed' | translate }}
-            </ion-badge>
-
-        </ion-label>
-        <ion-note slot="end" *ngIf="submission.timemodified">
-            {{submission.timemodified | coreDateDayOrTime}}
-            <div *ngIf="offline">
-                <ion-icon name="fas-clock" aria-hidden="true" /> {{ 'core.notsent' | translate }}
-            </div>
-            <div *ngIf="submission.deleted">
-                <ion-icon name="fas-trash" aria-hidden="true" /> {{ 'core.deletedoffline' | translate }}
-            </div>
-        </ion-note>
-    </ion-item>
+    }
 </core-loading>

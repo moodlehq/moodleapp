@@ -1,26 +1,35 @@
 <ion-content>
     <core-loading [hideUntil]="loaded" [fullscreen]="false">
         <ion-list>
-            <ion-item button class="ion-text-wrap" (click)="editPost()" *ngIf="offlinePost || canEdit" [detail]="false">
-                <ion-icon name="fas-pen" slot="start" aria-hidden="true" />
-                <ion-label>
-                    <p class="item-heading">{{ 'addon.mod_forum.edit' | translate }}</p>
-                </ion-label>
-            </ion-item>
-            <ion-item button class="ion-text-wrap" (click)="deletePost()" *ngIf="offlinePost || canDelete" [detail]="false">
-                <ion-icon name="fas-trash" slot="start" aria-hidden="true" />
-                <ion-label>
-                    <p class="item-heading" *ngIf="!offlinePost">{{ 'addon.mod_forum.delete' | translate }}</p>
-                    <p class="item-heading" *ngIf="offlinePost">{{ 'core.discard' | translate }}</p>
-                </ion-label>
-            </ion-item>
-            <ion-item class="ion-text-wrap" [href]="url" *ngIf="url" core-link capture="false" button [detail]="false"
-                [showBrowserWarning]="false">
-                <ion-icon name="fas-up-right-from-square" slot="start" aria-hidden="true" />
-                <ion-label>
-                    <p class="item-heading">{{ 'core.openinbrowser' | translate }}</p>
-                </ion-label>
-            </ion-item>
+            @if (offlinePost || canEdit) {
+                <ion-item button class="ion-text-wrap" (click)="editPost()" [detail]="false">
+                    <ion-icon name="fas-pen" slot="start" aria-hidden="true" />
+                    <ion-label>
+                        <p class="item-heading">{{ 'addon.mod_forum.edit' | translate }}</p>
+                    </ion-label>
+                </ion-item>
+            }
+            @if (offlinePost || canDelete) {
+                <ion-item button class="ion-text-wrap" (click)="deletePost()" [detail]="false">
+                    <ion-icon name="fas-trash" slot="start" aria-hidden="true" />
+                    <ion-label>
+                        @if (!offlinePost) {
+                            <p class="item-heading">{{ 'addon.mod_forum.delete' | translate }}</p>
+                        }
+                        @if (offlinePost) {
+                            <p class="item-heading">{{ 'core.discard' | translate }}</p>
+                        }
+                    </ion-label>
+                </ion-item>
+            }
+            @if (url) {
+                <ion-item class="ion-text-wrap" [href]="url" core-link capture="false" button [detail]="false" [showBrowserWarning]="false">
+                    <ion-icon name="fas-up-right-from-square" slot="start" aria-hidden="true" />
+                    <ion-label>
+                        <p class="item-heading">{{ 'core.openinbrowser' | translate }}</p>
+                    </ion-label>
+                </ion-item>
+            }
         </ion-list>
     </core-loading>
 </ion-content>

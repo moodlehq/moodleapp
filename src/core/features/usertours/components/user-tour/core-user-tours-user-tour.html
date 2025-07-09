@@ -1,5 +1,11 @@
-<div *ngIf="focusStyles" class="user-tour-focus" [style]="focusStyles"></div>
-<div *ngIf="!focusStyles" class="user-tour-overlay"></div>
+@if (focusStyles) {
+<div class="user-tour-focus" [style]="focusStyles"></div>
+}
+@if (!focusStyles) {
+<div class="user-tour-overlay"></div>
+}
 <div class="user-tour-wrapper" [style]="popoverWrapperStyles" #wrapper>
-    <span *ngIf="popover" class="user-tour-wrapper-arrow" [style]="popoverWrapperArrowStyles"></span>
+    @if (popover) {
+<span class="user-tour-wrapper-arrow" [style]="popoverWrapperArrowStyles"></span>
+}
 </div>

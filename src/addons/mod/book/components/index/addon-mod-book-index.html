@@ -30,22 +30,32 @@
             (click)="openBook(chapter.id)">
             <ion-label>
                 <p [class.ion-padding-start]="addPadding && chapter.level === 1 ? true : null">
-                    <span *ngIf="showNumbers" class="addon-mod-book-number">{{chapter.indexNumber}} </span>
-                    <span *ngIf="showBullets" class="addon-mod-book-bullet">&bull; </span>
+                    @if (showNumbers) {
+                        <span class="addon-mod-book-number">{{chapter.indexNumber}} </span>
+                    }
+                    @if (showBullets) {
+                        <span class="addon-mod-book-bullet">&bull; </span>
+                    }
                     <core-format-text [text]="chapter.title" contextLevel="module" [contextInstanceId]="module.id" [courseId]="courseId" />
                 </p>
             </ion-label>
         </ion-item>
     </ion-list>
 
-    <div collapsible-footer appearOnBottom *ngIf="!showLoading" slot="fixed">
-        <div class="list-item-limited-width">
-            <ion-button expand="block" (click)="openBook()" class="ion-margin ion-text-wrap">
-                <span *ngIf="!hasStartedBook">{{ 'core.start' | translate }}</span>
-                <span *ngIf="hasStartedBook">{{ 'core.resume' | translate }}</span>
-            </ion-button>
-        </div>
+    @if (!showLoading) {
+        <div collapsible-footer appearOnBottom slot="fixed">
+            <div class="list-item-limited-width">
+                <ion-button expand="block" (click)="openBook()" class="ion-margin ion-text-wrap">
+                    @if (!hasStartedBook) {
+                        <span>{{ 'core.start' | translate }}</span>
+                    }
+                    @if (hasStartedBook) {
+                        <span>{{ 'core.resume' | translate }}</span>
+                    }
+                </ion-button>
+            </div>
 
-        <core-course-module-navigation [courseId]="courseId" [currentModuleId]="module.id" />
-    </div>
+            <core-course-module-navigation [courseId]="courseId" [currentModuleId]="module.id" />
+        </div>
+    }
 </core-loading>

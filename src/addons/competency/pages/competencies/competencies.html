@@ -26,14 +26,16 @@
                                 [contextInstanceId]="contextInstanceId" /> <em>{{competency.competency.idnumber}}</em>
                         </p>
                     </ion-label>
-                    <ion-badge slot="end" *ngIf="competency.usercompetency"
-                        [color]="competency.usercompetency.proficiency ? 'success' : 'danger'">
-                        {{ competency.usercompetency.gradename }}
-                    </ion-badge>
-                    <ion-badge slot="end" *ngIf="competency.usercompetencycourse"
-                        [color]="competency.usercompetencycourse.proficiency ? 'success' : 'danger'">
-                        {{ competency.usercompetencycourse.gradename }}
-                    </ion-badge>
+                    @if (competency.usercompetency) {
+                        <ion-badge slot="end" [color]="competency.usercompetency.proficiency ? 'success' : 'danger'">
+                            {{ competency.usercompetency.gradename }}
+                        </ion-badge>
+                    }
+                    @if (competency.usercompetencycourse) {
+                        <ion-badge slot="end" [color]="competency.usercompetencycourse.proficiency ? 'success' : 'danger'">
+                            {{ competency.usercompetencycourse.gradename }}
+                        </ion-badge>
+                    }
                 </ion-item>
             </ion-list>
         </core-loading>

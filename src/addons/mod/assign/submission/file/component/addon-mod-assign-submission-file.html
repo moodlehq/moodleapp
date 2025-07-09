@@ -1,20 +1,24 @@
 <!-- Read only. -->
-<ion-item class="ion-text-wrap" *ngIf="files && files.length && !edit">
-    <ion-label>
-        <p class="item-heading">{{ plugin.name }}</p>
-        <div>
-            <core-files [files]="files" [component]="component" [componentId]="assign.cmid" [alwaysDownload]="true" />
-        </div>
-    </ion-label>
-</ion-item>
-
-<!-- Edit -->
-<div *ngIf="edit">
-    <ion-item-divider class="ion-text-wrap" [sticky]="true">
+@if (files && files.length && !edit) {
+    <ion-item class="ion-text-wrap">
         <ion-label>
             <p class="item-heading">{{ plugin.name }}</p>
+            <div>
+                <core-files [files]="files" [component]="component" [componentId]="assign.cmid" [alwaysDownload]="true" />
+            </div>
         </ion-label>
-    </ion-item-divider>
-    <core-attachments [files]="files" [maxSize]="maxSize" [maxSubmissions]="maxSubmissions" [courseId]="assign.course"
-        [component]="component" [componentId]="assign.cmid" [acceptedTypes]="acceptedTypes" [allowOffline]="allowOffline" />
-</div>
+    </ion-item>
+}
+
+<!-- Edit -->
+@if (edit) {
+    <div>
+        <ion-item-divider class="ion-text-wrap" [sticky]="true">
+            <ion-label>
+                <p class="item-heading">{{ plugin.name }}</p>
+            </ion-label>
+        </ion-item-divider>
+        <core-attachments [files]="files" [maxSize]="maxSize" [maxSubmissions]="maxSubmissions" [courseId]="assign.course"
+            [component]="component" [componentId]="assign.cmid" [acceptedTypes]="acceptedTypes" [allowOffline]="allowOffline" />
+    </div>
+}

@@ -1,25 +1,29 @@
 <!-- Render (no edit). -->
-<ion-item *ngIf="!edit && field && field.name">
-    <ion-label>
-        <p class="item-heading">
-            <core-format-text [text]="field.name" [contextLevel]="contextLevel" [contextInstanceId]="contextInstanceId"
-                [courseId]="courseId" [wsNotFiltered]="true" />
-        </p>
-        <p>
-            <core-format-text [text]="value" [contextLevel]="contextLevel" [contextInstanceId]="contextInstanceId" [courseId]="courseId"
-                [wsNotFiltered]="valueNotFiltered" />
-        </p>
-    </ion-label>
-</ion-item>
+@if (!edit && field && field.name) {
+    <ion-item>
+        <ion-label>
+            <p class="item-heading">
+                <core-format-text [text]="field.name" [contextLevel]="contextLevel" [contextInstanceId]="contextInstanceId"
+                    [courseId]="courseId" [wsNotFiltered]="true" />
+            </p>
+            <p>
+                <core-format-text [text]="value" [contextLevel]="contextLevel" [contextInstanceId]="contextInstanceId" [courseId]="courseId"
+                    [wsNotFiltered]="valueNotFiltered" />
+            </p>
+        </ion-label>
+    </ion-item>
+}
 
 <!-- Edit. -->
-<ion-item *ngIf="edit && field && field.shortname && form" class="ion-text-wrap" [formGroup]="form">
-    <ion-input labelPlacement="stacked" [type]="inputType" [formControlName]="modelName" [placeholder]="field.name"
-        maxlength="{{maxLength}}">
-        <div [core-mark-required]="required" slot="label">
-            <core-format-text [text]="field.name" [contextLevel]="contextLevel" [contextInstanceId]="contextInstanceId"
-                [courseId]="courseId" [wsNotFiltered]="true" />
-        </div>
-    </ion-input>
-    <core-input-errors [control]="form.controls[modelName]" />
-</ion-item>
+@if (edit && field && field.shortname && form) {
+    <ion-item class="ion-text-wrap" [formGroup]="form">
+        <ion-input labelPlacement="stacked" [type]="inputType" [formControlName]="modelName" [placeholder]="field.name"
+            maxlength="{{maxLength}}">
+            <div [core-mark-required]="required" slot="label">
+                <core-format-text [text]="field.name" [contextLevel]="contextLevel" [contextInstanceId]="contextInstanceId"
+                    [courseId]="courseId" [wsNotFiltered]="true" />
+            </div>
+        </ion-input>
+        <core-input-errors [control]="form.controls[modelName]" />
+    </ion-item>
+}

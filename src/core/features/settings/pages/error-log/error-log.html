@@ -8,43 +8,57 @@
             <h1>Error log</h1>
         </ion-title>
 
-        <ion-buttons slot="end" *ngIf="errorLogs.length">
-            <ion-button fill="clear" (click)="copyError()" [ariaLabel]="'core.settings.copyinfo' | translate">
-                <ion-icon slot="icon-only" name="fas-clipboard" aria-hidden="true" />
-            </ion-button>
-        </ion-buttons>
+        @if (errorLogs.length) {
+            <ion-buttons slot="end">
+                <ion-button fill="clear" (click)="copyError()" [ariaLabel]="'core.settings.copyinfo' | translate">
+                    <ion-icon slot="icon-only" name="fas-clipboard" aria-hidden="true" />
+                </ion-button>
+            </ion-buttons>
+        }
     </ion-toolbar>
 </ion-header>
 
 <ion-content>
-    <ion-list *ngIf="errorLogs.length; else noLogs">
-        <ion-item button lines="full" class="ion-text-wrap" *ngFor="let error of errorLogs" (click)="copyError(error)">
-            <ion-label class="ion-padding" [collapsible-item]="96">
-                <p class="item-heading">Trace</p>
-                <p class="ion-text-wrap">{{ error.message }}</p>
+    @if (errorLogs.length) {
+        <ion-list>
+            <ion-item button lines="full" class="ion-text-wrap" *ngFor="let error of errorLogs" (click)="copyError(error)">
+                <ion-label class="ion-padding" [collapsible-item]="96">
+                    <p class="item-heading">Trace</p>
+                    <p class="ion-text-wrap">{{ error.message }}</p>
 
-                <ng-container *ngIf="error.method">
-                    <p class="item-heading">Method</p>
-                    <p class="ion-text-wrap">{{ error.method }}</p>
-                </ng-container>
+                    @if (error.method) {
 
-                <ng-container *ngIf="error.type">
-                    <p class="item-heading">Type</p>
-                    <p class="ion-text-wrap">{{ error.type }}</p>
-                </ng-container>
+                        <p class="item-heading">Method</p>
+                        <p class="ion-text-wrap">{{ error.method }}</p>
 
-                <ng-container *ngIf="error.data">
-                    <p class="item-heading">Data</p>
-                    <p class="ion-text-wrap">{{ error.data | json }}</p>
-                </ng-container>
+                    }
 
-                <p *ngIf="error.time" class="ion-text-end">
-                    {{ error.time | coreFormatDate :'strftimedatetimeshort' }}
-                </p>
-            </ion-label>
-        </ion-item>
-    </ion-list>
-    <ng-template #noLogs>
+                    @if (error.type) {
+
+                        <p class="item-heading">Type</p>
+                        <p class="ion-text-wrap">{{ error.type }}</p>
+
+                    }
+
+                    @if (error.data) {
+
+                        <p class="item-heading">Data</p>
+                        <p class="ion-text-wrap">{{ error.data | json }}</p>
+
+                    }
+
+                    @if (error.time) {
+                        <p class="ion-text-end">
+                            {{ error.time | coreFormatDate :'strftimedatetimeshort' }}
+                        </p>
+                    }
+                </ion-label>
+            </ion-item>
+        </ion-list>
+    } @else {
+
         <core-empty-box message="No logs available" icon="fas-clipboard-question" />
-    </ng-template>
+
+    }
+
 </ion-content>

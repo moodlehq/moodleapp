@@ -19,32 +19,46 @@
                 [detail]="false">
 
                 <ion-label class="ion-text-wrap">
-                    <p class="item-heading" *ngIf="question.type !== 'description' && question.questionnumber">
-                        {{ 'core.question.questionno' | translate:{$a: question.questionnumber} }}
-                    </p>
-                    <p class="item-heading" *ngIf="question.type === 'description' || !question.questionnumber">
-                        {{ 'core.question.information' | translate }}
-                    </p>
+                    @if (question.type !== 'description' && question.questionnumber) {
+                        <p class="item-heading">
+                            {{ 'core.question.questionno' | translate:{$a: question.questionnumber} }}
+                        </p>
+                    }
+                    @if (question.type === 'description' || !question.questionnumber) {
+                        <p class="item-heading">
+                            {{ 'core.question.information' | translate }}
+                        </p>
+                    }
                     <p>{{ question.status }}</p>
                 </ion-label>
 
-                <ion-icon *ngIf="question.type === 'description' || !question.questionnumber" name="fas-circle-info" slot="end"
-                    aria-hidden="true" />
-                <ion-icon *ngIf="question.stateclass === 'requiresgrading'" name="fas-circle-question" aria-hidden="true" slot="end" />
-                <ion-icon *ngIf="question.stateclass === 'correct'" [name]="correctIcon" color="success" aria-hidden="true" slot="end" />
-                <ion-icon *ngIf="question.stateclass === 'partiallycorrect'" [name]="partialCorrectIcon" color="warning" aria-hidden="true"
-                    slot="end" />
-                <ion-icon *ngIf="question.stateclass === 'incorrect' || question.stateclass === 'notanswered'" [name]="incorrectIcon"
-                    color="danger" aria-hidden="true" slot="end" />
-                <ion-icon *ngIf="question.stateclass === 'invalidanswer'" name="fas-triangle-exclamation" color="danger" aria-hidden="true"
-                    slot="end" />
+                @if (question.type === 'description' || !question.questionnumber) {
+                    <ion-icon name="fas-circle-info" slot="end" aria-hidden="true" />
+                }
+                @if (question.stateclass === 'requiresgrading') {
+                    <ion-icon name="fas-circle-question" aria-hidden="true" slot="end" />
+                }
+                @if (question.stateclass === 'correct') {
+                    <ion-icon [name]="correctIcon" color="success" aria-hidden="true" slot="end" />
+                }
+                @if (question.stateclass === 'partiallycorrect') {
+                    <ion-icon [name]="partialCorrectIcon" color="warning" aria-hidden="true" slot="end" />
+                }
+                @if (question.stateclass === 'incorrect' || question.stateclass === 'notanswered') {
+                    <ion-icon [name]="incorrectIcon" color="danger" aria-hidden="true" slot="end" />
+                }
+                @if (question.stateclass === 'invalidanswer') {
+                    <ion-icon name="fas-triangle-exclamation" color="danger" aria-hidden="true" slot="end" />
+                }
             </ion-item>
         </ion-list>
     </nav>
 </ion-content>
-<ion-footer *ngIf="!isReview">
-    <!-- In player, show button to finish attempt. -->
-    <ion-button class="ion-text-wrap ion-margin" expand="block" (click)="loadPage(-1)" [disabled]="isSequential && nextPage !== -1">
-        {{ 'addon.mod_quiz.finishattemptdots' | translate }}
-    </ion-button>
-</ion-footer>
+@if (!isReview) {
+    <ion-footer>
+        <!-- In player, show button to finish attempt. -->
+        <ion-button class="ion-text-wrap ion-margin" expand="block" (click)="loadPage(-1)" [disabled]="isSequential && nextPage !== -1">
+            {{ 'addon.mod_quiz.finishattemptdots' | translate }}
+        </ion-button>
+    </ion-footer>
+}

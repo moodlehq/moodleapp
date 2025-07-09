@@ -19,37 +19,53 @@
     <core-course-module-info [module]="module" [description]="displayDescription && description" [component]="component"
         [componentId]="componentId" [courseId]="courseId" (completionChanged)="onCompletionChange()" />
 
-    <div *ngIf="shouldIframe || (shouldEmbed && isOther)" class="addon-mod_url-embedded-url">
-        <core-iframe [src]="url" />
-    </div>
-
-    <ion-list *ngIf="url && !shouldIframe && (!shouldEmbed || !isOther)">
-        <ion-item *ngIf="shouldEmbed">
-            <ion-label>
-                <img *ngIf="isImage" [alt]="name" [src]="embeddedUrl">
-                <video *ngIf="isVideo" [title]="name" controls controlsList="nodownload">
-                    <source [src]="embeddedUrl" [type]="mimetype">
-                </video>
-                <audio *ngIf="isAudio" [title]="name" controls>
-                    <source [src]="embeddedUrl" [type]="mimetype">
-                </audio>
-            </ion-label>
-        </ion-item>
-        <ion-item class="ion-text-wrap">
-            <ion-label>
-                <p class="item-heading">{{ 'addon.mod_url.pointingtourl' | translate }}</p>
-                <p>{{ url }}</p>
-            </ion-label>
-        </ion-item>
-    </ion-list>
-
-    <div collapsible-footer appearOnBottom *ngIf="!showLoading" slot="fixed">
-        <div class="list-item-limited-width" *ngIf="url && !shouldIframe && (!shouldEmbed || !isOther)">
-            <ion-button expand="block" (click)="go()" class="ion-margin ion-text-wrap">
-                <ion-icon name="fas-link" slot="start" aria-hidden="true" />
-                {{ 'addon.mod_url.accessurl' | translate }}
-            </ion-button>
+    @if (shouldIframe || (shouldEmbed && isOther)) {
+        <div class="addon-mod_url-embedded-url">
+            <core-iframe [src]="url" />
         </div>
-        <core-course-module-navigation [courseId]="courseId" [currentModuleId]="module.id" />
-    </div>
+    }
+
+    @if (url && !shouldIframe && (!shouldEmbed || !isOther)) {
+        <ion-list>
+            @if (shouldEmbed) {
+                <ion-item>
+                    <ion-label>
+                        @if (isImage) {
+                            <img [alt]="name" [src]="embeddedUrl">
+                        }
+                        @if (isVideo) {
+                            <video [title]="name" controls controlsList="nodownload">
+                                <source [src]="embeddedUrl" [type]="mimetype">
+                            </video>
+                        }
+                        @if (isAudio) {
+                            <audio [title]="name" controls>
+                                <source [src]="embeddedUrl" [type]="mimetype">
+                            </audio>
+                        }
+                    </ion-label>
+                </ion-item>
+            }
+            <ion-item class="ion-text-wrap">
+                <ion-label>
+                    <p class="item-heading">{{ 'addon.mod_url.pointingtourl' | translate }}</p>
+                    <p>{{ url }}</p>
+                </ion-label>
+            </ion-item>
+        </ion-list>
+    }
+
+    @if (!showLoading) {
+        <div collapsible-footer appearOnBottom slot="fixed">
+            @if (url && !shouldIframe && (!shouldEmbed || !isOther)) {
+                <div class="list-item-limited-width">
+                    <ion-button expand="block" (click)="go()" class="ion-margin ion-text-wrap">
+                        <ion-icon name="fas-link" slot="start" aria-hidden="true" />
+                        {{ 'addon.mod_url.accessurl' | translate }}
+                    </ion-button>
+                </div>
+            }
+            <core-course-module-navigation [courseId]="courseId" [currentModuleId]="module.id" />
+        </div>
+    }
 </core-loading>

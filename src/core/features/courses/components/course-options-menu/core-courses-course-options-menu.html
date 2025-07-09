@@ -1,42 +1,57 @@
 <ion-content>
     <ion-list>
-        <ion-item button class="ion-text-wrap" (click)="action('download')" *ngIf="downloadCourseEnabled" [detail]="false">
-            <ion-icon *ngIf="!prefetch.loading" [name]="prefetch.icon" slot="start" aria-hidden="true" />
-            <ion-spinner *ngIf="prefetch.loading" slot="start" [attr.aria-label]="'core.loading' | translate" />
-            <ion-label>
-                <p class="item-heading">{{ prefetch.statusTranslatable | translate }}</p>
-            </ion-label>
-        </ion-item>
-        <ion-item button class="ion-text-wrap" (click)="action('delete')" [detail]="false"
-            *ngIf="prefetch.status === 'downloaded' || prefetch.status === 'outdated'">
-            <ion-icon name="fas-trash" slot="start" aria-hidden="true" />
-            <ion-label>
-                <p class="item-heading">{{ 'addon.storagemanager.deletedata' | translate }}</p>
-            </ion-label>
-        </ion-item>
-        <ion-item button class="ion-text-wrap" (click)="action('hide')" *ngIf="!course.hidden" [detail]="false">
-            <ion-icon name="fas-eye" slot="start" aria-hidden="true" />
-            <ion-label>
-                <p class="item-heading">{{ 'core.courses.hidecourse' | translate }}</p>
-            </ion-label>
-        </ion-item>
-        <ion-item button class="ion-text-wrap" (click)="action('show')" *ngIf="course.hidden" [detail]="false">
-            <ion-icon name="fas-eye-slash" slot="start" aria-hidden="true" />
-            <ion-label>
-                <p class="item-heading">{{ 'core.courses.show' | translate }}</p>
-            </ion-label>
-        </ion-item>
-        <ion-item button class="ion-text-wrap" (click)="action('favourite')" *ngIf="!course.isfavourite" [detail]="false">
-            <ion-icon name="fas-star" slot="start" aria-hidden="true" />
-            <ion-label>
-                <p class="item-heading">{{ 'core.courses.addtofavourites' | translate }}</p>
-            </ion-label>
-        </ion-item>
-        <ion-item button class="ion-text-wrap" (click)="action('unfavourite')" *ngIf="course.isfavourite" [detail]="false">
-            <ion-icon name="far-star" slot="start" aria-hidden="true" />
-            <ion-label>
-                <p class="item-heading">{{ 'core.courses.removefromfavourites' | translate }}</p>
-            </ion-label>
-        </ion-item>
+        @if (downloadCourseEnabled) {
+            <ion-item button class="ion-text-wrap" (click)="action('download')" [detail]="false">
+                @if (!prefetch.loading) {
+                    <ion-icon [name]="prefetch.icon" slot="start" aria-hidden="true" />
+                }
+                @if (prefetch.loading) {
+                    <ion-spinner slot="start" [attr.aria-label]="'core.loading' | translate" />
+                }
+                <ion-label>
+                    <p class="item-heading">{{ prefetch.statusTranslatable | translate }}</p>
+                </ion-label>
+            </ion-item>
+        }
+        @if (prefetch.status === 'downloaded' || prefetch.status === 'outdated') {
+            <ion-item button class="ion-text-wrap" (click)="action('delete')" [detail]="false">
+                <ion-icon name="fas-trash" slot="start" aria-hidden="true" />
+                <ion-label>
+                    <p class="item-heading">{{ 'addon.storagemanager.deletedata' | translate }}</p>
+                </ion-label>
+            </ion-item>
+        }
+        @if (!course.hidden) {
+            <ion-item button class="ion-text-wrap" (click)="action('hide')" [detail]="false">
+                <ion-icon name="fas-eye" slot="start" aria-hidden="true" />
+                <ion-label>
+                    <p class="item-heading">{{ 'core.courses.hidecourse' | translate }}</p>
+                </ion-label>
+            </ion-item>
+        }
+        @if (course.hidden) {
+            <ion-item button class="ion-text-wrap" (click)="action('show')" [detail]="false">
+                <ion-icon name="fas-eye-slash" slot="start" aria-hidden="true" />
+                <ion-label>
+                    <p class="item-heading">{{ 'core.courses.show' | translate }}</p>
+                </ion-label>
+            </ion-item>
+        }
+        @if (!course.isfavourite) {
+            <ion-item button class="ion-text-wrap" (click)="action('favourite')" [detail]="false">
+                <ion-icon name="fas-star" slot="start" aria-hidden="true" />
+                <ion-label>
+                    <p class="item-heading">{{ 'core.courses.addtofavourites' | translate }}</p>
+                </ion-label>
+            </ion-item>
+        }
+        @if (course.isfavourite) {
+            <ion-item button class="ion-text-wrap" (click)="action('unfavourite')" [detail]="false">
+                <ion-icon name="far-star" slot="start" aria-hidden="true" />
+                <ion-label>
+                    <p class="item-heading">{{ 'core.courses.removefromfavourites' | translate }}</p>
+                </ion-label>
+            </ion-item>
+        }
     </ion-list>
 </ion-content>

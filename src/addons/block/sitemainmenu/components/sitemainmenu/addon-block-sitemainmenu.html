@@ -4,16 +4,22 @@
     </ion-label>
 </ion-item-divider>
 <core-loading [hideUntil]="loaded" placeholderType="column" placeholderHeight="48px" [placeholderLimit]="8">
-    <ion-list *ngIf="mainMenuBlock" class="core-course-module-list-wrapper list-item-limited-width">
-        <ion-item class="ion-text-wrap" *ngIf="mainMenuBlock.summary">
-            <ion-label>
-                <core-format-text [text]="mainMenuBlock.summary" [component]="component" [componentId]="siteHomeId" contextLevel="course"
-                    [contextInstanceId]="siteHomeId" />
-            </ion-label>
-        </ion-item>
+    @if (mainMenuBlock) {
+        <ion-list class="core-course-module-list-wrapper list-item-limited-width">
+            @if (mainMenuBlock.summary) {
+                <ion-item class="ion-text-wrap">
+                    <ion-label>
+                        <core-format-text [text]="mainMenuBlock.summary" [component]="component" [componentId]="siteHomeId"
+                            contextLevel="course" [contextInstanceId]="siteHomeId" />
+                    </ion-label>
+                </ion-item>
+            }
 
-        <ng-container *ngFor="let modOrSubsection of mainMenuBlock.contents">
-            <core-course-module *ngIf="isModule(modOrSubsection)" [module]="modOrSubsection" [section]="mainMenuBlock" />
-        </ng-container>
-    </ion-list>
+            <ng-container *ngFor="let modOrSubsection of mainMenuBlock.contents">
+                @if (isModule(modOrSubsection)) {
+                    <core-course-module [module]="modOrSubsection" [section]="mainMenuBlock" />
+                }
+            </ng-container>
+        </ion-list>
+    }
 </core-loading>

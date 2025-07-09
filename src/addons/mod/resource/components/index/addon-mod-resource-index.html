@@ -18,96 +18,129 @@
     <!-- Activity info. -->
     <core-course-module-info [module]="module" [courseId]="courseId" [description]="displayDescription && description"
         [component]="component" [componentId]="componentId" (completionChanged)="onCompletionChange()">
-        <div class="addon-mod_resource-afterlink ion-text-wrap" *ngIf="module.afterlink" description>
-            <core-format-text [text]="module.afterlink" contextLevel="module" [contextInstanceId]="module.id" [courseId]="courseId" />
-        </div>
+        @if (module.afterlink) {
+            <div class="addon-mod_resource-afterlink ion-text-wrap" description>
+                <core-format-text [text]="module.afterlink" contextLevel="module" [contextInstanceId]="module.id" [courseId]="courseId" />
+            </div>
+        }
     </core-course-module-info>
 
-    <ion-card class="core-warning-card" *ngIf="warning">
-        <ion-item>
-            <ion-icon name="fas-triangle-exclamation" slot="start" aria-hidden="true" />
-            <ion-label><span [innerHTML]="warning"></span></ion-label>
-        </ion-item>
-    </ion-card>
-
-    <ng-container *ngIf="mode === 'iframe'">
-        <core-iframe [src]="src" />
-    </ng-container>
-
-    <div *ngIf="mode === 'embedded'" class="ion-padding">
-        <core-format-text [text]="contentText" contextLevel="module" [contextInstanceId]="module.id" [courseId]="courseId" />
-    </div>
-
-    <ng-container *ngIf="mode === 'external'">
-        <ion-list>
-            <ion-item class="ion-text-wrap" *ngIf="type">
-                <ion-label>
-                    <p class="item-heading">{{ 'core.type' | translate }}</p>
-                    <p>{{ type }}</p>
-                </ion-label>
+    @if (warning) {
+        <ion-card class="core-warning-card">
+            <ion-item>
+                <ion-icon name="fas-triangle-exclamation" slot="start" aria-hidden="true" />
+                <ion-label><span [innerHTML]="warning"></span></ion-label>
             </ion-item>
+        </ion-card>
+    }
 
-            <ng-container *ngIf="!isExternalFile">
-                <ion-item class="ion-text-wrap" *ngIf="readableSize">
-                    <ion-label>
-                        <p class="item-heading">{{ 'core.size' | translate }}</p>
-                        <p>{{ readableSize }}</p>
-                    </ion-label>
-                </ion-item>
+    @if (mode === 'iframe') {
 
-                <ion-item class="ion-text-wrap" *ngIf="timecreated > 0">
-                    <ion-label>
-                        <p class="item-heading">{{ 'core.datecreated' | translate }}</p>
-                        <p>{{ timecreated | coreFormatDate }}</p>
-                    </ion-label>
-                </ion-item>
+        <core-iframe [src]="src" />
 
-                <ion-item class="ion-text-wrap" *ngIf="timemodified > 0">
-                    <ion-label>
-                        <p class="item-heading">{{ 'core.lastmodified' | translate }}</p>
-                        <p>{{ timemodified | coreFormatDate }}</p>
-                    </ion-label>
-                </ion-item>
+    }
 
-                <ion-item class="ion-text-wrap" *ngIf="downloadTimeReadable">
-                    <ion-label>
-                        <p class="item-heading">{{ 'core.lastdownloaded' | translate }}</p>
-                        <p>{{ downloadTimeReadable }}</p>
-                        <ion-grid *ngIf="currentStatus === outdatedStatus" class="addon-mod_resource-outdated">
-                            <ion-row class="ion-align-items-center">
-                                <ion-col size="auto">
-                                    <ion-icon color="warning" name="fas-triangle-exclamation" aria-hidden="true" />
-                                </ion-col>
-                                <ion-col>
-                                    <p><strong>{{ 'addon.mod_resource.resourcestatusoutdated' | translate }}</strong></p>
-                                </ion-col>
-                            </ion-row>
-                        </ion-grid>
-                    </ion-label>
-                </ion-item>
-            </ng-container>
-        </ion-list>
-    </ng-container>
-
-    <div collapsible-footer appearOnBottom *ngIf="!showLoading" slot="fixed">
-        <div class="list-item-limited-width" *ngIf="mode === 'external'">
-            <ion-button *ngIf="isIOS && (!shouldOpenInBrowser || !isOnline)" expand="block" fill="outline"
-                (click)="open(openFileAction.OPEN_WITH)" class="ion-margin ion-text-wrap">
-                <ion-icon name="far-share-from-square" slot="start" aria-hidden="true" />
-                {{ 'core.openwith' | translate }}
-            </ion-button>
-
-            <ion-button expand="block" (click)="open(openFileAction.OPEN)" class="ion-margin ion-text-wrap">
-                <ng-container *ngIf="isStreamedFile">
-                    <ion-icon name="fas-play" slot="start" aria-hidden="true" />
-                    {{ 'core.play' | translate }}
-                </ng-container>
-                <ng-container *ngIf="!isStreamedFile">
-                    <ion-icon name="far-file" slot="start" aria-hidden="true" />
-                    {{ 'addon.mod_resource.openthefile' | translate }}
-                </ng-container>
-            </ion-button>
+    @if (mode === 'embedded') {
+        <div class="ion-padding">
+            <core-format-text [text]="contentText" contextLevel="module" [contextInstanceId]="module.id" [courseId]="courseId" />
         </div>
-        <core-course-module-navigation [courseId]="courseId" [currentModuleId]="module.id" />
-    </div>
+    }
+
+    @if (mode === 'external') {
+
+        <ion-list>
+            @if (type) {
+                <ion-item class="ion-text-wrap">
+                    <ion-label>
+                        <p class="item-heading">{{ 'core.type' | translate }}</p>
+                        <p>{{ type }}</p>
+                    </ion-label>
+                </ion-item>
+            }
+
+            @if (!isExternalFile) {
+
+                @if (readableSize) {
+                    <ion-item class="ion-text-wrap">
+                        <ion-label>
+                            <p class="item-heading">{{ 'core.size' | translate }}</p>
+                            <p>{{ readableSize }}</p>
+                        </ion-label>
+                    </ion-item>
+                }
+
+                @if (timecreated > 0) {
+                    <ion-item class="ion-text-wrap">
+                        <ion-label>
+                            <p class="item-heading">{{ 'core.datecreated' | translate }}</p>
+                            <p>{{ timecreated | coreFormatDate }}</p>
+                        </ion-label>
+                    </ion-item>
+                }
+
+                @if (timemodified > 0) {
+                    <ion-item class="ion-text-wrap">
+                        <ion-label>
+                            <p class="item-heading">{{ 'core.lastmodified' | translate }}</p>
+                            <p>{{ timemodified | coreFormatDate }}</p>
+                        </ion-label>
+                    </ion-item>
+                }
+
+                @if (downloadTimeReadable) {
+                    <ion-item class="ion-text-wrap">
+                        <ion-label>
+                            <p class="item-heading">{{ 'core.lastdownloaded' | translate }}</p>
+                            <p>{{ downloadTimeReadable }}</p>
+                            @if (currentStatus === outdatedStatus) {
+                                <ion-grid class="addon-mod_resource-outdated">
+                                    <ion-row class="ion-align-items-center">
+                                        <ion-col size="auto">
+                                            <ion-icon color="warning" name="fas-triangle-exclamation" aria-hidden="true" />
+                                        </ion-col>
+                                        <ion-col>
+                                            <p><strong>{{ 'addon.mod_resource.resourcestatusoutdated' | translate }}</strong></p>
+                                        </ion-col>
+                                    </ion-row>
+                                </ion-grid>
+                            }
+                        </ion-label>
+                    </ion-item>
+                }
+
+            }
+        </ion-list>
+
+    }
+
+    @if (!showLoading) {
+        <div collapsible-footer appearOnBottom slot="fixed">
+            @if (mode === 'external') {
+                <div class="list-item-limited-width">
+                    @if (isIOS && (!shouldOpenInBrowser || !isOnline)) {
+                        <ion-button expand="block" fill="outline" (click)="open(openFileAction.OPEN_WITH)" class="ion-margin ion-text-wrap">
+                            <ion-icon name="far-share-from-square" slot="start" aria-hidden="true" />
+                            {{ 'core.openwith' | translate }}
+                        </ion-button>
+                    }
+
+                    <ion-button expand="block" (click)="open(openFileAction.OPEN)" class="ion-margin ion-text-wrap">
+                        @if (isStreamedFile) {
+
+                            <ion-icon name="fas-play" slot="start" aria-hidden="true" />
+                            {{ 'core.play' | translate }}
+
+                        }
+                        @if (!isStreamedFile) {
+
+                            <ion-icon name="far-file" slot="start" aria-hidden="true" />
+                            {{ 'addon.mod_resource.openthefile' | translate }}
+
+                        }
+                    </ion-button>
+                </div>
+            }
+            <core-course-module-navigation [courseId]="courseId" [currentModuleId]="module.id" />
+        </div>
+    }
 </core-loading>

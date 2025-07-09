@@ -24,9 +24,11 @@
                     }
 
                 } @else {
-                    <ng-container *ngIf="getPatternErrorMessage() as errorMessage">
+                    @if (getPatternErrorMessage(); as errorMessage) {
+
                         <span>{{ errorMessage | translate }}</span>
-                    </ng-container>
+
+                    }
                 }
             </div>
         }

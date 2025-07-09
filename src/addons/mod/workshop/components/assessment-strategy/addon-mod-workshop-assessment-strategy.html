@@ -2,61 +2,80 @@
 
 <form name="mma-mod_workshop-assessment-form" #assessmentForm>
     <core-loading [hideUntil]="assessmentStrategyLoaded">
-        <ng-container *ngIf="componentClass && assessmentStrategyLoaded">
+        @if (componentClass && assessmentStrategyLoaded) {
+
             <core-dynamic-component [component]="componentClass" [data]="data" />
-        </ng-container>
 
-        <ion-card class="core-info-card" *ngIf="notSupported">
-            <ion-item>
-                <ion-label>
-                    <p>{{ 'addon.mod_workshop.assessmentstrategynotsupported' | translate:{$a: strategy} }}</p>
-                </ion-label>
-            </ion-item>
-        </ion-card>
+        }
 
-        <ion-card *ngIf="assessmentStrategyLoaded && overallFeedkback &&
-            (edit || data.assessment?.feedbackauthor || data.assessment?.feedbackattachmentfiles?.length) ">
-            <ion-item class="ion-text-wrap">
-                <ion-label>
-                    <h3 class="item-heading">{{ 'addon.mod_workshop.overallfeedback' | translate }}</h3>
-                </ion-label>
-            </ion-item>
-            <ion-item *ngIf="edit">
-                <ion-label position="stacked">
-                    <span [core-mark-required]="overallFeedkbackRequired">
-                        {{ 'addon.mod_workshop.feedbackauthor' | translate }}
-                    </span>
-                </ion-label>
-                <core-rich-text-editor [control]="feedbackControl" [component]="component" [componentId]="workshop.coursemodule"
-                    [autoSave]="true" contextLevel="module" [contextInstanceId]="workshop.coursemodule" elementId="feedbackauthor_editor"
-                    [draftExtraParams]="{asid: assessmentId}" (contentChanged)="onFeedbackChange($event)" />
-                <core-input-errors *ngIf="overallFeedkbackRequired && data.fieldErrors && data.fieldErrors['feedbackauthor']"
-                    [errorText]="data.fieldErrors['feedbackauthor']" />
-            </ion-item>
-            <core-attachments *ngIf="edit && workshop.overallfeedbackfiles" [files]="data.assessment?.feedbackattachmentfiles"
-                [maxSize]="workshop.overallfeedbackmaxbytes" [maxSubmissions]="workshop.overallfeedbackfiles" [component]="component"
-                [componentId]="componentId" [allowOffline]="true" [courseId]="workshop.course" />
-            <ion-item *ngIf="edit && access && access.canallocate">
-                <ion-select labelPlacement="stacked" [(ngModel)]="weight" interface="action-sheet" name="weight"
-                    [cancelText]="'core.cancel' | translate"
-                    [interfaceOptions]="{header: 'addon.mod_workshop.assessmentweight' | translate}">
-                    <div [core-mark-required]="true" slot="label">
-                        {{ 'addon.mod_workshop.assessmentweight' | translate }}
-                    </div>
-                    <ion-select-option *ngFor="let w of weights" [value]="w">{{w}}</ion-select-option>
-                </ion-select>
-            </ion-item>
-            <ion-item class="ion-text-wrap" *ngIf="!edit && data.assessment?.feedbackauthor">
-                <ion-label>
-                    <core-format-text [component]="component" [componentId]="componentId" [text]="data.assessment?.feedbackauthor"
-                        contextLevel="module" [contextInstanceId]="workshop.coursemodule" [courseId]="workshop.course" />
-                </ion-label>
-            </ion-item>
-            <ion-item *ngIf="!edit && workshop.overallfeedbackfiles && data.assessment?.feedbackattachmentfiles?.length">
-                <ion-label>
-                    <core-files [files]="data.assessment?.feedbackattachmentfiles" [component]="component" [componentId]="componentId" />
-                </ion-label>
-            </ion-item>
-        </ion-card>
+        @if (notSupported) {
+            <ion-card class="core-info-card">
+                <ion-item>
+                    <ion-label>
+                        <p>{{ 'addon.mod_workshop.assessmentstrategynotsupported' | translate:{$a: strategy} }}</p>
+                    </ion-label>
+                </ion-item>
+            </ion-card>
+        }
+
+        @if (assessmentStrategyLoaded && overallFeedkback &&
+            (edit || data.assessment?.feedbackauthor || data.assessment?.feedbackattachmentfiles?.length) ) {
+            <ion-card>
+                <ion-item class="ion-text-wrap">
+                    <ion-label>
+                        <h3 class="item-heading">{{ 'addon.mod_workshop.overallfeedback' | translate }}</h3>
+                    </ion-label>
+                </ion-item>
+                @if (edit) {
+                    <ion-item>
+                        <ion-label position="stacked">
+                            <span [core-mark-required]="overallFeedkbackRequired">
+                                {{ 'addon.mod_workshop.feedbackauthor' | translate }}
+                            </span>
+                        </ion-label>
+                        <core-rich-text-editor [control]="feedbackControl" [component]="component" [componentId]="workshop.coursemodule"
+                            [autoSave]="true" contextLevel="module" [contextInstanceId]="workshop.coursemodule"
+                            elementId="feedbackauthor_editor" [draftExtraParams]="{asid: assessmentId}"
+                            (contentChanged)="onFeedbackChange($event)" />
+                        @if (overallFeedkbackRequired && data.fieldErrors && data.fieldErrors['feedbackauthor']) {
+                            <core-input-errors [errorText]="data.fieldErrors['feedbackauthor']" />
+                        }
+                    </ion-item>
+                }
+                @if (edit && workshop.overallfeedbackfiles) {
+                    <core-attachments [files]="data.assessment?.feedbackattachmentfiles" [maxSize]="workshop.overallfeedbackmaxbytes"
+                        [maxSubmissions]="workshop.overallfeedbackfiles" [component]="component" [componentId]="componentId"
+                        [allowOffline]="true" [courseId]="workshop.course" />
+                }
+                @if (edit && access && access.canallocate) {
+                    <ion-item>
+                        <ion-select labelPlacement="stacked" [(ngModel)]="weight" interface="action-sheet" name="weight"
+                            [cancelText]="'core.cancel' | translate"
+                            [interfaceOptions]="{header: 'addon.mod_workshop.assessmentweight' | translate}">
+                            <div [core-mark-required]="true" slot="label">
+                                {{ 'addon.mod_workshop.assessmentweight' | translate }}
+                            </div>
+                            <ion-select-option *ngFor="let w of weights" [value]="w">{{w}}</ion-select-option>
+                        </ion-select>
+                    </ion-item>
+                }
+                @if (!edit && data.assessment?.feedbackauthor) {
+                    <ion-item class="ion-text-wrap">
+                        <ion-label>
+                            <core-format-text [component]="component" [componentId]="componentId" [text]="data.assessment?.feedbackauthor"
+                                contextLevel="module" [contextInstanceId]="workshop.coursemodule" [courseId]="workshop.course" />
+                        </ion-label>
+                    </ion-item>
+                }
+                @if (!edit && workshop.overallfeedbackfiles && data.assessment?.feedbackattachmentfiles?.length) {
+                    <ion-item>
+                        <ion-label>
+                            <core-files [files]="data.assessment?.feedbackattachmentfiles" [component]="component"
+                                [componentId]="componentId" />
+                        </ion-label>
+                    </ion-item>
+                }
+            </ion-card>
+        }
     </core-loading>
 </form>

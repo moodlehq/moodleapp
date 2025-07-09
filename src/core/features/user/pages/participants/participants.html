@@ -8,44 +8,65 @@
             searchArea="CoreUserParticipants" (onSubmit)="search($event)" (onClear)="clearSearch()" />
 
         <core-loading [hideUntil]="participants.loaded" placeholderType="listwithavatar" placeholderHeight="44px" placeholderWidth="44px">
-            <core-empty-box *ngIf="participants.empty && !searchInProgress && !searchQuery" icon="far-user"
-                [message]="'core.user.noparticipants' | translate" />
+            @if (participants.empty && !searchInProgress && !searchQuery) {
+                <core-empty-box icon="far-user" [message]="'core.user.noparticipants' | translate" />
+            }
 
-            <core-empty-box *ngIf="participants.empty && !searchInProgress && searchQuery" icon="fas-magnifying-glass"
-                [message]="'core.noresults' | translate" [attr.role]="searchQuery ? 'alert' : null" />
+            @if (participants.empty && !searchInProgress && searchQuery) {
+                <core-empty-box icon="fas-magnifying-glass" [message]="'core.noresults' | translate"
+                    [attr.role]="searchQuery ? 'alert' : null" />
+            }
 
-            <ion-list *ngIf="!participants.empty">
-                <ion-item *ngFor="let participant of participants.items" class="ion-text-wrap"
-                    [attr.aria-current]="participants.getItemAriaCurrent(participant)" [attr.aria-label]="participant.fullname"
-                    (click)="participants.select(participant)" button [detail]="true">
+            @if (!participants.empty) {
+                <ion-list>
+                    <ion-item *ngFor="let participant of participants.items" class="ion-text-wrap"
+                        [attr.aria-current]="participants.getItemAriaCurrent(participant)" [attr.aria-label]="participant.fullname"
+                        (click)="participants.select(participant)" button [detail]="true">
 
-                    <core-user-avatar [user]="participant" [linkProfile]="false" [checkOnline]="true" slot="start" />
+                        <core-user-avatar [user]="participant" [linkProfile]="false" [checkOnline]="true" slot="start" />
 
-                    <ion-label>
-                        <ng-container *ngIf="!searchQuery">
-                            <p class="item-heading">{{ participant.fullname }}</p>
-                            <p *ngIf="participant.lastcourseaccess !== undefined">
-                                <strong>{{ 'core.user.lastcourseaccess' | translate }}: </strong>
-                                <ng-container *ngIf="participant.lastcourseaccess">{{ participant.lastcourseaccess | coreTimeAgo }}
-                                </ng-container>
-                                <ng-container *ngIf="!participant.lastcourseaccess">{{ 'core.never' | translate }}</ng-container>
-                            </p>
-                            <p *ngIf="participant.lastcourseaccess === undefined && participant.lastaccess !== undefined">
-                                <strong>{{ 'core.lastaccess' | translate }}: </strong>
-                                <ng-container *ngIf="participant.lastaccess">{{ participant.lastaccess | coreTimeAgo }}</ng-container>
-                                <ng-container *ngIf="!participant.lastaccess">{{ 'core.never' | translate }}</ng-container>
-                            </p>
-                        </ng-container>
+                        <ion-label>
+                            @if (!searchQuery) {
 
-                        <ng-container *ngIf="searchQuery">
-                            <p class="item-heading">
-                                <core-format-text [text]="participant.fullname" [highlight]="searchQuery" [filter]="false" />
-                            </p>
-                        </ng-container>
-                    </ion-label>
+                                <p class="item-heading">{{ participant.fullname }}</p>
+                                @if (participant.lastcourseaccess !== undefined) {
+                                    <p>
+                                        <strong>{{ 'core.user.lastcourseaccess' | translate }}: </strong>
+                                        @if (participant.lastcourseaccess) {
+                                            {{ participant.lastcourseaccess | coreTimeAgo }}
 
-                </ion-item>
-            </ion-list>
+                                        }
+                                        @if (!participant.lastcourseaccess) {
+                                            {{ 'core.never' | translate }}
+                                        }
+                                    </p>
+                                }
+                                @if (participant.lastcourseaccess === undefined && participant.lastaccess !== undefined) {
+                                    <p>
+                                        <strong>{{ 'core.lastaccess' | translate }}: </strong>
+                                        @if (participant.lastaccess) {
+                                            {{ participant.lastaccess | coreTimeAgo }}
+                                        }
+                                        @if (!participant.lastaccess) {
+                                            {{ 'core.never' | translate }}
+                                        }
+                                    </p>
+                                }
+
+                            }
+
+                            @if (searchQuery) {
+
+                                <p class="item-heading">
+                                    <core-format-text [text]="participant.fullname" [highlight]="searchQuery" [filter]="false" />
+                                </p>
+
+                            }
+                        </ion-label>
+
+                    </ion-item>
+                </ion-list>
+            }
             <core-infinite-loading [enabled]="participants.loaded && !participants.completed" (action)="fetchMoreParticipants($event)"
                 [error]="fetchMoreParticipantsFailed" />
         </core-loading>

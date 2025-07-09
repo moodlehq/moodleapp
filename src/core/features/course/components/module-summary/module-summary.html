@@ -11,213 +11,272 @@
     <!-- Content. -->
     <core-loading [hideUntil]="loaded">
         <!-- Activity info. -->
-        <ion-item class="ion-text-wrap" *ngIf="module" lines="full">
-            <ion-label>
-                <p *ngIf="moduleNameTranslated" class="core-modulename">
-                    <core-mod-icon slot="start" [modicon]="modicon" [modname]="module.modname" [componentId]="module.instance"
-                        [fallbackTranslation]="module.modplural" [purpose]="module.purpose" [isBranded]="module.branded" />
-                    {{moduleNameTranslated}}
-                </p>
-                <h1>
-                    <core-format-text [text]="module.name" contextLevel="module" [component]="component" [componentId]="componentId"
-                        [contextInstanceId]="module.id" [courseId]="courseId" />
-                </h1>
-            </ion-label>
-            <ion-button fill="clear" *ngIf="displayOptions.displayOpenInBrowser && externalUrl" [href]="externalUrl" core-link
-                [showBrowserWarning]="false" [ariaLabel]="'core.openinbrowser' | translate" slot="end" [class.hidden]="!isTeacher"
-                class="core-module-oib-button">
-                <ion-icon name="fas-up-right-from-square" slot="icon-only" aria-hidden="true" />
-            </ion-button>
-        </ion-item>
+        @if (module) {
+            <ion-item class="ion-text-wrap" lines="full">
+                <ion-label>
+                    @if (moduleNameTranslated) {
+                        <p class="core-modulename">
+                            <core-mod-icon slot="start" [modicon]="modicon" [modname]="module.modname" [componentId]="module.instance"
+                                [fallbackTranslation]="module.modplural" [purpose]="module.purpose" [isBranded]="module.branded" />
+                            {{moduleNameTranslated}}
+                        </p>
+                    }
+                    <h1>
+                        <core-format-text [text]="module.name" contextLevel="module" [component]="component" [componentId]="componentId"
+                            [contextInstanceId]="module.id" [courseId]="courseId" />
+                    </h1>
+                </ion-label>
+                @if (displayOptions.displayOpenInBrowser && externalUrl) {
+                    <ion-button fill="clear" [href]="externalUrl" core-link [showBrowserWarning]="false"
+                        [ariaLabel]="'core.openinbrowser' | translate" slot="end" [class.hidden]="!isTeacher"
+                        class="core-module-oib-button">
+                        <ion-icon name="fas-up-right-from-square" slot="icon-only" aria-hidden="true" />
+                    </ion-button>
+                }
+            </ion-item>
+        }
 
-        <ion-item class="ion-text-wrap" *ngIf="course" (click)="openCourse()" button [detail]="true" lines="full">
-            <ion-label>
-                <p class="item-heading">
-                    <ion-icon name="fas-graduation-cap" aria-hidden="true" />
-                    {{ 'core.course' | translate}}
-                </p>
-                <p>
-                    <core-format-text [text]="course.fullname" contextLevel="course" [contextInstanceId]="courseId" />
-                </p>
-            </ion-label>
-        </ion-item>
+        @if (course) {
+            <ion-item class="ion-text-wrap" (click)="openCourse()" button [detail]="true" lines="full">
+                <ion-label>
+                    <p class="item-heading">
+                        <ion-icon name="fas-graduation-cap" aria-hidden="true" />
+                        {{ 'core.course' | translate}}
+                    </p>
+                    <p>
+                        <core-format-text [text]="course.fullname" contextLevel="course" [contextInstanceId]="courseId" />
+                    </p>
+                </ion-label>
+            </ion-item>
+        }
 
-        <ion-item class="ion-text-wrap" *ngIf="module && description && displayOptions.displayDescription" lines="full">
-            <ion-label>
-                <p class="item-heading">
-                    {{ 'core.description' | translate}}
-                </p>
-                <core-format-text [text]="description" [component]="component" [componentId]="componentId" contextLevel="module"
-                    [contextInstanceId]="module.id" [courseId]="courseId" collapsible-item />
-            </ion-label>
-        </ion-item>
+        @if (module && description && displayOptions.displayDescription) {
+            <ion-item class="ion-text-wrap" lines="full">
+                <ion-label>
+                    <p class="item-heading">
+                        {{ 'core.description' | translate}}
+                    </p>
+                    <core-format-text [text]="description" [component]="component" [componentId]="componentId" contextLevel="module"
+                        [contextInstanceId]="module.id" [courseId]="courseId" collapsible-item />
+                </ion-label>
+            </ion-item>
+        }
 
-        <ion-card *ngIf="displayOptions.displayGrades && grades?.length > 0">
-            <ion-list>
+        @if (displayOptions.displayGrades && grades?.length > 0) {
+            <ion-card>
+                <ion-list>
+                    <ion-item lines="full" class="ion-text-wrap card-header">
+                        <ion-label>
+                            <h2>
+                                <ion-icon name="fas-chart-bar" slot="end" aria-hidden="true" />{{ 'core.grades.gradebook' | translate
+                            }}
+                            </h2>
+                        </ion-label>
+                    </ion-item>
+                    <ng-container *ngFor="let grade of grades">
+                        @if (grade.gradeitem) {
+                            <ion-item button class="ion-text-wrap divider" (click)="toggleGrade(grade)"
+                                [attr.aria-label]="(grade.expanded ? 'core.collapse' : 'core.expand') | translate"
+                                [attr.aria-expanded]="grade.expanded" [attr.aria-controls]="'grade-'+grade.id" role="heading"
+                                [detail]="false">
+                                <ion-icon name="fas-chevron-right" flip-rtl slot="start" aria-hidden="true" class="expandable-status-icon"
+                                    [class.expandable-status-icon-expanded]="grade.expanded" />
+                                <ion-label>
+                                    <p class="item-heading">
+                                        @if (grade.itemmodule) {
+                                            {{ 'core.gradenoun' | translate }}
+                                        } @else {
+                                            <core-format-text [text]="grade.gradeitem" contextLevel="course"
+                                                [contextInstanceId]="courseId" />
+                                        }
+                                    </p>
+                                    @if (grade.grade && grade.grade !== '-') {
+                                        <p class="core-grading-summary-grade">
+                                            @if (grade.penalty) {
+                                                <ion-icon name="fas-triangle-exclamation" color="danger" aria-hidden="true" />
+                                            }
+                                            <span [innerHTML]="grade.grade"></span>
+                                        </p>
+                                    } @else {
+                                        <ion-badge color="light">
+                                            {{ 'core.grades.notgraded' | translate }}
+                                        </ion-badge>
+                                    }
+                                    @if (grade.penalty) {
+                                        <p class="core-grading-summary-penalty" [class.sr-only]="!grade.expanded">
+                                            {{ grade.penalty }}
+                                        </p>
+                                    }
+                                </ion-label>
+                                @if (grade.icon) {
+                                    <ion-icon name="{{grade.icon}}" slot="end" [attr.aria-label]="grade.iconAlt" />
+                                }
+                                @if (grade.image && !grade.itemmodule) {
+                                    <img [url]="grade.image" slot="end" [alt]="grade.iconAlt" core-external-content />
+                                }
+                            </ion-item>
+                        }
+                        @if (grade.expanded) {
+                            <div [id]="'grade-'+grade.id">
+                                @if (grade.weight?.length > 0 && grade.weight !== '-') {
+                                    <ion-item class="ion-text-wrap">
+                                        <ion-label>
+                                            <p class="item-heading">{{ 'core.grades.weight' | translate}}</p>
+                                            <p [innerHTML]="grade.weight"></p>
+                                        </ion-label>
+                                    </ion-item>
+                                }
+                                @if (grade.range?.length > 0 && grade.range !== '-') {
+                                    <ion-item class="ion-text-wrap">
+                                        <ion-label>
+                                            <p class="item-heading">{{ 'core.grades.range' | translate}}</p>
+                                            <p [innerHTML]="grade.range"></p>
+                                        </ion-label>
+                                    </ion-item>
+                                }
+
+                                @if (grade.percentage?.length > 0 && grade.percentage !== '-') {
+                                    <ion-item class="ion-text-wrap">
+                                        <ion-label>
+                                            <p class="item-heading">{{ 'core.grades.percentage' | translate}}</p>
+                                            <p [innerHTML]="grade.percentage"></p>
+                                        </ion-label>
+                                    </ion-item>
+                                }
+
+                                @if (grade.lettergrade?.length > 0 && grade.lettergrade !== '-') {
+                                    <ion-item class="ion-text-wrap">
+                                        <ion-label>
+                                            <p class="item-heading">{{ 'core.grades.lettergrade' | translate}}</p>
+                                            <p [innerHTML]="grade.lettergrade"></p>
+                                        </ion-label>
+                                    </ion-item>
+                                }
+
+                                @if (grade.rank?.length > 0 && grade.rank !== '-') {
+                                    <ion-item class="ion-text-wrap">
+                                        <ion-label>
+                                            <p class="item-heading">{{ 'core.grades.rank' | translate}}</p>
+                                            <p [innerHTML]="grade.rank"></p>
+                                        </ion-label>
+                                    </ion-item>
+                                }
+
+                                @if (grade.average?.length > 0 && grade.average !== '-') {
+                                    <ion-item class="ion-text-wrap">
+                                        <ion-label>
+                                            <p class="item-heading">{{ 'core.grades.average' | translate}}</p>
+                                            <p [innerHTML]="grade.average"></p>
+                                        </ion-label>
+                                    </ion-item>
+                                }
+
+                                @if (grade.feedback?.length > 0 && grade.feedback !== '-') {
+                                    <ion-item class="ion-text-wrap">
+                                        <ion-label>
+                                            <p class="item-heading">{{ 'core.grades.feedback' | translate}}</p>
+                                            <p>
+                                                <core-format-text collapsible-item [text]="grade.feedback" contextLevel="course"
+                                                    [contextInstanceId]="courseId" />
+                                            </p>
+                                        </ion-label>
+                                    </ion-item>
+                                }
+
+                                @if (grade.contributiontocoursetotal?.length > 0 && grade.contributiontocoursetotal !== '-') {
+                                    <ion-item class="ion-text-wrap">
+                                        <ion-label>
+                                            <p class="item-heading">{{ 'core.grades.contributiontocoursetotal' | translate}}</p>
+                                            <p [innerHTML]="grade.contributiontocoursetotal"></p>
+                                        </ion-label>
+                                    </ion-item>
+                                }
+                            </div>
+                        }
+                    </ng-container>
+                </ion-list>
+            </ion-card>
+        }
+
+        @if ((canPrefetch && displayOptions.displayPrefetch) || (size && displayOptions.displaySize)) {
+            <ion-card>
                 <ion-item lines="full" class="ion-text-wrap card-header">
                     <ion-label>
                         <h2>
-                            <ion-icon name="fas-chart-bar" slot="end" aria-hidden="true" />{{ 'core.grades.gradebook' | translate
-                            }}
+                            <ion-icon name="fas-cloud-arrow-down" aria-hidden="true" />
+                            {{ 'addon.storagemanager.downloads' | translate }}
                         </h2>
                     </ion-label>
                 </ion-item>
-                <ng-container *ngFor="let grade of grades">
-                    <ion-item button *ngIf="grade.gradeitem" class="ion-text-wrap divider" (click)="toggleGrade(grade)"
-                        [attr.aria-label]="(grade.expanded ? 'core.collapse' : 'core.expand') | translate"
-                        [attr.aria-expanded]="grade.expanded" [attr.aria-controls]="'grade-'+grade.id" role="heading" [detail]="false">
-                        <ion-icon name="fas-chevron-right" flip-rtl slot="start" aria-hidden="true" class="expandable-status-icon"
-                            [class.expandable-status-icon-expanded]="grade.expanded" />
+                @if (size && displayOptions.displaySize) {
+                    <ion-item class="ion-text-wrap">
                         <ion-label>
-                            <p class="item-heading">
-                                @if (grade.itemmodule) {
-                                    {{ 'core.gradenoun' | translate }}
-                                } @else {
-                                    <core-format-text [text]="grade.gradeitem" contextLevel="course" [contextInstanceId]="courseId" />
-                                }
-                            </p>
-                            @if (grade.grade && grade.grade !== '-') {
-                                <p class="core-grading-summary-grade">
-                                    @if (grade.penalty) {
-                                        <ion-icon name="fas-triangle-exclamation" color="danger" aria-hidden="true" />
-                                    }
-                                    <span [innerHTML]="grade.grade"></span>
-                                </p>
-                            } @else {
-                                <ion-badge color="light">
-                                    {{ 'core.grades.notgraded' | translate }}
-                                </ion-badge>
-                            }
-                            @if (grade.penalty) {
-                                <p class="core-grading-summary-penalty" [class.sr-only]="!grade.expanded">
-                                    {{ grade.penalty }}
-                                </p>
-                            }
+                            <p class="item-heading ion-text-wrap">{{ 'addon.storagemanager.totalspaceusage' | translate }}</p>
+                            <ion-badge color="light">{{ size | coreBytesToSize }}</ion-badge>
                         </ion-label>
-                        <ion-icon *ngIf="grade.icon" name="{{grade.icon}}" slot="end" [attr.aria-label]="grade.iconAlt" />
-                        <img *ngIf="grade.image && !grade.itemmodule" [url]="grade.image" slot="end" [alt]="grade.iconAlt"
-                            core-external-content />
+                        @if (!removeFilesLoading) {
+                            <ion-button [disabled]="prefetchLoading" (click)="removeFiles()" color="danger" fill="clear"
+                                [ariaLabel]="'core.clearstoreddata' | translate:{$a: size | coreBytesToSize}" slot="end">
+                                <ion-icon name="fas-trash" slot="icon-only" aria-hidden="true" />
+                            </ion-button>
+                        }
+                        @if (removeFilesLoading) {
+                            <ion-spinner slot="end" aria-hidden="true" />
+                        }
                     </ion-item>
-                    <div *ngIf="grade.expanded" [id]="'grade-'+grade.id">
-                        <ion-item class="ion-text-wrap" *ngIf="grade.weight?.length > 0 && grade.weight !== '-'">
-                            <ion-label>
-                                <p class="item-heading">{{ 'core.grades.weight' | translate}}</p>
-                                <p [innerHTML]="grade.weight"></p>
-                            </ion-label>
-                        </ion-item>
-                        <ion-item class="ion-text-wrap" *ngIf="grade.range?.length > 0 && grade.range !== '-'">
-                            <ion-label>
-                                <p class="item-heading">{{ 'core.grades.range' | translate}}</p>
-                                <p [innerHTML]="grade.range"></p>
-                            </ion-label>
-                        </ion-item>
+                }
+                @if (downloadTimeReadable) {
+                    <ion-item class="ion-text-wrap">
+                        <ion-label>
+                            <p class="ion-text-wrap">{{ 'core.lastdownloaded' | translate }} {{ downloadTimeReadable }}</p>
+                        </ion-label>
+                    </ion-item>
+                }
+                @if (canPrefetch && displayOptions.displayPrefetch) {
+                    <ion-button fill="outline" expand="block" class="ion-text-wrap" (click)="prefetch()" [disabled]="prefetchDisabled"
+                        [attr.aria-label]="'addon.storagemanager.downloaddatafrom' | translate:{name: module?.name}">
+                        @if (!prefetchLoading) {
+                            <ion-icon name="fas-cloud-arrow-down" slot="start" aria-hidden="true" />
+                        }
+                        @if (prefetchLoading) {
+                            <ion-spinner slot="start" aria-hidden="true" />
+                        }
+                        <ion-label>
+                            {{ 'core.download' | translate }}
+                        </ion-label>
+                    </ion-button>
+                }
+            </ion-card>
+        }
 
-                        <ion-item class="ion-text-wrap" *ngIf="grade.percentage?.length > 0 && grade.percentage !== '-'">
-                            <ion-label>
-                                <p class="item-heading">{{ 'core.grades.percentage' | translate}}</p>
-                                <p [innerHTML]="grade.percentage"></p>
-                            </ion-label>
-                        </ion-item>
-
-                        <ion-item class="ion-text-wrap" *ngIf="grade.lettergrade?.length > 0 && grade.lettergrade !== '-'">
-                            <ion-label>
-                                <p class="item-heading">{{ 'core.grades.lettergrade' | translate}}</p>
-                                <p [innerHTML]="grade.lettergrade"></p>
-                            </ion-label>
-                        </ion-item>
-
-                        <ion-item class="ion-text-wrap" *ngIf="grade.rank?.length > 0 && grade.rank !== '-'">
-                            <ion-label>
-                                <p class="item-heading">{{ 'core.grades.rank' | translate}}</p>
-                                <p [innerHTML]="grade.rank"></p>
-                            </ion-label>
-                        </ion-item>
-
-                        <ion-item class="ion-text-wrap" *ngIf="grade.average?.length > 0 && grade.average !== '-'">
-                            <ion-label>
-                                <p class="item-heading">{{ 'core.grades.average' | translate}}</p>
-                                <p [innerHTML]="grade.average"></p>
-                            </ion-label>
-                        </ion-item>
-
-                        <ion-item class="ion-text-wrap" *ngIf="grade.feedback?.length > 0 && grade.feedback !== '-'">
-                            <ion-label>
-                                <p class="item-heading">{{ 'core.grades.feedback' | translate}}</p>
-                                <p>
-                                    <core-format-text collapsible-item [text]="grade.feedback" contextLevel="course"
-                                        [contextInstanceId]="courseId" />
-                                </p>
-                            </ion-label>
-                        </ion-item>
-
-                        <ion-item class="ion-text-wrap"
-                            *ngIf="grade.contributiontocoursetotal?.length > 0 && grade.contributiontocoursetotal !== '-'">
-                            <ion-label>
-                                <p class="item-heading">{{ 'core.grades.contributiontocoursetotal' | translate}}</p>
-                                <p [innerHTML]="grade.contributiontocoursetotal"></p>
-                            </ion-label>
-                        </ion-item>
-                    </div>
-                </ng-container>
-            </ion-list>
-        </ion-card>
-
-        <ion-card *ngIf="(canPrefetch && displayOptions.displayPrefetch) || (size && displayOptions.displaySize)">
-            <ion-item lines="full" class="ion-text-wrap card-header">
+        @if (blog && displayOptions.displayBlog) {
+            <ion-item button (click)="gotoBlog()" [detail]="true">
+                <ion-icon name="far-newspaper" slot="start" aria-hidden="true" />
                 <ion-label>
-                    <h2>
-                        <ion-icon name="fas-cloud-arrow-down" aria-hidden="true" />
-                        {{ 'addon.storagemanager.downloads' | translate }}
-                    </h2>
+                    {{ 'addon.blog.blog' | translate }}
                 </ion-label>
             </ion-item>
-            <ion-item *ngIf="size && displayOptions.displaySize" class="ion-text-wrap">
-                <ion-label>
-                    <p class="item-heading ion-text-wrap">{{ 'addon.storagemanager.totalspaceusage' | translate }}</p>
-                    <ion-badge color="light">{{ size | coreBytesToSize }}</ion-badge>
-                </ion-label>
-                <ion-button *ngIf="!removeFilesLoading" [disabled]="prefetchLoading" (click)="removeFiles()" color="danger" fill="clear"
-                    [ariaLabel]="'core.clearstoreddata' | translate:{$a: size | coreBytesToSize}" slot="end">
-                    <ion-icon name="fas-trash" slot="icon-only" aria-hidden="true" />
-                </ion-button>
-                <ion-spinner *ngIf="removeFilesLoading" slot="end" aria-hidden="true" />
-            </ion-item>
-            <ion-item *ngIf="downloadTimeReadable" class="ion-text-wrap">
-                <ion-label>
-                    <p class="ion-text-wrap">{{ 'core.lastdownloaded' | translate }} {{ downloadTimeReadable }}</p>
-                </ion-label>
-            </ion-item>
-            <ion-button fill="outline" expand="block" *ngIf="canPrefetch && displayOptions.displayPrefetch" class="ion-text-wrap"
-                (click)="prefetch()" [disabled]="prefetchDisabled"
-                [attr.aria-label]="'addon.storagemanager.downloaddatafrom' | translate:{name: module?.name}">
-                <ion-icon *ngIf="!prefetchLoading" name="fas-cloud-arrow-down" slot="start" aria-hidden="true" />
-                <ion-spinner *ngIf="prefetchLoading" slot="start" aria-hidden="true" />
-                <ion-label>
-                    {{ 'core.download' | translate }}
-                </ion-label>
-            </ion-button>
-        </ion-card>
-
-        <ion-item button *ngIf="blog && displayOptions.displayBlog" (click)="gotoBlog()" [detail]="true">
-            <ion-icon name="far-newspaper" slot="start" aria-hidden="true" />
-            <ion-label>
-                {{ 'addon.blog.blog' | translate }}
-            </ion-label>
-        </ion-item>
+        }
     </core-loading>
 </ion-content>
-<ion-footer *ngIf="loaded && isOnline && displayOptions.displayRefresh">
-    <ion-button class="ion-margin" *ngIf="!hasOffline" (click)="refresh()" expand="block" fill="outline">
-        <ion-icon name="fas-rotate-right" slot="start" aria-hidden="true" />
-        <ion-label>
-            {{ 'core.refresh' | translate }}
-        </ion-label>
-    </ion-button>
+@if (loaded && isOnline && displayOptions.displayRefresh) {
+    <ion-footer>
+        @if (!hasOffline) {
+            <ion-button class="ion-margin" (click)="refresh()" expand="block" fill="outline">
+                <ion-icon name="fas-rotate-right" slot="start" aria-hidden="true" />
+                <ion-label>
+                    {{ 'core.refresh' | translate }}
+                </ion-label>
+            </ion-button>
+        }
 
-    <ion-button class="ion-margin" *ngIf="hasOffline" (click)="sync()" expand="block" fill="outline">
-        <ion-icon name="fas-rotate" slot="start" aria-hidden="true" />
-        <ion-label>
-            {{ 'core.settings.synchronizenow' | translate }}
-        </ion-label>
-    </ion-button>
-</ion-footer>
+        @if (hasOffline) {
+            <ion-button class="ion-margin" (click)="sync()" expand="block" fill="outline">
+                <ion-icon name="fas-rotate" slot="start" aria-hidden="true" />
+                <ion-label>
+                    {{ 'core.settings.synchronizenow' | translate }}
+                </ion-label>
+            </ion-button>
+        }
+    </ion-footer>
+}

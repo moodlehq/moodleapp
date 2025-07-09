@@ -5,14 +5,17 @@
         </ion-buttons>
         <ion-title>
             <h1>
-                <core-format-text *ngIf="title" [text]="title" contextLevel="module" [contextInstanceId]="module.id"
-                    [courseId]="courseId" />
+                @if (title) {
+                    <core-format-text [text]="title" contextLevel="module" [contextInstanceId]="module.id" [courseId]="courseId" />
+                }
             </h1>
         </ion-title>
         <ion-buttons slot="end" [hidden]="!loaded">
-            <ion-button *ngIf="assessmentId && access.assessingallowed" fill="clear" (click)="saveAssessment()">
-                {{ 'core.save' | translate }}
-            </ion-button>
+            @if (assessmentId && access.assessingallowed) {
+                <ion-button fill="clear" (click)="saveAssessment()">
+                    {{ 'core.save' | translate }}
+                </ion-button>
+            }
             @if (canAddFeedback && !loadFeedbackToEditErrorMessage) {
                 <ion-button fill="clear" (click)="saveEvaluation()">
                     {{ 'core.save' | translate }}
@@ -22,77 +25,101 @@
     </ion-toolbar>
 </ion-header>
 <ion-content class="limited-width">
-    <ion-refresher slot="fixed" [disabled]="!loaded" (ionRefresh)="refreshSubmission($event.target)"
-        *ngIf="!((assessmentId && access.assessingallowed) || canAddFeedback)">
-        <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}" />
-    </ion-refresher>
+    @if (!((assessmentId && access.assessingallowed) || canAddFeedback)) {
+        <ion-refresher slot="fixed" [disabled]="!loaded" (ionRefresh)="refreshSubmission($event.target)">
+            <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}" />
+        </ion-refresher>
+    }
     <core-loading [hideUntil]="loaded">
-        <ion-list *ngIf="submission">
-            <addon-mod-workshop-submission [submission]="submission" [courseId]="courseId" [module]="module" [workshop]="workshop"
-                [access]="access" [submissionPage]="true" />
-            <ion-item class="ion-text-wrap" *ngIf="canEdit || canDelete">
-                <ion-label>
-                    <ion-button expand="block" *ngIf="canEdit" (click)="editSubmission()">
-                        <ion-icon name="fas-pen" slot="start" aria-hidden="true" />
-                        {{ 'addon.mod_workshop.editsubmission' | translate }}
-                    </ion-button>
-                    <ion-button expand="block" *ngIf="!submission.deleted && canDelete" color="danger" (click)="deleteSubmission()">
-                        <ion-icon name="fas-trash" slot="start" aria-hidden="true" />
-                        {{ 'addon.mod_workshop.deletesubmission' | translate }}
-                    </ion-button>
-                    <ion-button expand="block" fill="outline" *ngIf="submission.deleted && canDelete" color="danger"
-                        (click)="undoDeleteSubmission()">
-                        <ion-icon name="fas-rotate-left" slot="start" aria-hidden="true" />
-                        {{ 'core.restore' | translate }}
-                    </ion-button>
-                </ion-label>
-            </ion-item>
-        </ion-list>
+        @if (submission) {
+            <ion-list>
+                <addon-mod-workshop-submission [submission]="submission" [courseId]="courseId" [module]="module" [workshop]="workshop"
+                    [access]="access" [submissionPage]="true" />
+                @if (canEdit || canDelete) {
+                    <ion-item class="ion-text-wrap">
+                        <ion-label>
+                            @if (canEdit) {
+                                <ion-button expand="block" (click)="editSubmission()">
+                                    <ion-icon name="fas-pen" slot="start" aria-hidden="true" />
+                                    {{ 'addon.mod_workshop.editsubmission' | translate }}
+                                </ion-button>
+                            }
+                            @if (!submission.deleted && canDelete) {
+                                <ion-button expand="block" color="danger" (click)="deleteSubmission()">
+                                    <ion-icon name="fas-trash" slot="start" aria-hidden="true" />
+                                    {{ 'addon.mod_workshop.deletesubmission' | translate }}
+                                </ion-button>
+                            }
+                            @if (submission.deleted && canDelete) {
+                                <ion-button expand="block" fill="outline" color="danger" (click)="undoDeleteSubmission()">
+                                    <ion-icon name="fas-rotate-left" slot="start" aria-hidden="true" />
+                                    {{ 'core.restore' | translate }}
+                                </ion-button>
+                            }
+                        </ion-label>
+                    </ion-item>
+                }
+            </ion-list>
+        }
 
-        <ion-list *ngIf="!canAddFeedback && evaluate?.text">
-            <ion-item class="ion-text-wrap">
-                <core-user-avatar *ngIf="evaluateByProfile" [user]="evaluateByProfile" slot="start" [courseId]="courseId"
-                    [userId]="evaluateByProfile.id" />
-                <ion-label>
-                    <h2 *ngIf="evaluateByProfile && evaluateByProfile.fullname">
-                        {{ 'addon.mod_workshop.feedbackby' | translate : {$a: evaluateByProfile.fullname} }}
-                    </h2>
-                    <core-format-text [text]="evaluate?.text" contextLevel="module" [contextInstanceId]="module.id" [courseId]="courseId" />
-                </ion-label>
-            </ion-item>
-        </ion-list>
+        @if (!canAddFeedback && evaluate?.text) {
+            <ion-list>
+                <ion-item class="ion-text-wrap">
+                    @if (evaluateByProfile) {
+                        <core-user-avatar [user]="evaluateByProfile" slot="start" [courseId]="courseId" [userId]="evaluateByProfile.id" />
+                    }
+                    <ion-label>
+                        @if (evaluateByProfile && evaluateByProfile.fullname) {
+                            <h2>
+                                {{ 'addon.mod_workshop.feedbackby' | translate : {$a: evaluateByProfile.fullname} }}
+                            </h2>
+                        }
+                        <core-format-text [text]="evaluate?.text" contextLevel="module" [contextInstanceId]="module.id"
+                            [courseId]="courseId" />
+                    </ion-label>
+                </ion-item>
+            </ion-list>
+        }
 
-        <ion-list *ngIf="ownAssessment && !assessment">
-            <ion-item-divider class="ion-text-wrap">
-                <ion-label>
-                    <h2>{{ 'addon.mod_workshop.yourassessment' | translate }}</h2>
-                </ion-label>
-            </ion-item-divider>
-            <addon-mod-workshop-assessment [submission]="submission" [assessment]="ownAssessment" [courseId]="courseId" [access]="access"
-                [module]="module" [workshop]="workshop" />
-        </ion-list>
+        @if (ownAssessment && !assessment) {
+            <ion-list>
+                <ion-item-divider class="ion-text-wrap">
+                    <ion-label>
+                        <h2>{{ 'addon.mod_workshop.yourassessment' | translate }}</h2>
+                    </ion-label>
+                </ion-item-divider>
+                <addon-mod-workshop-assessment [submission]="submission" [assessment]="ownAssessment" [courseId]="courseId"
+                    [access]="access" [module]="module" [workshop]="workshop" />
+            </ion-list>
+        }
 
-        <ion-list *ngIf="submissionInfo && submissionInfo.reviewedby && submissionInfo.reviewedby.length && !assessment">
-            <ion-item-divider class="ion-text-wrap">
-                <ion-label>
-                    <h2>{{ 'addon.mod_workshop.receivedgrades' | translate }}</h2>
-                </ion-label>
-            </ion-item-divider>
-            <ng-container *ngFor="let reviewer of submissionInfo.reviewedby">
-                <addon-mod-workshop-assessment *ngIf="!reviewer.ownAssessment" [submission]="submission" [assessment]="reviewer"
-                    [courseId]="courseId" [access]="access" [module]="module" [workshop]="workshop" />
-            </ng-container>
-        </ion-list>
+        @if (submissionInfo && submissionInfo.reviewedby && submissionInfo.reviewedby.length && !assessment) {
+            <ion-list>
+                <ion-item-divider class="ion-text-wrap">
+                    <ion-label>
+                        <h2>{{ 'addon.mod_workshop.receivedgrades' | translate }}</h2>
+                    </ion-label>
+                </ion-item-divider>
+                <ng-container *ngFor="let reviewer of submissionInfo.reviewedby">
+                    @if (!reviewer.ownAssessment) {
+                        <addon-mod-workshop-assessment [submission]="submission" [assessment]="reviewer" [courseId]="courseId"
+                            [access]="access" [module]="module" [workshop]="workshop" />
+                    }
+                </ng-container>
+            </ion-list>
+        }
 
-        <ion-list *ngIf="submissionInfo && submissionInfo.reviewerof && submissionInfo.reviewerof.length && !assessment">
-            <ion-item-divider class="ion-text-wrap">
-                <ion-label>
-                    <h2>{{ 'addon.mod_workshop.givengrades' | translate }}</h2>
-                </ion-label>
-            </ion-item-divider>
-            <addon-mod-workshop-assessment *ngFor="let reviewer of submissionInfo.reviewerof" [submission]="submission"
-                [assessment]="reviewer" [courseId]="courseId" [module]="module" [workshop]="workshop" [access]="access" />
-        </ion-list>
+        @if (submissionInfo && submissionInfo.reviewerof && submissionInfo.reviewerof.length && !assessment) {
+            <ion-list>
+                <ion-item-divider class="ion-text-wrap">
+                    <ion-label>
+                        <h2>{{ 'addon.mod_workshop.givengrades' | translate }}</h2>
+                    </ion-label>
+                </ion-item-divider>
+                <addon-mod-workshop-assessment *ngFor="let reviewer of submissionInfo.reviewerof" [submission]="submission"
+                    [assessment]="reviewer" [courseId]="courseId" [module]="module" [workshop]="workshop" [access]="access" />
+            </ion-list>
+        }
 
         @if (canAddFeedback && submission) {
             @if (loadFeedbackToEditErrorMessage) {
@@ -115,12 +142,14 @@
                             <h2>{{ 'addon.mod_workshop.feedbackauthor' | translate }}</h2>
                         </ion-label>
                     </ion-item-divider>
-                    <ion-item class="ion-text-wrap" *ngIf="access.canpublishsubmissions">
-                        <ion-toggle formControlName="published">
-                            <p class="item-heading">{{ 'addon.mod_workshop.publishsubmission' | translate }}</p>
-                            <p>{{ 'addon.mod_workshop.publishsubmission_help' | translate }}</p>
-                        </ion-toggle>
-                    </ion-item>
+                    @if (access.canpublishsubmissions) {
+                        <ion-item class="ion-text-wrap">
+                            <ion-toggle formControlName="published">
+                                <p class="item-heading">{{ 'addon.mod_workshop.publishsubmission' | translate }}</p>
+                                <p>{{ 'addon.mod_workshop.publishsubmission_help' | translate }}</p>
+                            </ion-toggle>
+                        </ion-item>
+                    }
 
                     <ion-item-divider class="ion-text-wrap">
                         <ion-label>
@@ -147,21 +176,29 @@
             }
         }
 
-        <addon-mod-workshop-assessment-strategy *ngIf="assessmentId" [workshop]="workshop" [access]="access" [assessmentId]="assessmentId"
-            [userId]="assessmentUserId" [strategy]="strategy" [edit]="access.assessingallowed" />
+        @if (assessmentId) {
+            <addon-mod-workshop-assessment-strategy [workshop]="workshop" [access]="access" [assessmentId]="assessmentId"
+                [userId]="assessmentUserId" [strategy]="strategy" [edit]="access.assessingallowed" />
+        }
 
-        <ion-list *ngIf="assessmentId && !access.assessingallowed && assessment?.feedbackreviewer">
-            <ion-item class="ion-text-wrap">
-                <core-user-avatar *ngIf="evaluateGradingByProfile" [user]="evaluateGradingByProfile" slot="start" [courseId]="courseId"
-                    [userId]="evaluateGradingByProfile.id" />
-                <ion-label>
-                    <h3 class="item-heading" *ngIf="evaluateGradingByProfile && evaluateGradingByProfile.fullname">
-                        {{ 'addon.mod_workshop.feedbackby' | translate : {$a: evaluateGradingByProfile.fullname} }}
-                    </h3>
-                    <core-format-text [text]="assessment!.feedbackreviewer" contextLevel="module" [contextInstanceId]="module.id"
-                        [courseId]="courseId" />
-                </ion-label>
-            </ion-item>
-        </ion-list>
+        @if (assessmentId && !access.assessingallowed && assessment?.feedbackreviewer) {
+            <ion-list>
+                <ion-item class="ion-text-wrap">
+                    @if (evaluateGradingByProfile) {
+                        <core-user-avatar [user]="evaluateGradingByProfile" slot="start" [courseId]="courseId"
+                            [userId]="evaluateGradingByProfile.id" />
+                    }
+                    <ion-label>
+                        @if (evaluateGradingByProfile && evaluateGradingByProfile.fullname) {
+                            <h3 class="item-heading">
+                                {{ 'addon.mod_workshop.feedbackby' | translate : {$a: evaluateGradingByProfile.fullname} }}
+                            </h3>
+                        }
+                        <core-format-text [text]="assessment!.feedbackreviewer" contextLevel="module" [contextInstanceId]="module.id"
+                            [courseId]="courseId" />
+                    </ion-label>
+                </ion-item>
+            </ion-list>
+        }
     </core-loading>
 </ion-content>

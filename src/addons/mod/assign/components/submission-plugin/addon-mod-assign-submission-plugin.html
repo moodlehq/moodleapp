@@ -1,19 +1,25 @@
 <core-dynamic-component [component]="pluginComponent" [data]="data">
     <!-- This content will be replaced by the component if found. -->
     <core-loading [hideUntil]="pluginLoaded">
-        <ion-item class="ion-text-wrap" *ngIf="text.length > 0 || files.length > 0">
-            <ion-label>
-                <h2>{{ plugin.name }}</h2>
-                <ion-badge *ngIf="notSupported" color="primary">
-                    {{ 'addon.mod_assign.submissionnotsupported' | translate }}
-                </ion-badge>
-                <p *ngIf="text">
-                    <core-format-text [component]="component" [componentId]="assign.cmid" collapsible-item [text]="text"
-                        contextLevel="module" [contextInstanceId]="assign.cmid" [courseId]="assign.course" />
-                </p>
-                <core-file *ngFor="let file of files" [file]="file" [component]="component" [componentId]="assign.cmid"
-                    [alwaysDownload]="true" />
-            </ion-label>
-        </ion-item>
+        @if (text.length > 0 || files.length > 0) {
+            <ion-item class="ion-text-wrap">
+                <ion-label>
+                    <h2>{{ plugin.name }}</h2>
+                    @if (notSupported) {
+                        <ion-badge color="primary">
+                            {{ 'addon.mod_assign.submissionnotsupported' | translate }}
+                        </ion-badge>
+                    }
+                    @if (text) {
+                        <p>
+                            <core-format-text [component]="component" [componentId]="assign.cmid" collapsible-item [text]="text"
+                                contextLevel="module" [contextInstanceId]="assign.cmid" [courseId]="assign.course" />
+                        </p>
+                    }
+                    <core-file *ngFor="let file of files" [file]="file" [component]="component" [componentId]="assign.cmid"
+                        [alwaysDownload]="true" />
+                </ion-label>
+            </ion-item>
+        }
     </core-loading>
 </core-dynamic-component>

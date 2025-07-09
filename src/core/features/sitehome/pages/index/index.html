@@ -1,7 +1,9 @@
 <core-navbar-buttons slot="end" prepend>
-    <ion-button *ngIf="searchEnabled" (click)="openSearch()" [ariaLabel]="'core.courses.searchcourses' | translate">
-        <ion-icon name="fas-magnifying-glass" slot="icon-only" aria-hidden="true" />
-    </ion-button>
+    @if (searchEnabled) {
+        <ion-button (click)="openSearch()" [ariaLabel]="'core.courses.searchcourses' | translate">
+            <ion-icon name="fas-magnifying-glass" slot="icon-only" aria-hidden="true" />
+        </ion-button>
+    }
 </core-navbar-buttons>
 <ion-content>
     <ion-refresher slot="fixed" [disabled]="!dataLoaded" (ionRefresh)="doRefresh($event.target)">
@@ -10,50 +12,65 @@
     <core-loading [hideUntil]="dataLoaded" placeholderType="column" placeholderHeight="48px">
         <ion-list class="list-item-limited-width">
             <!-- Site home main contents. -->
-            <section *ngIf="section && section.hasContent" class="core-course-module-list-wrapper">
-                @if (section.name || section.visible === 0 || section.availabilityinfo) {
-                    <ion-item-divider class="course-section ion-text-wrap"
-                        [class.item-dimmed]="section.visible === 0 || section.uservisible === false">
-                        <ion-label>
-                            <h2 *ngIf="section.name" class="big" [id]="'core-section-name-' + section.id">
-                                <core-format-text [text]="section.name" contextLevel="course" [contextInstanceId]="siteHomeId" />
-                            </h2>
-                            <div *ngIf="section.visible === 0 && section.uservisible !== false">
-                                <ion-badge color="warning">
-                                    {{ 'core.course.hiddenfromstudents' | translate }}
-                                </ion-badge>
-                            </div>
-                            <div *ngIf="section.visible === 0 && section.uservisible === false">
-                                <ion-badge color="warning">
-                                    {{ 'core.notavailable' | translate }}
-                                </ion-badge>
-                            </div>
-                            <div *ngIf="section.availabilityinfo">
-                                <ion-chip class="clickable">
-                                    <ion-icon name="fas-lock" [attr.aria-label]="'core.restricted' | translate" />
-                                    <ion-label>
-                                        <core-format-text [text]=" section.availabilityinfo" contextLevel="course"
-                                            [contextInstanceId]="siteHomeId" />
-                                    </ion-label>
-                                </ion-chip>
-                            </div>
-                        </ion-label>
-                    </ion-item-divider>
-                }
+            @if (section && section.hasContent) {
+                <section class="core-course-module-list-wrapper">
+                    @if (section.name || section.visible === 0 || section.availabilityinfo) {
+                        <ion-item-divider class="course-section ion-text-wrap"
+                            [class.item-dimmed]="section.visible === 0 || section.uservisible === false">
+                            <ion-label>
+                                @if (section.name) {
+                                    <h2 class="big" [id]="'core-section-name-' + section.id">
+                                        <core-format-text [text]="section.name" contextLevel="course" [contextInstanceId]="siteHomeId" />
+                                    </h2>
+                                }
+                                @if (section.visible === 0 && section.uservisible !== false) {
+                                    <div>
+                                        <ion-badge color="warning">
+                                            {{ 'core.course.hiddenfromstudents' | translate }}
+                                        </ion-badge>
+                                    </div>
+                                }
+                                @if (section.visible === 0 && section.uservisible === false) {
+                                    <div>
+                                        <ion-badge color="warning">
+                                            {{ 'core.notavailable' | translate }}
+                                        </ion-badge>
+                                    </div>
+                                }
+                                @if (section.availabilityinfo) {
+                                    <div>
+                                        <ion-chip class="clickable">
+                                            <ion-icon name="fas-lock" [attr.aria-label]="'core.restricted' | translate" />
+                                            <ion-label>
+                                                <core-format-text [text]=" section.availabilityinfo" contextLevel="course"
+                                                    [contextInstanceId]="siteHomeId" />
+                                            </ion-label>
+                                        </ion-chip>
+                                    </div>
+                                }
+                            </ion-label>
+                        </ion-item-divider>
+                    }
 
-                <ion-item class="ion-text-wrap section-summary" *ngIf="section.summary">
-                    <ion-label>
-                        <core-format-text [text]="section.summary" contextLevel="course" [contextInstanceId]="siteHomeId" />
-                    </ion-label>
-                </ion-item>
+                    @if (section.summary) {
+                        <ion-item class="ion-text-wrap section-summary">
+                            <ion-label>
+                                <core-format-text [text]="section.summary" contextLevel="course" [contextInstanceId]="siteHomeId" />
+                            </ion-label>
+                        </ion-item>
+                    }
 
-                <ng-container *ngFor="let modOrSubsection of section.contents">
-                    <core-course-module *ngIf="isModule(modOrSubsection)" [module]="modOrSubsection" [section]="section" />
-                </ng-container>
-            </section>
+                    <ng-container *ngFor="let modOrSubsection of section.contents">
+                        @if (isModule(modOrSubsection)) {
+                            <core-course-module [module]="modOrSubsection" [section]="section" />
+                        }
+                    </ng-container>
+                </section>
+            }
 
             <!-- Site home items: news, categories, courses, etc. -->
-            <ng-container *ngIf="items.length > 0">
+            @if (items.length > 0) {
+
                 <ng-container *ngFor="let item of items">
                     @switch (item) {
                         @case ('LIST_OF_COURSE') {
@@ -73,11 +90,16 @@
                         }
                     }
                 </ng-container>
-            </ng-container>
-        </ion-list>
-        <core-block-side-blocks-button slot="fixed" *ngIf="hasBlocks" contextLevel="course" [instanceId]="siteHomeId" />
 
-        <core-empty-box *ngIf="!hasContent" icon="fas-box-open" [message]="'core.course.nocontentavailable' | translate" />
+            }
+        </ion-list>
+        @if (hasBlocks) {
+            <core-block-side-blocks-button slot="fixed" contextLevel="course" [instanceId]="siteHomeId" />
+        }
+
+        @if (!hasContent) {
+            <core-empty-box icon="fas-box-open" [message]="'core.course.nocontentavailable' | translate" />
+        }
     </core-loading>
 </ion-content>
 
@@ -93,7 +115,9 @@
 </ng-template>
 
 <ng-template #news>
-    <core-course-module class="core-sitehome-news" *ngIf="newsForumModule" [module]="newsForumModule" />
+    @if (newsForumModule) {
+        <core-course-module class="core-sitehome-news" [module]="newsForumModule" />
+    }
 </ng-template>
 
 <ng-template #categories>
