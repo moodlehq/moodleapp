@@ -20,7 +20,7 @@ import {
 } from '@features/course/services/course-options-delegate';
 import { CoreCourseUserAdminOrNavOptionIndexed } from '@features/courses/services/courses';
 import { makeSingleton } from '@singletons';
-import { CoreCourse } from '../course';
+import { CoreCourseOverview } from '../course-overview';
 import { CORE_COURSE_OVERVIEW_PAGE_NAME } from '@features/course/constants';
 
 /**
@@ -36,7 +36,7 @@ export class CoreCourseOverviewOptionHandlerService implements CoreCourseOptions
      * @inheritdoc
      */
     async isEnabled(): Promise<boolean> {
-        return CoreCourse.canGetOverviewInformation();
+        return CoreCourseOverview.canGetInformation();
     }
 
     /**

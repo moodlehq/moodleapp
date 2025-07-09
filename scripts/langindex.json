@@ -1646,6 +1646,7 @@
   "core.course.nocontentavailable": "local_moodlemobileapp",
   "core.course.overriddennotice": "grades",
   "core.course.overview_info": "course",
+  "core.course.overview_missing_title": "course",
   "core.course.previousactivity": "local_moodlemobileapp",
   "core.course.previousactivitynotfound": "local_moodlemobileapp",
   "core.course.refreshcourse": "local_moodlemobileapp",

@@ -12,9 +12,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit, signal } from '@angular/core';
+import { Component, OnInit, signal, Type, viewChild, WritableSignal } from '@angular/core';
 
-import { CoreCourse } from '@features/course/services/course';
+import {
+    CoreCourseOverview,
+    CoreCourseGetOverviewInformationWSHeader,
+    CoreCourseOverviewInformation,
+    CoreCourseOverviewActivity,
+    CoreCourseOverviewItem,
+} from '@features/course/services/course-overview';
 import { CoreCourseModuleDelegate } from '@features/course/services/module-delegate';
 import { CoreCourseHelper } from '@features/course/services/course-helper';
 import { CoreNavigator } from '@services/navigator';
@@ -28,6 +34,8 @@ import { CoreCourseModuleHelper } from '@features/course/services/course-module-
 import { Translate } from '@singletons';
 import { CoreUrl } from '@singletons/url';
 import { CoreObject } from '@singletons/object';
+import { IonAccordionGroup } from '@ionic/angular';
+import { CoreCourse } from '@features/course/services/course';
 
 /**
  * Page that displays an overview of all activities in a course.
@@ -43,15 +51,19 @@ import { CoreObject } from '@singletons/object';
 })
 export default class CoreCourseOverviewPage implements OnInit {
 
-    loaded = signal(false);
-    modTypes = signal<OverviewModType[]>([]);
+    readonly loaded = signal(false);
+    readonly modTypes = signal<OverviewModType[]>([]);
+
+    readonly accordionGroup = viewChild(IonAccordionGroup);
 
     protected courseId!: number;
     protected logView: () => void;
 
+    protected static readonly RESOURCES_NAME = 'resource';
+
     constructor() {
         this.logView = CoreTime.once(async () => {
-            await CorePromiseUtils.ignoreErrors(CoreCourse.logViewOverview(this.courseId));
+            await CorePromiseUtils.ignoreErrors(CoreCourseOverview.logView(this.courseId));
 
             CoreAnalytics.logEvent({
                 type: CoreAnalyticsEventType.VIEW_ITEM_LIST,
@@ -114,8 +126,8 @@ export default class CoreCourseOverviewPage implements OnInit {
                 // Get the full name of the module type.
                 if (archetypes[mod.modname] === ModArchetype.RESOURCE) {
                     // All resources are gathered in a single "Resources" option.
-                    if (!modFullNames['resources']) {
-                        modFullNames['resources'] = Translate.instant('core.resources');
+                    if (!modFullNames[CoreCourseOverviewPage.RESOURCES_NAME]) {
+                        modFullNames[CoreCourseOverviewPage.RESOURCES_NAME] = Translate.instant('core.resources');
                     }
                 } else {
                     modFullNames[mod.modname] = mod.modplural;
@@ -133,7 +145,7 @@ export default class CoreCourseOverviewPage implements OnInit {
             modFullNames = CoreObject.sortValues(modFullNames);
 
             const modTypes = await Promise.all(Object.keys(modFullNames).map(async (modName): Promise<OverviewModType> => {
-                const iconModName = modName === 'resources' ? 'page' : modName;
+                const iconModName = modName === CoreCourseOverviewPage.RESOURCES_NAME ? 'page' : modName;
 
                 const icon = await CoreCourseModuleDelegate.getModuleIconSrc(iconModName, modIcons[iconModName]);
 
@@ -142,7 +154,11 @@ export default class CoreCourseOverviewPage implements OnInit {
                     iconModName,
                     name: modFullNames[modName],
                     modName,
+                    modNameTranslated: modName === CoreCourseOverviewPage.RESOURCES_NAME ?
+                        modFullNames[modName] : CoreCourseModuleHelper.translateModuleName(modName, modFullNames[modName]),
                     branded: brandedIcons[iconModName],
+                    loaded: signal(false),
+                    overview: signal<OverviewInformation | undefined>(undefined),
                 };
             }));
 
@@ -160,13 +176,158 @@ export default class CoreCourseOverviewPage implements OnInit {
      * @param refresher Refresher.
      */
     async refreshData(refresher: HTMLIonRefresherElement): Promise<void> {
-        await CorePromiseUtils.ignoreErrors(CoreCourse.invalidateSections(this.courseId));
+        await CorePromiseUtils.ignoreErrors(Promise.all([
+            CoreCourse.invalidateSections(this.courseId),
+            CoreCourseOverview.invalidateCourseOverviews(this.courseId),
+        ]));
+
+        // Collapse the accordion when refreshing.
+        const accordionGroup = this.accordionGroup();
+        if (accordionGroup) {
+            accordionGroup.value = undefined;
+        }
 
         try {
             await this.loadModTypes();
         } finally {
             refresher.complete();
         }
+    }
+
+    /**
+     * An accordion has been expanded or collapsed.
+     *
+     * @param modName Mod name that was expanded, undefined if collapsed and none expanded.
+     */
+    accordionChanged(modName?: string): void {
+        const modType = modName && this.modTypes().find((modType) => modType.modName === modName);
+        if (!modType) {
+            return;
+        }
+
+        this.loadActivities(modType);
+    }
+
+    /**
+     * Load activities for a specific mod type if needed.
+     *
+     * @param modType Type to load.
+     */
+    async loadActivities(modType: OverviewModType): Promise<void> {
+        if (modType.loaded()) {
+            // Already loaded, nothing to do.
+            return;
+        }
+
+        try {
+            const overview = await CoreCourseOverview.getInformation(this.courseId, modType.modName);
+
+            const formattedOverview = await this.formatOverview(modType.modName, overview);
+
+            modType.overview.set(formattedOverview);
+            modType.loaded.set(true);
+        } catch (error) {
+            CoreAlerts.showError(error, { default: 'Error getting activities.' });
+        }
+    }
+
+    /**
+     * Format the overview information to include data to render it.
+     *
+     * @param modName Module name the overview belongs to.
+     * @param overview Overview to format.
+     * @returns Formatted overview.
+     */
+    protected async formatOverview(modName: string, overview: CoreCourseOverviewInformation): Promise<OverviewInformation> {
+        const columnsToRemove: string[] = [];
+
+        const headers = overview.headers.map((header) => ({
+            ...header,
+            classes:[
+                'ion-text-' + (header.align ?? 'start').trim(), // Convert alignment value to Ionic CSS class.
+            ],
+        }));
+
+        const activities = await Promise.all(overview.activities.map(async (activity) => {
+            // Only render the items that have a header. The other items are probably empty so the header is not displayed.
+            const itemsToRender = await Promise.all(headers.map(async (header) => {
+                const item = activity.items.find(item => item.key === header.key);
+                if (!item) {
+                    // Item not found, it shouldn't happen. Render an empty item.
+                    return this.getEmptyOverviewItem(header.key, header.name);
+                }
+
+                // Get the data to render the item.
+                const content = await CoreCourseModuleDelegate.getOverviewItemContent(modName, item);
+
+                if (content === undefined) {
+                    // The app doesn't know how to render the item, mark the mod type as not supported and render an empty item.
+                    columnsToRemove.push(header.key);
+
+                    return this.getEmptyOverviewItem(header.key, header.name);
+                }
+
+                return {
+                    ...item,
+                    component: 'component' in content ? content.component : null,
+                    componentData: {
+                        courseId: this.courseId,
+                        activity,
+                        item,
+                    },
+                    content: 'content' in content ? content.content : null,
+                    classes: header.classes.concat(content.classes ?? []),
+                };
+            }));
+
+            return {
+                ...activity,
+                itemsToRender,
+            };
+        }));
+
+        if (columnsToRemove.length) {
+            // Remove the unsupported columns for each activity.
+            activities.forEach((activity) => {
+                activity.itemsToRender = activity.itemsToRender.filter((item) => !columnsToRemove.includes(item.key ?? ''));
+            });
+        }
+
+        return {
+            ...overview,
+            isSupportedInApp: !columnsToRemove.length,
+            headers: headers.filter(header => !columnsToRemove.includes(header.key)),
+            activities,
+        };
+    }
+
+    /**
+     * Get an empty overview item.
+     *
+     * @param key Key of the item.
+     * @param name Name of the item.
+     * @returns Empty overview item.
+     */
+    protected getEmptyOverviewItem(key: string, name: string): OverviewItemToRender {
+        return {
+            key,
+            name,
+            contenttype: 'basic',
+            contentjson: '{"value":null,"datatype":"NULL"}',
+            extrajson: '{}',
+            parsedData: { value: null, datatype: 'NULL' },
+            content: null,
+        };
+    }
+
+    /**
+     * Helper function to cast to the proper type in the template.
+     *
+     * @param modType Variable to cast.
+     * @returns Casted variable.
+     */
+    toModType(modType: OverviewModType): OverviewModType {
+        return modType;
     }
 
 }
@@ -176,5 +337,35 @@ type OverviewModType = {
     name: string;
     modName: string;
     iconModName: string;
+    modNameTranslated: string;
     branded?: boolean;
+    loaded: WritableSignal<boolean>;
+    overview: WritableSignal<OverviewInformation | undefined>;
+};
+
+type OverviewInformation = Omit<CoreCourseOverviewInformation, 'activities' | 'headers'> & {
+    isSupportedInApp: boolean;
+    headers: OverviewHeader[];
+    activities: OverviewActivity[];
+};
+
+/**
+ * Overview information for an activity.
+ */
+type OverviewHeader = CoreCourseGetOverviewInformationWSHeader & {
+    classes: string[];
+};
+
+/**
+ * Overview information for an activity.
+ */
+type OverviewActivity = CoreCourseOverviewActivity & {
+    itemsToRender: OverviewItemToRender[];
+};
+
+type OverviewItemToRender = CoreCourseOverviewItem & {
+    component?: Type<unknown> | null;
+    componentData?: Record<string, unknown>;
+    content: string | null;
+    classes?: string[];
 };
