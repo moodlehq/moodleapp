@@ -220,10 +220,6 @@ export class CoreQuestionDelegateService extends CoreDelegate<CoreQuestionHandle
     protected defaultHandler = inject(CoreQuestionDefaultHandler);
     protected handlerNameProperty = 'type';
 
-    constructor() {
-        super();
-    }
-
     /**
      * Get the behaviour to use for a certain question type.
      * E.g. 'qtype_essay' uses 'manualgraded'.

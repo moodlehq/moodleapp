@@ -49,10 +49,6 @@ export class CoreSitePluginsQuestionBehaviourComponent extends CoreSitePluginsCo
     @Output() buttonClicked = new EventEmitter<CoreQuestionBehaviourButton>(); // Will emit when a behaviour button is clicked.
     @Output() onAbort = new EventEmitter<void>(); // Should emit an event if the question should be aborted.
 
-    constructor() {
-        super();
-    }
-
     /**
      * @inheritdoc
      */

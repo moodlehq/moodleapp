@@ -83,10 +83,6 @@ export class AddonWorkshopAssessmentStrategyDelegateService extends CoreDelegate
 
     protected handlerNameProperty = 'strategyName';
 
-    constructor() {
-        super();
-    }
-
     /**
      * @inheritdoc
      */

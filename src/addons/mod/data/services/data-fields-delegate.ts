@@ -132,10 +132,6 @@ export class AddonModDataFieldsDelegateService extends CoreDelegate<AddonModData
     protected handlerNameProperty = 'type';
     protected defaultHandler = inject(AddonModDataDefaultFieldHandler);
 
-    constructor() {
-        super();
-    }
-
     /**
      * @inheritdoc
      */

@@ -308,10 +308,6 @@ export class AddonModAssignSubmissionDelegateService extends CoreDelegate<AddonM
     protected handlerNameProperty = 'type';
     protected defaultHandler = inject(AddonModAssignDefaultSubmissionHandler);
 
-    constructor() {
-        super();
-    }
-
     /**
      * @inheritdoc
      */
