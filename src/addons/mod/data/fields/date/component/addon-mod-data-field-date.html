@@ -1,10 +1,10 @@
 <span *ngIf="inputMode && form" [formGroup]="form">
     <span *ngIf="editMode" [core-mark-required]="field.required" class="core-mark-required"></span>
 
-    <ion-datetime-button datetime="datetime" />
+    <ion-datetime-button [datetime]="'datetime-' + field.id" />
     <ion-modal [keepContentsMounted]="true">
         <ng-template>
-            <ion-datetime id="datetime" [formControlName]="'f_'+field.id" [max]="maxDate" [min]="minDate"
+            <ion-datetime [id]="'datetime-' + field.id" [formControlName]="'f_'+field.id" [max]="maxDate" [min]="minDate"
                 [disabled]="!!searchMode && !!searchFields && !searchFields['f_'+field.id+'_z']" presentation="date"
                 [showDefaultButtons]="true" />
         </ng-template>
