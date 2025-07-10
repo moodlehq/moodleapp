@@ -57,8 +57,6 @@ import { CoreSharedModule } from '@/core/shared.module';
 })
 export default class AddonModGlossaryEditPage implements OnInit, CanLeave {
 
-    protected route = inject(ActivatedRoute);
-
     @ViewChild('editFormEl') formElement?: ElementRef;
 
     component = ADDON_MOD_GLOSSARY_COMPONENT_LEGACY;
@@ -90,6 +88,7 @@ export default class AddonModGlossaryEditPage implements OnInit, CanLeave {
     protected syncObserver?: CoreEventObserver;
     protected isDestroyed = false;
     protected saved = false;
+    protected route = inject(ActivatedRoute);
 
     /**
      * @inheritdoc

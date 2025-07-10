@@ -59,8 +59,6 @@ import { CoreMainMenuUserButtonComponent } from '@features/mainmenu/components/u
 })
 export default class AddonCalendarIndexPage implements OnInit, OnDestroy {
 
-    protected route = inject(ActivatedRoute);
-
     @ViewChild(AddonCalendarCalendarComponent) calendarComponent?: AddonCalendarCalendarComponent;
     @ViewChild(AddonCalendarUpcomingEventsComponent) upcomingEventsComponent?: AddonCalendarUpcomingEventsComponent;
 
@@ -77,6 +75,7 @@ export default class AddonCalendarIndexPage implements OnInit, OnDestroy {
     protected manualSyncObserver?: CoreEventObserver;
     protected onlineObserver?: Subscription;
     protected filterChangedObserver?: CoreEventObserver;
+    protected route = inject(ActivatedRoute);
 
     year?: number;
     month?: number;

@@ -58,8 +58,6 @@ import { CoreCoursesMyPageName } from '@features/courses/constants';
 })
 export default class CoreCoursesMyPage implements OnInit, OnDestroy, AsyncDirective {
 
-    protected loadsManager = inject(PageLoadsManager);
-
     @ViewChild(CoreBlockComponent) block!: CoreBlockComponent;
 
     downloadCoursesEnabled = false;
@@ -74,6 +72,7 @@ export default class CoreCoursesMyPage implements OnInit, OnDestroy, AsyncDirect
     protected onReadyPromise = new CorePromisedValue<void>();
     protected loadsManagerSubscription: Subscription;
     protected logView: () => void;
+    protected loadsManager = inject(PageLoadsManager);
 
     constructor() {
         // Refresh the enabled flags if site is updated.

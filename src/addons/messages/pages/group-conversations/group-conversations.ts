@@ -72,8 +72,6 @@ const enum AddonMessagesGroupConversationOptionNames {
 })
 export default class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
 
-    protected route = inject(ActivatedRoute);
-
     @ViewChild(CoreSplitViewComponent) splitView!: CoreSplitViewComponent;
     @ViewChild(IonContent) content?: IonContent;
     @ViewChild('accordionGroup', { static: true }) accordionGroup!: IonAccordionGroup;
@@ -131,6 +129,7 @@ export default class AddonMessagesGroupConversationsPage implements OnInit, OnDe
     protected contactRequestsCountObserver: CoreEventObserver;
     protected memberInfoObserver: CoreEventObserver;
     protected firstExpand = false;
+    protected route = inject(ActivatedRoute);
 
     constructor() {
         this.loadingMessage = Translate.instant('core.loading');

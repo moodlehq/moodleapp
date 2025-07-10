@@ -66,7 +66,6 @@ export interface CoreQuestionBehaviourHandler extends CoreDelegateHandler {
 export class CoreQuestionBehaviourDelegateService extends CoreDelegate<CoreQuestionBehaviourHandler> {
 
     protected defaultHandler = inject(CoreQuestionBehaviourDefaultHandler);
-
     protected handlerNameProperty = 'type';
 
     constructor() {

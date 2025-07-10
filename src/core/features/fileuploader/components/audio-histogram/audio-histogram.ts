@@ -35,7 +35,7 @@ export class CoreFileUploaderAudioHistogramComponent implements AfterViewInit, O
     @Input({ transform: toBoolean }) paused = false;
     @ViewChild('canvas') canvasRef?: ElementRef<HTMLCanvasElement>;
 
-    private element: HTMLElement = inject<ElementRef<HTMLElement>>(ElementRef).nativeElement;
+    private element: HTMLElement = inject(ElementRef).nativeElement;
     private canvas?: HTMLCanvasElement;
     private context?: CanvasRenderingContext2D | null;
     private buffer?: Uint8Array;

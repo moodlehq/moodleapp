@@ -73,9 +73,6 @@ import { CoreSharedModule } from '@/core/shared.module';
 })
 export class CoreCompileHtmlComponent implements OnChanges, OnDestroy, DoCheck {
 
-    protected changeDetector = inject(ChangeDetectorRef);
-    protected injector = inject(Injector);
-
     @Input({ required: true }) text!: string; // The HTML text to display.
     @Input() javascript?: string; // The Javascript to execute in the component.
     @Input() jsData?: Record<string, unknown>; // Data to pass to the fake component.
@@ -94,17 +91,16 @@ export class CoreCompileHtmlComponent implements OnChanges, OnDestroy, DoCheck {
     @ViewChild('dynamicComponent', { read: ViewContainerRef }) container?: ViewContainerRef;
 
     protected componentRef?: ComponentRef<unknown>;
-    protected element: HTMLElement;
+    protected element: HTMLElement = inject(ElementRef).nativeElement;
     protected differ: KeyValueDiffer<unknown, unknown>; // To detect changes in the jsData input.
     protected creatingComponent = false;
     protected pendingCalls = {};
     protected componentStyles = '';
+    protected changeDetector = inject(ChangeDetectorRef);
+    protected injector = inject(Injector);
 
     constructor() {
-        const element = inject(ElementRef);
         const differs = inject(KeyValueDiffers);
-
-        this.element = element.nativeElement;
         this.differ = differs.find([]).create();
     }
 

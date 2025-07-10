@@ -41,8 +41,6 @@ const disabledScrollClass = 'disable-scroll-y';
 })
 export class CoreSplitViewComponent implements AfterViewInit, OnDestroy {
 
-    protected element: HTMLElement = inject(ElementRef).nativeElement;
-
     @ViewChild(IonContent) menuContent!: IonContent;
     @ViewChild(IonRouterOutlet) contentOutlet!: IonRouterOutlet;
     @Input() placeholderText = 'core.emptysplit';
@@ -52,6 +50,7 @@ export class CoreSplitViewComponent implements AfterViewInit, OnDestroy {
 
     private outletRouteSubject = new BehaviorSubject<ActivatedRouteSnapshot | null>(null);
     private subscriptions?: Subscription[];
+    protected element: HTMLElement = inject(ElementRef).nativeElement;
 
     get outletRoute(): ActivatedRouteSnapshot | null {
         return this.outletRouteSubject.value;

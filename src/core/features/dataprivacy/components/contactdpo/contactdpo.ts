@@ -37,13 +37,13 @@ import { CoreAlerts } from '@services/overlays/alerts';
 })
 export class CoreDataPrivacyContactDPOComponent implements OnInit {
 
-    protected fb = inject(FormBuilder);
-
     message = '';
     email = '';
 
     // Form variables.
     form: FormGroup;
+
+    protected fb = inject(FormBuilder);
 
     constructor() {
         this.form = new FormGroup({});

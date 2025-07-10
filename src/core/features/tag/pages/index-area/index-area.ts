@@ -33,8 +33,6 @@ import { CoreSharedModule } from '@/core/shared.module';
 })
 export default class CoreTagIndexAreaPage implements OnInit {
 
-    protected route = inject(ActivatedRoute);
-
     tagId = 0;
     tagName = '';
     collectionId = 0;
@@ -52,6 +50,8 @@ export default class CoreTagIndexAreaPage implements OnInit {
     canLoadMore = false;
     areaComponent?: Type<unknown>;
     loadMoreError = false;
+
+    protected route = inject(ActivatedRoute);
 
     /**
      * @inheritdoc

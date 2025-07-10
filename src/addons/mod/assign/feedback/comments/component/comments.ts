@@ -41,8 +41,6 @@ import { CoreSharedModule } from '@/core/shared.module';
 })
 export class AddonModAssignFeedbackCommentsComponent extends AddonModAssignFeedbackPluginBaseComponent implements OnInit {
 
-    protected fb = inject(FormBuilder);
-
     control?: FormControl<string>;
     component = ADDON_MOD_ASSIGN_COMPONENT_LEGACY;
     text = '';
@@ -50,6 +48,7 @@ export class AddonModAssignFeedbackCommentsComponent extends AddonModAssignFeedb
     loaded = false;
 
     protected element: HTMLElement = inject(ElementRef).nativeElement;
+    protected fb = inject(FormBuilder);
 
     /**
      * @inheritdoc

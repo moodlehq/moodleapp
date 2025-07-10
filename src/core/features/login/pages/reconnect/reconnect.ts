@@ -57,8 +57,6 @@ import { CoreLoginIdentityProviderComponent } from '../../components/identity-pr
 })
 export default class CoreLoginReconnectPage implements OnInit, OnDestroy {
 
-    protected fb = inject(FormBuilder);
-
     @ViewChild('reconnectForm') formElement?: ElementRef;
     @ViewChild(CoreLoginMethodsComponent) set loginMethods(loginMethods: CoreLoginMethodsComponent) {
         if (loginMethods && !this.currentLogin) {
@@ -96,6 +94,7 @@ export default class CoreLoginReconnectPage implements OnInit, OnDestroy {
     protected username = '';
     protected alwaysShowLoginFormObserver?: CoreEventObserver;
     protected loginObserver?: CoreEventObserver;
+    protected fb = inject(FormBuilder);
 
     constructor() {
         const currentSite = CoreSites.getCurrentSite();

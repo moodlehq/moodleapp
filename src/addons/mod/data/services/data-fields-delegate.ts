@@ -129,9 +129,8 @@ export interface AddonModDataFieldHandler extends CoreDelegateHandler {
 @Injectable({ providedIn: 'root' })
 export class AddonModDataFieldsDelegateService extends CoreDelegate<AddonModDataFieldHandler> {
 
-    protected defaultHandler = inject(AddonModDataDefaultFieldHandler);
-
     protected handlerNameProperty = 'type';
+    protected defaultHandler = inject(AddonModDataDefaultFieldHandler);
 
     constructor() {
         super();

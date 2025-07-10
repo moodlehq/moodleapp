@@ -36,8 +36,6 @@ import { CoreAlerts } from '@services/overlays/alerts';
 })
 export class AddonModQuizPreflightModalComponent implements OnInit {
 
-    protected element: HTMLElement = inject(ElementRef).nativeElement;
-
     @ViewChild('preflightFormEl') formElement?: ElementRef;
 
     @Input({ required: true }) title!: string;
@@ -50,6 +48,8 @@ export class AddonModQuizPreflightModalComponent implements OnInit {
     preflightForm: FormGroup;
     accessRulesData: { component: Type<unknown>; data: Record<string, unknown>}[] = []; // Component and data for each access rule.
     loaded = false;
+
+    protected element: HTMLElement = inject(ElementRef).nativeElement;
 
     constructor() {
         const formBuilder = inject(FormBuilder);

@@ -96,13 +96,11 @@ export interface CoreBlockHandlerData {
 @Injectable({ providedIn: 'root' })
 export class CoreBlockDelegateService extends CoreDelegate<CoreBlockHandler> {
 
-    protected defaultHandler = inject(CoreBlockDefaultHandler);
-
-    protected handlerNameProperty = 'blockName';
-
-    protected featurePrefix = 'CoreBlockDelegate_';
-
     blocksUpdateObservable: Subject<void>;
+
+    protected defaultHandler = inject(CoreBlockDefaultHandler);
+    protected handlerNameProperty = 'blockName';
+    protected featurePrefix = 'CoreBlockDelegate_';
 
     constructor() {
         super();

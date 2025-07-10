@@ -212,9 +212,8 @@ export interface AddonModAssignFeedbackHandler extends CoreDelegateHandler {
 @Injectable({ providedIn: 'root' })
 export class AddonModAssignFeedbackDelegateService extends CoreDelegate<AddonModAssignFeedbackHandler> {
 
-    protected defaultHandler = inject(AddonModAssignDefaultFeedbackHandler);
-
     protected handlerNameProperty = 'type';
+    protected defaultHandler = inject(AddonModAssignDefaultFeedbackHandler);
 
     constructor() {
         super();

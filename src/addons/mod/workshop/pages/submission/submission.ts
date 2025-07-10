@@ -79,9 +79,6 @@ import { CoreErrorHelper } from '@services/error-helper';
 })
 export default class AddonModWorkshopSubmissionPage implements OnInit, OnDestroy, CanLeave {
 
-    protected fb = inject(FormBuilder);
-    protected content = inject(IonContent, { optional: true });
-
     @ViewChild(AddonModWorkshopAssessmentStrategyComponent) assessmentStrategy?: AddonModWorkshopAssessmentStrategyComponent;
 
     @ViewChild('feedbackFormEl') formElement?: ElementRef;
@@ -129,6 +126,8 @@ export default class AddonModWorkshopSubmissionPage implements OnInit, OnDestroy
     protected syncObserver: CoreEventObserver;
     protected isDestroyed = false;
     protected logView: () => void;
+    protected fb = inject(FormBuilder);
+    protected content = inject(IonContent, { optional: true });
 
     constructor() {
         this.currentUserId = CoreSites.getCurrentSiteUserId();

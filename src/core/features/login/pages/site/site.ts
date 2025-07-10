@@ -66,8 +66,6 @@ import { CoreSharedModule } from '@/core/shared.module';
 })
 export default class CoreLoginSitePage implements OnInit {
 
-    protected formBuilder = inject(FormBuilder);
-
     @ViewChild('siteFormEl') formElement?: ElementRef;
 
     siteForm!: FormGroup;
@@ -84,6 +82,8 @@ export default class CoreLoginSitePage implements OnInit {
     enteredSiteUrl?: CoreLoginSiteInfoExtended;
     siteFinderSettings!: CoreLoginSiteFinderSettings;
     appName = CoreConstants.CONFIG.appname;
+
+    protected formBuilder = inject(FormBuilder);
 
     /**
      * @inheritdoc

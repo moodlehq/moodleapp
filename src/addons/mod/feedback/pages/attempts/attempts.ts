@@ -41,8 +41,6 @@ import { CoreSharedModule } from '@/core/shared.module';
 })
 export default class AddonModFeedbackAttemptsPage implements AfterViewInit, OnDestroy {
 
-    protected route = inject(ActivatedRoute);
-
     @ViewChild(CoreSplitViewComponent) splitView!: CoreSplitViewComponent;
 
     promisedAttempts: CorePromisedValue<AddonModFeedbackAttemptsManager>;
@@ -50,6 +48,7 @@ export default class AddonModFeedbackAttemptsPage implements AfterViewInit, OnDe
     courseId?: number;
 
     protected logView: () => void;
+    protected route = inject(ActivatedRoute);
 
     constructor() {
         this.promisedAttempts = new CorePromisedValue();

@@ -63,8 +63,6 @@ import { CoreSharedModule } from '@/core/shared.module';
 })
 export default class CoreLoginCredentialsPage implements OnInit, OnDestroy {
 
-    protected fb = inject(FormBuilder);
-
     @ViewChild('credentialsForm') formElement?: ElementRef<HTMLFormElement>;
 
     credForm!: FormGroup;
@@ -90,6 +88,7 @@ export default class CoreLoginCredentialsPage implements OnInit, OnDestroy {
     protected valueChangeSubscription?: Subscription;
     protected alwaysShowLoginFormObserver?: CoreEventObserver;
     protected loginObserver?: CoreEventObserver;
+    protected fb = inject(FormBuilder);
 
     constructor() {
         // Listen to LOGIN event to determine if login was successful, since the login can be done using QR, SSO, etc.

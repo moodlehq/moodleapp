@@ -41,8 +41,6 @@ import { ADDON_MOD_ASSIGN_MODNAME, AddonModAssignListFilterName } from '../../co
 })
 export default class AddonModAssignSubmissionReviewPage implements OnInit, OnDestroy {
 
-    protected route = inject(ActivatedRoute);
-
     @ViewChild(AddonModAssignSubmissionComponent) submissionComponent?: AddonModAssignSubmissionComponent;
 
     title = ''; // Title to display.
@@ -58,6 +56,7 @@ export default class AddonModAssignSubmissionReviewPage implements OnInit, OnDes
     protected blindMarking = false; // Whether it uses blind marking.
     protected forceLeave = false; // To allow leaving the page without checking for changes.
     protected logView: () => void;
+    protected route = inject(ActivatedRoute);
 
     constructor() {
         this.logView = CoreTime.once(() => {

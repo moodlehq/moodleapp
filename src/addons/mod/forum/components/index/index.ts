@@ -84,9 +84,9 @@ import { CoreCourseModuleInfoComponent } from '@features/course/components/modul
 })
 export class AddonModForumIndexComponent extends CoreCourseModuleMainActivityComponent implements OnInit, AfterViewInit, OnDestroy {
 
-    route = inject(ActivatedRoute);
-
     @ViewChild(CoreSplitViewComponent) splitView!: CoreSplitViewComponent;
+
+    route = inject(ActivatedRoute);
 
     component = ADDON_MOD_FORUM_COMPONENT_LEGACY;
     pluginName = 'forum';

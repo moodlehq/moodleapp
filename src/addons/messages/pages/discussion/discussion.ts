@@ -72,8 +72,6 @@ import { CoreSharedModule } from '@/core/shared.module';
 })
 export default class AddonMessagesDiscussionPage implements OnInit, OnDestroy, AfterViewInit {
 
-    protected route = inject(ActivatedRoute);
-
     @ViewChild(IonContent) content?: IonContent;
     @ViewChild(CoreInfiniteLoadingComponent) infinite?: CoreInfiniteLoadingComponent;
 
@@ -92,6 +90,7 @@ export default class AddonMessagesDiscussionPage implements OnInit, OnDestroy, A
     protected memberInfoObserver: CoreEventObserver;
     protected showLoadingModal = false; // Whether to show a loading modal while fetching data.
     protected hostElement: HTMLElement = inject(ElementRef).nativeElement;
+    protected route = inject(ActivatedRoute);
 
     conversationId?: number; // Conversation ID. Undefined if it's a new individual conversation.
     conversation?: AddonMessagesConversationFormatted; // The conversation object (if it exists).

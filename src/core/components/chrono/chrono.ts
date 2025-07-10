@@ -50,8 +50,6 @@ import { CoreSecondsToHMSPipe } from '@pipes/seconds-to-hms';
 })
 export class CoreChronoComponent implements OnInit, OnChanges, OnDestroy {
 
-    protected changeDetectorRef = inject(ChangeDetectorRef);
-
     @Input({ transform: toBoolean }) running = false; // Set it to true to start the chrono. Set it to false to stop it.
     @Input() startTime = 0; // Number of milliseconds to put in the chrono before starting.
     @Input() endTime?: number; // Number of milliseconds to stop the chrono.
@@ -60,7 +58,9 @@ export class CoreChronoComponent implements OnInit, OnChanges, OnDestroy {
     @Output() onEnd: EventEmitter<void>; // Will emit an event when the endTime is reached.
 
     time = 0;
+
     protected interval?: number;
+    protected changeDetectorRef = inject(ChangeDetectorRef);
 
     constructor() {
         this.onEnd = new EventEmitter();

@@ -24,10 +24,10 @@ import { toBoolean } from '../transforms/boolean';
 })
 export class CoreAriaButtonClickDirective implements OnInit, OnChanges {
 
-    protected element: HTMLElement = inject(ElementRef).nativeElement;
-
     @Input({ transform: toBoolean }) disabled = false;
     @Output() ariaButtonClick = new EventEmitter();
+
+    protected element: HTMLElement = inject(ElementRef).nativeElement;
 
     /**
      * @inheritdoc

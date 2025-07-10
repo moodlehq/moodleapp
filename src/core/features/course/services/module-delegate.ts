@@ -260,7 +260,6 @@ export interface CoreCourseModuleHandlerButton {
 export class CoreCourseModuleDelegateService extends CoreDelegate<CoreCourseModuleHandler> {
 
     protected defaultHandler = inject(CoreCourseModuleDefaultHandler);
-
     protected featurePrefix = CORE_COURSE_MODULE_FEATURE_PREFIX;
     protected handlerNameProperty = 'modName';
 

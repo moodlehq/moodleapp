@@ -88,9 +88,6 @@ import { CoreSharedModule } from '@/core/shared.module';
 })
 export default class AddonModQuizPlayerPage implements OnInit, OnDestroy, CanLeave {
 
-    protected changeDetector = inject(ChangeDetectorRef);
-    protected element: HTMLElement = inject(ElementRef).nativeElement;
-
     @ViewChild(IonContent) content?: IonContent;
     @ViewChildren(CoreQuestionComponent) questionComponents?: QueryList<CoreQuestionComponent>;
     @ViewChild('quizForm') formElement?: ElementRef;
@@ -130,7 +127,9 @@ export default class AddonModQuizPlayerPage implements OnInit, OnDestroy, CanLea
     protected autoSave!: AddonModQuizAutoSave; // Class to auto-save answers every certain time.
     protected autoSaveErrorSubscription?: Subscription; // To be notified when an error happens in auto-save.
     protected forceLeave = false; // If true, don't perform any check when leaving the view.
-    protected reloadNavigation = false;
+    protected reloadNavigation = false; // Whether navigation needs to be reloaded because some data was sent to server.
+    protected changeDetector = inject(ChangeDetectorRef);
+    protected element: HTMLElement = inject(ElementRef).nativeElement;
 
     /**
      * @inheritdoc

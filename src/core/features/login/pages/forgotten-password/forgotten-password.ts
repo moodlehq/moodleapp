@@ -41,8 +41,6 @@ import { CoreLoginExceededAttemptsComponent } from '../../components/exceeded-at
 })
 export default class CoreLoginForgottenPasswordPage implements OnInit {
 
-    protected formBuilder = inject(FormBuilder);
-
     @ViewChild('resetPasswordForm') formElement?: ElementRef;
 
     myForm!: FormGroup;
@@ -51,6 +49,8 @@ export default class CoreLoginForgottenPasswordPage implements OnInit {
     supportConfig?: CoreUserSupportConfig;
     canContactSupport?: boolean;
     wasPasswordResetRequestedRecently = false;
+
+    protected formBuilder = inject(FormBuilder);
 
     /**
      * Initialize the component.

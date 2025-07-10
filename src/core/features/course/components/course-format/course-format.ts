@@ -92,10 +92,6 @@ import { ADDON_STORAGE_MANAGER_PAGE_NAME } from '@addons/storagemanager/constant
 })
 export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
 
-    protected content = inject(IonContent);
-    protected element: HTMLElement = inject(ElementRef).nativeElement;
-    protected changeDetectorRef = inject(ChangeDetectorRef);
-
     static readonly LOAD_MORE_ACTIVITIES = 10; // How many activities should load each time showMoreActivities is called.
 
     @Input({ required: true }) course!: CoreCourseAnyCourseData; // The course to render.
@@ -152,6 +148,10 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
     protected lastCourseFormat?: string;
     protected viewedModulesInitialized = false;
     protected currentSite?: CoreSite;
+
+    protected content = inject(IonContent);
+    protected element: HTMLElement = inject(ElementRef).nativeElement;
+    protected changeDetectorRef = inject(ChangeDetectorRef);
 
     constructor() {
         // Pass this instance to all components so they can use its methods and properties.

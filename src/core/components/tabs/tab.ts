@@ -58,8 +58,6 @@ import { CoreBaseModule } from '@/core/base.module';
 })
 export class CoreTabComponent implements OnInit, OnDestroy, CoreTabBase {
 
-    protected tabs = inject(CoreTabsComponent);
-
     @Input({ required: true }) title!: string; // The tab title.
     @Input() icon?: string; // The tab icon.
     @Input() badge?: string; // A badge to add in the tab.
@@ -91,6 +89,7 @@ export class CoreTabComponent implements OnInit, OnDestroy, CoreTabBase {
     tabElement?: HTMLElement | null;
 
     protected isEnabled = true;
+    protected tabs = inject(CoreTabsComponent);
 
     constructor() {
         this.id = this.id || `core-tab-${CoreUtils.getUniqueId('CoreTabComponent')}`;

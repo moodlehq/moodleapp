@@ -63,8 +63,6 @@ import { CorePromiseUtils } from '@singletons/promise-utils';
 })
 export default class AddonModWorkshopEditSubmissionPage implements OnInit, OnDestroy, CanLeave {
 
-    protected fb = inject(FormBuilder);
-
     @ViewChild('editFormEl') formElement!: ElementRef;
 
     module!: CoreCourseModuleData;
@@ -98,6 +96,7 @@ export default class AddonModWorkshopEditSubmissionPage implements OnInit, OnDes
     protected forceLeave = false;
     protected siteId: string;
     protected isDestroyed = false;
+    protected fb = inject(FormBuilder);
 
     constructor() {
         this.userId = CoreSites.getCurrentSiteUserId();

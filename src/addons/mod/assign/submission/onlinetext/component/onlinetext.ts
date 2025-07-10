@@ -41,8 +41,6 @@ import { CoreFileHelper } from '@services/file-helper';
 })
 export class AddonModAssignSubmissionOnlineTextComponent extends AddonModAssignSubmissionPluginBaseComponent implements OnInit {
 
-    protected fb = inject(FormBuilder);
-
     control?: FormControl<string>;
     words = 0;
     component = ADDON_MOD_ASSIGN_COMPONENT_LEGACY;
@@ -54,6 +52,7 @@ export class AddonModAssignSubmissionOnlineTextComponent extends AddonModAssignS
     isSent = false;
 
     protected wordCountTimeout?: number;
+    protected fb = inject(FormBuilder);
 
     constructor() {
         super();

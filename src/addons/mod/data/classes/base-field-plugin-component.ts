@@ -27,8 +27,6 @@ import { toBoolean } from '@/core/transforms/boolean';
 })
 export abstract class AddonModDataFieldPluginBaseComponent implements OnInit, OnChanges {
 
-    protected fb = inject(FormBuilder);
-
     @Input({ required: true }) mode!: AddonModDataTemplateMode; // The render mode.
     @Input({ required: true }) field!: AddonModDataField; // The field to render.
     @Input() value?: Partial<AddonModDataEntryField>; // The value of the field.
@@ -40,6 +38,8 @@ export abstract class AddonModDataFieldPluginBaseComponent implements OnInit, On
     @Output() gotoEntry = new EventEmitter<number>(); // Action to perform.
     // Output called when the field is initialized with a value and it didn't have one already.
     @Output() onFieldInit = new EventEmitter<AddonModDataEntryFieldInitialized>();
+
+    protected fb = inject(FormBuilder);
 
     /**
      * Add the form control for the search mode.

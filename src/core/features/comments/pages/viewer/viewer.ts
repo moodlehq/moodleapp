@@ -64,8 +64,6 @@ import { CoreCourses } from '@features/courses/services/courses';
 })
 export default class CoreCommentsViewerPage implements OnInit, OnDestroy, AfterViewInit {
 
-    protected route = inject(ActivatedRoute);
-
     @ViewChild(IonContent) content?: IonContent;
 
     comments: CoreCommentsDataToDisplay[] = [];
@@ -99,6 +97,7 @@ export default class CoreCommentsViewerPage implements OnInit, OnDestroy, AfterV
     protected viewDestroyed = false;
     protected scrollBottom = true;
     protected scrollElement?: HTMLElement;
+    protected route = inject(ActivatedRoute);
 
     constructor() {
         this.currentUserId = CoreSites.getCurrentSiteUserId();

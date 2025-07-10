@@ -31,14 +31,14 @@ import { CoreSharedModule } from '@/core/shared.module';
 })
 export class AddonModQuizAccessPasswordComponent implements OnInit {
 
-    private fb = inject(FormBuilder);
-
     @Input() rule?: string; // The name of the rule.
     @Input() quiz?: AddonModQuizQuizWSData; // The quiz the rule belongs to.
     @Input() attempt?: AddonModQuizAttemptWSData; // The attempt being started/continued.
     @Input({ transform: toBoolean }) prefetch = false; // Whether the user is prefetching the quiz.
     @Input() siteId?: string; // Site ID.
     @Input() form?: FormGroup;
+
+    private fb = inject(FormBuilder);
 
     /**
      * @inheritdoc

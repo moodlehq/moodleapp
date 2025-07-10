@@ -85,8 +85,6 @@ import { CoreRatingRateComponent } from '@features/rating/components/rate/rate';
 })
 export class AddonModForumPostComponent implements OnInit, OnDestroy, OnChanges {
 
-    protected element: HTMLElement = inject(ElementRef).nativeElement;
-
     @Input({ required: true }) post!: AddonModForumPost; // Post.
     @Input({ required: true }) courseId!: number; // Post's course ID.
     @Input({ required: true }) discussionId!: number; // Post's' discussion ID.
@@ -116,6 +114,7 @@ export class AddonModForumPostComponent implements OnInit, OnDestroy, OnChanges 
     optionsMenuEnabled = false;
 
     protected preparePostData?: AddonModForumPrepareDraftAreaForPostWSResponse;
+    protected element: HTMLElement = inject(ElementRef).nativeElement;
 
     get showForm(): boolean {
         return this.post.id > 0

@@ -31,8 +31,6 @@ import { CoreSharedModule } from '@/core/shared.module';
 })
 export class AddonModQuizAccessOfflineAttemptsComponent implements OnInit {
 
-    private fb = inject(FormBuilder);
-
     @Input() rule?: string; // The name of the rule.
     @Input() quiz?: AddonModQuizQuizWSData; // The quiz the rule belongs to.
     @Input() attempt?: AddonModQuizAttemptWSData; // The attempt being started/continued.
@@ -41,6 +39,8 @@ export class AddonModQuizAccessOfflineAttemptsComponent implements OnInit {
     @Input() form?: FormGroup; // Form where to add the form control.
 
     syncTimeReadable = '';
+
+    private fb = inject(FormBuilder);
 
     /**
      * @inheritdoc

@@ -33,14 +33,13 @@ import { CoreCourseModuleHelper } from '../services/course-module-helper';
 })
 export class CoreCourseModuleMainActivityComponent extends CoreCourseModuleMainResourceComponent implements OnInit, OnDestroy {
 
-    protected content = inject(IonContent);
-
     @Input() group?: number; // Group ID the component belongs to.
 
     moduleName = ''; // Translated module name. Calculated from pluginName.
 
     protected syncObserver?: CoreEventObserver; // It will observe the sync auto event.
     protected syncEventName?: string; // Auto sync event name.
+    protected content = inject(IonContent);
 
     /**
      * @inheritdoc

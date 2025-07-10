@@ -71,8 +71,6 @@ import { DEFAULT_TEXT_FORMAT } from '@singletons/text';
 })
 export default class AddonCalendarEditEventPage implements OnInit, OnDestroy, CanLeave {
 
-    protected fb = inject(FormBuilder);
-
     @ViewChild(CoreEditorRichTextEditorComponent) descriptionEditor!: CoreEditorRichTextEditorComponent;
     @ViewChild('editEventForm') formElement!: ElementRef;
 
@@ -110,6 +108,7 @@ export default class AddonCalendarEditEventPage implements OnInit, OnDestroy, Ca
     protected showAll = false;
     protected isDestroyed = false;
     protected gotEventData = false;
+    protected fb = inject(FormBuilder);
 
     constructor() {
         this.currentSite = CoreSites.getRequiredCurrentSite();

@@ -27,8 +27,6 @@ import { CoreFormFields, CoreForms } from '@singletons/form';
 @Directive()
 export class CoreSitePluginsCallWSBaseDirective implements OnInit, OnDestroy {
 
-    protected parentContent = inject(CoreSitePluginsPluginContentComponent);
-
     @Input({ required: true }) name!: string; // The name of the WS to call.
     @Input() params?: Record<string, unknown>; // The params for the WS call.
     @Input() preSets?: CoreSiteWSPreSets; // The preSets for the WS call.
@@ -39,11 +37,11 @@ export class CoreSitePluginsCallWSBaseDirective implements OnInit, OnDestroy {
     @Output() onDone = new EventEmitter<void>(); // Notifies when the WS call is done (either success or fail).
 
     protected logger: CoreLogger;
-    protected element: HTMLElement;
+    protected element: HTMLElement = inject(ElementRef).nativeElement;
     protected invalidateObserver?: Subscription;
+    protected parentContent = inject(CoreSitePluginsPluginContentComponent);
 
     constructor() {
-        this.element = inject(ElementRef).nativeElement;
         this.logger = CoreLogger.getInstance('CoreSitePluginsCallWS');
     }
 

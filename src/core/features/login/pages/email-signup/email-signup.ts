@@ -56,10 +56,6 @@ import { CoreUserProfileFieldComponent } from '@features/user/components/user-pr
 })
 export default class CoreLoginEmailSignupPage implements OnInit {
 
-    protected fb = inject(FormBuilder);
-    protected elementRef = inject(ElementRef);
-    protected changeDetector = inject(ChangeDetectorRef);
-
     // Accept A-Z in strict chars pattern to be able to differentiate it from the lowercase pattern.
     protected static readonly USERNAME_STRICT_CHARS_PATTERN = '^[A-Z-.@_a-z0-9]*$';
     protected static readonly USERNAME_LOWERCASE_PATTERN = '^[^A-Z]*$';
@@ -101,6 +97,10 @@ export default class CoreLoginEmailSignupPage implements OnInit {
     email2Errors: CoreInputErrorsMessages;
     policyErrors: CoreInputErrorsMessages;
     namefieldsErrors?: Record<string, CoreInputErrorsMessages>;
+
+    protected fb = inject(FormBuilder);
+    protected element: HTMLElement = inject(ElementRef).nativeElement;
+    protected changeDetector = inject(ChangeDetectorRef);
 
     constructor() {
         // Create the ageVerificationForm.
@@ -303,7 +303,7 @@ export default class CoreLoginEmailSignupPage implements OnInit {
 
             // Scroll to the first element with errors.
             const errorFound = await CoreDom.scrollToInputError(
-                this.elementRef.nativeElement,
+                this.element,
             );
 
             if (!errorFound) {

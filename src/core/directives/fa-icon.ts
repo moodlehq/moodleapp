@@ -33,7 +33,6 @@ export class CoreFaIconDirective implements AfterViewInit, OnChanges {
     @Input() name = '';
 
     protected element: HTMLElement = inject(ElementRef).nativeElement;
-
     protected logger: CoreLogger;
 
     constructor() {

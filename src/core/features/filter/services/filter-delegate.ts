@@ -82,7 +82,6 @@ export interface CoreFilterHandler extends CoreDelegateHandler {
 export class CoreFilterDelegateService extends CoreDelegate<CoreFilterHandler> {
 
     protected defaultHandler = inject(CoreFilterDefaultHandler);
-
     protected featurePrefix = 'CoreFilterDelegate_';
     protected handlerNameProperty = 'filterName';
 

@@ -57,8 +57,6 @@ import { CoreSharedModule } from '@/core/shared.module';
 })
 export default class AddonModWikiEditPage implements OnInit, OnDestroy, CanLeave {
 
-    protected formBuilder = inject(FormBuilder);
-
     @ViewChild('editPageForm') formElement?: ElementRef;
 
     cmId?: number; // Course module ID.
@@ -88,6 +86,7 @@ export default class AddonModWikiEditPage implements OnInit, OnDestroy, CanLeave
     protected renewLockInterval?: number; // An interval to renew the lock every certain time.
     protected forceLeave = false; // To allow leaving the page without checking for changes.
     protected isDestroyed = false; // Whether the page has been destroyed.
+    protected formBuilder = inject(FormBuilder);
 
     constructor() {
         this.contentControl = this.formBuilder.control('', { nonNullable: true });

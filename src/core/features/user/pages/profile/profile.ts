@@ -50,15 +50,6 @@ import { CORE_USER_PROFILE_REFRESHED } from '@features/user/constants';
 })
 export default class CoreUserProfilePage implements OnInit, OnDestroy {
 
-    protected route = inject(ActivatedRoute);
-
-    protected courseId?: number;
-    protected userId!: number;
-    protected site!: CoreSite;
-    protected obsProfileRefreshed: CoreEventObserver;
-    protected subscription?: Subscription;
-    protected logView: (user: CoreUserProfile) => void;
-
     userLoaded = false;
     isLoadingHandlers = false;
     user?: CoreUserProfile;
@@ -70,6 +61,14 @@ export default class CoreUserProfilePage implements OnInit, OnDestroy {
     buttonHandlers: CoreUserProfileHandlerData[] = [];
 
     users?: CoreUserSwipeItemsManager;
+
+    protected courseId?: number;
+    protected userId!: number;
+    protected site!: CoreSite;
+    protected obsProfileRefreshed: CoreEventObserver;
+    protected subscription?: Subscription;
+    protected logView: (user: CoreUserProfile) => void;
+    protected route = inject(ActivatedRoute);
 
     constructor() {
         this.obsProfileRefreshed = CoreEvents.on(CORE_USER_PROFILE_REFRESHED, (data) => {

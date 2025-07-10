@@ -46,8 +46,6 @@ import { CoreSharedModule } from '@/core/shared.module';
 })
 export default class CoreCourseIndexPage implements OnInit, OnDestroy {
 
-    protected route = inject(ActivatedRoute);
-
     @ViewChild(CoreTabsOutletComponent) tabsComponent?: CoreTabsOutletComponent;
     @ViewChild('courseThumb') courseThumb?: ElementRef;
 
@@ -74,6 +72,8 @@ export default class CoreCourseIndexPage implements OnInit, OnDestroy {
         title: 'core.course',
         pageParams: {},
     };
+
+    protected route = inject(ActivatedRoute);
 
     constructor() {
         this.selectTabObserver = CoreEvents.on(CoreEvents.SELECT_COURSE_TAB, (data) => {
