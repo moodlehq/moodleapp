@@ -31,10 +31,6 @@ export class CorePluginFileDelegateService extends CoreDelegate<CorePluginFileHa
 
     protected handlerNameProperty = 'component';
 
-    constructor() {
-        super();
-    }
-
     /**
      * React to a file being deleted.
      *

@@ -68,10 +68,6 @@ export class CoreQuestionBehaviourDelegateService extends CoreDelegate<CoreQuest
     protected defaultHandler = inject(CoreQuestionBehaviourDefaultHandler);
     protected handlerNameProperty = 'type';
 
-    constructor() {
-        super();
-    }
-
     /**
      * Determine a question new state based on its answer(s).
      *

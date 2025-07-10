@@ -85,10 +85,6 @@ export class CoreFilterDelegateService extends CoreDelegate<CoreFilterHandler> {
     protected featurePrefix = 'CoreFilterDelegate_';
     protected handlerNameProperty = 'filterName';
 
-    constructor() {
-        super();
-    }
-
     /**
      * @inheritdoc
      */

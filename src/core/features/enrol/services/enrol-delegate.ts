@@ -128,10 +128,6 @@ export class CoreEnrolDelegateService extends CoreDelegate<CoreEnrolHandler> {
     protected handlerNameProperty = 'type';
     protected featurePrefix = 'CoreEnrolDelegate_';
 
-    constructor() {
-        super();
-    }
-
     /**
      * Check if an enrolment plugin is supported.
      *

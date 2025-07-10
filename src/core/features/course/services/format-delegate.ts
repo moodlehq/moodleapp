@@ -165,10 +165,6 @@ export class CoreCourseFormatDelegateService extends CoreDelegate<CoreCourseForm
     protected featurePrefix = 'CoreCourseFormatDelegate_';
     protected handlerNameProperty = 'format';
 
-    constructor() {
-        super();
-    }
-
     /**
      * Whether it allows seeing all sections at the same time. Defaults to true.
      *

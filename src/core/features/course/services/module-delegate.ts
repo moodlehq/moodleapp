@@ -263,10 +263,6 @@ export class CoreCourseModuleDelegateService extends CoreDelegate<CoreCourseModu
     protected featurePrefix = CORE_COURSE_MODULE_FEATURE_PREFIX;
     protected handlerNameProperty = 'modName';
 
-    constructor() {
-        super();
-    }
-
     /**
      * Get the component to render the module.
      *

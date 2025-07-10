@@ -50,10 +50,6 @@ export class CoreTagAreaDelegateService extends CoreDelegate<CoreTagAreaHandler>
 
     protected handlerNameProperty = 'type';
 
-    constructor() {
-        super();
-    }
-
     /**
      * @inheritdoc
      */

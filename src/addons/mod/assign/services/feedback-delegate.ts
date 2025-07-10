@@ -215,10 +215,6 @@ export class AddonModAssignFeedbackDelegateService extends CoreDelegate<AddonMod
     protected handlerNameProperty = 'type';
     protected defaultHandler = inject(AddonModAssignDefaultFeedbackHandler);
 
-    constructor() {
-        super();
-    }
-
     /**
      * @inheritdoc
      */

@@ -89,11 +89,5 @@ export type CoreSettingsPageHandlerToDisplay = CoreDelegateToDisplay & CoreSetti
  */
 @Injectable({ providedIn: 'root' })
 export class CoreSettingsDelegateService extends CoreSortedDelegate<CoreSettingsHandlerToDisplay, CoreSettingsHandler> {
-
-    constructor() {
-        super();
-    }
-
 }
-
 export const CoreSettingsDelegate = makeSingleton(CoreSettingsDelegateService);

@@ -55,10 +55,6 @@ export class CoreCourseModulePrefetchDelegateService extends CoreDelegate<CoreCo
     // Promises and observables for prefetching, to prevent downloading same section twice at the same time and notify progress.
     protected prefetchData: Record<string, Record<string, OngoingPrefetch>> = {};
 
-    constructor() {
-        super();
-    }
-
     /**
      * Initialize.
      */
