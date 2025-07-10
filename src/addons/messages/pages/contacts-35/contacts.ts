@@ -46,8 +46,6 @@ import { CoreSearchBoxComponent } from '@features/search/components/search-box/s
 })
 export default class AddonMessagesContacts35Page implements OnInit, OnDestroy {
 
-    protected route = inject(ActivatedRoute);
-
     @ViewChild(CoreSplitViewComponent) splitView!: CoreSplitViewComponent;
 
     protected searchingMessages: string;
@@ -55,6 +53,7 @@ export default class AddonMessagesContacts35Page implements OnInit, OnDestroy {
     protected siteId: string;
     protected noSearchTypes = ['online', 'offline', 'blocked', 'strangers'];
     protected memberInfoObserver: CoreEventObserver;
+    protected route = inject(ActivatedRoute);
 
     loaded = false;
     discussionUserId?: number;

@@ -36,8 +36,6 @@ import { CoreUtils } from '@singletons/utils';
 })
 export class CoreContextMenuItemComponent implements OnInit, OnDestroy, OnChanges {
 
-    protected ctxtMenu = inject(CoreContextMenuComponent);
-
     @Input() content?: string; // Content of the item.
     @Input() iconAction?: string; // Name of the icon to show on the right side of the item. Represents the action to do on click.
     // If is "spinner" an spinner will be shown.
@@ -65,6 +63,7 @@ export class CoreContextMenuItemComponent implements OnInit, OnDestroy, OnChange
 
     protected hasAction = false;
     protected destroyed = false;
+    protected ctxtMenu = inject(CoreContextMenuComponent);
 
     constructor() {
         this.action = new EventEmitter();

@@ -59,7 +59,7 @@ export class CoreContextMenuComponent implements OnInit, OnDestroy {
     protected itemsSubscription: Subscription;
 
     constructor() {
-        const element = inject(ElementRef).nativeElement;
+        const element: HTMLElement = inject(ElementRef).nativeElement;
         const changeDetector = inject(ChangeDetectorRef);
 
         // Create the stream and subscribe to it. We ignore successive changes during 250ms.

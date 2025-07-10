@@ -67,10 +67,6 @@ import { CoreRatingAggregateComponent } from '@features/rating/components/aggreg
 })
 export default class AddonModGlossaryEntryPage implements OnInit, OnDestroy {
 
-    protected splitView = inject(CoreSplitViewComponent, { optional: true });
-    protected route = inject(ActivatedRoute);
-    protected courseContentsPage = inject(CoreCourseContentsPage, { optional: true });
-
     @ViewChild(CoreCommentsCommentsComponent) comments?: CoreCommentsCommentsComponent;
 
     component = ADDON_MOD_GLOSSARY_COMPONENT_LEGACY;
@@ -94,6 +90,9 @@ export default class AddonModGlossaryEntryPage implements OnInit, OnDestroy {
 
     protected entrySlug!: string;
     protected logView: () => void;
+    protected splitView = inject(CoreSplitViewComponent, { optional: true });
+    protected route = inject(ActivatedRoute);
+    protected courseContentsPage = inject(CoreCourseContentsPage, { optional: true });
 
     constructor() {
         this.logView = CoreTime.once(async () => {

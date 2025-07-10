@@ -82,8 +82,6 @@ import { CoreUtils } from '@singletons/utils';
 })
 export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy {
 
-    protected splitviewCtrl = inject(CoreSplitViewComponent, { optional: true });
-
     @ViewChildren(AddonModAssignSubmissionPluginComponent) submissionComponents!:
         QueryList<AddonModAssignSubmissionPluginComponent>;
 
@@ -145,6 +143,7 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy {
     protected previousAttempt?: AddonModAssignSubmissionPreviousAttempt; // The previous attempt.
     protected submissionStatusAvailable = false; // Whether we were able to retrieve the submission status.
     protected syncObserver: CoreEventObserver;
+    protected splitviewCtrl = inject(CoreSplitViewComponent, { optional: true });
 
     protected hasOfflineGrade = false;
 

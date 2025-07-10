@@ -42,7 +42,6 @@ import { CoreAlerts } from '@services/overlays/alerts';
 export default class AddonBadgesIssuedBadgePage implements OnInit, OnDestroy {
 
     protected route = inject(ActivatedRoute);
-
     protected badgeHash = '';
     protected userId!: number;
     protected logView: (badge: AddonBadgesUserBadge) => void;

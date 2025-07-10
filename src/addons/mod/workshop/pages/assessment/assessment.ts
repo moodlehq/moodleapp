@@ -65,8 +65,6 @@ import { CoreErrorHelper } from '@services/error-helper';
 })
 export default class AddonModWorkshopAssessmentPage implements OnInit, OnDestroy, CanLeave {
 
-    protected fb = inject(FormBuilder);
-
     @ViewChild('evaluateFormEl') formElement!: ElementRef;
 
     assessment!: AddonModWorkshopSubmissionAssessmentWithFormData;
@@ -109,6 +107,7 @@ export default class AddonModWorkshopAssessmentPage implements OnInit, OnDestroy
     protected currentUserId: number;
     protected forceLeave = false;
     protected logView: () => void;
+    protected fb = inject(FormBuilder);
 
     constructor() {
         this.siteId = CoreSites.getCurrentSiteId();

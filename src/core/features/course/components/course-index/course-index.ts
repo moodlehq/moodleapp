@@ -41,8 +41,6 @@ import { CoreCourseModuleCompletionStatus, CORE_COURSE_ALL_SECTIONS_ID } from '@
 })
 export class CoreCourseCourseIndexComponent implements OnInit {
 
-    protected element: HTMLElement = inject(ElementRef).nativeElement;
-
     @Input() sections: CoreCourseSection[] = [];
     @Input() selectedId?: number;
     @Input() course?: CoreCourseAnyCourseData;
@@ -52,6 +50,8 @@ export class CoreCourseCourseIndexComponent implements OnInit {
     sectionsToRender: CourseIndexSection[] = [];
     loaded = false;
     isModule = sectionContentIsModule;
+
+    protected element: HTMLElement = inject(ElementRef).nativeElement;
 
     /**
      * @inheritdoc

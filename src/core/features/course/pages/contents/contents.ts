@@ -68,8 +68,6 @@ import { CoreSharedModule } from '@/core/shared.module';
 })
 export default class CoreCourseContentsPage implements OnInit, OnDestroy, CoreRefreshContext {
 
-    protected changeDetectorRef = inject(ChangeDetectorRef);
-
     @ViewChild(IonContent) content?: IonContent;
     @ViewChild(CoreCourseFormatComponent) formatComponent?: CoreCourseFormatComponent;
 
@@ -92,7 +90,8 @@ export default class CoreCourseContentsPage implements OnInit, OnDestroy, CoreRe
     protected syncObserver?: CoreEventObserver;
     protected isDestroyed = false;
     protected modulesHaveCompletion = false;
-    protected debouncedUpdateCachedCompletion?: () => void;
+    protected debouncedUpdateCachedCompletion?: () => void; // Update the cached completion after a certain time.
+    protected changeDetectorRef = inject(ChangeDetectorRef);
 
     /**
      * @inheritdoc

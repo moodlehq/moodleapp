@@ -74,7 +74,7 @@ export class CoreUserToursUserTourComponent implements AfterViewInit, OnDestroy 
     focusStyles?: string;
     popoverWrapperStyles?: string;
     popoverWrapperArrowStyles?: string;
-    private element: HTMLElement;
+    private element: HTMLElement = inject(ElementRef).nativeElement;
     private tour?: HTMLElement;
     private wrapperTransform = '';
     private wrapperElement = new CorePromisedValue<HTMLElement>();
@@ -87,8 +87,6 @@ export class CoreUserToursUserTourComponent implements AfterViewInit, OnDestroy 
     protected lastActivatedTime = 0;
 
     constructor() {
-        this.element = inject(ElementRef).nativeElement;
-
         CoreDirectivesRegistry.register(this.element, this);
 
         this.element.addEventListener('click', (event) =>

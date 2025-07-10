@@ -66,11 +66,9 @@ export class CoreH5PPlayerComponent implements OnInit, OnChanges, OnDestroy {
     protected siteCanDownload: boolean;
     protected observer?: CoreEventObserver;
     protected logger: CoreLogger;
-    protected nativeElement: HTMLElement;
+    protected element: HTMLElement = inject(ElementRef).nativeElement;
 
     constructor() {
-        this.nativeElement = inject(ElementRef).nativeElement;
-
         this.logger = CoreLogger.getInstance('CoreH5PPlayerComponent');
         this.site = CoreSites.getRequiredCurrentSite();
         this.siteId = this.site.getId();
@@ -260,7 +258,7 @@ export class CoreH5PPlayerComponent implements OnInit, OnChanges, OnDestroy {
      * @returns The native element.
      */
     getElement(): HTMLElement {
-        return this.nativeElement;
+        return this.element;
     }
 
     /**

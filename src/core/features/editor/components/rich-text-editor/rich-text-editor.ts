@@ -68,8 +68,6 @@ import { convertTextToHTMLElement } from '@/core/utils/create-html-element';
 })
 export class CoreEditorRichTextEditorComponent implements AfterViewInit, OnDestroy, OnInit {
 
-    protected content = inject(IonContent);
-
     private static readonly MIN_HEIGHT = 200; // Minimum height of the editor.
     private static readonly DRAFT_AUTOSAVE_FREQUENCY = 30000;
 
@@ -102,12 +100,13 @@ export class CoreEditorRichTextEditorComponent implements AfterViewInit, OnDestr
     protected originalContent?: string;
     protected autoSaveInterval?: number;
     protected resetObserver?: CoreEventObserver;
-    protected element: HTMLElement;
+    protected element: HTMLElement = inject(ElementRef).nativeElement;
+
+    protected content = inject(IonContent);
 
     constructor() {
          // Generate a "unique" ID based on timestamp.
         this.pageInstance = `app_${Date.now()}`;
-        this.element = inject(ElementRef).nativeElement;
     }
 
     /**

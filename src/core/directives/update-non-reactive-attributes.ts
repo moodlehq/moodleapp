@@ -27,9 +27,8 @@ import { Directive, ElementRef, OnDestroy, OnInit, inject } from '@angular/core'
 })
 export class CoreUpdateNonReactiveAttributesDirective implements OnInit, OnDestroy {
 
-    protected element: HTMLIonButtonElement = inject(ElementRef).nativeElement;
-
     protected mutationObserver: MutationObserver;
+    protected element: HTMLIonButtonElement = inject(ElementRef).nativeElement;
 
     constructor() {
         this.mutationObserver = new MutationObserver(() => {

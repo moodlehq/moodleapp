@@ -55,13 +55,11 @@ export class CoreQuestionBaseComponent<T extends AddonModQuizQuestion = AddonMod
     partialCorrectIcon = '';
 
     protected logger: CoreLogger;
-    protected hostElement: HTMLElement;
+    protected hostElement: HTMLElement= inject(ElementRef).nativeElement;
     protected onReadyPromise = new CorePromisedValue<void>();
 
     constructor() {
         this.logger = CoreLogger.getInstance(this.constructor.name);
-
-        this.hostElement = inject(ElementRef).nativeElement;
     }
 
     /**

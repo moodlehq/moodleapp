@@ -43,8 +43,6 @@ import { CoreCourseModuleHelper } from '@features/course/services/course-module-
 })
 export class CoreCourseModuleNavigationComponent implements OnInit, OnDestroy {
 
-    protected ionContent = inject(IonContent);
-
     @Input({ required: true }) courseId!: number; // Course ID.
     @Input({ required: true }) currentModuleId!: number; // Current module Id.
 
@@ -54,6 +52,7 @@ export class CoreCourseModuleNavigationComponent implements OnInit, OnDestroy {
     element: HTMLElement = inject(ElementRef).nativeElement;
 
     protected completionObserver: CoreEventObserver;
+    protected ionContent = inject(IonContent);
 
     constructor() {
         const siteId = CoreSites.getCurrentSiteId();

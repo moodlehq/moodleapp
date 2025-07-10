@@ -35,7 +35,6 @@ import { CoreSharedModule } from '@/core/shared.module';
 export default class AddonBadgesBadgeClassPage implements OnInit {
 
     protected route = inject(ActivatedRoute);
-
     protected badgeId = 0;
     protected logView: (badge: AddonBadgesBadgeClass) => void;
 

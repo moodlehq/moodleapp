@@ -67,8 +67,6 @@ import { CoreRatingAggregateComponent } from '@features/rating/components/aggreg
 })
 export default class AddonModDataEntryPage implements OnInit, OnDestroy {
 
-    private cdr = inject(ChangeDetectorRef);
-
     @ViewChild(IonContent) content?: IonContent;
     @ViewChild(CoreCommentsCommentsComponent) comments?: CoreCommentsCommentsComponent;
 
@@ -80,6 +78,7 @@ export default class AddonModDataEntryPage implements OnInit, OnDestroy {
     protected sortBy = 0;
     protected sortDirection = 'DESC';
     protected logView: () => void;
+    private cdr = inject(ChangeDetectorRef);
 
     moduleId = 0;
     courseId!: number;

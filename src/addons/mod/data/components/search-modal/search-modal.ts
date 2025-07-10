@@ -47,8 +47,6 @@ import { CoreCompileHtmlComponent } from '@features/compile/components/compile-h
 })
 export class AddonModDataSearchModalComponent implements OnInit {
 
-    protected fb = inject(FormBuilder);
-
     @ViewChild('searchFormEl') formElement!: ElementRef;
 
     @Input({ required: true }) search!: AddonModDataSearchDataParams;
@@ -67,6 +65,8 @@ export class AddonModDataSearchModalComponent implements OnInit {
     };
 
     fieldsArray: AddonModDataField[] = [];
+
+    protected fb = inject(FormBuilder);
 
     async ngOnInit(): Promise<void> {
         this.advancedIndexed = {};

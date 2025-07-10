@@ -41,8 +41,6 @@ import { CoreSharedModule } from '@/core/shared.module';
 })
 export class CoreEmulatorCaptureMediaComponent implements OnInit, OnDestroy {
 
-    protected changeDetectorRef = inject(ChangeDetectorRef);
-
     @Input() type?: 'video' | 'image' | 'captureimage';
     @Input() maxTime?: number; // Max time to capture.
     @Input() facingMode?: string; // Camera facing mode.
@@ -69,6 +67,7 @@ export class CoreEmulatorCaptureMediaComponent implements OnInit, OnDestroy {
     protected previewMedia?: HTMLVideoElement; // The element to preview the video captured.
     protected mediaBlob?: Blob; // A Blob where the captured data is stored.
     protected localMediaStream?: MediaStream;
+    protected changeDetectorRef = inject(ChangeDetectorRef);
 
     /**
      * @inheritdoc

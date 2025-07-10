@@ -35,13 +35,12 @@ import { CoreWait } from '@singletons/wait';
 })
 export class CoreLoginSiteHelpComponent implements AfterViewInit, OnDestroy {
 
-    protected el = inject<ElementRef<HTMLElement>>(ElementRef);
-
     openQuestion?: number;
     questions: Question[] = [];
     @HostBinding('class.hydrated') hydrated = false;
 
     private promises: CoreCancellablePromise[] = [];
+    protected el: HTMLElement = inject(ElementRef).nativeElement;
 
     constructor() {
         const getStartedTitle = Translate.instant('core.login.faqsetupsitelinktitle');
@@ -116,7 +115,7 @@ export class CoreLoginSiteHelpComponent implements AfterViewInit, OnDestroy {
      * @inheritdoc
      */
     async ngAfterViewInit(): Promise<void> {
-        const answers = Array.from(this.el.nativeElement.querySelectorAll<HTMLElement>('.core-login-site-help--answer'));
+        const answers = Array.from(this.el.querySelectorAll<HTMLElement>('.core-login-site-help--answer'));
 
         await Promise.all(answers.map(async answer => {
             await this.track(CoreWait.waitFor(() => answer.clientHeight !== 0));

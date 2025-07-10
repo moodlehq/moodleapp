@@ -50,8 +50,6 @@ import { CoreSharedModule } from '@/core/shared.module';
 })
 export default class CoreGradesCoursePage implements AfterViewInit, OnDestroy {
 
-    protected element: HTMLElement = inject(ElementRef).nativeElement;
-
     courseId!: number;
     userId!: number;
     gradeId?: number;
@@ -68,6 +66,7 @@ export default class CoreGradesCoursePage implements AfterViewInit, OnDestroy {
 
     protected useLegacyLayout?: boolean; // Whether to use the layout before 4.1.
     protected logView: () => void;
+    protected element: HTMLElement = inject(ElementRef).nativeElement;
 
     constructor() {
         const route = inject(ActivatedRoute);

@@ -24,7 +24,7 @@ export class CoreModalComponent<T=unknown> {
     result: CorePromisedValue<T> = new CorePromisedValue();
 
     constructor() {
-        const element = inject<ElementRef<HTMLElement>>(ElementRef).nativeElement;
+        const element: HTMLElement = inject(ElementRef).nativeElement;
 
         CoreDirectivesRegistry.register(element, this);
     }

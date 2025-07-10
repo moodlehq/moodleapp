@@ -34,8 +34,6 @@ import { CoreDom } from '@singletons/dom';
 })
 export class AddonModQuizNavigationModalComponent implements OnInit {
 
-    protected element: HTMLElement = inject(ElementRef).nativeElement;
-
     @Input() navigation?: AddonModQuizNavigationQuestion[]; // Whether the user is reviewing the attempt.
     @Input({ transform: toBoolean }) summaryShown = false; // Whether summary is currently being shown.
     @Input() nextPage?: number; // Next page.
@@ -46,6 +44,8 @@ export class AddonModQuizNavigationModalComponent implements OnInit {
     correctIcon = '';
     incorrectIcon = '';
     partialCorrectIcon = '';
+
+    protected element: HTMLElement = inject(ElementRef).nativeElement;
 
     /**
      * @inheritdoc

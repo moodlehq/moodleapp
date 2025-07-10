@@ -68,9 +68,6 @@ import { CoreLogger } from '@singletons/logger';
 })
 export class CoreDynamicComponent<ComponentClass> implements OnChanges, DoCheck, AsyncDirective {
 
-    protected cdr = inject(ChangeDetectorRef);
-    protected element: HTMLElement = inject(ElementRef).nativeElement;
-
     @Input() component?: Type<ComponentClass>;
     @Input() data?: Record<string | number, unknown>;
 
@@ -90,6 +87,8 @@ export class CoreDynamicComponent<ComponentClass> implements OnChanges, DoCheck,
     protected logger: CoreLogger;
     protected differ: KeyValueDiffer<unknown, unknown>; // To detect changes in the data input.
     protected lastComponent?: Type<unknown>;
+    protected cdr = inject(ChangeDetectorRef);
+    protected element: HTMLElement = inject(ElementRef).nativeElement;
 
     get instance(): any { // eslint-disable-line @typescript-eslint/no-explicit-any
         return this.promisedInstance.value;

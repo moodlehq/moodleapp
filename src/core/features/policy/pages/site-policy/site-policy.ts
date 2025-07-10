@@ -48,9 +48,6 @@ import { CoreSharedModule } from '@/core/shared.module';
 })
 export default class CorePolicySitePolicyPage implements OnInit, OnDestroy {
 
-    protected elementRef = inject(ElementRef);
-    protected changeDetector = inject(ChangeDetectorRef);
-
     @ViewChild(IonContent) content?: IonContent;
 
     siteName?: string;
@@ -79,6 +76,8 @@ export default class CorePolicySitePolicyPage implements OnInit, OnDestroy {
     protected siteId?: string;
     protected currentSite!: CoreSite;
     protected layoutSubscription?: Subscription;
+    protected element: HTMLElement = inject(ElementRef).nativeElement;
+    protected changeDetector = inject(ChangeDetectorRef);
 
     /**
      * @inheritdoc
@@ -368,7 +367,7 @@ export default class CorePolicySitePolicyPage implements OnInit, OnDestroy {
 
             // Scroll to the first element with errors.
             const errorFound = await CoreDom.scrollToInputError(
-                this.elementRef.nativeElement,
+                this.element,
             );
 
             if (!errorFound) {

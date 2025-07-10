@@ -59,8 +59,6 @@ import { CoreLoadings } from '@services/overlays/loadings';
 })
 export default class AddonModQuizReviewPage implements OnInit {
 
-    protected element: HTMLElement = inject(ElementRef).nativeElement;
-
     @ViewChild(IonContent) content?: IonContent;
 
     protected static readonly QUESTIONS_PER_LOAD_WHEN_SHOW_ALL = 10;
@@ -90,6 +88,7 @@ export default class AddonModQuizReviewPage implements OnInit {
     protected currentPage!: number; // The current page being reviewed.
     protected options?: AddonModQuizCombinedReviewOptions; // Review options.
     protected logView: () => void;
+    protected element: HTMLElement = inject(ElementRef).nativeElement;
 
     constructor() {
         this.logView = CoreTime.once(() => this.performLogView(true, {

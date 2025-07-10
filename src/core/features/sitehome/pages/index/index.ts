@@ -52,8 +52,6 @@ import { CoreBlockSideBlocksButtonComponent } from '../../../block/components/si
 })
 export default class CoreSiteHomeIndexPage implements OnInit, OnDestroy {
 
-    protected route = inject(ActivatedRoute);
-
     dataLoaded = false;
     section?: CoreCourseWSSection & {
         hasContent?: boolean;
@@ -70,6 +68,7 @@ export default class CoreSiteHomeIndexPage implements OnInit, OnDestroy {
 
     protected updateSiteObserver: CoreEventObserver;
     protected logView: () => void;
+    protected route = inject(ActivatedRoute);
 
     constructor() {
         // Refresh the enabled flags if site is updated.

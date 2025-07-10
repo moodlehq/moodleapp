@@ -75,9 +75,6 @@ import { CoreBoostrap } from '@singletons/bootstrap';
 })
 export class CoreFormatTextDirective implements OnChanges, OnDestroy, AsyncDirective {
 
-    protected viewContainerRef = inject(ViewContainerRef);
-    protected refreshContext? = inject<CoreRefreshContext>(CORE_REFRESH_CONTEXT, { optional: true });
-
     @ViewChild(CoreCollapsibleItemDirective) collapsible?: CoreCollapsibleItemDirective;
 
     @Input() text?: string; // The text to format.
@@ -109,11 +106,13 @@ export class CoreFormatTextDirective implements OnChanges, OnDestroy, AsyncDirec
     @Output() filterContentRenderingComplete = new EventEmitter<void>(); // Called when the filters have finished rendering content.
     @Output() onClick: EventEmitter<void> = new EventEmitter(); // Called when clicked.
 
-    protected element = inject(ElementRef).nativeElement;
     protected elementControllers: ElementController[] = [];
     protected domPromises: CoreCancellablePromise<void>[] = [];
     protected domElementPromise?: CoreCancellablePromise<void>;
     protected externalContentInstances: CoreExternalContentDirective[] = [];
+    protected element: HTMLElement = inject(ElementRef).nativeElement;
+    protected viewContainerRef = inject(ViewContainerRef);
+    protected refreshContext = inject<CoreRefreshContext>(CORE_REFRESH_CONTEXT, { optional: true });
 
     protected static readonly EMPTY_TEXT = '&nbsp;';
 

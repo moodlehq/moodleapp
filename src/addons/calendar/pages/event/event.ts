@@ -69,8 +69,6 @@ import { CoreSharedModule } from '@/core/shared.module';
 })
 export default class AddonCalendarEventPage implements OnInit, OnDestroy {
 
-    protected route = inject(ActivatedRoute);
-
     protected eventId!: number;
     protected siteHomeId: number;
     protected newEventObserver: CoreEventObserver;
@@ -82,6 +80,7 @@ export default class AddonCalendarEventPage implements OnInit, OnDestroy {
     protected currentSiteId: string;
     protected updateCurrentTime?: number;
     protected appResumeSubscription: Subscription;
+    protected route = inject(ActivatedRoute);
 
     eventLoaded = false;
     event?: AddonCalendarEventToDisplay;

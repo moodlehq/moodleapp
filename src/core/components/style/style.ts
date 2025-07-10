@@ -33,10 +33,10 @@ import { CoreDom } from '@singletons/dom';
 })
 export class CoreStyleComponent implements OnChanges {
 
-    protected element: HTMLElement = inject(ElementRef).nativeElement;
-
     @Input() css = ''; // CSS rules.
     @Input() prefix = '';
+
+    protected element: HTMLElement = inject(ElementRef).nativeElement;
 
     /**
      * @inheritdoc

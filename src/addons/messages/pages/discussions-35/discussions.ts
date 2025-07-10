@@ -53,8 +53,6 @@ import { CoreMainMenuUserButtonComponent } from '@features/mainmenu/components/u
 })
 export default class AddonMessagesDiscussions35Page implements OnInit, OnDestroy {
 
-    protected route = inject(ActivatedRoute);
-
     @ViewChild(CoreSplitViewComponent) splitView!: CoreSplitViewComponent;
 
     protected newMessagesObserver: CoreEventObserver;
@@ -63,6 +61,7 @@ export default class AddonMessagesDiscussions35Page implements OnInit, OnDestroy
     protected pushObserver: Subscription;
     protected loadingMessages: string;
     protected siteId: string;
+    protected route = inject(ActivatedRoute);
 
     loaded = false;
     loadingMessage = '';

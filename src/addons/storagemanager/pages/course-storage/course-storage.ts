@@ -59,9 +59,6 @@ import { CoreCourseDownloadStatusHelper } from '@features/course/services/course
 })
 export default class AddonStorageManagerCourseStoragePage implements OnInit, OnDestroy {
 
-    protected element = inject(ElementRef).nativeElement;
-    protected changeDetectorRef = inject(ChangeDetectorRef);
-
     courseId!: number;
     title = '';
     loaded = false;
@@ -88,6 +85,8 @@ export default class AddonStorageManagerCourseStoragePage implements OnInit, OnD
     protected moduleStatusObserver?: CoreEventObserver;
     protected isDestroyed = false;
     protected isGuest = false;
+    protected element: HTMLElement = inject(ElementRef).nativeElement;
+    protected changeDetectorRef = inject(ChangeDetectorRef);
 
     constructor() {
         // Refresh the enabled flags if site is updated.

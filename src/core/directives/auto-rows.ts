@@ -26,9 +26,8 @@ import { Directive, ElementRef, Output, EventEmitter, AfterViewInit, Input, OnCh
 })
 export class CoreAutoRowsDirective implements AfterViewInit, OnChanges {
 
-    protected element: HTMLElement = inject(ElementRef).nativeElement;
-
     protected height = 0;
+    protected element: HTMLElement = inject(ElementRef).nativeElement;
 
     @Input('core-auto-rows') value?: string;
     @Output() onResize: EventEmitter<void>; // Emit when resizing the textarea.

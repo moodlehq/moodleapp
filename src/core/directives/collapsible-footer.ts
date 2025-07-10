@@ -38,8 +38,6 @@ import { toBoolean } from '../transforms/boolean';
 })
 export class CoreCollapsibleFooterDirective implements OnInit, OnDestroy {
 
-    protected ionContent = inject(IonContent);
-
     @Input({ transform: toBoolean }) appearOnBottom = false; // Whether footer should re-appear when reaching the bottom.
 
     protected id = '0';
@@ -61,6 +59,7 @@ export class CoreCollapsibleFooterDirective implements OnInit, OnDestroy {
     protected keyUpListener?: EventListener;
     protected page?: HTMLElement;
     protected moduleNav: HTMLElement | null = null;
+    protected ionContent = inject(IonContent);
 
     /**
      * @inheritdoc

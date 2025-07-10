@@ -66,8 +66,6 @@ import { CoreSharedModule } from '@/core/shared.module';
 })
 export default class AddonModAssignEditPage implements OnInit, OnDestroy, CanLeave {
 
-    protected route = inject(ActivatedRoute);
-
     @ViewChild('editSubmissionForm') formElement?: ElementRef;
 
     title: string; // Title to display.
@@ -91,6 +89,7 @@ export default class AddonModAssignEditPage implements OnInit, OnDestroy, CanLea
     protected isDestroyed = false; // Whether the component has been destroyed.
     protected forceLeave = false; // To allow leaving the page without checking for changes.
     protected timeUpToast?: HTMLIonToastElement;
+    protected route = inject(ActivatedRoute);
 
     constructor() {
         this.userId = CoreSites.getCurrentSiteUserId(); // Right now we can only edit current user's submissions.

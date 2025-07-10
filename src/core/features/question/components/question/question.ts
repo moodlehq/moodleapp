@@ -55,9 +55,6 @@ import { CoreSharedModule } from '@/core/shared.module';
 })
 export class CoreQuestionComponent implements OnInit, AsyncDirective {
 
-    protected changeDetector = inject(ChangeDetectorRef);
-    protected element = inject(ElementRef);
-
     @Input() question?: CoreQuestionQuestion; // The question to render.
     @Input() component?: string; // The component the question belongs to.
     @Input() componentId?: number; // ID of the component the question belongs to.
@@ -93,6 +90,9 @@ export class CoreQuestionComponent implements OnInit, AsyncDirective {
 
     protected logger: CoreLogger;
 
+    protected changeDetector = inject(ChangeDetectorRef);
+    protected element: HTMLElement = inject(ElementRef).nativeElement;
+
     get showQuestion(): boolean {
         return this.showQuestionPromise.isResolved();
     }
@@ -109,7 +109,7 @@ export class CoreQuestionComponent implements OnInit, AsyncDirective {
 
     constructor() {
         this.logger = CoreLogger.getInstance('CoreQuestionComponent');
-        CoreDirectivesRegistry.register(this.element.nativeElement, this);
+        CoreDirectivesRegistry.register(this.element, this);
     }
 
     /**

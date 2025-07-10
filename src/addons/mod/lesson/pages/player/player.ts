@@ -74,9 +74,6 @@ import { CoreSharedModule } from '@/core/shared.module';
 })
 export default class AddonModLessonPlayerPage implements OnInit, OnDestroy, CanLeave {
 
-    protected changeDetector = inject(ChangeDetectorRef);
-    protected formBuilder = inject(FormBuilder);
-
     @ViewChild(IonContent) content?: IonContent;
     @ViewChild('questionFormEl') formElement?: ElementRef;
 
@@ -120,6 +117,8 @@ export default class AddonModLessonPlayerPage implements OnInit, OnDestroy, CanL
     protected firstPageLoaded?: boolean; // Whether the first page has been loaded.
     protected retakeToReview?: number; // Retake to review.
     protected menuShown = false;
+    protected changeDetector = inject(ChangeDetectorRef);
+    protected formBuilder = inject(FormBuilder);
 
     /**
      * @inheritdoc

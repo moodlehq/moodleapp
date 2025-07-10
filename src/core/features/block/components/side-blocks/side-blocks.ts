@@ -40,8 +40,6 @@ import { CoreCoursesMyPageName } from '@features/courses/constants';
 })
 export class CoreBlockSideBlocksComponent implements OnInit {
 
-    protected element: HTMLElement = inject(ElementRef).nativeElement;
-
     @Input({ required: true }) contextLevel!: ContextLevel;
     @Input({ required: true }) instanceId!: number;
     @Input() initialBlockInstanceId?: number;
@@ -51,6 +49,8 @@ export class CoreBlockSideBlocksComponent implements OnInit {
 
     loaded = false;
     blocks: CoreCourseBlock[] = [];
+
+    protected element: HTMLElement = inject(ElementRef).nativeElement;
 
     /**
      * @inheritdoc

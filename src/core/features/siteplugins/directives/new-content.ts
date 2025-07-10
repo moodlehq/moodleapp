@@ -48,8 +48,6 @@ import { ContextLevel } from '@/core/constants';
 })
 export class CoreSitePluginsNewContentDirective implements OnInit {
 
-    protected parentContent = inject(CoreSitePluginsPluginContentComponent, { optional: true });
-
     @Input() component?: string; // The component of the new content. If not provided, use the same component as current page.
     @Input() method?: string; // The method to get the new content. If not provided, use the same method as current page.
     @Input() args?: Record<string, unknown>; // The params to get the new content.
@@ -66,11 +64,8 @@ export class CoreSitePluginsNewContentDirective implements OnInit {
     @Input() courseId?: number; // Course ID the text belongs to. It can be used to improve performance with filters.
     @Input({ transform: toBoolean }) ptrEnabled = true; // Whether PTR should be enabled in the new page.
 
-    protected element: HTMLElement;
-
-    constructor() {
-        this.element = inject(ElementRef).nativeElement;
-    }
+    protected element: HTMLElement = inject(ElementRef).nativeElement;
+    protected parentContent = inject(CoreSitePluginsPluginContentComponent, { optional: true });
 
     /**
      * @inheritdoc

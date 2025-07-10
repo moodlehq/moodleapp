@@ -35,8 +35,6 @@ import { CoreSharedModule } from '@/core/shared.module';
 })
 export class AddonMessagesConversationInfoComponent implements OnInit {
 
-    protected route = inject(ActivatedRoute);
-
     @Input() conversationId = 0;
 
     loaded = false;
@@ -44,6 +42,8 @@ export class AddonMessagesConversationInfoComponent implements OnInit {
     members: AddonMessagesConversationMember[] = [];
     canLoadMore = false;
     loadMoreError = false;
+
+    protected route = inject(ActivatedRoute);
 
     /**
      * @inheritdoc

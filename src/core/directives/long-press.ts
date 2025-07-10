@@ -28,11 +28,12 @@ export class CoreLongPressDirective implements OnInit, OnDestroy {
 
     protected static readonly HOLD_DURATION = 500;
 
-    protected element: HTMLElement = inject(ElementRef).nativeElement;
     pressGesture?: Gesture;
     timeout?: number;
 
     @Output() longPress = new EventEmitter<GestureDetail>();
+
+    protected element: HTMLElement = inject(ElementRef).nativeElement;
 
     constructor() {
         this.element.setAttribute('tappable', '');

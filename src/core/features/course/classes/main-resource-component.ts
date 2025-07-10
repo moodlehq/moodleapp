@@ -52,8 +52,6 @@ export type CoreCourseResourceDownloadResult = {
 })
 export class CoreCourseModuleMainResourceComponent implements OnInit, OnDestroy, CoreCourseModuleMainComponent {
 
-    protected courseContentsPage = inject(CoreCourseContentsPage, { optional: true });
-
     @Input({ required: true }) module!: CoreCourseModuleData; // The module of the component.
     @Input({ required: true }) courseId!: number; // Course ID the component belongs to.
     @Output() dataRetrieved = new EventEmitter<unknown>(); // Called to notify changes the index page from the main component.
@@ -80,6 +78,8 @@ export class CoreCourseModuleMainResourceComponent implements OnInit, OnDestroy,
     protected isDestroyed = false; // Whether the component is destroyed.
     protected checkCompletionAfterLog = true; // Whether to check if completion has changed after calling logActivity.
     protected finishSuccessfulFetch: () => void;
+
+    protected courseContentsPage = inject(CoreCourseContentsPage, { optional: true });
 
     constructor() {
         this.logger = CoreLogger.getInstance(this.constructor.name);

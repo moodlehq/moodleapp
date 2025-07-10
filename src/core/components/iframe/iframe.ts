@@ -62,8 +62,6 @@ import { BackButtonPriority } from '@/core/constants';
 })
 export class CoreIframeComponent implements OnChanges, OnDestroy {
 
-    protected element: HTMLElement = inject(ElementRef).nativeElement;
-
     static loadingTimeout = 15000;
 
     @ViewChild('iframe') set iframeElement(iframeRef: ElementRef | undefined) {
@@ -97,6 +95,7 @@ export class CoreIframeComponent implements OnChanges, OnDestroy {
     protected navSubscription?: Subscription;
     protected messageListenerFunction: (event: MessageEvent) => Promise<void>;
     protected backButtonListener?: (event: BackButtonEvent) => void;
+    protected element: HTMLElement = inject(ElementRef).nativeElement;
 
     constructor() {
         this.loaded = new EventEmitter<HTMLIFrameElement>();

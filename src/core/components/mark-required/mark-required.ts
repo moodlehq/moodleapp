@@ -43,8 +43,9 @@ export class CoreMarkRequiredComponent implements AfterViewInit {
 
     @Input({ alias: 'core-mark-required', transform: toBoolean }) coreMarkRequired = true;
 
-    protected hostElement: HTMLElement = inject(ElementRef).nativeElement;
     requiredLabel = Translate.instant('core.required');
+
+    protected hostElement: HTMLElement = inject(ElementRef).nativeElement;
 
     /**
      * @inheritdoc

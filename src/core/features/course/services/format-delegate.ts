@@ -162,7 +162,6 @@ export interface CoreCourseFormatHandler extends CoreDelegateHandler {
 export class CoreCourseFormatDelegateService extends CoreDelegate<CoreCourseFormatHandler> {
 
     protected defaultHandler = inject(CoreCourseFormatDefaultHandler);
-
     protected featurePrefix = 'CoreCourseFormatDelegate_';
     protected handlerNameProperty = 'format';
 

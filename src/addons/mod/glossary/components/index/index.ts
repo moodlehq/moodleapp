@@ -79,8 +79,6 @@ import { CoreSharedModule } from '@/core/shared.module';
 export class AddonModGlossaryIndexComponent extends CoreCourseModuleMainActivityComponent
     implements OnInit, AfterViewInit, OnDestroy {
 
-    route = inject(ActivatedRoute);
-
     @ViewChild(CoreSplitViewComponent) splitView!: CoreSplitViewComponent;
 
     component = ADDON_MOD_GLOSSARY_COMPONENT_LEGACY;
@@ -90,6 +88,8 @@ export class AddonModGlossaryIndexComponent extends CoreCourseModuleMainActivity
     loadMoreError = false;
     loadingMessage: string;
     promisedEntries: CorePromisedValue<AddonModGlossaryEntriesManager>;
+
+    route = inject(ActivatedRoute);
 
     protected hasOfflineEntries = false;
     protected hasOfflineRatings = false;

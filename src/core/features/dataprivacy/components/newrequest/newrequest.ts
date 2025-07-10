@@ -38,8 +38,6 @@ import { CoreAlerts } from '@services/overlays/alerts';
 })
 export class CoreDataPrivacyNewRequestComponent implements OnInit {
 
-    protected fb = inject(FormBuilder);
-
     @Input() accessInfo?: CoreDataPrivacyGetAccessInformationWSResponse;
     @Input() createType?: CoreDataPrivacyDataRequestType;
 
@@ -48,6 +46,8 @@ export class CoreDataPrivacyNewRequestComponent implements OnInit {
     // Form variables.
     form: FormGroup;
     typeControl: FormControl<CoreDataPrivacyDataRequestType>;
+
+    protected fb = inject(FormBuilder);
 
     constructor() {
         this.form = new FormGroup({});

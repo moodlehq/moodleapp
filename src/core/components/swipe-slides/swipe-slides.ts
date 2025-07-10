@@ -53,8 +53,6 @@ import { CoreBaseModule } from '@/core/base.module';
 })
 export class CoreSwipeSlidesComponent<Item = unknown> implements OnChanges, OnDestroy, AsyncDirective {
 
-    protected content? = inject(IonContent);
-
     @Input() manager?: CoreSwipeSlidesItemsManager<Item>;
     @Input() options: CoreSwipeSlidesOptions = {};
     @Output() onWillChange = new EventEmitter<CoreSwipeCurrentItemData<Item>>();
@@ -87,12 +85,13 @@ export class CoreSwipeSlidesComponent<Item = unknown> implements OnChanges, OnDe
 
     @ContentChild(TemplateRef) template?: TemplateRef<{item: Item; active: boolean}>; // Template defined by the content.
 
-    protected hostElement: HTMLElement = inject(ElementRef).nativeElement;
     protected unsubscribe?: () => void;
     protected resizeListener: CoreEventObserver;
     protected activeSlideIndex?: number;
     protected onReadyPromise = new CorePromisedValue<void>();
     protected onUpdatePromise: CorePromisedValue<void> | null = null;
+    protected hostElement: HTMLElement = inject(ElementRef).nativeElement;
+    protected content = inject(IonContent);
 
     constructor() {
         this.resizeListener = CoreDom.onWindowResize(() => {

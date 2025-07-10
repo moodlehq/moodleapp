@@ -51,8 +51,6 @@ import { CoreCourseModuleNavigationComponent } from '@features/course/components
 })
 export class CoreSitePluginsModuleIndexComponent implements OnInit, OnDestroy, CoreCourseModuleMainComponent {
 
-    courseContentsPage = inject(CoreCourseContentsPage, { optional: true });
-
     @Input({ required: true }) module!: CoreCourseModuleData; // The module.
     @Input({ required: true }) courseId!: number; // Course ID the module belongs to.
     @Input() pageTitle?: string; // Current page title. It can be used by the "new-content" directives.
@@ -82,6 +80,8 @@ export class CoreSitePluginsModuleIndexComponent implements OnInit, OnDestroy, C
     isDestroyed = false;
 
     jsData?: Record<string, unknown>; // Data to pass to the component.
+
+    courseContentsPage = inject(CoreCourseContentsPage, { optional: true });
 
     /**
      * @inheritdoc

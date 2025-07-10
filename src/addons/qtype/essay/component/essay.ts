@@ -39,11 +39,11 @@ import { CoreSharedModule } from '@/core/shared.module';
 })
 export class AddonQtypeEssayComponent extends CoreQuestionBaseComponent<AddonModQuizEssayQuestion> {
 
-    protected fb = inject(FormBuilder);
-
     formControl?: FormControl<string | null>;
     attachments?: CoreFileEntry[];
     uploadFilesSupported = false;
+
+    protected fb = inject(FormBuilder);
 
     /**
      * @inheritdoc

@@ -305,9 +305,8 @@ export interface AddonModAssignSubmissionHandler extends CoreDelegateHandler {
 @Injectable({ providedIn: 'root' })
 export class AddonModAssignSubmissionDelegateService extends CoreDelegate<AddonModAssignSubmissionHandler> {
 
-    protected defaultHandler = inject(AddonModAssignDefaultSubmissionHandler);
-
     protected handlerNameProperty = 'type';
+    protected defaultHandler = inject(AddonModAssignDefaultSubmissionHandler);
 
     constructor() {
         super();

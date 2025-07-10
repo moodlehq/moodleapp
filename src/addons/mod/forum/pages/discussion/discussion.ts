@@ -85,12 +85,12 @@ type Post = AddonModForumPost & { children?: Post[] };
 })
 export default class AddonModForumDiscussionPage implements OnInit, AfterViewInit, OnDestroy, CanLeave {
 
+    @ViewChild(IonContent) content!: IonContent;
+
     protected splitView = inject(CoreSplitViewComponent, { optional: true });
     protected element: HTMLElement = inject(ElementRef).nativeElement;
     protected route = inject(ActivatedRoute);
     protected courseContentsPage = inject(CoreCourseContentsPage, { optional: true });
-
-    @ViewChild(IonContent) content!: IonContent;
 
     courseId?: number;
     discussionId!: number;

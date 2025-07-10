@@ -113,7 +113,7 @@ export class CoreTabsBaseComponent<T extends CoreTabBase> implements AfterViewIn
     tabAction: CoreTabsRoleTab<T>;
 
     constructor() {
-        const element = inject(ElementRef).nativeElement;
+        const element: HTMLElement = inject(ElementRef).nativeElement;
 
         this.backButtonFunction = (event) => this.backButtonClicked(event);
 

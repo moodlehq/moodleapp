@@ -40,10 +40,8 @@ import { CoreSharedModule } from '@/core/shared.module';
 })
 export class CoreMainMenuUserButtonComponent implements OnInit {
 
-    protected routerOutlet = inject(IonRouterOutlet);
-    protected menuPage = inject(CoreMainMenuPage, { optional: true });
-
     @Input({ transform: toBoolean }) alwaysShow = false;
+
     siteInfo?: CoreSiteInfo;
     isMainScreen = false;
     userTour: CoreUserTourDirectiveOptions = {
@@ -52,6 +50,9 @@ export class CoreMainMenuUserButtonComponent implements OnInit {
         alignment: CoreUserToursAlignment.Start,
         side: CoreScreen.isMobile ? CoreUserToursSide.Start : CoreUserToursSide.End,
     };
+
+    protected routerOutlet = inject(IonRouterOutlet);
+    protected menuPage = inject(CoreMainMenuPage, { optional: true });
 
     constructor() {
         this.siteInfo = CoreSites.getCurrentSite()?.getInfo();

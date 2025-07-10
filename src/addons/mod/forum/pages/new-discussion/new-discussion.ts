@@ -81,10 +81,6 @@ type NewDiscussionData = {
 })
 export default class AddonModForumNewDiscussionPage implements OnInit, OnDestroy, CanLeave {
 
-    protected route = inject(ActivatedRoute);
-    protected splitView = inject(CoreSplitViewComponent, { optional: true });
-    protected courseContentsPage = inject(CoreCourseContentsPage, { optional: true });
-
     @ViewChild('newDiscFormEl') formElement!: ElementRef;
     @ViewChild(CoreEditorRichTextEditorComponent) messageEditor!: CoreEditorRichTextEditorComponent;
 
@@ -126,6 +122,9 @@ export default class AddonModForumNewDiscussionPage implements OnInit, OnDestroy
     protected forceLeave = false;
     protected initialGroupId?: number;
     protected logView: () => void;
+    protected route = inject(ActivatedRoute);
+    protected splitView = inject(CoreSplitViewComponent, { optional: true });
+    protected courseContentsPage = inject(CoreCourseContentsPage, { optional: true });
 
     constructor() {
         this.logView = CoreTime.once(() => {
