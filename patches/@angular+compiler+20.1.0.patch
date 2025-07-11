@@ -1,8 +1,8 @@
 diff --git a/node_modules/@angular/compiler/fesm2022/compiler.mjs b/node_modules/@angular/compiler/fesm2022/compiler.mjs
-index 28520a9..2c48685 100755
+index c302999..e47fc9a 100755
 --- a/node_modules/@angular/compiler/fesm2022/compiler.mjs
 +++ b/node_modules/@angular/compiler/fesm2022/compiler.mjs
-@@ -7278,13 +7278,41 @@ var R3NgModuleMetadataKind;
+@@ -7142,13 +7142,41 @@ var R3NgModuleMetadataKind;
      R3NgModuleMetadataKind[R3NgModuleMetadataKind["Global"] = 0] = "Global";
      R3NgModuleMetadataKind[R3NgModuleMetadataKind["Local"] = 1] = "Local";
  })(R3NgModuleMetadataKind || (R3NgModuleMetadataKind = {}));
