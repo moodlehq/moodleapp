@@ -46,6 +46,7 @@ import {
 import { CoreAlerts } from '@services/overlays/alerts';
 import { CoreErrorHelper } from '@services/error-helper';
 import { CoreSharedModule } from '@/core/shared.module';
+import { CoreEnrolInfoIcon } from '@features/enrol/services/enrol-delegate';
 
 /**
  * This directive is meant to display an item for a list of courses.
@@ -68,7 +69,7 @@ export class CoreCoursesCourseListItemComponent implements OnInit, OnDestroy, On
     @Input({ transform: toBoolean }) showDownload = false; // If true, will show download button.
     @Input() layout: 'listwithenrol'|'summarycard'|'list'|'card' = 'listwithenrol';
 
-    enrolmentIcons: CoreCoursesEnrolmentIcons[] = [];
+    enrolmentIcons: CoreEnrolInfoIcon[] = [];
     isEnrolled = false;
     prefetchCourseData: CorePrefetchStatusInfo = {
         icon: '',

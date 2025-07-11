@@ -23,7 +23,7 @@ import {
     AddonModForumNewDiscussionData,
     AddonModForumReplyDiscussionData,
 } from '@addons/mod/forum/services/forum';
-import { AddonModForumOffline } from '@addons/mod/forum/services/forum-offline';
+import { AddonModForumOffline, AddonModForumOfflineDiscussion } from '@addons/mod/forum/services/forum-offline';
 import { Translate } from '@singletons';
 import { AddonModForumHelper } from '@addons/mod/forum/services/forum-helper';
 import { CoreGroupInfo } from '@services/groups';
@@ -92,7 +92,7 @@ export class AddonModForumIndexComponent extends CoreCourseModuleMainActivityCom
     pluginName = 'forum';
     descriptionNote?: string;
     promisedDiscussions = new CorePromisedValue<AddonModForumDiscussionsManager>();
-    discussionsItems: AddonModForumDiscussionItem[] = [];
+    discussionsItems: (AddonModForumDiscussion | AddonModForumOfflineDiscussion)[] = [];
     fetchFailed = false;
     canAddDiscussion = false;
     addDiscussionText!: string;
@@ -172,7 +172,7 @@ export class AddonModForumIndexComponent extends CoreCourseModuleMainActivityCom
      * @param discussion Discussion
      * @returns Whether the discussion is online.
      */
-    isOnlineDiscussion(discussion: AddonModForumDiscussionItem): boolean {
+    isOnlineDiscussion(discussion: AddonModForumDiscussionItem): discussion is AddonModForumDiscussion {
         return !!this.discussions?.getSource().isOnlineDiscussion(discussion);
     }
 
@@ -182,7 +182,7 @@ export class AddonModForumIndexComponent extends CoreCourseModuleMainActivityCom
      * @param discussion Discussion
      * @returns Whether the discussion is offline.
      */
-    isOfflineDiscussion(discussion: AddonModForumDiscussionItem): boolean {
+    isOfflineDiscussion(discussion: AddonModForumDiscussionItem): discussion is AddonModForumOfflineDiscussion {
         return !!this.discussions?.getSource().isOfflineDiscussion(discussion);
     }
 
@@ -205,7 +205,8 @@ export class AddonModForumIndexComponent extends CoreCourseModuleMainActivityCom
 
         this.sourceUnsubscribe = source.addListener({
             onItemsUpdated: async discussions => {
-                this.discussionsItems = discussions.filter(discussion => !source.isNewDiscussionForm(discussion));
+                this.discussionsItems = discussions.filter(discussion =>
+                    source.isOnlineDiscussion(discussion) || source.isOfflineDiscussion(discussion));
                 this.hasOffline = discussions.some(discussion => source.isOfflineDiscussion(discussion));
 
                 if (!this.forum) {
@@ -220,7 +221,7 @@ export class AddonModForumIndexComponent extends CoreCourseModuleMainActivityCom
                 if (hasOffline) {
                     // Only update new fetched discussions.
                     const promises = discussions.map(async (discussion) => {
-                        if (!this.discussions?.getSource().isOnlineDiscussion(discussion)) {
+                        if (!source.isOnlineDiscussion(discussion)) {
                             return;
                         }
 
