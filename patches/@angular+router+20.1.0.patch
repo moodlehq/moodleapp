@@ -1,5 +1,5 @@
 diff --git a/node_modules/@angular/router/router_module.d.d.ts b/node_modules/@angular/router/router_module.d.d.ts
-index 68b8153..b055e00 100755
+index 34bbb99..b139968 100755
 --- a/node_modules/@angular/router/router_module.d.d.ts
 +++ b/node_modules/@angular/router/router_module.d.d.ts
 @@ -1775,7 +1775,7 @@ declare class ActivatedRoute {
