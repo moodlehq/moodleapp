@@ -32,7 +32,6 @@ type Filter<T=unknown> = T & { checked: boolean };
     selector: 'core-search-global-search-filters',
     templateUrl: 'global-search-filters.html',
     styleUrl: './global-search-filters.scss',
-    standalone: true,
     imports: [
         CoreSharedModule,
     ],

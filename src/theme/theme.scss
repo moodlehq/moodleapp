@@ -10,31 +10,31 @@
  */
 
 /* Global variables */
-@import "globals.scss";
+@import "globals";
 
 /* Application styles */
-@import "theme.design-system.scss";
-@import "theme.custom.scss";
-@import "theme.base.scss";
+@import "theme.design-system";
+@import "theme.custom";
+@import "theme.base";
 
 /* Components */
-@import "components/language.scss";
-@import "components/collapsible-header.scss";
-@import "components/collapsible-item.scss";
-@import "components/error-accordion.scss";
-@import "components/reading-mode.scss";
-@import "components/format-text.scss";
-@import "components/iframe.scss";
-@import "components/mod-label.scss";
-@import "components/rubrics.scss";
-@import "components/table.scss";
-@import "components/videojs.scss";
+@import "components/language";
+@import "components/collapsible-header";
+@import "components/collapsible-item";
+@import "components/error-accordion";
+@import "components/reading-mode";
+@import "components/format-text";
+@import "components/iframe";
+@import "components/mod-label";
+@import "components/rubrics";
+@import "components/table";
+@import "components/videojs";
 
 /* Ionic components overrides */
-@import "components/ionic.scss";
+@import "components/ionic";
 
 /* Some styles from 3rd party libraries. */
-@import "components/bootstrap/utilities/screenreaders.scss";
+@import "components/bootstrap/utilities/screenreaders";
 
 /* Core CSS required for Ionic components to work properly */
 @import "@ionic/angular/css/core.css";
@@ -60,6 +60,6 @@
  * https://ionicframework.com/docs/theming/dark-mode
  */
 
-/* @import '@ionic/angular/css/palettes/dark.always.css'; */
-/* @import '@ionic/angular/css/palettes/dark.class.css'; */
-/* @import '@ionic/angular/css/palettes/dark.system.css'; */
+/* @import '@ionic/angular/css/palettes/dark.always'; */
+/* @import '@ionic/angular/css/palettes/dark.class'; */
+/* @import '@ionic/angular/css/palettes/dark.system'; */

@@ -29,7 +29,6 @@ import { CoreSharedModule } from '@/core/shared.module';
 @Component({
     selector: 'page-core-user-complete-profile',
     templateUrl: 'complete-profile.html',
-    standalone: true,
     imports: [
         CoreSharedModule,
     ],

@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { APP_INITIALIZER, NgModule, Type } from '@angular/core';
+import { NgModule, Type, provideAppInitializer } from '@angular/core';
 
 import { CoreCronDelegate } from '@services/cron';
 import { CORE_SITE_SCHEMAS } from '@services/sites';
@@ -47,17 +47,13 @@ export async function getPushNotificationsServices(): Promise<Type<unknown>[]> {
             useValue: [SITE_SCHEMA],
             multi: true,
         },
-        {
-            provide: APP_INITIALIZER,
-            multi: true,
-            useValue: async () => {
-                // Register the handlers.
-                CoreCronDelegate.register(CorePushNotificationsRegisterCronHandler.instance);
-                CoreCronDelegate.register(CorePushNotificationsUnregisterCronHandler.instance);
+        provideAppInitializer(async () => {
+            // Register the handlers.
+            CoreCronDelegate.register(CorePushNotificationsRegisterCronHandler.instance);
+            CoreCronDelegate.register(CorePushNotificationsUnregisterCronHandler.instance);
 
-                await CorePushNotifications.initialize();
-            },
-        },
+            await CorePushNotifications.initialize();
+        }),
     ],
 })
 export class CorePushNotificationsModule {}

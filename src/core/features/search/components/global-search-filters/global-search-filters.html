@@ -15,7 +15,8 @@
         <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}" />
     </ion-refresher>
     <ion-list>
-        <ng-container *ngIf="searchAreaCategories.length > 0">
+        @if (searchAreaCategories.length > 0) {
+
             <core-spacer />
             <ion-item class="ion-text-wrap heading">
                 <ion-label>
@@ -32,8 +33,10 @@
                     (ionChange)="onSearchAreaCategoryInputChanged(searchAreaCategory)"><core-format-text
                         [text]="searchAreaCategory.name" /></ion-checkbox>
             </ion-item>
-        </ng-container>
-        <ng-container *ngIf="!hideCourses && courses.length > 0">
+
+        }
+        @if (!hideCourses && courses.length > 0) {
+
             <core-spacer />
             <ion-item class="ion-text-wrap heading">
                 <ion-label>
@@ -49,6 +52,7 @@
                 <ion-checkbox labelPlacement="start" [(ngModel)]="course.checked"
                     (ionChange)="onCourseInputChanged(course)"><core-format-text [text]="course.shortname" /></ion-checkbox>
             </ion-item>
-        </ng-container>
+
+        }
     </ion-list>
 </ion-content>

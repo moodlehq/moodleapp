@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit, Type } from '@angular/core';
+import { Component, OnInit, Type, inject } from '@angular/core';
 import { CoreTag } from '@features/tag/services/tag';
 import { ActivatedRoute } from '@angular/router';
 import { CoreTagAreaDelegate } from '../../services/tag-area-delegate';
@@ -27,7 +27,6 @@ import { CoreSharedModule } from '@/core/shared.module';
 @Component({
     selector: 'page-core-tag-index-area',
     templateUrl: 'index-area.html',
-    standalone: true,
     imports: [
         CoreSharedModule,
     ],
@@ -52,9 +51,7 @@ export default class CoreTagIndexAreaPage implements OnInit {
     areaComponent?: Type<unknown>;
     loadMoreError = false;
 
-    constructor(
-        protected route: ActivatedRoute,
-    ) { }
+    protected route = inject(ActivatedRoute);
 
     /**
      * @inheritdoc

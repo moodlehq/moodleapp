@@ -27,7 +27,6 @@ import { CoreSharedModule } from '@/core/shared.module';
     selector: 'page-core-app-settings-about',
     templateUrl: 'about.html',
     styleUrl: 'about.scss',
-    standalone: true,
     imports: [
         CoreSharedModule,
     ],

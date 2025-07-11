@@ -12,12 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, Input, Optional, ViewChild, OnInit, OnDestroy } from '@angular/core';
+import { Component, Input, ViewChild, OnInit, OnDestroy } from '@angular/core';
 import { CoreError } from '@classes/errors/error';
 import { CoreTabsComponent } from '@components/tabs/tabs';
 import { CoreCourseModuleMainActivityComponent } from '@features/course/classes/main-activity-component';
-import CoreCourseContentsPage from '@features/course/pages/contents/contents';
-import { IonContent } from '@ionic/angular';
 import { CoreGroupInfo, CoreGroups } from '@services/groups';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSites } from '@services/sites';
@@ -58,7 +56,6 @@ import { CoreChartType } from '@components/chart/chart';
 @Component({
     selector: 'addon-mod-feedback-index',
     templateUrl: 'addon-mod-feedback-index.html',
-    standalone: true,
     imports: [
         CoreSharedModule,
         CoreCourseModuleInfoComponent,
@@ -102,11 +99,8 @@ export class AddonModFeedbackIndexComponent extends CoreCourseModuleMainActivity
     protected syncEventName = ADDON_MOD_FEEDBACK_AUTO_SYNCED;
     protected checkCompletionAfterLog = false;
 
-    constructor(
-        protected content?: IonContent,
-        @Optional() courseContentsPage?: CoreCourseContentsPage,
-    ) {
-        super('AddonModLessonIndexComponent', content, courseContentsPage);
+    constructor() {
+        super();
 
         // Listen for form submit events.
         this.submitObserver = CoreEvents.on(ADDON_MOD_FEEDBACK_FORM_SUBMITTED, async (data) => {

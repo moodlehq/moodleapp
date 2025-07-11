@@ -23,7 +23,6 @@ import { CoreSharedModule } from '@/core/shared.module';
 @Component({
     selector: 'addon-user-profile-field-social',
     templateUrl: 'addon-user-profile-field-social.html',
-    standalone: true,
     imports: [
         CoreSharedModule,
     ],

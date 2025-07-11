@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { AfterViewInit, Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, OnDestroy, OnInit, ViewChild, inject } from '@angular/core';
 import { IonContent } from '@ionic/angular';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { CoreSites } from '@services/sites';
@@ -66,7 +66,6 @@ import { CoreSharedModule } from '@/core/shared.module';
     selector: 'page-addon-messages-discussion',
     templateUrl: 'discussion.html',
     styleUrls: ['../../../../theme/components/discussion.scss', 'discussion.scss'],
-    standalone: true,
     imports: [
         CoreSharedModule,
     ],
@@ -90,7 +89,8 @@ export default class AddonMessagesDiscussionPage implements OnInit, OnDestroy, A
     protected viewDestroyed = false;
     protected memberInfoObserver: CoreEventObserver;
     protected showLoadingModal = false; // Whether to show a loading modal while fetching data.
-    protected hostElement: HTMLElement;
+    protected hostElement: HTMLElement = inject(ElementRef).nativeElement;
+    protected route = inject(ActivatedRoute);
 
     conversationId?: number; // Conversation ID. Undefined if it's a new individual conversation.
     conversation?: AddonMessagesConversationFormatted; // The conversation object (if it exists).
@@ -126,11 +126,7 @@ export default class AddonMessagesDiscussionPage implements OnInit, OnDestroy, A
     unreadMessageFrom = 0;
     initialized = false;
 
-    constructor(
-        protected route: ActivatedRoute,
-        protected elementRef: ElementRef<HTMLElement>,
-    ) {
-        this.hostElement = elementRef.nativeElement;
+    constructor() {
         this.siteId = CoreSites.getCurrentSiteId();
         this.currentUserId = CoreSites.getCurrentSiteUserId();
         this.groupMessagingEnabled = AddonMessages.isGroupMessagingEnabled();

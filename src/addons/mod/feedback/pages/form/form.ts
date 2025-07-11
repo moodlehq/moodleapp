@@ -57,7 +57,6 @@ import { CoreContentLinksHelper } from '@features/contentlinks/services/contentl
     selector: 'page-addon-mod-feedback-form',
     templateUrl: 'form.html',
     styleUrls: ['../../feedback.scss', 'form.scss'],
-    standalone: true,
     imports: [
         CoreSharedModule,
     ],

@@ -36,7 +36,6 @@ import { CoreCourseModuleComponent } from '../module/module';
     selector: 'core-course-section',
     templateUrl: 'course-section.html',
     styleUrl: 'course-section.scss',
-    standalone: true,
     imports: [
         CoreSharedModule,
         CoreCourseModuleComponent,

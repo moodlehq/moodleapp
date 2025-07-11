@@ -27,7 +27,6 @@ import { CoreSharedModule } from '@/core/shared.module';
 @Component({
     selector: 'core-reminders-set-button',
     templateUrl: 'set-button.html',
-    standalone: true,
     imports: [
         CoreSharedModule,
     ],

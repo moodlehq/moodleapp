@@ -25,7 +25,6 @@ import { CoreSharedModule } from '@/core/shared.module';
 @Component({
     selector: 'addon-mod-assign-feedback-file',
     templateUrl: 'addon-mod-assign-feedback-file.html',
-    standalone: true,
     imports: [
         CoreSharedModule,
     ],

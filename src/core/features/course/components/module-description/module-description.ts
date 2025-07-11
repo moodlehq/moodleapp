@@ -39,7 +39,6 @@ import { Component, HostBinding, Input } from '@angular/core';
 @Component({
     selector: 'core-course-module-description',
     templateUrl: 'core-course-module-description.html',
-    standalone: true,
     imports: [
         CoreSharedModule,
     ],

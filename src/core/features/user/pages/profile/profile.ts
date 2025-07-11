@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { ActivatedRoute, ActivatedRouteSnapshot } from '@angular/router';
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, inject } from '@angular/core';
 import { Subscription } from 'rxjs';
 
 import { CoreSite } from '@classes/sites/site';
@@ -44,19 +44,11 @@ import { CORE_USER_PROFILE_REFRESHED } from '@features/user/constants';
     selector: 'page-core-user-profile',
     templateUrl: 'profile.html',
     styleUrl: 'profile.scss',
-    standalone: true,
     imports: [
         CoreSharedModule,
     ],
 })
 export default class CoreUserProfilePage implements OnInit, OnDestroy {
-
-    protected courseId?: number;
-    protected userId!: number;
-    protected site!: CoreSite;
-    protected obsProfileRefreshed: CoreEventObserver;
-    protected subscription?: Subscription;
-    protected logView: (user: CoreUserProfile) => void;
 
     userLoaded = false;
     isLoadingHandlers = false;
@@ -70,7 +62,15 @@ export default class CoreUserProfilePage implements OnInit, OnDestroy {
 
     users?: CoreUserSwipeItemsManager;
 
-    constructor(private route: ActivatedRoute) {
+    protected courseId?: number;
+    protected userId!: number;
+    protected site!: CoreSite;
+    protected obsProfileRefreshed: CoreEventObserver;
+    protected subscription?: Subscription;
+    protected logView: (user: CoreUserProfile) => void;
+    protected route = inject(ActivatedRoute);
+
+    constructor() {
         this.obsProfileRefreshed = CoreEvents.on(CORE_USER_PROFILE_REFRESHED, (data) => {
             if (!this.user || !data.user) {
                 return;

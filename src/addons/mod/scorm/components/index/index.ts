@@ -13,12 +13,10 @@
 // limitations under the License.
 
 import { DownloadStatus } from '@/core/constants';
-import { Component, Input, OnDestroy, OnInit, Optional } from '@angular/core';
+import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { CoreError } from '@classes/errors/error';
 import { CoreCourseModuleMainActivityComponent } from '@features/course/classes/main-activity-component';
-import CoreCourseContentsPage from '@features/course/pages/contents/contents';
 import { CoreCourse } from '@features/course/services/course';
-import { IonContent } from '@ionic/angular';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSync } from '@services/sync';
 import { CoreObject } from '@singletons/object';
@@ -65,7 +63,6 @@ import { CoreSharedModule } from '@/core/shared.module';
     selector: 'addon-mod-scorm-index',
     templateUrl: 'addon-mod-scorm-index.html',
     styleUrl: 'index.scss',
-    standalone: true,
     imports: [
         CoreSharedModule,
         CoreCourseModuleInfoComponent,
@@ -120,11 +117,8 @@ export class AddonModScormIndexComponent extends CoreCourseModuleMainActivityCom
     protected useOnlinePlayer = false; // Whether the SCORM needs to be played using an online player.
     protected onlineObserver: Subscription;
 
-    constructor(
-        protected content?: IonContent,
-        @Optional() courseContentsPage?: CoreCourseContentsPage,
-    ) {
-        super('AddonModScormIndexComponent', content, courseContentsPage);
+    constructor() {
+        super();
 
         this.isOnline = CoreNetwork.isOnline();
         this.onlineObserver = CoreNetwork.onChange().subscribe(() => {

@@ -48,7 +48,6 @@ import { CoreSharedModule } from '@/core/shared.module';
     selector: 'page-addon-mod-book-contents',
     templateUrl: 'contents.html',
     styleUrl: 'contents.scss',
-    standalone: true,
     imports: [
         CoreSharedModule,
         CoreTagListComponent,

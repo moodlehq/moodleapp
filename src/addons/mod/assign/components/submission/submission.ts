@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, Input, OnInit, Optional, ViewChildren, QueryList, OnDestroy } from '@angular/core';
+import { Component, Input, OnInit, ViewChildren, QueryList, OnDestroy, inject } from '@angular/core';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { CoreSites } from '@services/sites';
 import {
@@ -73,7 +73,6 @@ import { CoreUtils } from '@singletons/utils';
     selector: 'addon-mod-assign-submission',
     templateUrl: 'addon-mod-assign-submission.html',
     styleUrl: 'submission.scss',
-    standalone: true,
     imports: [
         CoreSharedModule,
         AddonModAssignSubmissionPluginComponent,
@@ -144,12 +143,11 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy {
     protected previousAttempt?: AddonModAssignSubmissionPreviousAttempt; // The previous attempt.
     protected submissionStatusAvailable = false; // Whether we were able to retrieve the submission status.
     protected syncObserver: CoreEventObserver;
+    protected splitviewCtrl = inject(CoreSplitViewComponent, { optional: true });
 
     protected hasOfflineGrade = false;
 
-    constructor(
-        @Optional() protected splitviewCtrl: CoreSplitViewComponent,
-    ) {
+    constructor() {
         this.siteId = CoreSites.getCurrentSiteId();
         this.currentUserId = CoreSites.getCurrentSiteUserId();
 
@@ -574,7 +572,7 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy {
                 (submission.submissionstatement === undefined || submission.submissionstatement === null);
             this.editedOffline = submission && !this.removedOffline;
             this.submittedOffline = !!submission?.submitted && !this.removedOffline;
-        } catch (error) {
+        } catch {
             // No offline data found.
             this.editedOffline = false;
             this.submittedOffline = false;

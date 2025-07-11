@@ -22,7 +22,6 @@ import { CoreSharedModule } from '@/core/shared.module';
 @Component({
     selector: 'addon-mod-data-field-number',
     templateUrl: 'addon-mod-data-field-number.html',
-    standalone: true,
     imports: [
         CoreSharedModule,
     ],

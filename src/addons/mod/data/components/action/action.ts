@@ -44,7 +44,6 @@ import { CoreSharedModule } from '@/core/shared.module';
 @Component({
     selector: 'addon-mod-data-action',
     templateUrl: 'addon-mod-data-action.html',
-    standalone: true,
     imports: [
         CoreSharedModule,
         CoreCommentsCommentsComponent,

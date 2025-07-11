@@ -10,7 +10,7 @@
             <ion-item class="ion-text-wrap addon-qtype-shortanswer-input core-{{question.input.correctIconColor}}-item">
                 <ion-input labelPlacement="stacked" type="text" [attr.name]="question.input.name" [value]="question.input.value"
                     autocorrect="off" [disabled]="question.input.readOnly" [label]="'addon.mod_quiz.answercolon' | translate"
-                    [placeholder]="question.input.readOnly ? '' : 'core.question.answer' | translate"/>
+                    [placeholder]="question.input.readOnly ? '' : 'core.question.answer' | translate" />
 
                 @if (question.input.correctIcon) {
                     <ion-icon class="core-correct-icon" slot="end" [name]="question.input.correctIcon"

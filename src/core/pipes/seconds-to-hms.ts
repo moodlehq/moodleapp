@@ -25,7 +25,6 @@ import { CoreConstants } from '@/core/constants';
  */
 @Pipe({
     name: 'coreSecondsToHMS',
-    standalone: true,
 })
 export class CoreSecondsToHMSPipe implements PipeTransform {
 

@@ -41,7 +41,6 @@ import { CoreSharedModule } from '@/core/shared.module';
 @Component({
     selector: 'page-core-app-settings-dev',
     templateUrl: 'dev.html',
-    standalone: true,
     imports: [
         CoreSharedModule,
     ],

@@ -66,7 +66,7 @@ export class AddonModChoiceOfflineProvider {
             const response = await this.getResponse(choiceId, siteId, userId);
 
             return !!response.choiceid;
-        } catch (error) {
+        } catch {
             // No offline data found, return false.
             return false;
         }

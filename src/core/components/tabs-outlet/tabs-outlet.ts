@@ -21,13 +21,13 @@ import {
     ViewChild,
     SimpleChange,
     CUSTOM_ELEMENTS_SCHEMA,
+    ComponentRef,
 } from '@angular/core';
 import { IonRouterOutlet, IonTabs, ViewDidEnter, ViewDidLeave } from '@ionic/angular';
 
 import { CoreUtils } from '@singletons/utils';
-import { Params } from '@angular/router';
+import { NavigationExtras, Params } from '@angular/router';
 import { CoreNavBarButtonsComponent } from '../navbar-buttons/navbar-buttons';
-import { StackDidChangeEvent } from '@ionic/angular/common/directives/navigation/stack-utils';
 import { CoreNavigator } from '@services/navigator';
 import { CoreTabBase, CoreTabsBaseComponent } from '@classes/tabs';
 import { CoreDirectivesRegistry } from '@singletons/directives-registry';
@@ -35,6 +35,8 @@ import { CorePath } from '@singletons/path';
 import { CoreBaseModule } from '@/core/base.module';
 import { CoreFaIconDirective } from '@directives/fa-icon';
 import { CoreUpdateNonReactiveAttributesDirective } from '@directives/update-non-reactive-attributes';
+import { NavDirection, RouterDirection } from '@ionic/core';
+import { AnimationBuilder } from '@angular/animations';
 
 /**
  * This component displays some top scrollable tabs that will autohide on vertical scroll.
@@ -54,7 +56,6 @@ import { CoreUpdateNonReactiveAttributesDirective } from '@directives/update-non
     selector: 'core-tabs-outlet',
     templateUrl: 'core-tabs-outlet.html',
     styleUrl: '../tabs/tabs.scss',
-    standalone: true,
     imports: [
         CoreBaseModule,
         CoreUpdateNonReactiveAttributesDirective,
@@ -255,3 +256,36 @@ export type CoreTabsOutletTab = CoreTabBase & {
 };
 
 export type CoreTabsOutletTabWithId = Omit<CoreTabsOutletTab, 'id'> & { id: string };
+
+/**
+ * Copied from: @ionic/angular/common/directives/navigation/stack-utils
+ * because the import of StackDidChangeEvent was not working.
+ */
+interface StackDidChangeEvent {
+    enteringView: RouteView;
+    direction: RouterDirection;
+    animation: NavDirection | undefined;
+    /**
+     * `true` if the event is trigged as a result of a switch
+     * between tab navigation stacks.
+     */
+    tabSwitch: boolean;
+};
+
+/**
+ * Copied from: @ionic/angular/common/directives/navigation/stack-utils
+ * because the import of StackDidChangeEvent was not working.
+ */
+interface RouteView {
+    id: number;
+    url: string;
+    stackId: string | undefined;
+    element: HTMLElement;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    ref: ComponentRef<any>;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    savedData?: any;
+    savedExtras?: NavigationExtras;
+    unlistenEvents: () => void;
+    animationBuilder?: AnimationBuilder;
+}

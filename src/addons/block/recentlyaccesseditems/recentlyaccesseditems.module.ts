@@ -12,19 +12,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { APP_INITIALIZER, NgModule } from '@angular/core';
+import { NgModule, provideAppInitializer } from '@angular/core';
 import { CoreBlockDelegate } from '@features/block/services/block-delegate';
 import { AddonBlockRecentlyAccessedItemsHandler } from './services/block-handler';
 
 @NgModule({
     providers: [
-        {
-            provide: APP_INITIALIZER,
-            multi: true,
-            useValue: () => {
-                CoreBlockDelegate.registerHandler(AddonBlockRecentlyAccessedItemsHandler.instance);
-            },
-        },
+        provideAppInitializer(() => {
+            CoreBlockDelegate.registerHandler(AddonBlockRecentlyAccessedItemsHandler.instance);
+        }),
     ],
 })
 export class AddonBlockRecentlyAccessedItemsModule {}

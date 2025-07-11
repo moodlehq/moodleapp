@@ -25,7 +25,6 @@ import { ModalController, Translate } from '@singletons';
 @Component({
     selector: 'core-viewer-qr-scanner',
     templateUrl: 'qr-scanner.html',
-    standalone: true,
     imports: [
         CoreSharedModule,
     ],

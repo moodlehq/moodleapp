@@ -1,3 +1,9 @@
+@use "sass:color";
+@use "sass:list";
+@use "sass:map";
+@use "sass:string";
+@use "sass:meta";
+
 // Bootstrap functions
 //
 // Utility mixins and functions for evaluating source code across our variables, maps, and mixins.
@@ -23,9 +29,9 @@
 // Starts at zero
 // Used to ensure the min-width of the lowest breakpoint starts at 0.
 @mixin _assert-starts-at-zero($map, $map-name: "$grid-breakpoints") {
-  @if length($map) > 0 {
+  @if list.length($map) > 0 {
     $values: map-values($map);
-    $first-value: nth($values, 1);
+    $first-value: list.nth($values, 1);
     @if $first-value != 0 {
       @warn "First breakpoint in #{$map-name} must start at 0, but starts at #{$first-value}.";
     }
@@ -41,10 +47,10 @@
 // @param {String} $replace ('') - New value
 // @return {String} - Updated string
 @function str-replace($string, $search, $replace: "") {
-  $index: str-index($string, $search);
+  $index: string.index($string, $search);
 
   @if $index {
-    @return str-slice($string, 1, $index - 1) + $replace + str-replace(str-slice($string, $index + str-length($search)), $search, $replace);
+    @return string.slice($string, 1, $index - 1) + $replace + str-replace(string.slice($string, $index + string.length($search)), $search, $replace);
   }
 
   @return $string;
@@ -55,11 +61,11 @@
 // Requires the use of quotes around data URIs.
 
 @function escape-svg($string) {
-  @if str-index($string, "data:image/svg+xml") {
+  @if string.index($string, "data:image/svg+xml") {
     @each $char, $encoded in $escaped-characters {
       // Do not escape the url brackets
-      @if str-index($string, "url(") == 1 {
-        $string: url("#{str-replace(str-slice($string, 6, -3), $char, $encoded)}");
+      @if string.index($string, "url(") == 1 {
+        $string: url("#{str-replace(string.slice($string, 6, -3), $char, $encoded)}");
       } @else {
         $string: str-replace($string, $char, $encoded);
       }
@@ -71,9 +77,9 @@
 
 // Color contrast
 @function color-yiq($color, $dark: $yiq-text-dark, $light: $yiq-text-light) {
-  $r: red($color);
-  $g: green($color);
-  $b: blue($color);
+  $r: color.channel($color, "red");
+  $g: color.channel($color, "green");
+  $b: color.channel($color, "blue");
 
   $yiq: (($r * 299) + ($g * 587) + ($b * 114)) * .001;
 
@@ -86,15 +92,15 @@
 
 // Retrieve color Sass maps
 @function color($key: "blue") {
-  @return map-get($colors, $key);
+  @return map.get($colors, $key);
 }
 
 @function theme-color($key: "primary") {
-  @return map-get($theme-colors, $key);
+  @return map.get($theme-colors, $key);
 }
 
 @function gray($key: "100") {
-  @return map-get($grays, $key);
+  @return map.get($grays, $key);
 }
 
 // Request a theme color level
@@ -103,7 +109,7 @@
   $color-base: if($level > 0, $black, $white);
   $level: abs($level);
 
-  @return mix($color-base, $color, $level * $theme-color-interval);
+  @return color.mix($color-base, $color, $level * $theme-color-interval);
 }
 
 // Return valid calc
@@ -116,7 +122,7 @@
     @return $value1;
   }
 
-  @if type-of($value1) == number and type-of($value2) == number and comparable($value1, $value2) {
+  @if meta.type-of($value1) == number and meta.type-of($value2) == number and comparable($value1, $value2) {
     @return $value1 + $value2;
   }
 
@@ -136,11 +142,11 @@
     @return $value1;
   }
 
-  @if type-of($value1) == number and type-of($value2) == number and comparable($value1, $value2) {
+  @if meta.type-of($value1) == number and meta.type-of($value2) == number and comparable($value1, $value2) {
     @return $value1 - $value2;
   }
 
-  @if type-of($value2) != number {
+  @if meta.type-of($value2) != number {
     $value2: unquote("(") + $value2 + unquote(")");
   }
 
@@ -184,7 +190,7 @@
     "%": 1%
   );
   @if ($dividend-unit != $divisor-unit and map-has-key($unit-map, $dividend-unit)) {
-    $result: $result * map-get($unit-map, $dividend-unit);
+    $result: $result * map.get($unit-map, $dividend-unit);
   }
   @return $result;
 }

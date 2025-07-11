@@ -1,8 +1,10 @@
 <!-- Add buttons to the nav bar. -->
 <core-navbar-buttons slot="end" prepend>
     <core-context-menu>
-        <core-context-menu-item *ngIf="canNavigate && !selectedMonthIsCurrent() && displayNavButtons" [priority]="900"
-            [content]="'addon.calendar.currentmonth' | translate" iconAction="fas-calendar-day" (action)="goToCurrentMonth()" />
+        @if (canNavigate && !selectedMonthIsCurrent() && displayNavButtons) {
+            <core-context-menu-item [priority]="900" [content]="'addon.calendar.currentmonth' | translate" iconAction="fas-calendar-day"
+                (action)="goToCurrentMonth()" />
+        }
     </core-context-menu>
 </core-navbar-buttons>
 
@@ -42,22 +44,28 @@
         <!-- Period name and arrows to navigate. -->
         <ion-grid class="ion-no-padding addon-calendar-navigation">
             <ion-row class="ion-align-items-center">
-                <ion-col class="ion-text-start" *ngIf="canNavigate">
-                    <ion-button fill="clear" (click)="loadPrevious()" [ariaLabel]="'addon.calendar.monthprev' | translate">
-                        <ion-icon name="fas-chevron-left" slot="icon-only" aria-hidden="true" />
-                    </ion-button>
-                </ion-col>
+                @if (canNavigate) {
+                    <ion-col class="ion-text-start">
+                        <ion-button fill="clear" (click)="loadPrevious()" [ariaLabel]="'addon.calendar.monthprev' | translate">
+                            <ion-icon name="fas-chevron-left" slot="icon-only" aria-hidden="true" />
+                        </ion-button>
+                    </ion-col>
+                }
                 <ion-col class="ion-text-center addon-calendar-period">
                     <h2 id="addon-calendar-monthname">
                         {{ periodName }}
-                        <ion-spinner *ngIf="!selectedMonthLoaded()" class="addon-calendar-loading-month" />
+                        @if (!selectedMonthLoaded()) {
+                            <ion-spinner class="addon-calendar-loading-month" />
+                        }
                     </h2>
                 </ion-col>
-                <ion-col class="ion-text-end" *ngIf="canNavigate">
-                    <ion-button fill="clear" (click)="loadNext()" [ariaLabel]="'addon.calendar.monthnext' | translate">
-                        <ion-icon name="fas-chevron-right" slot="icon-only" aria-hidden="true" />
-                    </ion-button>
-                </ion-col>
+                @if (canNavigate) {
+                    <ion-col class="ion-text-end">
+                        <ion-button fill="clear" (click)="loadNext()" [ariaLabel]="'addon.calendar.monthnext' | translate">
+                            <ion-icon name="fas-chevron-right" slot="icon-only" aria-hidden="true" />
+                        </ion-button>
+                    </ion-col>
+                }
             </ion-row>
         </ion-grid>
 
@@ -98,33 +106,42 @@
                                         class="calendar_event_type calendar_event_{{type}}"></span></p>
 
                                 <!-- In tablet, display list of events. -->
-                                <div class="ion-hide-md-down addon-calendar-day-events" *ngIf="day.filteredEvents">
-                                    <ng-container *ngFor="let event of day.filteredEvents | slice:0:4; let index = index">
-                                        <div *ngIf="index < 3 || day.filteredEvents.length === 4" class="addon-calendar-event"
-                                            [class.addon-calendar-event-past]="event.ispast" (ariaButtonClick)="eventClicked(event, $event)"
-                                            [tabindex]="activeView ? 0 : -1">
-                                            <span class="calendar_event_type calendar_event_{{event.formattedType}}"></span>
-                                            <ion-icon *ngIf="event.offline && !event.deleted" name="fas-clock"
-                                                [attr.aria-label]="'core.notsent' | translate" />
-                                            <ion-icon *ngIf="event.deleted" name="fas-trash"
-                                                [attr.aria-label]="'core.deletedoffline' | translate" />
-                                            <span class="addon-calendar-event-time">
-                                                {{ event.timestart * 1000 | coreFormatDate: timeFormat }}
-                                            </span>
-                                            <!-- Add the icon title so accessibility tools read it. -->
-                                            <span class="sr-only">
-                                                {{ 'addon.calendar.type' + event.formattedType | translate }}
-                                                <span class="sr-only" *ngIf="event.iconTitle">
-                                                    {{ event.iconTitle }}
-                                                </span>
-                                            </span>
-                                            <span class="addon-calendar-event-name">{{event.name}}</span>
-                                        </div>
-                                    </ng-container>
-                                    <p *ngIf="day.filteredEvents.length > 4" class="addon-calendar-day-more">
-                                        <strong>{{ 'core.nummore' | translate:{$a: day.filteredEvents.length - 3} }}</strong>
-                                    </p>
-                                </div>
+                                @if (day.filteredEvents) {
+                                    <div class="ion-hide-md-down addon-calendar-day-events">
+                                        <ng-container *ngFor="let event of day.filteredEvents | slice:0:4; let index = index">
+                                            @if (index < 3 || day.filteredEvents.length === 4) {
+                                                <div class="addon-calendar-event" [class.addon-calendar-event-past]="event.ispast"
+                                                    (ariaButtonClick)="eventClicked(event, $event)" [tabindex]="activeView ? 0 : -1">
+                                                    <span class="calendar_event_type calendar_event_{{event.formattedType}}"></span>
+                                                    @if (event.offline && !event.deleted) {
+                                                        <ion-icon name="fas-clock" [attr.aria-label]="'core.notsent' | translate" />
+                                                    }
+                                                    @if (event.deleted) {
+                                                        <ion-icon name="fas-trash" [attr.aria-label]="'core.deletedoffline' | translate" />
+                                                    }
+                                                    <span class="addon-calendar-event-time">
+                                                        {{ event.timestart * 1000 | coreFormatDate: timeFormat }}
+                                                    </span>
+                                                    <!-- Add the icon title so accessibility tools read it. -->
+                                                    <span class="sr-only">
+                                                        {{ 'addon.calendar.type' + event.formattedType | translate }}
+                                                        @if (event.iconTitle) {
+                                                            <span class="sr-only">
+                                                                {{ event.iconTitle }}
+                                                            </span>
+                                                        }
+                                                    </span>
+                                                    <span class="addon-calendar-event-name">{{event.name}}</span>
+                                                </div>
+                                            }
+                                        </ng-container>
+                                        @if (day.filteredEvents.length > 4) {
+                                            <p class="addon-calendar-day-more">
+                                                <strong>{{ 'core.nummore' | translate:{$a: day.filteredEvents.length - 3} }}</strong>
+                                            </p>
+                                        }
+                                    </div>
+                                }
                             </ion-col>
                             <!-- Empty slots (last week). -->
                             <ion-col *ngFor="let value of week.postpadding" class="dayblank addon-calendar-day" role="cell" />

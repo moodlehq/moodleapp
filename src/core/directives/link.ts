@@ -34,7 +34,6 @@ import { CoreAlerts } from '@services/overlays/alerts';
  */
 @Directive({
     selector: '[core-link]',
-    standalone: true,
 })
 export class CoreLinkDirective implements OnInit {
 
@@ -51,9 +50,10 @@ export class CoreLinkDirective implements OnInit {
     protected element: HTMLElement | HTMLIonFabButtonElement | HTMLIonButtonElement | HTMLIonItemElement;
 
     constructor(
+        // eslint-disable-next-line @angular-eslint/prefer-inject
         element: ElementRef,
     ) {
-        this.element = element.nativeElement;
+        this.element = element.nativeElement;  // This is done that way to let format text create a directive.
     }
 
     /**
@@ -162,7 +162,7 @@ export class CoreLinkDirective implements OnInit {
         if (!CoreFileHelper.isOpenableInApp({ filename })) {
             try {
                 await CoreFileHelper.showConfirmOpenUnsupportedFile(false, { filename });
-            } catch (error) {
+            } catch {
                 return; // Cancelled, stop.
             }
         }

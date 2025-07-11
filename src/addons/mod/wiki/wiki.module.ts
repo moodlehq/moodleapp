@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { APP_INITIALIZER, NgModule } from '@angular/core';
+import { NgModule, provideAppInitializer } from '@angular/core';
 import { Routes } from '@angular/router';
 import { CoreContentLinksDelegate } from '@features/contentlinks/services/contentlinks-delegate';
 import { CoreCourseHelper } from '@features/course/services/course-helper';
@@ -66,24 +66,20 @@ const routes: Routes = [
             useValue: [OFFLINE_SITE_SCHEMA],
             multi: true,
         },
-        {
-            provide: APP_INITIALIZER,
-            multi: true,
-            useValue: () => {
-                CoreContentLinksDelegate.registerHandler(getCreateLinkHandlerInstance());
-                CoreContentLinksDelegate.registerHandler(getEditLinkHandlerInstance());
-                CoreContentLinksDelegate.registerHandler(getPageOrMapLinkHandlerInstance());
-                CoreCourseModulePrefetchDelegate.registerHandler(getPrefetchHandlerInstance());
-                CoreCronDelegate.register(getCronHandlerInstance());
+        provideAppInitializer(() => {
+            CoreContentLinksDelegate.registerHandler(getCreateLinkHandlerInstance());
+            CoreContentLinksDelegate.registerHandler(getEditLinkHandlerInstance());
+            CoreContentLinksDelegate.registerHandler(getPageOrMapLinkHandlerInstance());
+            CoreCourseModulePrefetchDelegate.registerHandler(getPrefetchHandlerInstance());
+            CoreCronDelegate.register(getCronHandlerInstance());
 
-                CoreCourseModuleDelegate.registerHandler(AddonModWikiModuleHandler.instance);
-                CoreContentLinksDelegate.registerHandler(AddonModWikiIndexLinkHandler.instance);
-                CoreContentLinksDelegate.registerHandler(AddonModWikiListLinkHandler.instance);
-                CoreTagAreaDelegate.registerHandler(AddonModWikiTagAreaHandler.instance);
+            CoreCourseModuleDelegate.registerHandler(AddonModWikiModuleHandler.instance);
+            CoreContentLinksDelegate.registerHandler(AddonModWikiIndexLinkHandler.instance);
+            CoreContentLinksDelegate.registerHandler(AddonModWikiListLinkHandler.instance);
+            CoreTagAreaDelegate.registerHandler(AddonModWikiTagAreaHandler.instance);
 
-                CoreCourseHelper.registerModuleReminderClick(ADDON_MOD_WIKI_COMPONENT_LEGACY);
-            },
-        },
+            CoreCourseHelper.registerModuleReminderClick(ADDON_MOD_WIKI_COMPONENT_LEGACY);
+        }),
     ],
 })
 export class AddonModWikiModule {}

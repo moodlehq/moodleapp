@@ -25,7 +25,6 @@ import { CoreSharedModule } from '@/core/shared.module';
 @Component({
     selector: 'addon-user-profile-field-text',
     templateUrl: 'addon-user-profile-field-text.html',
-    standalone: true,
     imports: [
         CoreSharedModule,
     ],

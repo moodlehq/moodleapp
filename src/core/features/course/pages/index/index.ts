@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, ViewChild, OnDestroy, OnInit, ElementRef } from '@angular/core';
+import { Component, ViewChild, OnDestroy, OnInit, ElementRef, inject } from '@angular/core';
 import { ActivatedRoute, Params } from '@angular/router';
 
 import { CoreTabsOutletTab, CoreTabsOutletComponent } from '@components/tabs-outlet/tabs-outlet';
@@ -40,7 +40,6 @@ import { CoreSharedModule } from '@/core/shared.module';
     selector: 'page-core-course-index',
     templateUrl: 'index.html',
     styleUrl: 'index.scss',
-    standalone: true,
     imports: [
         CoreSharedModule,
     ],
@@ -74,7 +73,9 @@ export default class CoreCourseIndexPage implements OnInit, OnDestroy {
         pageParams: {},
     };
 
-    constructor(private route: ActivatedRoute) {
+    protected route = inject(ActivatedRoute);
+
+    constructor() {
         this.selectTabObserver = CoreEvents.on(CoreEvents.SELECT_COURSE_TAB, (data) => {
             if (!data.name) {
                 // If needed, set sectionId and sectionNumber. They'll only be used if the content tabs hasn't been loaded yet.

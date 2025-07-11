@@ -24,7 +24,6 @@ import { CoreSharedModule } from '@/core/shared.module';
 @Component({
     selector: 'core-course-tag-area',
     templateUrl: 'core-course-tag-area.html',
-    standalone: true,
     imports: [
         CoreSharedModule,
     ],

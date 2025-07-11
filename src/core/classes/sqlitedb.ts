@@ -820,7 +820,7 @@ export class SQLiteDB {
             await Promise.all(promises);
         } else {
             // No changes needed.
-            // eslint-disable-next-line deprecation/deprecation
+            // eslint-disable-next-line @typescript-eslint/no-deprecated
             await this.insertRecordsFrom(newTable, oldTable);
         }
 

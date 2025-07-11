@@ -24,7 +24,6 @@ import { CoreSharedModule } from '@/core/shared.module';
     selector: 'core-course-unsupported-module',
     templateUrl: 'core-course-unsupported-module.html',
     styleUrl: 'unsupported-module.scss',
-    standalone: true,
     imports: [
         CoreSharedModule,
     ],

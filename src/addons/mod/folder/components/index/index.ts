@@ -12,10 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, Input, OnInit, Optional } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { Params } from '@angular/router';
 import { CoreCourseModuleMainResourceComponent } from '@features/course/classes/main-resource-component';
-import CoreCourseContentsPage from '@features/course/pages/contents/contents';
 import { CoreCourse } from '@features/course/services/course';
 import { CoreNavigator } from '@services/navigator';
 import { Md5 } from 'ts-md5';
@@ -36,7 +35,6 @@ import { CoreSharedModule } from '@/core/shared.module';
 @Component({
     selector: 'addon-mod-folder-index',
     templateUrl: 'addon-mod-folder-index.html',
-    standalone: true,
     imports: [
         CoreSharedModule,
         CoreCourseModuleInfoComponent,
@@ -51,10 +49,6 @@ export class AddonModFolderIndexComponent extends CoreCourseModuleMainResourceCo
     component = ADDON_MOD_FOLDER_COMPONENT_LEGACY;
     pluginName = 'folder';
     contents?: AddonModFolderFolderFormattedData;
-
-    constructor(@Optional() courseContentsPage?: CoreCourseContentsPage) {
-        super('AddonModFolderIndexComponent', courseContentsPage);
-    }
 
     /**
      * @inheritdoc

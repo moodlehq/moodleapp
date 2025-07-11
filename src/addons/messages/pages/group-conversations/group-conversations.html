@@ -32,10 +32,12 @@
                     <ion-label>
                         <p class="item-heading">{{ 'addon.messages.contacts' | translate }}</p>
                     </ion-label>
-                    <ion-badge *ngIf="contactRequestsCount > 0" slot="end"
-                        [attr.aria-label]="'addon.messages.pendingcontactrequests' | translate:{$a: contactRequestsCount}">
-                        {{contactRequestsCount}}
-                    </ion-badge>
+                    @if (contactRequestsCount > 0) {
+                        <ion-badge slot="end"
+                            [attr.aria-label]="'addon.messages.pendingcontactrequests' | translate:{$a: contactRequestsCount}">
+                            {{contactRequestsCount}}
+                        </ion-badge>
+                    }
                 </ion-item>
                 <ion-accordion-group (ionChange)="accordionGroupChange($event.detail)" #accordionGroup>
                     <ion-accordion *ngFor="let option of groupConversations" [value]="option.optionName" toggleIconSlot="start">
@@ -43,30 +45,38 @@
                             <ion-label>
                                 <h2>{{ option.titleString | translate }} ({{ option.count }})</h2>
                             </ion-label>
-                            <ion-badge slot="end" *ngIf="option.unread"
-                                [attr.aria-label]="'addon.messages.unreadconversations' | translate:{$a: option.unread}">
-                                {{ option.unread }}
-                            </ion-badge>
+                            @if (option.unread) {
+                                <ion-badge slot="end"
+                                    [attr.aria-label]="'addon.messages.unreadconversations' | translate:{$a: option.unread}">
+                                    {{ option.unread }}
+                                </ion-badge>
+                            }
                         </ion-item>
                         <div slot="content">
-                            <ng-container *ngIf="!option.loading">
+                            @if (!option.loading) {
+
                                 <ng-container *ngTemplateOutlet="conversationsTemplate;
                                         context: {conversations: option.conversations}" />
                                 <!-- The infinite loading cannot be inside the ng-template,
                                     it fails because it doesn't find ion-content. -->
                                 <core-infinite-loading [enabled]="option.canLoadMore" (action)="loadMoreConversations(option, $event)"
                                     [error]="option.loadMoreError" />
-                                <ion-item class="ion-text-wrap" *ngIf="option.conversations && option.conversations.length === 0">
+                                @if (option.conversations && option.conversations.length === 0) {
+                                    <ion-item class="ion-text-wrap">
+                                        <ion-label>
+                                            <p>{{ option.emptyString| translate }}</p>
+                                        </ion-label>
+                                    </ion-item>
+                                }
+
+                            }
+                            @if (option.loading) {
+                                <ion-item class="ion-text-center">
                                     <ion-label>
-                                        <p>{{ option.emptyString| translate }}</p>
+                                        <ion-spinner [attr.aria-label]="'core.loading' | translate" />
                                     </ion-label>
                                 </ion-item>
-                            </ng-container>
-                            <ion-item class="ion-text-center" *ngIf="option.loading">
-                                <ion-label>
-                                    <ion-spinner [attr.aria-label]="'core.loading' | translate" />
-                                </ion-label>
-                            </ion-item>
+                            }
                         </div>
                     </ion-accordion>
                 </ion-accordion-group>
@@ -83,47 +93,63 @@
         (click)="gotoConversation(conversation.id, conversation.userid)"
         id="addon-message-conversation-{{ conversation.id ? conversation.id : 'user-' + conversation.userid }}"
         [attr.aria-label]="conversation.name">
-        <!-- Group conversation image. -->
-        <ion-avatar slot="start" *ngIf="conversation.type === typeGroup">
-            <img [url]="conversation.imageurl" [alt]="conversation.name" core-external-content
-                onError="this.src='assets/img/group-avatar.svg'">
-        </ion-avatar>
-
-        <!-- Avatar for individual conversations. -->
-        <core-user-avatar *ngIf="conversation.type !== typeGroup" core-user-avatar [user]="conversation.otherUser" [linkProfile]="false"
-            [checkOnline]="conversation.showonlinestatus" slot="start" />
+        @if (conversation.type === typeGroup) {
+            <!-- Group conversation image. -->
+            <ion-avatar slot="start">
+                <img [url]="conversation.imageurl" [alt]="conversation.name" core-external-content
+                    onError="this.src='assets/img/group-avatar.svg'">
+            </ion-avatar>
+        } @else {
+            <!-- Avatar for individual conversations. -->
+            <core-user-avatar core-user-avatar [user]="conversation.otherUser" [linkProfile]="false"
+                [checkOnline]="conversation.showonlinestatus" slot="start" />
+        }
 
         <ion-label>
             <div class="flex-row ion-justify-content-between">
                 <p class="item-heading">
                     <core-format-text [text]="conversation.name" contextLevel="system" [contextInstanceId]="0" />
-                    <ion-icon name="fas-user-slash" *ngIf="conversation.isblocked"
-                        [attr.aria-label]="'addon.messages.contactblocked' | translate" />
-                    <ion-icon *ngIf="conversation.ismuted" name="fas-volume-xmark"
-                        [title]="'addon.messages.mutedconversation' | translate" />
+                    @if (conversation.isblocked) {
+                        <ion-icon name="fas-user-slash" [attr.aria-label]="'addon.messages.contactblocked' | translate" />
+                    }
+                    @if (conversation.ismuted) {
+                        <ion-icon name="fas-volume-xmark" [title]="'addon.messages.mutedconversation' | translate" />
+                    }
                 </p>
-                <ion-note *ngIf="conversation.lastmessagedate > 0 || conversation.unreadcount">
-                    <span *ngIf="conversation.lastmessagedate > 0" class="addon-message-last-message-date">
-                        {{conversation.lastmessagedate | coreDateDayOrTime}}
-                    </span>
-                    <ion-badge *ngIf="conversation.unreadcount > 0" aria-label="true">{{ conversation.unreadcount }}</ion-badge>
-                    <span *ngIf="conversation.unreadcount > 0" class="sr-only">
-                        {{ 'addon.messages.unreadmessages' | translate:{$a: conversation.unreadcount} }}
-                    </span>
-                </ion-note>
+                @if (conversation.lastmessagedate > 0 || conversation.unreadcount) {
+                    <ion-note>
+                        @if (conversation.lastmessagedate > 0) {
+                            <span class="addon-message-last-message-date">
+                                {{conversation.lastmessagedate | coreDateDayOrTime}}
+                            </span>
+                        }
+                        @if (conversation.unreadcount > 0) {
+                            <ion-badge aria-label="true">{{ conversation.unreadcount }}</ion-badge>
+                            <span class="sr-only">
+                                {{ 'addon.messages.unreadmessages' | translate:{$a: conversation.unreadcount} }}
+                            </span>
+                        }
+                    </ion-note>
+                }
             </div>
-            <p *ngIf="conversation.subname">
-                <core-format-text [text]="conversation.subname" contextLevel="system" [contextInstanceId]="0" />
-            </p>
-            <p *ngIf="conversation.lastmessage !== undefined" class="addon-message-last-message">
-                <span *ngIf="conversation.sentfromcurrentuser" class="addon-message-last-message-user">
-                    {{ 'addon.messages.you' | translate }}
-                </span>
-                <span *ngIf="!conversation.sentfromcurrentuser && conversation.type === typeGroup && conversation.members[0]"
-                    class="addon-message-last-message-user">{{ conversation.members[0].fullname + ':' }}</span>
-                <core-format-text clean="true" singleLine="true" [text]="conversation.lastmessage" class="addon-message-last-message-text"
-                    contextLevel="system" [contextInstanceId]="0" />
-            </p>
+            @if (conversation.subname) {
+                <p>
+                    <core-format-text [text]="conversation.subname" contextLevel="system" [contextInstanceId]="0" />
+                </p>
+            }
+            @if (conversation.lastmessage !== undefined) {
+                <p class="addon-message-last-message">
+                    @if (conversation.sentfromcurrentuser) {
+                        <span class="addon-message-last-message-user">
+                            {{ 'addon.messages.you' | translate }}
+                        </span>
+                    } @else if (conversation.type === typeGroup && conversation.members[0]) {
+                        <span class="addon-message-last-message-user">{{ conversation.members[0].fullname + ':' }}</span>
+                    }
+                    <core-format-text clean="true" singleLine="true" [text]="conversation.lastmessage"
+                        class="addon-message-last-message-text" contextLevel="system" [contextInstanceId]="0" />
+                </p>
+            }
         </ion-label>
     </ion-item>
 </ng-template>

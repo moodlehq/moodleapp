@@ -23,6 +23,7 @@ import {
     Output,
     SimpleChange,
     ViewChild,
+    inject,
 } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { CoreEvents } from '@singletons/events';
@@ -74,7 +75,6 @@ import { CoreRatingRateComponent } from '@features/rating/components/rate/rate';
     selector: 'addon-mod-forum-post',
     templateUrl: 'post.html',
     styleUrl: 'post.scss',
-    standalone: true,
     imports: [
         CoreSharedModule,
         CoreTagListComponent,
@@ -114,10 +114,7 @@ export class AddonModForumPostComponent implements OnInit, OnDestroy, OnChanges 
     optionsMenuEnabled = false;
 
     protected preparePostData?: AddonModForumPrepareDraftAreaForPostWSResponse;
-
-    constructor(
-        protected elementRef: ElementRef,
-    ) {}
+    protected element: HTMLElement = inject(ElementRef).nativeElement;
 
     get showForm(): boolean {
         return this.post.id > 0
@@ -202,7 +199,7 @@ export class AddonModForumPostComponent implements OnInit, OnDestroy, OnChanges 
             } finally {
                 modal.dismiss();
             }
-        } catch (error) {
+        } catch {
             // Do nothing.
         }
     }
@@ -593,7 +590,7 @@ export class AddonModForumPostComponent implements OnInit, OnDestroy, OnChanges 
             CoreForms.triggerFormCancelledEvent(this.formElement, CoreSites.getCurrentSiteId());
 
             this.unblockOperation();
-        } catch (error) {
+        } catch {
             // Cancelled.
         }
     }
@@ -680,7 +677,7 @@ export class AddonModForumPostComponent implements OnInit, OnDestroy, OnChanges 
      */
     protected async scrollToForm(): Promise<void> {
         await CoreDom.scrollToElement(
-            this.elementRef.nativeElement,
+            this.element,
             `#addon-forum-reply-edit-form-${this.uniqueId}`,
         );
     }

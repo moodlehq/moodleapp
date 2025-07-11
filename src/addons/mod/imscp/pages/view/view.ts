@@ -36,7 +36,6 @@ import { CoreSharedModule } from '@/core/shared.module';
 @Component({
     selector: 'page-addon-mod-imscp-view',
     templateUrl: 'view.html',
-    standalone: true,
     imports: [
         CoreSharedModule,
     ],

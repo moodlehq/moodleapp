@@ -30,7 +30,7 @@ import { CoreUrl } from '@singletons/url';
 export class CoreAnalyticsService extends CoreDelegate<CoreAnalyticsHandler> {
 
     constructor() {
-        super('CoreAnalyticsService');
+        super();
 
         CoreEvents.on(CoreConfigProvider.ENVIRONMENT_UPDATED, () => this.updateHandlers());
         CoreEvents.on(CoreEvents.LOGOUT, () => this.clearSiteHandlers());

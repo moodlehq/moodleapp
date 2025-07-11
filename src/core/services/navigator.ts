@@ -13,10 +13,16 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
-import { ActivatedRoute, ActivatedRouteSnapshot, Data, NavigationEnd, Params, UrlSegment } from '@angular/router';
-
-import { NavigationOptions } from '@ionic/angular/common/providers/nav-controller';
-
+import {
+    ActivatedRoute,
+    ActivatedRouteSnapshot,
+    Data,
+    NavigationBehaviorOptions,
+    NavigationEnd,
+    Params,
+    UrlCreationOptions,
+    UrlSegment,
+} from '@angular/router';
 import { CoreConstants } from '@/core/constants';
 import { CoreMainMenu } from '@features/mainmenu/services/mainmenu';
 import { CoreObject } from '@singletons/object';
@@ -34,6 +40,8 @@ import { CorePromisedValue } from '@classes/promised-value';
 import { BehaviorSubject } from 'rxjs';
 import { CoreLoadings } from './overlays/loadings';
 import { CorePromiseUtils } from '@singletons/promise-utils';
+import { AnimationBuilder } from '@ionic/angular';
+import { CorePath } from '@singletons/path';
 
 /**
  * Redirect payload.
@@ -47,7 +55,7 @@ export type CoreRedirectPayload = {
 /**
  * Navigation options.
  */
-export type CoreNavigationOptions = Pick<NavigationOptions, 'animated'|'animation'|'animationDirection'> & {
+export type CoreNavigationOptions = AnimationOptions & {
     params?: Params;
     reset?: boolean;
     replace?: boolean;
@@ -86,7 +94,10 @@ export class CoreNavigatorService {
      * @returns Whether the active route is using the given path.
      */
     isCurrent(path: string): boolean {
-        return CoreText.matchesGlob(this.getCurrentPath(), path);
+        const currentPath = this.getCurrentPath();
+        path = CorePath.resolveRelativePath(currentPath, path);
+
+        return CoreText.matchesGlob(currentPath, path);
     }
 
     /**
@@ -134,6 +145,7 @@ export class CoreNavigatorService {
      */
     async navigate(path: string, options: CoreNavigationOptions = {}): Promise<boolean> {
         const url: string[] = [/^[./]/.test(path) ? path : `./${path}`];
+
         const navigationOptions: NavigationOptions = CoreObject.withoutEmpty({
             animated: options.animated,
             animation: options.animation,
@@ -146,9 +158,15 @@ export class CoreNavigatorService {
         // Remove objects from queryParams and replace them with an ID.
         this.replaceObjectParams(navigationOptions.queryParams);
 
-        const navigationResult = (options.reset ?? false)
+        let navigationResult = (options.reset ?? false)
             ? await NavController.navigateRoot(url, navigationOptions)
             : await NavController.navigateForward(url, navigationOptions);
+
+        if (navigationResult === false && this.isCurrent(url[0])) {
+            // Navigation failed, because we are already on the same page.
+            // This can happen if the page is already loaded. Continue as if the navigation was successful.
+            navigationResult = true;
+        }
 
         // This is done to exit full screen if the user navigate.
         if (document.exitFullscreen) {
@@ -842,3 +860,18 @@ export class CoreNavigatorService {
 }
 
 export const CoreNavigator = makeSingleton(CoreNavigatorService);
+
+/**
+ * Copied from: @ionic/angular/common/providers/nav-controller
+ * because the import of NavigationOptions was not working.
+ */
+interface AnimationOptions {
+    animated?: boolean;
+    animation?: AnimationBuilder;
+    animationDirection?: 'forward' | 'back';
+};
+
+interface NavigationOptions extends NavigationExtras, AnimationOptions {
+}
+interface NavigationExtras extends UrlCreationOptions, NavigationBehaviorOptions {
+}

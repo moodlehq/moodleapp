@@ -352,7 +352,13 @@ export class CoreSitesProvider {
     protected afterLoginNavigationQueue: CoreSitesAfterLoginNavigationProcess[] = [];
     protected afterLoginNavigationQueueRunner = new CoreQueueRunner(1, true);
 
+    // eslint-disable-next-line @angular-eslint/prefer-inject
     constructor(@Optional() @Inject(CORE_SITE_SCHEMAS) siteSchemas: CoreSiteSchema[][] | null) {
+        // @todo: Inject CORE_SITE_SCHEMAS here will make CoreSites Singleton will provoke an error in the tests.
+        // Some clues to solve this:
+        // - Use TestBed injector on setSingletonsInjector test setup. It will need to change when configureTestingModule is called.
+        // - Maybe the problem is in getServiceInstance inside mockSingleton.
+
         this.sitesDB = new CoreSitesDB(siteSchemas);
     }
 

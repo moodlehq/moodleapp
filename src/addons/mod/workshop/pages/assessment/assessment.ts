@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit, OnDestroy, ViewChild, ElementRef } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, ElementRef, inject } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { CoreCourse } from '@features/course/services/course';
 import { CoreGradesHelper, CoreGradesMenuItem } from '@features/grades/services/grades-helper';
@@ -57,7 +57,6 @@ import { CoreErrorHelper } from '@services/error-helper';
 @Component({
     selector: 'page-addon-mod-workshop-assessment-page',
     templateUrl: 'assessment.html',
-    standalone: true,
     imports: [
         CoreSharedModule,
         AddonModWorkshopAssessmentStrategyComponent,
@@ -108,10 +107,9 @@ export default class AddonModWorkshopAssessmentPage implements OnInit, OnDestroy
     protected currentUserId: number;
     protected forceLeave = false;
     protected logView: () => void;
+    protected fb = inject(FormBuilder);
 
-    constructor(
-        protected fb: FormBuilder,
-    ) {
+    constructor() {
         this.siteId = CoreSites.getCurrentSiteId();
         this.currentUserId = CoreSites.getCurrentSiteUserId();
 

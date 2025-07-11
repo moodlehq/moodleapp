@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit, OnDestroy, ViewChild, ChangeDetectorRef, ElementRef } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, ChangeDetectorRef, ElementRef, inject } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { IonContent } from '@ionic/angular';
 import { CoreError } from '@classes/errors/error';
@@ -67,7 +67,6 @@ import { CoreSharedModule } from '@/core/shared.module';
     selector: 'page-addon-mod-lesson-player',
     templateUrl: 'player.html',
     styleUrl: 'player.scss',
-    standalone: true,
     imports: [
         CoreSharedModule,
         CoreEditorRichTextEditorComponent,
@@ -117,13 +116,9 @@ export default class AddonModLessonPlayerPage implements OnInit, OnDestroy, CanL
     protected jumps?: AddonModLessonPossibleJumps; // All possible jumps.
     protected firstPageLoaded?: boolean; // Whether the first page has been loaded.
     protected retakeToReview?: number; // Retake to review.
-    protected menuShown = false; // Whether menu is shown.
-
-    constructor(
-        protected changeDetector: ChangeDetectorRef,
-        protected formBuilder: FormBuilder,
-    ) {
-    }
+    protected menuShown = false;
+    protected changeDetector = inject(ChangeDetectorRef);
+    protected formBuilder = inject(FormBuilder);
 
     /**
      * @inheritdoc

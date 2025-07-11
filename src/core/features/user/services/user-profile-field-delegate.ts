@@ -79,10 +79,6 @@ export class CoreUserProfileFieldDelegateService extends CoreDelegate<CoreUserPr
 
     protected handlerNameProperty = 'type';
 
-    constructor() {
-        super('CoreUserProfileFieldDelegate');
-    }
-
     /**
      * Get the type of a field.
      *

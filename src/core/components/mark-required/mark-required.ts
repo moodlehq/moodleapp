@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { toBoolean } from '@/core/transforms/boolean';
-import { Component, Input, AfterViewInit, ElementRef } from '@angular/core';
+import { Component, Input, AfterViewInit, ElementRef, inject } from '@angular/core';
 
 import { CoreText } from '@singletons/text';
 import { Translate } from '@singletons';
@@ -34,7 +34,6 @@ import { CoreFaIconDirective } from '@directives/fa-icon';
     selector: '[core-mark-required]',
     templateUrl: 'core-mark-required.html',
     styleUrl: 'mark-required.scss',
-    standalone: true,
     imports: [
         CoreBaseModule,
         CoreFaIconDirective,
@@ -44,14 +43,9 @@ export class CoreMarkRequiredComponent implements AfterViewInit {
 
     @Input({ alias: 'core-mark-required', transform: toBoolean }) coreMarkRequired = true;
 
-    protected hostElement: HTMLElement;
     requiredLabel = Translate.instant('core.required');
 
-    constructor(
-        element: ElementRef,
-    ) {
-        this.hostElement = element.nativeElement;
-    }
+    protected hostElement: HTMLElement = inject(ElementRef).nativeElement;
 
     /**
      * @inheritdoc

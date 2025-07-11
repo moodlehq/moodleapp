@@ -32,7 +32,6 @@ import { CoreSharedModule } from '@/core/shared.module';
     selector: 'core-comments',
     templateUrl: 'core-comments.html',
     styleUrl: 'comments.scss',
-    standalone: true,
     imports: [
         CoreSharedModule,
     ],

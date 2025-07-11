@@ -29,23 +29,31 @@
                 <ion-item class="ion-text-wrap">
                     <ion-label>
                         <p class="item-heading">{{ session.sessionstart * 1000 | coreFormatDate }}</p>
-                        <p *ngIf="session.duration">{{ session.duration | coreDuration }}</p>
+                        @if (session.duration) {
+                            <p>{{ session.duration | coreDuration }}</p>
+                        }
                     </ion-label>
                 </ion-item>
                 <ion-card-content>
                     <ion-item *ngFor="let user of session.sessionusers">
                         <ion-label>
-                            {{ user.userfullname }} <span *ngIf="user.messagecount">({{ user.messagecount }})</span>
+                            {{ user.userfullname }}
+                            @if (user.messagecount) {
+                                <span>( {{ user.messagecount }} )</span>
+                            }
                         </ion-label>
                     </ion-item>
                 </ion-card-content>
-                <ion-button *ngIf="session.sessionusers.length < session.allsessionusers.length" fill="clear" expand="block"
-                    (click)="showMoreUsers(session, $event)">
-                    {{ 'core.showmore' | translate }}
-                </ion-button>
+                @if (session.sessionusers.length < session.allsessionusers.length) {
+                    <ion-button fill="clear" expand="block" (click)="showMoreUsers(session, $event)">
+                        {{ 'core.showmore' | translate }}
+                    </ion-button>
+                }
             </ion-card>
 
-            <core-empty-box *ngIf="sessions.empty" icon="far-comments" [message]="'addon.mod_chat.nosessionsfound' | translate" />
+            @if (sessions.empty) {
+                <core-empty-box icon="far-comments" [message]="'addon.mod_chat.nosessionsfound' | translate" />
+            }
         </core-loading>
     </core-split-view>
 </ion-content>

@@ -30,7 +30,6 @@ import { Translate } from '@singletons';
     selector: 'core-course-module-completion-details',
     templateUrl: 'module-completion-details.html',
     styleUrl: 'module-completion-details.scss',
-    standalone: true,
     imports: [
         CoreSharedModule,
     ],

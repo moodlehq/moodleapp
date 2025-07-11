@@ -12,13 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Directive, Input, ElementRef, Optional } from '@angular/core';
+import { Directive, Input } from '@angular/core';
 import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
 import { CoreNavigator } from '@services/navigator';
 import { Md5 } from 'ts-md5';
 
 import { CoreSitePluginsCallWSOnClickBaseDirective } from '../classes/call-ws-click-directive';
-import { CoreSitePluginsPluginContentComponent } from '../components/plugin-content/plugin-content';
 import { CoreSitePlugins } from '../services/siteplugins';
 import { toBoolean } from '@/core/transforms/boolean';
 import { ContextLevel } from '@/core/constants';
@@ -53,7 +52,6 @@ import { ContextLevel } from '@/core/constants';
  */
 @Directive({
     selector: '[core-site-plugins-call-ws-new-content]',
-    standalone: true,
 })
 export class CoreSitePluginsCallWSNewContentDirective extends CoreSitePluginsCallWSOnClickBaseDirective {
 
@@ -72,13 +70,6 @@ export class CoreSitePluginsCallWSNewContentDirective extends CoreSitePluginsCal
     @Input() contextInstanceId?: number; // The instance ID related to the context.
     @Input() courseId?: number; // Course ID the text belongs to. It can be used to improve performance with filters.
     @Input({ transform: toBoolean }) ptrEnabled = true; // Whether PTR should be enabled in the new page.
-
-    constructor(
-        element: ElementRef,
-        @Optional() parentContent: CoreSitePluginsPluginContentComponent,
-    ) {
-        super(element, parentContent);
-    }
 
     /**
      * @inheritdoc

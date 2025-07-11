@@ -12,14 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, Inject, Input, OnDestroy, OnInit, Optional } from '@angular/core';
+import { Component, Input, OnDestroy, OnInit, inject } from '@angular/core';
 import { IonContent } from '@ionic/angular';
 
 import { CoreCourseModuleMainResourceComponent } from './main-resource-component';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { CoreCourse } from '../services/course';
 import { CorePromiseUtils } from '@singletons/promise-utils';
-import CoreCourseContentsPage from '../pages/contents/contents';
 import { CoreSites } from '@services/sites';
 import { CoreSyncResult } from '@services/sync';
 import { CoreAlerts } from '@services/overlays/alerts';
@@ -40,14 +39,7 @@ export class CoreCourseModuleMainActivityComponent extends CoreCourseModuleMainR
 
     protected syncObserver?: CoreEventObserver; // It will observe the sync auto event.
     protected syncEventName?: string; // Auto sync event name.
-
-    constructor(
-        @Optional() @Inject('') loggerName: string = 'CoreCourseModuleMainResourceComponent',
-        protected content?: IonContent,
-        courseContentsPage?: CoreCourseContentsPage,
-    ) {
-        super(loggerName, courseContentsPage);
-    }
+    protected content = inject(IonContent);
 
     /**
      * @inheritdoc

@@ -49,6 +49,9 @@ describe('CoreNavigator', () => {
 
         expect(navigator.isCurrent('/main/foo')).toBe(true);
         expect(navigator.isCurrent('/main')).toBe(false);
+        expect(navigator.isCurrent('../../main/foo')).toBe(true);
+        expect(navigator.isCurrent('../foo')).toBe(true);
+        expect(navigator.isCurrent('main/foo')).toBe(false);
     });
 
     it('gets the current main menu tab', () => {

@@ -13,13 +13,12 @@
 // limitations under the License.
 
 import { DownloadStatus } from '@/core/constants';
-import { Component, Input, ViewChild, ElementRef, OnInit, OnDestroy, Optional } from '@angular/core';
+import { Component, Input, ViewChild, ElementRef, OnInit, OnDestroy } from '@angular/core';
 
 import { CoreTabsComponent } from '@components/tabs/tabs';
 import { CoreCourseModuleMainActivityComponent } from '@features/course/classes/main-activity-component';
-import CoreCourseContentsPage from '@features/course/pages/contents/contents';
 import { CoreUser } from '@features/user/services/user';
-import { IonContent, IonInput } from '@ionic/angular';
+import { IonInput } from '@ionic/angular';
 import { CoreGroupInfo, CoreGroups } from '@services/groups';
 import { CoreNavigator } from '@services/navigator';
 import { CoreForms } from '@singletons/form';
@@ -62,7 +61,6 @@ import { CoreSharedModule } from '@/core/shared.module';
 @Component({
     selector: 'addon-mod-lesson-index',
     templateUrl: 'addon-mod-lesson-index.html',
-    standalone: true,
     imports: [
         CoreSharedModule,
         CoreCourseModuleInfoComponent,
@@ -104,13 +102,6 @@ export class AddonModLessonIndexComponent extends CoreCourseModuleMainActivityCo
     protected hasPlayed = false; // Whether the user has gone to the lesson player (attempted).
     protected dataSentObserver?: CoreEventObserver; // To detect data sent to server.
     protected dataSent = false; // Whether some data was sent to server while playing the lesson.
-
-    constructor(
-        protected content?: IonContent,
-        @Optional() courseContentsPage?: CoreCourseContentsPage,
-    ) {
-        super('AddonModLessonIndexComponent', content, courseContentsPage);
-    }
 
     /**
      * @inheritdoc

@@ -78,7 +78,7 @@ export class CoreGeolocationProvider {
 /**
  * @deprecated since 5.0. Geo location is no longer available in the app.
  */
-export const CoreGeolocation = makeSingleton(CoreGeolocationProvider); // eslint-disable-line deprecation/deprecation
+export const CoreGeolocation = makeSingleton(CoreGeolocationProvider); // eslint-disable-line @typescript-eslint/no-deprecated
 
 /**
  * @deprecated since 5.0. Geo location is no longer available in the app.
@@ -93,10 +93,10 @@ export enum CoreGeolocationErrorReason {
  */
 export class CoreGeolocationError extends CoreError {
 
-    // eslint-disable-next-line deprecation/deprecation
+    // eslint-disable-next-line @typescript-eslint/no-deprecated
     reason: CoreGeolocationErrorReason;
 
-    // eslint-disable-next-line deprecation/deprecation
+    // eslint-disable-next-line @typescript-eslint/no-deprecated
     constructor(reason: CoreGeolocationErrorReason) {
         super(`GeolocationError: ${reason}`);
 

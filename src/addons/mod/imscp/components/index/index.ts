@@ -12,9 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit, Optional } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CoreCourseModuleMainResourceComponent } from '@features/course/classes/main-resource-component';
-import CoreCourseContentsPage from '@features/course/pages/contents/contents';
 import { CoreCourse } from '@features/course/services/course';
 import { CoreNavigator } from '@services/navigator';
 import { AddonModImscp, AddonModImscpTocItem } from '../../services/imscp';
@@ -31,7 +30,6 @@ import { CoreSharedModule } from '@/core/shared.module';
     selector: 'addon-mod-imscp-index',
     templateUrl: 'addon-mod-imscp-index.html',
     styleUrl: 'index.scss',
-    standalone: true,
     imports: [
         CoreSharedModule,
         CoreCourseModuleInfoComponent,
@@ -45,10 +43,6 @@ export class AddonModImscpIndexComponent extends CoreCourseModuleMainResourceCom
 
     items: AddonModImscpTocItem[] = [];
     hasStarted = false;
-
-    constructor(@Optional() courseContentsPage?: CoreCourseContentsPage) {
-        super('AddonModImscpIndexComponent', courseContentsPage);
-    }
 
     /**
      * @inheritdoc

@@ -155,7 +155,7 @@ export class CoreHTMLClasses {
             const trailing = new RegExp('/+$');
             const path = parsedUrl.path.replace(leading, '').replace(trailing, '');
             if (path) {
-                className += `--${path.replace(/\//g, '-')}` || '';
+                className += `--${path.replace(/\//g, '-')}`;
             }
         }
 

@@ -24,7 +24,6 @@ import { ModalController } from '@singletons';
  */
 @Component({
     templateUrl: 'ratings-modal.html',
-    standalone: true,
     imports: [
         CoreSharedModule,
     ],

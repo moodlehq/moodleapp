@@ -55,7 +55,6 @@ import { CoreSharedModule } from '@/core/shared.module';
 @Component({
     selector: 'addon-mod-workshop-assessment-strategy',
     templateUrl: 'addon-mod-workshop-assessment-strategy.html',
-    standalone: true,
     imports: [
         CoreSharedModule,
         CoreEditorRichTextEditorComponent,

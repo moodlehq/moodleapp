@@ -26,7 +26,6 @@ import { CoreSharedModule } from '@/core/shared.module';
 @Component({
     selector: 'addon-mod-quiz-access-time-limit',
     templateUrl: 'addon-mod-quiz-access-time-limit.html',
-    standalone: true,
     imports: [
         CoreSharedModule,
     ],

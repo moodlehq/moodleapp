@@ -12,19 +12,21 @@
     }
 </core-navbar-buttons>
 
-<!-- Content. -->
 <core-loading [hideUntil]="!showLoading">
 
     <!-- Activity info. -->
     <core-course-module-info [module]="module" [description]="description" [component]="component" [componentId]="componentId"
         [courseId]="courseId" [hasDataToSync]="hasOffline" (completionChanged)="onCompletionChange()">
-        <div description *ngIf="assign && assign.introattachments?.length && !assign.submissionattachments">
-            <core-file *ngFor="let file of assign.introattachments" [file]="file" [component]="component" [componentId]="componentId" />
-        </div>
+        @if (assign && assign.introattachments?.length && !assign.submissionattachments) {
+            <div description>
+                <core-file *ngFor="let file of assign.introattachments" [file]="file" [component]="component" [componentId]="componentId" />
+            </div>
+        }
     </core-course-module-info>
 
     <!-- User can view all submissions (teacher). -->
-    <ng-container *ngIf="assign && canViewAllSubmissions">
+    @if (assign && canViewAllSubmissions) {
+
         <ion-list class="core-list-align-detail-right">
 
             <core-group-selector [groupInfo]="groupInfo" [(selected)]="group" (selectedChange)="setGroup(group)" [courseId]="courseId" />
@@ -32,105 +34,133 @@
             <ion-item class="ion-text-wrap">
                 <ion-label>
                     <p class="item-heading">{{ 'core.course.hiddenfromstudents' | translate }}</p>
-                    <p *ngIf="module.visible">{{ 'core.no' | translate }}</p>
-                    <p *ngIf="!module.visible">{{ 'core.yes' | translate }}</p>
+                    @if (module.visible) {
+                        <p>{{ 'core.no' | translate }}</p>
+                    } @else {
+                        <p>{{ 'core.yes' | translate }}</p>
+                    }
                 </ion-label>
             </ion-item>
 
-            <ion-item class="ion-text-wrap" *ngIf="timeRemaining">
-                <ion-label>
-                    <p class="item-heading">{{ 'addon.mod_assign.timeremaining' | translate }}</p>
-                    <p>{{ timeRemaining }}</p>
-                </ion-label>
-            </ion-item>
-            <ion-item class="ion-text-wrap" *ngIf="lateSubmissions">
-                <ion-label>
-                    <p class="item-heading">{{ 'addon.mod_assign.latesubmissions' | translate }}</p>
-                    <p>{{ lateSubmissions }}</p>
-                </ion-label>
-            </ion-item>
+            @if (timeRemaining) {
+                <ion-item class="ion-text-wrap">
+                    <ion-label>
+                        <p class="item-heading">{{ 'addon.mod_assign.timeremaining' | translate }}</p>
+                        <p>{{ timeRemaining }}</p>
+                    </ion-label>
+                </ion-item>
+            }
+            @if (lateSubmissions) {
+                <ion-item class="ion-text-wrap">
+                    <ion-label>
+                        <p class="item-heading">{{ 'addon.mod_assign.latesubmissions' | translate }}</p>
+                        <p>{{ lateSubmissions }}</p>
+                    </ion-label>
+                </ion-item>
+            }
 
-            <!-- Summary of all submissions. -->
-            <ion-item class="ion-text-wrap" *ngIf="summary && summary.participantcount" (click)="goToSubmissionList()" [detail]="true"
-                button>
-                <ion-label>
-                    <p class="item-heading" *ngIf="assign.teamsubmission">{{ 'addon.mod_assign.numberofteams' | translate }}</p>
-                    <p class="item-heading" *ngIf="!assign.teamsubmission">{{ 'addon.mod_assign.numberofparticipants' | translate }}</p>
-                </ion-label>
-                <ion-badge slot="end" color="primary">
-                    <span aria-hidden="true">{{ summary.participantcount }}</span>
-                    <span class="sr-only" *ngIf="!assign.teamsubmission">
-                        {{ 'addon.mod_assign.numberofparticipantscountdescription' | translate:{count: summary.participantcount} }}
-                    </span>
-                    <span class="sr-only" *ngIf="assign.teamsubmission">
-                        {{ 'addon.mod_assign.numberofteamscountdescription' | translate:{count: summary.participantcount} }}
-                    </span>
-                </ion-badge>
-            </ion-item>
+            @if (summary) {
+                @if (summary.participantcount) {
+                    <!-- Summary of all submissions. -->
+                    <ion-item class="ion-text-wrap" (click)="goToSubmissionList()" [detail]="true" button>
+                        <ion-label>
+                            @if (assign.teamsubmission) {
+                                <p class="item-heading">{{ 'addon.mod_assign.numberofteams' | translate }}</p>
+                            } @else {
+                                <p class="item-heading">{{ 'addon.mod_assign.numberofparticipants' | translate }}</p>
+                            }
+                        </ion-label>
+                        <ion-badge slot="end" color="primary">
+                            <span aria-hidden="true">{{ summary.participantcount }}</span>
+                            @if (!assign.teamsubmission) {
+                                <span class="sr-only">
+                                    {{ 'addon.mod_assign.numberofparticipantscountdescription' |
+                                    translate:{count: summary.participantcount} }}
+                                </span>
+                            } @else {
+                                <span class="sr-only">
+                                    {{ 'addon.mod_assign.numberofteamscountdescription' | translate:{count: summary.participantcount} }}
+                                </span>
+                            }
+                        </ion-badge>
+                    </ion-item>
+                }
 
-            <!-- Summary of submissions with draft status. -->
-            <ion-item class="ion-text-wrap" *ngIf="assign.submissiondrafts && summary && summary.submissionsenabled"
-                [class.hide-detail]="!summary.submissiondraftscount" [detail]="true" [button]="summary.submissiondraftscount"
-                (click)="goToSubmissionList(submissionStatusDraft, !!summary.submissiondraftscount)">
-                <ion-label>
-                    <p class="item-heading">{{ 'addon.mod_assign.numberofdraftsubmissions' | translate }}</p>
-                </ion-label>
-                <ion-badge slot="end" color="primary">
-                    <span aria-hidden="true">{{ summary.submissiondraftscount }}</span>
-                    <span class="sr-only">
-                        {{ 'addon.mod_assign.numberofdraftsubmissionscountdescription' | translate:
+                @if (summary.submissionsenabled) {
+                    @if (assign.submissiondrafts) {
+                        <!-- Summary of submissions with draft status. -->
+                        <ion-item class="ion-text-wrap" [class.hide-detail]="!summary.submissiondraftscount" [detail]="true"
+                            [button]="summary.submissiondraftscount"
+                            (click)="goToSubmissionList(submissionStatusDraft, !!summary.submissiondraftscount)">
+                            <ion-label>
+                                <p class="item-heading">{{ 'addon.mod_assign.numberofdraftsubmissions' | translate }}</p>
+                            </ion-label>
+                            <ion-badge slot="end" color="primary">
+                                <span aria-hidden="true">{{ summary.submissiondraftscount }}</span>
+                                <span class="sr-only">
+                                    {{ 'addon.mod_assign.numberofdraftsubmissionscountdescription' | translate:
                         {count: summary.submissiondraftscount} }}
-                    </span>
-                </ion-badge>
-            </ion-item>
+                                </span>
+                            </ion-badge>
+                        </ion-item>
+                    }
 
-            <!-- Summary of submissions with submitted status. -->
-            <ion-item class="ion-text-wrap" *ngIf="summary && summary.submissionsenabled"
-                [class.hide-detail]="!summary.submissionssubmittedcount" [detail]="true" [button]="summary.submissionssubmittedcount"
-                (click)="goToSubmissionList(submissionStatusSubmitted, !!summary.submissionssubmittedcount)">
-                <ion-label>
-                    <p class="item-heading">{{ 'addon.mod_assign.numberofsubmittedassignments' | translate }}</p>
-                </ion-label>
-                <ion-badge slot="end" color="primary">
-                    <span aria-hidden="true">{{ summary.submissionssubmittedcount }}</span>
-                    <span class="sr-only">
-                        {{ 'addon.mod_assign.numberofsubmittedassignmentscountdescription' | translate:
+                    <!-- Summary of submissions with submitted status. -->
+                    <ion-item class="ion-text-wrap" [class.hide-detail]="!summary.submissionssubmittedcount" [detail]="true"
+                        [button]="summary.submissionssubmittedcount"
+                        (click)="goToSubmissionList(submissionStatusSubmitted, !!summary.submissionssubmittedcount)">
+                        <ion-label>
+                            <p class="item-heading">{{ 'addon.mod_assign.numberofsubmittedassignments' | translate }}</p>
+                        </ion-label>
+                        <ion-badge slot="end" color="primary">
+                            <span aria-hidden="true">{{ summary.submissionssubmittedcount }}</span>
+                            <span class="sr-only">
+                                {{ 'addon.mod_assign.numberofsubmittedassignmentscountdescription' | translate:
                         {count: summary.submissionssubmittedcount} }}
-                    </span>
-                </ion-badge>
-            </ion-item>
+                            </span>
+                        </ion-badge>
+                    </ion-item>
 
-            <!-- Summary of submissions that need grading. -->
-            <ion-item class="ion-text-wrap" *ngIf="summary && summary.submissionsenabled && !assign.teamsubmission"
-                [class.hide-detail]="!needsGradingAvailable" [detail]="true" [button]="needsGradingAvailable"
-                (click)="goToSubmissionList(needGrading, needsGradingAvailable)">
-                <ion-label>
-                    <p class="item-heading">{{ 'addon.mod_assign.numberofsubmissionsneedgrading' | translate }}</p>
-                </ion-label>
-                <ion-badge slot="end" color="primary">
-                    <span aria-hidden="true">{{ summary.submissionsneedgradingcount }}</span>
-                    <span class="sr-only">
-                        {{ 'addon.mod_assign.numberofsubmissionsneedgradingcountdescription' | translate:
+                    @if (!assign.teamsubmission) {
+                        <!-- Summary of submissions that need grading. -->
+                        <ion-item class="ion-text-wrap" [class.hide-detail]="!needsGradingAvailable" [detail]="true"
+                            [button]="needsGradingAvailable" (click)="goToSubmissionList(needGrading, needsGradingAvailable)">
+                            <ion-label>
+                                <p class="item-heading">{{ 'addon.mod_assign.numberofsubmissionsneedgrading' | translate }}</p>
+                            </ion-label>
+                            <ion-badge slot="end" color="primary">
+                                <span aria-hidden="true">{{ summary.submissionsneedgradingcount }}</span>
+                                <span class="sr-only">
+                                    {{ 'addon.mod_assign.numberofsubmissionsneedgradingcountdescription' | translate:
                         {count: summary.submissionsneedgradingcount} }}
-                    </span>
-                </ion-badge>
-            </ion-item>
+                                </span>
+                            </ion-badge>
+                        </ion-item>
+                    }
+                }
+            }
         </ion-list>
 
         <!-- Ungrouped users. -->
-        <ion-card *ngIf="assign.teamsubmission && summary && summary.warnofungroupedusers" class="core-info-card">
-            <ion-item>
-                <ion-icon name="fas-circle-question" slot="start" aria-hidden="true" />
-                <ion-label>{{ 'addon.mod_assign.'+summary.warnofungroupedusers | translate }}</ion-label>
-            </ion-item>
-        </ion-card>
+        @if (assign.teamsubmission && summary && summary.warnofungroupedusers) {
+            <ion-card class="core-info-card">
+                <ion-item>
+                    <ion-icon name="fas-circle-question" slot="start" aria-hidden="true" />
+                    <ion-label>{{ 'addon.mod_assign.'+summary.warnofungroupedusers | translate }}</ion-label>
+                </ion-item>
+            </ion-card>
+        }
 
-        <div collapsible-footer *ngIf="!showLoading" slot="fixed">
-            <core-course-module-navigation [courseId]="courseId" [currentModuleId]="module.id" />
-        </div>
-    </ng-container>
+        @if (!showLoading) {
+            <div collapsible-footer slot="fixed">
+                <core-course-module-navigation [courseId]="courseId" [currentModuleId]="module.id" />
+            </div>
+        }
+
+    }
 
     <!-- If it's a student, display his submission. -->
-    <addon-mod-assign-submission *ngIf="!showLoading && !canViewAllSubmissions && canViewOwnSubmission" [courseId]="courseId"
-        [moduleId]="module.id" />
+    @if (!showLoading && !canViewAllSubmissions && canViewOwnSubmission) {
+        <addon-mod-assign-submission [courseId]="courseId" [moduleId]="module.id" />
+    }
 </core-loading>

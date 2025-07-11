@@ -24,7 +24,6 @@ import { ContextLevel } from '@/core/constants';
 @Component({
     selector: 'core-bs-tooltip',
     templateUrl: 'core-bs-tooltip.html',
-    standalone: true,
     imports: [
         CoreBaseModule,
         CoreFormatTextDirective,

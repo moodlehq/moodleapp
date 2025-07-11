@@ -34,7 +34,6 @@ import { CoreLogger } from '@singletons/logger';
  */
 @Pipe({
     name: 'coreDateDayOrTime',
-    standalone: true,
 })
 export class CoreDateDayOrTimePipe implements PipeTransform {
 

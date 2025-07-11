@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { APP_INITIALIZER, NgModule } from '@angular/core';
+import { NgModule, provideAppInitializer } from '@angular/core';
 import { Routes } from '@angular/router';
 import { CoreContentLinksDelegate } from '@features/contentlinks/services/contentlinks-delegate';
 import { CoreCourseHelper } from '@features/course/services/course-helper';
@@ -101,25 +101,21 @@ const routes: Routes = [
             useValue: [OFFLINE_SITE_SCHEMA],
             multi: true,
         },
-        {
-            provide: APP_INITIALIZER,
-            multi: true,
-            useValue: () => {
-                CoreCourseModuleDelegate.registerHandler(AddonModFeedbackModuleHandler.instance);
-                CoreCourseModulePrefetchDelegate.registerHandler(AddonModFeedbackPrefetchHandler.instance);
-                CoreCronDelegate.register(AddonModFeedbackSyncCronHandler.instance);
-                CoreContentLinksDelegate.registerHandler(AddonModFeedbackIndexLinkHandler.instance);
-                CoreContentLinksDelegate.registerHandler(AddonModFeedbackListLinkHandler.instance);
-                CoreContentLinksDelegate.registerHandler(AddonModFeedbackAnalysisLinkHandler.instance);
-                CoreContentLinksDelegate.registerHandler(AddonModFeedbackCompleteLinkHandler.instance);
-                CoreContentLinksDelegate.registerHandler(AddonModFeedbackPrintLinkHandler.instance);
-                CoreContentLinksDelegate.registerHandler(AddonModFeedbackShowEntriesLinkHandler.instance);
-                CoreContentLinksDelegate.registerHandler(AddonModFeedbackShowNonRespondentsLinkHandler.instance);
-                CorePushNotificationsDelegate.registerClickHandler(AddonModFeedbackPushClickHandler.instance);
+        provideAppInitializer(() => {
+            CoreCourseModuleDelegate.registerHandler(AddonModFeedbackModuleHandler.instance);
+            CoreCourseModulePrefetchDelegate.registerHandler(AddonModFeedbackPrefetchHandler.instance);
+            CoreCronDelegate.register(AddonModFeedbackSyncCronHandler.instance);
+            CoreContentLinksDelegate.registerHandler(AddonModFeedbackIndexLinkHandler.instance);
+            CoreContentLinksDelegate.registerHandler(AddonModFeedbackListLinkHandler.instance);
+            CoreContentLinksDelegate.registerHandler(AddonModFeedbackAnalysisLinkHandler.instance);
+            CoreContentLinksDelegate.registerHandler(AddonModFeedbackCompleteLinkHandler.instance);
+            CoreContentLinksDelegate.registerHandler(AddonModFeedbackPrintLinkHandler.instance);
+            CoreContentLinksDelegate.registerHandler(AddonModFeedbackShowEntriesLinkHandler.instance);
+            CoreContentLinksDelegate.registerHandler(AddonModFeedbackShowNonRespondentsLinkHandler.instance);
+            CorePushNotificationsDelegate.registerClickHandler(AddonModFeedbackPushClickHandler.instance);
 
-                CoreCourseHelper.registerModuleReminderClick(ADDON_MOD_FEEDBACK_COMPONENT_LEGACY);
-            },
-        },
+            CoreCourseHelper.registerModuleReminderClick(ADDON_MOD_FEEDBACK_COMPONENT_LEGACY);
+        }),
     ],
 })
 export class AddonModFeedbackModule {}

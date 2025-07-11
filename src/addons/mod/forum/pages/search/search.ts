@@ -39,7 +39,6 @@ import { CoreSearchGlobalSearchResultComponent } from '@features/search/componen
 @Component({
     selector: 'page-addon-mod-forum-search',
     templateUrl: 'search.html',
-    standalone: true,
     imports: [
         CoreSharedModule,
         CoreSearchBoxComponent,
@@ -161,7 +160,7 @@ export default class AddonModForumSearchPage implements OnInit {
     async loadMoreResults(complete: () => void ): Promise<void> {
         try {
             await this.resultsSource?.load();
-        } catch (error) {
+        } catch {
             this.loadMoreError = true;
         } finally {
             complete();

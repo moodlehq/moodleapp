@@ -4,8 +4,11 @@
             <ion-back-button [text]="'core.back' | translate" />
         </ion-buttons>
         <ion-title>
-            <h1 *ngIf="courseId">{{ 'core.search' | translate }}</h1>
-            <h1 *ngIf="!courseId">{{ 'core.search.globalsearch' | translate }}</h1>
+            @if (courseId) {
+                <h1>{{ 'core.search' | translate }}</h1>
+            } @else {
+                <h1>{{ 'core.search.globalsearch' | translate }}</h1>
+            }
         </ion-title>
         <ion-buttons slot="end">
             <core-user-menu-button />
@@ -14,33 +17,40 @@
 </ion-header>
 <ion-content class="limited-width">
     <div>
-        <ion-card class="core-danger-card" *ngIf="searchBanner">
-            <ion-item>
-                <ion-icon name="fas-triangle-exclamation" slot="start" aria-hidden="true" />
-                <ion-label>
-                    <core-format-text [text]="searchBanner" />
-                </ion-label>
-            </ion-item>
-        </ion-card>
+        @if (searchBanner) {
+            <ion-card class="core-danger-card">
+                <ion-item>
+                    <ion-icon name="fas-triangle-exclamation" slot="start" aria-hidden="true" />
+                    <ion-label>
+                        <core-format-text [text]="searchBanner" />
+                    </ion-label>
+                </ion-item>
+            </ion-card>
+        }
 
         <core-search-box (onSubmit)="search($event)" (onClear)="clearSearch()" [placeholder]="'core.search' | translate"
             [searchLabel]="'core.search' | translate" [autoFocus]="true" searchArea="CoreSearchGlobalSearch" />
 
-        <ion-list *ngIf="resultsSource.isLoaded()">
-            <core-search-global-search-result *ngFor="let result of resultsSource.getItems()" [result]="result"
-                (onClick)="visitResult(result)" />
-        </ion-list>
+        @if (resultsSource.isLoaded()) {
+            <ion-list>
+                <core-search-global-search-result *ngFor="let result of resultsSource.getItems()" [result]="result"
+                    (onClick)="visitResult(result)" />
+            </ion-list>
+        }
 
         <core-infinite-loading [enabled]="resultsSource.isLoaded() && !resultsSource.isCompleted()" (action)="loadMoreResults($event)"
             [error]="loadMoreError" />
 
-        <core-empty-box *ngIf="resultsSource.isEmpty()" icon="fas-magnifying-glass" [dimmed]="!resultsSource.isLoaded()">
-            <p *ngIf="!resultsSource.isLoaded()" role="alert">{{ 'core.search.empty' | translate }}</p>
-            <ng-container *ngIf="resultsSource.isLoaded()">
-                <p><strong>{{ 'core.search.noresults' | translate: { $a: resultsSource.getQuery() } }}</strong></p>
-                <p><small>{{ 'core.search.noresultshelp' | translate }}</small></p>
-            </ng-container>
-        </core-empty-box>
+        @if (resultsSource.isEmpty()) {
+            <core-empty-box icon="fas-magnifying-glass" [dimmed]="!resultsSource.isLoaded()">
+                @if (!resultsSource.isLoaded()) {
+                    <p role="alert">{{ 'core.search.empty' | translate }}</p>
+                } @else {
+                    <p><strong>{{ 'core.search.noresults' | translate: { $a: resultsSource.getQuery() } }}</strong></p>
+                    <p><small>{{ 'core.search.noresultshelp' | translate }}</small></p>
+                }
+            </core-empty-box>
+        }
 
         <ion-fab slot="fixed" core-fab vertical="bottom" horizontal="end">
             <ion-fab-button (click)="openFilters()" [attr.aria-label]="'core.filter' | translate">

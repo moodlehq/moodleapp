@@ -36,7 +36,6 @@ import { CoreSharedModule } from '@/core/shared.module';
 @Component({
     selector: 'core-rating-rate',
     templateUrl: 'core-rating-rate.html',
-    standalone: true,
     imports: [
         CoreSharedModule,
     ],

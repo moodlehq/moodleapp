@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { APP_INITIALIZER, NgModule } from '@angular/core';
+import { NgModule, provideAppInitializer } from '@angular/core';
 import { CoreUserDelegate } from '@features/user/services/user-delegate';
 import { CoreDataPrivacyUserHandler } from './services/handlers/user';
 import { Routes } from '@angular/router';
@@ -35,15 +35,11 @@ const routes: Routes = [
         CoreMainMenuTabRoutingModule.forChild(routes),
     ],
     providers: [
-        {
-            provide: APP_INITIALIZER,
-            multi: true,
-            useValue: () => {
-                CoreUserDelegate.registerHandler(CoreDataPrivacyUserHandler.instance);
-                CoreContentLinksDelegate.registerHandler(CoreDataPrivacyDataRequestsLinkHandler.instance);
-                CoreContentLinksDelegate.registerHandler(CoreDataPrivacyCreateDataRequestLinkHandler.instance);
-            },
-        },
+        provideAppInitializer(() => {
+            CoreUserDelegate.registerHandler(CoreDataPrivacyUserHandler.instance);
+            CoreContentLinksDelegate.registerHandler(CoreDataPrivacyDataRequestsLinkHandler.instance);
+            CoreContentLinksDelegate.registerHandler(CoreDataPrivacyCreateDataRequestLinkHandler.instance);
+        }),
     ],
 })
 export class CoreDataPrivacyModule {}

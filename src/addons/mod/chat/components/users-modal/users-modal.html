@@ -17,7 +17,8 @@
             <core-user-avatar [user]="user" slot="start" [linkProfile]="false" />
             <ion-label>
                 <p class="item-heading">{{ user.fullname }}</p>
-                <ng-container *ngIf="currentUserId !== user.id && isOnline">
+                @if (currentUserId !== user.id && isOnline) {
+
                     <ion-button fill="clear" (click)="talkTo(user)">
                         <ion-icon name="fas-comments" slot="start" aria-hidden="true" />
                         {{ 'addon.mod_chat.talk' | translate }}
@@ -26,7 +27,8 @@
                         <ion-icon name="fas-bell" slot="start" aria-hidden="true" />
                         {{ 'addon.mod_chat.beep' | translate }}
                     </ion-button>
-                </ng-container>
+
+                }
             </ion-label>
         </ion-item>
     </core-loading>

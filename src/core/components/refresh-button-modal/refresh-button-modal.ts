@@ -23,7 +23,6 @@ import { ModalController } from '@singletons';
 @Component({
     templateUrl: 'refresh-button-modal.html',
     styleUrl: 'refresh-button-modal.scss',
-    standalone: true,
     imports: [
         CoreBaseModule,
         CoreFaIconDirective,

@@ -22,7 +22,6 @@ import { dayjs } from '@/core/utils/dayjs';
  */
 @Pipe({
     name: 'coreTimeAgo',
-    standalone: true,
 })
 export class CoreTimeAgoPipe implements PipeTransform {
 

@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Directive, ElementRef, Input, OnDestroy, OnInit } from '@angular/core';
+import { Directive, ElementRef, Input, OnDestroy, OnInit, inject } from '@angular/core';
 import { ScrollDetail } from '@ionic/core';
 import { IonContent } from '@ionic/angular';
 import { CoreUtils } from '@singletons/utils';
@@ -35,14 +35,13 @@ import { toBoolean } from '../transforms/boolean';
  */
 @Directive({
     selector: '[collapsible-footer]',
-    standalone: true,
 })
 export class CoreCollapsibleFooterDirective implements OnInit, OnDestroy {
 
     @Input({ transform: toBoolean }) appearOnBottom = false; // Whether footer should re-appear when reaching the bottom.
 
     protected id = '0';
-    protected element: HTMLElement;
+    protected element: HTMLElement = inject(ElementRef).nativeElement;
     protected initialHeight = 48;
     protected finalHeight = 0;
     protected initialPaddingBottom = '0px';
@@ -60,10 +59,7 @@ export class CoreCollapsibleFooterDirective implements OnInit, OnDestroy {
     protected keyUpListener?: EventListener;
     protected page?: HTMLElement;
     protected moduleNav: HTMLElement | null = null;
-
-    constructor(el: ElementRef, protected ionContent: IonContent) {
-        this.element = el.nativeElement;
-    }
+    protected ionContent = inject(IonContent);
 
     /**
      * @inheritdoc

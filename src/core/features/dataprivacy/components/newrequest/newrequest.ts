@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { CoreSharedModule } from '@/core/shared.module';
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, inject } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import {
     CoreDataPrivacy,
@@ -32,7 +32,6 @@ import { CoreAlerts } from '@services/overlays/alerts';
 @Component({
     selector: 'core-data-privacy-new-request',
     templateUrl: 'newrequest.html',
-    standalone: true,
     imports: [
         CoreSharedModule,
     ],
@@ -48,9 +47,9 @@ export class CoreDataPrivacyNewRequestComponent implements OnInit {
     form: FormGroup;
     typeControl: FormControl<CoreDataPrivacyDataRequestType>;
 
-    constructor(
-        protected fb: FormBuilder,
-    ) {
+    protected fb = inject(FormBuilder);
+
+    constructor() {
         this.form = new FormGroup({});
 
         // Initialize form variables.

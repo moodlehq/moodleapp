@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, Input, OnInit, Optional } from '@angular/core';
+import { Component, Input, OnInit, inject } from '@angular/core';
 import { CoreSiteInfo } from '@classes/sites/unauthenticated-site';
 import { CoreUserTourDirectiveOptions } from '@directives/user-tour';
 import { CoreUserToursAlignment, CoreUserToursSide } from '@features/usertours/services/user-tours';
@@ -34,7 +34,6 @@ import { CoreSharedModule } from '@/core/shared.module';
     selector: 'core-user-menu-button',
     templateUrl: 'user-menu-button.html',
     styleUrl: 'user-menu-button.scss',
-    standalone: true,
     imports: [
         CoreSharedModule,
     ],
@@ -42,6 +41,7 @@ import { CoreSharedModule } from '@/core/shared.module';
 export class CoreMainMenuUserButtonComponent implements OnInit {
 
     @Input({ transform: toBoolean }) alwaysShow = false;
+
     siteInfo?: CoreSiteInfo;
     isMainScreen = false;
     userTour: CoreUserTourDirectiveOptions = {
@@ -51,7 +51,10 @@ export class CoreMainMenuUserButtonComponent implements OnInit {
         side: CoreScreen.isMobile ? CoreUserToursSide.Start : CoreUserToursSide.End,
     };
 
-    constructor(protected routerOutlet: IonRouterOutlet, @Optional() protected menuPage: CoreMainMenuPage | null) {
+    protected routerOutlet = inject(IonRouterOutlet);
+    protected menuPage = inject(CoreMainMenuPage, { optional: true });
+
+    constructor() {
         this.siteInfo = CoreSites.getCurrentSite()?.getInfo();
     }
 

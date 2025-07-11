@@ -47,7 +47,6 @@ import { CoreSharedModule } from '@/core/shared.module';
     selector: 'page-addon-privatefiles-index',
     templateUrl: 'index.html',
     styleUrl: './index.scss',
-    standalone: true,
     imports: [
         CoreSharedModule,
         AddonPrivateFilesFileComponent,

@@ -21,9 +21,9 @@
                 list-style-type: none;
 
                 .user {
-                    @include float(start);
                     position: relative;
                     padding-bottom: 16px;
+                    @include float(start);
 
                     .core-adapted-img-container {
                         display: inline;
@@ -55,8 +55,8 @@
                 }
 
                 .message {
-                    @include float(end);
                     margin-top: 3px;
+                    @include float(end);
                 }
 
                 .uservisibility { // No support on the app.

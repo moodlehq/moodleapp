@@ -14,13 +14,17 @@
     <core-format-text [text]="content" [component]="component" [componentId]="componentId" [filter]="filter" [contextLevel]="contextLevel"
         [contextInstanceId]="instanceId" [courseId]="courseId" />
 
-    <ion-card *ngIf="files?.length">
-        <core-file *ngFor="let file of files" [file]="file" [component]="component" [componentId]="componentId" />
-    </ion-card>
+    @if (files?.length) {
+        <ion-card>
+            <core-file *ngFor="let file of files" [file]="file" [component]="component" [componentId]="componentId" />
+        </ion-card>
+    }
 </ion-content>
-<ion-footer *ngIf="displayCopyButton">
-    <ion-button expand="block" fill="outline" (click)="copyText()">
-        <ion-icon name="fas-copy" aria-hidden="true" slot="start" />
-        {{ 'core.copytoclipboard' | translate }}
-    </ion-button>
-</ion-footer>
+@if (displayCopyButton) {
+    <ion-footer>
+        <ion-button expand="block" fill="outline" (click)="copyText()">
+            <ion-icon name="fas-copy" aria-hidden="true" slot="start" />
+            {{ 'core.copytoclipboard' | translate }}
+        </ion-button>
+    </ion-footer>
+}

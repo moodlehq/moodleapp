@@ -26,7 +26,6 @@ import { CoreSharedFilesListComponent } from '../../components/list/list';
 @Component({
     selector: 'page-core-shared-files-list',
     templateUrl: 'list.html',
-    standalone: true,
     imports: [
         CoreSharedModule,
         CoreSharedFilesListComponent,

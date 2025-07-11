@@ -19,7 +19,9 @@
                     <core-dynamic-component [component]="data.component" [data]="data.data">
                         <p class="ion-padding">Couldn't find the directive to render this access rule.</p>
                     </core-dynamic-component>
-                    <core-spacer *ngIf="!last" />
+                    @if (!last) {
+                        <core-spacer />
+                    }
                 </ng-container>
 
                 <ion-button expand="block" type="submit" class="ion-margin">

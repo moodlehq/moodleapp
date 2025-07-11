@@ -373,7 +373,7 @@ export class CoreFileHelperProvider {
                 const fileObject = await CoreFile.getFileObjectFromFileEntry(fileEntry);
 
                 return fileObject.size;
-            } catch (error) {
+            } catch {
                 // Error getting the file, maybe it's not downloaded. Get remote size.
                 const size = await CoreWS.getRemoteFileSize(fileUrl);
 

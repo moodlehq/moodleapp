@@ -28,7 +28,6 @@ import { CoreAlerts } from '@services/overlays/alerts';
     selector: 'addon-forum-post-options-menu',
     templateUrl: 'post-options-menu.html',
     styleUrl: 'post-options-menu.scss',
-    standalone: true,
     imports: [
         CoreSharedModule,
     ],

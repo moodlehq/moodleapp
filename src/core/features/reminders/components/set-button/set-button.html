@@ -1,7 +1,12 @@
 <ion-button fill="clear" size="small" (click)="setReminder($event)"
     [ariaLabel]="'core.reminders.setareminderfor' | translate : { title: title, label: labelClean }">
-    <ion-icon name="fas-bell" slot="icon-only" *ngIf="timebefore !== undefined" aria-hidden="true" />
-    <ion-icon name="far-bell-slash" slot="icon-only" *ngIf="timebefore === undefined" aria-hidden="true" />
+    @if (timebefore !== undefined) {
+        <ion-icon name="fas-bell" slot="icon-only" aria-hidden="true" />
+    } @else {
+        <ion-icon name="far-bell-slash" slot="icon-only" aria-hidden="true" />
+    }
 </ion-button>
 
-<span class="sr-only" role="status" *ngIf="reminderMessage">{{ reminderMessage }}</span>
+@if (reminderMessage) {
+    <span class="sr-only" role="status">{{ reminderMessage }}</span>
+}

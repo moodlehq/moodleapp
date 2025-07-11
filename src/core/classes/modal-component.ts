@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { ElementRef } from '@angular/core';
+import { ElementRef, inject } from '@angular/core';
 import { CorePromisedValue } from '@classes/promised-value';
 import { CoreDirectivesRegistry } from '@singletons/directives-registry';
 
@@ -23,7 +23,9 @@ export class CoreModalComponent<T=unknown> {
 
     result: CorePromisedValue<T> = new CorePromisedValue();
 
-    constructor({ nativeElement: element }: ElementRef<HTMLElement>) {
+    constructor() {
+        const element: HTMLElement = inject(ElementRef).nativeElement;
+
         CoreDirectivesRegistry.register(element, this);
     }
 

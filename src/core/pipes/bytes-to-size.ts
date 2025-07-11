@@ -22,7 +22,6 @@ import { CoreText } from '@singletons/text';
  */
 @Pipe({
     name: 'coreBytesToSize',
-    standalone: true,
 })
 export class CoreBytesToSizePipe implements PipeTransform {
 

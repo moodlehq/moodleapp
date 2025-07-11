@@ -29,7 +29,6 @@ import { CoreContentLinksHelper } from '@features/contentlinks/services/contentl
     selector: 'addon-block-timeline-events',
     templateUrl: 'addon-block-timeline-events.html',
     styleUrl: 'events.scss',
-    standalone: true,
     imports: [
         CoreSharedModule,
     ],

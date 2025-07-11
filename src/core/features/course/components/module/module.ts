@@ -48,7 +48,6 @@ import { CoreCourseModuleHelper } from '@features/course/services/course-module-
     selector: 'core-course-module',
     templateUrl: 'core-course-module.html',
     styleUrl: 'module.scss',
-    standalone: true,
     imports: [
         CoreSharedModule,
         CoreCourseModuleCompletionLegacyComponent,
@@ -199,7 +198,6 @@ export class CoreCourseModuleComponent implements OnInit, OnDestroy {
      * @param event Click event.
      */
     buttonClicked(event: Event): void {
-        // eslint-disable-next-line deprecation/deprecation
         const button = this.module.handlerData?.button;
         if (!button || !button.action) {
             return;

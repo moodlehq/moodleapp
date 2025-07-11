@@ -20,7 +20,6 @@ import { CoreFileComponent } from '@components/file/file';
 @Component({
     selector: 'addon-privatefiles-file',
     templateUrl: 'file.html',
-    standalone: true,
     styleUrl: 'file.scss',
     imports: [CoreSharedModule],
 })

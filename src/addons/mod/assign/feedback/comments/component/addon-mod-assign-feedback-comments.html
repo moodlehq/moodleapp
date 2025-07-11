@@ -1,20 +1,24 @@
-<!-- Read only. -->
-<ion-item class="ion-text-wrap" *ngIf="text && !edit" button [detail]="true" (click)="open($event)">
-    <ion-label>
-        <p class="item-heading">{{ plugin.name }}</p>
-        <p class="collapse-content">
-            <core-format-text [component]="component" [componentId]="assign.cmid" [text]="text" contextLevel="module"
-                [contextInstanceId]="assign.cmid" [courseId]="assign.course" [sanitize]="!isSent" />
-        </p>
-    </ion-label>
-</ion-item>
+@if (text && !edit) {
+    <!-- Read only. -->
+    <ion-item class="ion-text-wrap" button [detail]="true" (click)="open($event)">
+        <ion-label>
+            <p class="item-heading">{{ plugin.name }}</p>
+            <p class="collapse-content">
+                <core-format-text [component]="component" [componentId]="assign.cmid" [text]="text" contextLevel="module"
+                    [contextInstanceId]="assign.cmid" [courseId]="assign.course" [sanitize]="!isSent" />
+            </p>
+        </ion-label>
+    </ion-item>
+}
 
-<!-- Edit -->
-<ion-item class="ion-text-wrap" *ngIf="edit && loaded">
-    <ion-label position="stacked">
-        <p class="item-heading">{{ plugin.name }}</p>
-    </ion-label>
-    <core-rich-text-editor [control]="control" [placeholder]="plugin.name" name="assignfeedbackcomments_editor" [component]="component"
-        [componentId]="assign.cmid" [autoSave]="true" contextLevel="module" [contextInstanceId]="assign.cmid"
-        elementId="assignfeedbackcomments_editor" [draftExtraParams]="{userid: userId, action: 'grade'}" />
-</ion-item>
+@if (edit && loaded) {
+    <!-- Edit -->
+    <ion-item class="ion-text-wrap">
+        <ion-label position="stacked">
+            <p class="item-heading">{{ plugin.name }}</p>
+        </ion-label>
+        <core-rich-text-editor [control]="control" [placeholder]="plugin.name" name="assignfeedbackcomments_editor" [component]="component"
+            [componentId]="assign.cmid" [autoSave]="true" contextLevel="module" [contextInstanceId]="assign.cmid"
+            elementId="assignfeedbackcomments_editor" [draftExtraParams]="{userid: userId, action: 'grade'}" />
+    </ion-item>
+}

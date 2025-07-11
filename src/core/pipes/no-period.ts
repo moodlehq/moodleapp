@@ -19,7 +19,6 @@ import { Pipe, PipeTransform } from '@angular/core';
  */
 @Pipe({
     name: 'coreNoPeriod',
-    standalone: true,
 })
 export class CoreNoPeriodPipe implements PipeTransform {
 

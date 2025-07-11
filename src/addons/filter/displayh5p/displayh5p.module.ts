@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { APP_INITIALIZER, NgModule } from '@angular/core';
+import { NgModule, provideAppInitializer } from '@angular/core';
 
 import { CoreFilterDelegate } from '@features/filter/services/filter-delegate';
 import { AddonFilterDisplayH5PHandler } from './services/handlers/displayh5p';
@@ -23,11 +23,9 @@ import { AddonFilterDisplayH5PHandler } from './services/handlers/displayh5p';
     imports: [
     ],
     providers: [
-        {
-            provide: APP_INITIALIZER,
-            multi: true,
-            useValue: () => CoreFilterDelegate.registerHandler(AddonFilterDisplayH5PHandler.instance),
-        },
+        provideAppInitializer(() => {
+            CoreFilterDelegate.registerHandler(AddonFilterDisplayH5PHandler.instance);
+        }),
     ],
 })
 export class AddonFilterDisplayH5PModule {}

@@ -25,7 +25,6 @@ import { CoreUpdateNonReactiveAttributesDirective } from '@directives/update-non
     selector: 'core-swipe-navigation-tour',
     templateUrl: 'core-swipe-navigation-tour.html',
     styleUrl: 'swipe-navigation-tour.scss',
-    standalone: true,
     imports: [
         CoreBaseModule,
         CoreFaIconDirective,

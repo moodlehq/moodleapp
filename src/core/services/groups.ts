@@ -49,7 +49,7 @@ export class CoreGroupsProvider {
             const groupmode = await this.getActivityGroupMode(cmId, siteId, ignoreCache);
 
             return groupmode === CoreGroupsProvider.SEPARATEGROUPS || groupmode === CoreGroupsProvider.VISIBLEGROUPS;
-        } catch (error) {
+        } catch {
             return false;
         }
     }

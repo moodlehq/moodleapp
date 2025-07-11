@@ -113,7 +113,7 @@ export class CoreFileUploaderProvider {
             const site = await CoreSites.getSite(siteId);
 
             return this.canDeleteDraftFilesInSite(site);
-        } catch (error) {
+        } catch {
             return false;
         }
     }

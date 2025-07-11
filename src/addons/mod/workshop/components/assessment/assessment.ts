@@ -35,7 +35,6 @@ import { CoreSharedModule } from '@/core/shared.module';
 @Component({
     selector: 'addon-mod-workshop-assessment',
     templateUrl: 'addon-mod-workshop-assessment.html',
-    standalone: true,
     imports: [
         CoreSharedModule,
     ],

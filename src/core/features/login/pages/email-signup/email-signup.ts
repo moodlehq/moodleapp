@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, ViewChild, ElementRef, OnInit, ChangeDetectorRef } from '@angular/core';
+import { Component, ViewChild, ElementRef, OnInit, ChangeDetectorRef, inject } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, FormControl } from '@angular/forms';
 import { CoreText } from '@singletons/text';
 import { CoreCountries, CoreCountry } from '@singletons/countries';
@@ -49,7 +49,6 @@ import { CoreUserProfileFieldComponent } from '@features/user/components/user-pr
     selector: 'page-core-login-email-signup',
     templateUrl: 'email-signup.html',
     styleUrl: '../../login.scss',
-    standalone: true,
     imports: [
         CoreSharedModule,
         CoreUserProfileFieldComponent,
@@ -99,11 +98,11 @@ export default class CoreLoginEmailSignupPage implements OnInit {
     policyErrors: CoreInputErrorsMessages;
     namefieldsErrors?: Record<string, CoreInputErrorsMessages>;
 
-    constructor(
-        protected fb: FormBuilder,
-        protected elementRef: ElementRef,
-        protected changeDetector: ChangeDetectorRef,
-    ) {
+    protected fb = inject(FormBuilder);
+    protected element: HTMLElement = inject(ElementRef).nativeElement;
+    protected changeDetector = inject(ChangeDetectorRef);
+
+    constructor() {
         // Create the ageVerificationForm.
         this.ageVerificationForm = this.fb.group({
             age: ['', Validators.required],
@@ -304,7 +303,7 @@ export default class CoreLoginEmailSignupPage implements OnInit {
 
             // Scroll to the first element with errors.
             const errorFound = await CoreDom.scrollToInputError(
-                this.elementRef.nativeElement,
+                this.element,
             );
 
             if (!errorFound) {

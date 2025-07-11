@@ -106,9 +106,8 @@ export class AddonModForumOfflineProvider {
             const discussions = await this.getNewDiscussions(forumId, siteId, userId);
 
             return !!discussions.length;
-        } catch (error) {
+        } catch {
             // No offline data found, return false.
-
             return false;
         }
     }
@@ -220,9 +219,8 @@ export class AddonModForumOfflineProvider {
             const replies = await this.getForumReplies(forumId, siteId, userId);
 
             return !!replies.length;
-        } catch (error) {
+        } catch {
             // No offline data found, return false.
-
             return false;
         }
     }
@@ -260,9 +258,8 @@ export class AddonModForumOfflineProvider {
             const replies = await this.getDiscussionReplies(discussionId, siteId, userId);
 
             return !!replies.length;
-        } catch (error) {
+        } catch {
             // No offline data found, return false.
-
             return false;
         }
     }

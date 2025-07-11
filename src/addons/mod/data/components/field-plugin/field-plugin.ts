@@ -29,7 +29,6 @@ import { toBoolean } from '@/core/transforms/boolean';
 @Component({
     selector: 'addon-mod-data-field-plugin',
     templateUrl: 'addon-mod-data-field-plugin.html',
-    standalone: true,
     imports: [
         CoreSharedModule,
     ],

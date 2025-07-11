@@ -42,7 +42,6 @@ import { CoreSharedModule } from '@/core/shared.module';
     selector: 'page-addon-mod-chat-chat',
     templateUrl: 'chat.html',
     styleUrls: ['../../../../../theme/components/discussion.scss', 'chat.scss'],
-    standalone: true,
     imports: [
         CoreSharedModule,
     ],

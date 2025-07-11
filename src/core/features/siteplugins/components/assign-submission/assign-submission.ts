@@ -29,7 +29,6 @@ import { getModAssignComponentModules } from '@addons/mod/assign/assign.module';
     selector: 'core-site-plugins-assign-submission',
     templateUrl: 'core-siteplugins-assign-submission.html',
     styles: [':host { display: contents; }'],
-    standalone: true,
     imports: [
         CoreSharedModule,
         CoreCompileHtmlComponent,

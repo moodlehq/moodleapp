@@ -3,5 +3,7 @@
     <strong>{{ label }}</strong> {{ readableTime }}
 </div>
 
-<core-reminders-set-button *ngIf="showReminderButton" slot="end" [component]="component" [instanceId]="instanceId" [type]="type"
-    [label]="label" [initialTimebefore]="timebefore" [time]="time" [title]="title" [url]="url" />
+@if (showReminderButton) {
+    <core-reminders-set-button slot="end" [component]="component" [instanceId]="instanceId" [type]="type" [label]="label"
+        [initialTimebefore]="timebefore" [time]="time" [title]="title" [url]="url" />
+}

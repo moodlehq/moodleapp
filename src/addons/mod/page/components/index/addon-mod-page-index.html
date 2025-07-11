@@ -23,9 +23,11 @@
         <core-format-text [component]="component" [componentId]="componentId" [text]="contents" contextLevel="module"
             [contextInstanceId]="module.id" [courseId]="courseId" />
 
-        <p class="ion-padding-bottom addon-mod_page-timemodified" *ngIf="displayTimemodified && timemodified">
-            {{ 'core.lastmodified' | translate}}: {{ timemodified! * 1000 | coreFormatDate }}
-        </p>
+        @if (displayTimemodified && timemodified) {
+            <p class="ion-padding-bottom addon-mod_page-timemodified">
+                {{ 'core.lastmodified' | translate}}: {{ timemodified! * 1000 | coreFormatDate }}
+            </p>
+        }
     </div>
 
 </core-loading>

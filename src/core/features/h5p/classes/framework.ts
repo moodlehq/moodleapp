@@ -353,7 +353,7 @@ export class CoreH5PFramework {
 
         try {
             return await this.contentTables[siteId].getOne({ foldername: folderName });
-        } catch (error) {
+        } catch {
             // Cannot get folder name, the h5p file was probably deleted. Just use the URL.
             return await this.contentTables[siteId].getOne({ fileurl: fileUrl });
         }
@@ -416,7 +416,7 @@ export class CoreH5PFramework {
             if (records && records[0]) {
                 return this.parseLibDBData(records[0]);
             }
-        } catch (error) {
+        } catch {
             // Library not found.
         }
 
@@ -498,7 +498,7 @@ export class CoreH5PFramework {
             const library = await this.getLibrary(machineName, majorVersion, minorVersion, siteId);
 
             return library.id || undefined;
-        } catch (error) {
+        } catch {
             return undefined;
         }
     }

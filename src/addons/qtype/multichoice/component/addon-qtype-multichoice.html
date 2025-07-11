@@ -30,15 +30,19 @@
                                 </div>
                             </div>
 
-                            @if (option.correctClass === 'correct') {
-                                <ion-icon class="core-correct-icon" [name]="correctIcon" color="success"
-                                    [attr.aria-label]="'core.question.correct' | translate" />
-                            } @else if (option.correctClass === 'partiallycorrect') {
-                                <ion-icon class="core-correct-icon" [name]="partialCorrectIcon" color="warning"
-                                    [attr.aria-label]="'core.question.partiallycorrect' | translate" />
-                            } @else if (option.correctClass === 'incorrect') {
-                                <ion-icon class="core-correct-icon" [name]="incorrectIcon" color="danger"
-                                    [attr.aria-label]="'core.question.incorrect' | translate" />
+                            @switch (option.correctClass) {
+                                @case ('correct') {
+                                    <ion-icon class="core-correct-icon" [name]="correctIcon" color="success"
+                                        [attr.aria-label]="'core.question.correct' | translate" />
+                                }
+                                @case ('partiallycorrect') {
+                                    <ion-icon class="core-correct-icon" [name]="partialCorrectIcon" color="warning"
+                                        [attr.aria-label]="'core.question.partiallycorrect' | translate" />
+                                }
+                                @case ('incorrect') {
+                                    <ion-icon class="core-correct-icon" [name]="incorrectIcon" color="danger"
+                                        [attr.aria-label]="'core.question.incorrect' | translate" />
+                                }
                             }
                         </ion-checkbox>
 
@@ -68,15 +72,19 @@
                                     </div>
                                 </div>
 
-                                @if (option.correctClass === 'correct') {
-                                    <ion-icon class="core-correct-icon" [name]="correctIcon" color="success"
-                                        [attr.aria-label]="'core.question.correct' | translate" />
-                                } @else if (option.correctClass === 'partiallycorrect') {
-                                    <ion-icon class="core-correct-icon" [name]="partialCorrectIcon" color="warning"
-                                        [attr.aria-label]="'core.question.partiallycorrect' | translate" />
-                                } @else if (option.correctClass === 'incorrect') {
-                                    <ion-icon class="core-correct-icon" [name]="incorrectIcon" color="danger"
-                                        [attr.aria-label]="'core.question.incorrect' | translate" />
+                                @switch (option.correctClass) {
+                                    @case ('correct') {
+                                        <ion-icon class="core-correct-icon" [name]="correctIcon" color="success"
+                                            [attr.aria-label]="'core.question.correct' | translate" />
+                                    }
+                                    @case ('partiallycorrect') {
+                                        <ion-icon class="core-correct-icon" [name]="partialCorrectIcon" color="warning"
+                                            [attr.aria-label]="'core.question.partiallycorrect' | translate" />
+                                    }
+                                    @case ('incorrect') {
+                                        <ion-icon class="core-correct-icon" [name]="incorrectIcon" color="danger"
+                                            [attr.aria-label]="'core.question.incorrect' | translate" />
+                                    }
                                 }
                             </ion-radio>
 
@@ -91,8 +99,8 @@
                 }
 
                 @if (!question.disabled) {
-                    <ion-button class="ion-text-wrap ion-margin-top" expand="block" fill="outline"
-                        [disabled]="!question.singleChoiceModel" (click)="clear()" type="button">
+                    <ion-button class="ion-text-wrap ion-margin-top" expand="block" fill="outline" [disabled]="!question.singleChoiceModel"
+                        (click)="clear()" type="button">
                         {{ 'addon.mod_quiz.clearchoice' | translate }}
                     </ion-button>
                 }

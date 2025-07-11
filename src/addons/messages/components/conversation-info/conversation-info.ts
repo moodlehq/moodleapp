@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, inject } from '@angular/core';
 import {
     AddonMessagesConversationFormatted,
     AddonMessagesConversationMember,
@@ -29,7 +29,6 @@ import { CoreSharedModule } from '@/core/shared.module';
 @Component({
     selector: 'page-addon-messages-conversation-info',
     templateUrl: 'conversation-info.html',
-    standalone: true,
     imports: [
         CoreSharedModule,
     ],
@@ -44,10 +43,7 @@ export class AddonMessagesConversationInfoComponent implements OnInit {
     canLoadMore = false;
     loadMoreError = false;
 
-    constructor(
-        protected route: ActivatedRoute,
-    ) {
-    }
+    protected route = inject(ActivatedRoute);
 
     /**
      * @inheritdoc

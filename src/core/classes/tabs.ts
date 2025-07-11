@@ -23,6 +23,7 @@ import {
     ViewChild,
     SimpleChange,
     ElementRef,
+    inject,
 } from '@angular/core';
 import { BackButtonEvent } from '@ionic/core';
 import { Subscription } from 'rxjs';
@@ -111,12 +112,14 @@ export class CoreTabsBaseComponent<T extends CoreTabBase> implements AfterViewIn
 
     tabAction: CoreTabsRoleTab<T>;
 
-    constructor(element: ElementRef) {
+    constructor() {
+        const element: HTMLElement = inject(ElementRef).nativeElement;
+
         this.backButtonFunction = (event) => this.backButtonClicked(event);
 
         this.tabAction = new CoreTabsRoleTab(this);
 
-        CoreDirectivesRegistry.register(element.nativeElement, this);
+        CoreDirectivesRegistry.register(element, this);
     }
 
     /**

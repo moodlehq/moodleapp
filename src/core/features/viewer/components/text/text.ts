@@ -28,7 +28,6 @@ import { ModalController } from '@singletons';
     selector: 'page-core-viewer-text',
     templateUrl: 'text.html',
     styleUrl: 'text.scss',
-    standalone: true,
     imports: [
         CoreSharedModule,
     ],

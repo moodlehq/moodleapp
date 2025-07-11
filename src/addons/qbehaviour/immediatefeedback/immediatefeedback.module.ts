@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { APP_INITIALIZER, NgModule } from '@angular/core';
+import { NgModule, provideAppInitializer } from '@angular/core';
 
 import { CoreQuestionBehaviourDelegate } from '@features/question/services/behaviour-delegate';
 import { AddonQbehaviourImmediateFeedbackHandler } from './services/handlers/immediatefeedback';
@@ -21,13 +21,9 @@ import { AddonQbehaviourImmediateFeedbackHandler } from './services/handlers/imm
     declarations: [
     ],
     providers: [
-        {
-            provide: APP_INITIALIZER,
-            multi: true,
-            useValue: () => {
-                CoreQuestionBehaviourDelegate.registerHandler(AddonQbehaviourImmediateFeedbackHandler.instance);
-            },
-        },
+        provideAppInitializer(() => {
+            CoreQuestionBehaviourDelegate.registerHandler(AddonQbehaviourImmediateFeedbackHandler.instance);
+        }),
     ],
 })
 export class AddonQbehaviourImmediateFeedbackModule {}

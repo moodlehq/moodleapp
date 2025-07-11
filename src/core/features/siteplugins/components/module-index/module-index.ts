@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit, OnDestroy, Input, ViewChild, HostBinding, Optional } from '@angular/core';
+import { Component, OnInit, OnDestroy, Input, ViewChild, HostBinding, inject } from '@angular/core';
 
 import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
 import { CoreCourseModuleSummaryResult } from '@features/course/components/module-summary/module-summary';
@@ -42,7 +42,6 @@ import { CoreCourseModuleNavigationComponent } from '@features/course/components
     selector: 'core-site-plugins-module-index',
     templateUrl: 'core-siteplugins-module-index.html',
     styles: [':host { display: contents; }'],
-    standalone: true,
     imports: [
         CoreSharedModule,
         CoreSitePluginsPluginContentComponent,
@@ -82,7 +81,7 @@ export class CoreSitePluginsModuleIndexComponent implements OnInit, OnDestroy, C
 
     jsData?: Record<string, unknown>; // Data to pass to the component.
 
-    constructor(@Optional() public courseContentsPage?: CoreCourseContentsPage) {}
+    courseContentsPage = inject(CoreCourseContentsPage, { optional: true });
 
     /**
      * @inheritdoc

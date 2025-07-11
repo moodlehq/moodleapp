@@ -1,16 +1,24 @@
-<ng-container *ngIf="editMode && form">
+@if (editMode && form) {
+
     <core-attachments [files]="files" [maxSize]="maxSizeBytes" maxSubmissions="1" [component]="component" [componentId]="componentId"
         [allowOffline]="true" [courseId]="database?.course" [required]="field.required"
         [title]="'addon.mod_data_fields_file.fieldtypelabel' | translate" />
-    <core-input-errors *ngIf="error" [errorText]="error" />
-</ng-container>
+    @if (error) {
+        <core-input-errors [errorText]="error" />
+    }
 
-<ng-container *ngIf="searchMode && form" [formGroup]="form">
-    <ion-input type="text" [formControlName]="'f_'+field.id" [placeholder]="field.name" />
-</ng-container>
+}
 
-<ng-container *ngIf="displayMode">
+@if (searchMode && form) {
+    <ng-container [formGroup]="form">
+        <ion-input type="text" [formControlName]="'f_'+field.id" [placeholder]="field.name" />
+    </ng-container>
+}
+
+@if (displayMode) {
+
     <div>
         <core-files [files]="files" [component]="component" [componentId]="componentId" [alwaysDownload]="true" />
     </div>
-</ng-container>
+
+}

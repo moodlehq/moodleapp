@@ -31,13 +31,11 @@ import { CoreFormatTextDirective } from '@directives/format-text';
     selector: 'core-site-logo',
     templateUrl: 'site-logo.html',
     styleUrl: 'site-logo.scss',
-    standalone: true,
     imports: [
         CoreBaseModule,
         CoreExternalContentDirective,
         CoreFormatTextDirective,
     ],
-
 })
 export class CoreSiteLogoComponent implements OnInit, OnDestroy {
 

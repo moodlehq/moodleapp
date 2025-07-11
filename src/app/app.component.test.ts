@@ -21,7 +21,6 @@ describe('AppComponent', () => {
 
     it('should render', async () => {
         const fixture = await renderComponent(AppComponent, {
-            standalone: true,
             imports: [RouterModule.forRoot([])],
         });
 

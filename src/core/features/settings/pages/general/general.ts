@@ -38,7 +38,6 @@ import { CoreEditorService } from '@features/editor/services/editor';
     selector: 'page-core-app-settings-general',
     templateUrl: 'general.html',
     styleUrl: 'general.scss',
-    standalone: true,
     imports: [
         CoreSharedModule,
     ],

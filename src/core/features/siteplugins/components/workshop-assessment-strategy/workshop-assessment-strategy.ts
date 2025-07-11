@@ -29,7 +29,6 @@ import { CoreSitePluginsCompileInitComponent } from '@features/siteplugins/class
     selector: 'core-siteplugins-workshop-assessment-strategy',
     templateUrl: 'core-siteplugins-workshop-assessment-strategy.html',
     styles: [':host { display: contents; }'],
-    standalone: true,
     imports: [
         CoreSharedModule,
         CoreCompileHtmlComponent,

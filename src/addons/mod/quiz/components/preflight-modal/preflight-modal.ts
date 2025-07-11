@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit, ViewChild, ElementRef, Input, Type } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef, Input, Type, inject } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { CoreSites } from '@services/sites';
 import { CoreForms } from '@singletons/form';
@@ -30,7 +30,6 @@ import { CoreAlerts } from '@services/overlays/alerts';
 @Component({
     selector: 'page-addon-mod-quiz-preflight-modal',
     templateUrl: 'preflight-modal.html',
-    standalone: true,
     imports: [
         CoreSharedModule,
     ],
@@ -50,10 +49,11 @@ export class AddonModQuizPreflightModalComponent implements OnInit {
     accessRulesData: { component: Type<unknown>; data: Record<string, unknown>}[] = []; // Component and data for each access rule.
     loaded = false;
 
-    constructor(
-        formBuilder: FormBuilder,
-        protected elementRef: ElementRef,
-    ) {
+    protected element: HTMLElement = inject(ElementRef).nativeElement;
+
+    constructor() {
+        const formBuilder = inject(FormBuilder);
+
         // Create an empty form group. The controls will be added by the access rules components.
         this.preflightForm = formBuilder.group({});
     }
@@ -124,7 +124,7 @@ export class AddonModQuizPreflightModalComponent implements OnInit {
         if (!this.preflightForm.valid) {
             // Form not valid. Scroll to the first element with errors.
             const hasScrolled = await CoreDom.scrollToInputError(
-                this.elementRef.nativeElement,
+                this.element,
             );
 
             if (!hasScrolled) {

@@ -1,7 +1,9 @@
 <core-navbar-buttons slot="end" prepend>
-    <ion-button *ngIf="searchEnabled" (click)="openSearch()" [ariaLabel]="'core.courses.searchcourses' | translate">
-        <ion-icon name="fas-magnifying-glass" slot="icon-only" aria-hidden="true" />
-    </ion-button>
+    @if (searchEnabled) {
+        <ion-button (click)="openSearch()" [ariaLabel]="'core.courses.searchcourses' | translate">
+            <ion-icon name="fas-magnifying-glass" slot="icon-only" aria-hidden="true" />
+        </ion-button>
+    }
 </core-navbar-buttons>
 <ion-content>
     <ion-refresher slot="fixed" [disabled]="!loaded" (ionRefresh)="refreshDashboard($event.target)">
@@ -9,14 +11,22 @@
     </ion-refresher>
 
     <core-loading [hideUntil]="loaded" placeholderType="column" placeholderHeight="96px">
-        <ion-list class="list-item-limited-width" *ngIf="hasMainBlocks">
-            <ng-container *ngFor="let block of blocks">
-                <core-block *ngIf="block.visible" [block]="block" contextLevel="user" [instanceId]="userId" />
-            </ng-container>
-        </ion-list>
+        @if (hasMainBlocks) {
+            <ion-list class="list-item-limited-width">
+                <ng-container *ngFor="let block of blocks">
+                    @if (block.visible) {
+                        <core-block [block]="block" contextLevel="user" [instanceId]="userId" />
+                    }
+                </ng-container>
+            </ion-list>
+        }
 
-        <core-block-side-blocks-button slot="fixed" *ngIf="hasSideBlocks" contextLevel="user" [instanceId]="userId" />
+        @if (hasSideBlocks) {
+            <core-block-side-blocks-button slot="fixed" contextLevel="user" [instanceId]="userId" />
+        }
 
-        <core-empty-box *ngIf="!hasMainBlocks" icon="fas-cubes" [message]="'core.course.nocontentavailable' | translate" />
+        @if (!hasMainBlocks) {
+            <core-empty-box icon="fas-cubes" [message]="'core.course.nocontentavailable' | translate" />
+        }
     </core-loading>
 </ion-content>

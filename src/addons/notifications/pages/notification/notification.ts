@@ -43,7 +43,6 @@ import { CoreSharedModule } from '@/core/shared.module';
     selector: 'page-addon-notifications-notification',
     templateUrl: 'notification.html',
     styleUrls: ['../../notifications.scss', 'notification.scss'],
-    standalone: true,
     imports: [
         CoreSharedModule,
     ],

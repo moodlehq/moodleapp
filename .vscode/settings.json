@@ -4,9 +4,6 @@
      * Formatting.
      */
     "editor.defaultFormatter": "dbaeumer.vscode-eslint",
-    "[html]": {
-        "editor.defaultFormatter": "nesterenok.js-beautify-extentions",
-    },
     "editor.formatOnSave": true,
     "eslint.format.enable": true,
     "html.format.wrapLineLength": 140,

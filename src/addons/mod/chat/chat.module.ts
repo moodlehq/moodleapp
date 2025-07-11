@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { APP_INITIALIZER, NgModule } from '@angular/core';
+import { NgModule, provideAppInitializer } from '@angular/core';
 import { Routes } from '@angular/router';
 import { CoreContentLinksDelegate } from '@features/contentlinks/services/contentlinks-delegate';
 import { CoreCourseHelper } from '@features/course/services/course-helper';
@@ -81,19 +81,15 @@ const routes: Routes = [
         CoreMainMenuTabRoutingModule.forChild(routes),
     ],
     providers: [
-        {
-            provide: APP_INITIALIZER,
-            multi: true,
-            useValue: () => {
-                CoreCourseModulePrefetchDelegate.registerHandler(getPrefetchHandlerInstance());
+        provideAppInitializer(() => {
+            CoreCourseModulePrefetchDelegate.registerHandler(getPrefetchHandlerInstance());
 
-                CoreCourseModuleDelegate.registerHandler(AddonModChatModuleHandler.instance);
-                CoreContentLinksDelegate.registerHandler(AddonModChatIndexLinkHandler.instance);
-                CoreContentLinksDelegate.registerHandler(AddonModChatListLinkHandler.instance);
+            CoreCourseModuleDelegate.registerHandler(AddonModChatModuleHandler.instance);
+            CoreContentLinksDelegate.registerHandler(AddonModChatIndexLinkHandler.instance);
+            CoreContentLinksDelegate.registerHandler(AddonModChatListLinkHandler.instance);
 
-                CoreCourseHelper.registerModuleReminderClick(ADDON_MOD_CHAT_COMPONENT_LEGACY);
-            },
-        },
+            CoreCourseHelper.registerModuleReminderClick(ADDON_MOD_CHAT_COMPONENT_LEGACY);
+        }),
     ],
 })
 export class AddonModChatModule {}

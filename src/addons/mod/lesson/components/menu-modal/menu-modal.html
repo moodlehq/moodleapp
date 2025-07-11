@@ -12,43 +12,52 @@
 </ion-header>
 <ion-content class="addon-mod_lesson-menu-modal">
     <nav>
-        <ion-list *ngIf="pageInstance">
-            <!-- Media file. -->
-            <ng-container *ngIf="pageInstance.mediaFile">
-                <ion-item-divider>
-                    <ion-label>
-                        <h2>{{ 'addon.mod_lesson.linkedmedia' | translate }}</h2>
-                    </ion-label>
-                </ion-item-divider>
-                <core-file [file]="pageInstance.mediaFile" [component]="pageInstance.component"
-                    [componentId]="pageInstance.lesson?.coursemodule" />
-            </ng-container>
+        @if (pageInstance) {
+            <ion-list>
+                <!-- Media file. -->
+                @if (pageInstance.mediaFile) {
+                    <ion-item-divider>
+                        <ion-label>
+                            <h2>{{ 'addon.mod_lesson.linkedmedia' | translate }}</h2>
+                        </ion-label>
+                    </ion-item-divider>
+                    <core-file [file]="pageInstance.mediaFile" [component]="pageInstance.component"
+                        [componentId]="pageInstance.lesson?.coursemodule" />
+                }
 
-            <!-- Lesson menu. -->
-            <ng-container *ngIf="pageInstance.displayMenu">
-                <ion-item-divider>
-                    <ion-label>
-                        <h2>{{ 'addon.mod_lesson.lessonmenu' | translate }}</h2>
-                    </ion-label>
-                </ion-item-divider>
-                <ion-item class="ion-text-center" *ngIf="pageInstance.loadingMenu">
-                    <ion-label>
-                        <ion-spinner [attr.aria-label]="'core.loading' | translate" />
-                    </ion-label>
-                </ion-item>
-                <div *ngIf="!pageInstance.loadingMenu">
-                    <ng-container *ngFor="let page of pageInstance.lessonPages">
-                        <ion-item class="ion-text-wrap" *ngIf="page.display && page.displayinmenublock" (click)="loadPage(page.id)"
-                            [attr.aria-current]="!pageInstance.eolData && pageInstance.currentPage === page.id ? 'page' : 'false'" button
-                            [detail]="true">
+                <!-- Lesson menu. -->
+                @if (pageInstance.displayMenu) {
+
+                    <ion-item-divider>
+                        <ion-label>
+                            <h2>{{ 'addon.mod_lesson.lessonmenu' | translate }}</h2>
+                        </ion-label>
+                    </ion-item-divider>
+                    @if (pageInstance.loadingMenu) {
+                        <ion-item class="ion-text-center">
                             <ion-label>
-                                <core-format-text [text]="page.title" contextLevel="module" [courseId]="pageInstance.courseId"
-                                    [contextInstanceId]="pageInstance.lesson?.coursemodule" />
+                                <ion-spinner [attr.aria-label]="'core.loading' | translate" />
                             </ion-label>
                         </ion-item>
-                    </ng-container>
-                </div>
-            </ng-container>
-        </ion-list>
+                    } @else {
+                        <div>
+                            <ng-container *ngFor="let page of pageInstance.lessonPages">
+                                @if (page.display && page.displayinmenublock) {
+                                    <ion-item class="ion-text-wrap" (click)="loadPage(page.id)"
+                                        [attr.aria-current]="!pageInstance.eolData && pageInstance.currentPage === page.id ? 'page' : 'false'"
+                                        button [detail]="true">
+                                        <ion-label>
+                                            <core-format-text [text]="page.title" contextLevel="module" [courseId]="pageInstance.courseId"
+                                                [contextInstanceId]="pageInstance.lesson?.coursemodule" />
+                                        </ion-label>
+                                    </ion-item>
+                                }
+                            </ng-container>
+                        </div>
+                    }
+
+                }
+            </ion-list>
+        }
     </nav>
 </ion-content>

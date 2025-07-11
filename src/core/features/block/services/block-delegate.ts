@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Injectable, Type } from '@angular/core';
+import { Injectable, Type, inject } from '@angular/core';
 import { CoreSites } from '@services/sites';
 import { CoreDelegate, CoreDelegateHandler } from '@classes/delegate';
 import { CoreSite } from '@classes/sites/site';
@@ -96,16 +96,14 @@ export interface CoreBlockHandlerData {
 @Injectable({ providedIn: 'root' })
 export class CoreBlockDelegateService extends CoreDelegate<CoreBlockHandler> {
 
-    protected handlerNameProperty = 'blockName';
-
-    protected featurePrefix = 'CoreBlockDelegate_';
-
     blocksUpdateObservable: Subject<void>;
 
-    constructor(
-        protected defaultHandler: CoreBlockDefaultHandler,
-    ) {
-        super('CoreBlockDelegate');
+    protected defaultHandler = inject(CoreBlockDefaultHandler);
+    protected handlerNameProperty = 'blockName';
+    protected featurePrefix = 'CoreBlockDelegate_';
+
+    constructor() {
+        super();
 
         this.blocksUpdateObservable = new Subject<void>();
     }

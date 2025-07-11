@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { APP_INITIALIZER, NgModule, Type } from '@angular/core';
+import { NgModule, Type, provideAppInitializer } from '@angular/core';
 import { Routes } from '@angular/router';
 
 import { CoreMainMenuRoutingModule } from '@features/mainmenu/mainmenu-routing.module';
@@ -81,30 +81,26 @@ const preferencesRoutes: Routes = [
             useValue: [MESSAGES_OFFLINE_SITE_SCHEMA],
             multi: true,
         },
-        {
-            provide: APP_INITIALIZER,
-            multi: true,
-            useValue: () => {
-                // Register handlers.
-                CoreMainMenuDelegate.registerHandler(AddonMessagesMainMenuHandler.instance);
-                CoreCronDelegate.register(AddonMessagesMainMenuHandler.instance);
-                CoreCronDelegate.register(AddonMessagesSyncCronHandler.instance);
-                CoreSettingsDelegate.registerHandler(AddonMessagesSettingsHandler.instance);
-                CoreContentLinksDelegate.registerHandler(AddonMessagesIndexLinkHandler.instance);
-                CoreContentLinksDelegate.registerHandler(AddonMessagesDiscussionLinkHandler.instance);
-                CoreContentLinksDelegate.registerHandler(AddonMessagesContactRequestLinkHandler.instance);
-                CorePushNotificationsDelegate.registerClickHandler(AddonMessagesPushClickHandler.instance);
-                CoreUserDelegate.registerHandler(AddonMessagesSendMessageUserHandler.instance);
+        provideAppInitializer(() => {
+            // Register handlers.
+            CoreMainMenuDelegate.registerHandler(AddonMessagesMainMenuHandler.instance);
+            CoreCronDelegate.register(AddonMessagesMainMenuHandler.instance);
+            CoreCronDelegate.register(AddonMessagesSyncCronHandler.instance);
+            CoreSettingsDelegate.registerHandler(AddonMessagesSettingsHandler.instance);
+            CoreContentLinksDelegate.registerHandler(AddonMessagesIndexLinkHandler.instance);
+            CoreContentLinksDelegate.registerHandler(AddonMessagesDiscussionLinkHandler.instance);
+            CoreContentLinksDelegate.registerHandler(AddonMessagesContactRequestLinkHandler.instance);
+            CorePushNotificationsDelegate.registerClickHandler(AddonMessagesPushClickHandler.instance);
+            CoreUserDelegate.registerHandler(AddonMessagesSendMessageUserHandler.instance);
 
-                // Sync some discussions when device goes online.
-                CoreNetwork.onConnectShouldBeStable().subscribe(() => {
-                    // Execute the callback in the Angular zone, so change detection doesn't stop working.
-                    NgZone.run(() => {
-                        AddonMessagesSync.syncAllDiscussions(undefined, true);
-                    });
+            // Sync some discussions when device goes online.
+            CoreNetwork.onConnectShouldBeStable().subscribe(() => {
+                // Execute the callback in the Angular zone, so change detection doesn't stop working.
+                NgZone.run(() => {
+                    AddonMessagesSync.syncAllDiscussions(undefined, true);
                 });
-            },
-        },
+            });
+        }),
 
     ],
 })

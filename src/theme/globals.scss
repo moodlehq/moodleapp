@@ -7,6 +7,6 @@
 $font-path: "../assets/fonts";
 $assets-path: "../assets";
 
-@import "./helpers/helpers.scss";
-@import "./globals.custom.scss";
-@import "./globals.variables.scss";
+@import "./helpers/helpers";
+@import "./globals.custom";
+@import "./globals.variables";

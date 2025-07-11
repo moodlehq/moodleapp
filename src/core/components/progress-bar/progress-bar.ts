@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, Input, OnChanges, SimpleChange, ChangeDetectionStrategy, ElementRef } from '@angular/core';
+import { Component, Input, OnChanges, SimpleChange, ChangeDetectionStrategy, ElementRef, inject } from '@angular/core';
 import { SafeStyle } from '@angular/platform-browser';
 import { DomSanitizer, Translate } from '@singletons';
 import { CoreBaseModule } from '@/core/base.module';
@@ -28,7 +28,6 @@ import { CoreBaseModule } from '@/core/base.module';
     templateUrl: 'core-progress-bar.html',
     styleUrl: 'progress-bar.scss',
     changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: true,
     imports: [CoreBaseModule],
 })
 export class CoreProgressBarComponent implements OnChanges {
@@ -44,11 +43,7 @@ export class CoreProgressBarComponent implements OnChanges {
     progressNumber = 0;
 
     protected textSupplied = false;
-    protected element: HTMLElement;
-
-    constructor(elementRef: ElementRef) {
-        this.element = elementRef.nativeElement;
-    }
+    protected element: HTMLElement = inject(ElementRef).nativeElement;
 
     /**
      * @inheritdoc

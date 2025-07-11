@@ -1,18 +1,20 @@
-<div *ngIf="question && question.behaviourCertaintyOptions && question.behaviourCertaintyOptions.length">
-    <ion-item class="ion-text-wrap addon-qbehaviour-deferredcbm-certainty-title">
-        <ion-label>
-            <p>{{ 'core.question.certainty' | translate }}</p>
-        </ion-label>
-    </ion-item>
-
-    <ion-radio-group [(ngModel)]="question.behaviourCertaintySelected" [name]="question.behaviourCertaintyOptions[0].name">
-        <ion-item class="ion-text-wrap" *ngFor="let option of question.behaviourCertaintyOptions">
-            <ion-radio id="{{option.id}}" [value]="option.value" [disabled]="option.disabled">
-                {{ option.text }}
-            </ion-radio>
+@if (question && question.behaviourCertaintyOptions && question.behaviourCertaintyOptions.length) {
+    <div>
+        <ion-item class="ion-text-wrap addon-qbehaviour-deferredcbm-certainty-title">
+            <ion-label>
+                <p>{{ 'core.question.certainty' | translate }}</p>
+            </ion-label>
         </ion-item>
-    </ion-radio-group>
 
-    <!-- ion-radio doesn't use an input. Create a hidden input to hold the selected value. -->
-    <input type="hidden" [ngModel]="question.behaviourCertaintySelected" [attr.name]="question.behaviourCertaintyOptions[0].name">
-</div>
+        <ion-radio-group [(ngModel)]="question.behaviourCertaintySelected" [name]="question.behaviourCertaintyOptions[0].name">
+            <ion-item class="ion-text-wrap" *ngFor="let option of question.behaviourCertaintyOptions">
+                <ion-radio id="{{option.id}}" [value]="option.value" [disabled]="option.disabled">
+                    {{ option.text }}
+                </ion-radio>
+            </ion-item>
+        </ion-radio-group>
+
+        <!-- ion-radio doesn't use an input. Create a hidden input to hold the selected value. -->
+        <input type="hidden" [ngModel]="question.behaviourCertaintySelected" [attr.name]="question.behaviourCertaintyOptions[0].name">
+    </div>
+}

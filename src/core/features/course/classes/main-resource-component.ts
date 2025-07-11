@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { DownloadStatus } from '@/core/constants';
-import { OnInit, OnDestroy, Input, Output, EventEmitter, Component, Optional, Inject } from '@angular/core';
+import { OnInit, OnDestroy, Input, Output, EventEmitter, Component, inject } from '@angular/core';
 import { CoreNetwork } from '@services/network';
 import { CoreSites } from '@services/sites';
 import { CoreUtils } from '@singletons/utils';
@@ -79,12 +79,10 @@ export class CoreCourseModuleMainResourceComponent implements OnInit, OnDestroy,
     protected checkCompletionAfterLog = true; // Whether to check if completion has changed after calling logActivity.
     protected finishSuccessfulFetch: () => void;
 
-    constructor(
-        @Optional() @Inject('') loggerName: string = 'CoreCourseModuleMainResourceComponent',
-        protected courseContentsPage?: CoreCourseContentsPage,
-    ) {
-        this.logger = CoreLogger.getInstance(loggerName);
+    protected courseContentsPage = inject(CoreCourseContentsPage, { optional: true });
 
+    constructor() {
+        this.logger = CoreLogger.getInstance(this.constructor.name);
         this.finishSuccessfulFetch = CoreTime.once(() => this.performFinishSuccessfulFetch());
     }
 

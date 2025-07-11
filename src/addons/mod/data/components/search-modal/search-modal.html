@@ -26,17 +26,21 @@
                 <ion-select labelPlacement="stacked" interface="action-sheet" name="sortBy" formControlName="sortBy"
                     [placeholder]="'core.sortby' | translate" [cancelText]="'core.cancel' | translate"
                     [interfaceOptions]="{header: 'core.sortby' | translate}" [label]="'core.sortby' | translate">
-                    <optgroup *ngIf="fieldsArray.length" label="{{ 'addon.mod_data.fields' | translate }}">
-                        <ion-select-option *ngFor="let field of fieldsArray" [value]="field.id">{{field.name}}</ion-select-option>
-                    </optgroup>
+                    @if (fieldsArray.length) {
+                        <optgroup label="{{ 'addon.mod_data.fields' | translate }}">
+                            <ion-select-option *ngFor="let field of fieldsArray" [value]="field.id">{{field.name}}</ion-select-option>
+                        </optgroup>
+                    }
                     <optgroup label="{{ 'addon.mod_data.other' | translate }}">
                         <ion-select-option value="0">{{ 'addon.mod_data.timeadded' | translate }}</ion-select-option>
                         <ion-select-option value="-4">{{ 'addon.mod_data.timemodified' | translate }}</ion-select-option>
                         <ion-select-option value="-1">{{ 'addon.mod_data.authorfirstname' | translate }}</ion-select-option>
                         <ion-select-option value="-2">{{ 'addon.mod_data.authorlastname' | translate }}</ion-select-option>
-                        <ion-select-option value="-3" *ngIf="database.approval">
-                            {{ 'addon.mod_data.approved' | translate }}
-                        </ion-select-option>
+                        @if (database.approval) {
+                            <ion-select-option value="-3">
+                                {{ 'addon.mod_data.approved' | translate }}
+                            </ion-select-option>
+                        }
                     </optgroup>
                 </ion-select>
             </ion-item>

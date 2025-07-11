@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit, OnDestroy, ViewChild, ElementRef, ChangeDetectorRef, Input } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, ElementRef, ChangeDetectorRef, Input, inject } from '@angular/core';
 import { MediaFile } from '@awesome-cordova-plugins/media-capture/ngx';
 
 import { CoreFile, CoreFileProvider } from '@services/file';
@@ -35,7 +35,6 @@ import { CoreSharedModule } from '@/core/shared.module';
     selector: 'core-emulator-capture-media',
     templateUrl: 'capture-media.html',
     styleUrl: 'capture-media.scss',
-    standalone: true,
     imports: [
         CoreSharedModule,
     ],
@@ -68,10 +67,7 @@ export class CoreEmulatorCaptureMediaComponent implements OnInit, OnDestroy {
     protected previewMedia?: HTMLVideoElement; // The element to preview the video captured.
     protected mediaBlob?: Blob; // A Blob where the captured data is stored.
     protected localMediaStream?: MediaStream;
-
-    constructor(
-        protected changeDetectorRef: ChangeDetectorRef,
-    ) {}
+    protected changeDetectorRef = inject(ChangeDetectorRef);
 
     /**
      * @inheritdoc

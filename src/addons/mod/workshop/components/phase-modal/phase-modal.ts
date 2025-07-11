@@ -25,7 +25,6 @@ import { toBoolean } from '@/core/transforms/boolean';
  */
 @Component({
     templateUrl: 'phase-modal.html',
-    standalone: true,
     imports: [
         CoreSharedModule,
     ],

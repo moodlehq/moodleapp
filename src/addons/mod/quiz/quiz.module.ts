@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { APP_INITIALIZER, NgModule, Type } from '@angular/core';
+import { NgModule, Type, provideAppInitializer } from '@angular/core';
 import { Routes } from '@angular/router';
 import { CoreContentLinksDelegate } from '@features/contentlinks/services/contentlinks-delegate';
 import { CoreCourseHelper } from '@features/course/services/course-helper';
@@ -89,22 +89,18 @@ const routes: Routes = [
             useValue: [SITE_SCHEMA],
             multi: true,
         },
-        {
-            provide: APP_INITIALIZER,
-            multi: true,
-            useValue: () => {
-                CoreCourseModuleDelegate.registerHandler(AddonModQuizModuleHandler.instance);
-                CoreCourseModulePrefetchDelegate.registerHandler(AddonModQuizPrefetchHandler.instance);
-                CoreContentLinksDelegate.registerHandler(AddonModQuizGradeLinkHandler.instance);
-                CoreContentLinksDelegate.registerHandler(AddonModQuizIndexLinkHandler.instance);
-                CoreContentLinksDelegate.registerHandler(AddonModQuizListLinkHandler.instance);
-                CoreContentLinksDelegate.registerHandler(AddonModQuizReviewLinkHandler.instance);
-                CorePushNotificationsDelegate.registerClickHandler(AddonModQuizPushClickHandler.instance);
-                CoreCronDelegate.register(AddonModQuizSyncCronHandler.instance);
+        provideAppInitializer(() => {
+            CoreCourseModuleDelegate.registerHandler(AddonModQuizModuleHandler.instance);
+            CoreCourseModulePrefetchDelegate.registerHandler(AddonModQuizPrefetchHandler.instance);
+            CoreContentLinksDelegate.registerHandler(AddonModQuizGradeLinkHandler.instance);
+            CoreContentLinksDelegate.registerHandler(AddonModQuizIndexLinkHandler.instance);
+            CoreContentLinksDelegate.registerHandler(AddonModQuizListLinkHandler.instance);
+            CoreContentLinksDelegate.registerHandler(AddonModQuizReviewLinkHandler.instance);
+            CorePushNotificationsDelegate.registerClickHandler(AddonModQuizPushClickHandler.instance);
+            CoreCronDelegate.register(AddonModQuizSyncCronHandler.instance);
 
-                CoreCourseHelper.registerModuleReminderClick(ADDON_MOD_QUIZ_COMPONENT_LEGACY);
-            },
-        },
+            CoreCourseHelper.registerModuleReminderClick(ADDON_MOD_QUIZ_COMPONENT_LEGACY);
+        }),
     ],
 })
 export class AddonModQuizModule {}

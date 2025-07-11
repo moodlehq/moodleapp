@@ -34,7 +34,6 @@ import { CoreSharedModule } from '@/core/shared.module';
 @Component({
     selector: 'page-addon-mod-chat-sessions',
     templateUrl: 'sessions.html',
-    standalone: true,
     imports: [
         CoreSharedModule,
     ],

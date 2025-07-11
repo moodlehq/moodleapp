@@ -62,9 +62,9 @@ import { CoreSitesListComponent } from './sites-list/sites-list';
  * @returns Returns core deprecated components.
  */
 export async function getCoreDeprecatedComponents(): Promise<Type<unknown>[]> {
-    // eslint-disable-next-line deprecation/deprecation
+    // eslint-disable-next-line @typescript-eslint/no-deprecated
     const { CoreStyleComponent } = await import('@components/style/style');
-    // eslint-disable-next-line deprecation/deprecation
+    // eslint-disable-next-line @typescript-eslint/no-deprecated
     const { CoreShowPasswordComponent } = await import('@components/show-password/show-password');
 
     return [

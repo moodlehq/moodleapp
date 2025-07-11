@@ -50,7 +50,6 @@ import { DEFAULT_TEXT_FORMAT } from '@singletons/text';
 @Component({
     selector: 'addon-blog-edit-entry',
     templateUrl: './edit-entry.html',
-    standalone: true,
     imports: [
         CoreEditorRichTextEditorComponent,
         CoreSharedModule,

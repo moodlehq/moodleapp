@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { APP_INITIALIZER, NgModule } from '@angular/core';
+import { NgModule, provideAppInitializer } from '@angular/core';
 import { Routes } from '@angular/router';
 import { CoreContentLinksDelegate } from '@features/contentlinks/services/contentlinks-delegate';
 import { CoreCourseHelper } from '@features/course/services/course-helper';
@@ -63,22 +63,18 @@ const routes: Routes = [
             useValue: [OFFLINE_SITE_SCHEMA],
             multi: true,
         },
-        {
-            provide: APP_INITIALIZER,
-            multi: true,
-            useValue: () => {
-                CoreCourseModuleDelegate.registerHandler(AddonModScormModuleHandler.instance);
-                CoreCourseModulePrefetchDelegate.registerHandler(AddonModScormPrefetchHandler.instance);
-                CoreCronDelegate.register(AddonModScormSyncCronHandler.instance);
-                CoreContentLinksDelegate.registerHandler(AddonModScormGradeLinkHandler.instance);
-                CoreContentLinksDelegate.registerHandler(AddonModScormIndexLinkHandler.instance);
-                CoreContentLinksDelegate.registerHandler(AddonModScormListLinkHandler.instance);
-                CoreContentLinksDelegate.registerHandler(AddonModScormPlayerLinkHandler.instance);
-                CorePluginFileDelegate.registerHandler(AddonModScormPluginFileHandler.instance);
+        provideAppInitializer(() => {
+            CoreCourseModuleDelegate.registerHandler(AddonModScormModuleHandler.instance);
+            CoreCourseModulePrefetchDelegate.registerHandler(AddonModScormPrefetchHandler.instance);
+            CoreCronDelegate.register(AddonModScormSyncCronHandler.instance);
+            CoreContentLinksDelegate.registerHandler(AddonModScormGradeLinkHandler.instance);
+            CoreContentLinksDelegate.registerHandler(AddonModScormIndexLinkHandler.instance);
+            CoreContentLinksDelegate.registerHandler(AddonModScormListLinkHandler.instance);
+            CoreContentLinksDelegate.registerHandler(AddonModScormPlayerLinkHandler.instance);
+            CorePluginFileDelegate.registerHandler(AddonModScormPluginFileHandler.instance);
 
-                CoreCourseHelper.registerModuleReminderClick(ADDON_MOD_SCORM_COMPONENT_LEGACY);
-            },
-        },
+            CoreCourseHelper.registerModuleReminderClick(ADDON_MOD_SCORM_COMPONENT_LEGACY);
+        }),
     ],
 })
 export class AddonModScormModule {}

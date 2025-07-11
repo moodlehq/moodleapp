@@ -18,107 +18,128 @@
                 <h2 class="big">{{ 'core.dataprivacy.datarequests' | translate }}</h2>
             </ion-label>
         </ion-item-divider>
-        <ion-list *ngIf="requests.length && !isTablet">
-            <ion-card *ngFor=" let request of requests">
-                <ion-item class="ion-text-wrap">
-                    <ion-label>
-                        <p class="item-heading">
-                            <ng-container *ngTemplateOutlet="type; context: {request: request}" />
-                        </p>
-                        <ion-row class="ion-justify-content-between ion-no-padding">
-                            <ion-col class="ion-no-padding">
-                                <p>{{request.timecreated * 1000 | coreFormatDate }}</p>
-                            </ion-col>
-                            <ion-col class="core-flex-no-grow ion-text-end  ion-no-padding">
-                                <ng-container *ngTemplateOutlet="statusBadge; context: {request: request}" />
-                            </ion-col>
-                        </ion-row>
-                    </ion-label>
-                </ion-item>
-                <ion-item *ngIf="request.requestedbyuser" class="ion-text-wrap">
-                    <ion-label>
-                        <p class="item-heading">{{ 'core.dataprivacy.requestby' | translate }}</p>
-                        <p>{{ request.requestedbyuser.fullname }}</p>
-                    </ion-label>
-                </ion-item>
-                <ion-item class="ion-text-wrap" [lines]="request.canCancel || request.downloadlink ? 'full' : 'none'">
-                    <ion-label>
-                        <p class="item-heading">{{ 'core.dataprivacy.message' | translate }}</p>
-                        <p><core-format-text [text]="request.messagehtml" /></p>
-                    </ion-label>
-                </ion-item>
-                <ion-item class="ion-text-wrap ion-text-end" *ngIf="request.canCancel || request.downloadlink">
-                    <ion-label>
-                        <ion-button fill="outline" expand="block" (click)="cancelRequest(request.id)" *ngIf="request.canCancel">
-                            {{ 'core.dataprivacy.cancelrequest' | translate }}
-                        </ion-button>
-                        <ion-button fill="outline" expand="block" *ngIf="request.downloadlink" [href]="request.downloadlink" core-link
-                            [showBrowserWarning]="false">
-                            {{ 'core.dataprivacy.download' | translate }}
-                        </ion-button>
-                    </ion-label>
-                </ion-item>
-            </ion-card>
-        </ion-list>
+        @if (requests.length && !isTablet) {
+            <ion-list>
+                <ion-card *ngFor=" let request of requests">
+                    <ion-item class="ion-text-wrap">
+                        <ion-label>
+                            <p class="item-heading">
+                                <ng-container *ngTemplateOutlet="type; context: {request: request}" />
+                            </p>
+                            <ion-row class="ion-justify-content-between ion-no-padding">
+                                <ion-col class="ion-no-padding">
+                                    <p>{{request.timecreated * 1000 | coreFormatDate }}</p>
+                                </ion-col>
+                                <ion-col class="core-flex-no-grow ion-text-end  ion-no-padding">
+                                    <ng-container *ngTemplateOutlet="statusBadge; context: {request: request}" />
+                                </ion-col>
+                            </ion-row>
+                        </ion-label>
+                    </ion-item>
+                    @if (request.requestedbyuser) {
+                        <ion-item class="ion-text-wrap">
+                            <ion-label>
+                                <p class="item-heading">{{ 'core.dataprivacy.requestby' | translate }}</p>
+                                <p>{{ request.requestedbyuser.fullname }}</p>
+                            </ion-label>
+                        </ion-item>
+                    }
+                    <ion-item class="ion-text-wrap" [lines]="request.canCancel || request.downloadlink ? 'full' : 'none'">
+                        <ion-label>
+                            <p class="item-heading">{{ 'core.dataprivacy.message' | translate }}</p>
+                            <p><core-format-text [text]="request.messagehtml" /></p>
+                        </ion-label>
+                    </ion-item>
+                    @if (request.canCancel || request.downloadlink) {
+                        <ion-item class="ion-text-wrap ion-text-end">
+                            <ion-label>
+                                @if (request.canCancel) {
+                                    <ion-button fill="outline" expand="block" (click)="cancelRequest(request.id)">
+                                        {{ 'core.dataprivacy.cancelrequest' | translate }}
+                                    </ion-button>
+                                }
+                                @if (request.downloadlink) {
+                                    <ion-button fill="outline" expand="block" [href]="request.downloadlink" core-link
+                                        [showBrowserWarning]="false">
+                                        {{ 'core.dataprivacy.download' | translate }}
+                                    </ion-button>
+                                }
+                            </ion-label>
+                        </ion-item>
+                    }
+                </ion-card>
+            </ion-list>
+        }
 
-        <table *ngIf="requests.length && isTablet" class="core-table">
-            <thead>
-                <tr>
-                    <th>{{ 'core.dataprivacy.requesttype' | translate }}</th>
-                    <th>{{ 'core.dataprivacy.daterequested' | translate }}</th>
-                    <th class="shrink">{{ 'core.dataprivacy.requestby' | translate }}</th>
-                    <th class="shrink">{{ 'core.dataprivacy.requeststatus' | translate }}</th>
-                    <th>{{ 'core.dataprivacy.message' | translate }}</th>
-                    <th class=" shrink">{{ 'core.dataprivacy.requestactions' | translate }}</th>
-                </tr>
-            </thead>
-            <tbody class="auto-striped">
-                <tr *ngFor=" let request of requests">
-                    <td>
-                        <p><ng-container *ngTemplateOutlet="type; context: {request: request}" /></p>
-                    </td>
-                    <td>
-                        <p>{{request.timecreated * 1000 | coreFormatDate }}</p>
-                    </td>
-                    <td>
-                        <p>{{ request.requestedbyuser.fullname }}</p>
-                    </td>
-                    <td>
-                        <ng-container *ngTemplateOutlet="statusBadge; context: {request: request}" />
-                    </td>
-                    <td>
-                        <p><core-format-text [text]="request.messagehtml" /></p>
-                    </td>
-                    <td>
-                        <ion-button fill="outline" size="small" (click)="cancelRequest(request.id)" *ngIf="request.canCancel">
-                            {{ 'core.dataprivacy.cancelrequest' | translate }}
-                        </ion-button>
-                        <ion-button fill="outline" size="small" *ngIf="request.downloadlink" [href]="request.downloadlink" core-link
-                            [showBrowserWarning]="false">
-                            {{ 'core.dataprivacy.download' | translate }}
-                        </ion-button>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
+        @if (requests.length && isTablet) {
+            <table class="core-table">
+                <thead>
+                    <tr>
+                        <th>{{ 'core.dataprivacy.requesttype' | translate }}</th>
+                        <th>{{ 'core.dataprivacy.daterequested' | translate }}</th>
+                        <th class="shrink">{{ 'core.dataprivacy.requestby' | translate }}</th>
+                        <th class="shrink">{{ 'core.dataprivacy.requeststatus' | translate }}</th>
+                        <th>{{ 'core.dataprivacy.message' | translate }}</th>
+                        <th class=" shrink">{{ 'core.dataprivacy.requestactions' | translate }}</th>
+                    </tr>
+                </thead>
+                <tbody class="auto-striped">
+                    <tr *ngFor=" let request of requests">
+                        <td>
+                            <p><ng-container *ngTemplateOutlet="type; context: {request: request}" /></p>
+                        </td>
+                        <td>
+                            <p>{{request.timecreated * 1000 | coreFormatDate }}</p>
+                        </td>
+                        <td>
+                            <p>{{ request.requestedbyuser.fullname }}</p>
+                        </td>
+                        <td>
+                            <ng-container *ngTemplateOutlet="statusBadge; context: {request: request}" />
+                        </td>
+                        <td>
+                            <p><core-format-text [text]="request.messagehtml" /></p>
+                        </td>
+                        <td>
+                            @if (request.canCancel) {
+                                <ion-button fill="outline" size="small" (click)="cancelRequest(request.id)">
+                                    {{ 'core.dataprivacy.cancelrequest' | translate }}
+                                </ion-button>
+                            }
+                            @if (request.downloadlink) {
+                                <ion-button fill="outline" size="small" [href]="request.downloadlink" core-link
+                                    [showBrowserWarning]="false">
+                                    {{ 'core.dataprivacy.download' | translate }}
+                                </ion-button>
+                            }
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        }
 
-        <core-empty-box *ngIf="!requests.length" icon="fas-bell-concierge"
-            [message]="'core.dataprivacy.nopersonaldatarequests' | translate" />
+        @if (!requests.length) {
+            <core-empty-box icon="fas-bell-concierge" [message]="'core.dataprivacy.nopersonaldatarequests' | translate" />
+        }
 
-        <div collapsible-footer *ngIf="loaded" slot="fixed">
-            <div class="list-item-limited-width adaptable-buttons-row">
-                <ion-button class="ion-margin ion-text-wrap" expand="block" (click)="contactDPO()" *ngIf="accessInfo?.cancontactdpo"
-                    fill="outline">
-                    <ion-icon slot="start" name="fas-envelope" [attr.aria-hidden]="true" />
-                    {{ 'core.dataprivacy.contactdataprotectionofficer' | translate }}
-                </ion-button>
-                <ion-button class="ion-margin ion-text-wrap" expand="block" (click)="newRequest()"
-                    *ngIf="accessInfo?.cancreatedatadownloadrequest || accessInfo?.cancreatedatadeletionrequest">
-                    <ion-icon slot="start" name="fas-pen-to-square" [attr.aria-hidden]="true" />
-                    {{ 'core.dataprivacy.newrequest' | translate }}
-                </ion-button>
+        @if (loaded) {
+            <div collapsible-footer slot="fixed">
+                <div class="list-item-limited-width adaptable-buttons-row">
+                    @if (accessInfo?.cancontactdpo) {
+                        <ion-button class="ion-margin ion-text-wrap" expand="block" (click)="contactDPO()" fill="outline">
+                            <ion-icon slot="start" name="fas-envelope" [attr.aria-hidden]="true" />
+                            {{ 'core.dataprivacy.contactdataprotectionofficer' | translate }}
+                        </ion-button>
+                    }
+                    @if (accessInfo?.cancreatedatadownloadrequest || accessInfo?.cancreatedatadeletionrequest) {
+                        <ion-button class="ion-margin ion-text-wrap" expand="block" (click)="newRequest()">
+                            <ion-icon slot="start" name="fas-pen-to-square" [attr.aria-hidden]="true" />
+                            {{ 'core.dataprivacy.newrequest' | translate }}
+                        </ion-button>
+                    }
+                </div>
             </div>
-        </div>
+        }
 
     </core-loading>
 </ion-content>

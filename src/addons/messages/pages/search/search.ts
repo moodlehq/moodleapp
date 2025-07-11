@@ -40,7 +40,6 @@ import { CoreSharedModule } from '@/core/shared.module';
 @Component({
     selector: 'page-addon-messages-search',
     templateUrl: 'search.html',
-    standalone: true,
     imports: [
         CoreSharedModule,
         CoreSearchBoxComponent,

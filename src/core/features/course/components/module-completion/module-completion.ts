@@ -37,7 +37,6 @@ import { CoreSharedModule } from '@/core/shared.module';
     selector: 'core-course-module-completion',
     templateUrl: 'core-course-module-completion.html',
     styleUrl: 'module-completion.scss',
-    standalone: true,
     imports: [
         CoreSharedModule,
     ],

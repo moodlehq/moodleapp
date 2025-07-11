@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Injectable, Type } from '@angular/core';
+import { Injectable, Type, inject } from '@angular/core';
 import { CoreDelegate, CoreDelegateHandler } from '@classes/delegate';
 import { AddonModAssignDefaultSubmissionHandler } from './handlers/default-submission';
 import { AddonModAssignAssign, AddonModAssignSubmission, AddonModAssignPlugin, AddonModAssignSavePluginData } from './assign';
@@ -306,12 +306,7 @@ export interface AddonModAssignSubmissionHandler extends CoreDelegateHandler {
 export class AddonModAssignSubmissionDelegateService extends CoreDelegate<AddonModAssignSubmissionHandler> {
 
     protected handlerNameProperty = 'type';
-
-    constructor(
-        protected defaultHandler: AddonModAssignDefaultSubmissionHandler,
-    ) {
-        super('AddonModAssignSubmissionDelegate');
-    }
+    protected defaultHandler = inject(AddonModAssignDefaultSubmissionHandler);
 
     /**
      * @inheritdoc
@@ -335,10 +330,10 @@ export class AddonModAssignSubmissionDelegateService extends CoreDelegate<AddonM
     ): Promise<boolean | undefined> {
         const handler = this.getHandler(plugin.type);
 
-        // eslint-disable-next-line deprecation/deprecation
+        // eslint-disable-next-line @typescript-eslint/no-deprecated
         if (handler && !handler.canContainFiltersWhenEditing && handler.canEditOffline) {
             // Plugin implements the old callback but not the new one. Use the old one.
-            // eslint-disable-next-line deprecation/deprecation
+            // eslint-disable-next-line @typescript-eslint/no-deprecated
             const canEditOffline = await handler.canEditOffline(assign, submission, plugin);
 
             // If cannot edit offline, assume it can contain filters.

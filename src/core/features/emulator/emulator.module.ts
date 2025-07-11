@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { APP_INITIALIZER, NgModule } from '@angular/core';
+import { NgModule, provideAppInitializer } from '@angular/core';
 
 import { CoreEmulatorHelper } from './services/emulator-helper';
 
@@ -91,19 +91,15 @@ import { CoreDbProviderMock } from '@features/emulator/services/db';
             provide: CoreDbProvider,
             useFactory: (): CoreDbProvider => CorePlatform.isMobile() ? new CoreDbProvider() : new CoreDbProviderMock(),
         },
-        {
-            provide: APP_INITIALIZER,
-            useValue: async () => {
-                if (CorePlatform.isMobile()) {
-                    return;
-                }
+        provideAppInitializer(async () => {
+            if (CorePlatform.isMobile()) {
+                return;
+            }
 
-                CoreNative.registerBrowserMock('secureStorage', new SecureStorageMock());
+            CoreNative.registerBrowserMock('secureStorage', new SecureStorageMock());
 
-                await CoreEmulatorHelper.load();
-            },
-            multi: true,
-        },
+            await CoreEmulatorHelper.load();
+        }),
     ],
 })
 export class CoreEmulatorModule {}

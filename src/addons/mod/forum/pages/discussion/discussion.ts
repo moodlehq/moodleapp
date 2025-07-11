@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { ContextLevel, CoreConstants } from '@/core/constants';
-import { Component, OnDestroy, ViewChild, OnInit, AfterViewInit, ElementRef, Optional } from '@angular/core';
+import { Component, OnDestroy, ViewChild, OnInit, AfterViewInit, ElementRef, inject } from '@angular/core';
 import { ActivatedRoute, ActivatedRouteSnapshot } from '@angular/router';
 import { CoreRoutedItemsManagerSourcesTracker } from '@classes/items-management/routed-items-manager-sources-tracker';
 import { CoreSplitViewComponent } from '@components/split-view/split-view';
@@ -78,7 +78,6 @@ type Post = AddonModForumPost & { children?: Post[] };
     selector: 'page-addon-mod-forum-discussion',
     templateUrl: 'discussion.html',
     styleUrl: 'discussion.scss',
-    standalone: true,
     imports: [
         CoreSharedModule,
         AddonModForumPostComponent,
@@ -87,6 +86,11 @@ type Post = AddonModForumPost & { children?: Post[] };
 export default class AddonModForumDiscussionPage implements OnInit, AfterViewInit, OnDestroy, CanLeave {
 
     @ViewChild(IonContent) content!: IonContent;
+
+    protected splitView = inject(CoreSplitViewComponent, { optional: true });
+    protected element: HTMLElement = inject(ElementRef).nativeElement;
+    protected route = inject(ActivatedRoute);
+    protected courseContentsPage = inject(CoreCourseContentsPage, { optional: true });
 
     courseId?: number;
     discussionId!: number;
@@ -141,13 +145,6 @@ export default class AddonModForumDiscussionPage implements OnInit, AfterViewIni
     protected ratingOfflineObserver?: CoreEventObserver;
     protected ratingSyncObserver?: CoreEventObserver;
     protected changeDiscObserver?: CoreEventObserver;
-
-    constructor(
-        @Optional() protected splitView: CoreSplitViewComponent,
-        protected elementRef: ElementRef,
-        protected route: ActivatedRoute,
-        @Optional() protected courseContentsPage?: CoreCourseContentsPage,
-    ) {}
 
     get isMobile(): boolean {
         return CoreScreen.isMobile;
@@ -214,7 +211,7 @@ export default class AddonModForumDiscussionPage implements OnInit, AfterViewIni
         if (scrollTo) {
             // Scroll to the post.
             CoreDom.scrollToElement(
-                this.elementRef.nativeElement,
+                this.element,
                 `#addon-mod_forum-post-${scrollTo}`,
             );
         }
@@ -366,7 +363,7 @@ export default class AddonModForumDiscussionPage implements OnInit, AfterViewIni
             const value = await CoreSites.getRequiredCurrentSite().getLocalSiteConfig<SortType>('AddonModForumDiscussionSort');
 
             return value;
-        } catch (error) {
+        } catch {
             try {
                 const value = await CoreUser.getUserPreference('forum_displaymode');
 
@@ -568,7 +565,7 @@ export default class AddonModForumDiscussionPage implements OnInit, AfterViewIni
                     const response = await AddonModForum.canAddDiscussionToAll(this.forumId, { cmId: this.cmId });
 
                     this.canPin = !!response.canpindiscussions;
-                } catch (error) {
+                } catch {
                     this.canPin = false;
                 }
             } else {

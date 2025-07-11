@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { APP_INITIALIZER, NgModule, Type } from '@angular/core';
+import { NgModule, Type, provideAppInitializer } from '@angular/core';
 import { CORE_SITE_SCHEMAS } from '@services/sites';
 import { REMINDERS_SITE_SCHEMA } from './services/database/reminders';
 import { CoreReminders } from './services/reminders';
@@ -50,13 +50,7 @@ export async function getRemindersExportedDirectives(): Promise<Type<unknown>[]>
             useValue: [REMINDERS_SITE_SCHEMA],
             multi: true,
         },
-        {
-            provide: APP_INITIALIZER,
-            multi: true,
-            useValue: async () => {
-                await CoreReminders.initialize();
-            },
-        },
+        provideAppInitializer(() => CoreReminders.initialize()),
     ],
 })
 export class CoreRemindersModule {}

@@ -1,38 +1,62 @@
+import { defineConfig } from "eslint/config";
+import angular from 'angular-eslint';
+import tseslint from 'typescript-eslint';
+import eslint from '@eslint/js';
+
+import header from 'eslint-plugin-header';
+import jsdoc from 'eslint-plugin-jsdoc';
+import preferArrow from 'eslint-plugin-prefer-arrow';
+import promise from 'eslint-plugin-promise';
+import parser from '@typescript-eslint/parser';
+import jest from 'eslint-plugin-jest';
+import stylistic from '@stylistic/eslint-plugin';
+
+import globals from 'globals';
+
+header.rules.header.meta.schema = false;
+
 const appConfig = {
-    env: {
-        browser: true,
-        es6: true,
-        node: true,
+    plugins: {
+        angular,
+        eslint,
+        tseslint,
+        header,
+        jsdoc,
+        'prefer-arrow': preferArrow,
+        promise,
+        '@stylistic': stylistic,
     },
-    plugins: [
-        '@angular-eslint',
-        '@typescript-eslint',
-        'header',
-        'jsdoc',
-        'prefer-arrow',
-        'promise',
-    ],
     extends: [
-        'eslint:recommended',
-        'plugin:@typescript-eslint/eslint-recommended',
-        'plugin:@typescript-eslint/recommended',
-        'plugin:@angular-eslint/recommended',
-        'plugin:@angular-eslint/template/process-inline-templates',
-        'plugin:promise/recommended',
-        'plugin:jsdoc/recommended',
-        'plugin:deprecation/recommended',
+        eslint.configs.recommended,
+        ...tseslint.configs.recommended,
+        ...angular.configs.tsRecommended,
+        'promise/flat/recommended',
+        'jsdoc/flat/recommended',
     ],
-    parser: '@typescript-eslint/parser',
-    parserOptions: {
-        project: 'tsconfig.json',
-        sourceType: 'module',
+    // IMPORTANT: Set the custom processor to enable inline template linting
+    // This allows your inline Component templates to be extracted and linted with the same
+    // rules as your external .html template files
+    processor: angular.processInlineTemplates,
+    languageOptions: {
+        parser,
+        globals: {
+            ...globals.browser,
+            ...globals.node,
+            ...globals.es6,
+        },
+        parserOptions: {
+            project: 'tsconfig.json',
+            sourceType: 'module',
+        },
     },
-    reportUnusedDisableDirectives: true,
+    linterOptions: {
+        reportUnusedDisableDirectives: true,
+    },
     rules: {
         '@angular-eslint/component-class-suffix': ['error', { suffixes: ['Component', 'Page'] }],
         '@angular-eslint/no-output-on-prefix': 'off',
         '@typescript-eslint/adjacent-overload-signatures': 'error',
-        '@typescript-eslint/ban-types': [
+        '@typescript-eslint/no-restricted-types': [
             'error',
             {
                 types: {
@@ -48,10 +72,11 @@ const appConfig = {
                     Object: {
                         message: 'Use {} instead.',
                     },
-                    Function: false,
                 },
             },
         ],
+        '@typescript-eslint/no-unsafe-function-type': 'off',
+        '@typescript-eslint/no-unused-expressions': 'off',
         '@typescript-eslint/explicit-member-accessibility': [
             'error',
             {
@@ -64,14 +89,14 @@ const appConfig = {
                 allowArgumentsExplicitlyTypedAsAny: true,
             },
         ],
-        '@typescript-eslint/lines-between-class-members': [
+        '@stylistic/lines-between-class-members': [
             'error',
             'always',
             {
                 exceptAfterSingleLine: true,
             },
         ],
-        '@typescript-eslint/member-delimiter-style': [
+        '@stylistic/member-delimiter-style': [
             'error',
             {
                 multiline: {
@@ -127,6 +152,7 @@ const appConfig = {
                 leadingUnderscore: 'allow',
             },
         ],
+        '@typescript-eslint/no-deprecated': 'error',
         '@typescript-eslint/no-empty-function': 'error',
         '@typescript-eslint/no-empty-interface': 'off',
         '@typescript-eslint/no-explicit-any': 'warn',
@@ -140,15 +166,15 @@ const appConfig = {
         '@typescript-eslint/no-redeclare': 'error',
         '@typescript-eslint/no-this-alias': 'error',
         '@typescript-eslint/no-unused-vars': 'error',
-        '@typescript-eslint/quotes': [
+        '@stylistic/quotes': [
             'error',
             'single',
         ],
-        '@typescript-eslint/semi': [
+        '@stylistic/semi': [
             'error',
             'always',
         ],
-        '@typescript-eslint/type-annotation-spacing': 'error',
+        '@stylistic/type-annotation-spacing': 'error',
         'header/header': [
             2,
             'line',
@@ -305,41 +331,41 @@ const appConfig = {
 };
 
 var testsConfig = Object.assign({}, appConfig);
-testsConfig['rules']['padded-blocks'] = [
+testsConfig.rules['padded-blocks'] = [
     'error',
     {
         classes: 'always',
         switches: 'never',
     },
 ];
-testsConfig['rules']['jest/expect-expect'] = 'off';
-testsConfig['rules']['jest/no-done-callback'] = 'off';
-testsConfig['plugins'].push('jest');
-testsConfig['extends'].push('plugin:jest/recommended');
+testsConfig.rules['jest/expect-expect'] = 'off';
+testsConfig.rules['jest/no-done-callback'] = 'off';
+testsConfig.plugins.jest = jest;
+testsConfig.extends.push('jest/flat/recommended');
 
-module.exports = {
-    root: true,
-    overrides: [
-        Object.assign({ files: ['*.ts'] }, appConfig),
-        Object.assign({ files: ['*.test.ts'] }, testsConfig),
-        {
-            files: ['*.html'],
-            extends: ['plugin:@angular-eslint/template/recommended'],
-            rules: {
-                '@angular-eslint/template/alt-text': 'error',
-                '@angular-eslint/template/elements-content': 'error',
-                '@angular-eslint/template/label-has-associated-control': 'error',
-                '@angular-eslint/template/no-duplicate-attributes': 'error',
-                '@angular-eslint/template/no-positive-tabindex': 'error',
-                '@angular-eslint/template/prefer-self-closing-tags': 'error',
-                '@angular-eslint/template/table-scope': 'error',
-                '@angular-eslint/template/valid-aria': 'error',
-                'max-len': ['warn', { code: 140 }],
-            },
+export default defineConfig([
+    Object.assign({ files: ['**/*.ts'] }, appConfig),
+    Object.assign({ files: ['**/*.test.ts'] }, testsConfig),
+    {
+        files: ['**/*.html'],
+        extends: [...angular.configs.templateRecommended,],
+        rules: {
+            '@angular-eslint/template/alt-text': 'error',
+            '@angular-eslint/template/elements-content': 'error',
+            '@angular-eslint/template/label-has-associated-control': 'error',
+            '@angular-eslint/template/no-duplicate-attributes': 'error',
+            '@angular-eslint/template/no-positive-tabindex': 'error',
+            '@angular-eslint/template/prefer-self-closing-tags': 'error',
+            '@angular-eslint/template/table-scope': 'error',
+            '@angular-eslint/template/valid-aria': 'error',
+            '@angular-eslint/template/prefer-control-flow': 'warn',
+            'max-len': ['warn', { code: 140 }],
         },
-        {
-            files: ['*.component.ts'],
-            extends: ['plugin:@angular-eslint/template/process-inline-templates'],
-        },
-    ],
-};
+    },
+    {
+        files: ['**/*.component.ts'],
+    },
+    {
+        ignores: ['**/*.js', '**/.*'],
+    },
+]);

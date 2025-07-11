@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Component, OnDestroy, OnInit, ViewChild, inject } from '@angular/core';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { CoreSites } from '@services/sites';
 import {
@@ -45,7 +45,6 @@ import { CoreMainMenuUserButtonComponent } from '@features/mainmenu/components/u
     selector: 'addon-messages-discussions',
     templateUrl: 'discussions.html',
     styleUrl: '../../messages-common.scss',
-    standalone: true,
     imports: [
         CoreSharedModule,
         CoreSearchBoxComponent,
@@ -62,6 +61,7 @@ export default class AddonMessagesDiscussions35Page implements OnInit, OnDestroy
     protected pushObserver: Subscription;
     protected loadingMessages: string;
     protected siteId: string;
+    protected route = inject(ActivatedRoute);
 
     loaded = false;
     loadingMessage = '';
@@ -75,9 +75,7 @@ export default class AddonMessagesDiscussions35Page implements OnInit, OnDestroy
         text: '',
     };
 
-    constructor(
-        protected route: ActivatedRoute,
-    ) {
+    constructor() {
 
         this.search.loading = Translate.instant('core.searching');
         this.loadingMessages = Translate.instant('core.loading');

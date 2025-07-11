@@ -22,7 +22,6 @@ import { CoreSharedModule } from '@/core/shared.module';
 @Component({
     selector: 'addon-mod-workshop-assessment-strategy-numerrors',
     templateUrl: 'addon-mod-workshop-assessment-strategy-numerrors.html',
-    standalone: true,
     imports: [
         CoreSharedModule,
     ],

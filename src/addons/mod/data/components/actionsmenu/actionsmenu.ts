@@ -22,7 +22,6 @@ import { PopoverController } from '@singletons';
 @Component({
     selector: 'addon-mod-data-actionsmenu',
     templateUrl: 'actionsmenu.html',
-    standalone: true,
     imports: [
         CoreSharedModule,
     ],

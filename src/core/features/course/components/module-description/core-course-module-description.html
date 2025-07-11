@@ -1,13 +1,17 @@
-<ion-card *ngIf="description">
-    <ion-item class="ion-text-wrap">
-        <ion-label>
-            <core-format-text [text]="description" [component]="component" [componentId]="componentId" collapsible-item
-                [contextLevel]="contextLevel" [contextInstanceId]="contextInstanceId" [courseId]="courseId" />
-        </ion-label>
-    </ion-item>
-    <ion-item class="ion-text-wrap" *ngIf="note">
-        <ion-label>
-            <ion-note slot="end">{{ note }}</ion-note>
-        </ion-label>
-    </ion-item>
-</ion-card>
+@if (description) {
+    <ion-card>
+        <ion-item class="ion-text-wrap">
+            <ion-label>
+                <core-format-text [text]="description" [component]="component" [componentId]="componentId" collapsible-item
+                    [contextLevel]="contextLevel" [contextInstanceId]="contextInstanceId" [courseId]="courseId" />
+            </ion-label>
+        </ion-item>
+        @if (note) {
+            <ion-item class="ion-text-wrap">
+                <ion-label>
+                    <ion-note slot="end">{{ note }}</ion-note>
+                </ion-label>
+            </ion-item>
+        }
+    </ion-card>
+}

@@ -23,7 +23,6 @@ import { CoreUserTours } from '@features/usertours/services/user-tours';
     selector: 'core-block-side-blocks-tour',
     templateUrl: 'side-blocks-tour.html',
     styleUrl: 'side-blocks-tour.scss',
-    standalone: true,
     imports: [
         CoreSharedModule,
     ],

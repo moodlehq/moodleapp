@@ -28,7 +28,6 @@ import { CoreSharedModule } from '@/core/shared.module';
     selector: 'core-viewer-image',
     templateUrl: 'image.html',
     styleUrl: 'image.scss',
-    standalone: true,
     imports: [
         CoreSharedModule,
     ],

@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit, OnDestroy, ViewChild, ElementRef } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, ElementRef, inject } from '@angular/core';
 import { FormControl, FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { CoreEvents } from '@singletons/events';
 import { CoreGroup, CoreGroups } from '@services/groups';
@@ -64,7 +64,6 @@ import { DEFAULT_TEXT_FORMAT } from '@singletons/text';
     selector: 'page-addon-calendar-edit-event',
     templateUrl: 'edit-event.html',
     styleUrl: 'edit-event.scss',
-    standalone: true,
     imports: [
         CoreSharedModule,
         CoreEditorRichTextEditorComponent,
@@ -109,10 +108,9 @@ export default class AddonCalendarEditEventPage implements OnInit, OnDestroy, Ca
     protected showAll = false;
     protected isDestroyed = false;
     protected gotEventData = false;
+    protected fb = inject(FormBuilder);
 
-    constructor(
-        protected fb: FormBuilder,
-    ) {
+    constructor() {
         this.currentSite = CoreSites.getRequiredCurrentSite();
         this.remindersEnabled = CoreReminders.isEnabled();
 

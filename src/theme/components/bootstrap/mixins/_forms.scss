@@ -1,3 +1,5 @@
+@use "sass:color";
+
 // Form control focus state
 //
 // Generate a customized focus state and for any input with the specified color,
@@ -160,8 +162,8 @@
 
       &:checked {
         ~ .custom-control-label::before {
-          border-color: lighten($color, 10%);
-          @include gradient-bg(lighten($color, 10%));
+          border-color: color.adjust($color, $lightness: 10%);
+          @include gradient-bg(color.adjust($color, $lightness: 10%));
         }
       }
 

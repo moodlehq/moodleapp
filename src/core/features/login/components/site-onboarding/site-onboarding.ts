@@ -28,7 +28,6 @@ import { CoreConstants } from '@/core/constants';
     selector: 'core-login-site-onboarding',
     templateUrl: 'site-onboarding.html',
     styleUrls: ['site-onboarding.scss', '../../login.scss'],
-    standalone: true,
     imports: [
         CoreSharedModule,
     ],

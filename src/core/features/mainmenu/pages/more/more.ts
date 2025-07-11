@@ -35,7 +35,6 @@ import { CoreContentLinksHelper } from '@features/contentlinks/services/contentl
     selector: 'page-core-mainmenu-more',
     templateUrl: 'more.html',
     styleUrl: 'more.scss',
-    standalone: true,
     imports: [
         CoreSharedModule,
         CoreMainMenuUserButtonComponent,

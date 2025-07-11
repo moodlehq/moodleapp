@@ -12,20 +12,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { APP_INITIALIZER, NgModule } from '@angular/core';
+import { NgModule, provideAppInitializer } from '@angular/core';
 
 import { CoreQuestionDelegate } from '@features/question/services/question-delegate';
 import { AddonQtypeMultichoiceHandler } from './services/handlers/multichoice';
 
 @NgModule({
     providers: [
-        {
-            provide: APP_INITIALIZER,
-            multi: true,
-            useValue: () => {
-                CoreQuestionDelegate.registerHandler(AddonQtypeMultichoiceHandler.instance);
-            },
-        },
+        provideAppInitializer(() => {
+            CoreQuestionDelegate.registerHandler(AddonQtypeMultichoiceHandler.instance);
+        }),
     ],
 })
 export class AddonQtypeMultichoiceModule {}

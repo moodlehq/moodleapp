@@ -10,6 +10,6 @@
 #
 # More info: https://github.com/browserslist/browserslist
 
-Android >= 7
-iOS >= 14
-Chrome >= 79
+Android >= 93
+iOS >= 15
+Chrome >= 93

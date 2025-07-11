@@ -31,7 +31,6 @@ import { CoreUserProfileFieldDelegate } from '@features/user/services/user-profi
     selector: 'core-site-plugins-user-profile-field',
     templateUrl: 'core-siteplugins-user-profile-field.html',
     styles: [':host { display: contents; }'],
-    standalone: true,
     imports: [
         CoreSharedModule,
         CoreCompileHtmlComponent,

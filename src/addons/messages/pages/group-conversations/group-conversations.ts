@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, inject } from '@angular/core';
 import { AccordionGroupChangeEventDetail, IonAccordionGroup, IonContent } from '@ionic/angular';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { CoreSites } from '@services/sites';
@@ -65,7 +65,6 @@ const enum AddonMessagesGroupConversationOptionNames {
     selector: 'page-addon-messages-group-conversations',
     templateUrl: 'group-conversations.html',
     styleUrl: '../../messages-common.scss',
-    standalone: true,
     imports: [
         CoreSharedModule,
         CoreMainMenuUserButtonComponent,
@@ -130,10 +129,9 @@ export default class AddonMessagesGroupConversationsPage implements OnInit, OnDe
     protected contactRequestsCountObserver: CoreEventObserver;
     protected memberInfoObserver: CoreEventObserver;
     protected firstExpand = false;
+    protected route = inject(ActivatedRoute);
 
-    constructor(
-        protected route: ActivatedRoute,
-    ) {
+    constructor() {
         this.loadingMessage = Translate.instant('core.loading');
         this.siteId = CoreSites.getCurrentSiteId();
         this.currentUserId = CoreSites.getCurrentSiteUserId();

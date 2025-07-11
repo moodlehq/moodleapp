@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Directive, ElementRef, OnInit, Output, EventEmitter, OnChanges, SimpleChanges, Input } from '@angular/core';
+import { Directive, ElementRef, OnInit, Output, EventEmitter, OnChanges, SimpleChanges, Input, inject } from '@angular/core';
 import { CoreDom } from '@singletons/dom';
 import { toBoolean } from '../transforms/boolean';
 
@@ -21,20 +21,13 @@ import { toBoolean } from '../transforms/boolean';
  */
 @Directive({
     selector: '[ariaButtonClick]',
-    standalone: true,
 })
 export class CoreAriaButtonClickDirective implements OnInit, OnChanges {
-
-    protected element: HTMLElement;
 
     @Input({ transform: toBoolean }) disabled = false;
     @Output() ariaButtonClick = new EventEmitter();
 
-    constructor(
-        element: ElementRef,
-    ) {
-        this.element = element.nativeElement;
-    }
+    protected element: HTMLElement = inject(ElementRef).nativeElement;
 
     /**
      * @inheritdoc

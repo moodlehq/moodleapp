@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { CoreSharedModule } from '@/core/shared.module';
-import { Component, ElementRef, Input, OnInit } from '@angular/core';
+import { Component, ElementRef, Input, OnInit, inject } from '@angular/core';
 import {
     CoreCourse,
     sectionContentIsModule,
@@ -35,7 +35,6 @@ import { CoreCourseModuleCompletionStatus, CORE_COURSE_ALL_SECTIONS_ID } from '@
     selector: 'core-course-course-index',
     templateUrl: 'course-index.html',
     styleUrl: 'course-index.scss',
-    standalone: true,
     imports: [
         CoreSharedModule,
     ],
@@ -52,10 +51,7 @@ export class CoreCourseCourseIndexComponent implements OnInit {
     loaded = false;
     isModule = sectionContentIsModule;
 
-    constructor(
-        protected elementRef: ElementRef,
-    ) {
-    }
+    protected element: HTMLElement = inject(ElementRef).nativeElement;
 
     /**
      * @inheritdoc
@@ -101,7 +97,7 @@ export class CoreCourseCourseIndexComponent implements OnInit {
         await CoreWait.nextTick();
 
         CoreDom.scrollToElement(
-            this.elementRef.nativeElement,
+            this.element,
             '.item.item-current',
             { addYAxis: -10 },
         );

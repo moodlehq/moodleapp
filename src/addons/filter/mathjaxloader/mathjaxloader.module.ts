@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { APP_INITIALIZER, NgModule } from '@angular/core';
+import { NgModule, provideAppInitializer } from '@angular/core';
 
 import { CoreFilterDelegate } from '@features/filter/services/filter-delegate';
 import { AddonFilterMathJaxLoaderHandler } from './services/handlers/mathjaxloader';
@@ -23,13 +23,9 @@ import { AddonFilterMathJaxLoaderHandler } from './services/handlers/mathjaxload
     imports: [
     ],
     providers: [
-        {
-            provide: APP_INITIALIZER,
-            multi: true,
-            useValue: async () => {
-                CoreFilterDelegate.registerHandler(AddonFilterMathJaxLoaderHandler.instance);
-            },
-        },
+        provideAppInitializer(() => {
+            CoreFilterDelegate.registerHandler(AddonFilterMathJaxLoaderHandler.instance);
+        }),
     ],
 })
 export class AddonFilterMathJaxLoaderModule {}

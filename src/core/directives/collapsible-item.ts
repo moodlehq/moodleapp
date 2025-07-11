@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Directive, ElementRef, Input, OnDestroy, OnInit } from '@angular/core';
+import { Directive, ElementRef, Input, OnDestroy, OnInit, inject } from '@angular/core';
 import { CoreCancellablePromise } from '@classes/cancellable-promise';
 import { CoreLoadingComponent } from '@components/loading/loading';
 import { CoreSettingsHelper } from '@features/settings/services/settings-helper';
@@ -38,7 +38,6 @@ const minMaxHeight = 56;
  */
 @Directive({
     selector: '[collapsible-item]',
-    standalone: true,
 })
 export class CoreCollapsibleItemDirective implements OnInit, OnDestroy {
 
@@ -49,7 +48,7 @@ export class CoreCollapsibleItemDirective implements OnInit, OnDestroy {
      */
     @Input('collapsible-item') height: number | string = defaultMaxHeight;
 
-    protected element: HTMLElement;
+    protected element: HTMLElement = inject(ElementRef).nativeElement;
     protected toggleExpandEnabled = false;
     protected expanded = false;
     protected maxHeight = defaultMaxHeight;
@@ -63,9 +62,7 @@ export class CoreCollapsibleItemDirective implements OnInit, OnDestroy {
     protected pageDidEnterListener?: EventListener;
     protected page?: HTMLElement;
 
-    constructor(el: ElementRef<HTMLElement>) {
-        this.element = el.nativeElement;
-
+    constructor() {
         this.element.addEventListener('click', (event) => this.elementClicked(event));
         this.uniqueId = `collapsible-item-${CoreUtils.getUniqueId('CoreCollapsibleItemDirective')}`;
         this.element.id = this.uniqueId;

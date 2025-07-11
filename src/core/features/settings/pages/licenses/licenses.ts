@@ -41,7 +41,6 @@ export interface CoreSettingsLicense {
 @Component({
     selector: 'page-core-app-settings-licenses',
     templateUrl: 'licenses.html',
-    standalone: true,
     imports: [
         CoreSharedModule,
     ],

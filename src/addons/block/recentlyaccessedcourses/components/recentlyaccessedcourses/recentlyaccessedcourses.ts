@@ -45,7 +45,6 @@ import { CorePromiseUtils } from '@singletons/promise-utils';
 @Component({
     selector: 'addon-block-recentlyaccessedcourses',
     templateUrl: 'addon-block-recentlyaccessedcourses.html',
-    standalone: true,
     imports: [
         CoreSharedModule,
         CoreCoursesCourseListItemComponent,
@@ -63,8 +62,7 @@ export class AddonBlockRecentlyAccessedCoursesComponent extends CoreBlockBaseCom
     protected fetchContentDefaultError = 'Error getting recent courses data.';
 
     constructor() {
-        super('AddonBlockRecentlyAccessedCoursesComponent');
-
+        super();
         this.site = CoreSites.getRequiredCurrentSite();
     }
 

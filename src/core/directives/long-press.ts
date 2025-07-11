@@ -14,7 +14,7 @@
 
 // Based on https://medium.com/madewithply/ionic-4-long-press-gestures-96cf1e44098b
 
-import { Directive, ElementRef, OnInit, OnDestroy, Output, EventEmitter } from '@angular/core';
+import { Directive, ElementRef, OnInit, OnDestroy, Output, EventEmitter, inject } from '@angular/core';
 import { Gesture, GestureDetail } from '@ionic/angular';
 import { GestureController } from '@singletons';
 
@@ -23,20 +23,19 @@ import { GestureController } from '@singletons';
  */
 @Directive({
     selector: '[longPress]',
-    standalone: true,
 })
 export class CoreLongPressDirective implements OnInit, OnDestroy {
 
     protected static readonly HOLD_DURATION = 500;
 
-    element: HTMLElement;
     pressGesture?: Gesture;
     timeout?: number;
 
     @Output() longPress = new EventEmitter<GestureDetail>();
 
-    constructor(el: ElementRef) {
-        this.element = el.nativeElement;
+    protected element: HTMLElement = inject(ElementRef).nativeElement;
+
+    constructor() {
         this.element.setAttribute('tappable', '');
     }
 

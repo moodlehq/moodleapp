@@ -31,7 +31,6 @@ import { CoreMath } from '@singletons/math';
     selector: 'core-reading-mode-settings-modal',
     templateUrl: 'reading-mode-settings.html',
     styleUrl: 'reading-mode-settings.scss',
-    standalone: true,
     imports: [
         CoreSharedModule,
     ],

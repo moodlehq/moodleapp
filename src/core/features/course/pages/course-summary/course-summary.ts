@@ -52,7 +52,6 @@ import { CoreSharedModule } from '@/core/shared.module';
     selector: 'page-core-course-summary',
     templateUrl: 'course-summary.html',
     styleUrl: 'course-summary.scss',
-    standalone: true,
     imports: [
         CoreSharedModule,
         CoreRemindersDateComponent,

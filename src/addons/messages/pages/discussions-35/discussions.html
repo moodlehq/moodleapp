@@ -35,7 +35,8 @@
                     </ion-label>
                 </ion-item>
 
-                <ng-container *ngIf="search.showResults">
+                @if (search.showResults) {
+
                     <ion-item-divider>
                         <ion-label>
                             <h2>{{ 'core.searchresults' | translate }}</h2>
@@ -56,8 +57,9 @@
                             </p>
                         </ion-label>
                     </ion-item>
-                </ng-container>
-                <ng-container *ngIf="!search.showResults">
+
+                } @else {
+
                     <ion-item class="ion-text-wrap addon-message-discussion" *ngFor="let discussion of discussions" button
                         [attr.aria-label]="discussion.fullname" (click)="gotoDiscussion(discussion.message!.user)"
                         [attr.aria-current]="discussion.message!.user === discussionUserId ? 'page' : 'false'" [detail]="false">
@@ -65,15 +67,23 @@
                         <ion-label>
                             <div class="flex-row ion-justify-content-between">
                                 <p class="item-heading">{{ discussion.fullname }}</p>
-                                <ion-note *ngIf="discussion.message!.timecreated > 0 || discussion.unread">
-                                    <span *ngIf="discussion.message!.timecreated > 0" class="addon-message-last-message-date">
-                                        {{discussion.message!.timecreated / 1000 | coreDateDayOrTime}}
-                                    </span>
-                                    <ion-icon *ngIf="discussion.unread" name="fas-circle" color="primary" aria-hidden="true" />
-                                    <span *ngIf="discussion.unread" class="sr-only">
-                                        {{ 'addon.messages.unreadmessages' | translate }}
-                                    </span>
-                                </ion-note>
+                                @if (discussion.message!.timecreated > 0 || discussion.unread) {
+                                    <ion-note>
+                                        @if (discussion.message!.timecreated > 0) {
+                                            <span class="addon-message-last-message-date">
+                                                {{discussion.message!.timecreated / 1000 | coreDateDayOrTime}}
+                                            </span>
+                                        }
+                                        @if (discussion.unread) {
+                                            <ion-icon name="fas-circle" color="primary" aria-hidden="true" />
+                                        }
+                                        @if (discussion.unread) {
+                                            <span class="sr-only">
+                                                {{ 'addon.messages.unreadmessages' | translate }}
+                                            </span>
+                                        }
+                                    </ion-note>
+                                }
                             </div>
                             <p>
                                 <core-format-text clean="true" singleLine="true" [text]="discussion.message!.message" contextLevel="system"
@@ -81,14 +91,17 @@
                             </p>
                         </ion-label>
                     </ion-item>
-                </ng-container>
+
+                }
             </ion-list>
 
-            <core-empty-box *ngIf="(!discussions || discussions.length <= 0) && !search.showResults" icon="far-comments"
-                [message]="'addon.messages.nomessagesfound' | translate" />
+            @if ((!discussions || discussions.length <= 0) && !search.showResults) {
+                <core-empty-box icon="far-comments" [message]="'addon.messages.nomessagesfound' | translate" />
+            }
 
-            <core-empty-box *ngIf="(!search.results || search.results.length <= 0) && search.showResults" icon="fas-magnifying-glass"
-                [message]="'core.noresults' | translate" />
+            @if ((!search.results || search.results.length <= 0) && search.showResults) {
+                <core-empty-box icon="fas-magnifying-glass" [message]="'core.noresults' | translate" />
+            }
         </core-loading>
     </core-split-view>
 </ion-content>

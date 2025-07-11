@@ -41,7 +41,6 @@ import { Translate } from '@singletons';
     templateUrl: 'addon-block-timeline.html',
     styleUrl: 'timeline.scss',
     changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: true,
     imports: [
         CoreSharedModule,
         CoreSearchBoxComponent,

@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { APP_INITIALIZER, NgModule } from '@angular/core';
+import { NgModule, provideAppInitializer } from '@angular/core';
 
 import { CoreQuestionBehaviourDelegate } from '@features/question/services/behaviour-delegate';
 import { AddonQbehaviourManualGradedHandler } from './services/handlers/manualgraded';
@@ -21,13 +21,9 @@ import { AddonQbehaviourManualGradedHandler } from './services/handlers/manualgr
     declarations: [
     ],
     providers: [
-        {
-            provide: APP_INITIALIZER,
-            multi: true,
-            useValue: () => {
-                CoreQuestionBehaviourDelegate.registerHandler(AddonQbehaviourManualGradedHandler.instance);
-            },
-        },
+        provideAppInitializer(() => {
+            CoreQuestionBehaviourDelegate.registerHandler(AddonQbehaviourManualGradedHandler.instance);
+        }),
     ],
 })
 export class AddonQbehaviourManualGradedModule {}

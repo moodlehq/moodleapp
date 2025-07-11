@@ -43,7 +43,6 @@ import { CoreUpdateNonReactiveAttributesDirective } from '@directives/update-non
     selector: 'core-send-message-form',
     templateUrl: 'core-send-message-form.html',
     styleUrl: 'send-message-form.scss',
-    standalone: true,
     imports: [
         CoreBaseModule,
         CoreAutoRowsDirective,

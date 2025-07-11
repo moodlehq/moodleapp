@@ -1,13 +1,7 @@
 @use "theme/globals" as *;
+@use "sass:list";
 
 :host {
-    @for $i from 0 to length($core-course-image-background) {
-        &.course-color-#{$i} {
-            --course-color: var(--core-course-color-#{$i});
-            --course-color-tint: var(--core-course-color-#{$i}-tint);
-        }
-    }
-
     --avatar-radius: var(--core-courseimage-radius);
     --avatar-size: 60px;
     --avatar-margin: 16px;
@@ -25,6 +19,13 @@
     @include media-breakpoint-down(md) {
         --avatar-size: 48px;
         --avatar-margin: 12px;
+    }
+
+    @for $i from 0 to list.length($core-course-image-background) {
+        &.course-color-#{$i} {
+            --course-color: var(--core-course-color-#{$i});
+            --course-color-tint: var(--core-course-color-#{$i}-tint);
+        }
     }
 }
 
@@ -54,11 +55,11 @@ ion-card {
 .core-button-spinner {
     margin: 0;
     position: absolute;
-    @include position(8px, 8px, null, null);
     display: flex;
     flex-direction: column;
     align-items: center;
     z-index: 2;
+    @include position(8px, 8px, null, null);
 
     ion-spinner {
         margin-top: 4px;

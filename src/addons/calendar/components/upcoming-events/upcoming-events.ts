@@ -12,7 +12,18 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnDestroy, OnInit, Input, DoCheck, Output, EventEmitter, KeyValueDiffers, KeyValueDiffer } from '@angular/core';
+import {
+    Component,
+    OnDestroy,
+    OnInit,
+    Input,
+    DoCheck,
+    Output,
+    EventEmitter,
+    KeyValueDiffers,
+    KeyValueDiffer,
+    inject,
+} from '@angular/core';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { CoreSites } from '@services/sites';
 import {
@@ -38,7 +49,6 @@ import { CoreSharedModule } from '@/core/shared.module';
     selector: 'addon-calendar-upcoming-events',
     templateUrl: 'addon-calendar-upcoming-events.html',
     styleUrl: '../../calendar-common.scss',
-    standalone: true,
     imports: [
         CoreSharedModule,
     ],
@@ -68,9 +78,9 @@ export class AddonCalendarUpcomingEventsComponent implements OnInit, DoCheck, On
     // Observers.
     protected undeleteEventObserver: CoreEventObserver;
 
-    constructor(
-        differs: KeyValueDiffers,
-    ) {
+    constructor() {
+        const differs = inject(KeyValueDiffers);
+
         this.currentSiteId = CoreSites.getCurrentSiteId();
 
         // Listen for events "undeleted" (offline).

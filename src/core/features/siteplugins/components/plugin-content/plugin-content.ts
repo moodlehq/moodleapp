@@ -23,6 +23,7 @@ import {
     ViewChild,
     KeyValueDiffer,
     HostBinding,
+    inject,
 } from '@angular/core';
 import { Subject } from 'rxjs';
 import { Md5 } from 'ts-md5';
@@ -46,7 +47,6 @@ import { ContextLevel } from '@/core/constants';
     selector: 'core-site-plugins-plugin-content',
     templateUrl: 'core-siteplugins-plugin-content.html',
     styles: [':host { display: contents; }'],
-    standalone: true,
     imports: [
         CoreSharedModule,
         CoreCompileHtmlComponent,
@@ -80,7 +80,9 @@ export class CoreSitePluginsPluginContentComponent implements OnInit, DoCheck {
 
     protected differ: KeyValueDiffer<unknown, unknown>; // To detect changes in the data input.
 
-    constructor(differs: KeyValueDiffers) {
+    constructor() {
+        const differs = inject(KeyValueDiffers);
+
         this.differ = differs.find([]).create();
     }
 

@@ -43,7 +43,6 @@ import { CoreSharedModule } from '@/core/shared.module';
     selector: 'page-addon-notes-list-page',
     templateUrl: 'list.html',
     animations: [CoreAnimations.SLIDE_IN_OUT],
-    standalone: true,
     imports: [
         CoreSharedModule,
     ],

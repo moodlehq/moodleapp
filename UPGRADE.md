@@ -2,6 +2,11 @@ This file describes API changes in the Moodle App that affect site plugins, info
 
 For more information about upgrading, read the official documentation: https://moodledev.io/general/app/upgrading/
 
+5.1.0
+=====
+
+ - "model" has been removed for site plugins because it isn't needed and it's not compatible with Angular 18. "model" is meant to support 2-way data binding in custom components, and site plugins cannot create components.
+
 5.0.0
 =====
 

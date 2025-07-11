@@ -43,7 +43,6 @@ import { AddonModH5PActivityAttemptSummaryComponent } from '../../components/att
     selector: 'page-addon-mod-h5pactivity-user-attempts',
     templateUrl: 'user-attempts.html',
     styleUrl: 'user-attempts.scss',
-    standalone: true,
     imports: [
         CoreSharedModule,
         AddonModH5PActivityAttemptCompletionComponent,

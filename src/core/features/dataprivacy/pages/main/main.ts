@@ -36,7 +36,6 @@ import { CoreSharedModule } from '@/core/shared.module';
     selector: 'page-core-data-privacy-main',
     templateUrl: 'main.html',
     styleUrl: 'main.scss',
-    standalone: true,
     imports: [
         CoreSharedModule,
     ],

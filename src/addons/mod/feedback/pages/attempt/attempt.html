@@ -4,51 +4,68 @@
             <ion-back-button [text]="'core.back' | translate" />
         </ion-buttons>
         <ion-title>
-            <h1 *ngIf="attempt">{{ attempt.fullname }}</h1>
-            <h1 *ngIf="anonAttempt">{{ 'addon.mod_feedback.anonymous_user' | translate }}</h1>
+            @if (attempt) {
+                <h1>{{ attempt.fullname }}</h1>
+            } @else if (anonAttempt) {
+                <h1>{{ 'addon.mod_feedback.anonymous_user' | translate }}</h1>
+            }
         </ion-title>
     </ion-toolbar>
 </ion-header>
 <ion-content [core-swipe-navigation]="attempts">
     <core-loading [hideUntil]="loaded">
-        <ion-list class="ion-no-margin" *ngIf="attempt || anonAttempt">
-            <ion-item *ngIf="attempt" class="ion-text-wrap" core-user-link [userId]="attempt.userid"
-                [attr.aria-label]="'core.user.viewprofile' | translate" [courseId]="attempt.courseid">
-                <core-user-avatar [user]="attempt" slot="start" [linkProfile]="false" />
-                <ion-label>
-                    <h2>{{attempt.fullname}}</h2>
-                    <p *ngIf="attempt.timemodified">{{attempt.timemodified * 1000 | coreFormatDate }}</p>
-                </ion-label>
-            </ion-item>
+        @if (attempt || anonAttempt) {
+            <ion-list class="ion-no-margin">
+                @if (attempt) {
+                    <ion-item class="ion-text-wrap" core-user-link [userId]="attempt.userid"
+                        [attr.aria-label]="'core.user.viewprofile' | translate" [courseId]="attempt.courseid">
+                        <core-user-avatar [user]="attempt" slot="start" [linkProfile]="false" />
+                        <ion-label>
+                            <h2>{{attempt.fullname}}</h2>
+                            @if (attempt.timemodified) {
+                                <p>{{attempt.timemodified * 1000 | coreFormatDate }}</p>
+                            }
+                        </ion-label>
+                    </ion-item>
+                } @else if (anonAttempt) {
+                    <ion-item class="ion-text-wrap">
+                        <core-user-avatar [linkProfile]="false" slot="start" />
+                        <ion-label>
+                            <h2>{{ 'addon.mod_feedback.anonymous_user' |translate }}</h2>
+                            <p>{{ 'addon.mod_feedback.response_nr' | translate }}: {{anonAttempt.number}}</p>
+                        </ion-label>
+                    </ion-item>
+                }
+                @if (items && items.length) {
 
-            <ion-item class="ion-text-wrap" *ngIf="anonAttempt">
-                <core-user-avatar [linkProfile]="false" slot="start" />
-                <ion-label>
-                    <h2>{{ 'addon.mod_feedback.anonymous_user' |translate }}</h2>
-                    <p>{{ 'addon.mod_feedback.response_nr' | translate }}: {{anonAttempt.number}}</p>
-                </ion-label>
-            </ion-item>
-            <ng-container *ngIf="items && items.length">
-                <ng-container *ngFor="let item of items">
-                    @if (item.typ === 'pagebreak') {
-                        <core-spacer />
-                    } @else {
-                        <ion-item class="ion-text-wrap" [class.feedback_is_dependent]="item.dependitem > 0">
-                            <ion-label>
-                                <p class="item-heading" *ngIf="item.name" [core-mark-required]="item.required">
-                                    <span *ngIf="feedback!.autonumbering && item.itemnumber">{{item.itemnumber}}. </span>
-                                    <core-format-text [component]="component" [componentId]="cmId" [text]="item.name" contextLevel="module"
-                                        [contextInstanceId]="cmId" [courseId]="courseId" />
-                                </p>
-                                <p *ngIf="item.submittedValue">
-                                    <core-format-text [component]="component" [componentId]="cmId" [text]="item.submittedValue"
-                                        contextLevel="module" [contextInstanceId]="cmId" [courseId]="courseId" />
-                                </p>
-                            </ion-label>
-                        </ion-item>
-                    }
-                </ng-container>
-            </ng-container>
-        </ion-list>
+                    <ng-container *ngFor="let item of items">
+                        @if (item.typ === 'pagebreak') {
+                            <core-spacer />
+                        } @else {
+                            <ion-item class="ion-text-wrap" [class.feedback_is_dependent]="item.dependitem > 0">
+                                <ion-label>
+                                    @if (item.name) {
+                                        <p class="item-heading" [core-mark-required]="item.required">
+                                            @if (feedback!.autonumbering && item.itemnumber) {
+                                                <span>{{item.itemnumber}}. </span>
+                                            }
+                                            <core-format-text [component]="component" [componentId]="cmId" [text]="item.name"
+                                                contextLevel="module" [contextInstanceId]="cmId" [courseId]="courseId" />
+                                        </p>
+                                    }
+                                    @if (item.submittedValue) {
+                                        <p>
+                                            <core-format-text [component]="component" [componentId]="cmId" [text]="item.submittedValue"
+                                                contextLevel="module" [contextInstanceId]="cmId" [courseId]="courseId" />
+                                        </p>
+                                    }
+                                </ion-label>
+                            </ion-item>
+                        }
+                    </ng-container>
+
+                }
+            </ion-list>
+        }
     </core-loading>
 </ion-content>

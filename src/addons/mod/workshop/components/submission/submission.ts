@@ -39,7 +39,6 @@ import { CoreSharedModule } from '@/core/shared.module';
     selector: 'addon-mod-workshop-submission',
     templateUrl: 'addon-mod-workshop-submission.html',
     styleUrl: 'submission.scss',
-    standalone: true,
     imports: [
         CoreSharedModule,
     ],

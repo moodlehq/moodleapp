@@ -26,7 +26,6 @@ import { CoreSharedModule } from '@/core/shared.module';
 @Component({
     selector: 'core-site-plugins-course-option',
     templateUrl: 'core-siteplugins-course-option.html',
-    standalone: true,
     imports: [
         CoreSharedModule,
         CoreSitePluginsPluginContentComponent,

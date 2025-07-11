@@ -33,7 +33,6 @@ import { CoreFaIconDirective } from '@directives/fa-icon';
     selector: 'core-chart',
     templateUrl: 'core-chart.html',
     styleUrl: 'chart.scss',
-    standalone: true,
     imports: [
         CoreBaseModule,
         CoreFaIconDirective,

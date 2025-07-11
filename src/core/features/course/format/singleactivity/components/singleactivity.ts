@@ -32,7 +32,6 @@ import { CoreSharedModule } from '@/core/shared.module';
     selector: 'core-course-format-single-activity',
     templateUrl: 'core-course-format-single-activity.html',
     styleUrl: 'single-activity.scss',
-    standalone: true,
     imports: [
         CoreSharedModule,
     ],

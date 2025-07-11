@@ -216,7 +216,7 @@ export class CoreH5PValidator {
             await CoreFile.getFile(path);
 
             return true;
-        } catch (error) {
+        } catch {
             return false;
         }
     }
@@ -347,7 +347,7 @@ export class CoreH5PValidator {
 
             return langIndex;
 
-        } catch (error) {
+        } catch {
             // Probably doesn't exist, ignore.
         }
     }
@@ -363,7 +363,7 @@ export class CoreH5PValidator {
             const path = CorePath.concatenatePaths(libPath, 'semantics.json');
 
             return await CoreFile.readFile<CoreH5PSemantics[]>(path, CoreFileFormat.FORMATJSON);
-        } catch (error) {
+        } catch {
             // Probably doesn't exist, ignore.
         }
     }

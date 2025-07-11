@@ -1,7 +1,7 @@
 /** Format Text - Show more styles. */
 /** Styles of elements inside the directive should be placed in format-text.scss */
 @use "theme/globals.variables" as global;
-@use "sass:math" as math;
+@use "sass:math";
 
 core-format-text {
     --core-format-text-background: var(--background, var(--ion-item-background));
@@ -72,7 +72,6 @@ core-format-text {
 
         button.core-image-viewer-icon {
             position: absolute;
-            @include position(null, 10px, 10px, null);
             color: var(--ion-text-color);
             border-radius: var(--mdl-shape-borderRadius-xl);
             background-color: var(--core-format-text-viewer-icon-background);
@@ -82,6 +81,7 @@ core-format-text {
             height: var(--a11y-sizing-minTargetSize);
             max-width: var(--a11y-sizing-minTargetSize);
             font-size: var(--mdl-typography-icon-fontSize-lg);
+            @include position(null, 10px, 10px, null);
 
             ion-icon {
                 flex: 1;
@@ -185,25 +185,25 @@ core-format-text {
 
     .embed-responsive-21by9 {
         &::before {
-            padding-top: percentage(math.div(9, 21));
+            padding-top: math.percentage(math.div(9, 21));
         }
     }
 
     .embed-responsive-16by9 {
         &::before {
-            padding-top: percentage(math.div(9, 16));
+            padding-top: math.percentage(math.div(9, 16));
         }
     }
 
     .embed-responsive-4by3 {
         &::before {
-            padding-top: percentage(math.div(3, 4));
+            padding-top: math.percentage(math.div(3, 4));
         }
     }
 
     .embed-responsive-1by1 {
         &::before {
-            padding-top: percentage(1);
+            padding-top: math.percentage(1);
         }
     }
 
@@ -366,9 +366,9 @@ core-rich-text-editor .core-rte-editor {
         flex-shrink: 0;
     }
 
-    @import "theme/components/atto.scss";
-    @import "theme/components/moodle.scss";
-    @import "theme/components/bootstrap/bootstrap.scss";
+    @import "theme/components/atto";
+    @import "theme/components/moodle";
+    @import "theme/components/bootstrap/bootstrap";
 }
 
 // h1 is too big and ugly, reduce size when loading.

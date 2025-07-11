@@ -1,25 +1,42 @@
 <ion-item lines="inset" button (click)="onClick.emit($event)">
-    <core-course-image *ngIf="result.course" [course]="result.course" />
-    <core-user-avatar *ngIf="result.user" [user]="result.user" [linkProfile]="false" />
+    @if (result.course) {
+        <core-course-image [course]="result.course" />
+    }
+    @if (result.user) {
+        <core-user-avatar [user]="result.user" [linkProfile]="false" />
+    }
     <ion-label>
-        <p class="item-heading" *ngIf="result.title">
-            <ion-icon *ngIf="renderedIcon" [name]="renderedIcon" aria-hidden="true" />
-            <core-mod-icon *ngIf="!renderedIcon && result.module" [modicon]="result.module.iconurl" [modname]="result.module.name"
-                [colorize]="false" />
-            <img *ngIf="!renderedIcon && !result.module && result.component" [url]="result.component.iconurl" alt="" class="result-icon"
-                core-external-content [component]="result.component.name">
-            <core-format-text [text]="result.title" />
-        </p>
-        <core-format-text *ngIf="result.content && !result.course && !result.user" [text]="result.content" />
-        <div *ngIf="renderedContext" class="result-context-wrapper">
-            <div *ngIf="renderedContext.courseName" class="result-context">
-                <ion-icon name="fas-graduation-cap" aria-hidden="true" />
-                <core-format-text [text]="renderedContext.courseName" />
+        @if (result.title) {
+            <p class="item-heading">
+                @if (renderedIcon) {
+                    <ion-icon [name]="renderedIcon" aria-hidden="true" />
+                } @else if (result.module) {
+                    <core-mod-icon [modicon]="result.module.iconurl" [modname]="result.module.name" [colorize]="false" />
+                } @else if (result.component) {
+                    <img [url]="result.component.iconurl" alt="" class="result-icon" core-external-content
+                        [component]="result.component.name">
+                }
+                <core-format-text [text]="result.title" />
+            </p>
+        }
+        @if (result.content && !result.course && !result.user) {
+            <core-format-text [text]="result.content" />
+        }
+        @if (renderedContext) {
+            <div class="result-context-wrapper">
+                @if (renderedContext.courseName) {
+                    <div class="result-context">
+                        <ion-icon name="fas-graduation-cap" aria-hidden="true" />
+                        <core-format-text [text]="renderedContext.courseName" />
+                    </div>
+                }
+                @if (renderedContext.userName) {
+                    <div class="result-context">
+                        <ion-icon name="fas-user" aria-hidden="true" />
+                        <span>{{ 'core.search.resultby' | translate: { $a: renderedContext.userName } }}</span>
+                    </div>
+                }
             </div>
-            <div *ngIf="renderedContext.userName" class="result-context">
-                <ion-icon name="fas-user" aria-hidden="true" />
-                <span>{{ 'core.search.resultby' | translate: { $a: renderedContext.userName } }}</span>
-            </div>
-        </div>
+        }
     </ion-label>
 </ion-item>

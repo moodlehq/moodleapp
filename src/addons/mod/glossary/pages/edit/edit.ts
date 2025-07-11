@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef, inject } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { CoreError } from '@classes/errors/error';
@@ -50,7 +50,6 @@ import { CoreSharedModule } from '@/core/shared.module';
 @Component({
     selector: 'page-addon-mod-glossary-edit',
     templateUrl: 'edit.html',
-    standalone: true,
     imports: [
         CoreSharedModule,
         CoreEditorRichTextEditorComponent,
@@ -89,8 +88,7 @@ export default class AddonModGlossaryEditPage implements OnInit, CanLeave {
     protected syncObserver?: CoreEventObserver;
     protected isDestroyed = false;
     protected saved = false;
-
-    constructor(protected route: ActivatedRoute) {}
+    protected route = inject(ActivatedRoute);
 
     /**
      * @inheritdoc

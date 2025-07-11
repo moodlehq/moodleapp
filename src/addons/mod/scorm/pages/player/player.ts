@@ -52,7 +52,6 @@ import { CoreSharedModule } from '@/core/shared.module';
 @Component({
     selector: 'page-addon-mod-scorm-player',
     templateUrl: 'player.html',
-    standalone: true,
     imports: [
         CoreSharedModule,
     ],

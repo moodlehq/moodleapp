@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, Input, OnInit, OnDestroy, ElementRef, ChangeDetectorRef } from '@angular/core';
+import { Component, Input, OnInit, OnDestroy, ElementRef, ChangeDetectorRef, inject } from '@angular/core';
 import { Subject, Subscription } from 'rxjs';
 import { auditTime } from 'rxjs/operators';
 import { CorePopovers } from '@services/overlays/popovers';
@@ -30,7 +30,6 @@ import { CoreUpdateNonReactiveAttributesDirective } from '@directives/update-non
 @Component({
     selector: 'core-context-menu',
     templateUrl: 'core-context-menu.html',
-    standalone: true,
     imports: [
         CoreBaseModule,
         CoreUpdateNonReactiveAttributesDirective,
@@ -59,7 +58,10 @@ export class CoreContextMenuComponent implements OnInit, OnDestroy {
     protected expanded = false;
     protected itemsSubscription: Subscription;
 
-    constructor(elementRef: ElementRef, changeDetector: ChangeDetectorRef) {
+    constructor() {
+        const element: HTMLElement = inject(ElementRef).nativeElement;
+        const changeDetector = inject(ChangeDetectorRef);
+
         // Create the stream and subscribe to it. We ignore successive changes during 250ms.
         this.itemsChangedStream = new Subject<void>();
         this.itemsSubscription = this.itemsChangedStream.pipe(auditTime(250)).subscribe(() => {
@@ -75,7 +77,7 @@ export class CoreContextMenuComponent implements OnInit, OnDestroy {
         // Calculate the unique ID.
         this.uniqueId = `core-context-menu-${CoreUtils.getUniqueId('CoreContextMenuComponent')}`;
 
-        CoreDirectivesRegistry.register(elementRef.nativeElement, this);
+        CoreDirectivesRegistry.register(element, this);
     }
 
     /**

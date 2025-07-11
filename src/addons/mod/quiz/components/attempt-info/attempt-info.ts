@@ -29,7 +29,6 @@ import { CoreSharedModule } from '@/core/shared.module';
 @Component({
     selector: 'addon-mod-quiz-attempt-info',
     templateUrl: 'attempt-info.html',
-    standalone: true,
     imports: [
         CoreSharedModule,
         AddonModQuizAttemptStateComponent,

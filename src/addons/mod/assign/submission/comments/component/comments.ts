@@ -26,7 +26,6 @@ import { ADDON_MOD_ASSIGN_COMMENTS_AREA, ADDON_MOD_ASSIGN_COMMENTS_COMPONENT_NAM
 @Component({
     selector: 'addon-mod-assign-submission-comments',
     templateUrl: 'addon-mod-assign-submission-comments.html',
-    standalone: true,
     imports: [
         CoreSharedModule,
         CoreCommentsCommentsComponent,

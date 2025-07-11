@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { APP_INITIALIZER, NgModule, Type } from '@angular/core';
+import { NgModule, Type, provideAppInitializer } from '@angular/core';
 import { Routes } from '@angular/router';
 
 import { CoreSiteHomeIndexLinkHandler } from './services/handlers/index-link';
@@ -45,14 +45,10 @@ const mainMenuHomeRoutes: Routes = [
 @NgModule({
     imports: [CoreMainMenuHomeRoutingModule.forChild({ children: mainMenuHomeRoutes })],
     providers: [
-        {
-            provide: APP_INITIALIZER,
-            multi: true,
-            useValue: () => {
-                CoreContentLinksDelegate.registerHandler(CoreSiteHomeIndexLinkHandler.instance);
-                CoreMainMenuHomeDelegate.registerHandler(CoreSiteHomeHomeHandler.instance);
-            },
-        },
+        provideAppInitializer(() => {
+            CoreContentLinksDelegate.registerHandler(CoreSiteHomeIndexLinkHandler.instance);
+            CoreMainMenuHomeDelegate.registerHandler(CoreSiteHomeHomeHandler.instance);
+        }),
     ],
 })
 export class CoreSiteHomeModule {}

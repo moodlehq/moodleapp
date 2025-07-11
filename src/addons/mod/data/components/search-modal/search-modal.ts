@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, ElementRef, Input, OnInit, Type, ViewChild } from '@angular/core';
+import { Component, ElementRef, Input, OnInit, Type, ViewChild, inject } from '@angular/core';
 import { FormGroup, FormBuilder } from '@angular/forms';
 import { CoreTag } from '@features/tag/services/tag';
 import { CoreSites } from '@services/sites';
@@ -40,7 +40,6 @@ import { CoreCompileHtmlComponent } from '@features/compile/components/compile-h
     selector: 'addon-mod-data-search-modal',
     templateUrl: 'search-modal.html',
     styleUrls: ['../../data.scss', '../../data-forms.scss'],
-    standalone: true,
     imports: [
         CoreSharedModule,
         CoreCompileHtmlComponent,
@@ -58,7 +57,7 @@ export class AddonModDataSearchModalComponent implements OnInit {
     advancedIndexed: CoreFormFields = {};
     extraImports?: Type<unknown>[];
 
-    searchForm: FormGroup;
+    searchForm: FormGroup = new FormGroup({});
     jsData?: {
         fields: Record<number, AddonModDataField>;
         form: FormGroup;
@@ -67,11 +66,7 @@ export class AddonModDataSearchModalComponent implements OnInit {
 
     fieldsArray: AddonModDataField[] = [];
 
-    constructor(
-        protected fb: FormBuilder,
-    ) {
-        this.searchForm = new FormGroup({});
-    }
+    protected fb = inject(FormBuilder);
 
     async ngOnInit(): Promise<void> {
         this.advancedIndexed = {};

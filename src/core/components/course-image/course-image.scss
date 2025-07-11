@@ -1,4 +1,5 @@
 @use "theme/globals" as *;
+@use "sass:list";
 
 :host {
     --core-image-radius: var(--core-courseimage-radius);
@@ -10,7 +11,7 @@
     background: var(--course-color, white);
     border-radius: var(--core-image-radius);
 
-    @for $i from 0 to length($core-course-image-background) {
+    @for $i from 0 to list.length($core-course-image-background) {
         &.course-color-#{$i} {
             --course-color: var(--core-course-color-#{$i});
             --course-color-tint: var(--core-course-color-#{$i}-tint);

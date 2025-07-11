@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { ChangeDetectionStrategy, Component, ElementRef, OnDestroy } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnDestroy } from '@angular/core';
 import { CoreModalComponent } from '@classes/modal-component';
 import { CorePlatform } from '@services/platform';
 import { DomSanitizer, Translate } from '@singletons';
@@ -35,7 +35,6 @@ import { CoreAlerts } from '@services/overlays/alerts';
     styleUrl: 'audio-recorder.scss',
     templateUrl: 'audio-recorder.html',
     changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: true,
     imports: [
         CoreSharedModule,
         CoreFileUploaderAudioHistogramComponent,
@@ -52,8 +51,8 @@ export class CoreFileUploaderAudioRecorderComponent extends CoreModalComponent<C
     protected media$: BehaviorSubject<AudioRecorderMedia | null>;
     protected recording$: Observable<AudioRecording | null>;
 
-    constructor(elementRef: ElementRef<HTMLElement>) {
-        super(elementRef);
+    constructor() {
+        super();
 
         this.recording = null;
         this.media$ = new BehaviorSubject<AudioRecorderMedia | null>(null);
@@ -282,13 +281,17 @@ function recorderAudioRecording(): OperatorFunction<AudioRecorderMedia | null, A
             });
         };
         const subscription = source.subscribe(media => {
-            previousRecorder?.removeEventListener('dataavailable', onDataAvailable);
-            previousRecorder?.removeEventListener('error', onError);
-            previousRecorder?.removeEventListener('stop', onStop);
+            if (previousRecorder) {
+                previousRecorder.ondataavailable = null;
+                previousRecorder.onerror = null;
+                previousRecorder.onstop = null;
+            }
 
-            media?.recorder.addEventListener('dataavailable', onDataAvailable);
-            media?.recorder.addEventListener('error', onError);
-            media?.recorder.addEventListener('stop', onStop);
+            if (media?.recorder) {
+                media.recorder.ondataavailable = onDataAvailable;
+                media.recorder.onerror = onError;
+                media.recorder.onstop = onStop;
+            }
 
             audioChunks = [];
             previousRecorder = media?.recorder;
@@ -301,9 +304,11 @@ function recorderAudioRecording(): OperatorFunction<AudioRecorderMedia | null, A
         return () => {
             subscription.unsubscribe();
 
-            previousRecorder?.removeEventListener('dataavailable', onDataAvailable);
-            previousRecorder?.removeEventListener('error', onError);
-            previousRecorder?.removeEventListener('stop', onStop);
+            if (previousRecorder) {
+                previousRecorder.ondataavailable = null;
+                previousRecorder.onerror = null;
+                previousRecorder.onstop = null;
+            }
         };
     });
 }
@@ -321,19 +326,23 @@ function recorderStatus(): OperatorFunction<AudioRecorderMedia | null, Recording
         const onResume = () => subscriber.next('recording');
         const onStop = () => subscriber.next('inactive');
         const subscription = source.subscribe(media => {
-            previousRecorder?.removeEventListener('start', onStart);
-            previousRecorder?.removeEventListener('pause', onPause);
-            previousRecorder?.removeEventListener('resume', onResume);
-            previousRecorder?.removeEventListener('stop', onStop);
+            if (previousRecorder) {
+                previousRecorder.onstart = null;
+                previousRecorder.onpause = null;
+                previousRecorder.onresume = null;
+                previousRecorder.onstop = null;
+            }
 
-            media?.recorder.addEventListener('start', onStart);
-            media?.recorder.addEventListener('pause', onPause);
-            media?.recorder.addEventListener('resume', onResume);
-            media?.recorder.addEventListener('stop', onStop);
+            if (media?.recorder) {
+                media.recorder.onstart = onStart;
+                media.recorder.onpause = onPause;
+                media.recorder.onresume = onResume;
+                media.recorder.onstop = onStop;
+            }
 
             previousRecorder = media?.recorder;
 
-            subscriber.next(media?.recorder.state ?? 'inactive');
+            subscriber.next(media?.recorder?.state ?? 'inactive');
         });
 
         subscriber.next('inactive');
@@ -341,10 +350,12 @@ function recorderStatus(): OperatorFunction<AudioRecorderMedia | null, Recording
         return () => {
             subscription.unsubscribe();
 
-            previousRecorder?.removeEventListener('start', onStart);
-            previousRecorder?.removeEventListener('pause', onPause);
-            previousRecorder?.removeEventListener('resume', onResume);
-            previousRecorder?.removeEventListener('stop', onStop);
+            if (previousRecorder) {
+                previousRecorder.onstart = null;
+                previousRecorder.onpause = null;
+                previousRecorder.onresume = null;
+                previousRecorder.onstop = null;
+            }
         };
     });
 }

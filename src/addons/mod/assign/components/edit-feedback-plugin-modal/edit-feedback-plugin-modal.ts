@@ -31,7 +31,6 @@ import { AddonModAssignFeedbackPluginComponent } from '../feedback-plugin/feedba
 @Component({
     selector: 'addon-mod-assign-edit-feedback-plugin-modal',
     templateUrl: 'edit-feedback-plugin-modal.html',
-    standalone: true,
     imports: [
         CoreSharedModule,
         AddonModAssignFeedbackPluginComponent,

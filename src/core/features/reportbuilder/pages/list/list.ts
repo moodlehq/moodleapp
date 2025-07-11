@@ -30,7 +30,6 @@ import { CoreSharedModule } from '@/core/shared.module';
     selector: 'core-report-builder-list',
     templateUrl: './list.html',
     changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: true,
     imports: [
         CoreSharedModule,
     ],

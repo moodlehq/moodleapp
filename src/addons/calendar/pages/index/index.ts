@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, inject } from '@angular/core';
 import { CoreNetwork } from '@services/network';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { CoreSites } from '@services/sites';
@@ -50,7 +50,6 @@ import { CoreMainMenuUserButtonComponent } from '@features/mainmenu/components/u
 @Component({
     selector: 'page-addon-calendar-index',
     templateUrl: 'index.html',
-    standalone: true,
     imports: [
         CoreSharedModule,
         AddonCalendarCalendarComponent,
@@ -76,6 +75,7 @@ export default class AddonCalendarIndexPage implements OnInit, OnDestroy {
     protected manualSyncObserver?: CoreEventObserver;
     protected onlineObserver?: Subscription;
     protected filterChangedObserver?: CoreEventObserver;
+    protected route = inject(ActivatedRoute);
 
     year?: number;
     month?: number;
@@ -98,9 +98,7 @@ export default class AddonCalendarIndexPage implements OnInit, OnDestroy {
         category: true,
     };
 
-    constructor(
-        protected route: ActivatedRoute,
-    ) {
+    constructor() {
         this.currentSiteId = CoreSites.getCurrentSiteId();
 
         // Listen for events added. When an event is added, reload the data.

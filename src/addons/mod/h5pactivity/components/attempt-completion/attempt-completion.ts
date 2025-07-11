@@ -23,7 +23,6 @@ import { AddonModH5PActivityAttempt } from '../../services/h5pactivity';
     selector: 'addon-mod-h5pactivity-attempt-completion',
     templateUrl: 'attempt-completion.html',
     styleUrl: 'attempt-completion.scss',
-    standalone: true,
     imports: [
         CoreSharedModule,
     ],

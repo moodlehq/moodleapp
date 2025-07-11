@@ -717,7 +717,7 @@ export class CoreSite extends CoreAuthenticatedSite {
             this.lastAutoLogin = CoreTime.timestamp();
 
             return data.autologinurl + '?userid=' + userId + '&key=' + data.key + '&urltogo=' + encodeURIComponent(url);
-        } catch (error) {
+        } catch {
             // Couldn't get autologin key, return the same URL.
             return url;
         } finally {

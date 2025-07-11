@@ -27,7 +27,6 @@ import { CoreSharedModule } from '@/core/shared.module';
     selector: 'core-site-plugins-block',
     templateUrl: 'core-siteplugins-block.html',
     styles: [':host { display: contents; }'],
-    standalone: true,
     imports: [
         CoreSharedModule,
         CoreSitePluginsPluginContentComponent,
@@ -42,10 +41,6 @@ export class CoreSitePluginsBlockComponent extends CoreBlockBaseComponent implem
     args?: Record<string, unknown>;
     jsData?: Record<string, unknown>; // Data to pass to the component.
     initResult?: CoreSitePluginsContent | null;
-
-    constructor() {
-        super('CoreSitePluginsBlockComponent');
-    }
 
     /**
      * Detect changes on input properties.

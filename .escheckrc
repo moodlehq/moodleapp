@@ -1,0 +1,11 @@
+[
+    {
+        "ecmaVersion": "es2022",
+        "files": [
+            "www/*.js",
+            "cordova-plugin-moodleapp/www/*.js"
+        ],
+        "checkFeatures": true,
+        "checkForPolyfills": true
+    }
+]

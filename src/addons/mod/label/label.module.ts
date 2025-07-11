@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { APP_INITIALIZER, NgModule } from '@angular/core';
+import { NgModule, provideAppInitializer } from '@angular/core';
 import { CoreContentLinksDelegate } from '@features/contentlinks/services/contentlinks-delegate';
 import { CoreCourseModuleDelegate } from '@features/course/services/module-delegate';
 import { CoreCourseModulePrefetchDelegate } from '@features/course/services/module-prefetch-delegate';
@@ -22,15 +22,11 @@ import { AddonModLabelPrefetchHandler } from './services/handlers/prefetch';
 
 @NgModule({
     providers: [
-        {
-            provide: APP_INITIALIZER,
-            multi: true,
-            useValue: () => {
-                CoreCourseModuleDelegate.registerHandler(AddonModLabelModuleHandler.instance);
-                CoreContentLinksDelegate.registerHandler(AddonModLabelIndexLinkHandler.instance);
-                CoreCourseModulePrefetchDelegate.registerHandler(AddonModLabelPrefetchHandler.instance);
-            },
-        },
+        provideAppInitializer(() => {
+            CoreCourseModuleDelegate.registerHandler(AddonModLabelModuleHandler.instance);
+            CoreContentLinksDelegate.registerHandler(AddonModLabelIndexLinkHandler.instance);
+            CoreCourseModulePrefetchDelegate.registerHandler(AddonModLabelPrefetchHandler.instance);
+        }),
     ],
 })
 export class AddonModLabelModule {}

@@ -32,7 +32,6 @@ import { ADDON_MOD_ASSIGN_SUBMISSION_FILE_FOLDER_NAME } from '../constants';
 @Component({
     selector: 'addon-mod-assign-submission-file',
     templateUrl: 'addon-mod-assign-submission-file.html',
-    standalone: true,
     imports: [
         CoreSharedModule,
     ],

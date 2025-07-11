@@ -30,7 +30,6 @@ import { CoreRemindersUnits, REMINDERS_DISABLED } from '@features/reminders/cons
 @Component({
     templateUrl: 'set-reminder-menu.html',
     styleUrl: 'set-reminder-menu.scss',
-    standalone: true,
     imports: [
         CoreSharedModule,
     ],

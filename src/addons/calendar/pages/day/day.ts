@@ -67,7 +67,6 @@ import { CoreSharedModule } from '@/core/shared.module';
     selector: 'page-addon-calendar-day',
     templateUrl: 'day.html',
     styleUrls: ['../../calendar-common.scss', 'day.scss'],
-    standalone: true,
     imports: [
         CoreSharedModule,
     ],

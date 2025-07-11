@@ -4,9 +4,11 @@
             <ion-back-button [text]="'core.back' | translate" />
         </ion-buttons>
         <ion-title>
-            <h1 *ngIf="plan">
-                <core-format-text [text]="plan.plan.name" contextLevel="user" [contextInstanceId]="plan.plan.userid" />
-            </h1>
+            @if (plan) {
+                <h1>
+                    <core-format-text [text]="plan.plan.name" contextLevel="user" [contextInstanceId]="plan.plan.userid" />
+                </h1>
+            }
         </ion-title>
     </ion-toolbar>
 </ion-header>
@@ -15,85 +17,101 @@
         <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}" />
     </ion-refresher>
     <core-loading [hideUntil]="competencies.loaded">
-        <ion-card *ngIf="user">
-            <ion-item class="ion-text-wrap">
-                <ion-label>
-                    <core-user-avatar [user]="user" slot="start" />
-                    <p class="item-heading">{{ user.fullname }}</p>
-                </ion-label>
-            </ion-item>
-        </ion-card>
-        <ion-card *ngIf="plan">
-            <ion-list>
-                <ion-item class="ion-text-wrap" *ngIf="plan.plan.description">
-                    <ion-label>
-                        <p>
-                            <core-format-text [text]="plan.plan.description" contextLevel="user" [contextInstanceId]="plan.plan.userid" />
-                        </p>
-                    </ion-label>
-                </ion-item>
+        @if (user) {
+            <ion-card>
                 <ion-item class="ion-text-wrap">
                     <ion-label>
-                        <p class="item-heading">{{ 'addon.competency.status' | translate }}</p>
-                        <p>{{ plan.plan.statusname }}</p>
+                        <core-user-avatar [user]="user" slot="start" />
+                        <p class="item-heading">{{ user.fullname }}</p>
                     </ion-label>
                 </ion-item>
-                <ion-item class="ion-text-wrap" *ngIf="plan.plan.duedate > 0">
-                    <ion-label>
-                        <p class="item-heading">{{ 'addon.competency.duedate' | translate }}</p>
-                        <p>{{ plan.plan.duedate * 1000 | coreFormatDate }}</p>
-                    </ion-label>
-                </ion-item>
-                <ion-item class="ion-text-wrap" *ngIf="plan.plan.template">
-                    <ion-label>
-                        <p class="item-heading">{{ 'addon.competency.template' | translate }}</p>
-                        <p>
-                            <core-format-text [text]="plan.plan.template.shortname" contextLevel="system" [contextInstanceId]="0" />
-                        </p>
-                    </ion-label>
-                </ion-item>
-                <ion-item class="ion-text-wrap">
-                    <ion-label id="addon-competency-plan-{{plan.plan.id}}-progress">
-                        <p class="item-heading">{{ 'addon.competency.progress' | translate }}</p>
-                        <p>
-                            {{ 'addon.competency.xcompetenciesproficientoutofy' | translate:
+            </ion-card>
+        }
+        @if (plan) {
+            <ion-card>
+                <ion-list>
+                    @if (plan.plan.description) {
+                        <ion-item class="ion-text-wrap">
+                            <ion-label>
+                                <p>
+                                    <core-format-text [text]="plan.plan.description" contextLevel="user"
+                                        [contextInstanceId]="plan.plan.userid" />
+                                </p>
+                            </ion-label>
+                        </ion-item>
+                    }
+                    <ion-item class="ion-text-wrap">
+                        <ion-label>
+                            <p class="item-heading">{{ 'addon.competency.status' | translate }}</p>
+                            <p>{{ plan.plan.statusname }}</p>
+                        </ion-label>
+                    </ion-item>
+                    @if (plan.plan.duedate > 0) {
+                        <ion-item class="ion-text-wrap">
+                            <ion-label>
+                                <p class="item-heading">{{ 'addon.competency.duedate' | translate }}</p>
+                                <p>{{ plan.plan.duedate * 1000 | coreFormatDate }}</p>
+                            </ion-label>
+                        </ion-item>
+                    }
+                    @if (plan.plan.template) {
+                        <ion-item class="ion-text-wrap">
+                            <ion-label>
+                                <p class="item-heading">{{ 'addon.competency.template' | translate }}</p>
+                                <p>
+                                    <core-format-text [text]="plan.plan.template.shortname" contextLevel="system" [contextInstanceId]="0" />
+                                </p>
+                            </ion-label>
+                        </ion-item>
+                    }
+                    <ion-item class="ion-text-wrap">
+                        <ion-label id="addon-competency-plan-{{plan.plan.id}}-progress">
+                            <p class="item-heading">{{ 'addon.competency.progress' | translate }}</p>
+                            <p>
+                                {{ 'addon.competency.xcompetenciesproficientoutofy' | translate:
                             {$a: {x: plan.proficientcompetencycount, y: plan.competencycount} } }}
-                        </p>
-                        <core-progress-bar [progress]="plan.proficientcompetencypercentage"
-                            [text]="plan.proficientcompetencypercentageformatted"
-                            ariaDescribedBy="addon-competency-plan-{{plan.plan.id}}-progress" />
-                    </ion-label>
-                </ion-item>
-            </ion-list>
-        </ion-card>
-        <ion-card *ngIf="plan">
-            <ion-card-header class="ion-text-wrap">
-                <ion-card-title>{{ 'addon.competency.learningplancompetencies' | translate }}</ion-card-title>
-            </ion-card-header>
-            <ion-list>
-                <ion-item class="ion-text-wrap" *ngIf="plan.competencycount === 0">
-                    <ion-label>
-                        <p>{{ 'addon.competency.nocompetencies' | translate }}</p>
-                    </ion-label>
-                </ion-item>
-                <ion-item class="ion-text-wrap" *ngFor="let competency of competencies.items" (click)="competencies.select(competency)"
-                    [attr.aria-label]="competency.competency.shortname" [detail]="true" button>
-                    <ion-label>
-                        <p class="item-heading">
-                            <core-format-text [text]="competency.competency.shortname" contextLevel="user"
-                                [contextInstanceId]="plan.plan.userid" /> <em>{{competency.competency.idnumber}}</em>
-                        </p>
-                    </ion-label>
-                    <ion-badge *ngIf="competency.usercompetencyplan" slot="end"
-                        [color]="competency.usercompetencyplan.proficiency ? 'success' : 'danger'">
-                        {{ competency.usercompetencyplan.gradename }}
-                    </ion-badge>
-                    <ion-badge *ngIf="!competency.usercompetencyplan" slot="end"
-                        [color]="competency.usercompetency.proficiency ? 'success' : 'danger'">
-                        {{ competency.usercompetency.gradename }}
-                    </ion-badge>
-                </ion-item>
-            </ion-list>
-        </ion-card>
+                            </p>
+                            <core-progress-bar [progress]="plan.proficientcompetencypercentage"
+                                [text]="plan.proficientcompetencypercentageformatted"
+                                ariaDescribedBy="addon-competency-plan-{{plan.plan.id}}-progress" />
+                        </ion-label>
+                    </ion-item>
+                </ion-list>
+            </ion-card>
+        }
+        @if (plan) {
+            <ion-card>
+                <ion-card-header class="ion-text-wrap">
+                    <ion-card-title>{{ 'addon.competency.learningplancompetencies' | translate }}</ion-card-title>
+                </ion-card-header>
+                <ion-list>
+                    @if (plan.competencycount === 0) {
+                        <ion-item class="ion-text-wrap">
+                            <ion-label>
+                                <p>{{ 'addon.competency.nocompetencies' | translate }}</p>
+                            </ion-label>
+                        </ion-item>
+                    }
+                    <ion-item class="ion-text-wrap" *ngFor="let competency of competencies.items" (click)="competencies.select(competency)"
+                        [attr.aria-label]="competency.competency.shortname" [detail]="true" button>
+                        <ion-label>
+                            <p class="item-heading">
+                                <core-format-text [text]="competency.competency.shortname" contextLevel="user"
+                                    [contextInstanceId]="plan.plan.userid" /> <em>{{competency.competency.idnumber}}</em>
+                            </p>
+                        </ion-label>
+                        @if (competency.usercompetencyplan) {
+                            <ion-badge slot="end" [color]="competency.usercompetencyplan.proficiency ? 'success' : 'danger'">
+                                {{ competency.usercompetencyplan.gradename }}
+                            </ion-badge>
+                        } @else {
+                            <ion-badge slot="end" [color]="competency.usercompetency.proficiency ? 'success' : 'danger'">
+                                {{ competency.usercompetency.gradename }}
+                            </ion-badge>
+                        }
+                    </ion-item>
+                </ion-list>
+            </ion-card>
+        }
     </core-loading>
 </ion-content>

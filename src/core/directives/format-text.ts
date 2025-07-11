@@ -20,12 +20,11 @@ import {
     EventEmitter,
     OnChanges,
     SimpleChange,
-    Optional,
     ViewContainerRef,
     ViewChild,
     OnDestroy,
-    Inject,
     ChangeDetectorRef,
+    inject,
 } from '@angular/core';
 
 import { CoreSites } from '@services/sites';
@@ -73,7 +72,6 @@ import { CoreBoostrap } from '@singletons/bootstrap';
  */
 @Directive({
     selector: 'core-format-text',
-    standalone: true,
 })
 export class CoreFormatTextDirective implements OnChanges, OnDestroy, AsyncDirective {
 
@@ -108,34 +106,31 @@ export class CoreFormatTextDirective implements OnChanges, OnDestroy, AsyncDirec
     @Output() filterContentRenderingComplete = new EventEmitter<void>(); // Called when the filters have finished rendering content.
     @Output() onClick: EventEmitter<void> = new EventEmitter(); // Called when clicked.
 
-    protected element: HTMLElement;
     protected elementControllers: ElementController[] = [];
     protected domPromises: CoreCancellablePromise<void>[] = [];
     protected domElementPromise?: CoreCancellablePromise<void>;
     protected externalContentInstances: CoreExternalContentDirective[] = [];
+    protected element: HTMLElement = inject(ElementRef).nativeElement;
+    protected viewContainerRef = inject(ViewContainerRef);
+    protected refreshContext = inject<CoreRefreshContext>(CORE_REFRESH_CONTEXT, { optional: true });
 
     protected static readonly EMPTY_TEXT = '&nbsp;';
 
-    constructor(
-        element: ElementRef,
-        protected viewContainerRef: ViewContainerRef,
-        @Optional() @Inject(CORE_REFRESH_CONTEXT) protected refreshContext?: CoreRefreshContext,
-    ) {
-        CoreDirectivesRegistry.register(element.nativeElement, this);
+    constructor() {
+        CoreDirectivesRegistry.register(this.element, this);
 
-        this.element = element.nativeElement;
         this.element.classList.add('core-loading'); // Hide contents until they're treated.
 
         this.element.innerHTML = CoreFormatTextDirective.EMPTY_TEXT;
 
-        this.element.addEventListener('click', (event) => this.elementClicked(event));
+        this.element.addEventListener('click', (event: MouseEvent) => this.elementClicked(event));
     }
 
     /**
      * @inheritdoc
      */
     ngOnChanges(changes: { [name: string]: SimpleChange }): void {
-        this.siteId = this.siteId || CoreSites.getCurrentSiteId();
+        this.siteId = this.siteId ?? CoreSites.getCurrentSiteId();
 
         if (changes.text || changes.filter || changes.contextLevel || changes.contextInstanceId) {
             this.formatAndRenderContents();

@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { toBoolean } from '@/core/transforms/boolean';
-import { Component, Input, Output, EventEmitter, OnInit, OnDestroy, ElementRef } from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnInit, OnDestroy, ElementRef, inject } from '@angular/core';
 import { CoreUser } from '@features/user/services/user';
 
 import { CoreTime } from '@singletons/time';
@@ -30,7 +30,6 @@ import { CoreSecondsToHMSPipe } from '@pipes/seconds-to-hms';
     selector: 'core-timer',
     templateUrl: 'core-timer.html',
     styleUrl: 'timer.scss',
-    standalone: true,
     imports: [
         CoreBaseModule,
         CoreSecondsToHMSPipe,
@@ -60,17 +59,13 @@ export class CoreTimerComponent implements OnInit, OnDestroy {
     showTimeLeft = true;
 
     protected timeInterval?: number;
-    protected element?: HTMLElement;
-
-    constructor(
-        protected elementRef: ElementRef,
-    ) {}
+    protected element: HTMLElement = inject(ElementRef).nativeElement;
 
     /**
      * @inheritdoc
      */
     async ngOnInit(): Promise<void> {
-        // eslint-disable-next-line deprecation/deprecation
+        // eslint-disable-next-line @typescript-eslint/no-deprecated
         if (this.hiddable && !this.hidable) {
 
             this.hidable = true;
@@ -94,7 +89,7 @@ export class CoreTimerComponent implements OnInit, OnDestroy {
 
         // Check time left every 200ms.
         this.timeInterval = window.setInterval(() => {
-            container = container || this.elementRef.nativeElement;
+            container = container || this.element;
             this.timeLeft = Math.max(endTime - CoreTime.timestamp(), 0);
 
             if (this.timeLeft <= 100) {

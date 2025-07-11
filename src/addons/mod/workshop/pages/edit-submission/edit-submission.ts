@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit, OnDestroy, ViewChild, ElementRef } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, ElementRef, inject } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { CoreError } from '@classes/errors/error';
 import { CoreCourseModuleData } from '@features/course/services/course-helper';
@@ -56,7 +56,6 @@ import { CorePromiseUtils } from '@singletons/promise-utils';
 @Component({
     selector: 'page-addon-mod-workshop-edit-submission',
     templateUrl: 'edit-submission.html',
-    standalone: true,
     imports: [
         CoreSharedModule,
         CoreEditorRichTextEditorComponent,
@@ -97,11 +96,9 @@ export default class AddonModWorkshopEditSubmissionPage implements OnInit, OnDes
     protected forceLeave = false;
     protected siteId: string;
     protected isDestroyed = false;
+    protected fb = inject(FormBuilder);
 
-    constructor(
-        protected fb: FormBuilder,
-    ) {
-
+    constructor() {
         this.userId = CoreSites.getCurrentSiteUserId();
         this.siteId = CoreSites.getCurrentSiteId();
 

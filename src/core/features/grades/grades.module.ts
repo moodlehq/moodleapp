@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { APP_INITIALIZER, NgModule, Type } from '@angular/core';
+import { NgModule, Type, provideAppInitializer } from '@angular/core';
 import { Routes } from '@angular/router';
 import { CoreContentLinksDelegate } from '@features/contentlinks/services/contentlinks-delegate';
 import { CoreCourseIndexRoutingModule } from '@features/course/course-routing.module';
@@ -116,18 +116,14 @@ const courseIndexRoutes: Routes = [
         CoreCourseIndexRoutingModule.forChild({ children: courseIndexRoutes }),
     ],
     providers: [
-        {
-            provide: APP_INITIALIZER,
-            multi: true,
-            useValue: () => {
-                CoreUserDelegate.registerHandler(CoreGradesUserHandler.instance);
-                CoreContentLinksDelegate.registerHandler(CoreGradesReportLinkHandler.instance);
-                CoreContentLinksDelegate.registerHandler(CoreGradesUserLinkHandler.instance);
-                CoreContentLinksDelegate.registerHandler(CoreGradesOverviewLinkHandler.instance);
-                CoreCourseOptionsDelegate.registerHandler(CoreGradesCourseOptionHandler.instance);
-                CoreCourseOptionsDelegate.registerHandler(CoreGradesCourseParticipantsOptionHandler.instance);
-            },
-        },
+        provideAppInitializer(() => {
+            CoreUserDelegate.registerHandler(CoreGradesUserHandler.instance);
+            CoreContentLinksDelegate.registerHandler(CoreGradesReportLinkHandler.instance);
+            CoreContentLinksDelegate.registerHandler(CoreGradesUserLinkHandler.instance);
+            CoreContentLinksDelegate.registerHandler(CoreGradesOverviewLinkHandler.instance);
+            CoreCourseOptionsDelegate.registerHandler(CoreGradesCourseOptionHandler.instance);
+            CoreCourseOptionsDelegate.registerHandler(CoreGradesCourseParticipantsOptionHandler.instance);
+        }),
     ],
 })
 export class CoreGradesModule {}

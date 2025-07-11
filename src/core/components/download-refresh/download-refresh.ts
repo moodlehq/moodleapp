@@ -32,7 +32,6 @@ import { CoreUpdateNonReactiveAttributesDirective } from '@directives/update-non
     templateUrl: 'core-download-refresh.html',
     styleUrl: 'download-refresh.scss',
     animations: [CoreAnimations.SHOW_HIDE],
-    standalone: true,
     imports: [
         CoreBaseModule,
         CoreUpdateNonReactiveAttributesDirective,

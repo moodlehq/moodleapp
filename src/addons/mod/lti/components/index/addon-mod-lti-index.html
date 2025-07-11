@@ -19,14 +19,16 @@
     <core-course-module-info [module]="module" [description]="displayDescription && description" [component]="component"
         [componentId]="componentId" [courseId]="courseId" (completionChanged)="onCompletionChange()" />
 
-    <div collapsible-footer *ngIf="!showLoading" slot="fixed">
-        <div class="list-item-limited-width">
-            <ion-button expand="block" (click)="launch()" class="ion-margin ion-text-wrap">
-                {{ 'addon.mod_lti.launchactivity' | translate }}
-                <ion-icon name="fas-up-right-from-square" slot="end" aria-hidden="true" />
-            </ion-button>
-        </div>
+    @if (!showLoading) {
+        <div collapsible-footer slot="fixed">
+            <div class="list-item-limited-width">
+                <ion-button expand="block" (click)="launch()" class="ion-margin ion-text-wrap">
+                    {{ 'addon.mod_lti.launchactivity' | translate }}
+                    <ion-icon name="fas-up-right-from-square" slot="end" aria-hidden="true" />
+                </ion-button>
+            </div>
 
-        <core-course-module-navigation [courseId]="courseId" [currentModuleId]="module.id" />
-    </div>
+            <core-course-module-navigation [courseId]="courseId" [currentModuleId]="module.id" />
+        </div>
+    }
 </core-loading>

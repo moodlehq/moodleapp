@@ -18,7 +18,8 @@
                 <core-group-selector [groupInfo]="groupInfo" [(selected)]="selectedGroup" (selectedChange)="reloadAttempts()"
                     [courseId]="courseId" />
 
-                <ng-container *ngIf="identifiableAttemptsTotal > 0">
+                @if (identifiableAttemptsTotal > 0) {
+
                     <ion-item-divider>
                         <ion-label>
                             <h2>{{ 'addon.mod_feedback.non_anonymous_entries' | translate : {$a: identifiableAttemptsTotal } }}</h2>
@@ -29,12 +30,16 @@
                         <core-user-avatar [user]="attempt" [linkProfile]="false" slot="start" />
                         <ion-label>
                             <p class="item-heading">{{ attempt.fullname }}</p>
-                            <p *ngIf="attempt.timemodified">{{ attempt.timemodified * 1000 | coreFormatDate }}</p>
+                            @if (attempt.timemodified) {
+                                <p>{{ attempt.timemodified * 1000 | coreFormatDate }}</p>
+                            }
                         </ion-label>
                     </ion-item>
-                </ng-container>
 
-                <ng-container *ngIf="identifiableAttemptsTotal === identifiableAttempts.length && anonymousAttemptsTotal > 0">
+                }
+
+                @if (identifiableAttemptsTotal === identifiableAttempts.length && anonymousAttemptsTotal > 0) {
+
                     <ion-item-divider>
                         <ion-label>
                             <h2>{{ 'addon.mod_feedback.anonymous_entries' | translate : {$a: anonymousAttemptsTotal } }}</h2>
@@ -48,7 +53,8 @@
                             <p>{{ 'addon.mod_feedback.response_nr' | translate }}: {{attempt.number}}</p>
                         </ion-label>
                     </ion-item>
-                </ng-container>
+
+                }
 
                 <core-infinite-loading [enabled]="attempts && attempts.loaded && !attempts.completed" [error]="fetchFailed"
                     (action)="fetchMoreAttempts($event)" />

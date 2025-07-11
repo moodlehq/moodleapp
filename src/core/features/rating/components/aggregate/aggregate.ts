@@ -31,7 +31,6 @@ import { CoreSharedModule } from '@/core/shared.module';
 @Component({
     selector: 'core-rating-aggregate',
     templateUrl: 'core-rating-aggregate.html',
-    standalone: true,
     imports: [
         CoreSharedModule,
     ],

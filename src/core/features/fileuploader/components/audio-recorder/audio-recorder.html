@@ -8,65 +8,81 @@
 
 <hr>
 
-<ng-container *ngIf="(status$ | async) as status">
-    <div *ngIf="status === 'empty'" class="core-audio-recorder--wrapper">
-        <p>{{ 'core.fileuploader.startrecordinginstructions' | translate }}</p>
+@if ((status$ | async); as status) {
 
-        <ion-button shape="round" color="danger" [ariaLabel]="'core.fileuploader.startrecording' | translate" (click)="startRecording()">
-            <ion-icon slot="icon-only" name="fas-microphone" />
-        </ion-button>
-    </div>
+    @if (status === 'empty') {
+        <div class="core-audio-recorder--wrapper">
+            <p>{{ 'core.fileuploader.startrecordinginstructions' | translate }}</p>
 
-    <div *ngIf="status.startsWith('recording')" class="core-audio-recorder--wrapper">
-        <core-audio-histogram *ngIf="(histogramAnalyzer$ | async) as analyser" [analyser]="analyser"
-            [paused]="status !== 'recording-ongoing'" />
+            <ion-button shape="round" color="danger" [ariaLabel]="'core.fileuploader.startrecording' | translate"
+                (click)="startRecording()">
+                <ion-icon slot="icon-only" name="fas-microphone" />
+            </ion-button>
+        </div>
+    }
 
-        <div class="core-audio-recorder--controls">
-            <div class="core-audio-recorder--control chrono">
-                <div *ngIf="status === 'recording-ongoing'" class="core-audio-recorder--recording-marker"></div>
-                <core-chrono [class.recording]="status === 'recording-ongoing'" [running]="status === 'recording-ongoing'"
-                    [hours]="false" />
-            </div>
+    @if (status.startsWith('recording')) {
+        <div class="core-audio-recorder--wrapper">
+            @if ((histogramAnalyzer$ | async); as analyser) {
+                <core-audio-histogram [analyser]="analyser" [paused]="status !== 'recording-ongoing'" />
+            }
 
-            <div class="core-audio-recorder--control">
-                <ion-button *ngIf="status === 'recording-ongoing'" shape="round" fill="clear"
-                    [ariaLabel]="'core.fileuploader.pauserecording' | translate" (click)="pauseRecording()">
-                    <ion-icon slot="icon-only" name="fas-circle-pause" />
-                </ion-button>
+            <div class="core-audio-recorder--controls">
+                <div class="core-audio-recorder--control chrono">
+                    @if (status === 'recording-ongoing') {
+                        <div class="core-audio-recorder--recording-marker"></div>
+                    }
+                    <core-chrono [class.recording]="status === 'recording-ongoing'" [running]="status === 'recording-ongoing'"
+                        [hours]="false" />
+                </div>
 
-                <ion-button *ngIf="status === 'recording-paused'" [ariaLabel]="'core.fileuploader.resumerecording' | translate"
-                    shape="round" fill="clear" color="danger" (click)="resumeRecording()">
-                    <ion-icon slot="icon-only" name="fas-microphone" />
-                </ion-button>
-            </div>
+                <div class="core-audio-recorder--control">
+                    @if (status === 'recording-ongoing') {
+                        <ion-button shape="round" fill="clear" [ariaLabel]="'core.fileuploader.pauserecording' | translate"
+                            (click)="pauseRecording()">
+                            <ion-icon slot="icon-only" name="fas-circle-pause" />
+                        </ion-button>
+                    } @else if (status === 'recording-paused') {
+                        <ion-button [ariaLabel]="'core.fileuploader.resumerecording' | translate" shape="round" fill="clear" color="danger"
+                            (click)="resumeRecording()">
+                            <ion-icon slot="icon-only" name="fas-microphone" />
+                        </ion-button>
+                    }
+                </div>
 
-            <div class="core-audio-recorder--control">
-                <ion-button shape="round" fill="clear" [ariaLabel]="'core.fileuploader.stoprecording' | translate"
-                    (click)="stopRecording()">
-                    <ion-icon slot="icon-only" name="fas-check" aria-hidden="true" />
-                </ion-button>
+                <div class="core-audio-recorder--control">
+                    <ion-button shape="round" fill="clear" [ariaLabel]="'core.fileuploader.stoprecording' | translate"
+                        (click)="stopRecording()">
+                        <ion-icon slot="icon-only" name="fas-check" aria-hidden="true" />
+                    </ion-button>
+                </div>
             </div>
         </div>
-    </div>
+    }
 
-    <div *ngIf="status === 'done'" class="core-audio-recorder--wrapper">
-        <audio *ngIf="(recordingUrl$ | async) as recordingUrl" controls controlsList="nodownload">
-            <source [src]="recordingUrl" />
-        </audio>
+    @if (status === 'done') {
+        <div class="core-audio-recorder--wrapper">
+            @if ((recordingUrl$ | async); as recordingUrl) {
+                <audio controls controlsList="nodownload">
+                    <source [src]="recordingUrl" />
+                </audio>
+            }
 
-        <div class="core-audio-recorder--controls">
-            <div class="core-audio-recorder--control">
-                <ion-button shape="round" fill="clear" color="danger" [ariaLabel]="'core.fileuploader.discardrecording' | translate"
-                    (click)="discardRecording()">
-                    <ion-icon slot="icon-only" name="fas-trash" />
-                </ion-button>
-            </div>
+            <div class="core-audio-recorder--controls">
+                <div class="core-audio-recorder--control">
+                    <ion-button shape="round" fill="clear" color="danger" [ariaLabel]="'core.fileuploader.discardrecording' | translate"
+                        (click)="discardRecording()">
+                        <ion-icon slot="icon-only" name="fas-trash" />
+                    </ion-button>
+                </div>
 
-            <div class="core-audio-recorder--control">
-                <ion-button (click)="submit()">
-                    {{ 'core.save' | translate }}
-                </ion-button>
+                <div class="core-audio-recorder--control">
+                    <ion-button (click)="submit()">
+                        {{ 'core.save' | translate }}
+                    </ion-button>
+                </div>
             </div>
         </div>
-    </div>
-</ng-container>
+    }
+
+}

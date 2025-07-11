@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Injectable, Type } from '@angular/core';
+import { Injectable, Type, inject } from '@angular/core';
 import { CoreDelegate, CoreDelegateHandler } from '@classes/delegate';
 import { AddonModAssignDefaultFeedbackHandler } from './handlers/default-feedback';
 import {
@@ -196,7 +196,6 @@ export interface AddonModAssignFeedbackHandler extends CoreDelegateHandler {
      * @param submitId The submission ID.
      * @param feedback The feedback.
      * @param plugin The plugin object.
-     * @param plugin The plugin object.
      * @returns Whether the submission can contain filters.
      */
     canContainFiltersWhenEditing?(
@@ -214,12 +213,7 @@ export interface AddonModAssignFeedbackHandler extends CoreDelegateHandler {
 export class AddonModAssignFeedbackDelegateService extends CoreDelegate<AddonModAssignFeedbackHandler> {
 
     protected handlerNameProperty = 'type';
-
-    constructor(
-        protected defaultHandler: AddonModAssignDefaultFeedbackHandler,
-    ) {
-        super('AddonModAssignFeedbackDelegate');
-    }
+    protected defaultHandler = inject(AddonModAssignDefaultFeedbackHandler);
 
     /**
      * @inheritdoc

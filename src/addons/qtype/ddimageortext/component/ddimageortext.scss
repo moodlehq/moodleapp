@@ -1,4 +1,5 @@
 @use "theme/globals" as *;
+@use "sass:list";
 
 // Style ddimageortext content a bit. Almost all these styles are copied from Moodle.
 :host {
@@ -55,7 +56,7 @@ core-format-text ::ng-deep {
             zoom: 1;
         }
 
-        @for $i from 0 to length($core-dd-question-colors) {
+        @for $i from 0 to list.length($core-dd-question-colors) {
             .group#{$i + 1} {
                 background: var(--core-dd-question-color-#{$i + 1});
                 color: var(--core-dd-question-color-#{$i + 1}-contrast);

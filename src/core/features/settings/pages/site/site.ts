@@ -14,7 +14,7 @@
 
 import { AfterViewInit, Component, OnDestroy, ViewChild } from '@angular/core';
 
-import { CoreSettingsHandlerToDisplay, CoreSettingsPageHandlerToDisplay } from '../../services/settings-delegate';
+import { CoreSettingsHandlerToDisplay } from '../../services/settings-delegate';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { CoreSites } from '@services/sites';
 import { CoreNavigator } from '@services/navigator';
@@ -38,7 +38,6 @@ import { CoreSharedModule } from '@/core/shared.module';
 @Component({
     selector: 'page-core-site-preferences',
     templateUrl: 'site.html',
-    standalone: true,
     imports: [
         CoreSharedModule,
     ],
@@ -47,7 +46,7 @@ export default class CoreSitePreferencesPage implements AfterViewInit, OnDestroy
 
     @ViewChild(CoreSplitViewComponent) splitView!: CoreSplitViewComponent;
 
-    handlers: CoreListItemsManager<CoreSettingsPageHandlerToDisplay, CoreSettingsHandlersSource>;
+    handlers: CoreListItemsManager<CoreSettingsHandlerToDisplay, CoreSettingsHandlersSource>;
 
     dataSaver = false;
     limitedConnection = false;
@@ -96,7 +95,8 @@ export default class CoreSitePreferencesPage implements AfterViewInit, OnDestroy
         try {
             await this.fetchData();
         } finally {
-            const handler = pageToOpen ? this.handlers.items.find(handler => handler.page == pageToOpen) : undefined;
+            const handler = pageToOpen ? this.handlers.items.find(handler =>
+                ('page' in handler) && handler.page === pageToOpen) : undefined;
 
             if (handler) {
                 this.handlers.watchSplitViewOutlet(this.splitView);

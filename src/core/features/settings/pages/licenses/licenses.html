@@ -14,34 +14,50 @@
         <ion-searchbar [(ngModel)]="textFilter" (ionInput)="filterChanged($event.target)" (ionCancel)="filterChanged($event.target)"
             [placeholder]="'core.filter' | translate" class="ion-margin-vertical" />
         <ion-list>
-            <ion-item button *ngIf="error" class="ion-text-wrap" [href]="licensesUrl" core-link [autoLogin]="false" [detail]="false">
-                <ion-label>
-                    {{ 'core.settings.opensourcelicenses' | translate }}
-                </ion-label>
-                <ion-button [href]="licensesUrl" target="_blank" fill="clear" slot="end" core-link [autoLogin]="false">
-                    {{ 'core.view' | translate }}</ion-button>
-            </ion-item>
-            <ng-container *ngIf="!error">
+            @if (error) {
+                <ion-item button class="ion-text-wrap" [href]="licensesUrl" core-link [autoLogin]="false" [detail]="false">
+                    <ion-label>
+                        {{ 'core.settings.opensourcelicenses' | translate }}
+                    </ion-label>
+                    <ion-button [href]="licensesUrl" target="_blank" fill="clear" slot="end" core-link [autoLogin]="false">
+                        {{ 'core.view' | translate }}</ion-button>
+                </ion-item>
+            } @else {
+
                 <ion-item *ngFor="let license of licenses" class="ion-text-wrap" lines="inset">
                     <ion-label>
                         <p class="item-heading">
-                            <a *ngIf="license.repository" [href]="license.repository" core-link [autoLogin]="false">{{ license.name }}</a>
-                            <ng-container *ngIf="!license.repository">{{ license.name }}</ng-container> - {{ license.version }}
+                            @if (license.repository) {
+                                <a [href]="license.repository" core-link [autoLogin]="false">{{ license.name }}</a>
+                            } @else {
+                                {{ license.name }}
+                            } - {{ license.version }}
                         </p>
-                        <p *ngIf="license.publisher">
-                            {{ 'core.settings.publisher' | translate }}{{ 'core.labelsep' | translate }} {{ license.publisher }}
-                        </p>
+                        @if (license.publisher) {
+                            <p>
+                                {{ 'core.settings.publisher' | translate }}{{ 'core.labelsep' | translate }} {{ license.publisher }}
+                            </p>
+                        }
                         <p>{{ 'core.settings.license' | translate }}{{ 'core.labelsep' | translate }} {{ license.licenses }}</p>
-                        <p><a *ngIf="license.url" [href]="license.url" core-link [autoLogin]="false">{{ license.url }}</a></p>
-                        <p><a *ngIf="license.email" [href]="'mailto:' + license.email" core-link [autoLogin]="false"
-                                [showBrowserWarning]="false">{{ license.email }}</a></p>
+                        <p>@if (license.url) {
+                                <a [href]="license.url" core-link [autoLogin]="false">{{ license.url }}</a>
+                            }
+                        </p>
+                        <p>@if (license.email) {
+                                <a [href]="'mailto:' + license.email" core-link [autoLogin]="false"
+                                    [showBrowserWarning]="false">{{ license.email }}</a>
+                            }
+                        </p>
                     </ion-label>
-                    <ion-button *ngIf="license.licenseUrl" [href]="license.licenseUrl" target="_blank" fill="clear" slot="end" core-link
-                        [autoLogin]="false" [ariaLabel]="'core.view' | translate">
-                        <ion-icon slot="icon-only" name="fas-up-right-from-square" aria-hidden="true" />
-                    </ion-button>
+                    @if (license.licenseUrl) {
+                        <ion-button [href]="license.licenseUrl" target="_blank" fill="clear" slot="end" core-link [autoLogin]="false"
+                            [ariaLabel]="'core.view' | translate">
+                            <ion-icon slot="icon-only" name="fas-up-right-from-square" aria-hidden="true" />
+                        </ion-button>
+                    }
                 </ion-item>
-            </ng-container>
+
+            }
             <core-infinite-loading [enabled]="canLoadMore" (action)="loadMore($event)" />
         </ion-list>
     </core-loading>

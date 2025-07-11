@@ -30,7 +30,6 @@ import { CoreSharedModule } from '@/core/shared.module';
 @Component({
     selector: 'page-addon-mod-feedback-nonrespondents',
     templateUrl: 'nonrespondents.html',
-    standalone: true,
     imports: [
         CoreSharedModule,
     ],

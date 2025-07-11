@@ -1,51 +1,50 @@
-<ion-button size="small" *ngIf="action === 'actionsmenu'" fill="clear" (click)="actionsMenu($event)"
-    [ariaLabel]="'addon.mod_data.actionsmenu' | translate">
-    <ion-icon name="fas-ellipsis-vertical" slot="icon-only" aria-hidden="true" />
-</ion-button>
+@if (action === 'actionsmenu') {
+    <ion-button size="small" fill="clear" (click)="actionsMenu($event)" [ariaLabel]="'addon.mod_data.actionsmenu' | translate">
+        <ion-icon name="fas-ellipsis-vertical" slot="icon-only" aria-hidden="true" />
+    </ion-button>
+} @else if (action === 'more') {
+    <ion-button size="small" fill="clear" (click)="viewEntry()" [ariaLabel]="'addon.mod_data.showmore' | translate">
+        <ion-icon name="fas-magnifying-glass-plus" slot="icon-only" aria-hidden="true" />
+    </ion-button>
+} @else if (action === 'edit') {
+    <ion-button size="small" fill="clear" (click)="editEntry()" [ariaLabel]="'core.edit' | translate">
+        <ion-icon name="fas-pen" slot="icon-only" aria-hidden="true" />
+    </ion-button>
+} @else if (action === 'delete' && !entry.deleted) {
+    <ion-button size="small" fill="clear" color="danger" (click)="deleteEntry()" [ariaLabel]="'core.delete' | translate">
+        <ion-icon name="fas-trash" slot="icon-only" aria-hidden="true" />
+    </ion-button>
+} @else if (action === 'delete' && entry.deleted) {
+    <ion-button size="small" fill="clear" color="danger" (click)="undoDelete()" [ariaLabel]="'core.restore' | translate">
+        <ion-icon name="fas-rotate-left" slot="icon-only" aria-hidden="true" />
+    </ion-button>
+} @else if (action === 'approve') {
+    <ion-button size="small" fill="clear" (click)="approveEntry()" [ariaLabel]="'addon.mod_data.approve' | translate">
+        <ion-icon name="fas-thumbs-up" slot="icon-only" aria-hidden="true" />
+    </ion-button>
+} @else if (action === 'disapprove') {
+    <ion-button size="small" fill="clear" (click)="disapproveEntry()" [ariaLabel]="'addon.mod_data.disapprove' | translate">
+        <ion-icon name="far-thumbs-down" slot="icon-only" aria-hidden="true" />
+    </ion-button>
+} @else if (action === 'comments' && mode === 'list') {
+    <core-comments contextLevel="module" [instanceId]="database.coursemodule" component="mod_data" [itemId]="entry.id" area="database_entry"
+        [courseId]="database.course" />
+} @else if (action === 'timeadded') {
+    <span [title]="entry.timecreated * 1000 | coreFormatDate">
+        {{ entry.timecreated * 1000 | coreFormatDate: 'strftimedatemonthabbr' }}
+    </span>
+} @else if (action === 'timemodified') {
+    <span [title]="entry.timemodified * 1000 | coreFormatDate">
+        {{ entry.timemodified * 1000 | coreFormatDate: 'strftimedatemonthabbr' }}
+    </span>
+} @else if (action === 'userpicture') {
+    <core-user-avatar [user]="entry" slot="start" [courseId]="database.course" [userId]="entry.userid" [profileUrl]="userPicture" />
+} @else if (action === 'user' && entry) {
+    <a core-user-link [courseId]="database.course" [userId]="entry.userid" [title]="entry.fullname">
+        {{entry.fullname}}
+    </a>
+}
 
-<ion-button size="small" *ngIf="action === 'more'" fill="clear" (click)="viewEntry()" [ariaLabel]="'addon.mod_data.showmore' | translate">
-    <ion-icon name="fas-magnifying-glass-plus" slot="icon-only" aria-hidden="true" />
-</ion-button>
-
-<ion-button size="small" *ngIf="action === 'edit'" fill="clear" (click)="editEntry()" [ariaLabel]="'core.edit' | translate">
-    <ion-icon name="fas-pen" slot="icon-only" aria-hidden="true" />
-</ion-button>
-
-<ion-button size="small" *ngIf="action === 'delete' && !entry.deleted" fill="clear" color="danger" (click)="deleteEntry()"
-    [ariaLabel]="'core.delete' | translate">
-    <ion-icon name="fas-trash" slot="icon-only" aria-hidden="true" />
-</ion-button>
-
-<ion-button size="small" *ngIf="action === 'delete' && entry.deleted" fill="clear" color="danger" (click)="undoDelete()"
-    [ariaLabel]="'core.restore' | translate">
-    <ion-icon name="fas-rotate-left" slot="icon-only" aria-hidden="true" />
-</ion-button>
-
-<ion-button size="small" *ngIf="action === 'approve'" fill="clear" (click)="approveEntry()"
-    [ariaLabel]="'addon.mod_data.approve' | translate">
-    <ion-icon name="fas-thumbs-up" slot="icon-only" aria-hidden="true" />
-</ion-button>
-
-<ion-button size="small" *ngIf="action === 'disapprove'" fill="clear" (click)="disapproveEntry()"
-    [ariaLabel]="'addon.mod_data.disapprove' | translate">
-    <ion-icon name="far-thumbs-down" slot="icon-only" aria-hidden="true" />
-</ion-button>
-
-<core-comments *ngIf="action === 'comments' && mode === 'list'" contextLevel="module" [instanceId]="database.coursemodule"
-    component="mod_data" [itemId]="entry.id" area="database_entry" [courseId]="database.course" />
-
-<span *ngIf="action === 'timeadded'" [title]="entry.timecreated * 1000 | coreFormatDate">
-    {{ entry.timecreated * 1000 | coreFormatDate: 'strftimedatemonthabbr' }}
-</span>
-<span *ngIf="action === 'timemodified'" [title]="entry.timemodified * 1000 | coreFormatDate">
-    {{ entry.timemodified * 1000 | coreFormatDate: 'strftimedatemonthabbr' }}
-</span>
-
-<core-user-avatar *ngIf="action === 'userpicture'" [user]="entry" slot="start" [courseId]="database.course" [userId]="entry.userid"
-    [profileUrl]="userPicture" />
-
-<a *ngIf="action === 'user' && entry" core-user-link [courseId]="database.course" [userId]="entry.userid" [title]="entry.fullname">
-    {{entry.fullname}}
-</a>
-
-<core-tag-list *ngIf="tagsEnabled && action === 'tags' && entry" [tags]="entry.tags" />
+@if (tagsEnabled && action === 'tags' && entry) {
+    <core-tag-list [tags]="entry.tags" />
+}

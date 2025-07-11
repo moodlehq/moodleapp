@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { APP_INITIALIZER, NgModule, Type } from '@angular/core';
+import { NgModule, Type, provideAppInitializer } from '@angular/core';
 import { Routes } from '@angular/router';
 
 import { AppRoutingModule } from '@/app/app-routing.module';
@@ -88,23 +88,19 @@ const appRoutes: Routes = [
         AppRoutingModule.forChild(appRoutes),
     ],
     providers: [
-        {
-            provide: APP_INITIALIZER,
-            multi: true,
-            useValue: async () => {
-                CoreCronDelegate.register(CoreLoginCronHandler.instance);
+        provideAppInitializer(async () => {
+            CoreCronDelegate.register(CoreLoginCronHandler.instance);
 
-                CoreEvents.on(CoreEvents.SESSION_EXPIRED, (data) => {
-                    CoreLoginHelper.sessionExpired(data);
-                });
+            CoreEvents.on(CoreEvents.SESSION_EXPIRED, (data) => {
+                CoreLoginHelper.sessionExpired(data);
+            });
 
-                CoreEvents.on(CoreEvents.PASSWORD_CHANGE_FORCED, (data) => {
-                    CoreLoginHelper.passwordChangeForced(data.siteId);
-                });
+            CoreEvents.on(CoreEvents.PASSWORD_CHANGE_FORCED, (data) => {
+                CoreLoginHelper.passwordChangeForced(data.siteId);
+            });
 
-                await CoreLoginHelper.initialize();
-            },
-        },
+            await CoreLoginHelper.initialize();
+        }),
     ],
 })
 export class CoreLoginModule {}

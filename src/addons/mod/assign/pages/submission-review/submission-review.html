@@ -17,6 +17,8 @@
         <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}" />
     </ion-refresher>
     <core-loading [hideUntil]="loaded">
-        <addon-mod-assign-submission *ngIf="loaded" [courseId]="courseId" [moduleId]="moduleId" [submitId]="submitId" [blindId]="blindId" />
+        @if (loaded) {
+            <addon-mod-assign-submission [courseId]="courseId" [moduleId]="moduleId" [submitId]="submitId" [blindId]="blindId" />
+        }
     </core-loading>
 </ion-content>

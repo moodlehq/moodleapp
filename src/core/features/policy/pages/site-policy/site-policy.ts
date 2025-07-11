@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { ChangeDetectorRef, Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, ElementRef, OnDestroy, OnInit, ViewChild, inject } from '@angular/core';
 
 import { CoreSites, CoreSitesReadingStrategy } from '@services/sites';
 import { CoreMimetype } from '@singletons/mimetype';
@@ -42,7 +42,6 @@ import { CoreSharedModule } from '@/core/shared.module';
     selector: 'page-core-policy-site-policy',
     templateUrl: 'site-policy.html',
     styleUrl: 'site-policy.scss',
-    standalone: true,
     imports: [
         CoreSharedModule,
     ],
@@ -77,8 +76,8 @@ export default class CorePolicySitePolicyPage implements OnInit, OnDestroy {
     protected siteId?: string;
     protected currentSite!: CoreSite;
     protected layoutSubscription?: Subscription;
-
-    constructor(protected elementRef: ElementRef, protected changeDetector: ChangeDetectorRef) {}
+    protected element: HTMLElement = inject(ElementRef).nativeElement;
+    protected changeDetector = inject(ChangeDetectorRef);
 
     /**
      * @inheritdoc
@@ -368,7 +367,7 @@ export default class CorePolicySitePolicyPage implements OnInit, OnDestroy {
 
             // Scroll to the first element with errors.
             const errorFound = await CoreDom.scrollToInputError(
-                this.elementRef.nativeElement,
+                this.element,
             );
 
             if (!errorFound) {

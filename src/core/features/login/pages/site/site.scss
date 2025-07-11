@@ -25,9 +25,9 @@
         height: auto;
         margin: 0 auto;
         margin-left: 50%;
-        @include transform(translate3d(-50%,0,0));
         object-fit: cover;
         object-position: 50% 50%;
+        @include transform(translate3d(-50%,0,0));
     }
     ion-icon {
         margin: 0 auto;

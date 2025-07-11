@@ -607,7 +607,7 @@ export class AddonModForumSyncProvider extends CoreCourseActivitySyncBaseProvide
                     );
 
                 files = files.concat(postAttachments as unknown as []);
-            } catch (error) {
+            } catch {
                 // Folder not found, no files to add.
             }
         }

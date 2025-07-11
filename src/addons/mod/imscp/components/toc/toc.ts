@@ -23,7 +23,6 @@ import { CoreSharedModule } from '@/core/shared.module';
 @Component({
     selector: 'addon-mod-imscp-toc',
     templateUrl: 'toc.html',
-    standalone: true,
     imports: [
         CoreSharedModule,
     ],

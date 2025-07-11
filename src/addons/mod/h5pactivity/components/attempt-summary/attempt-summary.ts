@@ -25,7 +25,6 @@ import { AddonModH5PActivityAttemptSuccessComponent } from '../attempt-success/a
     selector: 'addon-mod-h5pactivity-attempt-summary',
     templateUrl: 'attempt-summary.html',
     styleUrl: 'attempt-summary.scss',
-    standalone: true,
     imports: [
         CoreSharedModule,
         AddonModH5PActivityAttemptCompletionComponent,

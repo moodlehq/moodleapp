@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { APP_INITIALIZER, NgModule, Type } from '@angular/core';
+import { NgModule, provideAppInitializer, Type } from '@angular/core';
 import { Routes } from '@angular/router';
 import { CoreMainMenuRoutingModule } from '@features/mainmenu/mainmenu-routing.module';
 import { CoreMainMenuTabRoutingModule } from '@features/mainmenu/mainmenu-tab-routing.module';
@@ -70,14 +70,10 @@ const mainMenuChildrenRoutes: Routes = [
     ],
     providers: [
         { provide: CORE_SITE_SCHEMAS, useValue: [SITE_SCHEMA], multi: true },
-        {
-            provide: APP_INITIALIZER,
-            multi: true,
-            useValue() {
-                CoreMainMenuDelegate.registerHandler(CoreSearchMainMenuHandler.instance);
-                CoreContentLinksDelegate.registerHandler(CoreSearchGlobalSearchLinkHandler.instance);
-            },
-        },
+        provideAppInitializer(() => {
+            CoreMainMenuDelegate.registerHandler(CoreSearchMainMenuHandler.instance);
+            CoreContentLinksDelegate.registerHandler(CoreSearchGlobalSearchLinkHandler.instance);
+         }),
     ],
 })
 export class CoreSearchModule {}

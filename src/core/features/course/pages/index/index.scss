@@ -1,4 +1,5 @@
 @use "theme/globals" as *;
+@use "sass:list";
 
 :host {
     .core-format-progress-list {
@@ -13,7 +14,7 @@
         --border-radius: var(--core-courseimage-radius);
         @include margin(8px, 16px, 8px, 0px);
 
-        @for $i from 0 to length($core-course-image-background) {
+        @for $i from 0 to list.length($core-course-image-background) {
             &.course-color-#{$i} {
                 --course-color: var(--core-course-color-#{$i});
                 --course-color-tint: var(--core-course-color-#{$i}-tint);

@@ -50,7 +50,6 @@ describe('CoreFormatTextDirective', () => {
             providers: [
                 { provide: IonContent, useValue: null },
             ],
-            standalone: true,
         };
     });
 
@@ -80,7 +79,6 @@ describe('CoreFormatTextDirective', () => {
         const { nativeElement } = await renderTemplate(
             CoreFormatTextDirective,
             '<core-format-text text="Lorem ipsum dolor"></core-format-text>',
-            { standalone: true },
         );
 
         // Assert
@@ -125,7 +123,6 @@ describe('CoreFormatTextDirective', () => {
                 contextLevel="course"
                 [contextInstanceId]="42"
             ></core-format-text>`,
-            { standalone: true },
         );
 
         // Assert
@@ -184,7 +181,6 @@ describe('CoreFormatTextDirective', () => {
             CoreFormatTextDirective,
             'core-format-text',
             { text: '<a href="https://anchor-url/">Link</a>' },
-            { standalone: true },
         );
         const anchor = nativeElement.querySelector('a');
 

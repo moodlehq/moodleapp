@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Directive, ElementRef, Output, EventEmitter, AfterViewInit, Input, OnChanges } from '@angular/core';
+import { Directive, ElementRef, Output, EventEmitter, AfterViewInit, Input, OnChanges, inject } from '@angular/core';
 
 /**
  * Directive to adapt a textarea rows depending on the input text. It's based on Moodle's data-auto-rows.
@@ -23,16 +23,16 @@ import { Directive, ElementRef, Output, EventEmitter, AfterViewInit, Input, OnCh
  */
 @Directive({
     selector: 'textarea[core-auto-rows], ion-textarea[core-auto-rows]',
-    standalone: true,
 })
 export class CoreAutoRowsDirective implements AfterViewInit, OnChanges {
 
     protected height = 0;
+    protected element: HTMLElement = inject(ElementRef).nativeElement;
 
     @Input('core-auto-rows') value?: string;
     @Output() onResize: EventEmitter<void>; // Emit when resizing the textarea.
 
-    constructor(protected element: ElementRef) {
+    constructor() {
         this.onResize = new EventEmitter();
     }
 
@@ -62,24 +62,23 @@ export class CoreAutoRowsDirective implements AfterViewInit, OnChanges {
      * Resize the textarea.
      */
     protected resize(): void {
-        let nativeElement: HTMLElement = this.element.nativeElement;
-        if (nativeElement.tagName == 'ION-TEXTAREA') {
+        if (this.element.tagName == 'ION-TEXTAREA') {
             // Search the actual textarea.
-            const textarea = nativeElement.querySelector('textarea');
+            const textarea = this.element.querySelector('textarea');
             if (!textarea) {
                 return;
             }
 
-            nativeElement = textarea;
+            this.element = textarea;
         }
 
         // Set height to 1px to force scroll height to calculate correctly.
-        nativeElement.style.height = '1px';
-        nativeElement.style.height = `${nativeElement.scrollHeight}px`;
+        this.element.style.height = '1px';
+        this.element.style.height = `${this.element.scrollHeight}px`;
 
         // Emit event when resizing.
-        if (this.height != nativeElement.scrollHeight) {
-            this.height = nativeElement.scrollHeight;
+        if (this.height != this.element.scrollHeight) {
+            this.height = this.element.scrollHeight;
             this.onResize.emit();
         }
     }

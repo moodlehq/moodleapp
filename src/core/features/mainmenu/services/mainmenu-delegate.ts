@@ -108,10 +108,6 @@ export class CoreMainMenuDelegateService extends CoreSortedDelegate<CoreMainMenu
 
     protected featurePrefix = 'CoreMainMenuDelegate_';
 
-    constructor() {
-        super('CoreMainMenuDelegate');
-    }
-
 }
 
 export const CoreMainMenuDelegate = makeSingleton(CoreMainMenuDelegateService);

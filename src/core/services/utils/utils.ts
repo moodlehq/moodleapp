@@ -949,5 +949,5 @@ export class CoreUtilsProvider {
 /**
  * @deprecated since 5.0. Use CoreUtils on singleton instead.
  */
-// eslint-disable-next-line deprecation/deprecation
+// eslint-disable-next-line @typescript-eslint/no-deprecated
 export const CoreUtils = makeSingleton(CoreUtilsProvider);

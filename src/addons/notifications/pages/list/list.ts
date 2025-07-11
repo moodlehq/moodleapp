@@ -45,7 +45,6 @@ import { ADDONS_NOTIFICATIONS_READ_CHANGED_EVENT, ADDONS_NOTIFICATIONS_READ_CRON
     selector: 'page-addon-notifications-list',
     templateUrl: 'list.html',
     styleUrls: ['list.scss', '../../notifications.scss'],
-    standalone: true,
     imports: [
         CoreSharedModule,
         CoreMainMenuUserButtonComponent,

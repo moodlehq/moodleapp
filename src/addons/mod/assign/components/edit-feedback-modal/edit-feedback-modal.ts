@@ -54,7 +54,6 @@ import { CoreFormFields, CoreForms } from '@singletons/form';
     selector: 'addon-mod-assign-edit-feedback-modal',
     templateUrl: 'edit-feedback-modal.html',
     styleUrl: 'edit-feedback-modal.scss',
-    standalone: true,
     imports: [
         CoreSharedModule,
         AddonModAssignFeedbackPluginComponent,
@@ -519,7 +518,7 @@ export class AddonModAssignEditFeedbackModalComponent implements OnDestroy, OnIn
      */
     protected async discardDrafts(): Promise<void> {
         if (this.assign && this.feedback && this.feedback.plugins) {
-            // eslint-disable-next-line deprecation/deprecation
+            // eslint-disable-next-line @typescript-eslint/no-deprecated
             await AddonModAssignHelper.discardFeedbackPluginData(this.assign.id, this.submitId, this.feedback);
         }
     }

@@ -49,7 +49,6 @@ import { CoreBaseModule } from '@/core/base.module';
     templateUrl: 'core-show-password.html',
     styles: 'core-show-password { display: contents; }',
     encapsulation: ViewEncapsulation.None,
-    standalone: true,
     imports: [CoreBaseModule],
 })
 export class CoreShowPasswordComponent implements AfterViewInit {
@@ -76,12 +75,12 @@ export class CoreShowPasswordComponent implements AfterViewInit {
         CoreLogger.getInstance('CoreShowPasswordComponent')
             .warn('Deprecated component, use <ion-input-password-toggle /> instead.');
 
-        // eslint-disable-next-line deprecation/deprecation
+        // eslint-disable-next-line @typescript-eslint/no-deprecated
         if (!this.ionInput) {
             return;
         }
 
-        // eslint-disable-next-line deprecation/deprecation
+        // eslint-disable-next-line @typescript-eslint/no-deprecated
         const input = await CorePromiseUtils.ignoreErrors(this.ionInput.getInputElement());
         if (!input) {
             return;

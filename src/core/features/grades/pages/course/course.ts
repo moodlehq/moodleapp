@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { ActivatedRoute, ActivatedRouteSnapshot } from '@angular/router';
-import { AfterViewInit, Component, ElementRef, OnDestroy } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, OnDestroy, inject } from '@angular/core';
 import { CoreGrades } from '@features/grades/services/grades';
 import {
     CoreGradesFormattedTableColumn,
@@ -44,7 +44,6 @@ import { CoreSharedModule } from '@/core/shared.module';
     selector: 'page-core-grades-course',
     templateUrl: 'course.html',
     styleUrl: 'course.scss',
-    standalone: true,
     imports: [
         CoreSharedModule,
     ],
@@ -67,11 +66,11 @@ export default class CoreGradesCoursePage implements AfterViewInit, OnDestroy {
 
     protected useLegacyLayout?: boolean; // Whether to use the layout before 4.1.
     protected logView: () => void;
+    protected element: HTMLElement = inject(ElementRef).nativeElement;
 
-    constructor(
-        protected route: ActivatedRoute,
-        protected element: ElementRef<HTMLElement>,
-    ) {
+    constructor() {
+        const route = inject(ActivatedRoute);
+
         this.logView = CoreTime.once(() => this.performLogView());
 
         try {
@@ -114,7 +113,7 @@ export default class CoreGradesCoursePage implements AfterViewInit, OnDestroy {
      * @inheritdoc
      */
     async ngAfterViewInit(): Promise<void> {
-        this.withinSplitView = !!this.element.nativeElement.parentElement?.closest('core-split-view');
+        this.withinSplitView = !!this.element.parentElement?.closest('core-split-view');
 
         await this.swipeManager?.start();
         await this.fetchInitialGrades();
@@ -208,7 +207,7 @@ export default class CoreGradesCoursePage implements AfterViewInit, OnDestroy {
                     this.toggleRow(row, true);
 
                     CoreDom.scrollToElement(
-                        this.element.nativeElement,
+                        this.element,
                         `#grade-${row.id}`,
                     );
                     this.gradeId = undefined;

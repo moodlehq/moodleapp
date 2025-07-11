@@ -19,7 +19,9 @@
         <ion-list class="limited-width">
             <core-sites-list [accountsList]="accountsList">
                 <ng-template #siteLabel let-site="site">
-                    <ion-badge color="light" *ngIf="site.spaceUsage !== undefined">{{ site.spaceUsage | coreBytesToSize }}</ion-badge>
+                    @if (site.spaceUsage !== undefined) {
+                        <ion-badge color="light">{{ site.spaceUsage | coreBytesToSize }}</ion-badge>
+                    }
                 </ng-template>
 
                 <ng-template #siteItem let-site="site">

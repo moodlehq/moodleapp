@@ -21,7 +21,6 @@ import { CoreSharedModule } from '@/core/shared.module';
     selector: 'core-search-global-search-result',
     templateUrl: 'global-search-result.html',
     styleUrl: './global-search-result.scss',
-    standalone: true,
     imports: [
         CoreSharedModule,
     ],
@@ -50,7 +49,7 @@ export class CoreSearchGlobalSearchResultComponent implements OnChanges {
      * @returns Rendered context.
      */
     private computeRenderedContext(): CoreSearchGlobalSearchResultContext | null {
-        const context = { ...this.result.context } ?? {};
+        const context = { ...this.result.context };
 
         if (!this.showCourse) {
             delete context.courseName;

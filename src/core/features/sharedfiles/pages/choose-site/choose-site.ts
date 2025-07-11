@@ -29,7 +29,6 @@ import { CoreSharedModule } from '@/core/shared.module';
 @Component({
     selector: 'page-core-shared-files-choose-site',
     templateUrl: 'choose-site.html',
-    standalone: true,
     imports: [
         CoreSharedModule,
     ],

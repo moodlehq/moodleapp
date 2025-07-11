@@ -29,7 +29,6 @@ import { CoreSharedModule } from '@/core/shared.module';
 @Component({
     selector: 'core-user-profile-field',
     templateUrl: 'core-user-profile-field.html',
-    standalone: true,
     imports: [
         CoreSharedModule,
     ],

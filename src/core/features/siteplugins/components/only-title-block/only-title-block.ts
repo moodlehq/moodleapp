@@ -28,14 +28,9 @@ import { CoreSharedModule } from '@/core/shared.module';
     selector: 'core-siteplugins-only-title-block',
     templateUrl: 'core-siteplugins-only-title-block.html',
     styles: [':host { display: contents; }'],
-    standalone: true,
     imports: [CoreSharedModule],
 })
 export class CoreSitePluginsOnlyTitleBlockComponent extends CoreBlockBaseComponent implements OnInit {
-
-    constructor() {
-        super('CoreSitePluginsOnlyTitleBlockComponent');
-    }
 
     /**
      * @inheritdoc

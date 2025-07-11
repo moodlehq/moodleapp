@@ -4,14 +4,16 @@
     </ion-label>
 </ion-item-divider>
 <core-loading [hideUntil]="loaded" placeholderType="column" placeholderHeight="120px" [placeholderLimit]="1">
-    <ion-row class="ion-hide-md-up addon-block-timeline-filter" *ngIf="(search$ | async) !== null">
-        <ion-col>
-            <!-- Filter courses. -->
-            <core-search-box (onSubmit)="searchChanged($event)" (onClear)="searchChanged('')"
-                [placeholder]="'addon.block_timeline.searchevents' | translate" autocorrect="off" spellcheck="false" [lengthCheck]="2"
-                searchArea="AddonBlockTimeline" />
-        </ion-col>
-    </ion-row>
+    @if ((search$ | async) !== null) {
+        <ion-row class="ion-hide-md-up addon-block-timeline-filter">
+            <ion-col>
+                <!-- Filter courses. -->
+                <core-search-box (onSubmit)="searchChanged($event)" (onClear)="searchChanged('')"
+                    [placeholder]="'addon.block_timeline.searchevents' | translate" autocorrect="off" spellcheck="false" [lengthCheck]="2"
+                    searchArea="AddonBlockTimeline" />
+            </ion-col>
+        </ion-row>
+    }
     <ion-row class="ion-justify-content-between ion-align-items-center addon-block-timeline-filter">
         <ion-col size="auto">
             <core-combobox [formControl]="filter" (onChange)="filterChanged($event)"
@@ -28,12 +30,14 @@
                 </ion-select-option>
             </core-combobox>
         </ion-col>
-        <ion-col class="ion-hide-md-down" *ngIf="(search$ | async) !== null">
-            <!-- Filter courses. -->
-            <core-search-box (onSubmit)="searchChanged($event)" (onClear)="searchChanged('')"
-                [placeholder]="'addon.block_timeline.searchevents' | translate" autocorrect="off" spellcheck="false" [lengthCheck]="2"
-                searchArea="AddonBlockTimeline" />
-        </ion-col>
+        @if ((search$ | async) !== null) {
+            <ion-col class="ion-hide-md-down">
+                <!-- Filter courses. -->
+                <core-search-box (onSubmit)="searchChanged($event)" (onClear)="searchChanged('')"
+                    [placeholder]="'addon.block_timeline.searchevents' | translate" autocorrect="off" spellcheck="false" [lengthCheck]="2"
+                    searchArea="AddonBlockTimeline" />
+            </ion-col>
+        }
         <ion-col size="auto">
             <core-combobox [label]="'core.sortby' | translate" [formControl]="sort" (onChange)="sortChanged($event)"
                 icon="fas-arrow-down-short-wide" class="no-border">
@@ -43,13 +47,17 @@
             </core-combobox>
         </ion-col>
     </ion-row>
-    <ng-container *ngIf="sections$ | async as sections">
-        <ng-container *ngFor="let section of sections">
-            <addon-block-timeline-events *ngIf="section.data$ | async as data" [events]="data.events"
-                [showInlineCourse]="(sort$ | async) === AddonBlockTimelineSort.ByDates" [canLoadMore]="data.canLoadMore"
-                [loadingMore]="data.loadingMore" (loadMore)="section.loadMore()" [course]="section.course" />
-        </ng-container>
-        <core-empty-box *ngIf="sections && sections.length === 0" image="assets/img/icons/courses.svg"
-            [message]="'addon.block_timeline.noevents' | translate" />
-    </ng-container>
+    @if (sections$ | async; as sections) {
+        @for (section of sections; track section.course?.id || section.dateRange.from) {
+            @if (section.data$ | async; as data) {
+                <addon-block-timeline-events [events]="data.events" [showInlineCourse]="(sort$ | async) === AddonBlockTimelineSort.ByDates"
+                    [canLoadMore]="data.canLoadMore" [loadingMore]="data.loadingMore" (loadMore)="section.loadMore()"
+                    [course]="section.course" />
+            }
+        }
+        @if (sections && sections.length === 0) {
+            <core-empty-box image="assets/img/icons/courses.svg" [message]="'addon.block_timeline.noevents' | translate" />
+        }
+
+    }
 </core-loading>

@@ -37,7 +37,6 @@ import { map } from 'rxjs';
     selector: 'page-addon-mod-h5pactivity-users-attempts',
     templateUrl: 'users-attempts.html',
     styleUrl: 'users-attempts.scss',
-    standalone: true,
     imports: [
         CoreSharedModule,
     ],

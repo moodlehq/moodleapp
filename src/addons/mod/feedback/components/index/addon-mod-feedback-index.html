@@ -25,71 +25,83 @@
                 <ng-container *ngTemplateOutlet="tabOverview" />
             </ng-template>
         </core-tab>
-        <core-tab *ngIf="showAnalysis && access" [id]="tabs.analysis.name" [title]="tabs.analysis.label | translate"
-            (ionSelect)="tabChanged(tabs.analysis.name)">
-            <ng-template>
-                <ng-container *ngTemplateOutlet="tabAnalysis" />
-            </ng-template>
-        </core-tab>
+        @if (showAnalysis && access) {
+            <core-tab [id]="tabs.analysis.name" [title]="tabs.analysis.label | translate" (ionSelect)="tabChanged(tabs.analysis.name)">
+                <ng-template>
+                    <ng-container *ngTemplateOutlet="tabAnalysis" />
+                </ng-template>
+            </core-tab>
+        }
     </core-tabs>
 
-    <div collapsible-footer *ngIf="!showLoading" slot="fixed">
-        <div class="list-item-limited-width adaptable-buttons-row"
-            *ngIf="access && (access.canedititems || access.canviewreports || !access.isempty)">
-            <ion-button *ngIf="access.canedititems || access.canviewreports" expand="block" fill="outline"
-                (click)="gotoAnswerQuestions(true)" class="ion-margin ion-text-wrap">
-                <ion-icon name="fas-magnifying-glass" slot="start" aria-hidden="true" />
-                {{ 'addon.mod_feedback.preview' | translate }}
-            </ion-button>
-            <ion-button *ngIf="access.cancomplete && access.cansubmit && access.isopen" expand="block" (click)="gotoAnswerQuestions()"
-                class="ion-margin ion-text-wrap">
-                <ng-container *ngIf="!goPage">
-                    {{ 'addon.mod_feedback.complete_the_form' | translate }}
-                </ng-container>
-                <ng-container *ngIf="goPage">
-                    {{ 'addon.mod_feedback.continue_the_form' | translate }}
-                </ng-container>
-            </ion-button>
-        </div>
+    @if (!showLoading) {
+        <div collapsible-footer slot="fixed">
+            @if (access && (access.canedititems || access.canviewreports || !access.isempty)) {
+                <div class="list-item-limited-width adaptable-buttons-row">
+                    @if (access.canedititems || access.canviewreports) {
+                        <ion-button expand="block" fill="outline" (click)="gotoAnswerQuestions(true)" class="ion-margin ion-text-wrap">
+                            <ion-icon name="fas-magnifying-glass" slot="start" aria-hidden="true" />
+                            {{ 'addon.mod_feedback.preview' | translate }}
+                        </ion-button>
+                    }
+                    @if (access.cancomplete && access.cansubmit && access.isopen) {
+                        <ion-button expand="block" (click)="gotoAnswerQuestions()" class="ion-margin ion-text-wrap">
+                            @if (!goPage) {
 
-        <core-course-module-navigation [courseId]="courseId" [currentModuleId]="module.id" />
-    </div>
+                                {{ 'addon.mod_feedback.complete_the_form' | translate }}
+
+                            } @else {
+
+                                {{ 'addon.mod_feedback.continue_the_form' | translate }}
+
+                            }
+                        </ion-button>
+                    }
+                </div>
+            }
+
+            <core-course-module-navigation [courseId]="courseId" [currentModuleId]="module.id" />
+        </div>
+    }
 </core-loading>
 
 <ng-template #basicInfo>
-    <ion-list *ngIf="access && access.canviewanalysis && !access.isempty">
-        <core-group-selector [groupInfo]="groupInfo" [(selected)]="group" (selectedChange)="setGroup(group)" [courseId]="courseId" />
+    @if (access && access.canviewanalysis && !access.isempty) {
+        <ion-list>
+            <core-group-selector [groupInfo]="groupInfo" [(selected)]="group" (selectedChange)="setGroup(group)" [courseId]="courseId" />
 
-        <ion-item class="ion-text-wrap" (click)="openAttempts()" [class.hide-detail]="!(access.canviewreports && completedCount > 0)"
-            [detail]="true" [button]="access.canviewreports && completedCount > 0">
-            <ion-label>
-                <p class="item-heading">{{ 'addon.mod_feedback.completed_feedbacks' | translate }}</p>
-            </ion-label>
-            <ion-badge slot="end">
-                <span aria-hidden="true">{{completedCount}}</span>
-                <span class="sr-only">
-                    {{ 'addon.mod_feedback.completedfeedbackscountdescription' | translate:{count: completedCount} }}
-                </span>
-            </ion-badge>
-        </ion-item>
-        <ion-item class="ion-text-wrap" *ngIf="!access.isanonymous && access.canviewreports" (click)="openNonRespondents()" [detail]="true"
-            button>
-            <ion-label>
-                <p class="item-heading">{{ 'addon.mod_feedback.show_nonrespondents' | translate }}</p>
-            </ion-label>
-        </ion-item>
-        <ion-item class="ion-text-wrap">
-            <ion-label>
-                <p class="item-heading">{{ 'addon.mod_feedback.questions' | translate }}</p>
-            </ion-label>
-            <ion-badge slot="end">
-                <span aria-hidden="true">{{itemsCount}}</span>
-                <span class="sr-only">
-                    {{ 'addon.mod_feedback.questionscountdescription' | translate:{count: itemsCount} }}
-                </span>
-            </ion-badge>
-        </ion-item>
-    </ion-list>
+            <ion-item class="ion-text-wrap" (click)="openAttempts()" [class.hide-detail]="!(access.canviewreports && completedCount > 0)"
+                [detail]="true" [button]="access.canviewreports && completedCount > 0">
+                <ion-label>
+                    <p class="item-heading">{{ 'addon.mod_feedback.completed_feedbacks' | translate }}</p>
+                </ion-label>
+                <ion-badge slot="end">
+                    <span aria-hidden="true">{{completedCount}}</span>
+                    <span class="sr-only">
+                        {{ 'addon.mod_feedback.completedfeedbackscountdescription' | translate:{count: completedCount} }}
+                    </span>
+                </ion-badge>
+            </ion-item>
+            @if (!access.isanonymous && access.canviewreports) {
+                <ion-item class="ion-text-wrap" (click)="openNonRespondents()" [detail]="true" button>
+                    <ion-label>
+                        <p class="item-heading">{{ 'addon.mod_feedback.show_nonrespondents' | translate }}</p>
+                    </ion-label>
+                </ion-item>
+            }
+            <ion-item class="ion-text-wrap">
+                <ion-label>
+                    <p class="item-heading">{{ 'addon.mod_feedback.questions' | translate }}</p>
+                </ion-label>
+                <ion-badge slot="end">
+                    <span aria-hidden="true">{{itemsCount}}</span>
+                    <span class="sr-only">
+                        {{ 'addon.mod_feedback.questionscountdescription' | translate:{count: itemsCount} }}
+                    </span>
+                </ion-badge>
+            </ion-item>
+        </ion-list>
+    }
 </ng-template>
 
 <!-- Template to render the overview. -->
@@ -97,50 +109,67 @@
     <core-loading [hideUntil]="tabs.overview.loaded">
         <ng-container *ngTemplateOutlet="basicInfo" />
 
-        <ion-card class="core-info-card" *ngIf="access && access.cancomplete && !access.isopen">
-            <ion-item>
-                <ion-icon name="fas-circle-question" slot="start" aria-hidden="true" />
-                <ion-label>{{ 'addon.mod_feedback.feedback_is_not_open' | translate }}</ion-label>
-            </ion-item>
-        </ion-card>
-
-        <ion-card class="core-success-card" *ngIf="access && access.cancomplete && access.isopen && !access.cansubmit">
-            <ion-item>
-                <ion-icon name="fas-check" slot="start" aria-hidden="true" />
-                <ion-label>{{ 'addon.mod_feedback.this_feedback_is_already_submitted' | translate }}</ion-label>
-            </ion-item>
-        </ion-card>
-
-        <ion-list *ngIf="access && (access.canedititems || access.canviewreports || !access.isempty)">
-            <ion-item class="ion-text-wrap" *ngIf="access.canedititems && overview.timeopen">
-                <ion-label>
-                    <p class="item-heading">{{ 'addon.mod_feedback.feedbackopen' | translate }}</p>
-                    <p>{{overview.openTimeReadable}}</p>
-                </ion-label>
-            </ion-item>
-            <ion-item class="ion-text-wrap" *ngIf="access.canedititems && overview.timeclose">
-                <ion-label>
-                    <p class="item-heading">{{ 'addon.mod_feedback.feedbackclose' | translate }}</p>
-                    <p>{{overview.closeTimeReadable}}</p>
-                </ion-label>
-            </ion-item>
-            <ion-item class="ion-text-wrap" *ngIf="access.canedititems && feedback && feedback.page_after_submit">
-                <ion-label>
-                    <p class="item-heading">{{ 'addon.mod_feedback.page_after_submit' | translate }}</p>
-                    <core-format-text [component]="component" [componentId]="componentId" [text]="feedback.page_after_submit"
-                        contextLevel="module" [contextInstanceId]="module.id" [courseId]="courseId" />
-                </ion-label>
-            </ion-item>
-            <ng-container *ngIf="!access.isempty">
-                <ion-item class="ion-text-wrap">
-                    <ion-label>
-                        <p class="item-heading">{{ 'addon.mod_feedback.mode' | translate }}</p>
-                        <p *ngIf="access.isanonymous">{{ 'addon.mod_feedback.anonymous' | translate }}</p>
-                        <p *ngIf="!access.isanonymous">{{ 'addon.mod_feedback.non_anonymous' | translate }}</p>
-                    </ion-label>
+        @if (access && access.cancomplete && !access.isopen) {
+            <ion-card class="core-info-card">
+                <ion-item>
+                    <ion-icon name="fas-circle-question" slot="start" aria-hidden="true" />
+                    <ion-label>{{ 'addon.mod_feedback.feedback_is_not_open' | translate }}</ion-label>
                 </ion-item>
-            </ng-container>
-        </ion-list>
+            </ion-card>
+        }
+
+        @if (access && access.cancomplete && access.isopen && !access.cansubmit) {
+            <ion-card class="core-success-card">
+                <ion-item>
+                    <ion-icon name="fas-check" slot="start" aria-hidden="true" />
+                    <ion-label>{{ 'addon.mod_feedback.this_feedback_is_already_submitted' | translate }}</ion-label>
+                </ion-item>
+            </ion-card>
+        }
+
+        @if (access && (access.canedititems || access.canviewreports || !access.isempty)) {
+            <ion-list>
+                @if (access.canedititems && overview.timeopen) {
+                    <ion-item class="ion-text-wrap">
+                        <ion-label>
+                            <p class="item-heading">{{ 'addon.mod_feedback.feedbackopen' | translate }}</p>
+                            <p>{{overview.openTimeReadable}}</p>
+                        </ion-label>
+                    </ion-item>
+                }
+                @if (access.canedititems && overview.timeclose) {
+                    <ion-item class="ion-text-wrap">
+                        <ion-label>
+                            <p class="item-heading">{{ 'addon.mod_feedback.feedbackclose' | translate }}</p>
+                            <p>{{overview.closeTimeReadable}}</p>
+                        </ion-label>
+                    </ion-item>
+                }
+                @if (access.canedititems && feedback && feedback.page_after_submit) {
+                    <ion-item class="ion-text-wrap">
+                        <ion-label>
+                            <p class="item-heading">{{ 'addon.mod_feedback.page_after_submit' | translate }}</p>
+                            <core-format-text [component]="component" [componentId]="componentId" [text]="feedback.page_after_submit"
+                                contextLevel="module" [contextInstanceId]="module.id" [courseId]="courseId" />
+                        </ion-label>
+                    </ion-item>
+                }
+                @if (!access.isempty) {
+
+                    <ion-item class="ion-text-wrap">
+                        <ion-label>
+                            <p class="item-heading">{{ 'addon.mod_feedback.mode' | translate }}</p>
+                            @if (access.isanonymous) {
+                                <p>{{ 'addon.mod_feedback.anonymous' | translate }}</p>
+                            } @else {
+                                <p>{{ 'addon.mod_feedback.non_anonymous' | translate }}</p>
+                            }
+                        </ion-label>
+                    </ion-item>
+
+                }
+            </ion-list>
+        }
     </core-loading>
 </ng-template>
 
@@ -149,51 +178,62 @@
     <core-loading [hideUntil]="tabs.analysis.loaded">
         <ng-container *ngTemplateOutlet="basicInfo" />
 
-        <ng-container *ngIf="access && (access.canedititems || !access.isempty)">
-            <ion-card class="core-info-card" *ngIf="warning">
-                <ion-item>
-                    <ion-icon name="fas-circle-question" slot="start" aria-hidden="true" />
-                    <ion-label>{{ warning }}</ion-label>
-                </ion-item>
-            </ion-card>
+        @if (access && (access.canedititems || !access.isempty)) {
 
-            <ion-list *ngIf="items && items.length">
-                <ion-item class="ion-text-wrap core-analysis" *ngFor="let item of items">
-                    <ion-label>
-                        <p class="item-heading">
-                            {{item.num}}.
-                            <core-format-text [component]="component" [componentId]="componentId" [text]="item.name" contextLevel="module"
-                                [contextInstanceId]="module.id" [courseId]="courseId" />
-                        </p>
-                        <p>
-                            <core-format-text [component]="component" [componentId]="componentId" [text]="item.label" contextLevel="module"
-                                [contextInstanceId]="module.id" [courseId]="courseId" />
-                        </p>
-                        <ng-container [ngSwitch]="item.templateName">
-                            <ng-container *ngSwitchCase="'numeric'">
-                                <ul>
-                                    <li *ngFor="let data of item.data">{{ data }}</li>
-                                </ul>
-                                <p>{{ 'addon.mod_feedback.average' | translate }}: {{item.average | number : '1.2-2'}}</p>
-                            </ng-container>
-                            <ng-container *ngSwitchCase="'list'">
-                                <ul>
-                                    <ng-container *ngFor="let data of item.data">
-                                        <li *ngIf="data">{{ data }}</li>
-                                    </ng-container>
-                                </ul>
-                            </ng-container>
-                            <ng-container *ngSwitchCase="'chart'">
-                                <core-chart [type]="item.chartType" [data]="item.chartData" [labels]="item.labels" height="300"
-                                    contextLevel="module" [contextInstanceId]="module.id" [wsNotFiltered]="true" [courseId]="courseId" />
-                                <p *ngIf="item.average">
-                                    {{ 'addon.mod_feedback.average' | translate }}: {{item.average | number : '1.2-2'}}
-                                </p>
-                            </ng-container>
-                        </ng-container>
-                    </ion-label>
-                </ion-item>
-            </ion-list>
-        </ng-container>
+            @if (warning) {
+                <ion-card class="core-info-card">
+                    <ion-item>
+                        <ion-icon name="fas-circle-question" slot="start" aria-hidden="true" />
+                        <ion-label>{{ warning }}</ion-label>
+                    </ion-item>
+                </ion-card>
+            }
+
+            @if (items && items.length) {
+                <ion-list>
+                    <ion-item class="ion-text-wrap core-analysis" *ngFor="let item of items">
+                        <ion-label>
+                            <p class="item-heading">
+                                {{item.num}}.
+                                <core-format-text [component]="component" [componentId]="componentId" [text]="item.name"
+                                    contextLevel="module" [contextInstanceId]="module.id" [courseId]="courseId" />
+                            </p>
+                            <p>
+                                <core-format-text [component]="component" [componentId]="componentId" [text]="item.label"
+                                    contextLevel="module" [contextInstanceId]="module.id" [courseId]="courseId" />
+                            </p>
+                            @switch (item.templateName) {
+                                @case ('numeric') {
+                                    <ul>
+                                        <li *ngFor="let data of item.data">{{ data }}</li>
+                                    </ul>
+                                    <p>{{ 'addon.mod_feedback.average' | translate }}: {{item.average | number : '1.2-2'}}</p>
+                                }
+                                @case ('list') {
+                                    <ul>
+                                        <ng-container *ngFor="let data of item.data">
+                                            @if (data) {
+                                                <li>{{ data }}</li>
+                                            }
+                                        </ng-container>
+                                    </ul>
+                                }
+                                @case ('chart') {
+                                    <core-chart [type]="item.chartType" [data]="item.chartData" [labels]="item.labels" height="300"
+                                        contextLevel="module" [contextInstanceId]="module.id" [wsNotFiltered]="true"
+                                        [courseId]="courseId" />
+                                    @if (item.average) {
+                                        <p>
+                                            {{ 'addon.mod_feedback.average' | translate }}: {{item.average | number : '1.2-2'}}
+                                        </p>
+                                    }
+                                }
+                            }
+                        </ion-label>
+                    </ion-item>
+                </ion-list>
+            }
+
+        }
     </core-loading>
 </ng-template>

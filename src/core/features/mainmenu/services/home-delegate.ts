@@ -90,10 +90,6 @@ export class CoreMainMenuHomeDelegateService extends CoreSortedDelegate<CoreMain
 
     protected featurePrefix = 'CoreMainMenuHomeDelegate_';
 
-    constructor() {
-        super('CoreMainMenuHomeDelegate');
-    }
-
 }
 
 export const CoreMainMenuHomeDelegate = makeSingleton(CoreMainMenuHomeDelegateService);

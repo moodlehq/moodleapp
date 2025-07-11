@@ -24,16 +24,11 @@ import { CoreSharedModule } from '@/core/shared.module';
     selector: 'core-block-only-title',
     templateUrl: 'core-block-only-title.html',
     styleUrl: 'only-title-block.scss',
-    standalone: true,
     imports: [
         CoreSharedModule,
     ],
 })
 export class CoreBlockOnlyTitleComponent extends CoreBlockBaseComponent implements OnInit {
-
-    constructor() {
-        super('CoreBlockOnlyTitleComponent');
-    }
 
     /**
      * @inheritdoc

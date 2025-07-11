@@ -8,12 +8,14 @@
         </ion-item>
     </ion-card>
     <div class="spacer"></div>
-    <ion-item lines="none" class="ion-text-wrap" *ngIf="module?.url && module?.uservisible">
-        <ion-label>
-            <ion-button expand="block" [href]="module?.url" core-link [showBrowserWarning]="false">
-                {{ 'core.openinbrowser' | translate }}
-                <ion-icon name="fas-up-right-from-square" slot="end" aria-hidden="true" />
-            </ion-button>
-        </ion-label>
-    </ion-item>
+    @if (module?.url && module?.uservisible) {
+        <ion-item lines="none" class="ion-text-wrap">
+            <ion-label>
+                <ion-button expand="block" [href]="module?.url" core-link [showBrowserWarning]="false">
+                    {{ 'core.openinbrowser' | translate }}
+                    <ion-icon name="fas-up-right-from-square" slot="end" aria-hidden="true" />
+                </ion-button>
+            </ion-label>
+        </ion-item>
+    }
 </div>

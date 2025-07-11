@@ -40,7 +40,6 @@ type CoreCoursesListMode = 'search' | 'all' | 'my';
 @Component({
     selector: 'page-core-courses-list',
     templateUrl: 'list.html',
-    standalone: true,
     imports: [
         CoreSharedModule,
         CoreMainMenuUserButtonComponent,

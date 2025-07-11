@@ -33,7 +33,6 @@ export interface AddonWorkshopAssessmentStrategyHandler extends CoreDelegateHand
      * Return the Component to render the plugin.
      * It's recommended to return the class of the component, but you can also return an instance of the component.
      *
-     * @param injector Injector.
      * @returns The component (or promise resolved with component) to use, undefined if not found.
      */
     getComponent?(): Promise<Type<unknown>> | Type<unknown>;
@@ -83,10 +82,6 @@ export interface AddonWorkshopAssessmentStrategyHandler extends CoreDelegateHand
 export class AddonWorkshopAssessmentStrategyDelegateService extends CoreDelegate<AddonWorkshopAssessmentStrategyHandler> {
 
     protected handlerNameProperty = 'strategyName';
-
-    constructor() {
-        super('AddonWorkshopAssessmentStrategyDelegate');
-    }
 
     /**
      * @inheritdoc

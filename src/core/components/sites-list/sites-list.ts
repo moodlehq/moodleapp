@@ -44,7 +44,6 @@ import { CoreLinkDirective } from '@directives/link';
     selector: 'core-sites-list',
     templateUrl: 'sites-list.html',
     styleUrl: 'sites-list.scss',
-    standalone: true,
     imports: [
         CoreBaseModule,
         CoreFormatTextDirective,

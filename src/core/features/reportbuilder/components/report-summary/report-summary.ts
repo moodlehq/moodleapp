@@ -24,7 +24,6 @@ import { ModalController } from '@singletons';
     templateUrl: './report-summary.html',
     styleUrl: './report-summary.scss',
     changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: true,
     imports: [
         CoreSharedModule,
     ],

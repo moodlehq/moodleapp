@@ -39,7 +39,6 @@ import { CoreContentLinksHelper } from '@features/contentlinks/services/contentl
 @Component({
     selector: 'page-core-search-global-search',
     templateUrl: 'global-search.html',
-    standalone: true,
     imports: [
         CoreSharedModule,
         CoreMainMenuUserButtonComponent,
@@ -182,7 +181,7 @@ export default class CoreSearchGlobalSearchPage implements OnInit, OnDestroy, Af
     async loadMoreResults(complete: () => void ): Promise<void> {
         try {
             await this.resultsSource?.load();
-        } catch (error) {
+        } catch {
             this.loadMoreError = true;
         } finally {
             complete();

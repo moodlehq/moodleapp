@@ -24,7 +24,6 @@ import { CoreSharedModule } from '@/core/shared.module';
     selector: 'addon-mod-quiz-attempt-state',
     templateUrl: 'attempt-state.html',
     styleUrl: 'attempt-state.scss',
-    standalone: true,
     imports: [
         CoreSharedModule,
     ],

@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { APP_INITIALIZER, NgModule } from '@angular/core';
+import { NgModule, provideAppInitializer } from '@angular/core';
 import { TestingBehatRuntime, TestingBehatRuntimeService } from './services/behat-runtime';
 import { CorePlatform } from '@services/platform';
 
@@ -35,13 +35,7 @@ async function initializeAutomatedTests(window: AutomatedTestsWindow) {
 
 @NgModule({
     providers: [
-        {
-            provide: APP_INITIALIZER,
-            multi: true,
-            useValue: async () => {
-                await initializeAutomatedTests(window);
-            },
-        },
+        provideAppInitializer(() => initializeAutomatedTests(window)),
     ],
 })
 export class TestingModule {}

@@ -27,7 +27,9 @@
                             <p class="item-heading" id="device-{{device.id}}">
                                 <strong>{{ device.name }} {{ device.model }}</strong> ({{platform.platform}} {{ device.version }})
                             </p>
-                            <p *ngIf="device.current"><strong>{{ 'core.currentdevice' | translate }}</strong></p>
+                            @if (device.current) {
+                                <p><strong>{{ 'core.currentdevice' | translate }}</strong></p>
+                            }
                             <p>
                                 {{ 'core.lastmodified' | translate }}: {{ device.timemodified * 1000 |
                                 coreFormatDate:'strftimedatetimeshort' }}

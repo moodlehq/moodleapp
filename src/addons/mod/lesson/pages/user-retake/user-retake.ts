@@ -45,7 +45,6 @@ import { CoreSharedModule } from '@/core/shared.module';
     selector: 'page-addon-mod-lesson-user-retake',
     templateUrl: 'user-retake.html',
     styleUrl: 'user-retake.scss',
-    standalone: true,
     imports: [
         CoreSharedModule,
     ],

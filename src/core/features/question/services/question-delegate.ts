@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Injectable, Type } from '@angular/core';
+import { Injectable, Type, inject } from '@angular/core';
 
 import { CoreDelegate, CoreDelegateHandler } from '@classes/delegate';
 import { CoreWSFile } from '@services/ws';
@@ -217,11 +217,8 @@ export interface CoreQuestionHandler extends CoreDelegateHandler {
 @Injectable({ providedIn: 'root' })
 export class CoreQuestionDelegateService extends CoreDelegate<CoreQuestionHandler> {
 
+    protected defaultHandler = inject(CoreQuestionDefaultHandler);
     protected handlerNameProperty = 'type';
-
-    constructor(protected defaultHandler: CoreQuestionDefaultHandler) {
-        super('CoreQuestionDelegate');
-    }
 
     /**
      * Get the behaviour to use for a certain question type.

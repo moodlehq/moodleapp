@@ -34,7 +34,6 @@ import { CoreCourseModuleHelper } from '@features/course/services/course-module-
     selector: 'addon-block-activitymodules',
     templateUrl: 'addon-block-activitymodules.html',
     styleUrl: 'activitymodules.scss',
-    standalone: true,
     imports: [
         CoreSharedModule,
     ],
@@ -44,10 +43,6 @@ export class AddonBlockActivityModulesComponent extends CoreBlockBaseComponent i
     entries: AddonBlockActivityModuleEntry[] = [];
 
     protected fetchContentDefaultError = 'Error getting activity modules data.';
-
-    constructor() {
-        super('AddonBlockActivityModulesComponent');
-    }
 
     /**
      * Perform the invalidate content function.

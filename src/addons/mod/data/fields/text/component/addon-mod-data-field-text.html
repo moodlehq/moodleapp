@@ -1,7 +1,15 @@
-<span *ngIf="inputMode && form" [formGroup]="form">
-    <span *ngIf="editMode" [core-mark-required]="field.required" class="core-mark-required"></span>
-    <ion-input type="text" [formControlName]="'f_'+field.id" [placeholder]="field.name" />
-    <core-input-errors *ngIf="error && editMode" [control]="form.controls['f_'+field.id]" [errorText]="error" />
-</span>
+@if (inputMode && form) {
+    <span [formGroup]="form">
+        @if (editMode) {
+            <span [core-mark-required]="field.required" class="core-mark-required"></span>
+        }
+        <ion-input type="text" [formControlName]="'f_'+field.id" [placeholder]="field.name" />
+        @if (error && editMode) {
+            <core-input-errors [control]="form.controls['f_'+field.id]" [errorText]="error" />
+        }
+    </span>
+}
 
-<span *ngIf="displayMode && value && value.content">{{ value.content }}</span>
+@if (displayMode && value && value.content) {
+    <span>{{ value.content }}</span>
+}

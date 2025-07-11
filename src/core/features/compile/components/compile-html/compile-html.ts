@@ -38,6 +38,7 @@ import {
     EffectRef,
     EffectCleanupRegisterFn,
     CreateEffectOptions,
+    inject,
 } from '@angular/core';
 import { CorePromisedValue } from '@classes/promised-value';
 
@@ -68,7 +69,6 @@ import { CoreSharedModule } from '@/core/shared.module';
     selector: 'core-compile-html',
     template: '<core-loading [hideUntil]="loaded"><ng-container #dynamicComponent /></core-loading>',
     styles: [':host { display: contents; }'],
-    standalone: true,
     imports: [CoreSharedModule],
 })
 export class CoreCompileHtmlComponent implements OnChanges, OnDestroy, DoCheck {
@@ -91,19 +91,16 @@ export class CoreCompileHtmlComponent implements OnChanges, OnDestroy, DoCheck {
     @ViewChild('dynamicComponent', { read: ViewContainerRef }) container?: ViewContainerRef;
 
     protected componentRef?: ComponentRef<unknown>;
-    protected element: HTMLElement;
+    protected element: HTMLElement = inject(ElementRef).nativeElement;
     protected differ: KeyValueDiffer<unknown, unknown>; // To detect changes in the jsData input.
     protected creatingComponent = false;
     protected pendingCalls = {};
     protected componentStyles = '';
+    protected changeDetector = inject(ChangeDetectorRef);
+    protected injector = inject(Injector);
 
-    constructor(
-        protected changeDetector: ChangeDetectorRef,
-        protected injector: Injector,
-        element: ElementRef,
-        differs: KeyValueDiffers,
-    ) {
-        this.element = element.nativeElement;
+    constructor() {
+        const differs = inject(KeyValueDiffers);
         this.differ = differs.find([]).create();
     }
 

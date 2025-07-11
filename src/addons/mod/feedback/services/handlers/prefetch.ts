@@ -59,7 +59,7 @@ export class AddonModFeedbackPrefetchHandlerService extends CoreCourseActivityPr
             response.items.forEach((item) => {
                 files = files.concat(item.itemfiles);
             });
-        } catch (e) {
+        } catch {
             // Ignore errors.
         }
 

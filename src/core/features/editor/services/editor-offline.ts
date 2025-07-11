@@ -202,7 +202,7 @@ export class CoreEditorOfflineProvider {
             entry = await this.getDraft(contextLevel, contextInstanceId, elementId, extraParams, siteId);
 
             timecreated = entry.timecreated || timecreated;
-        } catch (error) {
+        } catch {
             // No draft already stored.
         }
 

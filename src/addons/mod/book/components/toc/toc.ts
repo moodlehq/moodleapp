@@ -25,7 +25,6 @@ import { CoreSharedModule } from '@/core/shared.module';
     selector: 'addon-mod-book-toc',
     templateUrl: 'toc.html',
     styleUrl: 'toc.scss',
-    standalone: true,
     imports: [
         CoreSharedModule,
     ],

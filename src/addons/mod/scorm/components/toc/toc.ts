@@ -26,7 +26,6 @@ import { CoreSharedModule } from '@/core/shared.module';
     selector: 'addon-mod-scorm-toc',
     templateUrl: 'toc.html',
     styleUrl: 'toc.scss',
-    standalone: true,
     imports: [
         CoreSharedModule,
     ],

@@ -1,4 +1,5 @@
 @use "theme/globals" as *;
+@use "sass:list";
 
 // Style ddwtos content a bit. Almost all these styles are copied from Moodle.
 
@@ -81,7 +82,7 @@ core-format-text ::ng-deep, .drags ::ng-deep {
         background-color: var(--core-question-correct-color-bg);
     }
 
-    @for $i from 0 to length($core-dd-question-colors) {
+    @for $i from 0 to list.length($core-dd-question-colors) {
         .group#{$i + 1} {
             background: var(--core-dd-question-color-#{$i + 1});
             color: var(--core-dd-question-color-#{$i + 1}-contrast);

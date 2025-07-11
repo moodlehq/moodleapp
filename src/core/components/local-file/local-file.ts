@@ -48,7 +48,6 @@ import { CoreUpdateNonReactiveAttributesDirective } from '@directives/update-non
     selector: 'core-local-file',
     templateUrl: 'core-local-file.html',
     styleUrl: 'core-local-file.scss',
-    standalone: true,
     imports: [
         CoreBaseModule,
         CoreAriaButtonClickDirective,
@@ -147,7 +146,7 @@ export class CoreLocalFileComponent implements OnInit {
         if (!CoreFileHelper.isOpenableInApp(this.file)) {
             try {
                 await CoreFileHelper.showConfirmOpenUnsupportedFile(false, this.file);
-            } catch (error) {
+            } catch {
                 return; // Cancelled, stop.
             }
         }

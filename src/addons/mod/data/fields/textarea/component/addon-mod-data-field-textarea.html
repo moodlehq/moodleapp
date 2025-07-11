@@ -1,12 +1,22 @@
-<span *ngIf="inputMode && form" [formGroup]="form">
-    <ion-input *ngIf="searchMode" type="text" [placeholder]="field.name" [formControlName]="'f_'+field.id" />
+@if (inputMode && form) {
+    <span [formGroup]="form">
+        @if (searchMode) {
+            <ion-input type="text" [placeholder]="field.name" [formControlName]="'f_'+field.id" />
+        }
 
-    <span *ngIf="editMode" [core-mark-required]="field.required" class="core-mark-required"></span>
-    <core-rich-text-editor *ngIf="editMode" [control]="form.controls['f_'+field.id]" [placeholder]="field.name" [name]="'f_'+field.id"
-        [component]="component" [componentId]="componentId" [autoSave]="true" contextLevel="module" [contextInstanceId]="componentId"
-        [elementId]="'field_'+field.id" ngDefaultControl />
-    <core-input-errors *ngIf="error && editMode" [control]="form.controls['f_'+field.id]" [errorText]="error" />
-</span>
+        @if (editMode) {
+            <span [core-mark-required]="field.required" class="core-mark-required"></span>
+            <core-rich-text-editor [control]="form.controls['f_'+field.id]" [placeholder]="field.name" [name]="'f_'+field.id"
+                [component]="component" [componentId]="componentId" [autoSave]="true" contextLevel="module"
+                [contextInstanceId]="componentId" [elementId]="'field_'+field.id" ngDefaultControl />
+            @if (error) {
+                <core-input-errors [control]="form.controls['f_'+field.id]" [errorText]="error" />
+            }
+        }
+    </span>
+}
 
-<core-format-text *ngIf="displayMode && value" [text]="format(value)" [component]="component" [componentId]="componentId"
-    contextLevel="module" [contextInstanceId]="componentId" [courseId]="database!.course" [sanitize]="recordHasOffline" />
+@if (displayMode && value) {
+    <core-format-text [text]="format(value)" [component]="component" [componentId]="componentId" contextLevel="module"
+        [contextInstanceId]="componentId" [courseId]="database!.course" [sanitize]="recordHasOffline" />
+}

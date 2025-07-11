@@ -21,7 +21,6 @@ import { CoreSharedModule } from '@/core/shared.module';
     selector: 'core-report-builder-report-column',
     templateUrl: './report-column.html',
     styleUrl: './report-column.scss',
-    standalone: true,
     imports: [
         CoreSharedModule,
     ],

@@ -1,11 +1,13 @@
-<ion-item *ngIf="course">
-    <ion-label class="ion-text-wrap">
-        <h3>
-            <span class="sr-only">{{ 'core.courses.aria:coursename' | translate }}</span>
-            <core-format-text [text]="course.displayname || course.fullname" contextLevel="course" [contextInstanceId]="course.id" />
-        </h3>
-    </ion-label>
-</ion-item>
+@if (course) {
+    <ion-item>
+        <ion-label class="ion-text-wrap">
+            <h3>
+                <span class="sr-only">{{ 'core.courses.aria:coursename' | translate }}</span>
+                <core-format-text [text]="course.displayname || course.fullname" contextLevel="course" [contextInstanceId]="course.id" />
+            </h3>
+        </ion-label>
+    </ion-item>
+}
 <ion-item-group *ngFor="let dayEvents of events">
     <ion-item>
         <ion-label>
@@ -26,8 +28,10 @@
                 <ion-row class="ion-justify-content-between ion-align-items-center ion-nowrap ion-no-padding">
                     <ion-col class="addon-block-timeline-activity-time ion-no-padding ion-text-nowrap">
                         <small>{{event.timesort * 1000 | coreFormatDate:"strftimetime24" }}</small>
-                        <core-mod-icon *ngIf="event.iconUrl" [modicon]="event.iconUrl" [componentId]="event.instance"
-                            [modname]="event.modulename" [purpose]="event.purpose" [colorize]="colorizeIcons" [isBranded]="event.branded" />
+                        @if (event.iconUrl) {
+                            <core-mod-icon [modicon]="event.iconUrl" [componentId]="event.instance" [modname]="event.modulename"
+                                [purpose]="event.purpose" [colorize]="colorizeIcons" [isBranded]="event.branded" />
+                        }
                     </ion-col>
                     <ion-col class="addon-block-timeline-activity-name ion-no-padding">
                         <p class="item-heading">
@@ -35,40 +39,56 @@
                                 <core-format-text [text]="event.activityname || event.name" contextLevel="module"
                                     [contextInstanceId]="event.id" [courseId]="event.course?.id" />
                             </span>
-                            <ion-badge *ngIf="event.overdue" color="danger">{{ 'addon.block_timeline.overdue' | translate }}
-                            </ion-badge>
+                            @if (event.overdue) {
+                                <ion-badge color="danger">{{ 'addon.block_timeline.overdue' | translate }}
+                                </ion-badge>
+                            }
                         </p>
-                        <p *ngIf="showInlineCourse && event.course">
-                            <span>
-                                <core-format-text [text]="event.course.fullnamedisplay" contextLevel="course"
-                                    [contextInstanceId]="event.course.id" />
-                            </span>
-                        </p>
-                        <p *ngIf="event.activitystr">
-                            <span>
-                                <core-format-text *ngIf="event.activitystr" [text]="event.activitystr" contextLevel="module"
-                                    [contextInstanceId]="event.id" />
-                            </span>
-                        </p>
+                        @if (showInlineCourse && event.course) {
+                            <p>
+                                <span>
+                                    <core-format-text [text]="event.course.fullnamedisplay" contextLevel="course"
+                                        [contextInstanceId]="event.course.id" />
+                                </span>
+                            </p>
+                        }
+                        @if (event.activitystr) {
+                            <p>
+                                <span>
+                                    @if (event.activitystr) {
+                                        <core-format-text [text]="event.activitystr" contextLevel="module" [contextInstanceId]="event.id" />
+                                    }
+                                </span>
+                            </p>
+                        }
                     </ion-col>
                 </ion-row>
-                <div class="addon-block-timeline-activity-action" *ngIf="event.action && event.action.actionable">
-                    <ion-button fill="outline" (click)="action($event, event.action.url)" [title]="event.action.name" class="chip">
-                        {{event.action.name}}
-                        <ion-badge slot="end" class="ion-margin-start" *ngIf="event.action.showitemcount">
-                            {{event.action.itemcount}}
-                        </ion-badge>
-                    </ion-button>
-                </div>
+                @if (event.action && event.action.actionable) {
+                    <div class="addon-block-timeline-activity-action">
+                        <ion-button fill="outline" (click)="action($event, event.action.url)" [title]="event.action.name" class="chip">
+                            {{event.action.name}}
+                            @if (event.action.showitemcount) {
+                                <ion-badge slot="end" class="ion-margin-start">
+                                    {{event.action.itemcount}}
+                                </ion-badge>
+                            }
+                        </ion-button>
+                    </div>
+                }
             </ion-label>
         </ion-item>
     </ng-container>
 </ion-item-group>
 
-<div class="ion-padding ion-text-center" *ngIf="canLoadMore">
-    <!-- Button and spinner to show more attempts. -->
-    <ion-button expand="block" (click)="loadMore.emit()" fill="outline" *ngIf="!loadingMore">
-        {{ 'core.loadmore' | translate }}
-    </ion-button>
-    <ion-spinner *ngIf="loadingMore" [attr.aria-label]="'core.loading' | translate" />
-</div>
+@if (canLoadMore) {
+    <div class="ion-padding ion-text-center">
+        <!-- Button and spinner to show more attempts. -->
+        @if (loadingMore) {
+            <ion-spinner [attr.aria-label]="'core.loading' | translate" />
+        } @else {
+            <ion-button expand="block" (click)="loadMore.emit()" fill="outline">
+                {{ 'core.loadmore' | translate }}
+            </ion-button>
+        }
+    </div>
+}

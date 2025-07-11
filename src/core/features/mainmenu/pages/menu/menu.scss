@@ -84,13 +84,13 @@ ion-tab-button {
     ion-icon.core-tab-badge {
         color: var(--core-bottom-tabs-badge-color);
         padding: 3px 6px 2px;
-        @include position(8px, null, null, calc(50% + 6px));
         min-width: 12px;
         font-size: #{dynamic-font(8px)};
         font-weight: normal;
         box-sizing: border-box;
         position: absolute;
         z-index: 1;
+        @include position(8px, null, null, calc(50% + 6px));
     }
 }
 

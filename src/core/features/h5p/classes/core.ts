@@ -337,7 +337,7 @@ export class CoreH5PCore {
             }
 
             return paramsStr;
-        } catch (error) {
+        } catch {
             return null;
         }
     }

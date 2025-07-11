@@ -4,22 +4,26 @@
             <ion-back-button [text]="'core.back' | translate" />
         </ion-buttons>
         <ion-title>
-            <h1 *ngIf="startingPost">
-                <core-format-text contextLevel="module" [text]="startingPost.subject" [contextInstanceId]="cmId" [courseId]="courseId"
-                    [sanitize]="!startingPost.id || startingPost.id < 0" />
-            </h1>
+            @if (startingPost) {
+                <h1>
+                    <core-format-text contextLevel="module" [text]="startingPost.subject" [contextInstanceId]="cmId" [courseId]="courseId"
+                        [sanitize]="!startingPost.id || startingPost.id < 0" />
+                </h1>
+            }
         </ion-title>
         <ion-buttons slot="end" />
     </ion-toolbar>
 </ion-header>
 <core-navbar-buttons slot="end">
     <core-context-menu>
-        <core-context-menu-item *ngIf="discussionLoaded && !postHasOffline && isOnline" [priority]="650"
-            [content]="'addon.mod_forum.refreshposts' | translate" [iconAction]="refreshIcon" [closeOnClick]="false"
-            (action)="doRefresh(null, $event)" />
-        <core-context-menu-item *ngIf="discussionLoaded && isMobile && postHasOffline && isOnline" [priority]="550"
-            [content]="'core.settings.synchronizenow' | translate" [iconAction]="syncIcon" [closeOnClick]="false"
-            (action)="doRefresh(null, $event, true)" />
+        @if (discussionLoaded && !postHasOffline && isOnline) {
+            <core-context-menu-item [priority]="650" [content]="'addon.mod_forum.refreshposts' | translate" [iconAction]="refreshIcon"
+                [closeOnClick]="false" (action)="doRefresh(null, $event)" />
+        }
+        @if (discussionLoaded && isMobile && postHasOffline && isOnline) {
+            <core-context-menu-item [priority]="550" [content]="'core.settings.synchronizenow' | translate" [iconAction]="syncIcon"
+                [closeOnClick]="false" (action)="doRefresh(null, $event, true)" />
+        }
         <core-context-menu-item [hidden]="sort === 'flat-oldest'" [priority]="500"
             [content]="'addon.mod_forum.modeflatoldestfirst' | translate" iconAction="fas-arrow-down"
             (action)="changeSort('flat-oldest')" />
@@ -52,58 +56,72 @@
 
     <core-loading [hideUntil]="discussionLoaded">
         <!-- Discussion replies found to be synchronized -->
-        <ion-card class="core-warning-card" *ngIf="postHasOffline || hasOfflineRatings">
-            <ion-item>
-                <ion-icon name="fas-triangle-exclamation" slot="start" aria-hidden="true" />
-                <ion-label>{{ 'core.hasdatatosync' | translate:{$a: discussionStr} }}</ion-label>
-            </ion-item>
-        </ion-card>
+        @if (postHasOffline || hasOfflineRatings) {
+            <ion-card class="core-warning-card">
+                <ion-item>
+                    <ion-icon name="fas-triangle-exclamation" slot="start" aria-hidden="true" />
+                    <ion-label>{{ 'core.hasdatatosync' | translate:{$a: discussionStr} }}</ion-label>
+                </ion-item>
+            </ion-card>
+        }
 
         <!-- Cut-off date or due date message -->
-        <ion-card class="core-info-card" *ngIf="availabilityMessage">
-            <ion-item>
-                <ion-icon name="fas-circle-info" slot="start" aria-hidden="true" />
-                <ion-label>{{ availabilityMessage }}</ion-label>
-            </ion-item>
-        </ion-card>
+        @if (availabilityMessage) {
+            <ion-card class="core-info-card">
+                <ion-item>
+                    <ion-icon name="fas-circle-info" slot="start" aria-hidden="true" />
+                    <ion-label>{{ availabilityMessage }}</ion-label>
+                </ion-item>
+            </ion-card>
+        }
 
-        <ion-card class="core-info-card" *ngIf="discussion && discussion.locked">
-            <ion-item>
-                <ion-icon name="fas-lock" slot="start" aria-hidden="true" />
-                <ion-label>{{ 'addon.mod_forum.discussionlocked' | translate }}</ion-label>
-            </ion-item>
-        </ion-card>
+        @if (discussion && discussion.locked) {
+            <ion-card class="core-info-card">
+                <ion-item>
+                    <ion-icon name="fas-lock" slot="start" aria-hidden="true" />
+                    <ion-label>{{ 'addon.mod_forum.discussionlocked' | translate }}</ion-label>
+                </ion-item>
+            </ion-card>
+        }
 
         <!-- Q&A message. -->
-        <ion-card class="core-info-card" *ngIf="showQAMessage">
-            <ion-item>
-                <ion-icon name="fas-circle-info" slot="start" aria-hidden="true" />
-                <ion-label>{{ 'addon.mod_forum.qandanotify' | translate }}</ion-label>
-            </ion-item>
-        </ion-card>
+        @if (showQAMessage) {
+            <ion-card class="core-info-card">
+                <ion-item>
+                    <ion-icon name="fas-circle-info" slot="start" aria-hidden="true" />
+                    <ion-label>{{ 'addon.mod_forum.qandanotify' | translate }}</ion-label>
+                </ion-item>
+            </ion-card>
+        }
 
-        <div *ngIf="startingPost" class="ion-margin-bottom">
-            <addon-mod-forum-post [post]="startingPost" [discussion]="discussion" [courseId]="courseId" [highlight]="true"
-                [discussionId]="discussionId" [component]="component" [componentId]="cmId" [formData]="formData"
-                [originalData]="originalData" [forum]="forum" [accessInfo]="accessInfo" [trackPosts]="trackPosts" [ratingInfo]="ratingInfo"
-                [leavingPage]="leavingPage" (onPostChange)="postListChanged()" />
-        </div>
+        @if (startingPost) {
+            <div class="ion-margin-bottom">
+                <addon-mod-forum-post [post]="startingPost" [discussion]="discussion" [courseId]="courseId" [highlight]="true"
+                    [discussionId]="discussionId" [component]="component" [componentId]="cmId" [formData]="formData"
+                    [originalData]="originalData" [forum]="forum" [accessInfo]="accessInfo" [trackPosts]="trackPosts"
+                    [ratingInfo]="ratingInfo" [leavingPage]="leavingPage" (onPostChange)="postListChanged()" />
+            </div>
+        }
 
-        <ion-card *ngIf="sort !== 'nested' && posts.length">
-            <ng-container *ngFor="let post of posts; first as first">
-                <core-spacer *ngIf="!first" />
-                <addon-mod-forum-post [post]="post" [courseId]="courseId" [discussionId]="discussionId" [component]="component"
-                    [componentId]="cmId" [formData]="formData" [originalData]="originalData" [parentSubject]="postSubjects[post.parentid]"
-                    [forum]="forum" [accessInfo]="accessInfo" [trackPosts]="trackPosts" [ratingInfo]="ratingInfo"
-                    [leavingPage]="leavingPage" (onPostChange)="postListChanged()" />
-            </ng-container>
-        </ion-card>
+        @if (sort !== 'nested' && posts.length) {
+            <ion-card>
+                <ng-container *ngFor="let post of posts; first as first">
+                    @if (!first) {
+                        <core-spacer />
+                    }
+                    <addon-mod-forum-post [post]="post" [courseId]="courseId" [discussionId]="discussionId" [component]="component"
+                        [componentId]="cmId" [formData]="formData" [originalData]="originalData"
+                        [parentSubject]="postSubjects[post.parentid]" [forum]="forum" [accessInfo]="accessInfo" [trackPosts]="trackPosts"
+                        [ratingInfo]="ratingInfo" [leavingPage]="leavingPage" (onPostChange)="postListChanged()" />
+                </ng-container>
+            </ion-card>
+        }
 
-        <ng-container *ngIf="sort === 'nested' && posts.length">
+        @if (sort === 'nested' && posts.length) {
             <ng-container *ngFor="let post of posts">
                 <ng-container *ngTemplateOutlet="nestedPosts; context: {post: post}" />
             </ng-container>
-        </ng-container>
+        }
 
         <ng-template #nestedPosts let-post="post">
             <ion-card>
@@ -112,11 +130,13 @@
                     [forum]="forum" [accessInfo]="accessInfo" [trackPosts]="trackPosts" [ratingInfo]="ratingInfo"
                     [leavingPage]="leavingPage" (onPostChange)="postListChanged()" />
             </ion-card>
-            <div class="ion-padding-start" *ngIf="post.children && post.children.length && post.children[0].subject">
-                <ng-container *ngFor="let child of post.children">
-                    <ng-container *ngTemplateOutlet="nestedPosts; context: {post: child}" />
-                </ng-container>
-            </div>
+            @if (post.children && post.children.length && post.children[0].subject) {
+                <div class="ion-padding-start">
+                    <ng-container *ngFor="let child of post.children">
+                        <ng-container *ngTemplateOutlet="nestedPosts; context: {post: child}" />
+                    </ng-container>
+                </div>
+            }
         </ng-template>
     </core-loading>
 </ion-content>

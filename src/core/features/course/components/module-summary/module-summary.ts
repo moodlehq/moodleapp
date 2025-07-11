@@ -22,7 +22,7 @@ import { CoreCourseHelper, CoreCourseModuleData } from '@features/course/service
 import { CoreCourseModuleDelegate } from '@features/course/services/module-delegate';
 import { CoreCourseModulePrefetchDelegate } from '@features/course/services/module-prefetch-delegate';
 import { CoreCourseAnyCourseData } from '@features/courses/services/courses';
-import { CoreGradesFormattedRow, CoreGradesFormattedTableRow, CoreGradesHelper } from '@features/grades/services/grades-helper';
+import { CoreGradesFormattedTableRow, CoreGradesHelper } from '@features/grades/services/grades-helper';
 import { CoreNetwork } from '@services/network';
 import { CoreFilepool } from '@services/filepool';
 import { CoreNavigator } from '@services/navigator';
@@ -46,7 +46,6 @@ import { CoreCourseModuleHelper } from '@features/course/services/course-module-
     selector: 'core-course-module-summary',
     templateUrl: 'module-summary.html',
     styleUrl: 'module-summary.scss',
-    standalone: true,
     imports: [
         CoreSharedModule,
     ],
@@ -73,7 +72,7 @@ export class CoreCourseModuleSummaryComponent implements OnInit, OnDestroy {
     prefetchDisabled = false;
     size?: number; // Size in bytes
     downloadTimeReadable = ''; // Last download time in a readable format.
-    grades?: CoreGradesFormattedRow[];
+    grades?: CoreGradesFormattedTableRow[];
     blog = false; // If blog is available.
     isOnline = false; // If the app is online or not.
     course?: CoreCourseAnyCourseData;

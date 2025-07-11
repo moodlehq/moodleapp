@@ -18,12 +18,13 @@ import {
     CUSTOM_ELEMENTS_SCHEMA,
     ElementRef,
     OnDestroy,
-    Optional,
     Type,
-    ViewChild, OnInit,
+    ViewChild,
+    OnInit,
     Input,
     Output,
     EventEmitter,
+    inject,
 } from '@angular/core';
 import { IonContent } from '@ionic/angular';
 import { CoreSharedModule } from '@/core/shared.module';
@@ -60,7 +61,6 @@ import { convertTextToHTMLElement } from '@/core/utils/create-html-element';
     selector: 'core-rich-text-editor',
     templateUrl: 'core-rich-text-editor.html',
     styleUrl: 'rich-text-editor.scss',
-    standalone: true,
     imports: [
         CoreSharedModule,
     ],
@@ -100,15 +100,13 @@ export class CoreEditorRichTextEditorComponent implements AfterViewInit, OnDestr
     protected originalContent?: string;
     protected autoSaveInterval?: number;
     protected resetObserver?: CoreEventObserver;
-    protected element: HTMLElement;
+    protected element: HTMLElement = inject(ElementRef).nativeElement;
 
-    constructor(
-        @Optional() protected content: IonContent,
-        elementRef: ElementRef<HTMLElement>,
-    ) {
+    protected content = inject(IonContent);
+
+    constructor() {
          // Generate a "unique" ID based on timestamp.
         this.pageInstance = `app_${Date.now()}`;
-        this.element = elementRef.nativeElement;
     }
 
     /**
@@ -373,7 +371,7 @@ export class CoreEditorRichTextEditorComponent implements AfterViewInit, OnDestr
                         this.elementId || '',
                         this.draftExtraParams || {},
                     );
-                } catch (error) {
+                } catch {
                     // Error deleting draft. Shouldn't happen.
                 }
             }

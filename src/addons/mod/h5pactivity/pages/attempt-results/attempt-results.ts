@@ -37,7 +37,6 @@ import { AddonModH5PActivityAttemptSummaryComponent } from '../../components/att
     selector: 'page-addon-mod-h5pactivity-attempt-results',
     templateUrl: 'attempt-results.html',
     styleUrl: 'attempt-results.scss',
-    standalone: true,
     imports: [
         CoreSharedModule,
         AddonModH5PActivityAttemptSummaryComponent,

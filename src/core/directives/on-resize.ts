@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Directive, ElementRef, OnInit, Output, EventEmitter, OnDestroy } from '@angular/core';
+import { Directive, ElementRef, OnInit, Output, EventEmitter, OnDestroy, inject } from '@angular/core';
 import { CoreUtils } from '@singletons/utils';
 
 /**
@@ -20,19 +20,14 @@ import { CoreUtils } from '@singletons/utils';
  */
 @Directive({
     selector: '[onResize]',
-    standalone: true,
 })
 export class CoreOnResizeDirective implements OnInit, OnDestroy {
 
     @Output() onResize = new EventEmitter();
 
-    private element: HTMLElement;
+    protected element: HTMLElement = inject(ElementRef).nativeElement;
     private resizeObserver?: ResizeObserver;
     private mutationObserver?: MutationObserver;
-
-    constructor(element: ElementRef) {
-        this.element = element.nativeElement;
-    }
 
     /**
      * @inheritdoc

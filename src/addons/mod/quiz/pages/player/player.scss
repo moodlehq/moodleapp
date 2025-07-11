@@ -1,5 +1,5 @@
 @use "theme/globals" as *;
-@use "sass:math" as math;
+@use "sass:math";
 
 $quiz-timer-warn-color: $red !default;
 $quiz-timer-iterations: 15 !default;
