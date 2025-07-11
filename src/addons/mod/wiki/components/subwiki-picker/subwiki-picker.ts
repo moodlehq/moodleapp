@@ -14,7 +14,7 @@
 
 import { Component, Input } from '@angular/core';
 import { PopoverController } from '@singletons';
-import { AddonModWikiSubwiki, AddonModWikiSubwikiListGrouping } from '../../services/wiki';
+import { AddonModWikiSubwikiListGrouping, AddonModWikiSubwikiListSubwiki } from '../../services/wiki';
 import { CoreSharedModule } from '@/core/shared.module';
 
 /**
@@ -31,7 +31,7 @@ export class AddonModWikiSubwikiPickerComponent {
 
     @Input() courseId?: number;
     @Input() subwikis: AddonModWikiSubwikiListGrouping[] = [];
-    @Input({ required: true }) currentSubwiki!: AddonModWikiSubwiki;
+    @Input({ required: true }) currentSubwiki!: AddonModWikiSubwikiListSubwiki;
 
     /**
      * Checks if the given subwiki is the one currently selected.
@@ -39,7 +39,7 @@ export class AddonModWikiSubwikiPickerComponent {
      * @param subwiki Subwiki to check.
      * @returns Whether it's the selected subwiki.
      */
-    isSubwikiSelected(subwiki: AddonModWikiSubwiki): boolean {
+    isSubwikiSelected(subwiki: AddonModWikiSubwikiListSubwiki): boolean {
 
         if (subwiki.id > 0 && this.currentSubwiki.id > 0) {
             return subwiki.id === this.currentSubwiki.id;
@@ -53,7 +53,7 @@ export class AddonModWikiSubwikiPickerComponent {
      *
      * @param subwiki The subwiki to open.
      */
-    openSubwiki(subwiki: AddonModWikiSubwiki): void {
+    openSubwiki(subwiki: AddonModWikiSubwikiListSubwiki): void {
         // Check if it isn't current subwiki.
         if (subwiki !== this.currentSubwiki) {
             PopoverController.dismiss(subwiki);

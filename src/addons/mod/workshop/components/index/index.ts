@@ -369,7 +369,7 @@ export class AddonModWorkshopIndexComponent extends CoreCourseModuleMainActivity
      * @param task Task to be done.
      */
     async runTask(task: AddonModWorkshopPhaseTaskData): Promise<void> {
-        if (task.code == 'submit') {
+        if (task.code === 'submit') {
             this.gotoSubmit();
         } else if (task.link) {
             CoreOpener.openInBrowser(task.link);
