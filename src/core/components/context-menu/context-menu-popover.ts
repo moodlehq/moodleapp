@@ -35,7 +35,7 @@ import { CoreLinkDirective } from '@directives/link';
 })
 export class CoreContextMenuPopoverComponent {
 
-    items = input<CoreContextMenuItemComponent[]>([]);
+    readonly items = input<CoreContextMenuItemComponent[]>([]);
 
     /**
      * Close the popover.

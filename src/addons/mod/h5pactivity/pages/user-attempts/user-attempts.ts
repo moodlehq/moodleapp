@@ -59,7 +59,7 @@ export default class AddonModH5PActivityUserAttemptsPage implements OnInit {
     attemptsData?: AddonModH5PActivityUserAttempts;
     user?: CoreUserProfile;
     isCurrentUser = false;
-    isTablet: Signal<boolean>;
+    readonly isTablet: Signal<boolean>;
     allAttemptsTitle = Translate.instant('addon.mod_h5pactivity.all_attempts');
     expandedAttemptId = '';
 

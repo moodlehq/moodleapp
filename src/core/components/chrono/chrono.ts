@@ -39,14 +39,14 @@ import { CoreSecondsToHMSPipe } from '@pipes/seconds-to-hms';
 })
 export class CoreChronoComponent implements OnInit, OnDestroy {
 
-    running = input(false, { transform: toBoolean }); // Set it to true to start the chrono. Set it to false to stop it.
-    startTime = input(0); // Number of milliseconds to put in the chrono before starting.
-    endTime = input<number>(); // Number of milliseconds to stop the chrono.
-    reset = input(false, { transform: toBoolean }); // Set it to true to reset the chrono.
-    hours = input(true, { transform: toBoolean }); // Whether to show hours in the chrono or not.
-    onEnd = output(); // Will emit an event when the endTime is reached.
+    readonly running = input(false, { transform: toBoolean }); // Set it to true to start the chrono. Set it to false to stop it.
+    readonly startTime = input(0); // Number of milliseconds to put in the chrono before starting.
+    readonly endTime = input<number>(); // Number of milliseconds to stop the chrono.
+    readonly reset = input(false, { transform: toBoolean }); // Set it to true to reset the chrono.
+    readonly hours = input(true, { transform: toBoolean }); // Whether to show hours in the chrono or not.
+    readonly onEnd = output(); // Will emit an event when the endTime is reached.
 
-    time = signal(0); // Current time in milliseconds.
+    readonly time = signal(0); // Current time in milliseconds.
     protected interval?: number;
 
     constructor() {

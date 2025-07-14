@@ -39,9 +39,9 @@ import { CoreFormatTextDirective } from '@directives/format-text';
 })
 export class CoreGroupSelectorComponent {
 
-    groupInfo = input<CoreGroupInfo>();
-    multipleGroupsMessage = input<string>();
-    selected = model.required<number>();
-    courseId = input<number>();
+    readonly groupInfo = input<CoreGroupInfo>();
+    readonly multipleGroupsMessage = input<string>();
+    readonly selected = model.required<number>();
+    readonly courseId = input<number>();
 
 }

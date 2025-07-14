@@ -38,9 +38,9 @@ const enum ScrollPosition {
 export class CoreHorizontalScrollControlsComponent {
 
     // eslint-disable-next-line @angular-eslint/no-input-rename
-    targetId = input<string>(undefined, { alias: 'aria-controls' });
+    readonly targetId = input<string>(undefined, { alias: 'aria-controls' });
 
-    scrollPosition = signal<ScrollPosition>(ScrollPosition.HIDDEN);
+    readonly scrollPosition = signal<ScrollPosition>(ScrollPosition.HIDDEN);
 
     /**
      * Get target element.

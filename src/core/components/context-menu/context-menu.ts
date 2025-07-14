@@ -36,8 +36,8 @@ import { CoreUpdateNonReactiveAttributesDirective } from '@directives/update-non
 })
 export class CoreContextMenuComponent implements OnDestroy {
 
-    icon = input('ellipsis-vertical'); // Icon to be shown on the navigation bar. Default: Kebab menu icon.
-    ariaLabel = input(Translate.instant('core.displayoptions'), { // Aria label to be shown on the top of the popover.
+    readonly icon = input('ellipsis-vertical'); // Icon to be shown on the navigation bar. Default: Kebab menu icon.
+    readonly ariaLabel = input(Translate.instant('core.displayoptions'), { // Aria label to be shown on the top of the popover.
         alias: 'aria-label',
     });
 
@@ -46,12 +46,12 @@ export class CoreContextMenuComponent implements OnDestroy {
      *
      * @deprecated since 4.4. Use aria-label instead.
      */
-    title = input<string>(); // Text to be shown on the top of the popover.
+    readonly title = input<string>(); // Text to be shown on the top of the popover.
 
-    hideMenu = computed(() => !this.items().some((item) => !item.hidden())); // Hide menu if all items are hidden.
-    uniqueId = `core-context-menu-${CoreUtils.getUniqueId('CoreContextMenuComponent')}`;
+    readonly hideMenu = computed(() => !this.items().some((item) => !item.hidden())); // Hide menu if all items are hidden.
+    readonly uniqueId = `core-context-menu-${CoreUtils.getUniqueId('CoreContextMenuComponent')}`;
 
-    protected items = signal<CoreContextMenuItemComponent[]>([]);
+    protected readonly items = signal<CoreContextMenuItemComponent[]>([]);
     protected itemsMovedToParent: CoreContextMenuItemComponent[] = [];
     protected parentContextMenu?: CoreContextMenuComponent;
     protected expanded = false;

@@ -55,14 +55,14 @@ import { CoreUpdateNonReactiveAttributesDirective } from '@directives/update-non
 })
 export class CoreSendMessageFormComponent {
 
-    message = model(''); // Input text.
-    placeholder = input(''); // Placeholder for the input area.
-    showKeyboard = input(false, { transform: toBoolean }); // If keyboard is shown or not.
-    sendDisabled = input(false, { transform: toBoolean }); // If send is disabled.
-    onSubmit = output<string>(); // Send data when submitting the message form.
-    onResize = output<void>(); // Emit when resizing the textarea.
+    readonly message = model(''); // Input text.
+    readonly placeholder = input(''); // Placeholder for the input area.
+    readonly showKeyboard = input(false, { transform: toBoolean }); // If keyboard is shown or not.
+    readonly sendDisabled = input(false, { transform: toBoolean }); // If send is disabled.
+    readonly onSubmit = output<string>(); // Send data when submitting the message form.
+    readonly onResize = output<void>(); // Emit when resizing the textarea.
 
-    formElement = viewChild.required<ElementRef>('messageForm');
+    readonly formElement = viewChild.required<ElementRef>('messageForm');
 
     protected sendOnEnter = false;
 

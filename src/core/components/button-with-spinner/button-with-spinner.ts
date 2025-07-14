@@ -34,7 +34,7 @@ import { CoreBaseModule } from '@/core/base.module';
 })
 export class CoreButtonWithSpinnerComponent {
 
-    loading = input(true, { transform: toBoolean });
-    loadingLabel = input('core.loading');
+    readonly loading = input(true, { transform: toBoolean });
+    readonly loadingLabel = input('core.loading');
 
 }

@@ -67,7 +67,7 @@ export default class AddonPrivateFilesIndexPage implements OnInit, OnDestroy {
     files?: AddonPrivateFilesFile[]; // List of files.
     component!: string; // Component to link the file downloads to.
     filesLoaded = false; // Whether the files are loaded.
-    selectFilesEnabled = signal(false);
+    readonly selectFilesEnabled = signal(false);
     selectedFiles: AddonPrivateFilesFile[] = [];
     selectAll = false;
     canDeleteFiles = false;
