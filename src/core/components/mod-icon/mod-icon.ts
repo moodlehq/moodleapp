@@ -61,32 +61,32 @@ const enum IconVersion {
 })
 export class CoreModIconComponent {
 
-    modname = input(''); // The module name. Used also as component if set.
-    fallbackTranslation = input(''); // Fallback translation string if cannot auto translate.
-    componentId = input<number>(); // Component Id for external icons.
-    modicon = input<string>(); // Module icon url or local url.
-    showAlt = input(true, { transform: toBoolean }); // Show alt otherwise it's only presentation icon.
-    purpose = input<ModPurpose>(ModPurpose.OTHER); // Purpose of the module.
-    colorize = input(true, { transform: toBoolean }); // Colorize the icon. Only applies on 4.0+.
-    isBranded = input(false, { transform: toBoolean }); // If icon is branded and no colorize will be applied.
+    readonly modname = input(''); // The module name. Used also as component if set.
+    readonly fallbackTranslation = input(''); // Fallback translation string if cannot auto translate.
+    readonly componentId = input<number>(); // Component Id for external icons.
+    readonly modicon = input<string>(); // Module icon url or local url.
+    readonly showAlt = input(true, { transform: toBoolean }); // Show alt otherwise it's only presentation icon.
+    readonly purpose = input<ModPurpose>(ModPurpose.OTHER); // Purpose of the module.
+    readonly colorize = input(true, { transform: toBoolean }); // Colorize the icon. Only applies on 4.0+.
+    readonly isBranded = input(false, { transform: toBoolean }); // If icon is branded and no colorize will be applied.
 
-    iconUrl = linkedSignal(() => CoreText.decodeHTMLEntities(this.modicon() || this.getFallbackIcon()));
-    isLocalUrl = computed(() => this.iconUrl().startsWith(assetsPath));
+    readonly iconUrl = linkedSignal(() => CoreText.decodeHTMLEntities(this.modicon() || this.getFallbackIcon()));
+    readonly isLocalUrl = computed(() => this.iconUrl().startsWith(assetsPath));
 
     // Cache icon if the url is not the theme generic one.
     // If modname is not set icon won't be cached.
     // Also if the url matches the regexp (the theme will manage the image so it's not cached).
-    linkIconWithComponent = computed(() => !!this.computedModName() && !!this.componentId() && !this.isLocalUrl() &&
+    readonly linkIconWithComponent = computed(() => !!this.computedModName() && !!this.componentId() && !this.isLocalUrl() &&
             this.getComponentNameFromIconUrl(this.iconUrl()) !== this.computedModName());
 
-    computedModName = computed(() => this.modname() || this.getComponentNameFromIconUrl(this.modicon() ?? ''));
-    modNameTranslated = computed(() =>
+    readonly computedModName = computed(() => this.modname() || this.getComponentNameFromIconUrl(this.modicon() ?? ''));
+    readonly modNameTranslated = computed(() =>
         CoreCourseModuleHelper.translateModuleName(this.computedModName(), this.fallbackTranslation()));
 
-    protected iconVersion = signal(IconVersion.LEGACY_VERSION);
-    protected purposeClass = computed(() => this.calculatePurposeClass());
-    protected addBrandedClass = computed(() => this.calculateAddBranded());
-    protected addColorizeClass = computed(() => this.colorize() && this.iconVersion() !== IconVersion.LEGACY_VERSION);
+    protected readonly iconVersion = signal(IconVersion.LEGACY_VERSION);
+    protected readonly purposeClass = computed(() => this.calculatePurposeClass());
+    protected readonly addBrandedClass = computed(() => this.calculateAddBranded());
+    protected readonly addColorizeClass = computed(() => this.colorize() && this.iconVersion() !== IconVersion.LEGACY_VERSION);
 
     constructor() {
         this.iconVersion.set(this.getIconVersion());

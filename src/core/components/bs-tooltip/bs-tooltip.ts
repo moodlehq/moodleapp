@@ -31,10 +31,10 @@ import { ContextLevel } from '@/core/constants';
 })
 export class CoreBSTooltipComponent {
 
-    title = input<string>();
-    content = input('');
-    formatTextOptions = input<CoreFormatTextOptions>();
-    html = input(false, { transform: toBoolean });
+    readonly title = input<string>();
+    readonly content = input('');
+    readonly formatTextOptions = input<CoreFormatTextOptions>();
+    readonly html = input(false, { transform: toBoolean });
 
 }
 

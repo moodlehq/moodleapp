@@ -44,15 +44,15 @@ import { CoreUpdateNonReactiveAttributesDirective } from '@directives/update-non
 })
 export class CorePasswordModalComponent {
 
-    formElement = viewChild<ElementRef>('passwordForm');
+    readonly formElement = viewChild<ElementRef>('passwordForm');
 
-    title = input<CorePasswordModalInputs['title']>('core.login.password'); // Translatable string shown on modal title.
-    placeholder = input<CorePasswordModalInputs['placeholder']>('core.login.password'); // Translatable string shown as placeholder.
-    submit = input<CorePasswordModalInputs['submit']>('core.submit'); // Translatable string shown on submit button.
-    validator = input<CorePasswordModalInputs['validator']>(); // Function to validate the password.
+    readonly title = input<CorePasswordModalInputs['title']>('core.login.password'); // Translatable string shown on modal title.
+    readonly placeholder = input<CorePasswordModalInputs['placeholder']>('core.login.password'); // Translatable placeholder string.
+    readonly submit = input<CorePasswordModalInputs['submit']>('core.submit'); // Translatable string shown on submit button.
+    readonly validator = input<CorePasswordModalInputs['validator']>(); // Function to validate the password.
 
-    password = signal(''); // Previous entered password.
-    error = signal<string>(''); // Error message to be shown.
+    readonly password = signal(''); // Previous entered password.
+    readonly error = signal<string>(''); // Error message to be shown.
 
     /**
      * Send the password back.

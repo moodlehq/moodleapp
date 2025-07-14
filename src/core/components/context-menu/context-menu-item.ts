@@ -36,25 +36,25 @@ import { CoreUtils } from '@singletons/utils';
 })
 export class CoreContextMenuItemComponent implements OnInit, OnDestroy {
 
-    content = input<string>(); // Content of the item.
-    iconAction = input<string>(); // Name of the icon to show on the right side of the item. Represents the action to do on click.
+    readonly content = input<string>(); // Content of the item.
+    readonly iconAction = input<string>(); // Icon to show on the right side of the item. Represents the action to do on click.
     // If is "spinner" an spinner will be shown.
     // If is "toggle" a toggle switch will be shown.
     // If no icon or spinner is selected, no action or link will work.
     // If href but no iconAction is provided arrow-right will be used.
-    iconSlash = input(false, { transform: toBoolean }); // Display a red slash over the icon.
-    ariaAction = input<string>(); // Aria label to add to iconAction. If not set, it will be equal to content.
-    href = input<string>(); // Link to go if no action provided.
-    captureLink = input(false, { transform: toBoolean }); // Whether the link needs to be captured by the app.
-    autoLogin = input(true, { transform: toBoolean }); // Whether the link needs to be opened using auto-login.
-    closeOnClick = input(true, { transform: toBoolean }); // Whether to close the popover when the item is clicked.
-    priority = input<number>(1); // Used to sort items. The highest priority, the highest position.
-    badge = input<string>(); // A badge to show in the item.
-    badgeClass = input<number>(); // A class to set in the badge.
-    badgeA11yText = input<string>(); // Description for the badge, if needed.
-    hidden = input(false, { transform: toBoolean }); // Whether the item should be hidden.
-    showBrowserWarning = input(true, { transform: toBoolean }); // Whether to show a warning before opening browser (for links).
-    toggle = model(false); // Whether the toggle is on or off.
+    readonly iconSlash = input(false, { transform: toBoolean }); // Display a red slash over the icon.
+    readonly ariaAction = input<string>(); // Aria label to add to iconAction. If not set, it will be equal to content.
+    readonly href = input<string>(); // Link to go if no action provided.
+    readonly captureLink = input(false, { transform: toBoolean }); // Whether the link needs to be captured by the app.
+    readonly autoLogin = input(true, { transform: toBoolean }); // Whether the link needs to be opened using auto-login.
+    readonly closeOnClick = input(true, { transform: toBoolean }); // Whether to close the popover when the item is clicked.
+    readonly priority = input<number>(1); // Used to sort items. The highest priority, the highest position.
+    readonly badge = input<string>(); // A badge to show in the item.
+    readonly badgeClass = input<number>(); // A class to set in the badge.
+    readonly badgeA11yText = input<string>(); // Description for the badge, if needed.
+    readonly hidden = input(false, { transform: toBoolean }); // Whether the item should be hidden.
+    readonly showBrowserWarning = input(true, { transform: toBoolean }); // Show a warning before opening links in browser.
+    readonly toggle = model(false); // Whether the toggle is on or off.
 
     // New output syntax doesn't have the 'observed' property, keep EventEmitter for now.
     // See https://github.com/angular/angular/issues/54837
@@ -64,7 +64,7 @@ export class CoreContextMenuItemComponent implements OnInit, OnDestroy {
 
     uniqueId = CoreUtils.getUniqueId('CoreContextMenuItem');
     // Effective href to use when the item is clicked. Use this instead of href directly.
-    effectiveHref = computed(() => this.action.observed ? undefined : this.href());
+    readonly effectiveHref = computed(() => this.action.observed ? undefined : this.href());
 
     protected previousHiddenValue: boolean | undefined; // Previous value of hidden, used to detect if it's the first change.
     protected destroyed = false;

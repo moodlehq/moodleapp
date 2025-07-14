@@ -50,23 +50,23 @@ import { CoreFormatDatePipe } from '@pipes/format-date';
 })
 export class CoreMessageComponent {
 
-    message = input<CoreMessageData>(); // The message object.
-    user = input<CoreUserWithAvatar>(); // The user object.
+    readonly message = input<CoreMessageData>(); // The message object.
+    readonly user = input<CoreUserWithAvatar>(); // The user object.
 
-    text = input(''); // Message text.
-    time = input(0); // Message time.
-    instanceId = input(0);
-    courseId = input<number>();
-    contextLevel = input<ContextLevel>(ContextLevel.SYSTEM);
-    showDelete = input(false, { transform: toBoolean });
-    onDeleteMessage = output<void>();
-    onUndoDeleteMessage = output<void>();
-    afterRender = output<void>();
+    readonly text = input(''); // Message text.
+    readonly time = input(0); // Message time.
+    readonly instanceId = input(0);
+    readonly courseId = input<number>();
+    readonly contextLevel = input<ContextLevel>(ContextLevel.SYSTEM);
+    readonly showDelete = input(false, { transform: toBoolean });
+    readonly onDeleteMessage = output<void>();
+    readonly onUndoDeleteMessage = output<void>();
+    readonly afterRender = output<void>();
 
-    userFullname = computed(() => this.user()?.fullname || this.user()?.userfullname);
+    readonly userFullname = computed(() => this.user()?.fullname || this.user()?.userfullname);
 
-    protected userId = computed(() => this.user()?.userid || this.user()?.id);
-    protected isMine = computed(() => this.userId() === CoreSites.getCurrentSiteUserId());
+    protected readonly userId = computed(() => this.user()?.userid || this.user()?.id);
+    protected readonly isMine = computed(() => this.userId() === CoreSites.getCurrentSiteUserId());
 
     @HostBinding('class.no-user') get showUser(): boolean {
         return !this.message()?.showUserData;

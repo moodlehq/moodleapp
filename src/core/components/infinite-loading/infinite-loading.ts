@@ -37,15 +37,15 @@ const THRESHOLD = .15; // % of the scroll element height that must be close to t
 })
 export class CoreInfiniteLoadingComponent {
 
-    enabled = input.required<boolean, unknown>({ transform: toBoolean });
-    error = input(false, { transform: toBoolean });
-    position = input<'top' | 'bottom'>('bottom');
-    action = output<() => void>(); // Will emit an event when triggered.
+    readonly enabled = input.required<boolean, unknown>({ transform: toBoolean });
+    readonly error = input(false, { transform: toBoolean });
+    readonly position = input<'top' | 'bottom'>('bottom');
+    readonly action = output<() => void>(); // Will emit an event when triggered.
 
-    infiniteScroll = viewChild(IonInfiniteScroll);
+    readonly infiniteScroll = viewChild(IonInfiniteScroll);
 
-    loadingMore = signal(false); // Hide button and avoid loading more.
-    loadingForced = signal(false); // Whether loading is forced or happened on scroll.
+    readonly loadingMore = signal(false); // Hide button and avoid loading more.
+    readonly loadingForced = signal(false); // Whether loading is forced or happened on scroll.
     hostElement: HTMLElement = inject(ElementRef).nativeElement;
 
     constructor() {

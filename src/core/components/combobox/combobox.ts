@@ -60,24 +60,24 @@ import { CoreUpdateNonReactiveAttributesDirective } from '@directives/update-non
 })
 export class CoreComboboxComponent implements ControlValueAccessor {
 
-    interface = input<'popover' | 'modal'>('popover');
-    label = input(Translate.instant('core.show')); // Aria label.
-    disabled = model(false);
-    selection = model('');
+    readonly interface = input<'popover' | 'modal'>('popover');
+    readonly label = input(Translate.instant('core.show')); // Aria label.
+    readonly disabled = model(false);
+    readonly selection = model('');
 
     // Additional options when interface modal is selected.
-    icon = input<string>(); // Icon for modal interface.
-    modalOptions = input<ModalOptions>(); // Will emit an event the value changed.
-    listboxId = input<string>('');
+    readonly icon = input<string>(); // Icon for modal interface.
+    readonly modalOptions = input<ModalOptions>(); // Will emit an event the value changed.
+    readonly listboxId = input<string>('');
 
     /**
      * @deprecated since 5.1. Use (selectionChange) instead.
      */
-    onChange = output<unknown>(); // Will emit an event the value changed.
+    readonly onChange = output<unknown>(); // Will emit an event the value changed.
 
-    expanded = signal(false);
+    readonly expanded = signal(false);
 
-    protected touched = signal(false);
+    protected readonly touched = signal(false);
     protected formOnChange?: (value: unknown) => void;
     protected formOnTouched?: () => void;
 
@@ -116,7 +116,7 @@ export class CoreComboboxComponent implements ControlValueAccessor {
      */
     onValueChanged(selection: unknown): void {
         this.touch();
-        this.onChange.emit(selection); // eslint-disable-line deprecation/deprecation
+        this.onChange.emit(selection); // eslint-disable-line @typescript-eslint/no-deprecated
         this.formOnChange?.(selection);
     }
 

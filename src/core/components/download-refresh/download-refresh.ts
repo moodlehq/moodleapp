@@ -40,25 +40,25 @@ import { CoreUpdateNonReactiveAttributesDirective } from '@directives/update-non
 })
 export class CoreDownloadRefreshComponent {
 
-    status = input<DownloadStatus>(); // Download status.
-    statusesTranslatable = input<Partial<CoreDownloadStatusTranslatable>>(); // Download statuses translatable strings.
-    statusSubject = input(''); // Status subject to use on name filed in the translatable string.
-    enabled = input(false, { transform: toBoolean }); // Whether the download is enabled.
-    loading = input(true, { transform: toBoolean }); // Force loading status when is not downloading.
-    canTrustDownload = input(false, { transform: toBoolean }); // If false, refresh will be shown if downloaded.
-    action = output<boolean>(); // Will emit an event when the item clicked.
+    readonly status = input<DownloadStatus>(); // Download status.
+    readonly statusesTranslatable = input<Partial<CoreDownloadStatusTranslatable>>(); // Download statuses translatable strings.
+    readonly statusSubject = input(''); // Status subject to use on name filed in the translatable string.
+    readonly enabled = input(false, { transform: toBoolean }); // Whether the download is enabled.
+    readonly loading = input(true, { transform: toBoolean }); // Force loading status when is not downloading.
+    readonly canTrustDownload = input(false, { transform: toBoolean }); // If false, refresh will be shown if downloaded.
+    readonly action = output<boolean>(); // Will emit an event when the item clicked.
 
     /**
      * @deprecated since 4.5. Use statusesTranslatable instead.
      */
-    statusTranslatable = input<string>(); // Download status translatable string.
+    readonly statusTranslatable = input<string>(); // Download status translatable string.
 
     statusDownloaded = DownloadStatus.DOWNLOADED;
     statusNotDownloaded = DownloadStatus.DOWNLOADABLE_NOT_DOWNLOADED;
     statusOutdated = DownloadStatus.OUTDATED;
     statusDownloading = DownloadStatus.DOWNLOADING;
 
-    translates = computed<CoreDownloadStatusTranslatable>(() => ({
+    readonly translates = computed<CoreDownloadStatusTranslatable>(() => ({
         downloaded: 'core.downloaded',
         notdownloaded: 'core.download',
         outdated: 'core.refresh',

@@ -64,7 +64,7 @@ export default class AddonNotificationsSettingsPage implements OnInit, OnDestroy
     canChangeSound: boolean;
     processorHandlers: AddonMessageOutputHandlerData[] = [];
     loggedInOffLegacyMode = false;
-    warningMessage = signal<string | undefined>(undefined);
+    readonly warningMessage = signal<string | undefined>(undefined);
 
     protected updateTimeout?: number;
     protected logView: () => void;

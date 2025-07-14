@@ -33,8 +33,8 @@ import { CoreFaIconDirective } from '@directives/fa-icon';
 })
 export class CoreCourseImageComponent {
 
-    course = input.required<CoreCourseListItem>();
-    fill = input(false, { transform: toBoolean });
+    readonly course = input.required<CoreCourseListItem>();
+    readonly fill = input(false, { transform: toBoolean });
 
     protected element: HTMLElement = inject(ElementRef).nativeElement;
 

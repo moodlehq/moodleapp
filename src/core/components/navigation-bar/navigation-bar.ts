@@ -42,34 +42,34 @@ import { CoreUpdateNonReactiveAttributesDirective } from '@directives/update-non
 })
 export class CoreNavigationBarComponent {
 
-    items = input<CoreNavigationBarItem[]>([]); // List of items.
-    previousTranslate = input('core.previous'); // Previous translatable text, can admit $a variable.
-    nextTranslate = input('core.next'); // Next translatable text, can admit $a variable.
-    component = input<string>(); // Component the bar belongs to.
-    componentId = input<number>(); // Component ID.
-    contextLevel = input<ContextLevel>(); // The context level.
-    contextInstanceId = input<number>(); // The instance ID related to the context.
-    courseId = input<number>(); // Course ID the text belongs to. It can be used to improve performance with filters.
-    action = output<unknown>(); // Function to call when arrow is clicked. Will receive as a param the item to load.
+    readonly items = input<CoreNavigationBarItem[]>([]); // List of items.
+    readonly previousTranslate = input('core.previous'); // Previous translatable text, can admit $a variable.
+    readonly nextTranslate = input('core.next'); // Next translatable text, can admit $a variable.
+    readonly component = input<string>(); // Component the bar belongs to.
+    readonly componentId = input<number>(); // Component ID.
+    readonly contextLevel = input<ContextLevel>(); // The context level.
+    readonly contextInstanceId = input<number>(); // The instance ID related to the context.
+    readonly courseId = input<number>(); // Course ID the text belongs to. It can be used to improve performance with filters.
+    readonly action = output<unknown>(); // Function to call when arrow is clicked. Will receive as a param the item to load.
 
-    currentIndex = linkedSignal(() => this.items().findIndex(item => item.current));
-    progress = computed(() => this.currentIndex() >= 0 ? ((this.currentIndex() + 1) / this.items().length) * 100 : 0);
-    progressText = computed(() => this.currentIndex() >= 0 ? `${this.currentIndex() + 1} / ${this.items().length}` : '');
+    readonly currentIndex = linkedSignal(() => this.items().findIndex(item => item.current));
+    readonly progress = computed(() => this.currentIndex() >= 0 ? ((this.currentIndex() + 1) / this.items().length) * 100 : 0);
+    readonly progressText = computed(() => this.currentIndex() >= 0 ? `${this.currentIndex() + 1} / ${this.items().length}` : '');
 
-    nextIndex = computed(() => this.currentIndex() >= 0 ?
+    readonly nextIndex = computed(() => this.currentIndex() >= 0 ?
         this.items().findIndex((item, index) => item.enabled && index > this.currentIndex()) : -1);
 
-    nextTitle = computed(() => this.items()[this.nextIndex()] ?
+    readonly nextTitle = computed(() => this.items()[this.nextIndex()] ?
         Translate.instant(this.nextTranslate(), { $a: this.items()[this.nextIndex()].title || '' }) : '');
 
-    previousIndex = computed(() => {
+    readonly previousIndex = computed(() => {
         const reversedIndex = this.currentIndex() >= 0 ?
             this.items().slice(0, this.currentIndex()).reverse().findIndex(item => item.enabled) : -1;
 
         return reversedIndex >= 0 ? this.currentIndex() - reversedIndex - 1 : -1;
     });
 
-    previousTitle = computed(() => this.items()[this.previousIndex()] ?
+    readonly previousTitle = computed(() => this.items()[this.previousIndex()] ?
         Translate.instant(this.previousTranslate(), { $a: this.items()[this.previousIndex()].title || '' }) : '');
 
     /**

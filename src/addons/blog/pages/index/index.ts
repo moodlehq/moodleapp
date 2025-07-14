@@ -72,7 +72,7 @@ export default class AddonBlogIndexPage implements OnInit, OnDestroy {
     protected siteHomeId: number;
     protected logView: () => void;
 
-    loaded = signal(false);
+    readonly loaded = signal(false);
     canLoadMore = false;
     loadMoreError = false;
     entries: (AddonBlogOfflinePostFormatted | AddonBlogPostFormatted)[] = [];
@@ -91,11 +91,11 @@ export default class AddonBlogIndexPage implements OnInit, OnDestroy {
     syncObserver: CoreEventObserver;
     onlineObserver: Subscription;
     optionsAvailable = false;
-    hasOfflineDataToSync = signal(false);
-    isOnline = signal(false);
+    readonly hasOfflineDataToSync = signal(false);
+    readonly isOnline = signal(false);
     siteId: string;
     syncIcon = CoreConstants.ICON_SYNC;
-    syncHidden = computed(() => !this.loaded() || !this.isOnline() || !this.hasOfflineDataToSync());
+    readonly syncHidden = computed(() => !this.loaded() || !this.isOnline() || !this.hasOfflineDataToSync());
 
     constructor() {
         this.currentUserId = CoreSites.getCurrentSiteUserId();

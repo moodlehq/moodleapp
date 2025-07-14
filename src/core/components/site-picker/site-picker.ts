@@ -34,11 +34,11 @@ import { CoreBaseModule } from '@/core/base.module';
 })
 export class CoreSitePickerComponent implements OnInit {
 
-    initialSite = input<string>(); // Initial site. If not provided, current site.
-    siteSelected = output<string>(); // Emit an event when a site is selected. Sends the siteId as parameter.
+    readonly initialSite = input<string>(); // Initial site. If not provided, current site.
+    readonly siteSelected = output<string>(); // Emit an event when a site is selected. Sends the siteId as parameter.
 
-    selectedSite = signal<string | undefined>(undefined);
-    sites = signal<SiteInfo[]>([]);
+    readonly selectedSite = signal<string | undefined>(undefined);
+    readonly sites = signal<SiteInfo[]>([]);
 
     /**
      * @inheritdoc

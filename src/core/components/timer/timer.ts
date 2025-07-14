@@ -38,28 +38,28 @@ import { CorePromiseUtils } from '@singletons/promise-utils';
 })
 export class CoreTimerComponent implements OnInit, OnDestroy {
 
-    endTime = input(0); // Timestamp (in seconds) when the timer should end.
-    timerText = input<string>(''); // Text to show next to the timer. If not defined, no text shown.
-    timeLeftClass = input<string>(); // Name of the class to apply with each second. By default, 'core-timer-timeleft-'.
-    timeLeftClassThreshold = input(100); // Number of seconds to start adding the timeLeftClass. Set it to -1 to not add it.
-    align = input('start'); // Where to align the time and text. Defaults to 'start'. Other values: 'center', 'end'.
-    hidable = input(false, { transform: toBoolean }); // Whether the user can hide the time left.
-    timeUpText = input<string>(); // Text to show when the timer reaches 0. If not defined, 'core.timesup'.
-    mode = input<CoreTimerMode>(CoreTimerMode.ITEM); // How to display data.
-    underTimeClassThresholds = input([]); // Number of seconds to add the class 'core-timer-under-'.
-    timerHiddenPreferenceName = input<string>(); // Name of the preference to store the timer visibility.
-    finished = output<void>(); // Will emit an event when the timer reaches 0.
+    readonly endTime = input(0); // Timestamp (in seconds) when the timer should end.
+    readonly timerText = input<string>(''); // Text to show next to the timer. If not defined, no text shown.
+    readonly timeLeftClass = input<string>(); // Name of the class to apply with each second. By default, 'core-timer-timeleft-'.
+    readonly timeLeftClassThreshold = input(100); // Number of seconds to start adding the timeLeftClass. -1 to not add it.
+    readonly align = input('start'); // Where to align the time and text. Defaults to 'start'. Other values: 'center', 'end'.
+    readonly hidable = input(false, { transform: toBoolean }); // Whether the user can hide the time left.
+    readonly timeUpText = input<string>(); // Text to show when the timer reaches 0. If not defined, 'core.timesup'.
+    readonly mode = input<CoreTimerMode>(CoreTimerMode.ITEM); // How to display data.
+    readonly underTimeClassThresholds = input([]); // Number of seconds to add the class 'core-timer-under-'.
+    readonly timerHiddenPreferenceName = input<string>(); // Name of the preference to store the timer visibility.
+    readonly finished = output<void>(); // Will emit an event when the timer reaches 0.
     /**
      * @deprecated since 4.4. Use hidable instead.
      */
-    hiddable = input(false, { transform: toBoolean }); // Whether the user can hide the time left.
+    readonly hiddable = input(false, { transform: toBoolean }); // Whether the user can hide the time left.
 
-    timeLeft = signal(-1); // Seconds left to end.
-    hiddenByUser = signal(false); // Whether the user has hidden the timer.
+    readonly timeLeft = signal(-1); // Seconds left to end.
+    readonly hiddenByUser = signal(false); // Whether the user has hidden the timer.
 
-    showTimeLeft = computed(() => !this.canHideTimer() || !this.hiddenByUser());
+    readonly showTimeLeft = computed(() => !this.canHideTimer() || !this.hiddenByUser());
 
-    canHideTimer = computed(() => {
+    readonly canHideTimer = computed(() => {
         // eslint-disable-next-line @typescript-eslint/no-deprecated
         if (!this.hidable() && !this.hiddable()) {
             return false;

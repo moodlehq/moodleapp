@@ -41,7 +41,7 @@ import { CoreFaIconDirective } from '@directives/fa-icon';
 })
 export class CoreMarkRequiredComponent implements AfterViewInit {
 
-    coreMarkRequired = input(true, { alias: 'core-mark-required', transform: toBoolean });
+    readonly coreMarkRequired = input(true, { alias: 'core-mark-required', transform: toBoolean });
 
     requiredLabel = Translate.instant('core.required');
 

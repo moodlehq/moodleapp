@@ -33,8 +33,8 @@ import { CoreDom } from '@singletons/dom';
 })
 export class CoreStyleComponent {
 
-    css = input(''); // CSS rules.
-    prefix = input(''); // Prefix to add to CSS rules.
+    readonly css = input(''); // CSS rules.
+    readonly prefix = input(''); // Prefix to add to CSS rules.
 
     protected element: HTMLElement = inject(ElementRef).nativeElement;
 

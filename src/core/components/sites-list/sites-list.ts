@@ -53,11 +53,11 @@ import { CoreLinkDirective } from '@directives/link';
 })
 export class CoreSitesListComponent<T extends CoreSiteBasicInfo> {
 
-    accountsList = input.required<CoreAccountsList<T>>();
-    sitesClickable = input(false, { transform: toBoolean }); // Whether the sites are clickable.
-    currentSiteClickable = input<boolean, unknown>(undefined, { transform: toBoolean }); // If set, set a different clickable value
-                                                                                         // for current site.
-    onSiteClicked = output<T>();
+    readonly accountsList = input.required<CoreAccountsList<T>>();
+    readonly sitesClickable = input(false, { transform: toBoolean }); // Whether the sites are clickable.
+    readonly currentSiteClickable = input<boolean, unknown>(undefined, { transform: toBoolean }); // Set a different clickable value
+                                                                                                  // for current site.
+    readonly onSiteClicked = output<T>();
 
     @ContentChild('siteItem') siteItemTemplate?: TemplateRef<{site: T; isCurrentSite: boolean}>;
     @ContentChild('siteLabel') siteLabelTemplate?: TemplateRef<{site: T; isCurrentSite: boolean}>;

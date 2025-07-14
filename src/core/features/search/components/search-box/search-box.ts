@@ -64,8 +64,8 @@ export class CoreSearchBoxComponent implements OnInit {
     searched = ''; // Last search emitted.
     searchText = '';
     history: CoreSearchHistoryDBRecord[] = [];
-    historyShown = signal(false);
-    showLengthAlert = signal(false);
+    readonly historyShown = signal(false);
+    readonly showLengthAlert = signal(false);
 
     constructor() {
         this.onSubmit = new EventEmitter<string>();

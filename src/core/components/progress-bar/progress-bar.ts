@@ -34,22 +34,22 @@ import { CoreBaseModule } from '@/core/base.module';
 })
 export class CoreProgressBarComponent {
 
-    progress = input.required<number | string>(); // Percentage (0 to 100). Negative number will show an indeterminate bar.
-    text = input<string>(); // Percentage in text to be shown at the right. If not defined, progress will be used.
-    a11yText = input<string>(); // Accessibility text to read before the percentage.
-    ariaDescribedBy = input<string>(); // ID of the element that described the progress, if any.
-    color = input('');
+    readonly progress = input.required<number | string>(); // Percentage (0 to 100). Negative number will show an indeterminate bar.
+    readonly text = input<string>(); // Percentage in text to be shown at the right. If not defined, progress will be used.
+    readonly a11yText = input<string>(); // Accessibility text to read before the percentage.
+    readonly ariaDescribedBy = input<string>(); // ID of the element that described the progress, if any.
+    readonly color = input('');
 
-    progressNumber = computed(() => {
+    readonly progressNumber = computed(() => {
         const progress = Number(this.progress());
 
         return progress < 0 || isNaN(progress) ? -1 : Math.floor(progress); // Remove decimals if progress is valid.
     });
 
-    textToDisplay = computed(() => this.text() ??
+    readonly textToDisplay = computed(() => this.text() ??
         (this.progressNumber() !== -1 ? Translate.instant('core.percentagenumber', { $a: this.progressNumber() }) : ''));
 
-    progressBarValueText = computed(() =>
+    readonly progressBarValueText = computed(() =>
         (this.a11yText() ? Translate.instant(this.a11yText() ?? '') + ' ' : '') + this.textToDisplay());
 
 }

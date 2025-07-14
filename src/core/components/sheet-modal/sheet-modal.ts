@@ -30,9 +30,9 @@ import { CoreBaseModule } from '@/core/base.module';
 })
 export class CoreSheetModalComponent<T extends CoreModalComponent> implements AfterViewInit {
 
-    component = input.required<Constructor<T>>();
-    componentProps = input<Record<string, unknown>>();
-    wrapper = viewChild<ElementRef<HTMLElement>>('wrapper');
+    readonly component = input.required<Constructor<T>>();
+    readonly componentProps = input<Record<string, unknown>>();
+    readonly wrapper = viewChild<ElementRef<HTMLElement>>('wrapper');
 
     private element: HTMLElement = inject(ElementRef).nativeElement;
     private wrapperElement = new CorePromisedValue<HTMLElement>();
