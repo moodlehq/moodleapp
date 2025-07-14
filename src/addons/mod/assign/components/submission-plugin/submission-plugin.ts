@@ -34,7 +34,6 @@ import { CoreSharedModule } from '@/core/shared.module';
 @Component({
     selector: 'addon-mod-assign-submission-plugin',
     templateUrl: 'addon-mod-assign-submission-plugin.html',
-    standalone: true,
     imports: [
         CoreSharedModule,
     ],

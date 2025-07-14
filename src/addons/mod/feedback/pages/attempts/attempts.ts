@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { AfterViewInit, Component, OnDestroy, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, OnDestroy, ViewChild, inject } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { CoreRoutedItemsManagerSourcesTracker } from '@classes/items-management/routed-items-manager-sources-tracker';
 import { CoreListItemsManager } from '@classes/items-management/list-items-manager';
@@ -35,7 +35,6 @@ import { CoreSharedModule } from '@/core/shared.module';
 @Component({
     selector: 'page-addon-mod-feedback-attempts',
     templateUrl: 'attempts.html',
-    standalone: true,
     imports: [
         CoreSharedModule,
     ],
@@ -49,8 +48,9 @@ export default class AddonModFeedbackAttemptsPage implements AfterViewInit, OnDe
     courseId?: number;
 
     protected logView: () => void;
+    protected route = inject(ActivatedRoute);
 
-    constructor(protected route: ActivatedRoute) {
+    constructor() {
         this.promisedAttempts = new CorePromisedValue();
 
         this.logView = CoreTime.once(() => {

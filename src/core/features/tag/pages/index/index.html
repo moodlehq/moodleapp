@@ -15,24 +15,30 @@
             <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}" />
         </ion-refresher>
         <core-loading [hideUntil]="loaded">
-            <ion-list *ngIf="hasUnsupportedAreas || areas.length">
-                <ion-item *ngIf="hasUnsupportedAreas" class="core-warning-item">
-                    <ion-icon slot="start" name="fas-triangle-exclamation" color="warning" aria-hidden="true" />
-                    <ion-label class="ion-text-wrap">{{ 'core.tag.warningareasnotsupported' | translate }}</ion-label>
-                </ion-item>
-                <ion-item class="ion-text-wrap" *ngFor="let area of areas" [attr.aria-label]="area.nameKey | translate"
-                    (click)="openArea(area)" [attr.aria-current]="area.id === selectedAreaId ? 'page' : 'false'" button [detail]="true">
-                    <ion-label>
-                        <p class="item-heading">{{ area.nameKey | translate }}</p>
-                    </ion-label>
-                    <ion-badge slot="end" *ngIf="area.badge">
-                        <span aria-hidden="true">{{ area.badge }}</span>
-                        <span class="sr-only">{{ 'core.tag.tagareabadgedescription' | translate:{ count: area.badge } }}</span>
-                    </ion-badge>
-                </ion-item>
-            </ion-list>
-            <core-empty-box icon="fas-tag" *ngIf="!hasUnsupportedAreas && (!areas || !areas.length)"
-                [message]="'core.tag.noresultsfor' | translate: { $a: tagName }" />
+            @if (hasUnsupportedAreas || areas.length) {
+                <ion-list>
+                    @if (hasUnsupportedAreas) {
+                        <ion-item class="core-warning-item">
+                            <ion-icon slot="start" name="fas-triangle-exclamation" color="warning" aria-hidden="true" />
+                            <ion-label class="ion-text-wrap">{{ 'core.tag.warningareasnotsupported' | translate }}</ion-label>
+                        </ion-item>
+                    }
+                    <ion-item class="ion-text-wrap" *ngFor="let area of areas" [attr.aria-label]="area.nameKey | translate"
+                        (click)="openArea(area)" [attr.aria-current]="area.id === selectedAreaId ? 'page' : 'false'" button [detail]="true">
+                        <ion-label>
+                            <p class="item-heading">{{ area.nameKey | translate }}</p>
+                        </ion-label>
+                        @if (area.badge) {
+                            <ion-badge slot="end">
+                                <span aria-hidden="true">{{ area.badge }}</span>
+                                <span class="sr-only">{{ 'core.tag.tagareabadgedescription' | translate:{ count: area.badge } }}</span>
+                            </ion-badge>
+                        }
+                    </ion-item>
+                </ion-list>
+            } @else {
+                <core-empty-box icon="fas-tag" [message]="'core.tag.noresultsfor' | translate: { $a: tagName }" />
+            }
         </core-loading>
     </core-split-view>
 </ion-content>

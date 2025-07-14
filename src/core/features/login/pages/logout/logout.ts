@@ -26,7 +26,6 @@ import { CoreRedirects } from '@singletons/redirects';
 @Component({
     selector: 'page-core-login-logout',
     templateUrl: 'logout.html',
-    standalone: true,
     imports: [
         CoreSharedModule,
     ],

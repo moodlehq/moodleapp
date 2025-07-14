@@ -29,7 +29,6 @@ const enum ScrollPosition {
     selector: 'core-horizontal-scroll-controls',
     templateUrl: 'core-horizontal-scroll-controls.html',
     styleUrl: './horizontal-scroll-controls.scss',
-    standalone: true,
     imports: [
         CoreBaseModule,
         CoreUpdateNonReactiveAttributesDirective,

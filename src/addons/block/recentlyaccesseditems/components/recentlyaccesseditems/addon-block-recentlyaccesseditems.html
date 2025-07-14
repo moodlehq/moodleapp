@@ -9,32 +9,39 @@
 <core-loading [hideUntil]="loaded" placeholderType="row" placeholderWidth="280px" placeholderHeight="66px" [placeholderLimit]="4">
     <div [id]="scrollElementId" [hidden]="!items || items.length === 0" class="core-horizontal-scroll"
         (scroll)="scrollControls.updateScrollPosition()">
-        <div *ngIf="items" (onResize)="scrollControls.updateScrollPosition()" class="flex-row">
-            <div class="safe-area-pseudo-padding-start"></div>
-            <div *ngFor="let item of items" class="core-horizontal-scroll-item">
-                <ion-card>
-                    <ion-item class="core-course-module-handler ion-text-wrap" [detail]="false" (click)="action($event, item)" button>
-                        <core-mod-icon slot="start" *ngIf="item.iconUrl" [modicon]="item.iconUrl" [modname]="item.modname"
-                            [componentId]="item.cmid" [showAlt]="false" [purpose]="item.purpose" [isBranded]="item.branded" />
-                        <ion-label>
-                            <!-- Add the icon title so accessibility tools read it. -->
-                            <span class="sr-only" *ngIf="item.iconTitle">{{ item.iconTitle }}</span>
-                            <p class="item-heading">
-                                <core-format-text [text]="item.name" contextLevel="module" [contextInstanceId]="item.cmid"
-                                    [courseId]="item.courseid" />
-                            </p>
-                            <p>
-                                <core-format-text [text]="item.coursename" contextLevel="course" [contextInstanceId]="item.courseid" />
-                            </p>
-                        </ion-label>
-                    </ion-item>
-                </ion-card>
+        @if (items) {
+            <div (onResize)="scrollControls.updateScrollPosition()" class="flex-row">
+                <div class="safe-area-pseudo-padding-start"></div>
+                <div *ngFor="let item of items" class="core-horizontal-scroll-item">
+                    <ion-card>
+                        <ion-item class="core-course-module-handler ion-text-wrap" [detail]="false" (click)="action($event, item)" button>
+                            @if (item.iconUrl) {
+                                <core-mod-icon slot="start" [modicon]="item.iconUrl" [modname]="item.modname" [componentId]="item.cmid"
+                                    [showAlt]="false" [purpose]="item.purpose" [isBranded]="item.branded" />
+                            }
+                            <ion-label>
+                                <!-- Add the icon title so accessibility tools read it. -->
+                                @if (item.iconTitle) {
+                                    <span class="sr-only">{{ item.iconTitle }}</span>
+                                }
+                                <p class="item-heading">
+                                    <core-format-text [text]="item.name" contextLevel="module" [contextInstanceId]="item.cmid"
+                                        [courseId]="item.courseid" />
+                                </p>
+                                <p>
+                                    <core-format-text [text]="item.coursename" contextLevel="course" [contextInstanceId]="item.courseid" />
+                                </p>
+                            </ion-label>
+                        </ion-item>
+                    </ion-card>
+                </div>
+                <div class="safe-area-pseudo-padding-end"></div>
             </div>
-            <div class="safe-area-pseudo-padding-end"></div>
-        </div>
+        }
     </div>
 
-    <core-empty-box *ngIf="items.length <= 0" image="assets/img/icons/activities.svg"
-        [message]="'addon.block_recentlyaccesseditems.noitems' | translate" />
+    @if (items.length <= 0) {
+        <core-empty-box image="assets/img/icons/activities.svg" [message]="'addon.block_recentlyaccesseditems.noitems' | translate" />
+    }
 
 </core-loading>

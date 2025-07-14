@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Directive, Input, OnInit, ElementRef, Optional } from '@angular/core';
+import { Directive, Input, OnInit, ElementRef, inject } from '@angular/core';
 import { Md5 } from 'ts-md5';
 
 import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
@@ -45,7 +45,6 @@ import { ContextLevel } from '@/core/constants';
  */
 @Directive({
     selector: '[core-site-plugins-new-content]',
-    standalone: true,
 })
 export class CoreSitePluginsNewContentDirective implements OnInit {
 
@@ -65,14 +64,8 @@ export class CoreSitePluginsNewContentDirective implements OnInit {
     @Input() courseId?: number; // Course ID the text belongs to. It can be used to improve performance with filters.
     @Input({ transform: toBoolean }) ptrEnabled = true; // Whether PTR should be enabled in the new page.
 
-    protected element: HTMLElement;
-
-    constructor(
-        element: ElementRef,
-        @Optional() protected parentContent: CoreSitePluginsPluginContentComponent,
-    ) {
-        this.element = element.nativeElement || element;
-    }
+    protected element: HTMLElement = inject(ElementRef).nativeElement;
+    protected parentContent = inject(CoreSitePluginsPluginContentComponent, { optional: true });
 
     /**
      * @inheritdoc

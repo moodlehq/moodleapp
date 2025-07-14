@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { APP_INITIALIZER, NgModule, Type } from '@angular/core';
+import { NgModule, Type, provideAppInitializer } from '@angular/core';
 import { Routes } from '@angular/router';
 
 import { CoreMainMenuTabRoutingModule } from '@features/mainmenu/mainmenu-tab-routing.module';
@@ -126,7 +126,7 @@ export async function getCourseExportedDirectives(): Promise<Type<unknown>[]> {
 
     const { CoreCourseDownloadModuleMainFileDirective } = await import('@features/course/directives/download-module-main-file');
 
-    // eslint-disable-next-line deprecation/deprecation
+    // eslint-disable-next-line @typescript-eslint/no-deprecated
     const { CoreCourseModuleDescriptionComponent } =
         await import('@features/course/components/module-description/module-description');
 
@@ -169,19 +169,15 @@ const courseIndexRoutes: Routes = [
             useValue: [COURSE_SITE_SCHEMA, COURSE_OFFLINE_SITE_SCHEMA, LOG_SITE_SCHEMA, PREFETCH_SITE_SCHEMA],
             multi: true,
         },
-        {
-            provide: APP_INITIALIZER,
-            multi: true,
-            useValue: () => {
-                CoreCronDelegate.register(CoreCourseSyncCronHandler.instance);
-                CoreCronDelegate.register(CoreCourseLogCronHandler.instance);
-                CoreTagAreaDelegate.registerHandler(CoreCourseTagAreaHandler.instance);
-                CoreTagAreaDelegate.registerHandler(CoreCourseModulesTagAreaHandler.instance);
+        provideAppInitializer(() => {
+            CoreCronDelegate.register(CoreCourseSyncCronHandler.instance);
+            CoreCronDelegate.register(CoreCourseLogCronHandler.instance);
+            CoreTagAreaDelegate.registerHandler(CoreCourseTagAreaHandler.instance);
+            CoreTagAreaDelegate.registerHandler(CoreCourseModulesTagAreaHandler.instance);
 
-                CoreCourse.initialize();
-                CoreCourseModulePrefetchDelegate.initialize();
-            },
-        },
+            CoreCourse.initialize();
+            CoreCourseModulePrefetchDelegate.initialize();
+        }),
     ],
 })
 export class CoreCourseModule {}

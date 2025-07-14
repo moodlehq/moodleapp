@@ -53,7 +53,6 @@ import { CoreUpdateNonReactiveAttributesDirective } from '@directives/update-non
     selector: 'core-attachments',
     templateUrl: 'core-attachments.html',
     styleUrl: 'attachments.scss',
-    standalone: true,
     imports: [
         CoreBaseModule,
         CoreFaIconDirective,

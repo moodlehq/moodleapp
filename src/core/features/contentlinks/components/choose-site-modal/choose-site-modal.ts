@@ -29,7 +29,6 @@ import { CoreAlerts } from '@services/overlays/alerts';
 @Component({
     selector: 'core-content-links-choose-site-modal',
     templateUrl: 'choose-site-modal.html',
-    standalone: true,
     imports: [
         CoreSharedModule,
     ],

@@ -767,7 +767,7 @@ export class CoreUserProvider {
                 CoreUserOffline.setPreference(name, value, value),
                 CorePromiseUtils.ignoreErrors(this.invalidateUserPreference(name)),
             ]);
-        } catch (error) {
+        } catch {
             // Preference not saved online. Update the offline one.
             await CoreUserOffline.setPreference(name, value);
         }

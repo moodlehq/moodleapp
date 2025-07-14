@@ -33,7 +33,6 @@ import { CoreSharedModule } from '@/core/shared.module';
 @Component({
     selector: 'page-addon-course-completion-report',
     templateUrl: 'report.html',
-    standalone: true,
     imports: [
         CoreSharedModule,
     ],

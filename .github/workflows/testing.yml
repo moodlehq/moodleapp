@@ -24,14 +24,14 @@ jobs:
       run: |
         result=$(cat scripts/langindex.json | grep \"TBD\" | wc -l); test $result -eq 0
         if [ $result -ne 0 ]; then
-          echo "There are lang strings to be decided on langindex.json"
+          echo "::error::There are lang strings to be decided on langindex.json"
           exit 1
         fi
         gulp
         langcount=`jq -r '. | length' src/assets/lang/en.json`
         langindexcount=`jq -r '. | length' scripts/langindex.json`
         if [ $langcount -ne $langindexcount ]; then
-          echo "Lang file has $langcount while langindex $langindexcount"
+          echo "::error::Lang file has $langcount while langindex $langindexcount"
           exit 1
         fi
 
@@ -49,7 +49,7 @@ jobs:
             [[ -n $skip ]] || { echo "$i key not found"; found=$(($found + 1)); }
         done
         if [ $found -ne 0 ]; then
-          echo "Found $found missing langkeys"
+          echo "::error::Found $found missing langkeys"
           exit 1
         fi
     - name: Run Linters (ignore warnings)
@@ -72,5 +72,14 @@ jobs:
         test $lines -eq 79
     - name: JavaScript code compatibility
       run: |
-        npx check-es-compat www/*.js --polyfills="\{Array,String,TypedArray\}.prototype.at,Object.hasOwn"
-        npx check-es-compat cordova-plugin-moodleapp/www/*.js
+        # Check for ES2021 features, allowing ErrorCause feature.
+        # browserslist is not used here because of a bug in es-check
+        # See https://github.com/yowainwright/es-check/blob/main/constants.js to see the list of features and polyfills.
+        npx es-check --config=.escheckrc
+        # In order to support Chrome 93 and iOS 15 we need to find Static initialization blocks are not present in the code.
+        # See https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Classes/Static_initialization_blocks
+        # acorn is used by es-check but cannot check for this feature only, so we need to check it manually.
+        if grep -qE 'static[ ]*\{' www/*.js cordova-plugin-moodleapp/www/*.js; then
+          echo "::error::Static initialization blocks are not supported in Chrome 93 and iOS 15."
+          exit 1
+        fi

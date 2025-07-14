@@ -23,6 +23,7 @@ import {
     EventEmitter,
     SimpleChange,
     ChangeDetectorRef,
+    inject,
 } from '@angular/core';
 import { CoreBaseModule } from '@/core/base.module';
 import { CoreSecondsToHMSPipe } from '@pipes/seconds-to-hms';
@@ -42,7 +43,6 @@ import { CoreSecondsToHMSPipe } from '@pipes/seconds-to-hms';
 @Component({
     selector: 'core-chrono',
     templateUrl: 'core-chrono.html',
-    standalone: true,
     imports: [
         CoreBaseModule,
         CoreSecondsToHMSPipe,
@@ -58,9 +58,11 @@ export class CoreChronoComponent implements OnInit, OnChanges, OnDestroy {
     @Output() onEnd: EventEmitter<void>; // Will emit an event when the endTime is reached.
 
     time = 0;
-    protected interval?: number;
 
-    constructor(protected changeDetectorRef: ChangeDetectorRef) {
+    protected interval?: number;
+    protected changeDetectorRef = inject(ChangeDetectorRef);
+
+    constructor() {
         this.onEnd = new EventEmitter();
     }
 

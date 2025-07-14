@@ -12,19 +12,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { NgModule, APP_INITIALIZER } from '@angular/core';
+import { NgModule, provideAppInitializer } from '@angular/core';
 import { AddonModDataFieldsDelegate } from '../../services/data-fields-delegate';
 import { AddonModDataFieldTextareaHandler } from './services/handler';
 
 @NgModule({
     providers: [
-        {
-            provide: APP_INITIALIZER,
-            multi: true,
-            useValue: () => {
-                AddonModDataFieldsDelegate.registerHandler(AddonModDataFieldTextareaHandler.instance);
-            },
-        },
+        provideAppInitializer(() => {
+            AddonModDataFieldsDelegate.registerHandler(AddonModDataFieldTextareaHandler.instance);
+        }),
     ],
 })
 export class AddonModDataFieldTextareaModule {}

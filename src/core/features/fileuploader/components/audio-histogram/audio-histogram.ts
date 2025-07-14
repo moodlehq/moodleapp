@@ -14,14 +14,13 @@
 
 import { CoreSharedModule } from '@/core/shared.module';
 import { toBoolean } from '@/core/transforms/boolean';
-import { AfterViewInit, ChangeDetectionStrategy, Component, ElementRef, Input, OnDestroy, ViewChild } from '@angular/core';
+import { AfterViewInit, ChangeDetectionStrategy, Component, ElementRef, inject, Input, OnDestroy, ViewChild } from '@angular/core';
 
 @Component({
     selector: 'core-audio-histogram',
     templateUrl: 'audio-histogram.html',
     styleUrl: 'audio-histogram.scss',
     changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: true,
     imports: [
         CoreSharedModule,
     ],
@@ -36,15 +35,11 @@ export class CoreFileUploaderAudioHistogramComponent implements AfterViewInit, O
     @Input({ transform: toBoolean }) paused = false;
     @ViewChild('canvas') canvasRef?: ElementRef<HTMLCanvasElement>;
 
-    private element: HTMLElement;
+    private element: HTMLElement = inject(ElementRef).nativeElement;
     private canvas?: HTMLCanvasElement;
     private context?: CanvasRenderingContext2D | null;
     private buffer?: Uint8Array;
     private destroyed = false;
-
-    constructor({ nativeElement }: ElementRef<HTMLElement>) {
-        this.element = nativeElement;
-    }
 
     /**
      * @inheritdoc

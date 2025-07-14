@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { CoreConstants } from '@/core/constants';
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { NavParams } from '@ionic/angular';
 import { PopoverController } from '@singletons';
 import { CoreContextMenuItemComponent } from './context-menu-item';
@@ -28,7 +28,6 @@ import { CoreLinkDirective } from '@directives/link';
     selector: 'core-context-menu-popover',
     templateUrl: 'core-context-menu-popover.html',
     styleUrl: 'context-menu-popover.scss',
-    standalone: true,
     imports: [
         CoreBaseModule,
         CoreFaIconDirective,
@@ -40,9 +39,9 @@ export class CoreContextMenuPopoverComponent {
     uniqueId: string;
     items: CoreContextMenuItemComponent[];
 
-    constructor(
-        navParams: NavParams,
-    ) {
+    constructor() {
+        const navParams = inject(NavParams);
+
         this.items = navParams.get('items') || [];
         this.uniqueId = navParams.get('id');
     }

@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-/* eslint-disable deprecation/deprecation */
+/* eslint-disable @typescript-eslint/no-deprecated */
 
 import { Injectable } from '@angular/core';
 import {
@@ -314,7 +314,7 @@ export class FileMock extends File {
     private fillErrorMessageMock(error: FileError): void {
         try {
             error.message = this.cordovaFileError[error.code];
-        } catch (e) {
+        } catch {
             // Ignore errors.
         }
     }
@@ -558,6 +558,7 @@ export class FileMock extends File {
      * @param path Base FileSystem.
      * @param file Name of file, relative to path.
      * @returns Returns a Promise that resolves with the contents of the file as string rejects with an error.
+     * @deprecated see https://developer.mozilla.org/en-US/docs/Web/API/FileReader/readAsBinaryString
      */
     readAsBinaryString(path: string, file: string): Promise<string> {
         return this.readFileMock<string>(path, file, 'BinaryString');

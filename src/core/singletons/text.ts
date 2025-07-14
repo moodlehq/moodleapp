@@ -124,7 +124,7 @@ export class CoreText {
             virtualInput.innerHTML = text;
             virtualInput.select();
             virtualInput.setSelectionRange(0, 99999);
-            document.execCommand('copy'); // eslint-disable-line deprecation/deprecation
+            document.execCommand('copy'); // eslint-disable-line @typescript-eslint/no-deprecated
         }
 
         // Show toast using ionicLoading.

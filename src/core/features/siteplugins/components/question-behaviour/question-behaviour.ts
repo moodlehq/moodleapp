@@ -29,7 +29,6 @@ import { CoreSitePluginsCompileInitComponent } from '@features/siteplugins/class
     selector: 'core-site-plugins-question-behaviour',
     templateUrl: 'core-siteplugins-question-behaviour.html',
     styles: [':host { display: contents; }'],
-    standalone: true,
     imports: [
         CoreSharedModule,
         CoreCompileHtmlComponent,
@@ -49,10 +48,6 @@ export class CoreSitePluginsQuestionBehaviourComponent extends CoreSitePluginsCo
     @Input() preferredBehaviour?: string; // Preferred behaviour.
     @Output() buttonClicked = new EventEmitter<CoreQuestionBehaviourButton>(); // Will emit when a behaviour button is clicked.
     @Output() onAbort = new EventEmitter<void>(); // Should emit an event if the question should be aborted.
-
-    constructor() {
-        super();
-    }
 
     /**
      * @inheritdoc

@@ -3,18 +3,24 @@
     <ion-tab-bar slot="bottom" class="mainmenu-tabs" [@menuVisibilityAnimation]="visibility">
         <core-loading [hideUntil]="loaded" [placeholderType]="tabsPlacement === 'bottom' ? 'rowwrap' : 'column'"
             [placeholderLimit]="loadingTabsLength" />
-        <core-user-menu-button *ngIf="loaded && tabsPlacement === 'side'" [alwaysShow]="true" />
+        @if (loaded && tabsPlacement === 'side') {
+            <core-user-menu-button [alwaysShow]="true" />
+        }
 
         <ion-tab-button *ngFor="let tab of tabs" (keydown)="tabAction.keyDown(tab.page, $event)" (keyup)="tabAction.keyUp(tab.page, $event)"
             [hidden]="!loaded && tab.hide" [tab]="tab.page" [disabled]="tab.hide" layout="label-hide" class="{{tab.class}}"
             [selected]="tab.page === selectedTab" [tabindex]="selectedTab === tab.page ? 0 : -1" [attr.aria-controls]="tab.id">
             <ion-icon class="core-tab-icon" [name]="tab.icon" aria-hidden="true" />
             <ion-label aria-hidden="true">{{ tab.title | translate }}</ion-label>
-            <ion-badge class="core-tab-badge" *ngIf="tab.badge" aria-hidden="true">{{ tab.badge }}</ion-badge>
+            @if (tab.badge) {
+                <ion-badge class="core-tab-badge" aria-hidden="true">{{ tab.badge }}</ion-badge>
+            }
             <span class="sr-only">{{ tab.title | translate }}</span>
-            <span *ngIf="tab.badge && tab.badgeA11yText" class="sr-only">
-                {{ tab.badgeA11yText | translate: {$a : tab.badge } }}
-            </span>
+            @if (tab.badge && tab.badgeA11yText) {
+                <span class="sr-only">
+                    {{ tab.badgeA11yText | translate: {$a : tab.badge } }}
+                </span>
+            }
         </ion-tab-button>
 
         <ion-tab-button (keydown)="tabAction.keyDown(morePageName, $event)" (keyup)="tabAction.keyUp(morePageName, $event)"
@@ -23,7 +29,9 @@
             <ion-icon class="core-tab-icon" name="ellipsis-horizontal" aria-hidden="true" />
             <ion-label aria-hidden="true">{{ 'core.more' | translate }}</ion-label>
             <span class="sr-only">{{ 'core.more' | translate }}</span>
-            <ion-icon *ngIf="moreBadge" class="core-tab-badge" name="fas-circle" aria-hidden="true" />
+            @if (moreBadge) {
+                <ion-icon class="core-tab-badge" name="fas-circle" aria-hidden="true" />
+            }
         </ion-tab-button>
     </ion-tab-bar>
 </ion-tabs>

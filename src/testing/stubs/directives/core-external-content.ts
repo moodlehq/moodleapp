@@ -16,9 +16,8 @@ import { Directive, Input } from '@angular/core';
 
 @Directive({
     selector: '[core-external-content]',
-    standalone: true,
 })
-export class CoreExternalContentDirectiveStub { // eslint-disable-line @angular-eslint/directive-class-suffix
+export class CoreExternalContentDirectiveStub {
 
     @Input() siteId?: string;
 

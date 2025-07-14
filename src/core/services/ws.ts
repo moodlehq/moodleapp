@@ -367,7 +367,7 @@ export class CoreWSProvider {
             this.mimeTypeCache[url] = mimeType;
 
             return mimeType || '';
-        } catch (error) {
+        } catch {
             // Error, resolve with empty mimetype.
             return '';
         }
@@ -1277,7 +1277,7 @@ export class CoreWSProvider {
             const result = await this.performHead(url);
 
             return result.status >= 200 && result.status < 300;
-        } catch (error) {
+        } catch {
             return false;
         }
     }

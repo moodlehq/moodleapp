@@ -623,5 +623,5 @@ export class CoreTextUtilsProvider {
 /**
  * @deprecated since 4.5. Use CoreText instead.
  */
-// eslint-disable-next-line deprecation/deprecation
+// eslint-disable-next-line @typescript-eslint/no-deprecated
 export const CoreTextUtils = makeSingleton(CoreTextUtilsProvider);

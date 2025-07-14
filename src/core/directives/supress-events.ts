@@ -14,7 +14,7 @@
 
 // Based on http://roblouie.com/article/198/using-gestures-in-the-ionic-2-beta/
 
-import { Directive, ElementRef, OnInit, Input, Output, EventEmitter } from '@angular/core';
+import { Directive, ElementRef, OnInit, Input, Output, EventEmitter, inject } from '@angular/core';
 import { CoreLogger } from '@singletons/logger';
 
 /**
@@ -38,18 +38,13 @@ import { CoreLogger } from '@singletons/logger';
  */
 @Directive({
     selector: '[core-suppress-events]',
-    standalone: true,
 })
 export class CoreSupressEventsDirective implements OnInit {
 
     @Input('core-suppress-events') suppressEvents?: string | string[];
     @Output() onClick = new EventEmitter();
 
-    protected element: HTMLElement;
-
-    constructor(el: ElementRef) {
-        this.element = el.nativeElement;
-    }
+    protected element: HTMLElement = inject(ElementRef).nativeElement;
 
     /**
      * Initialize event listeners.

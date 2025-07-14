@@ -23,7 +23,6 @@ import { CoreSharedModule } from '@/core/shared.module';
     selector: 'addon-mod-quiz-question-card',
     templateUrl: 'question-card.html',
     styleUrl: 'question-card.scss',
-    standalone: true,
     imports: [
         CoreSharedModule,
     ],

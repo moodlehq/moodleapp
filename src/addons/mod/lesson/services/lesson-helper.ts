@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
 
 import { CoreDom } from '@singletons/dom';
@@ -42,9 +42,7 @@ import { CoreCourseCommonModWSOptions } from '@features/course/services/course';
 @Injectable({ providedIn: 'root' })
 export class AddonModLessonHelperProvider {
 
-    constructor(
-        protected formBuilder: FormBuilder,
-    ) {}
+    protected formBuilder = inject(FormBuilder);
 
     /**
      * Given the HTML of next activity link, format it to extract the href and the text.

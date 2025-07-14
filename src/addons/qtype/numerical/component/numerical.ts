@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, ElementRef } from '@angular/core';
+import { Component } from '@angular/core';
 
 import { AddonModQuizNumericalQuestion, CoreQuestionBaseComponent } from '@features/question/classes/base-question-component';
 import { CoreSharedModule } from '@/core/shared.module';
@@ -24,16 +24,11 @@ import { CoreSharedModule } from '@/core/shared.module';
     selector: 'numerical',
     templateUrl: 'numerical.html',
     styleUrl: 'numerical.scss',
-    standalone: true,
     imports: [
         CoreSharedModule,
     ],
 })
 export class AddonQtypeNumericalComponent extends CoreQuestionBaseComponent<AddonModQuizNumericalQuestion> {
-
-    constructor(elementRef: ElementRef) {
-        super('AddonQtypeNumericalComponent', elementRef);
-    }
 
     /**
      * @inheritdoc

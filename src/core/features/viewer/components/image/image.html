@@ -19,15 +19,17 @@
             </ion-button>
         </ion-col>
         <ion-col />
-        <ion-col size="auto" *ngIf="swiper">
-            <ion-button fill="clear" [ariaLabel]="'core.zoomout' | translate" (click)="zoom(false)">
-                <ion-icon name="fas-magnifying-glass-minus" slot="icon-only" aria-hidden="true" />
-            </ion-button>
-        </ion-col>
-        <ion-col size="auto" *ngIf="swiper">
-            <ion-button fill="clear" [ariaLabel]="'core.zoomin' | translate" (click)="zoom(true)">
-                <ion-icon name="fas-magnifying-glass-plus" slot="icon-only" aria-hidden="true" />
-            </ion-button>
-        </ion-col>
+        @if (swiper) {
+            <ion-col size="auto">
+                <ion-button fill="clear" [ariaLabel]="'core.zoomout' | translate" (click)="zoom(false)">
+                    <ion-icon name="fas-magnifying-glass-minus" slot="icon-only" aria-hidden="true" />
+                </ion-button>
+            </ion-col>
+            <ion-col size="auto">
+                <ion-button fill="clear" [ariaLabel]="'core.zoomin' | translate" (click)="zoom(true)">
+                    <ion-icon name="fas-magnifying-glass-plus" slot="icon-only" aria-hidden="true" />
+                </ion-button>
+            </ion-col>
+        }
     </ion-row>
 </ion-footer>

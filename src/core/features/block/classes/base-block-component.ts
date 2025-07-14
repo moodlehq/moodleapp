@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { OnInit, Input, Component, Optional, Inject, OnChanges, SimpleChanges } from '@angular/core';
+import { OnInit, Input, Component, OnChanges, SimpleChanges } from '@angular/core';
 import { CoreLogger } from '@singletons/logger';
 import { CoreArray } from '@singletons/array';
 import { CoreText } from '@singletons/text';
@@ -47,7 +47,9 @@ export abstract class CoreBlockBaseComponent implements OnInit, OnChanges, ICore
 
     protected logger: CoreLogger;
 
-    constructor(@Optional() @Inject('') loggerName: string = 'AddonBlockComponent') {
+    constructor() {
+        const loggerName = this.constructor.name ?? 'AddonBlockComponent';
+
         this.logger = CoreLogger.getInstance(loggerName);
     }
 

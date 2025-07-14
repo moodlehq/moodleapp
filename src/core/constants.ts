@@ -20,13 +20,14 @@ import {
     ModResourceDisplay,
 } from '@addons/mod/constants';
 import { InjectionToken } from '@angular/core';
+import { CoreStorageTable } from '@services/storage';
 import { CoreBrowser } from '@singletons/browser';
 
 /**
  * Injection token used for dependencies marked as optional that will never
  * be resolved by Angular injectors.
  */
-export const NULL_INJECTION_TOKEN = new InjectionToken('null');
+export const NULL_INJECTION_TOKEN: InjectionToken<() => Promise<CoreStorageTable>> = new InjectionToken('null');
 
 /**
  * Context levels enumeration.

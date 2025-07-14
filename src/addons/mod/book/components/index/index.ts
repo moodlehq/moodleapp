@@ -12,10 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, Optional, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CoreCourseModuleMainResourceComponent } from '@features/course/classes/main-resource-component';
 import { AddonModBook, AddonModBookBookWSData, AddonModBookTocChapter } from '../../services/book';
-import CoreCourseContentsPage from '@features/course/pages/contents/contents';
 import { CoreCourse } from '@features/course/services/course';
 import { CoreNavigator } from '@services/navigator';
 import { CorePromiseUtils } from '@singletons/promise-utils';
@@ -30,7 +29,6 @@ import { CoreCourseModuleInfoComponent } from '@features/course/components/modul
 @Component({
     selector: 'addon-mod-book-index',
     templateUrl: 'addon-mod-book-index.html',
-    standalone: true,
     imports: [
         CoreSharedModule,
         CoreCourseModuleInfoComponent,
@@ -48,10 +46,6 @@ export class AddonModBookIndexComponent extends CoreCourseModuleMainResourceComp
 
     protected book?: AddonModBookBookWSData;
     protected checkCompletionAfterLog = false;
-
-    constructor( @Optional() courseContentsPage?: CoreCourseContentsPage) {
-        super('AddonModBookIndexComponent', courseContentsPage);
-    }
 
     /**
      * @inheritdoc
@@ -90,8 +84,8 @@ export class AddonModBookIndexComponent extends CoreCourseModuleMainResourceComp
         this.dataRetrieved.emit(this.book);
 
         this.description = this.book.intro;
-        this.showNumbers = this.book.numbering == AddonModBookNumbering.NUMBERS;
-        this.showBullets = this.book.numbering == AddonModBookNumbering.BULLETS;
+        this.showNumbers = this.book.numbering === AddonModBookNumbering.NUMBERS;
+        this.showBullets = this.book.numbering === AddonModBookNumbering.BULLETS;
         this.addPadding = this.book.numbering != AddonModBookNumbering.NONE;
 
         const lastChapterViewed = await AddonModBook.getLastChapterViewed(this.book.id);

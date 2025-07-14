@@ -14,22 +14,27 @@
             <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}" />
         </ion-refresher>
         <core-loading [hideUntil]="plans.loaded">
-            <core-empty-box *ngIf="plans.empty" icon="fas-route" [message]="'addon.competency.noplanswerecreated' | translate" />
-            <ion-list *ngIf="!plans.empty" class="ion-no-margin">
-                <ion-item class="ion-text-wrap" *ngFor="let plan of plans.items" [attr.aria-label]="plan.name" (click)="plans.select(plan)"
-                    [attr.aria-current]="plans.getItemAriaCurrent(plan)" button [detail]="true">
-                    <ion-label>
-                        <p class="item-heading">
-                            <core-format-text [text]="plan.name" contextLevel="user" [contextInstanceId]="plan.userid" />
-                        </p>
-                        <p *ngIf="plan.duedate > 0">
-                            {{ 'addon.competency.duedate' | translate }}:&nbsp;
-                            {{ plan.duedate * 1000 | coreFormatDate :'strftimedatetimeshort' }}
-                        </p>
-                    </ion-label>
-                    <ion-badge slot="end" class="ion-text-wrap" [color]="plan.statuscolor">{{ plan.statusname }}</ion-badge>
-                </ion-item>
-            </ion-list>
+            @if (plans.empty) {
+                <core-empty-box icon="fas-route" [message]="'addon.competency.noplanswerecreated' | translate" />
+            } @else {
+                <ion-list class="ion-no-margin">
+                    <ion-item class="ion-text-wrap" *ngFor="let plan of plans.items" [attr.aria-label]="plan.name"
+                        (click)="plans.select(plan)" [attr.aria-current]="plans.getItemAriaCurrent(plan)" button [detail]="true">
+                        <ion-label>
+                            <p class="item-heading">
+                                <core-format-text [text]="plan.name" contextLevel="user" [contextInstanceId]="plan.userid" />
+                            </p>
+                            @if (plan.duedate > 0) {
+                                <p>
+                                    {{ 'addon.competency.duedate' | translate }}:&nbsp;
+                                    {{ plan.duedate * 1000 | coreFormatDate :'strftimedatetimeshort' }}
+                                </p>
+                            }
+                        </ion-label>
+                        <ion-badge slot="end" class="ion-text-wrap" [color]="plan.statuscolor">{{ plan.statusname }}</ion-badge>
+                    </ion-item>
+                </ion-list>
+            }
         </core-loading>
     </core-split-view>
 </ion-content>

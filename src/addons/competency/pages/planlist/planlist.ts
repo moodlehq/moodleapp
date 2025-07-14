@@ -31,7 +31,6 @@ import { CoreSharedModule } from '@/core/shared.module';
 @Component({
     selector: 'page-addon-competency-planlist',
     templateUrl: 'planlist.html',
-    standalone: true,
     imports: [
         CoreSharedModule,
     ],

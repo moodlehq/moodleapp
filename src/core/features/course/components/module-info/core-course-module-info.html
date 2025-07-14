@@ -5,8 +5,9 @@
         <h1>
             <core-format-text [text]="module.name" contextLevel="module" [component]="component" [componentId]="componentId"
                 [contextInstanceId]="module.id" [courseId]="courseId" />
-            <ion-icon name="fas-lock" *ngIf="module.visible === 0 || module.uservisible === false"
-                [attr.aria-label]="'core.restricted' | translate" />
+            @if (module.visible === 0 || module.uservisible === false) {
+                <ion-icon name="fas-lock" [attr.aria-label]="'core.restricted' | translate" />
+            }
         </h1>
         <ng-content select="[title]" />
     </ion-label>
@@ -14,39 +15,49 @@
 
 <div class="core-module-info-box">
     <!-- Module completion. -->
-    <div class="core-module-info-completion core-module-info-box-section" *ngIf="showCompletion &&
-            module.completiondata && (module.completiondata.isautomatic || (showManualCompletion && module.uservisible))">
-        <core-course-module-completion [completion]="module.completiondata" [moduleName]="module.name" [moduleId]="module.id"
-            [showCompletionConditions]="true" [showManualCompletion]="showManualCompletion && module.uservisible"
-            (completionChanged)="completionChanged.emit($event)" />
-    </div>
+    @if (showCompletion &&
+            module.completiondata && (module.completiondata.isautomatic || (showManualCompletion && module.uservisible))) {
+        <div class="core-module-info-completion core-module-info-box-section">
+            <core-course-module-completion [completion]="module.completiondata" [moduleName]="module.name" [moduleId]="module.id"
+                [showCompletionConditions]="true" [showManualCompletion]="showManualCompletion && module.uservisible"
+                (completionChanged)="completionChanged.emit($event)" />
+        </div>
+    }
 
     <!-- Activity dates. -->
-    <div *ngIf="module.dates && module.dates.length" class="core-module-dates core-module-info-box-section">
-        <core-reminders-date *ngFor="let date of module.dates" [component]="component" [instanceId]="module.id" [type]="date.dataid"
-            [label]="date.label" [time]="date.timestamp" [relativeTo]="date.relativeto" [title]="module.name" [url]="module.url" />
-    </div>
+    @if (module.dates && module.dates.length) {
+        <div class="core-module-dates core-module-info-box-section">
+            <core-reminders-date *ngFor="let date of module.dates" [component]="component" [instanceId]="module.id" [type]="date.dataid"
+                [label]="date.label" [time]="date.timestamp" [relativeTo]="date.relativeto" [title]="module.name" [url]="module.url" />
+        </div>
+    }
 
     <!-- Availability info space. -->
-    <div class="core-module-availabilityinfo core-module-info-box-section" *ngIf="showAvailabilityInfo && module.availabilityinfo">
-        <ion-icon name="fas-lock" [attr.aria-label]="'core.restricted' | translate" />
-        <core-format-text [text]="module.availabilityinfo" contextLevel="module" [contextInstanceId]="module.id"
-            [courseId]="module.course" />
-    </div>
+    @if (showAvailabilityInfo && module.availabilityinfo) {
+        <div class="core-module-availabilityinfo core-module-info-box-section">
+            <ion-icon name="fas-lock" [attr.aria-label]="'core.restricted' | translate" />
+            <core-format-text [text]="module.availabilityinfo" contextLevel="module" [contextInstanceId]="module.id"
+                [courseId]="module.course" />
+        </div>
+    }
 
-    <div class="core-module-info-description core-module-info-box-section" *ngIf="description">
-        <core-format-text [text]="description" [component]="component" [componentId]="componentId" contextLevel="module"
-            [contextInstanceId]="module.id" [courseId]="courseId" [collapsible-item]="expandDescription ? null : ''" />
-    </div>
+    @if (description) {
+        <div class="core-module-info-description core-module-info-box-section">
+            <core-format-text [text]="description" [component]="component" [componentId]="componentId" contextLevel="module"
+                [contextInstanceId]="module.id" [courseId]="courseId" [collapsible-item]="expandDescription ? null : ''" />
+        </div>
+    }
     <ng-content select="[description]" />
 </div>
 
 <ng-content />
 
 <!-- Activity has something offline. -->
-<ion-card class="core-warning-card" *ngIf="hasDataToSync">
-    <ion-item>
-        <ion-icon name="fas-triangle-exclamation" slot="start" aria-hidden="true" />
-        <ion-label>{{ 'core.hasdatatosync' | translate: {$a: moduleNameTranslated} }}</ion-label>
-    </ion-item>
-</ion-card>
+@if (hasDataToSync) {
+    <ion-card class="core-warning-card">
+        <ion-item>
+            <ion-icon name="fas-triangle-exclamation" slot="start" aria-hidden="true" />
+            <ion-label>{{ 'core.hasdatatosync' | translate: {$a: moduleNameTranslated} }}</ion-label>
+        </ion-item>
+    </ion-card>
+}

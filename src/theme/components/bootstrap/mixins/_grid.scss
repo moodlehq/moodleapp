@@ -1,3 +1,5 @@
+@use "sass:math";
+
 /// Grid system
 //
 // Generate semantic grid columns with these mixins.
@@ -38,11 +40,11 @@
 }
 
 @mixin make-col($size, $columns: $grid-columns) {
-  flex: 0 0 percentage(divide($size, $columns));
+  flex: 0 0 math.percentage(divide($size, $columns));
   // Add a `max-width` to ensure content within each column does not blow out
   // the width of the column. Applies to IE10+ and Firefox. Chrome and Safari
   // do not appear to require this.
-  max-width: percentage(divide($size, $columns));
+  max-width: math.percentage(divide($size, $columns));
 }
 
 @mixin make-col-auto() {
@@ -53,7 +55,7 @@
 
 @mixin make-col-offset($size, $columns: $grid-columns) {
   $num: divide($size, $columns);
-  margin-left: if($num == 0, 0, percentage($num));
+  margin-left: if($num == 0, 0, math.percentage($num));
 }
 
 // Row columns

@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, ElementRef } from '@angular/core';
+import { Component } from '@angular/core';
 
 import { AddonModQuizTextQuestion, CoreQuestionBaseComponent } from '@features/question/classes/base-question-component';
 import { CoreSharedModule } from '@/core/shared.module';
@@ -24,16 +24,11 @@ import { CoreSharedModule } from '@/core/shared.module';
     selector: 'addon-qtype-shortanswer',
     templateUrl: 'addon-qtype-shortanswer.html',
     styleUrl: 'shortanswer.scss',
-    standalone: true,
     imports: [
         CoreSharedModule,
     ],
 })
 export class AddonQtypeShortAnswerComponent extends CoreQuestionBaseComponent<AddonModQuizTextQuestion> {
-
-    constructor(elementRef: ElementRef) {
-        super('AddonQtypeShortAnswerComponent', elementRef);
-    }
 
     /**
      * @inheritdoc

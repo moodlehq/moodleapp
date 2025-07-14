@@ -12,19 +12,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { APP_INITIALIZER, NgModule } from '@angular/core';
+import { NgModule, provideAppInitializer } from '@angular/core';
 import { AddonWorkshopAssessmentStrategyDelegate } from '../../services/assessment-strategy-delegate';
 import { getAssessmentStrategyHandlerInstance } from './services/handler';
 
 @NgModule({
     providers: [
-        {
-            provide: APP_INITIALIZER,
-            multi: true,
-            useValue: () => {
-                AddonWorkshopAssessmentStrategyDelegate.registerHandler(getAssessmentStrategyHandlerInstance());
-            },
-        },
+        provideAppInitializer(() => {
+            AddonWorkshopAssessmentStrategyDelegate.registerHandler(getAssessmentStrategyHandlerInstance());
+        }),
     ],
 })
 export class AddonModWorkshopAssessmentStrategyRubricModule {}

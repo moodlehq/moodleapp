@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { APP_INITIALIZER, NgModule, Type } from '@angular/core';
+import { NgModule, Type, provideAppInitializer } from '@angular/core';
 import { CoreContentLinksDelegate } from '@features/contentlinks/services/contentlinks-delegate';
 import { CoreCourseOptionsDelegate } from '@features/course/services/course-options-delegate';
 import { CorePushNotificationsDelegate } from '@features/pushnotifications/services/push-delegate';
@@ -175,19 +175,15 @@ const courseIndexRoutes: Routes = [
         CoreCourseIndexRoutingModule.forChild({ children: courseIndexRoutes }),
     ],
     providers: [
-        {
-            provide: APP_INITIALIZER,
-            multi: true,
-            useValue: () => {
-                CoreContentLinksDelegate.registerHandler(AddonCompetencyCompetencyLinkHandler.instance);
-                CoreContentLinksDelegate.registerHandler(AddonCompetencyPlanLinkHandler.instance);
-                CoreContentLinksDelegate.registerHandler(AddonCompetencyPlansLinkHandler.instance);
-                CoreContentLinksDelegate.registerHandler(AddonCompetencyUserCompetencyLinkHandler.instance);
-                CoreUserDelegate.registerHandler(AddonCompetencyUserHandler.instance);
-                CoreCourseOptionsDelegate.registerHandler(AddonCompetencyCourseOptionHandler.instance);
-                CorePushNotificationsDelegate.registerClickHandler(AddonCompetencyPushClickHandler.instance);
-            },
-        },
+        provideAppInitializer(() => {
+            CoreContentLinksDelegate.registerHandler(AddonCompetencyCompetencyLinkHandler.instance);
+            CoreContentLinksDelegate.registerHandler(AddonCompetencyPlanLinkHandler.instance);
+            CoreContentLinksDelegate.registerHandler(AddonCompetencyPlansLinkHandler.instance);
+            CoreContentLinksDelegate.registerHandler(AddonCompetencyUserCompetencyLinkHandler.instance);
+            CoreUserDelegate.registerHandler(AddonCompetencyUserHandler.instance);
+            CoreCourseOptionsDelegate.registerHandler(AddonCompetencyCourseOptionHandler.instance);
+            CorePushNotificationsDelegate.registerClickHandler(AddonCompetencyPushClickHandler.instance);
+        }),
     ],
 })
 export class AddonCompetencyModule {}

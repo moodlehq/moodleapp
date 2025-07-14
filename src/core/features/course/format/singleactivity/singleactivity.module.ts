@@ -12,20 +12,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { APP_INITIALIZER, NgModule } from '@angular/core';
+import { NgModule, provideAppInitializer } from '@angular/core';
 
 import { CoreCourseFormatDelegate } from '@features/course/services/format-delegate';
 import { CoreCourseFormatSingleActivityHandler } from './services/handlers/singleactivity-format';
 
 @NgModule({
     providers: [
-        {
-            provide: APP_INITIALIZER,
-            multi: true,
-            useValue: () => {
-                CoreCourseFormatDelegate.registerHandler(CoreCourseFormatSingleActivityHandler.instance);
-            },
-        },
+        provideAppInitializer(() => {
+            CoreCourseFormatDelegate.registerHandler(CoreCourseFormatSingleActivityHandler.instance);
+        }),
     ],
 })
 export class CoreCourseFormatSingleActivityModule {}

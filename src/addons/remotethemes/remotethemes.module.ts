@@ -12,19 +12,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { APP_INITIALIZER, NgModule } from '@angular/core';
+import { NgModule, provideAppInitializer } from '@angular/core';
 import { CoreStyles } from '@features/styles/services/styles';
 import { AddonRemoteThemesHandler } from './services/remotethemes-handler';
 
 @NgModule({
     providers: [
-        {
-            provide: APP_INITIALIZER,
-            multi: true,
-            useValue: () => {
-                CoreStyles.registerStyleHandler(AddonRemoteThemesHandler.instance);
-            },
-        },
+        provideAppInitializer(() => {
+            CoreStyles.registerStyleHandler(AddonRemoteThemesHandler.instance);
+        }),
     ],
 })
 export class AddonRemoteThemesModule {}

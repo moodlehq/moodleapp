@@ -28,7 +28,6 @@ import { CoreCourseModuleComponent } from '@features/course/components/module/mo
 @Component({
     selector: 'addon-block-sitemainmenu',
     templateUrl: 'addon-block-sitemainmenu.html',
-    standalone: true,
     imports: [
         CoreSharedModule,
         CoreCourseModuleComponent,
@@ -42,10 +41,6 @@ export class AddonBlockSiteMainMenuComponent extends CoreBlockBaseComponent impl
     isModule = sectionContentIsModule;
 
     protected fetchContentDefaultError = 'Error getting main menu data.';
-
-    constructor() {
-        super('AddonBlockSiteMainMenuComponent');
-    }
 
     /**
      * @inheritdoc

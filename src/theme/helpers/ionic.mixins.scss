@@ -1,3 +1,7 @@
+@use "sass:list";
+@use "sass:map";
+@use "sass:string";
+
 /**
  * Imported ionic mixins for SCSS
  * ----------------------------------------------------------------------------
@@ -120,9 +124,9 @@
 
 // Get the key from a map based on the index
 @function index-to-key($map, $index) {
-  $keys: map-keys($map);
+  $keys: map.keys($map);
 
-  @return nth($keys, $index);
+  @return list.nth($keys, $index);
 }
 
 
@@ -144,7 +148,7 @@
 //    >> breakpoint-min(sm, (xs: 0, sm: 576px, md: 768px, lg: 992px, xl: 1200px))
 //    576px
 @function breakpoint-min($name, $breakpoints: $screen-breakpoints) {
-  $min: map-get($breakpoints, $name);
+  $min: map.get($breakpoints, $name);
 
   @return if($name != index-to-key($breakpoints, 1), $min, null);
 }
@@ -181,9 +185,9 @@
 //    md
 //    >> breakpoint-next(sm, $breakpoint-names: (xs sm md lg xl))
 //    md
-@function breakpoint-next($name, $breakpoints: $screen-breakpoints, $breakpoint-names: map-keys($breakpoints)) {
+@function breakpoint-next($name, $breakpoints: $screen-breakpoints, $breakpoint-names: map.keys($breakpoints)) {
   $n: index($breakpoint-names, $name);
-  @return if($n < length($breakpoint-names), nth($breakpoint-names, $n + 1), null);
+  @return if($n < list.length($breakpoint-names), list.nth($breakpoint-names, $n + 1), null);
 }
 
 // Maximum breakpoint width. Null for the smallest (first) breakpoint.
@@ -197,7 +201,7 @@
 //    >> breakpoint-max(md, (xs: 0, sm: 576px, md: 768px, lg: 992px, xl: 1200px))
 //    767.98px
 @function breakpoint-max($name, $breakpoints: $screen-breakpoints) {
-  $max: map-get($breakpoints, $name);
+  $max: map.get($breakpoints, $name);
   @return if($max and $max > 0, $max - .02, null);
 }
 
@@ -251,23 +255,23 @@
   // @link https://www.w3.org/TR/selectors-3/#grouping
   @each $selector in $selectorsSplit {
     // Group the selectors back into a single selector to optimize the output.
-    @if str-index($selector, ":host-context") {
-      $hostContextSelectors: append($hostContextSelectors, $selector, comma);
+    @if string.index($selector, ":host-context") {
+      $hostContextSelectors: list.append($hostContextSelectors, $selector, comma);
     } @else {
       // Group the selectors back into a single selector to optimize the output.
-      $restSelectors: append($restSelectors, $selector, comma);
+      $restSelectors: list.append($restSelectors, $selector, comma);
     }
   }
 
   // Supported by Chrome.
-  @if length($hostContextSelectors) > 0 {
+  @if list.length($hostContextSelectors) > 0 {
     @at-root #{$hostContextSelectors} {
       @content;
     }
   }
 
   // Supported by all browsers.
-  @if length($restSelectors) > 0 {
+  @if list.length($restSelectors) > 0 {
     @at-root #{$restSelectors} {
       @content;
     }
@@ -311,7 +315,7 @@
       background-image: url("data:image/svg+xml;charset=utf-8,#{$url}");
     }
   } @else {
-    $transform: "transform='translate(#{nth($viewBox, 3)}, 0) scale(-1, 1)'";
+    $transform: "transform='translate(#{list.nth($viewBox, 3)}, 0) scale(-1, 1)'";
     $flipped-url: $svg;
     $flipped-url: str-replace($flipped-url, "<path", "<path #{$transform}");
     $flipped-url: str-replace($flipped-url, "<line", "<line #{$transform}");
@@ -353,9 +357,9 @@
 // @param {boolean} $content include content or use default
 // ----------------------------------------------------------
 @mixin property($prop, $top, $end: $top, $bottom: $top, $start: $end) {
-  @include property-horizontal($prop, $start, $end);
   #{$prop}-top: $top;
   #{$prop}-bottom: $bottom;
+  @include property-horizontal($prop, $start, $end);
 }
 
 // Add padding horizontal
@@ -442,9 +446,9 @@
 // @param {string} $start
 // ----------------------------------------------------------
 @mixin position($top: null, $end: null, $bottom: null, $start: null) {
-  @include position-horizontal($start, $end);
   top: $top;
   bottom: $bottom;
+  @include position-horizontal($start, $end);
 }
 
 // Add border for all directions
@@ -593,15 +597,15 @@
   $rtl-translate: null;
 
   @each $transform in $transforms {
-    @if (str-index($transform, translate3d)) {
+    @if (string.index($transform, translate3d)) {
       $transform: str-replace($transform, 'translate3d(');
       $transform: str-replace($transform, ')');
 
       $coordinates: str-split($transform, ',');
 
-      $x: nth($coordinates, 1);
-      $y: nth($coordinates, 2);
-      $z: nth($coordinates, 3);
+      $x: list.nth($coordinates, 1);
+      $y: list.nth($coordinates, 2);
+      $z: list.nth($coordinates, 3);
 
       $ltr-translate: translate3d($x, $y, $z);
       $rtl-translate: translate3d(calc(-1 * #{$x}), $y, $z);

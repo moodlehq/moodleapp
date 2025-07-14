@@ -22,7 +22,6 @@ import { Component } from '@angular/core';
     selector: 'addon-mod-quiz-connection-error',
     templateUrl: 'connection-error.html',
     styleUrl: 'connection-error.scss',
-    standalone: true,
     imports: [
         CoreSharedModule,
     ],

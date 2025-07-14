@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { APP_INITIALIZER, NgModule } from '@angular/core';
+import { NgModule, provideAppInitializer } from '@angular/core';
 import { Routes } from '@angular/router';
 
 import { CoreMainMenuTabRoutingModule } from '@features/mainmenu/mainmenu-tab-routing.module';
@@ -35,14 +35,10 @@ const routes: Routes = [
         CoreMainMenuTabRoutingModule.forChild(routes),
     ],
     providers: [
-        {
-            provide: APP_INITIALIZER,
-            multi: true,
-            useValue: () => {
-                AddonMessageOutputDelegate.registerHandler(AddonMessageOutputAirnotifierHandler.instance);
-                AddonMessageOutputAirnotifier.initialize();
-            },
-        },
+        provideAppInitializer(() => {
+            AddonMessageOutputDelegate.registerHandler(AddonMessageOutputAirnotifierHandler.instance);
+            AddonMessageOutputAirnotifier.initialize();
+        }),
     ],
 })
 export class AddonMessageOutputAirnotifierModule {}

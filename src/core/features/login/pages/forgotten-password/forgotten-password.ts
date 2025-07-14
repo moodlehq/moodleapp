@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, ViewChild, ElementRef, OnInit } from '@angular/core';
+import { Component, ViewChild, ElementRef, OnInit, inject } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { CoreLoginHelper } from '@features/login/services/login-helper';
 import { Translate } from '@singletons';
@@ -34,7 +34,6 @@ import { CoreLoginExceededAttemptsComponent } from '../../components/exceeded-at
 @Component({
     selector: 'page-core-login-forgotten-password',
     templateUrl: 'forgotten-password.html',
-    standalone: true,
     imports: [
         CoreSharedModule,
         CoreLoginExceededAttemptsComponent,
@@ -51,7 +50,7 @@ export default class CoreLoginForgottenPasswordPage implements OnInit {
     canContactSupport?: boolean;
     wasPasswordResetRequestedRecently = false;
 
-    constructor(protected formBuilder: FormBuilder) {}
+    protected formBuilder = inject(FormBuilder);
 
     /**
      * Initialize the component.

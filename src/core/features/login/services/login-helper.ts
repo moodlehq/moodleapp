@@ -318,7 +318,7 @@ export class CoreLoginHelperProvider {
         if (!siteConfig) {
             return [];
         }
-        // eslint-disable-next-line deprecation/deprecation
+        // eslint-disable-next-line @typescript-eslint/no-deprecated
         if (this.isFeatureDisabled(IDENTITY_PROVIDERS_FEATURE_NAME, siteConfig)) {
             // Identity providers are disabled, return an empty list.
             return [];
@@ -335,7 +335,7 @@ export class CoreLoginHelperProvider {
                 if (
                     provider.url &&
                     (provider.url.indexOf(httpsUrl) != -1 || provider.url.indexOf(httpUrl) != -1) &&
-                    !this.isFeatureDisabled( // eslint-disable-line deprecation/deprecation
+                    !this.isFeatureDisabled( // eslint-disable-line @typescript-eslint/no-deprecated
                         IDENTITY_PROVIDER_FEATURE_NAME_PREFIX + urlParams.id,
                         siteConfig,
                     )
@@ -471,7 +471,7 @@ export class CoreLoginHelperProvider {
      * @deprecated since 4.4. Please use isFeatureDisabled in a site instance.
      */
     isEmailSignupDisabled(config?: CoreSitePublicConfigResponse): boolean {
-        // eslint-disable-next-line deprecation/deprecation
+        // eslint-disable-next-line @typescript-eslint/no-deprecated
         return this.isFeatureDisabled(EMAIL_SIGNUP_FEATURE_NAME, config);
     }
 
@@ -484,7 +484,7 @@ export class CoreLoginHelperProvider {
      * @deprecated since 4.4. Please use isFeatureDisabled in a site instance.
      */
     isFeatureDisabled(feature: string, config?: CoreSitePublicConfigResponse): boolean {
-       // eslint-disable-next-line deprecation/deprecation
+       // eslint-disable-next-line @typescript-eslint/no-deprecated
        const disabledFeatures = this.getDisabledFeatures(config);
 
         const regEx = new RegExp(`(,|^)${feature}(,|$)`, 'g');
@@ -511,7 +511,7 @@ export class CoreLoginHelperProvider {
      * @deprecated since 4.4. Please use isFeatureDisabled in a site instance.
      */
     isForgottenPasswordDisabled(config?: CoreSitePublicConfigResponse): boolean {
-        // eslint-disable-next-line deprecation/deprecation
+        // eslint-disable-next-line @typescript-eslint/no-deprecated
         return this.isFeatureDisabled(FORGOTTEN_PASSWORD_FEATURE_NAME, config);
     }
 

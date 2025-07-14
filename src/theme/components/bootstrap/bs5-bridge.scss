@@ -1,3 +1,6 @@
+@use "sass:color";
+@use "sass:map";
+
 /**
  * This file should be in sync with: https://github.com/moodle/moodle/blob/main/theme/boost/scss/moodle/bs5-bridge.scss
  * This is partially done as part of https://tracker.moodle.org/browse/MDL-71979.
@@ -25,13 +28,13 @@ $alert-color-scale: 50% !default;
 
 // Tint a color: mix a color with white based on the provided weight.
 @function tint-color($color, $weight) {
-    @return mix(white, $color, $weight);
+    @return color.mix(white, $color, $weight);
 }
 
 // Shade a color: mix a color with black.
 // This function darkens a given color with black based on the provided weight.
 @function shade-color($color, $weight) {
-    @return mix(black, $color, $weight);
+    @return color.mix(black, $color, $weight);
 }
 
 // Shade the color if the weight is positive, else tint it.
@@ -60,7 +63,7 @@ $alert-color-scale: 50% !default;
 
 // Generate all spacer classes for all breakpoints for directions start and end.
 // ps-1 > pl-1, pe-1 > pr-1, me-sm-1 > ml-sm-1, ...
-@each $breakpoint in map-keys($grid-breakpoints) {
+@each $breakpoint in map.keys($grid-breakpoints) {
     $infix: breakpoint-infix($breakpoint, $grid-breakpoints);
     @each $prop, $abbrev in (margin: m, padding: p) {
         @each $size, $length in $spacers {
@@ -76,7 +79,7 @@ $alert-color-scale: 50% !default;
 
 // Generate all margin auto classes for all breakpoints for directions start and end.
 // ps-auto > pl-auto, pe-auto > pr-auto, me-sm-auto > ml-sm-auto, ...
-@each $breakpoint in map-keys($grid-breakpoints) {
+@each $breakpoint in map.keys($grid-breakpoints) {
     $infix: breakpoint-infix($breakpoint, $grid-breakpoints);
     .ms#{$infix}-auto {
         @extend .ml#{$infix}-auto;
@@ -88,7 +91,7 @@ $alert-color-scale: 50% !default;
 
 // Generate all float classes for all breakpoints for directions start and end.
 // float-start > float-left, float-sm-end > float-sm-right, ...
-@each $breakpoint in map-keys($grid-breakpoints) {
+@each $breakpoint in map.keys($grid-breakpoints) {
     $infix: breakpoint-infix($breakpoint, $grid-breakpoints);
     .float#{$infix}-start {
         @extend .float#{$infix}-left;
@@ -100,7 +103,7 @@ $alert-color-scale: 50% !default;
 
 // Generate all text classes for all breakpoints for directions start and end.
 // text-start > text-left, text-sm-end > text-sm-right, ...
-@each $breakpoint in map-keys($grid-breakpoints) {
+@each $breakpoint in map.keys($grid-breakpoints) {
     $infix: breakpoint-infix($breakpoint, $grid-breakpoints);
     .text#{$infix}-start {
         @extend .text#{$infix}-left;

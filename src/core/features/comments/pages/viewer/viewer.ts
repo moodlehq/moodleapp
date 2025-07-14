@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnDestroy, OnInit, ViewChild, AfterViewInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, ViewChild, AfterViewInit, inject } from '@angular/core';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { ActivatedRoute } from '@angular/router';
 import { CoreSites } from '@services/sites';
@@ -58,7 +58,6 @@ import { CoreCourses } from '@features/courses/services/courses';
     templateUrl: 'viewer.html',
     animations: [CoreAnimations.SLIDE_IN_OUT],
     styleUrls: ['../../../../../theme/components/discussion.scss', 'viewer.scss'],
-    standalone: true,
     imports: [
         CoreSharedModule,
     ],
@@ -98,10 +97,9 @@ export default class CoreCommentsViewerPage implements OnInit, OnDestroy, AfterV
     protected viewDestroyed = false;
     protected scrollBottom = true;
     protected scrollElement?: HTMLElement;
+    protected route = inject(ActivatedRoute);
 
-    constructor(
-        protected route: ActivatedRoute,
-    ) {
+    constructor() {
         this.currentUserId = CoreSites.getCurrentSiteUserId();
 
         // Refresh data if comments are synchronized automatically.

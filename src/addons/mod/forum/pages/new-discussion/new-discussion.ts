@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnDestroy, ViewChild, ElementRef, OnInit, Optional } from '@angular/core';
+import { Component, OnDestroy, ViewChild, ElementRef, OnInit, inject } from '@angular/core';
 import { FileEntry } from '@awesome-cordova-plugins/file/ngx';
 import { FormControl } from '@angular/forms';
 import { CoreEvents, CoreEventObserver } from '@singletons/events';
@@ -74,7 +74,6 @@ type NewDiscussionData = {
     selector: 'page-addon-mod-forum-new-discussion',
     templateUrl: 'new-discussion.html',
     styleUrl: 'new-discussion.scss',
-    standalone: true,
     imports: [
         CoreSharedModule,
         CoreEditorRichTextEditorComponent,
@@ -123,12 +122,11 @@ export default class AddonModForumNewDiscussionPage implements OnInit, OnDestroy
     protected forceLeave = false;
     protected initialGroupId?: number;
     protected logView: () => void;
+    protected route = inject(ActivatedRoute);
+    protected splitView = inject(CoreSplitViewComponent, { optional: true });
+    protected courseContentsPage = inject(CoreCourseContentsPage, { optional: true });
 
-    constructor(
-        protected route: ActivatedRoute,
-        @Optional() protected splitView: CoreSplitViewComponent,
-        @Optional() protected courseContentsPage?: CoreCourseContentsPage,
-    ) {
+    constructor() {
         this.logView = CoreTime.once(() => {
             CoreAnalytics.logEvent({
                 type: CoreAnalyticsEventType.VIEW_ITEM,
@@ -364,7 +362,7 @@ export default class AddonModForumNewDiscussionPage implements OnInit, OnDestroy
         // We first check if the user can post to all the groups.
         try {
             response = await AddonModForum.canAddDiscussionToAll(this.forumId, { cmId: this.cmId });
-        } catch (error) {
+        } catch {
             // The call failed, let's assume he can't.
             response = {
                 status: false,
@@ -632,7 +630,7 @@ export default class AddonModForumNewDiscussionPage implements OnInit, OnDestroy
             CoreForms.triggerFormCancelledEvent(this.formElement, CoreSites.getCurrentSiteId());
 
             this.returnToDiscussions();
-        } catch (error) {
+        } catch {
             // Cancelled.
         }
     }

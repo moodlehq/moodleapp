@@ -23,7 +23,6 @@ import { CoreSharedModule } from '@/core/shared.module';
 @Component({
     selector: 'page-core-app-settings-error-log',
     templateUrl: 'error-log.html',
-    standalone: true,
     imports: [
         CoreSharedModule,
     ],

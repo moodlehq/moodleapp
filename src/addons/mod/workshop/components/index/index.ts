@@ -12,12 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, Input, OnDestroy, OnInit, Optional } from '@angular/core';
+import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { Params } from '@angular/router';
 import { CoreError } from '@classes/errors/error';
 import { CoreCourseModuleMainActivityComponent } from '@features/course/classes/main-activity-component';
-import CoreCourseContentsPage from '@features/course/pages/contents/contents';
-import { IonContent } from '@ionic/angular';
 import { CoreGroupInfo, CoreGroups } from '@services/groups';
 import { CoreNavigator } from '@services/navigator';
 import { CorePlatform } from '@services/platform';
@@ -70,7 +68,6 @@ import { CoreCourseModuleInfoComponent } from '@features/course/components/modul
 @Component({
     selector: 'addon-mod-workshop-index',
     templateUrl: 'addon-mod-workshop-index.html',
-    standalone: true,
     imports: [
         CoreSharedModule,
         AddonModWorkshopSubmissionComponent,
@@ -120,11 +117,8 @@ export class AddonModWorkshopIndexComponent extends CoreCourseModuleMainActivity
     protected syncObserver?: CoreEventObserver;
     protected syncEventName = ADDON_MOD_WORKSHOP_AUTO_SYNCED;
 
-    constructor (
-    @Optional() content: IonContent,
-        @Optional() courseContentsPage?: CoreCourseContentsPage,
-    ) {
-        super('AddonModWorkshopIndexComponent', content, courseContentsPage);
+    constructor () {
+        super();
 
         // Listen to submission and assessment changes.
         this.obsSubmissionChanged = CoreEvents.on(ADDON_MOD_WORKSHOP_SUBMISSION_CHANGED, (data) => {
@@ -375,7 +369,7 @@ export class AddonModWorkshopIndexComponent extends CoreCourseModuleMainActivity
      * @param task Task to be done.
      */
     async runTask(task: AddonModWorkshopPhaseTaskData): Promise<void> {
-        if (task.code == 'submit') {
+        if (task.code === 'submit') {
             this.gotoSubmit();
         } else if (task.link) {
             CoreOpener.openInBrowser(task.link);

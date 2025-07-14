@@ -28,7 +28,6 @@ import { CoreUpdateNonReactiveAttributesDirective } from '@directives/update-non
 @Component({
     selector: 'core-recaptcha',
     templateUrl: 'core-recaptcha.html',
-    standalone: true,
     imports: [
         CoreBaseModule,
         CoreUpdateNonReactiveAttributesDirective,

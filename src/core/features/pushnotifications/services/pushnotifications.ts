@@ -773,7 +773,7 @@ export class CorePushNotificationsProvider {
             const entry = await this.badgesTable.getOne({ siteid: siteId, addon });
 
             return entry?.number || 0;
-        } catch (err) {
+        } catch {
             return 0;
         }
     }

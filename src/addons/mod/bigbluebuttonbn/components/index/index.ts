@@ -12,11 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit, Optional } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CoreError } from '@classes/errors/error';
 import { CoreCourseModuleMainActivityComponent } from '@features/course/classes/main-activity-component';
-import CoreCourseContentsPage from '@features/course/pages/contents/contents';
-import { IonContent } from '@ionic/angular';
 import { CoreApp } from '@services/app';
 import { CoreGroupInfo, CoreGroups } from '@services/groups';
 import { CoreSites } from '@services/sites';
@@ -47,7 +45,6 @@ import { CoreCourseModuleNavigationComponent } from '@features/course/components
     selector: 'addon-mod-bbb-index',
     templateUrl: 'index.html',
     styleUrl: 'index.scss',
-    standalone: true,
     imports: [
         CoreSharedModule,
         CoreCourseModuleInfoComponent,
@@ -63,13 +60,6 @@ export class AddonModBBBIndexComponent extends CoreCourseModuleMainActivityCompo
     groupId = 0;
     meetingInfo?: AddonModBBBMeetingInfo;
     recordings?: Recording[];
-
-    constructor(
-        protected content?: IonContent,
-        @Optional() courseContentsPage?: CoreCourseContentsPage,
-    ) {
-        super('AddonModBBBIndexComponent', content, courseContentsPage);
-    }
 
     /**
      * @inheritdoc

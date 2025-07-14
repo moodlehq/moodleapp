@@ -25,7 +25,6 @@ import { CoreSharedModule } from '@/core/shared.module';
 @Component({
     selector: 'page-addon-message-output-airnotifier-devices',
     templateUrl: 'devices.html',
-    standalone: true,
     imports: [
         CoreSharedModule,
     ],

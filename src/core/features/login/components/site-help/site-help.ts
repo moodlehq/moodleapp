@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { AfterViewInit, Component, ElementRef, HostBinding, OnDestroy } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, HostBinding, OnDestroy, inject } from '@angular/core';
 
 import { CoreQRScan } from '@services/qrscan';
 import { ModalController, Translate } from '@singletons';
@@ -29,7 +29,6 @@ import { CoreWait } from '@singletons/wait';
     selector: 'core-login-site-help',
     templateUrl: 'site-help.html',
     styleUrl: 'site-help.scss',
-    standalone: true,
     imports: [
         CoreSharedModule,
     ],
@@ -41,8 +40,9 @@ export class CoreLoginSiteHelpComponent implements AfterViewInit, OnDestroy {
     @HostBinding('class.hydrated') hydrated = false;
 
     private promises: CoreCancellablePromise[] = [];
+    protected el: HTMLElement = inject(ElementRef).nativeElement;
 
-    constructor(protected el: ElementRef<HTMLElement>) {
+    constructor() {
         const getStartedTitle = Translate.instant('core.login.faqsetupsitelinktitle');
         const canScanQR = CoreQRScan.canScanQR();
         const urlImageHtml = FAQ_URL_IMAGE_HTML;
@@ -115,7 +115,7 @@ export class CoreLoginSiteHelpComponent implements AfterViewInit, OnDestroy {
      * @inheritdoc
      */
     async ngAfterViewInit(): Promise<void> {
-        const answers = Array.from(this.el.nativeElement.querySelectorAll<HTMLElement>('.core-login-site-help--answer'));
+        const answers = Array.from(this.el.querySelectorAll<HTMLElement>('.core-login-site-help--answer'));
 
         await Promise.all(answers.map(async answer => {
             await this.track(CoreWait.waitFor(() => answer.clientHeight !== 0));

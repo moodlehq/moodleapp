@@ -41,7 +41,6 @@ import { CorePromiseUtils } from '@singletons/promise-utils';
 @Component({
     selector: 'addon-block-starredcourses',
     templateUrl: 'addon-block-starredcourses.html',
-    standalone: true,
     imports: [
         CoreSharedModule,
         CoreCoursesCourseListItemComponent,
@@ -59,8 +58,7 @@ export class AddonBlockStarredCoursesComponent extends CoreBlockBaseComponent im
     protected fetchContentDefaultError = 'Error getting starred courses data.';
 
     constructor() {
-        super('AddonBlockStarredCoursesComponent');
-
+        super();
         this.site = CoreSites.getRequiredCurrentSite();
     }
 

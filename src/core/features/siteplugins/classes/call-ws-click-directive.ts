@@ -12,11 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Input, OnInit, ElementRef, Directive } from '@angular/core';
+import { Input, OnInit, Directive } from '@angular/core';
 
 import { CoreErrorHelper } from '@services/error-helper';
 import { Translate } from '@singletons';
-import { CoreSitePluginsPluginContentComponent } from '../components/plugin-content/plugin-content';
 import { CoreSitePluginsCallWSBaseDirective } from './call-ws-directive';
 import { toBoolean } from '@/core/transforms/boolean';
 import { CoreLoadings } from '@services/overlays/loadings';
@@ -32,13 +31,6 @@ export class CoreSitePluginsCallWSOnClickBaseDirective extends CoreSitePluginsCa
 
     @Input() confirmMessage?: string; // Message to confirm the action. If not supplied, no confirmation. If empty, default message.
     @Input({ transform: toBoolean }) showError = true; // Whether to show an error message if the WS call fails.
-
-    constructor(
-        element: ElementRef,
-        parentContent: CoreSitePluginsPluginContentComponent | null,
-    ) {
-        super(element, parentContent);
-    }
 
     /**
      * @inheritdoc

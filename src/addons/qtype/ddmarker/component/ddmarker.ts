@@ -30,7 +30,6 @@ import { CoreText } from '@singletons/text';
     selector: 'addon-qtype-ddmarker',
     templateUrl: 'addon-qtype-ddmarker.html',
     styleUrl: 'ddmarker.scss',
-    standalone: true,
     imports: [
         CoreSharedModule,
     ],
@@ -47,10 +46,6 @@ export class AddonQtypeDdMarkerComponent
     protected destroyed = false;
     protected textIsRendered = false;
     protected ddAreaisRendered = false;
-
-    constructor(elementRef: ElementRef) {
-        super('AddonQtypeDdMarkerComponent', elementRef);
-    }
 
     /**
      * @inheritdoc

@@ -23,7 +23,6 @@ import { CoreSharedModule } from '@/core/shared.module';
 @Component({
     selector: 'core-tag-feed',
     templateUrl: 'core-tag-feed.html',
-    standalone: true,
     imports: [
         CoreSharedModule,
     ],

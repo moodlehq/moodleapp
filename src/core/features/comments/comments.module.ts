@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { APP_INITIALIZER, NgModule, Type } from '@angular/core';
+import { NgModule, Type, provideAppInitializer } from '@angular/core';
 import { Routes } from '@angular/router';
 import { CoreMainMenuTabRoutingModule } from '@features/mainmenu/mainmenu-tab-routing.module';
 import { CoreCronDelegate } from '@services/cron';
@@ -55,15 +55,11 @@ const routes: Routes = [
             useValue: [COMMENTS_OFFLINE_SITE_SCHEMA],
             multi: true,
         },
-        {
-            provide: APP_INITIALIZER,
-            multi: true,
-            useValue: () => {
-                CoreCronDelegate.register(CoreCommentsSyncCronHandler.instance);
+        provideAppInitializer(() => {
+            CoreCronDelegate.register(CoreCommentsSyncCronHandler.instance);
 
-                CoreComments.initialize();
-            },
-        },
+            CoreComments.initialize();
+        }),
     ],
 })
 export class CoreCommentsModule {}

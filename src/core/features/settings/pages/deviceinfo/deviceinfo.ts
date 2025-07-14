@@ -72,7 +72,6 @@ interface CoreSettingsDeviceInfo {
     selector: 'page-core-app-settings-deviceinfo',
     templateUrl: 'deviceinfo.html',
     styleUrl: 'deviceinfo.scss',
-    standalone: true,
     imports: [
         CoreSharedModule,
     ],

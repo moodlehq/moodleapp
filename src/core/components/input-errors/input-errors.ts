@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, ElementRef, HostBinding, Input, OnChanges, OnInit, SimpleChange } from '@angular/core';
+import { Component, ElementRef, HostBinding, Input, OnChanges, OnInit, SimpleChange, inject } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { CoreBaseModule } from '@/core/base.module';
 import { CoreFaIconDirective } from '@directives/fa-icon';
@@ -39,7 +39,6 @@ import { CoreFaIconDirective } from '@directives/fa-icon';
     selector: 'core-input-errors',
     templateUrl: 'core-input-errors.html',
     styleUrl: 'input-errors.scss',
-    standalone: true,
     imports: [
         CoreBaseModule,
         CoreFaIconDirective,
@@ -52,7 +51,7 @@ export class CoreInputErrorsComponent implements OnInit, OnChanges {
     @Input() errorText = ''; // Set other non automatic errors.
     errorKeys: string[] = [];
 
-    protected hostElement: HTMLElement;
+    protected hostElement: HTMLElement = inject(ElementRef).nativeElement;
 
     @HostBinding('class.has-errors')
     get hasErrors(): boolean {
@@ -60,12 +59,6 @@ export class CoreInputErrorsComponent implements OnInit, OnChanges {
     }
 
     @HostBinding('role') role = 'alert';
-
-    constructor(
-        element: ElementRef,
-    ) {
-        this.hostElement = element.nativeElement;
-    }
 
     /**
      * Initialize some common errors if they aren't set.

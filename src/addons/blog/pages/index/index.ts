@@ -56,7 +56,6 @@ import { CoreMainMenuUserButtonComponent } from '@features/mainmenu/components/u
     selector: 'page-addon-blog-index',
     templateUrl: 'index.html',
     styleUrl: './index.scss',
-    standalone: true,
     imports: [
         CoreSharedModule,
         CoreCommentsCommentsComponent,

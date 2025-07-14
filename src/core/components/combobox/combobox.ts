@@ -52,7 +52,6 @@ import { CoreUpdateNonReactiveAttributesDirective } from '@directives/update-non
             useExisting: CoreComboboxComponent,
         },
     ],
-    standalone: true,
     imports: [
         CoreBaseModule,
         CoreFaIconDirective,

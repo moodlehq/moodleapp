@@ -10,9 +10,11 @@
         </ion-title>
 
         <ion-buttons slot="end">
-            <ion-button *ngIf="loaded" (click)="showToc()" aria-haspopup="true" [ariaLabel]="'addon.mod_imscp.toc' | translate">
-                <ion-icon name="fas-list-ul" slot="icon-only" aria-hidden="true" />
-            </ion-button>
+            @if (loaded) {
+                <ion-button (click)="showToc()" aria-haspopup="true" [ariaLabel]="'addon.mod_imscp.toc' | translate">
+                    <ion-icon name="fas-list-ul" slot="icon-only" aria-hidden="true" />
+                </ion-button>
+            }
         </ion-buttons>
     </ion-toolbar>
 </ion-header>
@@ -20,16 +22,21 @@
     <!-- Content. -->
     <core-loading [hideUntil]="loaded">
 
-        <ion-card class="core-warning-card" *ngIf="warning">
-            <ion-item>
-                <ion-icon name="fas-triangle-exclamation" slot="start" aria-hidden="true" />
-                <ion-label><span [innerHTML]="warning"></span></ion-label>
-            </ion-item>
-        </ion-card>
+        @if (warning) {
+            <ion-card class="core-warning-card">
+                <ion-item>
+                    <ion-icon name="fas-triangle-exclamation" slot="start" aria-hidden="true" />
+                    <ion-label><span [innerHTML]="warning"></span></ion-label>
+                </ion-item>
+            </ion-card>
+        }
 
-        <core-iframe *ngIf="loaded" [src]="src" [showFullscreenOnToolbar]="true" [autoFullscreenOnRotate]="true" />
+        @if (loaded) {
+            <core-iframe [src]="src" [showFullscreenOnToolbar]="true" [autoFullscreenOnRotate]="true" />
+        }
     </core-loading>
 
-    <core-navigation-bar collapsible-footer appearOnBottom *ngIf="loaded && navigationItems.length > 1" [items]="navigationItems"
-        (action)="loadItem($event)" />
+    @if (loaded && navigationItems.length > 1) {
+        <core-navigation-bar collapsible-footer appearOnBottom [items]="navigationItems" (action)="loadItem($event)" />
+    }
 </ion-content>

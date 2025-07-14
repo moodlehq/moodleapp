@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Input, Output, OnInit, OnChanges, SimpleChange, EventEmitter, Component } from '@angular/core';
+import { Input, Output, OnInit, OnChanges, SimpleChange, EventEmitter, Component, inject } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { CoreFormFields } from '@singletons/form';
 import { AddonModDataData, AddonModDataEntryField, AddonModDataField } from '../services/data';
@@ -39,8 +39,7 @@ export abstract class AddonModDataFieldPluginBaseComponent implements OnInit, On
     // Output called when the field is initialized with a value and it didn't have one already.
     @Output() onFieldInit = new EventEmitter<AddonModDataEntryFieldInitialized>();
 
-    constructor(protected fb: FormBuilder) {
-    }
+    protected fb = inject(FormBuilder);
 
     /**
      * Add the form control for the search mode.

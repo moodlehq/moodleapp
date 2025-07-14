@@ -339,7 +339,7 @@ export class CoreUrlUtilsProvider {
 /**
  * @deprecated since 4.5. Use CoreUrl instead.
  */
-// eslint-disable-next-line deprecation/deprecation
+// eslint-disable-next-line @typescript-eslint/no-deprecated
 export const CoreUrlUtils = makeSingleton(CoreUrlUtilsProvider);
 
 /**

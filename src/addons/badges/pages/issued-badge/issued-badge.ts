@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, inject } from '@angular/core';
 import { CoreSites } from '@services/sites';
 import { CoreUser } from '@features/user/services/user';
 import { AddonBadges, AddonBadgesUserBadge } from '../../services/badges';
@@ -35,13 +35,13 @@ import { CoreAlerts } from '@services/overlays/alerts';
     selector: 'page-addon-badges-issued-badge',
     templateUrl: 'issued-badge.html',
     styleUrl: 'issued-badge.scss',
-    standalone: true,
     imports: [
         CoreSharedModule,
     ],
 })
 export default class AddonBadgesIssuedBadgePage implements OnInit, OnDestroy {
 
+    protected route = inject(ActivatedRoute);
     protected badgeHash = '';
     protected userId!: number;
     protected logView: (badge: AddonBadgesUserBadge) => void;
@@ -53,7 +53,7 @@ export default class AddonBadgesIssuedBadgePage implements OnInit, OnDestroy {
     badgeLoaded = false;
     currentTime = 0;
 
-    constructor(protected route: ActivatedRoute) {
+    constructor() {
         this.courseId = CoreNavigator.getRouteNumberParam('courseId') || this.courseId; // Use 0 for site badges.
         this.userId = CoreNavigator.getRouteNumberParam('userId') || CoreSites.getRequiredCurrentSite().getUserId();
         this.badgeHash = CoreNavigator.getRouteParam('badgeHash') || '';

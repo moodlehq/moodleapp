@@ -32,7 +32,6 @@ import { CoreSharedModule } from '@/core/shared.module';
     selector: 'page-addon-mod-chat-session-messages',
     templateUrl: 'session-messages.html',
     styleUrls: ['../../../../../theme/components/discussion.scss', 'session-messages.scss'],
-    standalone: true,
     imports: [
         CoreSharedModule,
     ],

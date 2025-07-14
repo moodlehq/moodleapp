@@ -368,7 +368,7 @@ export class CoreLocalNotificationsProvider {
             this.codes[key] = entry.code;
 
             return entry.code;
-        } catch (err) {
+        } catch {
             // No code stored for that ID. Create a new code for it.
             const entries = await table.getMany(undefined, {
                 sorting: [

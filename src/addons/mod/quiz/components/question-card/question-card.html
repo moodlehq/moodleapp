@@ -1,18 +1,26 @@
 <ion-card id="addon-mod_quiz-question-{{question.slot}}">
     <ion-item-divider>
         <ion-label class="ion-text-wrap">
-            <h2 *ngIf="question.type !== 'description' && question.questionnumber" class="inline">
-                {{ 'core.question.questionno' | translate:{$a: question.questionnumber} }}
-            </h2>
-            <h2 *ngIf="question.type === 'description' || !question.questionnumber" class="inline">
-                {{ 'core.question.information' | translate }}
-            </h2>
+            @if (question.type !== 'description' && question.questionnumber) {
+                <h2 class="inline">
+                    {{ 'core.question.questionno' | translate:{$a: question.questionnumber} }}
+                </h2>
+            } @else {
+                <h2 class="inline">
+                    {{ 'core.question.information' | translate }}
+                </h2>
+            }
         </ion-label>
-        <div class="ion-text-wrap ion-margin-start addon-mod_quiz-question-note" slot="end"
-            *ngIf="question.status || question.readableMark">
-            <p *ngIf="question.status">{{question.status}}</p>
-            <p *ngIf="question.readableMark" [innerHTML]="question.readableMark"></p>
-        </div>
+        @if (question.status || question.readableMark) {
+            <div class="ion-text-wrap ion-margin-start addon-mod_quiz-question-note" slot="end">
+                @if (question.status) {
+                    <p>{{question.status}}</p>
+                }
+                @if (question.readableMark) {
+                    <p [innerHTML]="question.readableMark"></p>
+                }
+            </div>
+        }
     </ion-item-divider>
 
     <ng-content />

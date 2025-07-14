@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Component, OnDestroy, OnInit, ViewChild, inject } from '@angular/core';
 import { ActivatedRoute, ActivatedRouteSnapshot } from '@angular/router';
 import { CoreRoutedItemsManagerSourcesTracker } from '@classes/items-management/routed-items-manager-sources-tracker';
 import { CoreSwipeNavigationItemsManager } from '@classes/items-management/swipe-navigation-items-manager';
@@ -34,7 +34,6 @@ import { ADDON_MOD_ASSIGN_MODNAME, AddonModAssignListFilterName } from '../../co
 @Component({
     selector: 'page-addon-mod-assign-submission-review',
     templateUrl: 'submission-review.html',
-    standalone: true,
     imports: [
         CoreSharedModule,
         AddonModAssignSubmissionComponent,
@@ -57,8 +56,9 @@ export default class AddonModAssignSubmissionReviewPage implements OnInit, OnDes
     protected blindMarking = false; // Whether it uses blind marking.
     protected forceLeave = false; // To allow leaving the page without checking for changes.
     protected logView: () => void;
+    protected route = inject(ActivatedRoute);
 
-    constructor(protected route: ActivatedRoute) {
+    constructor() {
         this.logView = CoreTime.once(() => {
             if (!this.assign) {
                 return;

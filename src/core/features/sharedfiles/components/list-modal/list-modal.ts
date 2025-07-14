@@ -27,7 +27,6 @@ import { CoreSharedFilesListComponent } from '../list/list';
 @Component({
     selector: 'core-shared-files-list-modal',
     templateUrl: 'list-modal.html',
-    standalone: true,
     imports: [
         CoreSharedModule,
         CoreSharedFilesListComponent,

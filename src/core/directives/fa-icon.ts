@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { AfterViewInit, Directive, ElementRef, Input, OnChanges, SimpleChange } from '@angular/core';
+import { AfterViewInit, Directive, ElementRef, Input, OnChanges, SimpleChange, inject } from '@angular/core';
 import { CoreLogger } from '@singletons/logger';
 import { CoreIcons } from '@singletons/icons';
 import { CoreConstants } from '../constants';
@@ -27,18 +27,15 @@ import { CoreConstants } from '../constants';
  */
 @Directive({
     selector: 'ion-icon[name]',
-    standalone: true,
 })
 export class CoreFaIconDirective implements AfterViewInit, OnChanges {
 
     @Input() name = '';
 
-    protected element: HTMLElement;
-
+    protected element: HTMLElement = inject(ElementRef).nativeElement;
     protected logger: CoreLogger;
 
-    constructor(el: ElementRef) {
-        this.element = el.nativeElement;
+    constructor() {
         this.logger = CoreLogger.getInstance('CoreFaIconDirective');
     }
 

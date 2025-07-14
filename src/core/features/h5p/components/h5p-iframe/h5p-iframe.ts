@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, Input, Output, ElementRef, OnChanges, SimpleChange, EventEmitter, OnDestroy } from '@angular/core';
+import { Component, Input, Output, OnChanges, SimpleChange, EventEmitter, OnDestroy, inject } from '@angular/core';
 import { NavigationEnd, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { filter } from 'rxjs/operators';
@@ -39,7 +39,6 @@ import { CoreSharedModule } from '@/core/shared.module';
 @Component({
     selector: 'core-h5p-iframe',
     templateUrl: 'core-h5p-iframe.html',
-    standalone: true,
     imports: [
         CoreSharedModule,
     ],
@@ -70,10 +69,9 @@ export class CoreH5PIframeComponent implements OnChanges, OnDestroy {
     protected subscription: Subscription;
     protected iframeLoadedOnce = false;
 
-    constructor(
-        public elementRef: ElementRef,
-        router: Router,
-    ) {
+    constructor() {
+        const router = inject(Router);
+
         this.logger = CoreLogger.getInstance('CoreH5PIframeComponent');
         this.site = CoreSites.getRequiredCurrentSite();
         this.siteId = this.site.getId();
@@ -181,7 +179,7 @@ export class CoreH5PIframeComponent implements OnChanges, OnDestroy {
             );
 
             return url;
-        } catch (error) {
+        } catch {
             // Index file doesn't exist, probably deleted because a lib was updated. Try to create it again.
             try {
                 const path = await CoreFilepool.getInternalUrlByUrl(this.siteId, this.fileUrl!);

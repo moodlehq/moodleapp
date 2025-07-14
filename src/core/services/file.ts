@@ -62,6 +62,12 @@ export type CoreFileProgressFunction = (event: CoreFileProgressEvent) => void;
 export const enum CoreFileFormat {
     FORMATTEXT = 0,
     FORMATDATAURL = 1,
+    /**
+     * @deprecated since 5.1. This is related to Javascript API deprecation and it's not safe
+     * to use it. When readAsBinaryString is finally removed this format could be deleted from the app.
+     * For more information, read
+     * https://developer.mozilla.org/en-US/docs/Web/API/FileReader/readAsBinaryString
+     */
     FORMATBINARYSTRING = 2,
     FORMATARRAYBUFFER = 3,
     FORMATJSON = 4,
@@ -476,6 +482,7 @@ export class CoreFileProvider {
      */
     readFile(
         path: string,
+        // eslint-disable-next-line @typescript-eslint/no-deprecated
         format?: CoreFileFormat.FORMATTEXT | CoreFileFormat.FORMATDATAURL | CoreFileFormat.FORMATBINARYSTRING,
         folder?: string,
     ): Promise<string>;
@@ -497,7 +504,9 @@ export class CoreFileProvider {
         switch (format) {
             case CoreFileFormat.FORMATDATAURL:
                 return File.readAsDataURL(folder, path);
+            // eslint-disable-next-line @typescript-eslint/no-deprecated
             case CoreFileFormat.FORMATBINARYSTRING:
+                // This internally uses deprecated FileReader.readAsBinaryString for webapp.
                 return File.readAsBinaryString(folder, path);
             case CoreFileFormat.FORMATARRAYBUFFER:
                 return File.readAsArrayBuffer(folder, path);
@@ -505,7 +514,7 @@ export class CoreFileProvider {
                 return File.readAsText(folder, path).then((text) => {
                     const parsed = CoreText.parseJSON(text, null);
 
-                    if (parsed == null && text != null) {
+                    if (parsed === null && text !== null) {
                         throw new CoreError(`Error parsing JSON file: ${path}`);
                     }
 
@@ -524,7 +533,6 @@ export class CoreFileProvider {
      * @returns Promise to be resolved when the file is read.
      */
     readFileData(fileData: IFile, format: CoreFileFormat = CoreFileFormat.FORMATTEXT): Promise<string | ArrayBuffer | unknown> {
-        format = format || CoreFileFormat.FORMATTEXT;
         this.logger.debug(`Read file from file data with format ${format}`);
 
         return new Promise((resolve, reject): void => {
@@ -532,11 +540,11 @@ export class CoreFileProvider {
 
             reader.onloadend = (event): void => {
                 if (event.target?.result !== undefined && event.target.result !== null) {
-                    if (format == CoreFileFormat.FORMATJSON) {
+                    if (format === CoreFileFormat.FORMATJSON) {
                         // Convert to object.
                         const parsed = CoreText.parseJSON(<string> event.target.result, null);
 
-                        if (parsed == null) {
+                        if (parsed === null) {
                             reject('Error parsing JSON file.');
                         }
 
@@ -567,7 +575,9 @@ export class CoreFileProvider {
                 case CoreFileFormat.FORMATDATAURL:
                     reader.readAsDataURL(fileData);
                     break;
+                // eslint-disable-next-line @typescript-eslint/no-deprecated
                 case CoreFileFormat.FORMATBINARYSTRING:
+                    // eslint-disable-next-line @typescript-eslint/no-deprecated
                     reader.readAsBinaryString(fileData);
                     break;
                 case CoreFileFormat.FORMATARRAYBUFFER:
@@ -1119,7 +1129,7 @@ export class CoreFileProvider {
             }
 
             return this.calculateUniqueName(files, fileNameWithoutExtension + extension);
-        } catch (error) {
+        } catch {
             // Folder doesn't exist, name is unique. Clean it and return it.
             return CoreText.removeSpecialCharactersForFiles(CoreUrl.decodeURIComponent(fileName));
         }

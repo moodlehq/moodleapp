@@ -74,7 +74,6 @@ const ANIMATION_DURATION = 500;
         ]),
     ],
     styleUrl: 'menu.scss',
-    standalone: true,
     imports: [
         CoreSharedModule,
         CoreMainMenuUserButtonComponent,
