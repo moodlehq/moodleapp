@@ -1,5 +1,5 @@
 ## BUILD STAGE
-FROM node:18 as build-stage
+FROM node:lts-jod as build-stage
 
 WORKDIR /app
 
