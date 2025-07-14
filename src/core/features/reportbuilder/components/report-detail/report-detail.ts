@@ -40,7 +40,6 @@ import { CoreReportBuilderReportColumnComponent } from '../report-column/report-
     selector: 'core-report-builder-report-detail',
     templateUrl: './report-detail.html',
     styleUrl: './report-detail.scss',
-    standalone: true,
     imports: [
         CoreSharedModule,
         CoreReportBuilderReportColumnComponent,

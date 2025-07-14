@@ -235,7 +235,7 @@ export class CoreCourseOptionsDelegateService extends CoreDelegate<CoreCourseOpt
     protected featurePrefix = 'CoreCourseOptionsDelegate_';
 
     constructor() {
-        super('CoreCourseOptionsDelegate');
+        super();
 
         CoreEvents.on(CoreEvents.LOGOUT, () => {
             this.clearCoursesHandlers();
@@ -496,7 +496,7 @@ export class CoreCourseOptionsDelegateService extends CoreDelegate<CoreCourseOpt
         // Load course options if missing.
         await this.loadCourseOptions(course, refresh);
 
-        // eslint-disable-next-line deprecation/deprecation
+        // eslint-disable-next-line @typescript-eslint/no-deprecated
         return this.hasHandlersForDefault(course.id, refresh, course.navOptions, course.admOptions);
     }
 
@@ -516,7 +516,7 @@ export class CoreCourseOptionsDelegateService extends CoreDelegate<CoreCourseOpt
         navOptions?: CoreCourseUserAdminOrNavOptionIndexed,
         admOptions?: CoreCourseUserAdminOrNavOptionIndexed,
     ): Promise<boolean> {
-        // eslint-disable-next-line deprecation/deprecation
+        // eslint-disable-next-line @typescript-eslint/no-deprecated
         return await this.hasHandlersForAccess(
             courseId,
             refresh,
@@ -542,7 +542,7 @@ export class CoreCourseOptionsDelegateService extends CoreDelegate<CoreCourseOpt
         navOptions?: CoreCourseUserAdminOrNavOptionIndexed,
         admOptions?: CoreCourseUserAdminOrNavOptionIndexed,
     ): Promise<boolean> {
-        // eslint-disable-next-line deprecation/deprecation
+        // eslint-disable-next-line @typescript-eslint/no-deprecated
         return await this.hasHandlersForAccess(
             courseId,
             refresh,

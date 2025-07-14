@@ -38,7 +38,6 @@ import { CORE_USER_PROFILE_PICTURE_UPDATED } from '@features/user/constants';
     selector: 'core-user-avatar',
     templateUrl: 'core-user-avatar.html',
     styleUrl: 'user-avatar.scss',
-    standalone: true,
     imports: [
         CoreBaseModule,
         CoreExternalContentDirective,

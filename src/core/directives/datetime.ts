@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Directive, OnInit } from '@angular/core';
+import { Directive, OnInit, inject } from '@angular/core';
 import { CoreLang } from '@services/lang';
 import { CoreUser } from '@features/user/services/user';
 import { IonDatetime } from '@ionic/angular';
@@ -22,11 +22,10 @@ import { IonDatetime } from '@ionic/angular';
  */
 @Directive({
     selector: 'ion-datetime',
-    standalone: true,
 })
 export class CoreIonDatetimeDirective implements OnInit {
 
-    constructor(protected datetime: IonDatetime) {}
+    protected datetime = inject(IonDatetime);
 
     /**
      * @inheritdoc

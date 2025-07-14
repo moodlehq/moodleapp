@@ -29,12 +29,14 @@
     </ion-refresher>
 
     <core-loading [hideUntil]="notesLoaded">
-        <ion-item class="ion-text-wrap" *ngIf="user">
-            <core-user-avatar [user]="user" [courseId]="courseId" slot="start" [linkProfile]="false" />
-            <ion-label>
-                <p class="item-heading">{{user!.fullname}}</p>
-            </ion-label>
-        </ion-item>
+        @if (user) {
+            <ion-item class="ion-text-wrap">
+                <core-user-avatar [user]="user" [courseId]="courseId" slot="start" [linkProfile]="false" />
+                <ion-label>
+                    <p class="item-heading">{{user!.fullname}}</p>
+                </ion-label>
+            </ion-item>
+        }
 
         <core-combobox [selection]="type" (onChange)="typeChanged($event)">
             <ion-select-option class="ion-text-wrap" value="site">
@@ -48,46 +50,59 @@
             </ion-select-option>
         </core-combobox>
 
-        <ion-card class="core-warning-card" *ngIf="hasOffline">
-            <ion-item>
-                <ion-icon name="fas-triangle-exclamation" slot="start" aria-hidden="true" />
-                <ion-label>
-                    {{ 'core.thereisdatatosync' | translate:{$a: 'addon.notes.notes' | translate | lowercase } }}
-                </ion-label>
-            </ion-item>
-        </ion-card>
+        @if (hasOffline) {
+            <ion-card class="core-warning-card">
+                <ion-item>
+                    <ion-icon name="fas-triangle-exclamation" slot="start" aria-hidden="true" />
+                    <ion-label>
+                        {{ 'core.thereisdatatosync' | translate:{$a: 'addon.notes.notes' | translate | lowercase } }}
+                    </ion-label>
+                </ion-item>
+            </ion-card>
+        }
 
-        <core-empty-box *ngIf="notes && notes.length === 0" icon="fas-receipt" [message]="'addon.notes.nonotes' | translate" />
-
-        <ng-container *ngIf="notes && notes.length > 0">
+        @if (notes && notes.length === 0) {
+            <core-empty-box icon="fas-receipt" [message]="'addon.notes.nonotes' | translate" />
+        } @else {
             <ion-card *ngFor="let note of notes">
                 <ion-item class="ion-text-wrap">
-                    <core-user-avatar [user]="note" [courseId]="courseId" slot="start" *ngIf="!userId" />
+                    @if (!userId) {
+                        <core-user-avatar [user]="note" [courseId]="courseId" slot="start" />
+                    }
                     <ion-label>
-                        <p class="item-heading" *ngIf="!userId">{{note.userfullname}}</p>
-                        <p *ngIf="!note.deleted && !note.offline" slot="end">
-                            <span class="ion-text-wrap">{{note.lastmodified | coreDateDayOrTime}}</span>
-                        </p>
+                        @if (!userId) {
+                            <p class="item-heading">{{note.userfullname}}</p>
+                        }
+                        @if (!note.deleted && !note.offline) {
+                            <p slot="end">
+                                <span class="ion-text-wrap">{{note.lastmodified | coreDateDayOrTime}}</span>
+                            </p>
+                        }
                     </ion-label>
-                    <p *ngIf="note.offline" slot="end">
-                        <ion-icon name="fas-clock" aria-hidden="true" /> <span class="ion-text-wrap">
-                            {{ 'core.notsent' | translate }}
-                        </span>
-                    </p>
-                    <p *ngIf="note.deleted" slot="end">
-                        <ion-icon name="fas-trash" aria-hidden="true" /> <span class="ion-text-wrap">
-                            {{ 'core.deletedoffline' | translate }}
-                        </span>
-                    </p>
-                    <ion-button *ngIf="note.deleted" slot="end" fill="clear" color="danger" (click)="undoDeleteNote($event, note)"
-                        [ariaLabel]="'core.restore' | translate">
-                        <ion-icon name="fas-rotate-left" slot="icon-only" aria-hidden="true" />
-                    </ion-button>
-                    <ion-button *ngIf="showDelete && !note.deleted && (type !== 'personal' || note.usermodified === currentUserId)"
-                        slot="end" fill="clear" [@coreSlideInOut]="'fromRight'" color="danger" (click)="deleteNote($event, note)"
-                        [ariaLabel]="'core.delete' | translate">
-                        <ion-icon name="fas-trash" slot="icon-only" aria-hidden="true" />
-                    </ion-button>
+                    @if (note.offline) {
+                        <p slot="end">
+                            <ion-icon name="fas-clock" aria-hidden="true" /> <span class="ion-text-wrap">
+                                {{ 'core.notsent' | translate }}
+                            </span>
+                        </p>
+                    }
+                    @if (note.deleted) {
+                        <p slot="end">
+                            <ion-icon name="fas-trash" aria-hidden="true" /> <span class="ion-text-wrap">
+                                {{ 'core.deletedoffline' | translate }}
+                            </span>
+                        </p>
+                        <ion-button slot="end" fill="clear" color="danger" (click)="undoDeleteNote($event, note)"
+                            [ariaLabel]="'core.restore' | translate">
+                            <ion-icon name="fas-rotate-left" slot="icon-only" aria-hidden="true" />
+                        </ion-button>
+                    }
+                    @if (showDelete && !note.deleted && (type !== 'personal' || note.usermodified === currentUserId)) {
+                        <ion-button slot="end" fill="clear" [@coreSlideInOut]="'fromRight'" color="danger"
+                            (click)="deleteNote($event, note)" [ariaLabel]="'core.delete' | translate">
+                            <ion-icon name="fas-trash" slot="icon-only" aria-hidden="true" />
+                        </ion-button>
+                    }
                 </ion-item>
                 <ion-item class="ion-text-wrap">
                     <ion-label>
@@ -95,13 +110,16 @@
                     </ion-label>
                 </ion-item>
             </ion-card>
-        </ng-container>
+
+        }
     </core-loading>
 
-    <ion-fab slot="fixed" core-fab vertical="bottom" horizontal="end" *ngIf="userId && notesLoaded">
-        <ion-fab-button (click)="addNote($event)" [attr.aria-label]="'addon.notes.addnewnote' |translate">
-            <ion-icon name="fas-plus" aria-hidden="true" />
-            <span class="sr-only">{{ 'addon.notes.addnewnote' | translate }}</span>
-        </ion-fab-button>
-    </ion-fab>
+    @if (userId && notesLoaded) {
+        <ion-fab slot="fixed" core-fab vertical="bottom" horizontal="end">
+            <ion-fab-button (click)="addNote($event)" [attr.aria-label]="'addon.notes.addnewnote' |translate">
+                <ion-icon name="fas-plus" aria-hidden="true" />
+                <span class="sr-only">{{ 'addon.notes.addnewnote' | translate }}</span>
+            </ion-fab-button>
+        </ion-fab>
+    }
 </ion-content>

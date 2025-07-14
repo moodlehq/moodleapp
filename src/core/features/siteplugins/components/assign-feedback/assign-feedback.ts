@@ -29,7 +29,6 @@ import { getModAssignComponentModules } from '@addons/mod/assign/assign.module';
     selector: 'core-site-plugins-assign-feedback',
     templateUrl: 'core-siteplugins-assign-feedback.html',
     styles: [':host { display: contents; }'],
-    standalone: true,
     imports: [
         CoreSharedModule,
         CoreCompileHtmlComponent,

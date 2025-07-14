@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { APP_INITIALIZER, NgModule } from '@angular/core';
+import { NgModule, provideAppInitializer } from '@angular/core';
 
 import { CoreQuestionDelegate } from '@features/question/services/question-delegate';
 import { AddonQtypeTrueFalseHandler } from './services/handlers/truefalse';
@@ -21,13 +21,9 @@ import { AddonQtypeTrueFalseHandler } from './services/handlers/truefalse';
     declarations: [
     ],
     providers: [
-        {
-            provide: APP_INITIALIZER,
-            multi: true,
-            useValue: () => {
-                CoreQuestionDelegate.registerHandler(AddonQtypeTrueFalseHandler.instance);
-            },
-        },
+        provideAppInitializer(() => {
+            CoreQuestionDelegate.registerHandler(AddonQtypeTrueFalseHandler.instance);
+        }),
     ],
 })
 export class AddonQtypeTrueFalseModule {}

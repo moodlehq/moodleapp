@@ -33,7 +33,6 @@ import { CoreUpdateNonReactiveAttributesDirective } from '@directives/update-non
     selector: 'core-navigation-bar',
     templateUrl: 'core-navigation-bar.html',
     styleUrl: 'navigation-bar.scss',
-    standalone: true,
     imports: [
         CoreBaseModule,
         CoreUpdateNonReactiveAttributesDirective,

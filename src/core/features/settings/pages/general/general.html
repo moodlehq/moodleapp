@@ -38,45 +38,55 @@
                 <p class="item-heading ion-text-wrap">{{ 'core.settings.enablepinchtozoom' | translate }}</p>
             </ion-toggle>
         </ion-item>
-        <ion-item class="ion-text-wrap core-settings-general-color-scheme" *ngIf="colorSchemes.length > 0">
-            <ion-select [(ngModel)]="selectedScheme" (ionChange)="colorSchemeChanged($event)" interface="action-sheet"
-                [cancelText]="'core.cancel' | translate" [disabled]="colorSchemeDisabled"
-                [interfaceOptions]="{header: 'core.settings.colorscheme' | translate}">
-                <div slot="label">
-                    <p class="item-heading ion-text-wrap">{{ 'core.settings.colorscheme' | translate }}</p>
-                    <p *ngIf="colorSchemeDisabled" class="text-danger">{{ 'core.settings.forcedsetting' | translate }}</p>
-                </div>
-                <ion-select-option *ngFor="let scheme of colorSchemes" [value]="scheme">
-                    {{ 'core.settings.colorscheme-' + scheme | translate }}</ion-select-option>
-            </ion-select>
-        </ion-item>
-        <ion-item *ngIf="colorSchemes.length > 0 && selectedScheme === 'system' && isAndroid" lines="none">
-            <ion-label class="ion-text-wrap">
-                <p class="ion-text-wrap">{{ 'core.settings.colorscheme-system-notice' | translate }}</p>
-            </ion-label>
-        </ion-item>
+        @if (colorSchemes.length > 0) {
+            <ion-item class="ion-text-wrap core-settings-general-color-scheme">
+                <ion-select [(ngModel)]="selectedScheme" (ionChange)="colorSchemeChanged($event)" interface="action-sheet"
+                    [cancelText]="'core.cancel' | translate" [disabled]="colorSchemeDisabled"
+                    [interfaceOptions]="{header: 'core.settings.colorscheme' | translate}">
+                    <div slot="label">
+                        <p class="item-heading ion-text-wrap">{{ 'core.settings.colorscheme' | translate }}</p>
+                        @if (colorSchemeDisabled) {
+                            <p class="text-danger">{{ 'core.settings.forcedsetting' | translate }}</p>
+                        }
+                    </div>
+                    <ion-select-option *ngFor="let scheme of colorSchemes" [value]="scheme">
+                        {{ 'core.settings.colorscheme-' + scheme | translate }}</ion-select-option>
+                </ion-select>
+            </ion-item>
+            @if (selectedScheme === 'system' && isAndroid) {
+                <ion-item lines="none">
+                    <ion-label class="ion-text-wrap">
+                        <p class="ion-text-wrap">{{ 'core.settings.colorscheme-system-notice' | translate }}</p>
+                    </ion-label>
+                </ion-item>
+            }
+        }
         <core-dynamic-component [component]="editorSettingsComponentClass" />
-        <ion-item *ngIf="displayIframeHelp" lines="none">
-            <ion-label>
-                <p class="item-heading ion-text-wrap">{{ 'core.settings.ioscookies' | translate }}</p>
-                <p class="ion-text-wrap">{{ 'core.settings.ioscookiesdescription' | translate }}</p>
-                <ion-button expand="block" (click)="openNativeSettings($event)">
-                    {{ 'core.opensettings' | translate }}
-                </ion-button>
-            </ion-label>
-        </ion-item>
+        @if (displayIframeHelp) {
+            <ion-item lines="none">
+                <ion-label>
+                    <p class="item-heading ion-text-wrap">{{ 'core.settings.ioscookies' | translate }}</p>
+                    <p class="ion-text-wrap">{{ 'core.settings.ioscookiesdescription' | translate }}</p>
+                    <ion-button expand="block" (click)="openNativeSettings($event)">
+                        {{ 'core.opensettings' | translate }}
+                    </ion-button>
+                </ion-label>
+            </ion-item>
+        }
         <ion-item>
             <ion-toggle [(ngModel)]="debugDisplay" (ionChange)="debugDisplayChanged($event)">
                 <p class="item-heading ion-text-wrap">{{ 'core.settings.debugdisplay' | translate }}</p>
                 <p class="ion-text-wrap">{{ 'core.settings.debugdisplaydescription' | translate }}</p>
             </ion-toggle>
         </ion-item>
-        <ion-item *ngIf="analyticsAvailable">
-            <ion-label>
-                <p class="item-heading ion-text-wrap">{{ 'core.settings.enableanalytics' | translate }}</p>
-                <p class="ion-text-wrap">{{ 'core.settings.enableanalyticsdescription' | translate }}</p>
-            </ion-label>
-            <ion-toggle [(ngModel)]="analyticsEnabled" (ionChange)="analyticsEnabledChanged($event)" slot="end" />
-        </ion-item>
+        @if (analyticsAvailable) {
+            <ion-item>
+                <ion-label>
+                    <p class="item-heading ion-text-wrap">{{ 'core.settings.enableanalytics' | translate }}</p>
+                    <p class="ion-text-wrap">{{ 'core.settings.enableanalyticsdescription' | translate }}</p>
+                </ion-label>
+                <ion-toggle [(ngModel)]="analyticsEnabled" (ionChange)="analyticsEnabledChanged($event)" slot="end" />
+            </ion-item>
+        }
     </ion-list>
 </ion-content>

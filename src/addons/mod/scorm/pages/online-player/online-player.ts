@@ -40,7 +40,6 @@ import { CoreAlerts } from '@services/overlays/alerts';
 @Component({
     selector: 'page-addon-mod-scorm-online-player',
     templateUrl: 'online-player.html',
-    standalone: true,
     imports: [
         CoreSharedModule,
     ],

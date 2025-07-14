@@ -27,7 +27,6 @@ import { CoreSharedModule } from '@/core/shared.module';
     selector: 'addon-user-profile-field-checkbox',
     templateUrl: 'addon-user-profile-field-checkbox.html',
     styleUrl: './checkbox.scss',
-    standalone: true,
     imports: [
         CoreSharedModule,
     ],

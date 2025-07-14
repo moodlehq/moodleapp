@@ -22,7 +22,6 @@ import { PopoverController } from '@singletons';
  */
 @Component({
     templateUrl: 'set-reminder-custom.html',
-    standalone: true,
     imports: [
         CoreSharedModule,
     ],

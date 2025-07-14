@@ -12,13 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, Optional, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { Params } from '@angular/router';
 import { CoreError } from '@classes/errors/error';
 import { CoreSite } from '@classes/sites/site';
 import { CoreCourseModuleMainActivityComponent } from '@features/course/classes/main-activity-component';
-import CoreCourseContentsPage from '@features/course/pages/contents/contents';
-import { IonContent } from '@ionic/angular';
 import { CoreGroupInfo, CoreGroups } from '@services/groups';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSites } from '@services/sites';
@@ -63,7 +61,6 @@ import { CoreCourseModuleNavigationComponent } from '@features/course/components
 @Component({
     selector: 'addon-mod-assign-index',
     templateUrl: 'addon-mod-assign-index.html',
-    standalone: true,
     imports: [
         CoreSharedModule,
         AddonModAssignSubmissionComponent,
@@ -109,11 +106,8 @@ export class AddonModAssignIndexComponent extends CoreCourseModuleMainActivityCo
     protected gradedObserver?: CoreEventObserver;
     protected startedObserver?: CoreEventObserver;
 
-    constructor(
-        protected content?: IonContent,
-        @Optional() courseContentsPage?: CoreCourseContentsPage,
-    ) {
-        super('AddonModLessonIndexComponent', content, courseContentsPage);
+    constructor() {
+        super();
 
         this.currentSite = CoreSites.getRequiredCurrentSite();
         this.currentUserId = this.currentSite.getUserId();

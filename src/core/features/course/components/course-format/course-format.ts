@@ -24,6 +24,7 @@ import {
     ElementRef,
     ChangeDetectorRef,
     ViewChild,
+    inject,
 } from '@angular/core';
 import { CoreDynamicComponent } from '@components/dynamic-component/dynamic-component';
 import { CoreCourseAnyCourseData } from '@features/courses/services/courses';
@@ -83,7 +84,6 @@ import { ADDON_STORAGE_MANAGER_PAGE_NAME } from '@addons/storagemanager/constant
     selector: 'core-course-format',
     templateUrl: 'course-format.html',
     styleUrl: 'course-format.scss',
-    standalone: true,
     imports: [
         CoreSharedModule,
         CoreCourseSectionComponent,
@@ -149,11 +149,11 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
     protected viewedModulesInitialized = false;
     protected currentSite?: CoreSite;
 
-    constructor(
-        protected content: IonContent,
-        protected elementRef: ElementRef,
-        protected changeDetectorRef: ChangeDetectorRef,
-    ) {
+    protected content = inject(IonContent);
+    protected element: HTMLElement = inject(ElementRef).nativeElement;
+    protected changeDetectorRef = inject(ChangeDetectorRef);
+
+    constructor() {
         // Pass this instance to all components so they can use its methods and properties.
         this.data.coreCourseFormatComponent = this;
     }
@@ -458,7 +458,7 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
 
         // Check current scrolled section.
         const allSectionElements: NodeListOf<HTMLElement> =
-            this.elementRef.nativeElement.querySelectorAll('.core-course-module-list-wrapper');
+            this.element.querySelectorAll('.core-course-module-list-wrapper');
 
         const scroll = await this.content.getScrollElement();
         const containerTop = scroll.getBoundingClientRect().top;
@@ -627,7 +627,7 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
      */
     protected scrollInCourse(id: number, isSection = false): void {
         const elementId = isSection ? `#core-section-name-${id}` : `#core-course-module-${id}`;
-        CoreDom.scrollToElement(this.elementRef.nativeElement, elementId,{ addYAxis: -10 });
+        CoreDom.scrollToElement(this.element, elementId,{ addYAxis: -10 });
     }
 
     /**

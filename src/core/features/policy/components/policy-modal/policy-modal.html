@@ -1,8 +1,10 @@
 <ion-header>
     <ion-toolbar>
-        <ion-title *ngIf="policy">
-            <h1>{{ policy.name }}</h1>
-        </ion-title>
+        @if (policy) {
+            <ion-title>
+                <h1>{{ policy.name }}</h1>
+            </ion-title>
+        }
         <ion-buttons slot="end">
             <ion-button fill="clear" (click)="closeModal()" [ariaLabel]="'core.close' | translate">
                 <ion-icon name="fas-xmark" slot="icon-only" aria-hidden="true" />
@@ -11,14 +13,16 @@
     </ion-toolbar>
 </ion-header>
 <ion-content>
-    <ion-item *ngIf="policy" class="ion-text-wrap">
-        <ion-label>
-            <core-format-text [text]="policy.summary" contextLevel="system" [contextInstanceId]="0" />
-        </ion-label>
-    </ion-item>
-    <ion-item *ngIf="policy" class="ion-text-wrap">
-        <ion-label>
-            <core-format-text [text]="policy.content" contextLevel="system" [contextInstanceId]="0" />
-        </ion-label>
-    </ion-item>
+    @if (policy) {
+        <ion-item class="ion-text-wrap">
+            <ion-label>
+                <core-format-text [text]="policy.summary" contextLevel="system" [contextInstanceId]="0" />
+            </ion-label>
+        </ion-item>
+        <ion-item class="ion-text-wrap">
+            <ion-label>
+                <core-format-text [text]="policy.content" contextLevel="system" [contextInstanceId]="0" />
+            </ion-label>
+        </ion-item>
+    }
 </ion-content>

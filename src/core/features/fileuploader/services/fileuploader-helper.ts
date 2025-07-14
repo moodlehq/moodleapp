@@ -395,7 +395,7 @@ export class CoreFileUploaderHelperProvider {
                             try {
                                 // The handler provided a path. First treat it like it's a relative path.
                                 fileEntry = await CoreFile.getFile(data.path);
-                            } catch (error) {
+                            } catch {
                                 // File not found, it's probably an absolute path.
                                 fileEntry = await CoreFile.getExternalFile(data.path);
                             }
@@ -777,7 +777,7 @@ export class CoreFileUploaderHelperProvider {
                     header: Translate.instant('core.error'),
                     okText: Translate.instant('core.retry'),
                 });
-            } catch (error) {
+            } catch {
                 // User cancelled. Delete the file if needed.
                 if (options.deleteAfterUpload) {
                     CoreFile.removeExternalFile(path);

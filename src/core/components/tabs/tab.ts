@@ -12,7 +12,18 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, Input, Output, OnInit, OnDestroy, ElementRef, EventEmitter, ContentChild, TemplateRef } from '@angular/core';
+import {
+    Component,
+    Input,
+    Output,
+    OnInit,
+    OnDestroy,
+    ElementRef,
+    EventEmitter,
+    ContentChild,
+    TemplateRef,
+    inject,
+} from '@angular/core';
 import { CoreTabBase } from '@classes/tabs';
 
 import { CoreUtils } from '@singletons/utils';
@@ -43,7 +54,6 @@ import { CoreBaseModule } from '@/core/base.module';
 @Component({
     selector: 'core-tab',
     template: '@if (loaded && template) {<ng-container [ngTemplateOutlet]="template" />}',
-    standalone: true,
     imports: [CoreBaseModule],
 })
 export class CoreTabComponent implements OnInit, OnDestroy, CoreTabBase {
@@ -73,18 +83,15 @@ export class CoreTabComponent implements OnInit, OnDestroy, CoreTabBase {
 
     @ContentChild(TemplateRef) template?: TemplateRef<void>; // Template defined by the content.
 
-    element: HTMLElement; // The core-tab element.
+    element: HTMLElement = inject(ElementRef).nativeElement; // The core-tab element.
     loaded = false;
     initialized = false;
     tabElement?: HTMLElement | null;
 
     protected isEnabled = true;
+    protected tabs = inject(CoreTabsComponent);
 
-    constructor(
-        protected tabs: CoreTabsComponent,
-        element: ElementRef,
-    ) {
-        this.element = element.nativeElement;
+    constructor() {
         this.id = this.id || `core-tab-${CoreUtils.getUniqueId('CoreTabComponent')}`;
         this.element.setAttribute('role', 'tabpanel');
         this.element.setAttribute('tabindex', '0');

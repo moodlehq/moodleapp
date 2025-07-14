@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit, OnDestroy, ViewChild, ElementRef } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, ElementRef, inject } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { CoreError } from '@classes/errors/error';
 import { CoreFileUploaderHelper } from '@features/fileuploader/services/fileuploader-helper';
@@ -59,7 +59,6 @@ import { CoreSharedModule } from '@/core/shared.module';
     selector: 'page-addon-mod-assign-edit',
     templateUrl: 'edit.html',
     styleUrl: 'edit.scss',
-    standalone: true,
     imports: [
         CoreSharedModule,
         AddonModAssignSubmissionPluginComponent,
@@ -90,10 +89,9 @@ export default class AddonModAssignEditPage implements OnInit, OnDestroy, CanLea
     protected isDestroyed = false; // Whether the component has been destroyed.
     protected forceLeave = false; // To allow leaving the page without checking for changes.
     protected timeUpToast?: HTMLIonToastElement;
+    protected route = inject(ActivatedRoute);
 
-    constructor(
-        protected route: ActivatedRoute,
-    ) {
+    constructor() {
         this.userId = CoreSites.getCurrentSiteUserId(); // Right now we can only edit current user's submissions.
         this.editText = Translate.instant('addon.mod_assign.editsubmission');
         this.title = this.editText;
@@ -393,7 +391,7 @@ export default class AddonModAssignEditPage implements OnInit, OnDestroy, CanLea
         // Get size to ask for confirmation.
         try {
             size = await AddonModAssignHelper.getSubmissionSizeForEdit(this.assign!, this.userSubmission!, inputData);
-        } catch (error) {
+        } catch {
             // Error calculating size, return -1.
             size = -1;
         }

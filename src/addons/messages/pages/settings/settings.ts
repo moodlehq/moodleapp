@@ -38,7 +38,6 @@ import { CoreSharedModule } from '@/core/shared.module';
 @Component({
     selector: 'page-addon-messages-settings',
     templateUrl: 'settings.html',
-    standalone: true,
     imports: [
         CoreSharedModule,
     ],

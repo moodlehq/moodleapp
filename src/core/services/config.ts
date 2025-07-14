@@ -167,7 +167,7 @@ export class CoreConfigProvider {
             await this.table.getOneByPrimaryKey({ name });
 
             return true;
-        } catch (error) {
+        } catch {
             return false;
         }
     }

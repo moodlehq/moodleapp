@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Injectable, Type } from '@angular/core';
+import { Injectable, Type, inject } from '@angular/core';
 import { CoreDelegate, CoreDelegateHandler } from '@classes/delegate';
 import { AddonModDataDefaultFieldHandler } from './handlers/default-field';
 import { makeSingleton } from '@singletons';
@@ -42,7 +42,7 @@ export interface AddonModDataFieldHandler extends CoreDelegateHandler {
      * Return the Component to use to display the plugin data.
      * It's recommended to return the class of the component, but you can also return an instance of the component.
      *
-     * @param field The field object.
+     * @param plugin The field plugin object.
      * @returns The component to use, undefined if not found.
      */
     getComponent?(plugin: AddonModDataField): Promise<Type<AddonModDataFieldPluginBaseComponent> | undefined>;
@@ -130,12 +130,7 @@ export interface AddonModDataFieldHandler extends CoreDelegateHandler {
 export class AddonModDataFieldsDelegateService extends CoreDelegate<AddonModDataFieldHandler> {
 
     protected handlerNameProperty = 'type';
-
-    constructor(
-        protected defaultHandler: AddonModDataDefaultFieldHandler,
-    ) {
-        super('AddonModDataFieldsDelegate');
-    }
+    protected defaultHandler = inject(AddonModDataDefaultFieldHandler);
 
     /**
      * @inheritdoc

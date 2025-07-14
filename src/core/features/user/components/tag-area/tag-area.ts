@@ -23,7 +23,6 @@ import { CoreSharedModule } from '@/core/shared.module';
 @Component({
     selector: 'core-user-tag-area',
     templateUrl: 'core-user-tag-area.html',
-    standalone: true,
     imports: [
         CoreSharedModule,
     ],

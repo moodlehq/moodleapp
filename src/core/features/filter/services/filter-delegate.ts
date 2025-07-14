@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Injectable, ViewContainerRef } from '@angular/core';
+import { Injectable, ViewContainerRef, inject } from '@angular/core';
 
 import { CoreSites } from '@services/sites';
 import { CoreFilter, CoreFilterFilter, CoreFilterFormatTextOptions, CoreFilterStateValue } from './filter';
@@ -81,12 +81,9 @@ export interface CoreFilterHandler extends CoreDelegateHandler {
 @Injectable({ providedIn: 'root' })
 export class CoreFilterDelegateService extends CoreDelegate<CoreFilterHandler> {
 
+    protected defaultHandler = inject(CoreFilterDefaultHandler);
     protected featurePrefix = 'CoreFilterDelegate_';
     protected handlerNameProperty = 'filterName';
-
-    constructor(protected defaultHandler: CoreFilterDefaultHandler) {
-        super('CoreFilterDelegate');
-    }
 
     /**
      * @inheritdoc

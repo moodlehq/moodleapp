@@ -86,7 +86,7 @@ export class CoreCourseActivitySyncBaseProvider<T = void> extends CoreSyncBasePr
         preventDownloadRegex?: RegExp,
         siteId?: string,
     ): Promise<boolean> {
-        // eslint-disable-next-line deprecation/deprecation
+        // eslint-disable-next-line @typescript-eslint/no-deprecated
         return this.prefetchAfterUpdate(undefined, module, courseId, preventDownloadRegex, siteId);
     }
 

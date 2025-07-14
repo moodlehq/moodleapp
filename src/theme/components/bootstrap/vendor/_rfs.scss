@@ -1,3 +1,6 @@
+@use "sass:map";
+@use "sass:meta";
+
 // stylelint-disable property-blacklist, scss/dollar-variable-default
 
 // SCSS RFS mixin
@@ -30,7 +33,7 @@ $rfs-two-dimensional: false !default;
 // Factor of decrease
 $rfs-factor: 10 !default;
 
-@if type-of($rfs-factor) != "number" or $rfs-factor <= 1 {
+@if meta.type-of($rfs-factor) != "number" or $rfs-factor <= 1 {
   @error "`#{$rfs-factor}` is not a valid  $rfs-factor, it must be greater than 1.";
 }
 
@@ -86,7 +89,7 @@ $rfs-base-font-size-unit: unit($rfs-base-font-size);
     "%": 1%
   );
   @if ($dividend-unit != $divisor-unit and map-has-key($unit-map, $dividend-unit)) {
-    $result: $result * map-get($unit-map, $dividend-unit);
+    $result: $result * map.get($unit-map, $dividend-unit);
   }
   @return $result;
 }
@@ -155,7 +158,7 @@ $rfs-breakpoint-unit-cache: unit($rfs-breakpoint);
 // Responsive font size mixin
 @mixin rfs($fs, $important: false) {
   // Cache $fs unit
-  $fs-unit: if(type-of($fs) == "number", unit($fs), false);
+  $fs-unit: if(meta.type-of($fs) == "number", unit($fs), false);
 
   // Add !important suffix if needed
   $rfs-suffix: if($important, " !important", "");

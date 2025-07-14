@@ -37,7 +37,6 @@ import { CoreCourseModuleHelper } from '@features/course/services/course-module-
         --activity-border: 0px;
         --card-padding-bottom: 0px;
     }`,
-    standalone: true,
     imports: [
         CoreSharedModule,
         CoreCourseModuleComponent,

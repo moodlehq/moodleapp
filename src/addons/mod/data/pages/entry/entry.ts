@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnDestroy, ViewChild, ChangeDetectorRef, OnInit, Type } from '@angular/core';
+import { Component, OnDestroy, ViewChild, ChangeDetectorRef, OnInit, Type, inject } from '@angular/core';
 import { CoreCommentsCommentsComponent } from '@features/comments/components/comments/comments';
 import { CoreComments } from '@features/comments/services/comments';
 import { CoreCourseModuleHelper } from '@features/course/services/course-module-helper';
@@ -57,7 +57,6 @@ import { CoreRatingAggregateComponent } from '@features/rating/components/aggreg
     selector: 'page-addon-mod-data-entry',
     templateUrl: 'entry.html',
     styleUrl: '../../data.scss',
-    standalone: true,
     imports: [
         CoreSharedModule,
         CoreCompileHtmlComponent,
@@ -79,6 +78,7 @@ export default class AddonModDataEntryPage implements OnInit, OnDestroy {
     protected sortBy = 0;
     protected sortDirection = 'DESC';
     protected logView: () => void;
+    private cdr = inject(ChangeDetectorRef);
 
     moduleId = 0;
     courseId!: number;
@@ -114,9 +114,7 @@ export default class AddonModDataEntryPage implements OnInit, OnDestroy {
     isPullingToRefresh = false; // Whether the last fetching of data was started by a pull-to-refresh action
     commentsEnabled = false;
 
-    constructor(
-        private cdr: ChangeDetectorRef,
-    ) {
+    constructor() {
         this.moduleName = CoreCourseModuleHelper.translateModuleName('data');
         this.siteId = CoreSites.getCurrentSiteId();
 

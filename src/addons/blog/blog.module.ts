@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { APP_INITIALIZER, NgModule } from '@angular/core';
+import { NgModule, provideAppInitializer } from '@angular/core';
 import { Routes } from '@angular/router';
 import { CoreContentLinksDelegate } from '@features/contentlinks/services/contentlinks-delegate';
 import { CoreCourseIndexRoutingModule } from '@features/course/course-routing.module';
@@ -53,19 +53,15 @@ const routes: Routes = [
             useValue: [BLOG_OFFLINE_SITE_SCHEMA],
             multi: true,
         },
-        {
-            provide: APP_INITIALIZER,
-            multi: true,
-            useValue: () => {
-                CoreContentLinksDelegate.registerHandler(AddonBlogIndexLinkHandler.instance);
-                CoreContentLinksDelegate.registerHandler(AddonBlogEditEntryLinkHandler.instance);
-                CoreMainMenuDelegate.registerHandler(AddonBlogMainMenuHandler.instance);
-                CoreUserDelegate.registerHandler(AddonBlogUserHandler.instance);
-                CoreTagAreaDelegate.registerHandler(AddonBlogTagAreaHandler.instance);
-                CoreCourseOptionsDelegate.registerHandler(AddonBlogCourseOptionHandler.instance);
-                CoreCronDelegate.register(AddonBlogSyncCronHandler.instance);
-            },
-        },
+        provideAppInitializer(() => {
+            CoreContentLinksDelegate.registerHandler(AddonBlogIndexLinkHandler.instance);
+            CoreContentLinksDelegate.registerHandler(AddonBlogEditEntryLinkHandler.instance);
+            CoreMainMenuDelegate.registerHandler(AddonBlogMainMenuHandler.instance);
+            CoreUserDelegate.registerHandler(AddonBlogUserHandler.instance);
+            CoreTagAreaDelegate.registerHandler(AddonBlogTagAreaHandler.instance);
+            CoreCourseOptionsDelegate.registerHandler(AddonBlogCourseOptionHandler.instance);
+            CoreCronDelegate.register(AddonBlogSyncCronHandler.instance);
+        }),
     ],
 })
 export class AddonBlogModule {}

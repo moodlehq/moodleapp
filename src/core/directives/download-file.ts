@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Directive, Input, OnInit, ElementRef } from '@angular/core';
+import { Directive, Input, OnInit, ElementRef, inject } from '@angular/core';
 import { CoreFileHelper } from '@services/file-helper';
 import { CoreAlerts } from '@services/overlays/alerts';
 import { CoreLoadings } from '@services/overlays/loadings';
@@ -25,7 +25,6 @@ import { Translate } from '@singletons';
  */
 @Directive({
     selector: '[core-download-file]',
-    standalone: true,
 })
 export class CoreDownloadFileDirective implements OnInit {
 
@@ -33,11 +32,7 @@ export class CoreDownloadFileDirective implements OnInit {
     @Input() component?: string; // Component to link the file to.
     @Input() componentId?: string | number; // Component ID to use in conjunction with the component.
 
-    protected element: HTMLElement;
-
-    constructor(element: ElementRef) {
-        this.element = element.nativeElement;
-    }
+    protected element: HTMLElement = inject(ElementRef).nativeElement;
 
     /**
      * @inheritdoc

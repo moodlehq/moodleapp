@@ -31,7 +31,6 @@ import { CoreContentLinksHelper } from '@features/contentlinks/services/contentl
     selector: 'addon-block-recentlyaccesseditems',
     templateUrl: 'addon-block-recentlyaccesseditems.html',
     styleUrl: 'recentlyaccesseditems.scss',
-    standalone: true,
     imports: [
         CoreSharedModule,
     ],
@@ -42,10 +41,6 @@ export class AddonBlockRecentlyAccessedItemsComponent extends CoreBlockBaseCompo
     scrollElementId!: string;
 
     protected fetchContentDefaultError = 'Error getting recently accessed items data.';
-
-    constructor() {
-        super('AddonBlockRecentlyAccessedItemsComponent');
-    }
 
     /**
      * @inheritdoc

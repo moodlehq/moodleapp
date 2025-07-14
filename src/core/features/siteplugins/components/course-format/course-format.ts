@@ -29,7 +29,6 @@ import { CoreSharedModule } from '@/core/shared.module';
     selector: 'core-site-plugins-course-format',
     templateUrl: 'core-siteplugins-course-format.html',
     styles: [':host { display: contents; }'],
-    standalone: true,
     imports: [
         CoreSharedModule,
         CoreSitePluginsPluginContentComponent,

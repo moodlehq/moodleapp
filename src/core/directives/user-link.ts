@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Directive, Input, OnInit, ElementRef } from '@angular/core';
+import { Directive, Input, OnInit, ElementRef, inject } from '@angular/core';
 import { CoreNavigator } from '@services/navigator';
 
 /**
@@ -20,20 +20,13 @@ import { CoreNavigator } from '@services/navigator';
  */
 @Directive({
     selector: '[core-user-link]',
-    standalone: true,
 })
 export class CoreUserLinkDirective implements OnInit {
 
     @Input() userId?: number; // User id to open the profile.
     @Input() courseId?: number; // If set, course id to show the user info related to that course.
 
-    protected element: HTMLElement;
-
-    constructor(
-        element: ElementRef,
-    ) {
-        this.element = element.nativeElement;
-    }
+    protected element: HTMLElement = inject(ElementRef).nativeElement;
 
     /**
      * Function executed when the component is initialized.

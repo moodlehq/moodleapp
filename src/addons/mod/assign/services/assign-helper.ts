@@ -172,7 +172,7 @@ export class AddonModAssignHelperProvider {
 
         const promises = feedback.plugins
             ? feedback.plugins.map((plugin) =>
-                // eslint-disable-next-line deprecation/deprecation
+                // eslint-disable-next-line @typescript-eslint/no-deprecated
                 AddonModAssignFeedbackDelegate.discardPluginFeedbackData(assignId, userId, plugin, siteId))
             : [];
 

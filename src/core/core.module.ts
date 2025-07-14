@@ -58,21 +58,21 @@ export async function getCoreServices(): Promise<Type<unknown>[]> {
     const { CorePromptsService } = await import('@services/overlays/prompts');
     const { CoreToastsService } = await import('@services/overlays/toasts');
 
-    // eslint-disable-next-line deprecation/deprecation
+    // eslint-disable-next-line @typescript-eslint/no-deprecated
     const { CoreDomUtilsProvider } = await import('@services/utils/dom');
-    // eslint-disable-next-line deprecation/deprecation
+    // eslint-disable-next-line @typescript-eslint/no-deprecated
     const { CoreGeolocationProvider } = await import('@services/geolocation');
-    // eslint-disable-next-line deprecation/deprecation
+    // eslint-disable-next-line @typescript-eslint/no-deprecated
     const { CoreTextUtilsProvider } = await import('@services/utils/text');
-    // eslint-disable-next-line deprecation/deprecation
+    // eslint-disable-next-line @typescript-eslint/no-deprecated
     const { CoreTimeUtilsProvider } = await import('@services/utils/time');
-    // eslint-disable-next-line deprecation/deprecation
+    // eslint-disable-next-line @typescript-eslint/no-deprecated
     const { CoreUrlUtilsProvider } = await import('@services/utils/url');
-    // eslint-disable-next-line deprecation/deprecation
+    // eslint-disable-next-line @typescript-eslint/no-deprecated
     const { CoreUtilsProvider } = await import('@services/utils/utils');
-    // eslint-disable-next-line deprecation/deprecation
+    // eslint-disable-next-line @typescript-eslint/no-deprecated
     const { CoreMimetypeUtilsProvider } = await import('@services/utils/mimetype');
-    // eslint-disable-next-line deprecation/deprecation
+    // eslint-disable-next-line @typescript-eslint/no-deprecated
     const { CoreIframeUtilsProvider } = await import('@services/utils/iframe');
 
     return [

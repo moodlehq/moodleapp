@@ -13,7 +13,16 @@
 // limitations under the License.
 
 import {
-    Component, Input, Output, ViewChild, ElementRef, EventEmitter, OnChanges, SimpleChange, OnDestroy,
+    Component,
+    Input,
+    Output,
+    ViewChild,
+    ElementRef,
+    EventEmitter,
+    OnChanges,
+    SimpleChange,
+    OnDestroy,
+    inject,
 } from '@angular/core';
 import { SafeResourceUrl } from '@angular/platform-browser';
 
@@ -43,7 +52,6 @@ import { BackButtonPriority } from '@/core/constants';
     selector: 'core-iframe',
     templateUrl: 'core-iframe.html',
     styleUrl: 'iframe.scss',
-    standalone: true,
     imports: [
         CoreBaseModule,
         CoreLoadingComponent,
@@ -87,8 +95,9 @@ export class CoreIframeComponent implements OnChanges, OnDestroy {
     protected navSubscription?: Subscription;
     protected messageListenerFunction: (event: MessageEvent) => Promise<void>;
     protected backButtonListener?: (event: BackButtonEvent) => void;
+    protected element: HTMLElement = inject(ElementRef).nativeElement;
 
-    constructor(protected elementRef: ElementRef<HTMLElement>) {
+    constructor() {
         this.loaded = new EventEmitter<HTMLIFrameElement>();
 
         // Listen for messages from the iframe.
@@ -160,7 +169,7 @@ export class CoreIframeComponent implements OnChanges, OnDestroy {
         }
 
         if (!this.style) {
-            const shadow = this.elementRef.nativeElement.closest('.ion-page')?.querySelector('ion-header ion-toolbar')?.shadowRoot;
+            const shadow = this.element.closest('.ion-page')?.querySelector('ion-header ion-toolbar')?.shadowRoot;
             if (shadow) {
                 this.style = document.createElement('style');
                 shadow.appendChild(this.style);
@@ -225,7 +234,7 @@ export class CoreIframeComponent implements OnChanges, OnDestroy {
      */
     protected isInHiddenPage(): boolean {
         // If we can't find the parent ion-page, consider it to be hidden too.
-        return !this.elementRef.nativeElement.closest('.ion-page') || !!this.elementRef.nativeElement.closest('.ion-page-hidden');
+        return !this.element.closest('.ion-page') || !!this.element.closest('.ion-page-hidden');
     }
 
     /**

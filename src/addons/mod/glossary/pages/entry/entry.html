@@ -4,10 +4,12 @@
             <ion-back-button [text]="'core.back' | translate" />
         </ion-buttons>
         <ion-title>
-            <h1 *ngIf="entry">
-                <core-format-text [text]="entry.concept" contextLevel="module" [contextInstanceId]="componentId" [courseId]="courseId"
-                    [sanitize]="!onlineEntry" />
-            </h1>
+            @if (entry) {
+                <h1>
+                    <core-format-text [text]="entry.concept" contextLevel="module" [contextInstanceId]="componentId" [courseId]="courseId"
+                        [sanitize]="!onlineEntry" />
+                </h1>
+            }
         </ion-title>
         <ion-buttons slot="end" />
     </ion-toolbar>
@@ -18,89 +20,123 @@
     </ion-refresher>
 
     <core-loading [hideUntil]="loaded">
-        <ng-container *ngIf="entry && loaded">
-            <ion-card *ngIf="offlineEntry" class="core-warning-card">
-                <ion-item>
-                    <ion-icon name="fas-triangle-exclamation" slot="start" aria-hidden="true" />
-                    <ion-label>{{ 'core.hasdatatosync' | translate: { $a: 'addon.mod_glossary.entry' | translate } }}</ion-label>
-                </ion-item>
-            </ion-card>
+        @if (entry && loaded) {
+
+            @if (offlineEntry) {
+                <ion-card class="core-warning-card">
+                    <ion-item>
+                        <ion-icon name="fas-triangle-exclamation" slot="start" aria-hidden="true" />
+                        <ion-label>{{ 'core.hasdatatosync' | translate: { $a: 'addon.mod_glossary.entry' | translate } }}</ion-label>
+                    </ion-item>
+                </ion-card>
+            }
             <div core-reading-mode>
-                <ion-item class="ion-text-wrap" *ngIf="showAuthor">
-                    <core-user-avatar [user]="entry" slot="start" />
-                    <ion-label>
-                        <h2>
-                            <core-format-text [text]="entry.concept" contextLevel="module" [contextInstanceId]="componentId"
-                                [courseId]="courseId" [sanitize]="!onlineEntry" />
-                        </h2>
-                        <p *ngIf="onlineEntry">{{ onlineEntry.userfullname }}</p>
-                    </ion-label>
-                    <ion-note slot="end" *ngIf="showDate && onlineEntry">{{ onlineEntry.timemodified | coreDateDayOrTime }}</ion-note>
-                </ion-item>
-                <ion-item class="ion-text-wrap" *ngIf="!showAuthor">
-                    <ion-label>
-                        <p class="item-heading">
-                            <core-format-text [text]="entry.concept" contextLevel="module" [contextInstanceId]="componentId"
-                                [sanitize]="!onlineEntry" />
-                        </p>
-                    </ion-label>
-                    <ion-note slot="end" *ngIf="showDate && onlineEntry">{{ onlineEntry.timemodified | coreDateDayOrTime }}</ion-note>
-                </ion-item>
+                @if (showAuthor) {
+                    <ion-item class="ion-text-wrap">
+                        <core-user-avatar [user]="entry" slot="start" />
+                        <ion-label>
+                            <h2>
+                                <core-format-text [text]="entry.concept" contextLevel="module" [contextInstanceId]="componentId"
+                                    [courseId]="courseId" [sanitize]="!onlineEntry" />
+                            </h2>
+                            @if (onlineEntry) {
+                                <p>{{ onlineEntry.userfullname }}</p>
+                            }
+                        </ion-label>
+                        @if (showDate && onlineEntry) {
+                            <ion-note slot="end">{{ onlineEntry.timemodified | coreDateDayOrTime }}</ion-note>
+                        }
+                    </ion-item>
+                } @else {
+                    <ion-item class="ion-text-wrap">
+                        <ion-label>
+                            <p class="item-heading">
+                                <core-format-text [text]="entry.concept" contextLevel="module" [contextInstanceId]="componentId"
+                                    [sanitize]="!onlineEntry" />
+                            </p>
+                        </ion-label>
+                        @if (showDate && onlineEntry) {
+                            <ion-note slot="end">{{ onlineEntry.timemodified | coreDateDayOrTime }}</ion-note>
+                        }
+                    </ion-item>
+                }
                 <ion-item class="ion-text-wrap">
                     <ion-label>
                         <core-format-text [component]="component" [componentId]="componentId" [text]="entry.definition"
                             contextLevel="module" [contextInstanceId]="componentId" [courseId]="courseId" [sanitize]="!onlineEntry" />
                     </ion-label>
                 </ion-item>
-                <div *ngIf="onlineEntry && onlineEntry.attachment">
-                    <core-file *ngFor="let file of onlineEntry.attachments" [file]="file" [component]="component"
-                        [componentId]="componentId" />
-                </div>
-                <div *ngIf="offlineEntry && offlineEntry.attachments">
-                    <core-file *ngFor="let file of offlineEntry.attachments.online" [file]="file" [component]="component"
-                        [componentId]="componentId" />
-                </div>
+                @if (onlineEntry && onlineEntry.attachment) {
+                    <div>
+                        <core-file *ngFor="let file of onlineEntry.attachments" [file]="file" [component]="component"
+                            [componentId]="componentId" />
+                    </div>
+                }
+                @if (offlineEntry && offlineEntry.attachments) {
+                    <div>
+                        <core-file *ngFor="let file of offlineEntry.attachments.online" [file]="file" [component]="component"
+                            [componentId]="componentId" />
+                    </div>
+                }
             </div>
-            <div *ngIf="offlineEntry && offlineEntryFiles">
-                <core-local-file *ngFor="let file of offlineEntryFiles" [file]="file" />
-            </div>
-            <ion-item class="ion-text-wrap" *ngIf="onlineEntry && tagsEnabled && entry && onlineEntry.tags && onlineEntry.tags.length > 0">
-                <ion-label>
-                    <div slot="start">{{ 'core.tag.tags' | translate }}:</div>
-                    <core-tag-list [tags]="onlineEntry.tags" />
-                </ion-label>
-            </ion-item>
-            <ion-item *ngIf="canDelete || canEdit">
-                <div slot="end">
-                    <ion-button *ngIf="canDelete" fill="clear" color="danger" (click)="deleteEntry()"
-                        [ariaLabel]="'addon.mod_glossary.deleteentry' | translate">
-                        <ion-icon slot="icon-only" name="fas-trash" aria-hidden="true" />
-                    </ion-button>
-                    <ion-button *ngIf="canEdit" fill="clear" (click)="editEntry()" [ariaLabel]="'addon.mod_glossary.editentry' | translate">
-                        <ion-icon slot="icon-only" name="fas-pen" aria-hidden="true" />
-                    </ion-button>
+            @if (offlineEntry && offlineEntryFiles) {
+                <div>
+                    <core-local-file *ngFor="let file of offlineEntryFiles" [file]="file" />
                 </div>
-            </ion-item>
-            <ion-item class="ion-text-wrap" *ngIf="onlineEntry && !onlineEntry.approved">
-                <ion-label>
-                    <p><em>{{ 'addon.mod_glossary.entrypendingapproval' | translate }}</em></p>
-                </ion-label>
-            </ion-item>
-            <core-comments *ngIf="glossary && glossary.allowcomments && onlineEntry && onlineEntry.id > 0 && commentsEnabled"
-                contextLevel="module" [instanceId]="glossary.coursemodule" component="mod_glossary" [itemId]="onlineEntry.id"
-                area="glossary_entry" [courseId]="glossary.course" [showItem]="true" [title]="entry.concept" />
-            <core-rating-rate *ngIf="glossary && ratingInfo && onlineEntry" [ratingInfo]="ratingInfo" contextLevel="module"
-                [instanceId]="glossary.coursemodule" [itemId]="onlineEntry.id" [itemSetId]="0" [courseId]="glossary.course"
-                [aggregateMethod]="glossary.assessed" [scaleId]="glossary.scale" [userId]="entry.userid" (onUpdate)="ratingUpdated()" />
-            <core-rating-aggregate *ngIf="glossary && ratingInfo && onlineEntry" [ratingInfo]="ratingInfo" contextLevel="module"
-                [instanceId]="glossary.coursemodule" [itemId]="onlineEntry.id" [courseId]="glossary.course"
-                [aggregateMethod]="glossary.assessed" [scaleId]="glossary.scale" />
-        </ng-container>
+            }
+            @if (onlineEntry && tagsEnabled && entry && onlineEntry.tags && onlineEntry.tags.length > 0) {
+                <ion-item class="ion-text-wrap">
+                    <ion-label>
+                        <div slot="start">{{ 'core.tag.tags' | translate }}:</div>
+                        <core-tag-list [tags]="onlineEntry.tags" />
+                    </ion-label>
+                </ion-item>
+            }
+            @if (canDelete || canEdit) {
+                <ion-item>
+                    <div slot="end">
+                        @if (canDelete) {
+                            <ion-button fill="clear" color="danger" (click)="deleteEntry()"
+                                [ariaLabel]="'addon.mod_glossary.deleteentry' | translate">
+                                <ion-icon slot="icon-only" name="fas-trash" aria-hidden="true" />
+                            </ion-button>
+                        }
+                        @if (canEdit) {
+                            <ion-button fill="clear" (click)="editEntry()" [ariaLabel]="'addon.mod_glossary.editentry' | translate">
+                                <ion-icon slot="icon-only" name="fas-pen" aria-hidden="true" />
+                            </ion-button>
+                        }
+                    </div>
+                </ion-item>
+            }
+            @if (onlineEntry && !onlineEntry.approved) {
+                <ion-item class="ion-text-wrap">
+                    <ion-label>
+                        <p><em>{{ 'addon.mod_glossary.entrypendingapproval' | translate }}</em></p>
+                    </ion-label>
+                </ion-item>
+            }
+            @if (glossary && glossary.allowcomments && onlineEntry && onlineEntry.id > 0 && commentsEnabled) {
+                <core-comments contextLevel="module" [instanceId]="glossary.coursemodule" component="mod_glossary" [itemId]="onlineEntry.id"
+                    area="glossary_entry" [courseId]="glossary.course" [showItem]="true" [title]="entry.concept" />
+            }
+            @if (glossary && ratingInfo && onlineEntry) {
+                <core-rating-rate [ratingInfo]="ratingInfo" contextLevel="module" [instanceId]="glossary.coursemodule"
+                    [itemId]="onlineEntry.id" [itemSetId]="0" [courseId]="glossary.course" [aggregateMethod]="glossary.assessed"
+                    [scaleId]="glossary.scale" [userId]="entry.userid" (onUpdate)="ratingUpdated()" />
+                <core-rating-aggregate [ratingInfo]="ratingInfo" contextLevel="module" [instanceId]="glossary.coursemodule"
+                    [itemId]="onlineEntry.id" [courseId]="glossary.course" [aggregateMethod]="glossary.assessed"
+                    [scaleId]="glossary.scale" />
+            }
 
-        <ion-card *ngIf="!entry" class="core-warning-card">
-            <ion-item>
-                <ion-label>{{ 'addon.mod_glossary.errorloadingentry' | translate }}</ion-label>
-            </ion-item>
-        </ion-card>
+        }
+
+        @if (!entry) {
+            <ion-card class="core-warning-card">
+                <ion-item>
+                    <ion-label>{{ 'addon.mod_glossary.errorloadingentry' | translate }}</ion-label>
+                </ion-item>
+            </ion-card>
+        }
     </core-loading>
 </ion-content>

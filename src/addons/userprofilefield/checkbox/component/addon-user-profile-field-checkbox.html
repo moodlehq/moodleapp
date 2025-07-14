@@ -1,26 +1,33 @@
-<!-- Render (no edit). -->
-<ion-item *ngIf="!edit && field && field.name">
-    <ion-label>
-        <p class="item-heading">
-            <core-format-text [text]="field.name" [contextLevel]="contextLevel" [contextInstanceId]="contextInstanceId"
-                [courseId]="courseId" [wsNotFiltered]="true" />
-        </p>
-        <p *ngIf="value !== '0'">
-            {{ 'core.yes' | translate }}
-        </p>
-        <p *ngIf="value === '0'">
-            {{ 'core.no' | translate }}
-        </p>
-    </ion-label>
-</ion-item>
+@if (!edit && field && field.name) {
+    <!-- Render (no edit). -->
+    <ion-item>
+        <ion-label>
+            <p class="item-heading">
+                <core-format-text [text]="field.name" [contextLevel]="contextLevel" [contextInstanceId]="contextInstanceId"
+                    [courseId]="courseId" [wsNotFiltered]="true" />
+            </p>
+            @if (value !== '0') {
+                <p>
+                    {{ 'core.yes' | translate }}
+                </p>
+            } @else {
+                <p>
+                    {{ 'core.no' | translate }}
+                </p>
+            }
+        </ion-label>
+    </ion-item>
+}
 
-<!-- Edit. -->
-<ion-item *ngIf="edit && field && field.shortname && form" [formGroup]="form">
-    <ion-checkbox [formControlName]="modelName" labelPlacement="start" justify="space-between">
-        <span [core-mark-required]="required">
-            <core-format-text [text]="field.name" [contextLevel]="contextLevel" [contextInstanceId]="contextInstanceId"
-                [courseId]="courseId" [wsNotFiltered]="true" />
-        </span>
-    </ion-checkbox>
-    <core-input-errors [control]="form.controls[modelName]" />
-</ion-item>
+@if (edit && field && field.shortname && form) {
+    <!-- Edit. -->
+    <ion-item [formGroup]="form">
+        <ion-checkbox [formControlName]="modelName" labelPlacement="start" justify="space-between">
+            <span [core-mark-required]="required">
+                <core-format-text [text]="field.name" [contextLevel]="contextLevel" [contextInstanceId]="contextInstanceId"
+                    [courseId]="courseId" [wsNotFiltered]="true" />
+            </span>
+        </ion-checkbox>
+        <core-input-errors [control]="form.controls[modelName]" />
+    </ion-item>
+}

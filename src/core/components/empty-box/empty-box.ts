@@ -29,7 +29,6 @@ import { CoreFaIconDirective } from '@directives/fa-icon';
     selector: 'core-empty-box',
     templateUrl: 'core-empty-box.html',
     styleUrl: 'empty-box.scss',
-    standalone: true,
     imports: [
         CoreBaseModule,
         CoreFaIconDirective,

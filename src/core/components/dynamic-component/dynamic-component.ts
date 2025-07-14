@@ -27,6 +27,7 @@ import {
     ElementRef,
     KeyValueDiffer,
     Type,
+    inject,
 } from '@angular/core';
 import { AsyncDirective } from '@classes/async-directive';
 import { CorePromisedValue } from '@classes/promised-value';
@@ -64,7 +65,6 @@ import { CoreLogger } from '@singletons/logger';
     selector: 'core-dynamic-component',
     templateUrl: 'core-dynamic-component.html',
     styles: [':host { display: contents; }'],
-    standalone: true,
 })
 export class CoreDynamicComponent<ComponentClass> implements OnChanges, DoCheck, AsyncDirective {
 
@@ -87,16 +87,15 @@ export class CoreDynamicComponent<ComponentClass> implements OnChanges, DoCheck,
     protected logger: CoreLogger;
     protected differ: KeyValueDiffer<unknown, unknown>; // To detect changes in the data input.
     protected lastComponent?: Type<unknown>;
+    protected cdr = inject(ChangeDetectorRef);
+    protected element: HTMLElement = inject(ElementRef).nativeElement;
 
     get instance(): any { // eslint-disable-line @typescript-eslint/no-explicit-any
         return this.promisedInstance.value;
     }
 
-    constructor(
-        differs: KeyValueDiffers,
-        protected cdr: ChangeDetectorRef,
-        protected element: ElementRef,
-    ) {
+    constructor() {
+        const differs = inject(KeyValueDiffers);
 
         this.logger = CoreLogger.getInstance('CoreDynamicComponent');
         this.differ = differs.find([]).create();
@@ -188,7 +187,7 @@ export class CoreDynamicComponent<ComponentClass> implements OnChanges, DoCheck,
 
             // This feature is usually meant for site plugins. Inject some properties.
             this.component.instance['ChangeDetectorRef'] = this.cdr;
-            this.component.instance['componentContainer'] = this.element.nativeElement;
+            this.component.instance['componentContainer'] = this.element;
 
             this.promisedInstance.resolve(this.component.instance);
         } else {

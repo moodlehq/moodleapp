@@ -39,7 +39,6 @@ import { CoreSharedModule } from '@/core/shared.module';
     selector: 'page-addon-mod-feedback-attempt',
     templateUrl: 'attempt.html',
     styleUrl: '../../feedback.scss',
-    standalone: true,
     imports: [
         CoreSharedModule,
     ],

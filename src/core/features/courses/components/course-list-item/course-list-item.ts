@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { DownloadStatus } from '@/core/constants';
-import { Component, ElementRef, HostBinding, Input, OnChanges, OnDestroy, OnInit } from '@angular/core';
+import { Component, ElementRef, HostBinding, Input, OnChanges, OnDestroy, OnInit, inject } from '@angular/core';
 import {
     CoreCourseDownloadStatusHelper,
     CoreEventCourseStatusChanged,
@@ -46,6 +46,7 @@ import {
 import { CoreAlerts } from '@services/overlays/alerts';
 import { CoreErrorHelper } from '@services/error-helper';
 import { CoreSharedModule } from '@/core/shared.module';
+import { CoreEnrolInfoIcon } from '@features/enrol/services/enrol-delegate';
 
 /**
  * This directive is meant to display an item for a list of courses.
@@ -58,7 +59,6 @@ import { CoreSharedModule } from '@/core/shared.module';
     selector: 'core-courses-course-list-item',
     templateUrl: 'core-courses-course-list-item.html',
     styleUrl: 'course-list-item.scss',
-    standalone: true,
     imports: [
         CoreSharedModule,
     ],
@@ -69,7 +69,7 @@ export class CoreCoursesCourseListItemComponent implements OnInit, OnDestroy, On
     @Input({ transform: toBoolean }) showDownload = false; // If true, will show download button.
     @Input() layout: 'listwithenrol'|'summarycard'|'list'|'card' = 'listwithenrol';
 
-    enrolmentIcons: CoreCoursesEnrolmentIcons[] = [];
+    enrolmentIcons: CoreEnrolInfoIcon[] = [];
     isEnrolled = false;
     prefetchCourseData: CorePrefetchStatusInfo = {
         icon: '',
@@ -93,15 +93,14 @@ export class CoreCoursesCourseListItemComponent implements OnInit, OnDestroy, On
     protected isDestroyed = false;
     protected courseStatusObserver?: CoreEventObserver;
 
-    protected element: HTMLElement;
+    protected element: HTMLElement = inject(ElementRef).nativeElement;
     protected progressObserver: CoreEventObserver;
 
     @HostBinding('attr.data-course-id') protected get courseId(): number {
         return this.course.id;
     }
 
-    constructor(element: ElementRef) {
-        this.element = element.nativeElement;
+    constructor() {
         const siteId = CoreSites.getCurrentSiteId();
         this.progressObserver = CoreEvents.on(CORE_COURSE_PROGRESS_UPDATED_EVENT, (data) => {
             if (!this.course || this.course.id !== data.courseId || !('progress' in this.course)) {

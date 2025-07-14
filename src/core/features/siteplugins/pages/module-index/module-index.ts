@@ -25,7 +25,6 @@ import { CoreSharedModule } from '@/core/shared.module';
 @Component({
     selector: 'page-core-site-plugins-module-index',
     templateUrl: 'module-index.html',
-    standalone: true,
     imports: [
         CoreSharedModule,
         CoreSitePluginsModuleIndexComponent,

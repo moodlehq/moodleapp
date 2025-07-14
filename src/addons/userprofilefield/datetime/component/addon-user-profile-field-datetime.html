@@ -1,40 +1,50 @@
-<!-- Render (no edit). -->
-<ion-item *ngIf="!edit && field && field.name">
-    <ion-label>
-        <p class="item-heading">
-            <core-format-text [text]="field.name" [contextLevel]="contextLevel" [contextInstanceId]="contextInstanceId"
-                [courseId]="courseId" [wsNotFiltered]="true" />
-        </p>
-        <p *ngIf="valueNumber">{{ valueNumber * 1000 | coreFormatDate }}</p>
-        <p *ngIf="displayValue">{{ displayValue }}</p>
-    </ion-label>
-</ion-item>
+@if (!edit && field && field.name) {
+    <!-- Render (no edit). -->
+    <ion-item>
+        <ion-label>
+            <p class="item-heading">
+                <core-format-text [text]="field.name" [contextLevel]="contextLevel" [contextInstanceId]="contextInstanceId"
+                    [courseId]="courseId" [wsNotFiltered]="true" />
+            </p>
+            @if (valueNumber) {
+                <p>{{ valueNumber * 1000 | coreFormatDate }}</p>
+            }
+            @if (displayValue) {
+                <p>{{ displayValue }}</p>
+            }
+        </ion-label>
+    </ion-item>
+}
 
-<!-- Edit. -->
-<ion-item *ngIf="edit && field && field.shortname && form" class="ion-text-wrap" [formGroup]="form">
-    <ion-label position="stacked">
-        <label [core-mark-required]="required" for="profile-field-datetime-{{field.shortname}}-button">
-            <core-format-text [text]="field.name" [contextLevel]="contextLevel" [contextInstanceId]="contextInstanceId"
-                [courseId]="courseId" [wsNotFiltered]="true" />
-        </label>
-    </ion-label>
+@if (edit && field && field.shortname && form) {
+    <!-- Edit. -->
+    <ion-item class="ion-text-wrap" [formGroup]="form">
+        <ion-label position="stacked">
+            <label [core-mark-required]="required" for="profile-field-datetime-{{field.shortname}}-button">
+                <core-format-text [text]="field.name" [contextLevel]="contextLevel" [contextInstanceId]="contextInstanceId"
+                    [courseId]="courseId" [wsNotFiltered]="true" />
+            </label>
+        </ion-label>
 
-    <ion-datetime-button datetime="profile-field-datetime-{{field.shortname}}" id="profile-field-datetime-{{field.shortname}}-button">
-        <ng-container *ngIf="control?.value === undefined">
-            <span slot="date-target">{{ 'core.choosedots' | translate }}</span>
-            <span slot="time-target">{{ 'core.choosedots' | translate }}</span>
-        </ng-container>
-    </ion-datetime-button>
-    <ion-modal [keepContentsMounted]="true">
-        <ng-template>
-            <ion-datetime id="profile-field-datetime-{{field.shortname}}" [formControlName]="modelName"
-                [presentation]="ionDateTimePresentation" [max]="max" [min]="min" [showDefaultButtons]="true">
-                <span slot="title">
-                    <core-format-text [text]="field.name" [contextLevel]="contextLevel" [contextInstanceId]="contextInstanceId"
-                        [courseId]="courseId" [wsNotFiltered]="true" />
-                </span>
-            </ion-datetime>
-        </ng-template>
-    </ion-modal>
-    <core-input-errors [control]="form.controls[modelName]" />
-</ion-item>
+        <ion-datetime-button datetime="profile-field-datetime-{{field.shortname}}" id="profile-field-datetime-{{field.shortname}}-button">
+            @if (control?.value === undefined) {
+
+                <span slot="date-target">{{ 'core.choosedots' | translate }}</span>
+                <span slot="time-target">{{ 'core.choosedots' | translate }}</span>
+
+            }
+        </ion-datetime-button>
+        <ion-modal [keepContentsMounted]="true">
+            <ng-template>
+                <ion-datetime id="profile-field-datetime-{{field.shortname}}" [formControlName]="modelName"
+                    [presentation]="ionDateTimePresentation" [max]="max" [min]="min" [showDefaultButtons]="true">
+                    <span slot="title">
+                        <core-format-text [text]="field.name" [contextLevel]="contextLevel" [contextInstanceId]="contextInstanceId"
+                            [courseId]="courseId" [wsNotFiltered]="true" />
+                    </span>
+                </ion-datetime>
+            </ng-template>
+        </ion-modal>
+        <core-input-errors [control]="form.controls[modelName]" />
+    </ion-item>
+}

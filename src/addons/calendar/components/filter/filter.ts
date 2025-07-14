@@ -30,7 +30,6 @@ import { CoreSites } from '@services/sites';
     selector: 'addon-calendar-filter',
     templateUrl: 'filter.html',
     styleUrls: ['../../calendar-common.scss', 'filter.scss'],
-    standalone: true,
     imports: [
         CoreSharedModule,
     ],

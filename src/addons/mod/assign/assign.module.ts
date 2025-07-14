@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { APP_INITIALIZER, NgModule, Type } from '@angular/core';
+import { NgModule, Type, provideAppInitializer } from '@angular/core';
 import { Routes } from '@angular/router';
 import { CoreContentLinksDelegate } from '@features/contentlinks/services/contentlinks-delegate';
 import { CoreCourseHelper } from '@features/course/services/course-helper';
@@ -136,20 +136,16 @@ const routes: Routes = [
             useValue: [ADDON_MOD_ASSIGN_OFFLINE_SITE_SCHEMA],
             multi: true,
         },
-        {
-            provide: APP_INITIALIZER,
-            multi: true,
-            useValue: () => {
-                CoreCourseModuleDelegate.registerHandler(AddonModAssignModuleHandler.instance);
-                CoreContentLinksDelegate.registerHandler(AddonModAssignIndexLinkHandler.instance);
-                CoreContentLinksDelegate.registerHandler(AddonModAssignListLinkHandler.instance);
-                CoreCourseModulePrefetchDelegate.registerHandler(AddonModAssignPrefetchHandler.instance);
-                CoreCronDelegate.register(AddonModAssignSyncCronHandler.instance);
-                CorePushNotificationsDelegate.registerClickHandler(AddonModAssignPushClickHandler.instance);
+        provideAppInitializer(() => {
+            CoreCourseModuleDelegate.registerHandler(AddonModAssignModuleHandler.instance);
+            CoreContentLinksDelegate.registerHandler(AddonModAssignIndexLinkHandler.instance);
+            CoreContentLinksDelegate.registerHandler(AddonModAssignListLinkHandler.instance);
+            CoreCourseModulePrefetchDelegate.registerHandler(AddonModAssignPrefetchHandler.instance);
+            CoreCronDelegate.register(AddonModAssignSyncCronHandler.instance);
+            CorePushNotificationsDelegate.registerClickHandler(AddonModAssignPushClickHandler.instance);
 
-                CoreCourseHelper.registerModuleReminderClick(ADDON_MOD_ASSIGN_COMPONENT_LEGACY);
-            },
-        },
+            CoreCourseHelper.registerModuleReminderClick(ADDON_MOD_ASSIGN_COMPONENT_LEGACY);
+        }),
     ],
 })
 export class AddonModAssignModule {}

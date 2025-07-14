@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { APP_INITIALIZER, NgModule } from '@angular/core';
+import { NgModule, provideAppInitializer } from '@angular/core';
 import { Route, Routes } from '@angular/router';
 
 import { conditionalRoutes } from '@/app/app-routing.module';
@@ -151,23 +151,19 @@ const courseContentsRoutes: Routes = conditionalRoutes(
             useValue: [SITE_SCHEMA],
             multi: true,
         },
-        {
-            provide: APP_INITIALIZER,
-            multi: true,
-            useValue: () => {
-                CoreCourseModuleDelegate.registerHandler(AddonModForumModuleHandler.instance);
-                CoreCourseModulePrefetchDelegate.registerHandler(AddonModForumPrefetchHandler.instance);
-                CoreCronDelegate.register(AddonModForumSyncCronHandler.instance);
-                CoreContentLinksDelegate.registerHandler(AddonModForumDiscussionLinkHandler.instance);
-                CoreContentLinksDelegate.registerHandler(AddonModForumIndexLinkHandler.instance);
-                CoreContentLinksDelegate.registerHandler(AddonModForumListLinkHandler.instance);
-                CoreContentLinksDelegate.registerHandler(AddonModForumPostLinkHandler.instance);
-                CoreTagAreaDelegate.registerHandler(AddonModForumTagAreaHandler.instance);
-                CorePushNotificationsDelegate.registerClickHandler(AddonModForumPushClickHandler.instance);
+        provideAppInitializer(() => {
+            CoreCourseModuleDelegate.registerHandler(AddonModForumModuleHandler.instance);
+            CoreCourseModulePrefetchDelegate.registerHandler(AddonModForumPrefetchHandler.instance);
+            CoreCronDelegate.register(AddonModForumSyncCronHandler.instance);
+            CoreContentLinksDelegate.registerHandler(AddonModForumDiscussionLinkHandler.instance);
+            CoreContentLinksDelegate.registerHandler(AddonModForumIndexLinkHandler.instance);
+            CoreContentLinksDelegate.registerHandler(AddonModForumListLinkHandler.instance);
+            CoreContentLinksDelegate.registerHandler(AddonModForumPostLinkHandler.instance);
+            CoreTagAreaDelegate.registerHandler(AddonModForumTagAreaHandler.instance);
+            CorePushNotificationsDelegate.registerClickHandler(AddonModForumPushClickHandler.instance);
 
-                CoreCourseHelper.registerModuleReminderClick(ADDON_MOD_FORUM_COMPONENT_LEGACY);
-            },
-        },
+            CoreCourseHelper.registerModuleReminderClick(ADDON_MOD_FORUM_COMPONENT_LEGACY);
+        }),
     ],
 })
 export class AddonModForumModule {}

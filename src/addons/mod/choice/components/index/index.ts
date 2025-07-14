@@ -12,11 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, Optional, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CoreError } from '@classes/errors/error';
 import { CoreCourseModuleMainActivityComponent } from '@features/course/classes/main-activity-component';
-import CoreCourseContentsPage from '@features/course/pages/contents/contents';
-import { IonContent } from '@ionic/angular';
 import { CoreSites } from '@services/sites';
 import { CoreTime } from '@singletons/time';
 import { Translate } from '@singletons';
@@ -53,7 +51,6 @@ import { CoreGroupInfo, CoreGroups } from '@services/groups';
     selector: 'addon-mod-choice-index',
     templateUrl: 'addon-mod-choice-index.html',
     styleUrl: 'index.scss',
-    standalone: true,
     imports: [
         CoreSharedModule,
         CoreCourseModuleInfoComponent,
@@ -87,13 +84,6 @@ export class AddonModChoiceIndexComponent extends CoreCourseModuleMainActivityCo
     protected syncEventName = ADDON_MOD_CHOICE_AUTO_SYNCED;
     protected hasAnsweredOnline = false;
     protected now = CoreTime.timestamp();
-
-    constructor(
-        protected content?: IonContent,
-        @Optional() courseContentsPage?: CoreCourseContentsPage,
-    ) {
-        super('AddonModChoiceIndexComponent', content, courseContentsPage);
-    }
 
     /**
      * @inheritdoc

@@ -76,7 +76,7 @@ export class CorePolicyService {
         try {
             // Try to get the latest config, maybe the site policy was just added or has changed.
             sitePolicy = await site.getConfig('sitepolicy', true);
-        } catch (error) {
+        } catch {
             // Cannot get config, try to get the site policy using signup settings.
             const settings = await CoreLoginHelper.getEmailSignupSettings(site.getURL());
 

@@ -41,7 +41,6 @@ import { CoreSharedModule } from '@/core/shared.module';
     selector: 'core-course-module-completion-legacy',
     templateUrl: 'core-course-module-completion-legacy.html',
     styleUrl: 'module-completion-legacy.scss',
-    standalone: true,
     imports: [
         CoreSharedModule,
     ],

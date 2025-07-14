@@ -25,6 +25,7 @@ import {
     computed,
     effect,
     untracked,
+    inject,
 } from '@angular/core';
 import {
     ActionSheetController,
@@ -39,7 +40,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { CoreLogger } from '@singletons/logger';
 import { CoreEvents } from '@singletons/events';
 import { makeSingleton } from '@singletons';
-import { effectWithInjectionContext, modelWithInjectionContext } from '@/core/utils/signals';
+import { effectWithInjectionContext } from '@/core/utils/signals';
 
 // Import core services and exported directives/objects.
 import { CoreSharedModule } from '@/core/shared.module';
@@ -141,7 +142,9 @@ import { CoreError } from '@classes/errors/error';
 @Injectable({ providedIn: 'root' })
 export class CoreCompileProvider {
 
-    protected logger: CoreLogger;
+    protected injector = inject(Injector);
+
+    protected logger = CoreLogger.getInstance('CoreCompileProvider');
 
     // Other Ionic/Angular providers that don't depend on where they are injected.
     protected readonly OTHER_SERVICES: unknown[] = [
@@ -170,10 +173,6 @@ export class CoreCompileProvider {
     protected componentId = 0;
     protected libraries?: unknown[];
     protected exportedObjects?: Record<string, unknown>;
-
-    constructor(protected injector: Injector) {
-        this.logger = CoreLogger.getInstance('CoreCompileProvider');
-    }
 
     /**
      * Create and compile a dynamic component.
@@ -207,7 +206,6 @@ export class CoreCompileProvider {
             template,
             host: { 'compiled-component-id': String(this.componentId++) },
             styles,
-            standalone: true,
             imports,
             schemas: [NO_ERRORS_SCHEMA],
         })(componentClass);
@@ -302,7 +300,6 @@ export class CoreCompileProvider {
         instance['computed'] = computed;
         instance['untracked'] = untracked;
         instance['effect'] = options.effectWrapper ?? effectWithInjectionContext(injector);
-        instance['model'] = modelWithInjectionContext(injector);
 
         /**
          * @deprecated since 4.1, plugins should use CoreNetwork instead.
@@ -341,8 +338,8 @@ export class CoreCompileProvider {
         /**
          * @deprecated since 5.0, geolocation is deprecated and will be removed in future versions.
          */
-        instance['CoreGeolocationError'] = CoreGeolocationError; // eslint-disable-line deprecation/deprecation
-        instance['CoreGeolocationErrorReason'] = CoreGeolocationErrorReason; // eslint-disable-line deprecation/deprecation
+        instance['CoreGeolocationError'] = CoreGeolocationError; // eslint-disable-line @typescript-eslint/no-deprecated
+        instance['CoreGeolocationErrorReason'] = CoreGeolocationErrorReason; // eslint-disable-line @typescript-eslint/no-deprecated
 
         // Inject exported objects.
         for (const name in this.exportedObjects) {

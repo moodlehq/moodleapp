@@ -1,22 +1,31 @@
 <!-- Buttons to add to the header. -->
 <core-navbar-buttons slot="end">
     <!-- Select subwiki. -->
-    <ion-button *ngIf="subwikiData.count > 1" (click)="showSubwikiPicker($event)" [ariaLabel]="'addon.mod_wiki.subwiki' | translate"
-        aria-haspopup="true">
-        <ion-icon *ngIf="!groupWiki" name="fas-user" aria-hidden="true" />
-        <ion-icon *ngIf="groupWiki" name="fas-users" aria-hidden="true" />
-    </ion-button>
+    @if (subwikiData.count > 1) {
+        <ion-button (click)="showSubwikiPicker($event)" [ariaLabel]="'addon.mod_wiki.subwiki' | translate" aria-haspopup="true">
+            @if (!groupWiki) {
+                <ion-icon name="fas-user" aria-hidden="true" />
+            } @else {
+                <ion-icon name="fas-users" aria-hidden="true" />
+            }
+        </ion-button>
+    }
 
-    <ion-button *ngIf="!showLoading && currentPageObj" (click)="openMap()" [ariaLabel]="'addon.mod_wiki.map' | translate"
-        aria-haspopup="true">
-        <ion-icon name="fas-map" aria-hidden="true" />
-    </ion-button>
+    @if (!showLoading && currentPageObj) {
+        <ion-button (click)="openMap()" [ariaLabel]="'addon.mod_wiki.map' | translate" aria-haspopup="true">
+            <ion-icon name="fas-map" aria-hidden="true" />
+        </ion-button>
+    }
 
     <core-context-menu>
-        <core-context-menu-item *ngIf="canEdit && (isOnline || pageIsOffline)" [priority]="590" [content]="'core.edit' | translate"
-            iconAction="fas-pen" (action)="goToEditPage()" />
-        <core-context-menu-item *ngIf="canEdit" [priority]="580" [content]="'addon.mod_wiki.createpage' | translate" iconAction="fas-plus"
-            (action)="goToNewPage()" />
+        @if (canEdit) {
+            @if (isOnline || pageIsOffline) {
+                <core-context-menu-item [priority]="590" [content]="'core.edit' | translate" iconAction="fas-pen"
+                    (action)="goToEditPage()" />
+            }
+            <core-context-menu-item [priority]="580" [content]="'addon.mod_wiki.createpage' | translate" iconAction="fas-plus"
+                (action)="goToNewPage()" />
+        }
 
         @if (courseContentsPage) {
             <core-context-menu-item [priority]="5000" [content]="'core.info' | translate" (action)="openModuleSummary()"
@@ -35,53 +44,76 @@
 <core-loading [hideUntil]="!showLoading">
 
     <!-- Activity info. -->
-    <core-course-module-info *ngIf="isMainPage" [module]="module" [description]="description" [component]="component"
-        [componentId]="componentId" [courseId]="courseId" (completionChanged)="onCompletionChange()" />
+    @if (isMainPage) {
+        <core-course-module-info [module]="module" [description]="description" [component]="component" [componentId]="componentId"
+            [courseId]="courseId" (completionChanged)="onCompletionChange()" />
+    }
 
-    <div *ngIf="pageIsOffline || hasOffline || pageWarning">
-        <!-- Wiki has something offline. -->
-        <ion-card class="core-warning-card" *ngIf="pageIsOffline || hasOffline">
-            <ion-item class="ion-text-wrap">
-                <ion-icon name="fas-triangle-exclamation" slot="start" aria-hidden="true" />
-                <ion-label>
-                    <span *ngIf="pageIsOffline">{{ 'core.hasdatatosync' | translate:{$a: pageStr} }}</span>
-                    <span *ngIf="!pageIsOffline">{{ 'core.hasdatatosync' | translate:{$a: moduleName} }}</span>
-                </ion-label>
-            </ion-item>
-        </ion-card>
+    @if (pageIsOffline || hasOffline || pageWarning) {
+        <div>
+            @if (pageIsOffline || hasOffline) {
+                <!-- Wiki has something offline. -->
+                <ion-card class="core-warning-card">
+                    <ion-item class="ion-text-wrap">
+                        <ion-icon name="fas-triangle-exclamation" slot="start" aria-hidden="true" />
+                        <ion-label>
+                            @if (pageIsOffline) {
+                                <span>{{ 'core.hasdatatosync' | translate:{$a: pageStr} }}</span>
+                            } @else {
+                                <span>{{ 'core.hasdatatosync' | translate:{$a: moduleName} }}</span>
+                            }
+                        </ion-label>
+                    </ion-item>
+                </ion-card>
+            }
 
-        <!-- Page warning. -->
-        <ion-card class="core-warning-card" *ngIf="pageWarning">
-            <ion-item>
-                <ion-icon name="fas-triangle-exclamation" slot="start" aria-hidden="true" />
-                <ion-label>{{ pageWarning }}</ion-label>
-            </ion-item>
-        </ion-card>
-    </div>
-    <div class="ion-padding-horizontal addon-mod_wiki-page-content" *ngIf="!showLoading">
-        <h2 *ngIf="pageTitle">
-            <core-format-text [component]="component" [componentId]="componentId" [text]="pageTitle"
-                contextLevel="module" [contextInstanceId]="module.id" [courseId]="courseId" [sanitize]="pageIsOffline" />
-        </h2>
-        <article [ngClass]="{'addon-mod_wiki-noedit': !canEdit}">
-            <core-format-text *ngIf="pageContent" [component]="component" [componentId]="componentId" [text]="pageContent"
-                contextLevel="module" [contextInstanceId]="module.id" [courseId]="courseId" [sanitize]="pageIsOffline" />
-            <core-empty-box *ngIf="!pageContent" icon="fas-file-lines" [message]="'addon.mod_wiki.nocontent' | translate" />
-        </article>
-
-        <div class="ion-margin-top" *ngIf="tagsEnabled && tags.length > 0">
-            <strong>{{ 'core.tag.tags' | translate }}:</strong>
-            <core-tag-list [tags]="tags" />
+            @if (pageWarning) {
+                <!-- Page warning. -->
+                <ion-card class="core-warning-card">
+                    <ion-item>
+                        <ion-icon name="fas-triangle-exclamation" slot="start" aria-hidden="true" />
+                        <ion-label>{{ pageWarning }}</ion-label>
+                    </ion-item>
+                </ion-card>
+            }
         </div>
-    </div>
+    }
+    @if (!showLoading) {
+        <div class="ion-padding-horizontal addon-mod_wiki-page-content">
+            @if (pageTitle) {
+                <h2>
+                    <core-format-text [component]="component" [componentId]="componentId" [text]="pageTitle" contextLevel="module"
+                        [contextInstanceId]="module.id" [courseId]="courseId" [sanitize]="pageIsOffline" />
+                </h2>
+            }
+            <article [ngClass]="{'addon-mod_wiki-noedit': !canEdit}">
+                @if (pageContent) {
+                    <core-format-text [component]="component" [componentId]="componentId" [text]="pageContent" contextLevel="module"
+                        [contextInstanceId]="module.id" [courseId]="courseId" [sanitize]="pageIsOffline" />
+                } @else {
+                    <core-empty-box icon="fas-file-lines" [message]="'addon.mod_wiki.nocontent' | translate" />
+                }
+            </article>
+
+            @if (tagsEnabled && tags.length > 0) {
+                <div class="ion-margin-top">
+                    <strong>{{ 'core.tag.tags' | translate }}:</strong>
+                    <core-tag-list [tags]="tags" />
+                </div>
+            }
+        </div>
+    }
 </core-loading>
 
-<core-course-module-navigation collapsible-footer *ngIf="isMainPage" [hidden]="showLoading" [courseId]="courseId"
-    [currentModuleId]="module.id" />
+@if (isMainPage) {
+    <core-course-module-navigation collapsible-footer [hidden]="showLoading" [courseId]="courseId" [currentModuleId]="module.id" />
+}
 
-<ion-fab slot="fixed" core-fab vertical="bottom" horizontal="end" *ngIf="canEdit">
-    <ion-fab-button (click)="goToNewPage()" [attr.aria-label]="'addon.mod_wiki.createpage' | translate">
-        <ion-icon name="fas-plus" aria-hidden="true" />
-        <span class="sr-only">{{ 'addon.mod_wiki.createpage' | translate }}</span>
-    </ion-fab-button>
-</ion-fab>
+@if (canEdit) {
+    <ion-fab slot="fixed" core-fab vertical="bottom" horizontal="end">
+        <ion-fab-button (click)="goToNewPage()" [attr.aria-label]="'addon.mod_wiki.createpage' | translate">
+            <ion-icon name="fas-plus" aria-hidden="true" />
+            <span class="sr-only">{{ 'addon.mod_wiki.createpage' | translate }}</span>
+        </ion-fab-button>
+    </ion-fab>
+}

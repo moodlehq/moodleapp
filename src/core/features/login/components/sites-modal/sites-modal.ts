@@ -29,7 +29,6 @@ import { CoreAlerts } from '@services/overlays/alerts';
     selector: 'core-login-sites-modal',
     templateUrl: 'sites-modal.html',
     animations: [CoreAnimations.SLIDE_IN_OUT, CoreAnimations.SHOW_HIDE],
-    standalone: true,
     imports: [
         CoreSharedModule,
     ],

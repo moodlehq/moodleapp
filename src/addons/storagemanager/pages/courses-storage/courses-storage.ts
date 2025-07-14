@@ -40,7 +40,6 @@ import { ADDON_STORAGE_MANAGER_PAGE_NAME } from '@addons/storagemanager/constant
     selector: 'page-addon-storagemanager-courses-storage',
     templateUrl: 'courses-storage.html',
     styleUrl: 'courses-storage.scss',
-    standalone: true,
     imports: [
         CoreSharedModule,
     ],

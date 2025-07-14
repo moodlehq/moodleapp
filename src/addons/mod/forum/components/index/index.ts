@@ -12,9 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, Optional, OnInit, OnDestroy, ViewChild, AfterViewInit } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, AfterViewInit, inject } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { IonContent } from '@ionic/angular';
 import { CoreCourseModuleMainActivityComponent } from '@features/course/classes/main-activity-component';
 import {
     AddonModForum,
@@ -24,9 +23,8 @@ import {
     AddonModForumNewDiscussionData,
     AddonModForumReplyDiscussionData,
 } from '@addons/mod/forum/services/forum';
-import { AddonModForumOffline } from '@addons/mod/forum/services/forum-offline';
+import { AddonModForumOffline, AddonModForumOfflineDiscussion } from '@addons/mod/forum/services/forum-offline';
 import { Translate } from '@singletons';
-import CoreCourseContentsPage from '@features/course/pages/contents/contents';
 import { AddonModForumHelper } from '@addons/mod/forum/services/forum-helper';
 import { CoreGroupInfo } from '@services/groups';
 import { CoreEvents, CoreEventObserver } from '@singletons/events';
@@ -78,7 +76,6 @@ import { CoreCourseModuleInfoComponent } from '@features/course/components/modul
     selector: 'addon-mod-forum-index',
     templateUrl: 'index.html',
     styleUrl: 'index.scss',
-    standalone: true,
     imports: [
         CoreSharedModule,
         CoreCourseModuleInfoComponent,
@@ -89,11 +86,13 @@ export class AddonModForumIndexComponent extends CoreCourseModuleMainActivityCom
 
     @ViewChild(CoreSplitViewComponent) splitView!: CoreSplitViewComponent;
 
+    route = inject(ActivatedRoute);
+
     component = ADDON_MOD_FORUM_COMPONENT_LEGACY;
     pluginName = 'forum';
     descriptionNote?: string;
-    promisedDiscussions: CorePromisedValue<AddonModForumDiscussionsManager>;
-    discussionsItems: AddonModForumDiscussionItem[] = [];
+    promisedDiscussions = new CorePromisedValue<AddonModForumDiscussionsManager>();
+    discussionsItems: (AddonModForumDiscussion | AddonModForumOfflineDiscussion)[] = [];
     fetchFailed = false;
     canAddDiscussion = false;
     addDiscussionText!: string;
@@ -116,16 +115,6 @@ export class AddonModForumIndexComponent extends CoreCourseModuleMainActivityCom
     protected ratingSyncObserver?: CoreEventObserver;
     protected sourceUnsubscribe?: () => void;
     protected checkCompletionAfterLog = false; // Use CoreListItemsManager log system instead.
-
-    constructor(
-        public route: ActivatedRoute,
-        @Optional() protected content?: IonContent,
-        @Optional() courseContentsPage?: CoreCourseContentsPage,
-    ) {
-        super('AddonModForumIndexComponent', content, courseContentsPage);
-
-        this.promisedDiscussions = new CorePromisedValue();
-    }
 
     get discussions(): AddonModForumDiscussionsManager | null {
         return this.promisedDiscussions.value;
@@ -183,7 +172,7 @@ export class AddonModForumIndexComponent extends CoreCourseModuleMainActivityCom
      * @param discussion Discussion
      * @returns Whether the discussion is online.
      */
-    isOnlineDiscussion(discussion: AddonModForumDiscussionItem): boolean {
+    isOnlineDiscussion(discussion: AddonModForumDiscussionItem): discussion is AddonModForumDiscussion {
         return !!this.discussions?.getSource().isOnlineDiscussion(discussion);
     }
 
@@ -193,7 +182,7 @@ export class AddonModForumIndexComponent extends CoreCourseModuleMainActivityCom
      * @param discussion Discussion
      * @returns Whether the discussion is offline.
      */
-    isOfflineDiscussion(discussion: AddonModForumDiscussionItem): boolean {
+    isOfflineDiscussion(discussion: AddonModForumDiscussionItem): discussion is AddonModForumOfflineDiscussion {
         return !!this.discussions?.getSource().isOfflineDiscussion(discussion);
     }
 
@@ -216,7 +205,8 @@ export class AddonModForumIndexComponent extends CoreCourseModuleMainActivityCom
 
         this.sourceUnsubscribe = source.addListener({
             onItemsUpdated: async discussions => {
-                this.discussionsItems = discussions.filter(discussion => !source.isNewDiscussionForm(discussion));
+                this.discussionsItems = discussions.filter(discussion =>
+                    source.isOnlineDiscussion(discussion) || source.isOfflineDiscussion(discussion));
                 this.hasOffline = discussions.some(discussion => source.isOfflineDiscussion(discussion));
 
                 if (!this.forum) {
@@ -231,7 +221,7 @@ export class AddonModForumIndexComponent extends CoreCourseModuleMainActivityCom
                 if (hasOffline) {
                     // Only update new fetched discussions.
                     const promises = discussions.map(async (discussion) => {
-                        if (!this.discussions?.getSource().isOnlineDiscussion(discussion)) {
+                        if (!source.isOnlineDiscussion(discussion)) {
                             return;
                         }
 

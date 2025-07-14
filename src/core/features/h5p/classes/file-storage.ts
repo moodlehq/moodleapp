@@ -272,7 +272,7 @@ export class CoreH5PFileStorage {
                     },
                 ];
             }
-        } catch (error) {
+        } catch {
             // Not found, nothing to do.
         }
     }

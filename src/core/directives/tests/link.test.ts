@@ -24,7 +24,6 @@ describe('CoreLinkDirective', () => {
         const fixture = await renderTemplate(
             CoreLinkDirective,
             '<a href="https://moodle.org/" core-link [capture]="true">Link</a>',
-            { standalone: true },
         );
 
         // Assert
@@ -43,7 +42,6 @@ describe('CoreLinkDirective', () => {
         const { nativeElement } = await renderTemplate(
             CoreLinkDirective,
             '<a href="https://moodle.org/" core-link [capture]="true">Link</a>',
-            { standalone: true },
         );
 
         const anchor = nativeElement.querySelector('a');

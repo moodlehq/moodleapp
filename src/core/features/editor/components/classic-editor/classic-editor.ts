@@ -12,15 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import {
-    AfterViewInit,
-    Component,
-    CUSTOM_ELEMENTS_SCHEMA,
-    ViewChild,
-    ElementRef,
-    OnInit,
-    OnDestroy,
-} from '@angular/core';
+import { AfterViewInit, Component, CUSTOM_ELEMENTS_SCHEMA, ViewChild, ElementRef, OnInit, OnDestroy, inject } from '@angular/core';
 import { IonTextarea } from '@ionic/angular';
 import { CoreUtils } from '@singletons/utils';
 import { CoreDirectivesRegistry } from '@singletons/directives-registry';
@@ -46,7 +38,6 @@ import { CoreEditorBaseComponent } from '@features/editor/classes/base-editor-co
     selector: 'core-editor-classic-editor',
     templateUrl: 'core-editor-classic-editor.html',
     styleUrl: 'classic-editor.scss',
-    standalone: true,
     imports: [
         CoreSharedModule,
     ],
@@ -85,7 +76,7 @@ export class CoreEditorClassicEditorComponent extends CoreEditorBaseComponent im
     protected readonly RESTORE_MESSAGE_CLEAR_TIME = 6000;
     protected readonly SAVE_MESSAGE_CLEAR_TIME = 2000;
 
-    protected element: HTMLElement;
+    protected element: HTMLElement = inject(ElementRef).nativeElement;
 
     protected contentObserver?: MutationObserver;
     protected isCurrentView = true;
@@ -127,13 +118,6 @@ export class CoreEditorClassicEditorComponent extends CoreEditorBaseComponent im
         watchSlidesProgress: true,
     };
 
-    constructor(
-        elementRef: ElementRef,
-    ) {
-        super();
-        this.element = elementRef.nativeElement;
-    }
-
     /**
      * @inheritdoc
      */
@@ -154,7 +138,7 @@ export class CoreEditorClassicEditorComponent extends CoreEditorBaseComponent im
         this.textareaElement = await this.textarea?.getInputElement();
 
         // Use paragraph on enter.
-        // eslint-disable-next-line deprecation/deprecation
+        // eslint-disable-next-line @typescript-eslint/no-deprecated
         document.execCommand('DefaultParagraphSeparator', false, 'p');
 
         document.addEventListener('selectionchange', this.selectionChangeFunction);
@@ -323,7 +307,7 @@ export class CoreEditorClassicEditorComponent extends CoreEditorBaseComponent im
      */
     protected executeCommand({ name: command, parameters }: EditorCommand): void {
         if (parameters === 'block') {
-            // eslint-disable-next-line deprecation/deprecation
+            // eslint-disable-next-line @typescript-eslint/no-deprecated
             document.execCommand('formatBlock', false, '<' + command + '>');
 
             return;
@@ -333,7 +317,7 @@ export class CoreEditorClassicEditorComponent extends CoreEditorBaseComponent im
             this.toolbarStyles[parameters] = this.toolbarStyles[parameters] == 'true' ? 'false' : 'true';
         }
 
-        // eslint-disable-next-line deprecation/deprecation
+        // eslint-disable-next-line @typescript-eslint/no-deprecated
         document.execCommand(command, false);
     }
 
@@ -562,7 +546,7 @@ export class CoreEditorClassicEditorComponent extends CoreEditorBaseComponent im
 
         if (text) {
             this.focusRTE(event); // Make sure the editor is focused.
-            // eslint-disable-next-line deprecation/deprecation
+            // eslint-disable-next-line @typescript-eslint/no-deprecated
             document.execCommand('insertText', false, text);
         }
     }

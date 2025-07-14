@@ -24,31 +24,41 @@
             </ion-label>
             <div slot="end" class="flex-row">
                 <!-- Download all courses. -->
-                <div *ngIf="downloadCoursesEnabled && myOverviewBlock && myOverviewBlock.filteredCourses.length > 0"
-                    class="core-button-spinner">
-                    <ion-button *ngIf="!myOverviewBlock.prefetchCoursesData.loading" fill="clear" size="default"
-                        (click)="myOverviewBlock.prefetchCourses()"
-                        [attr.aria-label]="myOverviewBlock.prefetchCoursesData.statusTranslatable | translate">
-                        <ion-icon [name]="myOverviewBlock.prefetchCoursesData.icon" slot="icon-only" aria-hidden="true" />
-                    </ion-button>
-                    <ion-badge class="core-course-download-courses-progress" *ngIf="myOverviewBlock.prefetchCoursesData.badge"
-                        role="progressbar" [attr.aria-valuemax]="myOverviewBlock.prefetchCoursesData.total"
-                        [attr.aria-valuenow]="myOverviewBlock.prefetchCoursesData.count"
-                        [attr.aria-valuetext]="myOverviewBlock.prefetchCoursesData.badgeA11yText">
-                        {{myOverviewBlock.prefetchCoursesData.badge}}
-                    </ion-badge>
-                    <ion-spinner *ngIf="myOverviewBlock.prefetchCoursesData.loading" [attr.aria-label]="'core.loading' | translate" />
-                </div>
+                @if (downloadCoursesEnabled && myOverviewBlock && myOverviewBlock.filteredCourses.length > 0) {
+                    <div class="core-button-spinner">
+                        @if (!myOverviewBlock.prefetchCoursesData.loading) {
+                            <ion-button fill="clear" size="default" (click)="myOverviewBlock.prefetchCourses()"
+                                [attr.aria-label]="myOverviewBlock.prefetchCoursesData.statusTranslatable | translate">
+                                <ion-icon [name]="myOverviewBlock.prefetchCoursesData.icon" slot="icon-only" aria-hidden="true" />
+                            </ion-button>
+                        }
+                        @if (myOverviewBlock.prefetchCoursesData.badge) {
+                            <ion-badge class="core-course-download-courses-progress" role="progressbar"
+                                [attr.aria-valuemax]="myOverviewBlock.prefetchCoursesData.total"
+                                [attr.aria-valuenow]="myOverviewBlock.prefetchCoursesData.count"
+                                [attr.aria-valuetext]="myOverviewBlock.prefetchCoursesData.badgeA11yText">
+                                {{myOverviewBlock.prefetchCoursesData.badge}}
+                            </ion-badge>
+                        }
+                        @if (myOverviewBlock.prefetchCoursesData.loading) {
+                            <ion-spinner [attr.aria-label]="'core.loading' | translate" />
+                        }
+                    </div>
+                }
             </div>
         </ion-item>
         <ion-list>
-            <core-block *ngIf="loadedBlock?.visible" [block]="loadedBlock" contextLevel="user" [instanceId]="userId"
-                labelledBy="core-courses-my-title" />
+            @if (loadedBlock?.visible) {
+                <core-block [block]="loadedBlock" contextLevel="user" [instanceId]="userId" labelledBy="core-courses-my-title" />
+            }
         </ion-list>
 
-        <core-block-side-blocks-button slot="fixed" *ngIf="hasSideBlocks" contextLevel="user" [instanceId]="userId"
-            [myDashboardPage]="myPageCourses" />
+        @if (hasSideBlocks) {
+            <core-block-side-blocks-button slot="fixed" contextLevel="user" [instanceId]="userId" [myDashboardPage]="myPageCourses" />
+        }
 
-        <core-empty-box *ngIf="!loadedBlock" icon="fas-cubes" [message]="'core.course.nocontentavailable' | translate" />
+        @if (!loadedBlock) {
+            <core-empty-box icon="fas-cubes" [message]="'core.course.nocontentavailable' | translate" />
+        }
     </core-loading>
 </ion-content>

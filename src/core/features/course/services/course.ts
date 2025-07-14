@@ -939,7 +939,7 @@ export class CoreCourseProvider {
         const subsectionsComponents = CoreArray.unique(subsections.map(section => (section.component ?? '').replace('mod_', '')));
 
         sections.forEach(section => {
-            // eslint-disable-next-line deprecation/deprecation
+            // eslint-disable-next-line @typescript-eslint/no-deprecated
             section.contents = section.modules.map(module => {
                 if (!subsectionsComponents.includes(module.modname)) {
                     return module;

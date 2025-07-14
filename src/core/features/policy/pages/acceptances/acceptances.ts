@@ -37,7 +37,6 @@ import { CoreSharedModule } from '@/core/shared.module';
     selector: 'page-core-policy-acceptances',
     templateUrl: 'acceptances.html',
     styleUrl: 'acceptances.scss',
-    standalone: true,
     imports: [
         CoreSharedModule,
     ],
@@ -248,7 +247,7 @@ export default class CorePolicyAcceptancesPage implements OnInit, OnDestroy {
             }
 
             policy.acceptance = newPolicy.acceptance;
-        } catch (error) {
+        } catch {
             // Error updating the acceptance, calculate it in the app.
             policy.acceptance = {
                 status: accepted ? 1 : 0,

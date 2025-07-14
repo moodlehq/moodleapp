@@ -22,14 +22,15 @@
             autocorrect="off" spellcheck="false" lengthCheck="2" [disabled]="!loaded" searchArea="AddonMessagesContacts" />
 
         <core-loading [hideUntil]="loaded" [message]="loadingMessage">
-            <core-empty-box *ngIf="!hasContacts && searchString === ''" icon="fas-address-book"
-                [message]="'addon.messages.contactlistempty' | translate" />
-
-            <core-empty-box *ngIf="!hasContacts && searchString !== ''" icon="fas-address-book"
-                [message]="'addon.messages.nousersfound' | translate" />
+            @if (!hasContacts && searchString === '') {
+                <core-empty-box icon="fas-address-book" [message]="'addon.messages.contactlistempty' | translate" />
+            } @else if (!hasContacts && searchString !== '') {
+                <core-empty-box icon="fas-address-book" [message]="'addon.messages.nousersfound' | translate" />
+            }
 
             <ion-list *ngFor="let contactType of contactTypes" class="ion-no-margin">
-                <ng-container *ngIf="contacts[contactType] && (contacts[contactType].length > 0 || contactType === searchType)">
+                @if (contacts[contactType] && (contacts[contactType].length > 0 || contactType === searchType)) {
+
                     <ion-item-divider>
                         <ion-label>
                             <p class="item-heading">{{ 'addon.messages.type_' + contactType | translate }}</p>
@@ -40,17 +41,19 @@
                     </ion-item-divider>
                     <ng-container *ngFor="let contact of contacts[contactType]">
                         <!-- Don't show deleted users -->
-                        <ion-item class="ion-text-wrap addon-messages-conversation-item"
-                            *ngIf="contact.profileimageurl || contact.profileimageurlsmall" [attr.aria-label]="contact.fullname"
-                            (click)="gotoDiscussion(contact.id)" [detail]="true" button
-                            [attr.aria-current]="contact.id === discussionUserId ? 'page' : 'false'">
-                            <core-user-avatar [user]="contact" slot="start" [checkOnline]="contact.showonlinestatus" />
-                            <ion-label>
-                                <p class="item-heading">{{ contact.fullname }}</p>
-                            </ion-label>
-                        </ion-item>
+                        @if (contact.profileimageurl || contact.profileimageurlsmall) {
+                            <ion-item class="ion-text-wrap addon-messages-conversation-item" [attr.aria-label]="contact.fullname"
+                                (click)="gotoDiscussion(contact.id)" [detail]="true" button
+                                [attr.aria-current]="contact.id === discussionUserId ? 'page' : 'false'">
+                                <core-user-avatar [user]="contact" slot="start" [checkOnline]="contact.showonlinestatus" />
+                                <ion-label>
+                                    <p class="item-heading">{{ contact.fullname }}</p>
+                                </ion-label>
+                            </ion-item>
+                        }
                     </ng-container>
-                </ng-container>
+
+                }
             </ion-list>
         </core-loading>
     </core-split-view>

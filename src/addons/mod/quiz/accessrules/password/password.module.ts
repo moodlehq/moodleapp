@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { APP_INITIALIZER, NgModule } from '@angular/core';
+import { NgModule, provideAppInitializer } from '@angular/core';
 
 import { CORE_SITE_SCHEMAS } from '@services/sites';
 import { AddonModQuizAccessPasswordHandler } from './services/handlers/password';
@@ -26,13 +26,9 @@ import { SITE_SCHEMA } from './services/database/password';
             useValue: [SITE_SCHEMA],
             multi: true,
         },
-        {
-            provide: APP_INITIALIZER,
-            multi: true,
-            useValue: () => {
-                AddonModQuizAccessRuleDelegate.registerHandler(AddonModQuizAccessPasswordHandler.instance);
-            },
-        },
+        provideAppInitializer(() => {
+            AddonModQuizAccessRuleDelegate.registerHandler(AddonModQuizAccessPasswordHandler.instance);
+        }),
     ],
 })
 export class AddonModQuizAccessPasswordModule {}

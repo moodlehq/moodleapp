@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Directive, ElementRef, OnDestroy, OnInit } from '@angular/core';
+import { Directive, ElementRef, OnDestroy, OnInit, inject } from '@angular/core';
 import { CoreCancellablePromise } from '@classes/cancellable-promise';
 import { CoreDom } from '@singletons/dom';
 
@@ -25,18 +25,13 @@ import { CoreDom } from '@singletons/dom';
  */
 @Directive({
     selector: 'ion-fab[core-fab]',
-    standalone: true,
 })
 export class CoreFabDirective implements OnInit, OnDestroy {
 
-    protected element: HTMLElement;
+    protected element: HTMLElement = inject(ElementRef).nativeElement;
     protected content?: HTMLIonContentElement | null;
     protected initialPaddingBottom = 0;
     protected slotPromise?: CoreCancellablePromise<void>;
-
-    constructor(el: ElementRef) {
-        this.element = el.nativeElement;
-    }
 
     /**
      * @inheritdoc

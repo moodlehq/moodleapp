@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, Input, ElementRef, OnInit, OnDestroy, OnChanges, SimpleChange } from '@angular/core';
+import { Component, Input, ElementRef, OnInit, OnDestroy, OnChanges, SimpleChange, inject } from '@angular/core';
 
 import { CoreNetwork } from '@services/network';
 import { CoreFilepool } from '@services/filepool';
@@ -40,7 +40,6 @@ import { CoreFileHelper } from '@services/file-helper';
     selector: 'core-h5p-player',
     templateUrl: 'core-h5p-player.html',
     styleUrl: 'h5p-player.scss',
-    standalone: true,
     imports: [
         CoreSharedModule,
         CoreH5PIframeComponent,
@@ -67,13 +66,9 @@ export class CoreH5PPlayerComponent implements OnInit, OnChanges, OnDestroy {
     protected siteCanDownload: boolean;
     protected observer?: CoreEventObserver;
     protected logger: CoreLogger;
-    protected nativeElement: HTMLElement;
+    protected element: HTMLElement = inject(ElementRef).nativeElement;
 
-    constructor(
-        elementRef: ElementRef,
-    ) {
-        this.nativeElement = elementRef.nativeElement;
-
+    constructor() {
         this.logger = CoreLogger.getInstance('CoreH5PPlayerComponent');
         this.site = CoreSites.getRequiredCurrentSite();
         this.siteId = this.site.getId();
@@ -263,7 +258,7 @@ export class CoreH5PPlayerComponent implements OnInit, OnChanges, OnDestroy {
      * @returns The native element.
      */
     getElement(): HTMLElement {
-        return this.nativeElement;
+        return this.element;
     }
 
     /**

@@ -28,7 +28,6 @@ import { CoreSharedModule } from '@/core/shared.module';
     selector: 'addon-qtype-ddwtos',
     templateUrl: 'addon-qtype-ddwtos.html',
     styleUrls: ['../../../../core/features/question/question.scss', 'ddwtos.scss'],
-    standalone: true,
     imports: [
         CoreSharedModule,
     ],
@@ -42,10 +41,6 @@ export class AddonQtypeDdwtosComponent extends CoreQuestionBaseComponent<AddonMo
     protected destroyed = false;
     protected textIsRendered = false;
     protected answerAreRendered = false;
-
-    constructor(elementRef: ElementRef) {
-        super('AddonQtypeDdwtosComponent', elementRef);
-    }
 
     /**
      * @inheritdoc

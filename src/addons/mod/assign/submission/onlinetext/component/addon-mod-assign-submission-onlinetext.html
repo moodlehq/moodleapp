@@ -1,33 +1,41 @@
-<!-- Read only -->
-<ion-item class="ion-text-wrap" *ngIf="!edit && text" button [detail]="true" (click)="open($event)">
-    <ion-label>
-        <p class="item-heading">{{ plugin.name }}</p>
-        <p *ngIf="words">{{ 'addon.mod_assign.numwords' | translate: {'$a': words} }}</p>
-        <p class="collapse-content">
-            <core-format-text [component]="component" [componentId]="assign.cmid" [text]="text" contextLevel="module"
-                [contextInstanceId]="assign.cmid" [courseId]="assign.course" [sanitize]="!isSent" />
-        </p>
-    </ion-label>
-</ion-item>
-
-<!-- Edit -->
-<div *ngIf="edit && loaded">
-    <ion-item-divider class="ion-text-wrap" [sticky]="true">
+@if (!edit && text) {
+    <!-- Read only -->
+    <ion-item class="ion-text-wrap" button [detail]="true" (click)="open($event)">
         <ion-label>
             <p class="item-heading">{{ plugin.name }}</p>
-        </ion-label>
-    </ion-item-divider>
-    <ion-item class="ion-text-wrap" *ngIf="wordLimitEnabled && words >= 0">
-        <ion-label>
-            <p class="item-heading">{{ 'addon.mod_assign.wordlimit' | translate }}</p>
-            <p>{{ 'core.numwords' | translate: {'$a': words + ' / ' + wordLimit} }}</p>
+            @if (words) {
+                <p>{{ 'addon.mod_assign.numwords' | translate: {'$a': words} }}</p>
+            }
+            <p class="collapse-content">
+                <core-format-text [component]="component" [componentId]="assign.cmid" [text]="text" contextLevel="module"
+                    [contextInstanceId]="assign.cmid" [courseId]="assign.course" [sanitize]="!isSent" />
+            </p>
         </ion-label>
     </ion-item>
-    <ion-item class="ion-text-wrap">
-        <ion-label class="sr-only">{{ plugin.name }}</ion-label>
-        <core-rich-text-editor [control]="control" [placeholder]="plugin.name" name="onlinetext_editor_text"
-            (contentChanged)="onChange($event)" [component]="component" [componentId]="assign.cmid" [autoSave]="true" contextLevel="module"
-            [contextInstanceId]="assign.cmid" elementId="onlinetext_editor"
-            [draftExtraParams]="{userid: currentUserId, action: 'editsubmission'}" />
-    </ion-item>
-</div>
+}
+
+@if (edit && loaded) {
+    <!-- Edit -->
+    <div>
+        <ion-item-divider class="ion-text-wrap" [sticky]="true">
+            <ion-label>
+                <p class="item-heading">{{ plugin.name }}</p>
+            </ion-label>
+        </ion-item-divider>
+        @if (wordLimitEnabled && words >= 0) {
+            <ion-item class="ion-text-wrap">
+                <ion-label>
+                    <p class="item-heading">{{ 'addon.mod_assign.wordlimit' | translate }}</p>
+                    <p>{{ 'core.numwords' | translate: {'$a': words + ' / ' + wordLimit} }}</p>
+                </ion-label>
+            </ion-item>
+        }
+        <ion-item class="ion-text-wrap">
+            <ion-label class="sr-only">{{ plugin.name }}</ion-label>
+            <core-rich-text-editor [control]="control" [placeholder]="plugin.name" name="onlinetext_editor_text"
+                (contentChanged)="onChange($event)" [component]="component" [componentId]="assign.cmid" [autoSave]="true"
+                contextLevel="module" [contextInstanceId]="assign.cmid" elementId="onlinetext_editor"
+                [draftExtraParams]="{userid: currentUserId, action: 'editsubmission'}" />
+        </ion-item>
+    </div>
+}

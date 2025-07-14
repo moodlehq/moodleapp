@@ -30,7 +30,6 @@ import { CoreSharedModule } from '@/core/shared.module';
     selector: 'page-core-login-sites',
     templateUrl: 'sites.html',
     animations: [CoreAnimations.SLIDE_IN_OUT, CoreAnimations.SHOW_HIDE],
-    standalone: true,
     imports: [
         CoreSharedModule,
     ],
@@ -85,7 +84,7 @@ export default class CoreLoginSitesPage implements OnInit {
 
         try {
             await CoreAlerts.confirmDelete(Translate.instant('core.login.confirmdeletesite', { sitename: siteName }));
-        } catch (error) {
+        } catch {
             // User cancelled, stop.
             return;
         }

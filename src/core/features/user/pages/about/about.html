@@ -13,119 +13,155 @@
         <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}" />
     </ion-refresher>
     <core-loading [hideUntil]="userLoaded" placeholderType="column" placeholderHeight="48px">
-        <ion-list *ngIf="user">
-            <ion-item class="ion-text-center core-user-profile-maininfo ion-text-wrap" [lines]="user.description ? 'none' : 'full'">
-                <ion-label>
-                    <core-user-avatar [user]="user" [userId]="user.id" [linkProfile]="false" [checkOnline]="!canChangeProfilePicture">
-                        <ion-button class="edit-avatar" *ngIf="canChangeProfilePicture" (click)="changeProfilePicture()"
-                            [ariaLabel]="'core.user.newpicture' | translate" fill="clear">
-                            <ion-icon slot="icon-only" name="fas-pen" aria-hidden="true" />
-                        </ion-button>
-                    </core-user-avatar>
-                    <h2>{{ user.fullname }}</h2>
-                </ion-label>
-            </ion-item>
-
-            <ion-item class="ion-text-wrap" *ngIf="user.description" lines="full">
-                <ion-label>
-                    <p>
-                        <core-format-text [text]="user.description" contextLevel="user" [contextInstanceId]="user.id"
-                            [courseId]="courseId" />
-                    </p>
-                </ion-label>
-            </ion-item>
-
-            <ion-item-group *ngIf="hasContact">
-                <ion-item-divider>
+        @if (user) {
+            <ion-list>
+                <ion-item class="ion-text-center core-user-profile-maininfo ion-text-wrap" [lines]="user.description ? 'none' : 'full'">
                     <ion-label>
-                        <h3>{{ 'core.user.contact' | translate}}</h3>
-                    </ion-label>
-                </ion-item-divider>
-                <ion-item class="ion-text-wrap" *ngIf="user.email">
-                    <ion-label>
-                        <p class="item-heading">{{ 'core.user.email' | translate }}</p>
-                        <p><a class="core-anchor" href="mailto:{{user.email}}" core-link [autoLogin]="false" [showBrowserWarning]="false">
-                                {{ user.email }}
-                            </a></p>
-                    </ion-label>
-                </ion-item>
-                <ion-item class="ion-text-wrap" *ngIf="user.country">
-                    <ion-label>
-                        <p class="item-heading">{{ 'core.user.country' | translate}}</p>
-                        <p>{{ user.country }}</p>
-                    </ion-label>
-                </ion-item>
-                <ion-item class="ion-text-wrap" *ngIf="user.city">
-                    <ion-label>
-                        <p class="item-heading">{{ 'core.user.city' | translate}}</p>
-                        <p>{{ user.city }}</p>
-                    </ion-label>
-                </ion-item>
-                <ion-item class="ion-text-wrap" *ngIf="displayTimezone && user.timezone">
-                    <ion-label>
-                        <p class="item-heading">{{ 'core.timezone' | translate}}</p>
-                        <p>{{ user.timezone }}</p>
-                    </ion-label>
-                </ion-item>
-                <ion-item class="ion-text-wrap" *ngIf="user.phone1">
-                    <ion-label>
-                        <p class="item-heading">{{ 'core.user.phone1' | translate}}</p>
-                        <p><a class="core-anchor" href="tel:{{user.phone1}}" core-link [autoLogin]="false" [showBrowserWarning]="false">
-                                {{ user.phone1 }}
-                            </a></p>
-                    </ion-label>
-                </ion-item>
-                <ion-item class="ion-text-wrap" *ngIf="user.phone2">
-                    <ion-label>
-                        <p class="item-heading">{{ 'core.user.phone2' | translate}}</p>
-                        <p><a class="core-anchor" href="tel:{{user.phone2}}" core-link [autoLogin]="false" [showBrowserWarning]="false">
-                                {{ user.phone2 }}
-                            </a></p>
+                        <core-user-avatar [user]="user" [userId]="user.id" [linkProfile]="false" [checkOnline]="!canChangeProfilePicture">
+                            @if (canChangeProfilePicture) {
+                                <ion-button class="edit-avatar" (click)="changeProfilePicture()"
+                                    [ariaLabel]="'core.user.newpicture' | translate" fill="clear">
+                                    <ion-icon slot="icon-only" name="fas-pen" aria-hidden="true" />
+                                </ion-button>
+                            }
+                        </core-user-avatar>
+                        <h2>{{ user.fullname }}</h2>
                     </ion-label>
                 </ion-item>
 
-
-                <ng-container *ngIf="canShowDepartment">
-                    <ion-item class="ion-text-wrap" *ngIf="user.institution">
+                @if (user.description) {
+                    <ion-item class="ion-text-wrap" lines="full">
                         <ion-label>
-                            <p class="item-heading">{{ 'core.user.institution' | translate }}</p>
-                            <p>{{ user.institution }}</p>
+                            <p>
+                                <core-format-text [text]="user.description" contextLevel="user" [contextInstanceId]="user.id"
+                                    [courseId]="courseId" />
+                            </p>
                         </ion-label>
                     </ion-item>
-                    <ion-item class="ion-text-wrap" *ngIf="user.department">
-                        <ion-label>
-                            <p class="item-heading">{{ 'core.user.department' | translate }}</p>
-                            <p>{{ user.department }}</p>
-                        </ion-label>
-                    </ion-item>
-                    <ion-item class="ion-text-wrap" *ngIf="user.idnumber">
-                        <ion-label>
-                            <p class="item-heading">{{ 'core.user.idnumber' | translate }}</p>
-                            <p>{{ user.idnumber }}</p>
-                        </ion-label>
-                    </ion-item>
-                </ng-container>
-            </ion-item-group>
-            <ion-item-group *ngIf="hasDetails">
-                <ion-item-divider>
-                    <ion-label>
-                        <h3>{{ 'core.userdetails' | translate}}</h3>
-                    </ion-label>
-                </ion-item-divider>
-                <ion-item class="ion-text-wrap core-user-profile-interests" *ngIf="interests">
-                    <ion-label>
-                        <p class="item-heading">{{ 'core.user.interests' | translate}}</p>
-                        <ion-badge *ngFor="let interest of interests" role="link" (click)="openInterest(interest)">
-                            {{ interest }}
-                        </ion-badge>
-                    </ion-label>
-                </ion-item>
-                <core-user-profile-field *ngFor="let field of user.customfields" [field]="field" contextLevel="course"
-                    [contextInstanceId]="courseId" [courseId]="courseId" />
-            </ion-item-group>
-        </ion-list>
+                }
 
-        <core-empty-box *ngIf="!user || (!hasContact && !hasDetails && !user.description)" icon="fas-user"
-            [message]=" 'core.user.detailsnotavailable' | translate" />
+                @if (hasContact) {
+                    <ion-item-group>
+                        <ion-item-divider>
+                            <ion-label>
+                                <h3>{{ 'core.user.contact' | translate}}</h3>
+                            </ion-label>
+                        </ion-item-divider>
+                        @if (user.email) {
+                            <ion-item class="ion-text-wrap">
+                                <ion-label>
+                                    <p class="item-heading">{{ 'core.user.email' | translate }}</p>
+                                    <p><a class="core-anchor" href="mailto:{{user.email}}" core-link [autoLogin]="false"
+                                            [showBrowserWarning]="false">
+                                            {{ user.email }}
+                                        </a></p>
+                                </ion-label>
+                            </ion-item>
+                        }
+                        @if (user.country) {
+                            <ion-item class="ion-text-wrap">
+                                <ion-label>
+                                    <p class="item-heading">{{ 'core.user.country' | translate}}</p>
+                                    <p>{{ user.country }}</p>
+                                </ion-label>
+                            </ion-item>
+                        }
+                        @if (user.city) {
+                            <ion-item class="ion-text-wrap">
+                                <ion-label>
+                                    <p class="item-heading">{{ 'core.user.city' | translate}}</p>
+                                    <p>{{ user.city }}</p>
+                                </ion-label>
+                            </ion-item>
+                        }
+                        @if (displayTimezone && user.timezone) {
+                            <ion-item class="ion-text-wrap">
+                                <ion-label>
+                                    <p class="item-heading">{{ 'core.timezone' | translate}}</p>
+                                    <p>{{ user.timezone }}</p>
+                                </ion-label>
+                            </ion-item>
+                        }
+                        @if (user.phone1) {
+                            <ion-item class="ion-text-wrap">
+                                <ion-label>
+                                    <p class="item-heading">{{ 'core.user.phone1' | translate}}</p>
+                                    <p><a class="core-anchor" href="tel:{{user.phone1}}" core-link [autoLogin]="false"
+                                            [showBrowserWarning]="false">
+                                            {{ user.phone1 }}
+                                        </a></p>
+                                </ion-label>
+                            </ion-item>
+                        }
+                        @if (user.phone2) {
+                            <ion-item class="ion-text-wrap">
+                                <ion-label>
+                                    <p class="item-heading">{{ 'core.user.phone2' | translate}}</p>
+                                    <p><a class="core-anchor" href="tel:{{user.phone2}}" core-link [autoLogin]="false"
+                                            [showBrowserWarning]="false">
+                                            {{ user.phone2 }}
+                                        </a></p>
+                                </ion-label>
+                            </ion-item>
+                        }
+
+
+                        @if (canShowDepartment) {
+
+                            @if (user.institution) {
+                                <ion-item class="ion-text-wrap">
+                                    <ion-label>
+                                        <p class="item-heading">{{ 'core.user.institution' | translate }}</p>
+                                        <p>{{ user.institution }}</p>
+                                    </ion-label>
+                                </ion-item>
+                            }
+                            @if (user.department) {
+                                <ion-item class="ion-text-wrap">
+                                    <ion-label>
+                                        <p class="item-heading">{{ 'core.user.department' | translate }}</p>
+                                        <p>{{ user.department }}</p>
+                                    </ion-label>
+                                </ion-item>
+                            }
+                            @if (user.idnumber) {
+                                <ion-item class="ion-text-wrap">
+                                    <ion-label>
+                                        <p class="item-heading">{{ 'core.user.idnumber' | translate }}</p>
+                                        <p>{{ user.idnumber }}</p>
+                                    </ion-label>
+                                </ion-item>
+                            }
+
+                        }
+                    </ion-item-group>
+                }
+                @if (hasDetails) {
+                    <ion-item-group>
+                        <ion-item-divider>
+                            <ion-label>
+                                <h3>{{ 'core.userdetails' | translate}}</h3>
+                            </ion-label>
+                        </ion-item-divider>
+                        @if (interests) {
+                            <ion-item class="ion-text-wrap core-user-profile-interests">
+                                <ion-label>
+                                    <p class="item-heading">{{ 'core.user.interests' | translate}}</p>
+                                    <ion-badge *ngFor="let interest of interests" role="link" (click)="openInterest(interest)">
+                                        {{ interest }}
+                                    </ion-badge>
+                                </ion-label>
+                            </ion-item>
+                        }
+                        <core-user-profile-field *ngFor="let field of user.customfields" [field]="field" contextLevel="course"
+                            [contextInstanceId]="courseId" [courseId]="courseId" />
+                    </ion-item-group>
+                }
+            </ion-list>
+        }
+
+        @if (!user || (!hasContact && !hasDetails && !user.description)) {
+            <core-empty-box icon="fas-user" [message]=" 'core.user.detailsnotavailable' | translate" />
+        }
     </core-loading>
 </ion-content>

@@ -10,10 +10,12 @@
         </ion-title>
 
         <ion-buttons slot="end">
-            <ion-button fill="clear" *ngIf="displayOpenInBrowser && module.url && module.uservisible && !unsupported" [href]="module.url"
-                core-link [showBrowserWarning]="false" [ariaLabel]="'core.openinbrowser' | translate">
-                <ion-icon name="fas-up-right-from-square" slot="icon-only" aria-hidden="true" />
-            </ion-button>
+            @if (displayOpenInBrowser && module.url && module.uservisible && !unsupported) {
+                <ion-button fill="clear" [href]="module.url" core-link [showBrowserWarning]="false"
+                    [ariaLabel]="'core.openinbrowser' | translate">
+                    <ion-icon name="fas-up-right-from-square" slot="icon-only" aria-hidden="true" />
+                </ion-button>
+            }
             <ion-button fill="clear" (click)="openModuleSummary()" aria-haspopup="true" [ariaLabel]="'core.info' | translate">
                 <ion-icon name="fas-circle-info" slot="icon-only" aria-hidden="true" />
             </ion-button>
@@ -30,22 +32,29 @@
             [showManualCompletion]="showManualCompletion">
 
             <div class="core-module-additional-info">
-                <p *ngIf="module.handlerData?.extraBadge" class="ion-text-wrap" [innerHTML]="module.handlerData?.extraBadge">
-                </p>
+                @if (module.handlerData?.extraBadge) {
+                    <p class="ion-text-wrap" [innerHTML]="module.handlerData?.extraBadge">
+                    </p>
+                }
 
                 <!-- Hidden badges -->
-                <ion-badge color="secondary" *ngIf="module.visible === 0" class="ion-text-wrap">
-                    <ion-icon name="far-eye-slash" aria-hidden="true" />
-                    {{ 'core.course.hiddenfromstudents' | translate }}
-                </ion-badge>
-                <ion-badge color="secondary" *ngIf="module.visible !== 0 && module.isStealth" class="ion-text-wrap">
-                    <ion-icon name="fas-eye-low-vision" aria-hidden="true" />
-                    {{ 'core.course.hiddenoncoursepage' | translate }}
-                </ion-badge>
+                @if (module.visible === 0) {
+                    <ion-badge color="secondary" class="ion-text-wrap">
+                        <ion-icon name="far-eye-slash" aria-hidden="true" />
+                        {{ 'core.course.hiddenfromstudents' | translate }}
+                    </ion-badge>
+                } @else if (module.isStealth) {
+                    <ion-badge color="secondary" class="ion-text-wrap">
+                        <ion-icon name="fas-eye-low-vision" aria-hidden="true" />
+                        {{ 'core.course.hiddenoncoursepage' | translate }}
+                    </ion-badge>
+                }
             </div>
         </core-course-module-info>
 
-        <core-course-unsupported-module *ngIf="unsupported" [module]="module" />
+        @if (unsupported) {
+            <core-course-unsupported-module [module]="module" />
+        }
     </core-loading>
 
     <core-course-module-navigation collapsible-footer appearOnBottom [hidden]="!loaded" [courseId]="courseId"

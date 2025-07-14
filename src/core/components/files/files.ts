@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { toBoolean } from '@/core/transforms/boolean';
-import { Component, Input, OnInit, DoCheck, KeyValueDiffers } from '@angular/core';
+import { Component, Input, OnInit, DoCheck, inject, IterableDiffer, IterableDiffers } from '@angular/core';
 import { CoreFileEntry } from '@services/file-helper';
 
 import { CoreMimetype } from '@singletons/mimetype';
@@ -31,7 +31,6 @@ import { CoreFormatTextDirective } from '@directives/format-text';
 @Component({
     selector: 'core-files',
     templateUrl: 'core-files.html',
-    standalone: true,
     imports: [
         CoreBaseModule,
         CoreFileComponent,
@@ -53,10 +52,11 @@ export class CoreFilesComponent implements OnInit, DoCheck {
 
     contentText?: string;
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    protected differ: any; // To detect changes in the data input.
+    protected differ: IterableDiffer<CoreFileEntry>; // To detect changes in the data input.
 
-    constructor(differs: KeyValueDiffers) {
+    constructor() {
+        const differs = inject(IterableDiffers);
+
         this.differ = differs.find([]).create();
     }
 

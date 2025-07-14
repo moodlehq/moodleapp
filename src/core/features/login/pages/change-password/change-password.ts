@@ -29,7 +29,6 @@ import { CoreSharedModule } from '@/core/shared.module';
 @Component({
     selector: 'page-core-login-change-password',
     templateUrl: 'change-password.html',
-    standalone: true,
     imports: [
         CoreSharedModule,
     ],

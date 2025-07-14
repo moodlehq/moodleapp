@@ -22,7 +22,6 @@ describe('CoreUserAvatarComponent', () => {
         // Act.
         const { nativeElement } = await renderComponent(
             CoreUserAvatarComponent,
-            { standalone: true },
         );
 
         // Assert.

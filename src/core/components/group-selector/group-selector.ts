@@ -32,7 +32,6 @@ import { CoreFormatTextDirective } from '@directives/format-text';
     templateUrl: 'group-selector.html',
     styleUrl: 'group-selector.scss',
     changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: true,
     imports: [
         CoreBaseModule,
         CoreFaIconDirective,

@@ -3,6 +3,5 @@
         "ionic.ionic",
         "dbaeumer.vscode-eslint",
         "angular.ng-template",
-        "nesterenok.js-beautify-extentions",
     ]
 }

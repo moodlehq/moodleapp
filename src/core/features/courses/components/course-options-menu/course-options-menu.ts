@@ -25,11 +25,9 @@ import { CoreSharedModule } from '@/core/shared.module';
 @Component({
     selector: 'core-courses-course-options-menu',
     templateUrl: 'core-courses-course-options-menu.html',
-    standalone: true,
     imports: [
         CoreSharedModule,
     ],
-
 })
 export class CoreCoursesCourseOptionsMenuComponent implements OnInit {
 

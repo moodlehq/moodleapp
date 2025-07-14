@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, Input, Output, OnInit, OnDestroy, EventEmitter, OnChanges, SimpleChange } from '@angular/core';
+import { Component, Input, Output, OnInit, OnDestroy, EventEmitter, OnChanges, SimpleChange, inject } from '@angular/core';
 import { CoreContextMenuComponent } from '../context-menu/context-menu';
 import { toBoolean } from '@/core/transforms/boolean';
 import { CoreUtils } from '@singletons/utils';
@@ -33,7 +33,6 @@ import { CoreUtils } from '@singletons/utils';
 @Component({
     selector: 'core-context-menu-item',
     template: '',
-    standalone: true,
 })
 export class CoreContextMenuItemComponent implements OnInit, OnDestroy, OnChanges {
 
@@ -64,10 +63,9 @@ export class CoreContextMenuItemComponent implements OnInit, OnDestroy, OnChange
 
     protected hasAction = false;
     protected destroyed = false;
+    protected ctxtMenu = inject(CoreContextMenuComponent);
 
-    constructor(
-        protected ctxtMenu: CoreContextMenuComponent,
-    ) {
+    constructor() {
         this.action = new EventEmitter();
         this.onClosed = new EventEmitter();
     }

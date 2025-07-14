@@ -19,6 +19,7 @@ import {
     ElementRef,
     EventEmitter,
     HostBinding,
+    inject,
     Input,
     OnDestroy,
     Output,
@@ -47,7 +48,6 @@ import { BackButtonPriority } from '@/core/constants';
     selector: 'core-user-tours-user-tour',
     templateUrl: 'core-user-tours-user-tour.html',
     styleUrl: 'user-tour.scss',
-    standalone: true,
     imports: [
         CoreSharedModule,
     ],
@@ -74,7 +74,7 @@ export class CoreUserToursUserTourComponent implements AfterViewInit, OnDestroy 
     focusStyles?: string;
     popoverWrapperStyles?: string;
     popoverWrapperArrowStyles?: string;
-    private element: HTMLElement;
+    private element: HTMLElement = inject(ElementRef).nativeElement;
     private tour?: HTMLElement;
     private wrapperTransform = '';
     private wrapperElement = new CorePromisedValue<HTMLElement>();
@@ -86,10 +86,8 @@ export class CoreUserToursUserTourComponent implements AfterViewInit, OnDestroy 
     protected content?: HTMLIonContentElement | null;
     protected lastActivatedTime = 0;
 
-    constructor({ nativeElement: element }: ElementRef<HTMLElement>) {
-        this.element = element;
-
-        CoreDirectivesRegistry.register(element, this);
+    constructor() {
+        CoreDirectivesRegistry.register(this.element, this);
 
         this.element.addEventListener('click', (event) =>
             this.dismissOnBackOrBackdrop(event.target as HTMLElement));

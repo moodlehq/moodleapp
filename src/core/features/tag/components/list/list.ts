@@ -25,7 +25,6 @@ import { CoreSharedModule } from '@/core/shared.module';
     selector: 'core-tag-list',
     templateUrl: 'core-tag-list.html',
     styleUrl: 'list.scss',
-    standalone: true,
     imports: [
         CoreSharedModule,
     ],

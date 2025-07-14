@@ -10,11 +10,13 @@
 </div>
 
 <div #toolbar class="core-rte-toolbar" [class.toolbar-hidden]="toolbarHidden">
-    <button *ngIf="toolbarArrows" class="toolbar-arrow" [attr.disabled]="toolbarPrevHidden ? 'true' : null" (click)="toolbarPrev($event)"
-        (keyup)="toolbarPrev($event)" (mousedown)="downAction($event)" (keydown)="downAction($event)"
-        [attr.aria-label]="'core.previous' | translate" [tabindex]="toolbarPrevHidden ? -1 : 0">
-        <ion-icon name="fas-chevron-left" aria-hidden="true" />
-    </button>
+    @if (toolbarArrows) {
+        <button class="toolbar-arrow" [attr.disabled]="toolbarPrevHidden ? 'true' : null" (click)="toolbarPrev($event)"
+            (keyup)="toolbarPrev($event)" (mousedown)="downAction($event)" (keydown)="downAction($event)"
+            [attr.aria-label]="'core.previous' | translate" [tabindex]="toolbarPrevHidden ? -1 : 0">
+            <ion-icon name="fas-chevron-left" aria-hidden="true" />
+        </button>
+    }
     <swiper-container #swiperRef [slidesPerView]="swiperOpts.slidesPerView" (slidechangetransitionend)="updateToolbarArrows()">
         <!-- https://developer.mozilla.org/en-US/docs/Web/API/Document/execCommand -->
         <swiper-slide>
@@ -93,12 +95,14 @@
                 <ion-icon name="fas-eraser" aria-hidden="true" />
             </button>
         </swiper-slide>
-        <swiper-slide *ngIf="canScanQR">
-            <button [disabled]="!rteEnabled" (click)="scanQR($event)" (keyup)="scanQR($event)" (mousedown)="downAction($event)"
-                (keydown)="downAction($event)" [title]="'core.scanqr' | translate" tabindex="0">
-                <ion-icon name="fas-qrcode" aria-hidden="true" />
-            </button>
-        </swiper-slide>
+        @if (canScanQR) {
+            <swiper-slide>
+                <button [disabled]="!rteEnabled" (click)="scanQR($event)" (keyup)="scanQR($event)" (mousedown)="downAction($event)"
+                    (keydown)="downAction($event)" [title]="'core.scanqr' | translate" tabindex="0">
+                    <ion-icon name="fas-qrcode" aria-hidden="true" />
+                </button>
+            </swiper-slide>
+        }
         <swiper-slide>
             <button [attr.aria-pressed]="!rteEnabled" [title]="'core.editor.toggle' | translate" (click)="toggleEditor($event)"
                 (keyup)="toggleEditor($event)" (mousedown)="downAction($event)" (keydown)="downAction($event)" tabindex="0">
@@ -106,9 +110,11 @@
             </button>
         </swiper-slide>
     </swiper-container>
-    <button *ngIf="toolbarArrows" class="toolbar-arrow" [attr.disabled]="toolbarNextHidden ? 'true' : null"
-        [attr.aria-label]="'core.next' | translate" (click)="toolbarNext($event)" (keyup)="toolbarNext($event)"
-        (mousedown)="downAction($event)" (keydown)="downAction($event)" [tabindex]="toolbarNextHidden ? -1 : 0">
-        <ion-icon name="fas-chevron-right" aria-hidden="true" />
-    </button>
+    @if (toolbarArrows) {
+        <button class="toolbar-arrow" [attr.disabled]="toolbarNextHidden ? 'true' : null" [attr.aria-label]="'core.next' | translate"
+            (click)="toolbarNext($event)" (keyup)="toolbarNext($event)" (mousedown)="downAction($event)" (keydown)="downAction($event)"
+            [tabindex]="toolbarNextHidden ? -1 : 0">
+            <ion-icon name="fas-chevron-right" aria-hidden="true" />
+        </button>
+    }
 </div>

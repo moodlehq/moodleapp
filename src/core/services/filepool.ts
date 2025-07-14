@@ -1395,7 +1395,7 @@ export class CoreFilepoolProvider {
             const anchor = CoreUrl.getUrlAnchor(fileUrl);
 
             return finishSuccessfulDownload(url + (anchor || ''));
-        } catch (error) {
+        } catch {
             // The file is not downloaded or it's outdated.
             this.notifyFileDownloading(siteId, fileId, links);
             alreadyDownloaded = false;
@@ -1708,7 +1708,7 @@ export class CoreFilepoolProvider {
                 if (entry.extension) {
                     path += `.${entry.extension}`;
                 }
-            } catch (error) {
+            } catch {
                 // If file not found, use the path without extension.
             }
         } else if (extension) {
@@ -1776,7 +1776,7 @@ export class CoreFilepoolProvider {
                 }
 
                 files.push(fileEntry);
-            } catch (error) {
+            } catch {
                 // File not found, ignore error.
             }
         }));
@@ -1831,7 +1831,7 @@ export class CoreFilepoolProvider {
 
         try {
             file = await this.fixPluginfileURL(siteId, fileUrl, timemodified);
-        } catch (e) {
+        } catch {
             return DownloadStatus.NOT_DOWNLOADABLE;
         }
 
@@ -2411,7 +2411,7 @@ export class CoreFilepoolProvider {
             }
 
             // Entry not found. Check if it's stored with the "bugged" file ID.
-            const buggedFileId = this.getFiledIdByUrlBugged(fileUrl); // eslint-disable-line deprecation/deprecation
+            const buggedFileId = this.getFiledIdByUrlBugged(fileUrl); // eslint-disable-line @typescript-eslint/no-deprecated
             if (buggedFileId === fileId) {
                 throw error;
             }
@@ -2419,8 +2419,8 @@ export class CoreFilepoolProvider {
             const fileEntry = await this.filesTables[siteId].getOneByPrimaryKey({ fileId: buggedFileId });
 
             try {
-                await this.fixBuggedFileId(siteId, fileEntry, fileId); // eslint-disable-line deprecation/deprecation
-            } catch (error) {
+                await this.fixBuggedFileId(siteId, fileEntry, fileId); // eslint-disable-line @typescript-eslint/no-deprecated
+            } catch {
                 // Ignore errors when fixing the ID, it shouldn't happen.
             }
 
@@ -2905,7 +2905,7 @@ export class CoreFilepoolProvider {
             if (entry.extension) {
                 path += `.${entry.extension}`;
             }
-        } catch (error) {
+        } catch {
             // If file not found, use the path without extension.
         }
 
@@ -3107,7 +3107,7 @@ export class CoreFilepoolProvider {
             }
 
             previousStatus = entry.status;
-        } catch (error) {
+        } catch {
             // No previous status.
         }
 
