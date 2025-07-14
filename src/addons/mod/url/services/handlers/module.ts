@@ -171,7 +171,7 @@ export class AddonModUrlModuleHandlerService extends CoreModuleHandlerBase imple
                 module,
                 undefined,
                 undefined,
-                true,
+                false,
                 false,
                 undefined,
                 'url',
