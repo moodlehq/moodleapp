@@ -348,7 +348,11 @@ export class AddonNotificationsProvider {
             useridto: CoreSites.getCurrentSiteUserId(),
         };
 
-        return site.write<boolean>('core_message_mark_all_notifications_as_read', params);
+        const preSets: CoreSiteWSPreSets = {
+            typeExpected: 'boolean',
+        };
+
+        return site.write<boolean>('core_message_mark_all_notifications_as_read', params, preSets);
     }
 
     /**
