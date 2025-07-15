@@ -1,6 +1,6 @@
 /** Format Text - Show more styles. */
 /** Styles of elements inside the directive should be placed in format-text.scss */
-@use "theme/globals.variables" as global;
+@use "../globals.variables" as global;
 @use "sass:math";
 
 core-format-text {
@@ -212,6 +212,9 @@ core-format-text {
 core-format-text,
 .item core-format-text,
 core-rich-text-editor .core-rte-editor {
+    @import "atto";
+    @import "bootstrap/bootstrap";
+
     @include core-headings();
 
     p, ul, ol, li {
@@ -366,9 +369,6 @@ core-rich-text-editor .core-rte-editor {
         flex-shrink: 0;
     }
 
-    @import "theme/components/atto";
-    @import "theme/components/moodle";
-    @import "theme/components/bootstrap/bootstrap";
 }
 
 // h1 is too big and ugly, reduce size when loading.
