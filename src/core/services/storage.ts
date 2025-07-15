@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { inject, Injectable } from '@angular/core';
+import { Inject, Injectable, Optional } from '@angular/core';
 
 import { AsyncInstance, asyncInstance } from '@/core/utils/async-instance';
 import { CoreAppDB } from './app-db';
@@ -39,11 +39,10 @@ export class CoreStorageService {
 
     table: AsyncInstance<CoreStorageTable>;
 
-    constructor() {
-        // Retrieving the value using the same token instance
-        const lazyTableConstructor =
-            inject<() => Promise<CoreStorageTable>>(NULL_INJECTION_TOKEN, {
-                optional: true }) || undefined;
+    // eslint-disable-next-line @angular-eslint/prefer-inject
+    constructor(@Optional() @Inject(NULL_INJECTION_TOKEN) lazyTableConstructor?: () => Promise<CoreStorageTable>) {
+        // @todo: Inject the NullInjectionToken inside the constructor.
+        // This change can make the service fail so we need to be careful and test it properly.
 
         this.table = asyncInstance(lazyTableConstructor);
     }
