@@ -147,6 +147,7 @@
         "cordova-plugin-moodleapp": "file:cordova-plugin-moodleapp",
         "cross-env": "^7.0.3",
         "es-check": "^9.1.4",
+        "es6-promise-plugin": "^4.2.2",
         "eslint": "^9.30.1",
         "eslint-plugin-header": "^3.1.1",
         "eslint-plugin-jest": "^28.14.0",
