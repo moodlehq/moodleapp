@@ -1,3 +1,5 @@
+@use "../../globals" as global;
+
 @import "mixins/banner";
 @include bsBanner("");
 
@@ -50,3 +52,5 @@
 // Utilities
 @import "utilities/api";
 // scss-docs-end import-stack
+
+@import "bs4-compat";

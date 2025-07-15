@@ -6,6 +6,8 @@
  */
 
 @mixin dark-palette() {
+    color-scheme: dark;
+
     & {
         // Ionic shades, defined for ionic internal use.
         --ion-background-color-step-0:    var(--black);
