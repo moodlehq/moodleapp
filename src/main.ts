@@ -22,7 +22,7 @@ import { CoreModule } from '@/core/core.module';
 import { AppRoutingModule } from './app/app-routing.module';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 import { TranslateModule, TranslateLoader } from '@ngx-translate/core';
-import { withInterceptorsFromDi, provideHttpClient, HttpClient } from '@angular/common/http';
+import { provideHttpClient, HttpClient, withInterceptors } from '@angular/common/http';
 import { moodleTransitionAnimation } from '@classes/page-transition';
 import { provideAnimations } from '@angular/platform-browser/animations';
 import { BrowserModule, bootstrapApplication } from '@angular/platform-browser';
@@ -30,6 +30,7 @@ import { CoreSiteInfoCronHandler } from '@services/handlers/site-info-cron';
 import { CoreCronDelegate } from '@services/cron';
 import { IonicRouteStrategy, IonicModule } from '@ionic/angular';
 import { RouteReuseStrategy } from '@angular/router';
+import { coreInterceptorFn } from '@classes/interceptor';
 
 if (CoreConstants.BUILD.isProduction) {
     enableProdMode();
@@ -72,7 +73,7 @@ bootstrapApplication(AppComponent, {
         }),
         provideAnimations(),
         // HttpClient is used to make JSON requests. It fails for HEAD requests because there is no content.
-        provideHttpClient(withInterceptorsFromDi()),
+        provideHttpClient(withInterceptors([coreInterceptorFn])),
     ],
 }).catch(err => {
     // eslint-disable-next-line no-console
