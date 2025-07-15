@@ -1,53 +1,52 @@
-@use "theme/globals" as global;
+@import "mixins/banner";
+@include bsBanner("");
 
-// Bootstrap 4 Styles
-// -------------------------
 
+// scss-docs-start import-stack
+// Configuration
 @import "functions";
 @import "variables";
+@import "variables-dark";
+@import "maps";
 @import "mixins";
-
-@import "reboot";
-
-@import "grid";
-@import "forms";
-@import "buttons";
-@import "card";
-@import "badge";
-@import "alert";
-@import "media";
-@import "close";
-
 @import "utilities";
 
-// Bootstrap 5 Styles
-// -------------------------
-@import "bs5-bridge";
+// Layout & components
+@import "root";
+@import "reboot";
+@import "type";
+@import "images";
+@import "containers";
+@import "grid";
+@import "tables";
+@import "forms";
+@import "buttons";
+@import "transitions";
+@import "dropdown";
+@import "button-group";
+@import "nav";
+@import "navbar";
+@import "card";
+@import "accordion";
+@import "breadcrumb";
+@import "pagination";
+@import "badge";
+@import "alert";
+@import "progress";
+@import "list-group";
+@import "close";
+@import "toasts";
+@import "modal";
+@import "tooltip";
+@import "popover";
+@import "carousel";
+@import "spinners";
+@import "offcanvas";
+@import "placeholders";
 
+// Helpers
+@import "helpers";
 
-// Deprecated styles.
-.label {
-    display: inline-block;
-    padding: .25em .4em;
-    font-size: 75%;
-    font-weight: 700;
-    line-height: 1.1;
-    text-align: center;
-    white-space: nowrap;
-    vertical-align: baseline;
-    transition: color .15s ease-in-out,background-color .15s ease-in-out,border-color .15s ease-in-out,box-shadow .15s ease-in-out;
-    color: var(--white);
-    background-color: var(--medium);
-}
-
-.label-important {
-    color: var(--danger-contrast);
-    background-color: var(--danger);
-}
-
-@each $color-name, $unused in global.$colors {
-    .label-#{$color-name} {
-        color: var(--#{$color-name}-contrast);
-        background-color: var(--#{$color-name});
-    }
-}
+// Utilities
+@import "utilities/api";
+// scss-docs-end import-stack
