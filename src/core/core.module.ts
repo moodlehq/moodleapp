@@ -12,12 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { ApplicationInitStatus, Injector, NgModule, Type } from '@angular/core';
 
 import { CoreApplicationInitStatus } from './classes/application-init-status';
 import { CoreFeaturesModule } from './features/features.module';
-import { CoreInterceptor } from './classes/interceptor';
 import { getDatabaseProviders } from './services/database';
 import { getInitializerProviders } from './initializers';
 
@@ -146,7 +144,6 @@ export async function getCoreExportedObjects(): Promise<Record<string, unknown>>
         CoreFeaturesModule,
     ],
     providers: [
-        { provide: HTTP_INTERCEPTORS, useClass: CoreInterceptor, multi: true },
         { provide: ApplicationInitStatus, useClass: CoreApplicationInitStatus, deps: [Injector] },
         ...getDatabaseProviders(),
         ...getInitializerProviders(),

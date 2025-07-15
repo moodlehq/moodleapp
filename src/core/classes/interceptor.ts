@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
-import { HttpInterceptor, HttpHandler, HttpRequest } from '@angular/common/http';
+import { HttpRequest, HttpEvent, HttpInterceptorFn, HttpHandlerFn } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
 /**
@@ -21,7 +21,7 @@ import { Observable } from 'rxjs';
  * and serializes the parameters if needed.
  */
 @Injectable()
-export class CoreInterceptor implements HttpInterceptor {
+export class CoreInterceptor {
 
     /**
      * Serialize an object to be used in a request.
@@ -61,17 +61,23 @@ export class CoreInterceptor implements HttpInterceptor {
         return query.length ? query.substring(0, query.length - 1) : query;
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    intercept(req: HttpRequest<any>, next: HttpHandler): Observable<any> {
-        // Add the header and serialize the body if needed.
-        const newReq = req.clone({
-            headers: req.headers.set('Content-Type', 'application/x-www-form-urlencoded'),
-            body: typeof req.body === 'object' && String(req.body) != '[object File]' ?
-                CoreInterceptor.serialize(req.body) : req.body,
-        });
-
-        // Pass on the cloned request instead of the original request.
-        return next.handle(newReq);
-    }
-
 }
+
+/**
+ * Interceptor function to be used with Angular's HttpClient.
+ * This function adds the 'Content-Type' header and serializes the body if needed.
+ *
+ * @inheritdoc
+ */
+export const coreInterceptorFn: HttpInterceptorFn =
+    (req: HttpRequest<unknown>, next: HttpHandlerFn): Observable<HttpEvent<unknown>> => {
+    // Add the header and serialize the body if needed.
+    const newReq = req.clone({
+        headers: req.headers.set('Content-Type', 'application/x-www-form-urlencoded'),
+        body: typeof req.body === 'object' && String(req.body) !== '[object File]' ?
+            CoreInterceptor.serialize(req.body) : req.body,
+    });
+
+    // Pass on the cloned request instead of the original request.
+    return next(newReq);
+};
