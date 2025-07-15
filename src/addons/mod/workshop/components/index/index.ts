@@ -104,11 +104,11 @@ export class AddonModWorkshopIndexComponent extends CoreCourseModuleMainActivity
     canAssess = false;
     hasNextPage = false;
 
-    readonly PHASE_SETUP = AddonModWorkshopPhase.PHASE_SETUP;
-    readonly PHASE_SUBMISSION = AddonModWorkshopPhase.PHASE_SUBMISSION;
-    readonly PHASE_ASSESSMENT = AddonModWorkshopPhase.PHASE_ASSESSMENT;
-    readonly PHASE_EVALUATION = AddonModWorkshopPhase.PHASE_EVALUATION;
-    readonly PHASE_CLOSED = AddonModWorkshopPhase.PHASE_CLOSED;
+    phaseSetup = AddonModWorkshopPhase.PHASE_SETUP;
+    phaseSubmission = AddonModWorkshopPhase.PHASE_SUBMISSION;
+    phaseAssessment = AddonModWorkshopPhase.PHASE_ASSESSMENT;
+    phaseEvaluation = AddonModWorkshopPhase.PHASE_EVALUATION;
+    phaseClosed = AddonModWorkshopPhase.PHASE_CLOSED;
 
     protected offlineSubmissions: AddonModWorkshopOfflineSubmission[] = [];
     protected obsSubmissionChanged: CoreEventObserver;

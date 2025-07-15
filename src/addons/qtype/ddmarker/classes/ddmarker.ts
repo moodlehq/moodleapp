@@ -29,7 +29,7 @@ import { ElementRef } from '@angular/core';
  */
 export class AddonQtypeDdMarkerQuestion {
 
-    protected readonly COLOURS = ['#FFFFFF', '#B0C4DE', '#DCDCDC', '#D8BFD8', '#87CEFA', '#DAA520', '#FFD700', '#F0E68C'];
+    protected static readonly COLOURS = ['#FFFFFF', '#B0C4DE', '#DCDCDC', '#D8BFD8', '#87CEFA', '#DAA520', '#FFD700', '#F0E68C'];
 
     protected logger: CoreLogger;
     protected afterImageLoadDone = false;
@@ -593,11 +593,11 @@ export class AddonQtypeDdMarkerQuestion {
      * @returns Colour.
      */
     getNextColour(): string {
-        const colour = this.COLOURS[this.nextColourIndex];
+        const colour = AddonQtypeDdMarkerQuestion.COLOURS[this.nextColourIndex];
         this.nextColourIndex++;
 
         // If we reached the end of the list, start again.
-        if (this.nextColourIndex === this.COLOURS.length) {
+        if (this.nextColourIndex === AddonQtypeDdMarkerQuestion.COLOURS.length) {
             this.nextColourIndex = 0;
         }
 

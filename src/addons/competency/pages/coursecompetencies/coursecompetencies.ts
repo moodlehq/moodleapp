@@ -75,7 +75,7 @@ export default class AddonCompetencyCourseCompetenciesPage implements OnInit, On
     }
 
     get courseId(): number {
-        return this.competencies.getSource().COURSE_ID;
+        return this.competencies.getSource().courseId;
     }
 
     get user(): CoreUserProfile | undefined {
@@ -164,7 +164,7 @@ export default class AddonCompetencyCourseCompetenciesPage implements OnInit, On
      */
     protected performLogView(): void {
         const source = this.competencies.getSource();
-        if (source.USER_ID && source.USER_ID !== CoreSites.getCurrentSiteUserId()) {
+        if (source.userId && source.userId !== CoreSites.getCurrentSiteUserId()) {
             // Only log event when viewing own competencies. In LMS viewing students competencies uses a different view.
             return;
         }
@@ -175,9 +175,9 @@ export default class AddonCompetencyCourseCompetenciesPage implements OnInit, On
             name: Translate.instant('addon.competency.coursecompetencies'),
             data: {
                 category: 'competency',
-                courseid: source.COURSE_ID,
+                courseid: source.courseId,
             },
-            url: `/admin/tool/lp/coursecompetencies.php?courseid=${source.COURSE_ID}`,
+            url: `/admin/tool/lp/coursecompetencies.php?courseid=${source.courseId}`,
         });
     }
 

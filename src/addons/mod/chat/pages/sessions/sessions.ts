@@ -50,14 +50,14 @@ export default class AddonModChatSessionsPage implements OnInit, AfterViewInit, 
         this.logView = CoreTime.once(async () => {
             const source = this.sessions.getSource();
 
-            await CorePromiseUtils.ignoreErrors(AddonModChat.logViewSessions(this.sessions.getSource().CM_ID));
+            await CorePromiseUtils.ignoreErrors(AddonModChat.logViewSessions(this.sessions.getSource().cmId));
 
             CoreAnalytics.logEvent({
                 type: CoreAnalyticsEventType.VIEW_ITEM_LIST,
                 ws: 'mod_chat_view_sessions',
                 name: Translate.instant('addon.mod_chat.chatreport'),
-                data: { chatid: source.CHAT_ID, category: 'chat' },
-                url: `/mod/chat/report.php?id=${source.CM_ID}`,
+                data: { chatid: source.chatId, category: 'chat' },
+                url: `/mod/chat/report.php?id=${source.cmId}`,
             });
         });
     }

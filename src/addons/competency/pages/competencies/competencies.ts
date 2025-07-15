@@ -110,7 +110,7 @@ export default class AddonCompetencyCompetenciesPage implements AfterViewInit, O
             } else {
                 this.title = Translate.instant('addon.competency.coursecompetencies');
                 this.contextLevel = ContextLevel.COURSE;
-                this.contextInstanceId = source.COURSE_ID;
+                this.contextInstanceId = source.courseId;
             }
 
             this.logView();
@@ -153,15 +153,15 @@ export default class AddonCompetencyCompetenciesPage implements AfterViewInit, O
                 name: this.title,
                 data: {
                     category: 'competency',
-                    planid: source.PLAN_ID,
+                    planid: source.planId,
                 },
-                url: `/admin/tool/lp/plan.php?id=${source.PLAN_ID}`,
+                url: `/admin/tool/lp/plan.php?id=${source.planId}`,
             });
 
             return;
         }
 
-        if (source.USER_ID && source.USER_ID !== CoreSites.getCurrentSiteUserId()) {
+        if (source.userId && source.userId !== CoreSites.getCurrentSiteUserId()) {
             // Only log event when viewing own competencies. In LMS viewing students competencies uses a different view.
             return;
         }
@@ -172,9 +172,9 @@ export default class AddonCompetencyCompetenciesPage implements AfterViewInit, O
             name: this.title,
             data: {
                 category: 'competency',
-                courseid: source.COURSE_ID,
+                courseid: source.courseId,
             },
-            url: `/admin/tool/lp/coursecompetencies.php?courseid=${source.COURSE_ID}`,
+            url: `/admin/tool/lp/coursecompetencies.php?courseid=${source.courseId}`,
         });
     }
 

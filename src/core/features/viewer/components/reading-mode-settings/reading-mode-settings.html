@@ -15,14 +15,14 @@
         <div slot="end">{{settings.zoom}}% @if (defaultZoom) { {{ 'core.viewer.default' | translate }} }</div>
     </ion-item>
     <ion-item lines="full">
-        <ion-range aria-labelledby="readingmode-range-label" [min]="MIN_TEXT_SIZE_ZOOM" [max]="MAX_TEXT_SIZE_ZOOM"
-            [step]="TEXT_SIZE_ZOOM_STEP" [value]="settings.zoom" (ionInput)="changeTextSizeZoom($event.detail.value)">
+        <ion-range aria-labelledby="readingmode-range-label" [min]="minTextSizeZoom" [max]="maxTextSizeZoom"
+            [step]="textSizeZoomStep" [value]="settings.zoom" (ionInput)="changeTextSizeZoom($event.detail.value)">
             <ion-button slot="start" fill="clear" [ariaLabel]="'core.viewer.decreasetextsize' | translate"
-                (click)="changeTextSizeZoom(settings.zoom - TEXT_SIZE_ZOOM_STEP)">
+                (click)="changeTextSizeZoom(settings.zoom - textSizeZoomStep)">
                 <ion-icon name="fas-font" slot="icon-only" aria-hidden="true" class="zoom-decrease" />
             </ion-button>
             <ion-button slot="end" fill="clear" [ariaLabel]="'core.viewer.increasetextsize' | translate"
-                (click)="changeTextSizeZoom(settings.zoom + TEXT_SIZE_ZOOM_STEP)">
+                (click)="changeTextSizeZoom(settings.zoom + textSizeZoomStep)">
                 <ion-icon name="fas-font" slot="icon-only" aria-hidden="true" class="zoom-increase" />
             </ion-button>
         </ion-range>

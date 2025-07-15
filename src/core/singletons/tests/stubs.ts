@@ -23,7 +23,7 @@ export class Galaxy {
 export class MilkyWayService extends Galaxy {
 
     exists?: boolean;
-    readonly MEANING_OF_LIFE = 42;
+    readonly meaningOfLife = 42;
 
     private years = 0;
 
@@ -34,7 +34,7 @@ export class MilkyWayService extends Galaxy {
     }
 
     getTheMeaningOfLife(): number {
-        return this.MEANING_OF_LIFE;
+        return this.meaningOfLife;
     }
 
     addYears(years: number): number {

@@ -66,8 +66,8 @@ interface WebkitWindow {
      */
     // eslint-disable-next-line @typescript-eslint/naming-convention
     LocalFileSystem: {
-        readonly TEMPORARY: number;
-        readonly PERSISTENT: number;
+        readonly TEMPORARY: number; // eslint-disable-line @typescript-eslint/naming-convention
+        readonly PERSISTENT: number; // eslint-disable-line @typescript-eslint/naming-convention
     };
 
     /**
