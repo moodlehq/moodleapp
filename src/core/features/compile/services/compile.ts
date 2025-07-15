@@ -147,17 +147,17 @@ export class CoreCompileProvider {
     protected logger = CoreLogger.getInstance('CoreCompileProvider');
 
     // Other Ionic/Angular providers that don't depend on where they are injected.
-    protected readonly OTHER_SERVICES: unknown[] = [
+    protected static readonly OTHER_SERVICES: unknown[] = [
         TranslateService, HttpClient, DomSanitizer, ActionSheetController, AlertController, LoadingController,
         ModalController, PopoverController, ToastController, FormBuilder,
     ];
 
     // List of imports for dynamic module. Since the template can have any component we need to import all core components modules.
-    protected readonly IMPORTS = [
+    protected static readonly IMPORTS = [
         CoreSharedModule,
     ];
 
-    protected readonly LAZY_IMPORTS = [
+    protected static readonly LAZY_IMPORTS = [
         getBlockExportedDirectives,
         getCoreDeprecatedComponents,
         getCourseExportedDirectives,
@@ -194,10 +194,10 @@ export class CoreCompileProvider {
         // Import the Angular compiler to be able to compile components in runtime.
         await import('@angular/compiler');
 
-        const lazyImports = await Promise.all(this.LAZY_IMPORTS.map(getModules => getModules()));
+        const lazyImports = await Promise.all(CoreCompileProvider.LAZY_IMPORTS.map(getModules => getModules()));
         const imports = [
             ...lazyImports.flat(),
-            ...this.IMPORTS,
+            ...CoreCompileProvider.IMPORTS,
             ...extraImports,
         ];
 
@@ -414,7 +414,7 @@ export class CoreCompileProvider {
         return [
             ...lazyLibraries,
             CoreAutoLogoutService,
-            ...this.OTHER_SERVICES,
+            ...CoreCompileProvider.OTHER_SERVICES,
         ];
     }
 

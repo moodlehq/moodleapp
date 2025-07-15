@@ -32,14 +32,14 @@ export class CoreUserParticipantsSource extends CoreRoutedItemsManagerSource<Cor
         return `participants-${courseId}-${searchQuery}`;
     }
 
-    readonly COURSE_ID: number;
-    readonly SEARCH_QUERY: string | null;
+    readonly courseId: number;
+    readonly searchQuery: string | null;
 
     constructor(courseId: number, searchQuery: string | null = null) {
         super();
 
-        this.COURSE_ID = courseId;
-        this.SEARCH_QUERY = searchQuery;
+        this.courseId = courseId;
+        this.searchQuery = searchQuery;
     }
 
     /**
@@ -53,7 +53,7 @@ export class CoreUserParticipantsSource extends CoreRoutedItemsManagerSource<Cor
      * @inheritdoc
      */
     getItemQueryParams(): Params {
-        return { search: this.SEARCH_QUERY };
+        return { search: this.searchQuery };
     }
 
     /**
@@ -62,10 +62,10 @@ export class CoreUserParticipantsSource extends CoreRoutedItemsManagerSource<Cor
     protected async loadPageItems(
         page: number,
     ): Promise<{ items: (CoreUserParticipant | CoreUserDescriptionExporter)[]; hasMoreItems: boolean }> {
-        if (this.SEARCH_QUERY) {
+        if (this.searchQuery) {
             const { participants, canLoadMore } = await CoreUser.searchParticipants(
-                this.COURSE_ID,
-                this.SEARCH_QUERY,
+                this.courseId,
+                this.searchQuery,
                 true,
                 page,
                 CORE_USER_PARTICIPANTS_LIST_LIMIT,
@@ -78,7 +78,7 @@ export class CoreUserParticipantsSource extends CoreRoutedItemsManagerSource<Cor
         }
 
         const { participants, canLoadMore } = await CoreUser.getParticipants(
-            this.COURSE_ID,
+            this.courseId,
             page * CORE_USER_PARTICIPANTS_LIST_LIMIT,
             CORE_USER_PARTICIPANTS_LIST_LIMIT,
         );

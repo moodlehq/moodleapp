@@ -29,9 +29,9 @@ import { ADDON_MOD_GLOSSARY_LIMIT_ENTRIES } from '../constants';
  */
 export class AddonModGlossaryEntriesSource extends CoreRoutedItemsManagerSource<AddonModGlossaryEntryItem> {
 
-    readonly COURSE_ID: number;
-    readonly CM_ID: number;
-    readonly GLOSSARY_PATH_PREFIX: string;
+    readonly courseId: number;
+    readonly cmId: number;
+    readonly glossaryPathPrefix: string;
 
     isSearch = false;
     hasSearched = false;
@@ -47,9 +47,9 @@ export class AddonModGlossaryEntriesSource extends CoreRoutedItemsManagerSource<
     constructor(courseId: number, cmId: number, glossaryPathPrefix: string) {
         super();
 
-        this.COURSE_ID = courseId;
-        this.CM_ID = cmId;
-        this.GLOSSARY_PATH_PREFIX = glossaryPathPrefix;
+        this.courseId = courseId;
+        this.cmId = cmId;
+        this.glossaryPathPrefix = glossaryPathPrefix;
     }
 
     /**
@@ -77,10 +77,10 @@ export class AddonModGlossaryEntriesSource extends CoreRoutedItemsManagerSource<
      */
     getItemPath(entry: AddonModGlossaryEntryItem): string {
         if (this.isOfflineEntry(entry)) {
-            return `${this.GLOSSARY_PATH_PREFIX}entry/new-${entry.timecreated}`;
+            return `${this.glossaryPathPrefix}entry/new-${entry.timecreated}`;
         }
 
-        return `${this.GLOSSARY_PATH_PREFIX}entry/${entry.id}`;
+        return `${this.glossaryPathPrefix}entry/${entry.id}`;
     }
 
     /**
@@ -88,8 +88,8 @@ export class AddonModGlossaryEntriesSource extends CoreRoutedItemsManagerSource<
      */
     getItemQueryParams(): Params {
         return {
-            cmId: this.CM_ID,
-            courseId: this.COURSE_ID,
+            cmId: this.cmId,
+            courseId: this.courseId,
         };
     }
 
@@ -152,7 +152,7 @@ export class AddonModGlossaryEntriesSource extends CoreRoutedItemsManagerSource<
      * Load glossary.
      */
     async loadGlossary(): Promise<void> {
-        this.glossary = await AddonModGlossary.getGlossary(this.COURSE_ID, this.CM_ID);
+        this.glossary = await AddonModGlossary.getGlossary(this.courseId, this.cmId);
     }
 
     /**
@@ -163,7 +163,7 @@ export class AddonModGlossaryEntriesSource extends CoreRoutedItemsManagerSource<
     async invalidateCache(invalidateGlossary: boolean = true): Promise<void> {
         await Promise.all<unknown>([
             this.fetchInvalidate && this.fetchInvalidate(),
-            invalidateGlossary && AddonModGlossary.invalidateCourseGlossaries(this.COURSE_ID),
+            invalidateGlossary && AddonModGlossary.invalidateCourseGlossaries(this.courseId),
             invalidateGlossary && this.glossary && AddonModGlossary.invalidateCategories(this.glossary.id),
         ]);
     }
@@ -245,7 +245,7 @@ export class AddonModGlossaryEntriesSource extends CoreRoutedItemsManagerSource<
         }
 
         const from = page * this.getPageLength();
-        const pageEntries = await fetchFunction({ from, cmId: this.CM_ID });
+        const pageEntries = await fetchFunction({ from, cmId: this.cmId });
 
         entries.push(...pageEntries.entries);
 

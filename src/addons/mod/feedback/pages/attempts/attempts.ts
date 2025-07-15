@@ -64,7 +64,7 @@ export default class AddonModFeedbackAttemptsPage implements AfterViewInit, OnDe
                 ws: 'mod_feedback_get_responses_analysis',
                 name: source.feedback.name,
                 data: { feedbackid: source.feedback.id, category: 'feedback' },
-                url: `/mod/feedback/show_entries.php?id=${source.CM_ID}`,
+                url: `/mod/feedback/show_entries.php?id=${source.cmId}`,
             });
         });
     }

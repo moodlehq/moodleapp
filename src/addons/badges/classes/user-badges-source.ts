@@ -21,14 +21,14 @@ import { AddonBadges, AddonBadgesUserBadge } from '../services/badges';
  */
 export class AddonBadgesUserBadgesSource extends CoreRoutedItemsManagerSource<AddonBadgesUserBadge> {
 
-    readonly COURSE_ID: number;
-    readonly USER_ID: number;
+    readonly courseId: number;
+    readonly userId: number;
 
     constructor(courseId: number, userId: number) {
         super();
 
-        this.COURSE_ID = courseId;
-        this.USER_ID = userId;
+        this.courseId = courseId;
+        this.userId = userId;
     }
 
     /**
@@ -43,8 +43,8 @@ export class AddonBadgesUserBadgesSource extends CoreRoutedItemsManagerSource<Ad
      */
     getItemQueryParams(): Params {
         return {
-            courseId: this.COURSE_ID,
-            userId: this.USER_ID,
+            courseId: this.courseId,
+            userId: this.userId,
         };
     }
 
@@ -52,7 +52,7 @@ export class AddonBadgesUserBadgesSource extends CoreRoutedItemsManagerSource<Ad
      * @inheritdoc
      */
     protected async loadPageItems(): Promise<{ items: AddonBadgesUserBadge[] }> {
-        const badges = await AddonBadges.getUserBadges(this.COURSE_ID, this.USER_ID);
+        const badges = await AddonBadges.getUserBadges(this.courseId, this.userId);
 
         return { items: badges };
     }

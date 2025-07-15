@@ -31,12 +31,12 @@ export class AddonCompetencyPlansSource extends CoreRoutedItemsManagerSource<Add
         return userId ? String(userId) : 'current-user';
     }
 
-    readonly USER_ID?: number;
+    readonly userId?: number;
 
     constructor(userId?: number) {
         super();
 
-        this.USER_ID = userId;
+        this.userId = userId;
     }
 
     /**
@@ -50,8 +50,8 @@ export class AddonCompetencyPlansSource extends CoreRoutedItemsManagerSource<Add
      * @inheritdoc
      */
     getItemQueryParams(): Params {
-        if (this.USER_ID) {
-            return { userId: this.USER_ID };
+        if (this.userId) {
+            return { userId: this.userId };
         }
 
         return {};
@@ -61,14 +61,14 @@ export class AddonCompetencyPlansSource extends CoreRoutedItemsManagerSource<Add
      * Invalidate learning plans cache.
      */
     async invalidateCache(): Promise<void> {
-        await AddonCompetency.invalidateLearningPlans(this.USER_ID);
+        await AddonCompetency.invalidateLearningPlans(this.userId);
     }
 
     /**
      * @inheritdoc
      */
     protected async loadPageItems(): Promise<{ items: AddonCompetencyPlanFormatted[] }> {
-        const plans = await AddonCompetency.getLearningPlans(this.USER_ID);
+        const plans = await AddonCompetency.getLearningPlans(this.userId);
 
         plans.forEach((plan: AddonCompetencyPlanFormatted) => {
             plan.statusname = AddonCompetencyHelper.getPlanStatusName(plan.status);
