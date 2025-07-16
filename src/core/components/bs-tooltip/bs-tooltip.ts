@@ -24,6 +24,7 @@ import { ContextLevel } from '@/core/constants';
 @Component({
     selector: 'core-bs-tooltip',
     templateUrl: 'core-bs-tooltip.html',
+    styleUrl: 'core-bs-tooltip.scss',
     imports: [
         CoreBaseModule,
         CoreFormatTextDirective,
@@ -35,6 +36,7 @@ export class CoreBSTooltipComponent {
     readonly content = input('');
     readonly formatTextOptions = input<CoreFormatTextOptions>();
     readonly html = input(false, { transform: toBoolean });
+    readonly item = input(true, { transform: toBoolean });
 
 }
 
