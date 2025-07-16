@@ -40,7 +40,7 @@ export class CoreCourseOverviewItemCompletionComponent {
     readonly activity = input.required<CoreCourseOverviewActivity>();
     readonly item = input.required<CoreCourseOverviewItem<CoreCourseModuleWSCompletionData>>();
 
-    protected completion = signal<CoreCourseModuleCompletionData|undefined>(undefined);
+    protected readonly completion = signal<CoreCourseModuleCompletionData|undefined>(undefined);
 
     constructor() {
         effect(async () => {
