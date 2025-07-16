@@ -237,6 +237,9 @@ ion-app {
 .text-gray {
     color: var(--gray-500);
 }
+.text-dimmed {
+    opacity: .7;
+}
 
 // Wait to load before showing the image.
 img[core-external-content]:not([src]) {

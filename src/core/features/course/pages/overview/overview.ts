@@ -270,7 +270,7 @@ export default class CoreCourseOverviewPage implements OnInit {
                 return {
                     ...item,
                     component: 'component' in content ? content.component : null,
-                    componentData: {
+                    componentData: ('componentData' in content ? content.componentData : undefined) ?? {
                         courseId: this.courseId,
                         activity,
                         item,

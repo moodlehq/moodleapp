@@ -31,7 +31,12 @@ import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
 import { CoreCacheUpdateFrequency, CoreConstants } from '@/core/constants';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreTextFormat } from '@singletons/text';
-import { CORE_USER_PROFILE_REFRESHED, CORE_USER_PROFILE_PICTURE_UPDATED, CORE_USER_PARTICIPANTS_LIST_LIMIT } from '../constants';
+import {
+    CORE_USER_PROFILE_REFRESHED,
+    CORE_USER_PROFILE_PICTURE_UPDATED,
+    CORE_USER_PARTICIPANTS_LIST_LIMIT,
+    CORE_USER_TF_12, CORE_USER_TF_24,
+} from '../constants';
 
 declare module '@singletons/events' {
 
@@ -229,6 +234,35 @@ export class CoreUserProvider {
      */
     protected getParticipantsListCacheKey(courseId: number): string {
         return `${CoreUserProvider.ROOT_CACHE_KEY}list:${courseId}`;
+    }
+
+    /**
+     * Get the preferred time format to use when printing times.
+     *
+     * @param siteId ID of the site. If not defined, use current site.
+     * @returns Promise resolved with the format.
+     */
+    async getPreferredTimeFormat(siteId?: string): Promise<string> {
+        const site = await CoreSites.getSite(siteId);
+        let format: string | undefined | null;
+
+        try {
+            format = await CoreUser.getUserPreference('calendar_timeformat');
+        } catch {
+            // Ignore errors.
+        }
+
+        if (!format || format === '0') {
+            format = site.getStoredConfig('calendar_site_timeformat');
+        }
+
+        if (format === CORE_USER_TF_12) {
+            format = Translate.instant('core.strftimetime12');
+        } else if (format === CORE_USER_TF_24) {
+            format = Translate.instant('core.strftimetime24');
+        }
+
+        return format && format !== '0' ? format : Translate.instant('core.strftimetime');
     }
 
     /**

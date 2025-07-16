@@ -17,7 +17,6 @@ import { CoreCourseModuleHelper } from '../services/course-module-helper';
 import { CoreCourseModuleData } from '../services/course-helper';
 import { CoreCourseModuleHandler, CoreCourseModuleHandlerData, CoreCourseOverviewItemContent } from '../services/module-delegate';
 import { CoreCourseOverviewItem } from '../services/course-overview';
-import { CoreTime } from '@singletons/time';
 
 /**
  * Base module handler to be registered.
@@ -122,8 +121,13 @@ export class CoreModuleHandlerBase implements Partial<CoreCourseModuleHandler> {
         }
 
         if (item.contenttype === 'core_calendar\\output\\humandate' && Number(item.parsedData.timestamp)) {
+            const { CoreHumanDateComponent } = await import('@components/human-date/human-date');
+
             return {
-                content: CoreTime.userDate(Number(item.parsedData.timestamp) * 1000),
+                component: CoreHumanDateComponent,
+                componentData: {
+                    timestamp: Number(item.parsedData.timestamp) * 1000,
+                },
             };
         }
 
