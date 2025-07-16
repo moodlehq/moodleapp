@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, effect, input, signal } from '@angular/core';
 import { CoreSharedModule } from '@/core/shared.module';
 import { CoreCourseModuleWSCompletionData } from '@features/course/services/course';
 import { CoreCourseModuleCompletionComponent } from '../module-completion/module-completion';
@@ -34,30 +34,29 @@ import { CoreCourseOverview, CoreCourseOverviewActivity, CoreCourseOverviewItem 
         CoreCourseModuleCompletionComponent,
     ],
 })
-export class CoreCourseOverviewItemCompletionComponent implements OnChanges {
+export class CoreCourseOverviewItemCompletionComponent {
 
-    // Don't use signal inputs yet because core-dynamic-component still isn't adapted to use them.
-    @Input({ required: true }) courseId!: number;
-    @Input({ required: true }) activity!: CoreCourseOverviewActivity;
-    @Input({ required: true }) item!: CoreCourseOverviewItem<CoreCourseModuleWSCompletionData>;
+    readonly courseId = input.required<number>();
+    readonly activity = input.required<CoreCourseOverviewActivity>();
+    readonly item = input.required<CoreCourseOverviewItem<CoreCourseModuleWSCompletionData>>();
 
-    protected completion?: CoreCourseModuleCompletionData;
+    protected completion = signal<CoreCourseModuleCompletionData|undefined>(undefined);
 
-    /**
-     * @inheritdoc
-     */
-    async ngOnChanges(changes: SimpleChanges): Promise<void> {
-        if (!changes.item || !this.item) {
-            return;
-        }
+    constructor() {
+        effect(async () => {
+            const activity = this.activity();
+            const item = this.item();
 
-        // @todo: This data could be calculated in the completion components to make them more reusable.
-        this.completion = await CoreCourseHelper.loadOfflineCompletionData(this.activity.cmid, {
-            ...this.item.parsedData,
-            tracking: this.item.parsedData.isautomatic ?
-                CoreCourseModuleCompletionTracking.AUTOMATIC : CoreCourseModuleCompletionTracking.MANUAL,
-            cmid: this.activity.cmid,
-            courseId: this.courseId,
+            // @todo: This data could be calculated in the completion components to make them more reusable.
+            const completion = await CoreCourseHelper.loadOfflineCompletionData(activity.cmid, {
+                ...item.parsedData,
+                tracking: item.parsedData.isautomatic ?
+                    CoreCourseModuleCompletionTracking.AUTOMATIC : CoreCourseModuleCompletionTracking.MANUAL,
+                cmid: activity.cmid,
+                courseId: this.courseId(),
+            });
+
+            this.completion.set(completion);
         });
     }
 
@@ -67,7 +66,7 @@ export class CoreCourseOverviewItemCompletionComponent implements OnChanges {
     onCompletionChanged(): void {
         // Only invalidate the data, don't re-fetch it to decrease data usage.
         // This means that if a user then accesses the overview in offline he can see outdated info.
-        CorePromiseUtils.ignoreErrors(CoreCourseOverview.invalidateInformation(this.courseId, this.activity.modname));
+        CorePromiseUtils.ignoreErrors(CoreCourseOverview.invalidateInformation(this.courseId(), this.activity().modname));
     }
 
 }

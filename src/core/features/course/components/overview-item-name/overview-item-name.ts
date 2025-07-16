@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, Input } from '@angular/core';
+import { Component, input } from '@angular/core';
 import { CoreSharedModule } from '@/core/shared.module';
 import { CoreCourseOverviewActivity, CoreCourseOverviewItem } from '@features/course/services/course-overview';
 
@@ -30,10 +30,9 @@ import { CoreCourseOverviewActivity, CoreCourseOverviewItem } from '@features/co
 })
 export class CoreCourseOverviewItemNameComponent {
 
-    // Don't use signal inputs yet because core-dynamic-component still isn't adapted to use them.
-    @Input({ required: true }) courseId!: number;
-    @Input({ required: true }) activity!: CoreCourseOverviewActivity;
-    @Input({ required: true }) item!: CoreCourseOverviewItem<ItemData>;
+    readonly courseId = input.required<number>();
+    readonly activity = input.required<CoreCourseOverviewActivity>();
+    readonly item = input.required<CoreCourseOverviewItem<ItemData>>();
 
 }
 
