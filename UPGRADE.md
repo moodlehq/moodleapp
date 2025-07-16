@@ -6,7 +6,8 @@ For more information about upgrading, read the official documentation: https://m
 =====
 
  - "model" has been removed for site plugins because it isn't needed and it's not compatible with Angular 18. "model" is meant to support 2-way data binding in custom components, and site plugins cannot create components.
-- The (onChange) output in core-combobox has been deprecated, please use (selectionChange) instead.
+ - The (onChange) output in core-combobox has been deprecated, please use (selectionChange) instead.
+ - The CoreUserOfflineProvider service has been renamed to CoreUserPreferencesOfflineService and is no longer available for plugins. To read or write preferences please use the new CoreUserPreferencesService service.
 
 5.0.0
 =====

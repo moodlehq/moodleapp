@@ -14,7 +14,7 @@
 
 import { toBoolean } from '@/core/transforms/boolean';
 import { Component, OnInit, OnDestroy, ElementRef, input, output, signal, computed, effect, inject } from '@angular/core';
-import { CoreUser } from '@features/user/services/user';
+import { CoreUserPreferences } from '@features/user/services/user-preferences';
 
 import { CoreTime } from '@singletons/time';
 import { CoreBaseModule } from '@/core/base.module';
@@ -142,7 +142,7 @@ export class CoreTimerComponent implements OnInit, OnDestroy {
     protected async initHiddenByUser(): Promise<void> {
         const timerHiddenPreferenceName = this.timerHiddenPreferenceName();
         if (this.canHideTimer() && timerHiddenPreferenceName) {
-            const hidden = await CorePromiseUtils.ignoreErrors(CoreUser.getUserPreference(timerHiddenPreferenceName));
+            const hidden = await CorePromiseUtils.ignoreErrors(CoreUserPreferences.getPreference(timerHiddenPreferenceName));
 
             this.hiddenByUser.set(hidden === '1');
         }
@@ -156,7 +156,7 @@ export class CoreTimerComponent implements OnInit, OnDestroy {
 
         const timerHiddenPreferenceName = this.timerHiddenPreferenceName();
         if (timerHiddenPreferenceName) {
-            CoreUser.setUserPreference(timerHiddenPreferenceName, this.hiddenByUser() ? '0' : '1');
+            CoreUserPreferences.setPreference(timerHiddenPreferenceName, this.hiddenByUser() ? '0' : '1');
         }
     }
 

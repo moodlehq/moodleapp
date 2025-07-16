@@ -41,7 +41,7 @@ import { Translate } from '@singletons';
 import { ADDON_CALENDAR_UNDELETED_EVENT_EVENT } from '@addons/calendar/constants';
 import { CoreAlerts } from '@services/overlays/alerts';
 import { CoreSharedModule } from '@/core/shared.module';
-import { CoreUser } from '@features/user/services/user';
+import { CoreUserPreferences } from '@features/user/services/user-preferences';
 
 /**
  * Component that displays upcoming events.
@@ -177,7 +177,7 @@ export class AddonCalendarUpcomingEventsComponent implements OnInit, DoCheck, On
             return;
         }));
 
-        promises.push(CoreUser.getPreferredTimeFormat().then((value) => {
+        promises.push(CoreUserPreferences.getTimeFormat().then((value) => {
             this.timeFormat = value;
 
             return;
