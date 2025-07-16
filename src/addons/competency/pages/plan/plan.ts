@@ -129,7 +129,7 @@ export default class AddonCompetencyPlanPage implements OnInit, OnDestroy {
             return;
         }
 
-        const planId = this.competencies.getSource().PLAN_ID;
+        const planId = this.competencies.getSource().planId;
 
         CoreAnalytics.logEvent({
             type: CoreAnalyticsEventType.VIEW_ITEM_LIST,

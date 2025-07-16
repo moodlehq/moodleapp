@@ -56,7 +56,7 @@ export default class AddonMessagesSettingsPage implements OnInit, OnDestroy {
     siteValue = AddonMessagesMessagePrivacy.SITE;
     groupMessagingEnabled = false;
     sendOnEnter = false;
-    warningMessage = signal<string | undefined>(undefined);
+    readonly warningMessage = signal<string | undefined>(undefined);
 
     protected loggedInOffLegacyMode = false;
     protected previousContactableValue?: number | boolean;

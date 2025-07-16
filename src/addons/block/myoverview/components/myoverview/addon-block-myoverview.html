@@ -38,7 +38,7 @@
             @if (filters.enabled) {
                 <ion-col size="auto">
                     <core-combobox [label]="'core.courses.filtermycourses' | translate" [selection]="filters.timeFilterSelected"
-                        (onChange)="filterOptionsChanged($event)">
+                        (selectionChange)="filterCourses()">
                         @if (filters.show.allincludinghidden) {
                             <ion-select-option class="ion-text-wrap core-select-option-border-bottom" value="allincludinghidden">
                                 {{ 'addon.block_myoverview.allincludinghidden' | translate }}
@@ -95,7 +95,7 @@
             </ion-col>
             @if (sort.enabled) {
                 <ion-col size="auto">
-                    <core-combobox [label]="'core.sortby' | translate" [selection]="sort.selected" (onChange)="sortCourses($event)"
+                    <core-combobox [label]="'core.sortby' | translate" [selection]="sort.selected" (selectionChange)="sortCourses()"
                         icon="fas-arrow-down-short-wide" class="no-border">
                         <ion-select-option class="ion-text-wrap" value="fullname">
                             {{'addon.block_myoverview.title' | translate}}

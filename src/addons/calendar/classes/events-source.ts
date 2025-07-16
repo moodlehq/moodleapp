@@ -21,14 +21,14 @@ import { CoreRoutedItemsManagerSource } from '@classes/items-management/routed-i
  */
 export class AddonCalendarEventsSource extends CoreRoutedItemsManagerSource<AddonCalendarEventToDisplay> {
 
-    readonly DATE: string;
+    readonly date: string;
 
     private events: AddonCalendarEventToDisplay[] = [];
 
     constructor(date: string) {
         super();
 
-        this.DATE = date;
+        this.date = date;
     }
 
     /**
@@ -58,7 +58,7 @@ export class AddonCalendarEventsSource extends CoreRoutedItemsManagerSource<Addo
      * @inheritdoc
      */
     getItemQueryParams(): Params {
-        return { date: this.DATE };
+        return { date: this.date };
     }
 
 }

@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, ElementRef, Input, OnChanges, inject } from '@angular/core';
+import { Component, ElementRef, effect, input, inject } from '@angular/core';
 import { CoreDom } from '@singletons/dom';
 
 /**
@@ -31,24 +31,21 @@ import { CoreDom } from '@singletons/dom';
     template: '',
     imports: [],
 })
-export class CoreStyleComponent implements OnChanges {
+export class CoreStyleComponent {
 
-    @Input() css = ''; // CSS rules.
-    @Input() prefix = '';
+    readonly css = input(''); // CSS rules.
+    readonly prefix = input(''); // Prefix to add to CSS rules.
 
     protected element: HTMLElement = inject(ElementRef).nativeElement;
 
-    /**
-     * @inheritdoc
-     */
-    ngOnChanges(): void {
-        if (this.element) {
+    constructor() {
+        effect(() => {
             const style = document.createElement('style');
-            style.innerHTML = CoreDom.prefixCSS(this.css, this.prefix);
+            style.innerHTML = CoreDom.prefixCSS(this.css(), this.prefix());
 
             this.element.innerHTML = '';
             this.element.appendChild(style);
-        }
+        });
     }
 
 }

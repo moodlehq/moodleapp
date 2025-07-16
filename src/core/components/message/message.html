@@ -1,43 +1,44 @@
-@if (message) {
+@let messageValue = message();
+@if (messageValue) {
     <div class="message-box" (longPress)="copyMessage()">
         <div class="main">
             <!-- User data. -->
-            @if (message.showUserData) {
+            @if (messageValue.showUserData) {
                 <div class="message-user">
-                    <core-user-avatar slot="start" [user]="user" [courseId]="courseId" [linkProfile]="false" aria-hidden="true" />
-                    <div>{{ userFullname }}</div>
+                    <core-user-avatar slot="start" [user]="user()" [courseId]="courseId()" [linkProfile]="false" aria-hidden="true" />
+                    <div>{{ userFullname() }}</div>
                 </div>
             } @else {
                 <div class="sr-only">
-                    {{ isMine ? ('addon.messages.you' | translate) : userFullname }}
+                    {{ isMine() ? ('addon.messages.you' | translate) : userFullname() }}
                 </div>
             }
 
-            <core-format-text class="message-text" [text]="text" (afterRender)="afterRender.emit()" [contextLevel]="contextLevel"
-                [contextInstanceId]="instanceId" [courseId]="courseId" [sanitize]="message.pending" />
+            <core-format-text class="message-text" [text]="text()" (afterRender)="afterRender.emit()" [contextLevel]="contextLevel()"
+                [contextInstanceId]="instanceId()" [courseId]="courseId()" [sanitize]="messageValue.pending" />
         </div>
 
         <div class="extra">
             <div class="message-time">
-                @if (message.pending) {
+                @if (messageValue.pending) {
                     <ion-icon name="fas-clock" [attr.aria-label]="'core.notsent' | translate" role="status" />
                 } @else {
-                    @if (message.deleted) {
+                    @if (messageValue.deleted) {
                         <ion-icon name="fas-trash" aria-hidden="true" />
                         <span class="ion-text-wrap">{{ 'core.deletedoffline' | translate }}</span>
                     } @else {
-                        {{ time | coreFormatDate: 'strftimetime' }}
+                        {{ time() | coreFormatDate: 'strftimetime' }}
                     }
                 }
             </div>
 
-            @if (showDelete && !message.deleted && message.delete !== false) {
+            @if (showDelete() && !messageValue.deleted && messageValue.delete !== false) {
                 <ion-button fill="clear" [@coreSlideInOut]="'fromRight'" color="danger" (click)="delete($event)"
                     [ariaLabel]="'addon.messages.deletemessage' | translate" class="delete-button">
                     <ion-icon name="fas-trash" slot="icon-only" aria-hidden="true" />
                 </ion-button>
             }
-            @if (showDelete && message.deleted) {
+            @if (showDelete() && messageValue.deleted) {
                 <ion-button fill="clear" [@coreSlideInOut]="'fromRight'" color="danger" (click)="undoDelete($event)"
                     [ariaLabel]="'core.restore' | translate" class="delete-button">
                     <ion-icon name="fas-rotate-left" slot="icon-only" aria-hidden="true" />
@@ -45,7 +46,7 @@
             }
         </div>
 
-        @if (message.showTail) {
+        @if (messageValue.showTail) {
             <div class="tail"></div>
         }
     </div>

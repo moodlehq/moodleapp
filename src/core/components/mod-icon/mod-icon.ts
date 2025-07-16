@@ -14,16 +14,12 @@
 
 import { toBoolean } from '@/core/transforms/boolean';
 import {
-    ChangeDetectionStrategy,
-    Component,
-    ElementRef,
-    HostBinding,
-    Input,
-    OnChanges,
-    OnInit,
-    SimpleChange,
-    signal,
-    inject,
+  ChangeDetectionStrategy,
+  Component,
+  signal,
+  input,
+  computed,
+  linkedSignal,
 } from '@angular/core';
 import { CoreCourseModuleHelper } from '@features/course/services/course-module-helper';
 import { CoreCourseModuleDelegate } from '@features/course/services/module-delegate';
@@ -55,179 +51,119 @@ const enum IconVersion {
         CoreBaseModule,
         CoreExternalContentDirective,
     ],
+    host: {
+        '[attr.role]': 'showAlt() ? "img" : "presentation"',
+        '[attr.aria-label]': 'showAlt() ? modNameTranslated() : ""',
+        '[class]': 'iconVersion() + " " + purposeClass() ?? ""',
+        '[class.branded]': 'addBrandedClass()',
+        '[class.colorize]': 'addColorizeClass()',
+    },
 })
-export class CoreModIconComponent implements OnInit, OnChanges {
+export class CoreModIconComponent {
 
-    @Input() modname = ''; // The module name. Used also as component if set.
-    @Input() fallbackTranslation = ''; // Fallback translation string if cannot auto translate.
-    @Input() componentId?: number; // Component Id for external icons.
-    @Input() modicon?: string; // Module icon url or local url.
-    @Input({ transform: toBoolean }) showAlt = true; // Show alt otherwise it's only presentation icon.
-    @Input() purpose: ModPurpose = ModPurpose.OTHER; // Purpose of the module.
-    @Input({ transform: toBoolean }) @HostBinding('class.colorize') colorize = true; // Colorize the icon. Only applies on 4.0+.
-    @Input({ transform: toBoolean }) isBranded = false; // If icon is branded and no colorize will be applied.
+    readonly modname = input(''); // The module name. Used also as component if set.
+    readonly fallbackTranslation = input(''); // Fallback translation string if cannot auto translate.
+    readonly componentId = input<number>(); // Component Id for external icons.
+    readonly modicon = input<string>(); // Module icon url or local url.
+    readonly showAlt = input(true, { transform: toBoolean }); // Show alt otherwise it's only presentation icon.
+    readonly purpose = input<ModPurpose>(ModPurpose.OTHER); // Purpose of the module.
+    readonly colorize = input(true, { transform: toBoolean }); // Colorize the icon. Only applies on 4.0+.
+    readonly isBranded = input(false, { transform: toBoolean }); // If icon is branded and no colorize will be applied.
 
-    @HostBinding('class.branded') brandedClass?: boolean;
+    readonly iconUrl = linkedSignal(() => CoreText.decodeHTMLEntities(this.modicon() || this.getFallbackIcon()));
+    readonly isLocalUrl = computed(() => this.iconUrl().startsWith(assetsPath));
 
-    @HostBinding('attr.role')
-    get getRole(): string | null {
-        return this.showAlt ? 'img' : 'presentation';
-    }
+    // Cache icon if the url is not the theme generic one.
+    // If modname is not set icon won't be cached.
+    // Also if the url matches the regexp (the theme will manage the image so it's not cached).
+    readonly linkIconWithComponent = computed(() => !!this.computedModName() && !!this.componentId() && !this.isLocalUrl() &&
+            this.getComponentNameFromIconUrl(this.iconUrl()) !== this.computedModName());
 
-    @HostBinding('attr.aria-label')
-    get getAriaLabel(): string {
-        return this.showAlt ? this.modNameTranslated() : '';
-    }
+    readonly computedModName = computed(() => this.modname() || this.getComponentNameFromIconUrl(this.modicon() ?? ''));
+    readonly modNameTranslated = computed(() =>
+        CoreCourseModuleHelper.translateModuleName(this.computedModName(), this.fallbackTranslation()));
 
-    iconUrl = signal('');
-    modNameTranslated = signal('');
-    isLocalUrl = signal(false);
-    linkIconWithComponent = signal(false);
+    protected readonly iconVersion = signal(IconVersion.LEGACY_VERSION);
+    protected readonly purposeClass = computed(() => this.calculatePurposeClass());
+    protected readonly addBrandedClass = computed(() => this.calculateAddBranded());
+    protected readonly addColorizeClass = computed(() => this.colorize() && this.iconVersion() !== IconVersion.LEGACY_VERSION);
 
-    protected iconVersion: IconVersion = IconVersion.LEGACY_VERSION;
-    protected purposeClass = '';
-    protected element: HTMLElement = inject(ElementRef).nativeElement;
-
-    /**
-     * @inheritdoc
-     */
-    async ngOnInit(): Promise<void> {
-        this.iconVersion = this.getIconVersion();
-        this.element.classList.add(this.iconVersion);
-
-        if (!this.modname && this.modicon) {
-            // Guess module from the icon url.
-            this.modname = this.getComponentNameFromIconUrl(this.modicon);
-        }
-
-        this.modNameTranslated.set(CoreCourseModuleHelper.translateModuleName(this.modname, this.fallbackTranslation));
-
-        this.setPurposeClass();
-
-        await this.setIcon();
+    constructor() {
+        this.iconVersion.set(this.getIconVersion());
     }
 
     /**
-     * @inheritdoc
+     * Calculates whether the branded class should be added or not.
+     *
+     * @returns Whether the branded class should be added.
      */
-    async ngOnChanges(changes: { [name: string]: SimpleChange }): Promise<void> {
-        if (changes && changes.modicon && changes.modicon.previousValue !== undefined) {
-            await this.setIcon();
-        }
-    }
-
-    /**
-     * Sets the isBranded property when undefined.
-     */
-    protected async setBrandedClass(): Promise<void> {
-        if (!this.colorize) {
-            this.brandedClass = false;
-
+    protected calculateAddBranded(): boolean {
+        if (!this.colorize()) {
             // It doesn't matter.
-            return;
+            return false;
         }
 
-        // Earlier 4.0, icons were never colorized.
-        if (this.iconVersion === IconVersion.LEGACY_VERSION) {
-            this.brandedClass = false;
-            this.colorize = false;
-
-            return;
+        if (this.iconVersion() === IconVersion.LEGACY_VERSION) {
+            return false;
         }
-
-        // Reset the branded class to the original value.
-        this.brandedClass = this.isBranded;
 
         // Exception for bigbluebuttonbn, it's the only one that has a branded icon.
-        if (this.iconVersion === IconVersion.VERSION_4_0 && this.modname === 'bigbluebuttonbn') {
+        if (this.iconVersion() === IconVersion.VERSION_4_0 && this.computedModName() === 'bigbluebuttonbn') {
             // Known issue, if the icon is overriden by theme it won't be colorized.
-            this.brandedClass = true;
-
-            return;
+            return true;
         }
 
-        // No icon or local icon (not legacy), colorize it.
+        const isBranded = this.isBranded();
+
+        // No icon or local icon (not legacy), use the input.
         if (!this.iconUrl() || this.isLocalUrl()) {
-            this.brandedClass ??= false;
-
-            return;
+            return isBranded ?? false;
         }
 
-        this.iconUrl.update(value => CoreText.decodeHTMLEntities(value));
-        if (this.brandedClass !== undefined) {
-            return;
+        if (isBranded !== undefined) {
+            return isBranded;
         }
 
-        // If it's an Moodle Theme icon, check if filtericon is set and use it.
+        // If it's a Moodle Theme icon, check if filtericon is set and use it.
         if (CoreUrl.isThemeImageUrl(this.iconUrl())) {
             const filter = CoreUrl.getThemeImageUrlParam(this.iconUrl(), 'filtericon');
             if (filter === '1') {
-                this.brandedClass = false;
-
-                return;
+                return false;
             }
 
             // filtericon was introduced in 4.2 and backported to 4.1.3 and 4.0.8.
-            if (this.modname && !CoreSites.getCurrentSite()?.isVersionGreaterEqualThan(['4.0.8', '4.1.3', '4.2'])) {
+            if (this.computedModName() && !CoreSites.getCurrentSite()?.isVersionGreaterEqualThan(['4.0.8', '4.1.3', '4.2'])) {
                 // If version is prior to that, check if the url is a module icon and filter it.
-                if (this.getComponentNameFromIconUrl(this.iconUrl()) === this.modname) {
-                    this.brandedClass =  false;
-
-                    return;
+                if (this.getComponentNameFromIconUrl(this.iconUrl()) === this.computedModName()) {
+                    return false;
                 }
             }
         }
 
         // External icons, or non monologo, do not filter.
-        this.brandedClass = true;
+        return true;
     }
 
     /**
-     * Set icon.
+     * Get icon to load on error.
+     *
+     * @returns Icon URL.
      */
-    async setIcon(): Promise<void> {
-        this.iconUrl.update(value => this.modicon || value);
-
-        if (!this.iconUrl()) {
-            this.loadFallbackIcon();
-            this.setBrandedClass();
-
-            return;
-        }
-
-        this.isLocalUrl.set(this.iconUrl().startsWith(assetsPath));
-
-        // Cache icon if the url is not the theme generic one.
-        // If modname is not set icon won't be cached.
-        // Also if the url matches the regexp (the theme will manage the image so it's not cached).
-        this.linkIconWithComponent.set(
-            !!this.modname &&
-            !!this.componentId &&
-            !this.isLocalUrl() &&
-            this.getComponentNameFromIconUrl(this.iconUrl()) != this.modname,
-        );
-
-        this.setBrandedClass();
-    }
-
-    /**
-     * Icon to load on error.
-     */
-    async loadFallbackIcon(): Promise<void> {
-        if (this.isLocalUrl()) {
-            return;
-        }
-
-        this.isLocalUrl.set(true);
-        this.linkIconWithComponent.set(false);
-
-        const moduleName = !this.modname || !CoreCourseModuleHelper.isCoreModule(this.modname)
+    getFallbackIcon(): string {
+        const moduleName = !this.computedModName() || !CoreCourseModuleHelper.isCoreModule(this.computedModName())
             ? fallbackModName
-            : this.modname;
+            : this.computedModName();
 
         const path = CoreCourseModuleHelper.getModuleIconsPath();
 
-        this.iconUrl.set(`${path + moduleName  }.svg`);
+        return `${path + moduleName}.svg`;
+    }
+
+    /**
+     * Load fallback icon.
+     */
+    loadFallbackIcon(): void {
+        this.iconUrl.set(this.getFallbackIcon());
     }
 
     /**
@@ -237,6 +173,10 @@ export class CoreModIconComponent implements OnInit, OnChanges {
      * @returns Guessed modname.
      */
     protected getComponentNameFromIconUrl(iconUrl: string): string {
+        if (!iconUrl) {
+            return '';
+        }
+
         const component = CoreUrl.getThemeImageUrlParam(iconUrl, 'component');
 
         // Some invalid components (others may be added later on).
@@ -252,35 +192,34 @@ export class CoreModIconComponent implements OnInit, OnChanges {
     }
 
     /**
-     * Set the purpose class.
+     * Calculates the purpose class.
+     *
+     * @returns The purpose class.
      */
-    protected setPurposeClass(): void {
-        if (this.iconVersion === IconVersion.LEGACY_VERSION) {
-            return;
+    protected calculatePurposeClass(): string {
+        if (this.iconVersion() === IconVersion.LEGACY_VERSION) {
+            return '';
         }
 
-        this.purposeClass =
-            CoreCourseModuleDelegate.supportsFeature<ModPurpose>(
-                this.modname || '',
-                ModFeature.MOD_PURPOSE,
-                this.purpose,
-            );
+        const purposeClass = CoreCourseModuleDelegate.supportsFeature<ModPurpose>(
+            this.computedModName() || '',
+            ModFeature.MOD_PURPOSE,
+            this.purpose(),
+        );
 
-        if (this.iconVersion === IconVersion.VERSION_4_0) {
-            if (this.purposeClass === ModPurpose.INTERACTIVECONTENT) {
+        if (this.iconVersion() === IconVersion.VERSION_4_0) {
+            if (purposeClass === ModPurpose.INTERACTIVECONTENT) {
                 // Interactive content was introduced on 4.4, on previous versions CONTENT is used instead.
-                this.purposeClass = ModPurpose.CONTENT;
+                return ModPurpose.CONTENT;
             }
 
-            if (this.modname === 'lti') {
+            if (this.computedModName() === 'lti') {
                 // LTI had content purpose with 4.0 icons.
-                this.purposeClass = ModPurpose.CONTENT;
+                return ModPurpose.CONTENT;
             }
         }
 
-        if (this.purposeClass) {
-            this.element.classList.add(this.purposeClass);
-        }
+        return purposeClass;
     }
 
     /**

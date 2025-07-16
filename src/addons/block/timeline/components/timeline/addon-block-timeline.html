@@ -16,7 +16,7 @@
     }
     <ion-row class="ion-justify-content-between ion-align-items-center addon-block-timeline-filter">
         <ion-col size="auto">
-            <core-combobox [formControl]="filter" (onChange)="filterChanged($event)"
+            <core-combobox [formControl]="filter" (selectionChange)="filterChanged($event)"
                 [label]="'addon.block_timeline.ariadayfilter' | translate">
                 <ion-select-option *ngFor="let option of statusFilterOptions; last as last"
                     [attr.class]="'ion-text-wrap' + last ? ' core-select-option-border-bottom' : ''" [value]="option.value">
@@ -39,7 +39,7 @@
             </ion-col>
         }
         <ion-col size="auto">
-            <core-combobox [label]="'core.sortby' | translate" [formControl]="sort" (onChange)="sortChanged($event)"
+            <core-combobox [label]="'core.sortby' | translate" [formControl]="sort" (selectionChange)="sortChanged($event)"
                 icon="fas-arrow-down-short-wide" class="no-border">
                 <ion-select-option *ngFor="let option of sortOptions" class="ion-text-wrap" [value]="option.value">
                     {{ option.name | translate }}

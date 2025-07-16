@@ -55,6 +55,14 @@ const appConfig = {
     rules: {
         '@angular-eslint/component-class-suffix': ['error', { suffixes: ['Component', 'Page'] }],
         '@angular-eslint/no-output-on-prefix': 'off',
+        '@angular-eslint/prefer-signals': [
+            'error',
+            {
+                preferInputSignals: false, // @todo: Force input signals when all have been migrated.
+                preferQuerySignals: false, // @todo: Force query signals when all have been migrated.
+                preferReadonlySignalProperties: true,
+            },
+        ],
         '@typescript-eslint/adjacent-overload-signatures': 'error',
         '@typescript-eslint/no-restricted-types': [
             'error',
@@ -132,17 +140,17 @@ const appConfig = {
             },
             {
                 selector: 'property',
-                modifiers: ['public', 'readonly'],
+                modifiers: ['public', 'static', 'readonly'],
                 format: ['UPPER_CASE'],
             },
             {
                 selector: 'property',
-                modifiers: ['protected', 'readonly'],
+                modifiers: ['protected', 'static', 'readonly'],
                 format: ['UPPER_CASE'],
             },
             {
                 selector: 'property',
-                modifiers: ['private', 'readonly'],
+                modifiers: ['private', 'static', 'readonly'],
                 format: ['UPPER_CASE'],
             },
             {

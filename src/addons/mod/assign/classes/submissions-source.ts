@@ -49,9 +49,9 @@ export class AddonModAssignSubmissionsSource extends CoreRoutedItemsManagerSourc
         return `submissions-${courseId}-${moduleId}-${statusId}`;
     }
 
-    readonly COURSE_ID: number;
-    readonly MODULE_ID: number;
-    readonly SELECTED_STATUS: AddonModAssignListFilterName | undefined;
+    readonly courseId: number;
+    readonly moduleId: number;
+    readonly selectedStatus: AddonModAssignListFilterName | undefined;
 
     assign?: AddonModAssignAssign;
     groupId = 0;
@@ -70,9 +70,9 @@ export class AddonModAssignSubmissionsSource extends CoreRoutedItemsManagerSourc
     constructor(courseId: number, moduleId: number, selectedStatus?: AddonModAssignListFilterName) {
         super();
 
-        this.COURSE_ID = courseId;
-        this.MODULE_ID = moduleId;
-        this.SELECTED_STATUS = selectedStatus;
+        this.courseId = courseId;
+        this.moduleId = moduleId;
+        this.selectedStatus = selectedStatus;
     }
 
     /**
@@ -89,7 +89,7 @@ export class AddonModAssignSubmissionsSource extends CoreRoutedItemsManagerSourc
         return {
             blindId: submission.blindid,
             groupId: this.groupId,
-            selectedStatus: this.SELECTED_STATUS,
+            selectedStatus: this.selectedStatus,
         };
     }
 
@@ -98,7 +98,7 @@ export class AddonModAssignSubmissionsSource extends CoreRoutedItemsManagerSourc
      */
     async invalidateCache(): Promise<void> {
         await Promise.all([
-            AddonModAssign.invalidateAssignmentData(this.COURSE_ID),
+            AddonModAssign.invalidateAssignmentData(this.courseId),
             this.assign && AddonModAssign.invalidateAllSubmissionData(this.assign.id),
             this.assign && AddonModAssign.invalidateAssignmentUserMappingsData(this.assign.id),
             this.assign && AddonModAssign.invalidateAssignmentGradesData(this.assign.id),
@@ -111,7 +111,7 @@ export class AddonModAssignSubmissionsSource extends CoreRoutedItemsManagerSourc
      */
     async loadAssignment(sync: boolean = false): Promise<void> {
         // Get assignment data.
-        this.assign = await AddonModAssign.getAssignment(this.COURSE_ID, this.MODULE_ID);
+        this.assign = await AddonModAssign.getAssignment(this.courseId, this.moduleId);
 
         if (sync) {
             try {
@@ -177,7 +177,7 @@ export class AddonModAssignSubmissionsSource extends CoreRoutedItemsManagerSourc
         // Remove grades (not graded) and sort by timemodified DESC to allow finding quicker.
         grades = grades.filter((grade) => parseInt(grade.grade, 10) >= 0).sort((a, b) => b.timemodified - a.timemodified);
         // Filter the submissions to get only the ones with the right status and add some extra data.
-        if (this.SELECTED_STATUS == AddonModAssignListFilterName.NEED_GRADING) {
+        if (this.selectedStatus == AddonModAssignListFilterName.NEED_GRADING) {
             const promises: Promise<void>[] = submissions.map(async (submission: AddonModAssignSubmissionForList) => {
                 // Only show the submissions that need to be graded.
                 submission.needsGrading = await AddonModAssign.needsSubmissionToBeGraded(submission, assign);
@@ -186,8 +186,8 @@ export class AddonModAssignSubmissionsSource extends CoreRoutedItemsManagerSourc
             await Promise.all(promises);
 
             submissions = submissions.filter((submission: AddonModAssignSubmissionForList) => submission.needsGrading);
-        } else if (this.SELECTED_STATUS) {
-            const searchStatus = this.SELECTED_STATUS == AddonModAssignListFilterName.DRAFT
+        } else if (this.selectedStatus) {
+            const searchStatus = this.selectedStatus == AddonModAssignListFilterName.DRAFT
                 ? AddonModAssignSubmissionStatusValues.DRAFT
                 : AddonModAssignSubmissionStatusValues.SUBMITTED;
 

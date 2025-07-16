@@ -29,8 +29,8 @@ import { ADDON_MOD_FEEDBACK_PER_PAGE } from '../constants';
  */
 export class AddonModFeedbackAttemptsSource extends CoreRoutedItemsManagerSource<AddonModFeedbackAttemptItem> {
 
-    readonly COURSE_ID: number;
-    readonly CM_ID: number;
+    readonly courseId: number;
+    readonly cmId: number;
 
     selectedGroup?: number;
     identifiable?: AddonModFeedbackWSAttempt[];
@@ -43,8 +43,8 @@ export class AddonModFeedbackAttemptsSource extends CoreRoutedItemsManagerSource
     constructor(courseId: number, cmId: number) {
         super();
 
-        this.COURSE_ID = courseId;
-        this.CM_ID = cmId;
+        this.courseId = courseId;
+        this.cmId = cmId;
     }
 
     /**
@@ -101,7 +101,7 @@ export class AddonModFeedbackAttemptsSource extends CoreRoutedItemsManagerSource
      */
     async invalidateCache(): Promise<void> {
         await Promise.all([
-            CoreGroups.invalidateActivityGroupInfo(this.CM_ID),
+            CoreGroups.invalidateActivityGroupInfo(this.cmId),
             this.feedback && AddonModFeedback.invalidateResponsesAnalysisData(this.feedback.id),
         ]);
     }
@@ -110,8 +110,8 @@ export class AddonModFeedbackAttemptsSource extends CoreRoutedItemsManagerSource
      * Load feedback.
      */
     async loadFeedback(): Promise<void> {
-        this.feedback = await AddonModFeedback.getFeedback(this.COURSE_ID, this.CM_ID);
-        this.groupInfo = await CoreGroups.getActivityGroupInfo(this.CM_ID);
+        this.feedback = await AddonModFeedback.getFeedback(this.courseId, this.cmId);
+        this.groupInfo = await CoreGroups.getActivityGroupInfo(this.cmId);
 
         this.selectedGroup = CoreGroups.validateGroupId(this.selectedGroup, this.groupInfo);
     }
@@ -134,7 +134,7 @@ export class AddonModFeedbackAttemptsSource extends CoreRoutedItemsManagerSource
         const result = await AddonModFeedbackHelper.getResponsesAnalysis(this.feedback.id, {
             page,
             groupId: this.selectedGroup,
-            cmId: this.CM_ID,
+            cmId: this.cmId,
         });
 
         if (page === 0) {

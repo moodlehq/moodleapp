@@ -78,7 +78,7 @@ export default class AddonModLessonPlayerPage implements OnInit, OnDestroy, CanL
     @ViewChild('questionFormEl') formElement?: ElementRef;
 
     component = ADDON_MOD_LESSON_COMPONENT_LEGACY;
-    readonly LESSON_EOL = AddonModLessonJumpTo.EOL;
+    lessonEol = AddonModLessonJumpTo.EOL;
     questionForm?: FormGroup; // The FormGroup for question pages.
     title?: string; // The page title.
     lesson?: AddonModLessonLessonWSData; // The lesson object.

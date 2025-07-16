@@ -51,7 +51,7 @@ export default class AddonModH5PActivityUsersAttemptsPage implements OnInit {
     totalAttempts?: number;
     fetchMoreUsersFailed = false;
     canLoadMore = false;
-    isTablet: Signal<boolean>;
+    readonly isTablet: Signal<boolean>;
 
     protected page = 0;
     protected logView: () => void;

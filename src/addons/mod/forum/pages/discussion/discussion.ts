@@ -922,7 +922,7 @@ class AddonModForumDiscussionDiscussionsSwipeManager extends AddonModForumDiscus
     protected getSelectedItemPathFromRoute(route: ActivatedRouteSnapshot | ActivatedRoute): string | null {
         const params = CoreNavigator.getRouteParams(route);
 
-        return this.getSource().DISCUSSIONS_PATH_PREFIX + params.discussionId;
+        return this.getSource().discussionsPathPrefix + params.discussionId;
     }
 
 }

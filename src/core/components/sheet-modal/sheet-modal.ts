@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { Constructor } from '@/core/utils/types';
-import { AfterViewInit, Component, ElementRef, inject, Input, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, inject, input, viewChild } from '@angular/core';
 import { CoreModalComponent } from '@classes/modal-component';
 import { CorePromisedValue } from '@classes/promised-value';
 import { CoreModals } from '@services/overlays/modals';
@@ -30,9 +30,9 @@ import { CoreBaseModule } from '@/core/base.module';
 })
 export class CoreSheetModalComponent<T extends CoreModalComponent> implements AfterViewInit {
 
-    @Input({ required: true }) component!: Constructor<T>;
-    @Input() componentProps?: Record<string, unknown>;
-    @ViewChild('wrapper') wrapper?: ElementRef<HTMLElement>;
+    readonly component = input.required<Constructor<T>>();
+    readonly componentProps = input<Record<string, unknown>>();
+    readonly wrapper = viewChild<ElementRef<HTMLElement>>('wrapper');
 
     private element: HTMLElement = inject(ElementRef).nativeElement;
     private wrapperElement = new CorePromisedValue<HTMLElement>();
@@ -46,13 +46,14 @@ export class CoreSheetModalComponent<T extends CoreModalComponent> implements Af
      * @inheritdoc
      */
     ngAfterViewInit(): void {
-        if (!this.wrapper) {
+        const wrapper = this.wrapper();
+        if (!wrapper) {
             this.wrapperElement.reject(new Error('CoreSheetModalComponent wasn\'t mounted properly'));
 
             return;
         }
 
-        this.wrapperElement.resolve(this.wrapper.nativeElement);
+        this.wrapperElement.resolve(wrapper.nativeElement);
     }
 
     /**
@@ -62,7 +63,7 @@ export class CoreSheetModalComponent<T extends CoreModalComponent> implements Af
      */
     async show(): Promise<T> {
         const wrapper = await this.wrapperElement;
-        this.content = await AngularFrameworkDelegate.attachViewToDom(wrapper, this.component, this.componentProps ?? {});
+        this.content = await AngularFrameworkDelegate.attachViewToDom(wrapper, this.component(), this.componentProps() ?? {});
 
         await CoreWait.nextTick();
 
@@ -72,7 +73,7 @@ export class CoreSheetModalComponent<T extends CoreModalComponent> implements Af
         await CoreWait.nextTick();
         await CoreWait.wait(300);
 
-        const instance = CoreDirectivesRegistry.resolve(this.content, this.component);
+        const instance = CoreDirectivesRegistry.resolve(this.content, this.component());
 
         if (!instance) {
             throw new Error('Modal not mounted properly');

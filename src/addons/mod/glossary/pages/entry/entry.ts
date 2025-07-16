@@ -403,7 +403,7 @@ class AddonModGlossaryEntryEntriesSwipeManager
     protected getSelectedItemPathFromRoute(route: ActivatedRouteSnapshot | ActivatedRoute): string | null {
         const params = CoreNavigator.getRouteParams(route);
 
-        return `${this.getSource().GLOSSARY_PATH_PREFIX}entry/${params.entrySlug}`;
+        return `${this.getSource().glossaryPathPrefix}entry/${params.entrySlug}`;
     }
 
 }

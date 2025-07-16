@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, Input, Output, EventEmitter, ViewChild, ElementRef } from '@angular/core';
+import { Component, ElementRef, input, output, model, viewChild } from '@angular/core';
 import { CoreConfig } from '@services/config';
 import { CoreEvents } from '@singletons/events';
 import { CoreSites } from '@services/sites';
@@ -55,22 +55,18 @@ import { CoreUpdateNonReactiveAttributesDirective } from '@directives/update-non
 })
 export class CoreSendMessageFormComponent {
 
-    @Input() message = ''; // Input text.
-    @Input() placeholder = ''; // Placeholder for the input area.
-    @Input({ transform: toBoolean }) showKeyboard = false; // If keyboard is shown or not.
-    @Input({ transform: toBoolean }) sendDisabled = false; // If send is disabled.
-    @Output() onSubmit: EventEmitter<string>; // Send data when submitting the message form.
-    @Output() onResize: EventEmitter<void>; // Emit when resizing the textarea.
+    readonly message = model(''); // Input text.
+    readonly placeholder = input(''); // Placeholder for the input area.
+    readonly showKeyboard = input(false, { transform: toBoolean }); // If keyboard is shown or not.
+    readonly sendDisabled = input(false, { transform: toBoolean }); // If send is disabled.
+    readonly onSubmit = output<string>(); // Send data when submitting the message form.
+    readonly onResize = output<void>(); // Emit when resizing the textarea.
 
-    @ViewChild('messageForm') formElement!: ElementRef;
+    readonly formElement = viewChild.required<ElementRef>('messageForm');
 
     protected sendOnEnter = false;
 
     constructor() {
-
-        this.onSubmit = new EventEmitter();
-        this.onResize = new EventEmitter();
-
         CoreConfig.get(CoreConstants.SETTINGS_SEND_ON_ENTER, !CorePlatform.isMobile()).then((sendOnEnter) => {
             this.sendOnEnter = !!sendOnEnter;
 
@@ -93,16 +89,16 @@ export class CoreSendMessageFormComponent {
         $event.preventDefault();
         $event.stopPropagation();
 
-        let value = this.message.trim();
+        let value = this.message().trim();
 
         if (!value) {
             // Silent error.
             return;
         }
 
-        this.message = ''; // Reset the form.
+        this.message.set(''); // Reset the form.
 
-        CoreForms.triggerFormSubmittedEvent(this.formElement, false, CoreSites.getCurrentSiteId());
+        CoreForms.triggerFormSubmittedEvent(this.formElement(), false, CoreSites.getCurrentSiteId());
 
         value = CoreText.replaceNewLines(value, '<br>');
         this.onSubmit.emit(value);
@@ -121,7 +117,7 @@ export class CoreSendMessageFormComponent {
      * @param e Event.
      */
     enterKeyDown(e: KeyboardEvent, other?: string): void {
-        if (this.sendDisabled) {
+        if (this.sendDisabled()) {
             return;
         }
 
@@ -143,7 +139,7 @@ export class CoreSendMessageFormComponent {
      * @param other The name of the other key that was clicked, undefined if no other key.
      */
     enterKeyUp(e: Event, other?: string): void {
-        if (this.sendDisabled) {
+        if (this.sendDisabled()) {
             return;
         }
 
