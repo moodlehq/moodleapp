@@ -24,7 +24,6 @@ import { CoreGroups } from '@services/groups';
 import { CoreLocalNotifications } from '@services/local-notifications';
 import { CoreConfig } from '@services/config';
 import { AddonCalendarOffline } from './calendar-offline';
-import { CoreUser } from '@features/user/services/user';
 import { CoreWSExternalWarning, CoreWSDate } from '@services/ws';
 import { dayjs } from '@/core/utils/dayjs';
 import { AddonCalendarEventDBRecord } from './database/calendar';
@@ -60,6 +59,7 @@ import {
 import { REMINDERS_DEFAULT_REMINDER_TIMEBEFORE } from '@features/reminders/constants';
 import { AddonCalendarFilter } from './calendar-helper';
 import { CorePromiseUtils } from '@singletons/promise-utils';
+import { CoreUserPreferences } from '@features/user/services/user-preferences';
 
 declare module '@singletons/events' {
 
@@ -480,7 +480,7 @@ export class AddonCalendarProvider {
         const site = await CoreSites.getSite(siteId);
         let value: string | undefined | null;
         try {
-            value = await CoreUser.getUserPreference('calendar_lookahead');
+            value = await CoreUserPreferences.getPreference('calendar_lookahead');
         } catch {
             // Ignore errors.
         }
@@ -497,10 +497,10 @@ export class AddonCalendarProvider {
      *
      * @param siteId ID of the site. If not defined, use current site.
      * @returns Promise resolved with the format.
-     * @deprecated since 5.1. Use CoreUser.getPreferredTimeFormat instead.
+     * @deprecated since 5.1. Use CoreUserPreferences.getTimeFormat instead.
      */
     getCalendarTimeFormat(siteId?: string): Promise<string> {
-        return CoreUser.getPreferredTimeFormat(siteId);
+        return CoreUserPreferences.getTimeFormat(siteId);
     }
 
     /**
@@ -1230,7 +1230,7 @@ export class AddonCalendarProvider {
      * @param siteId Site Id. If not defined, use current site.
      */
     async invalidateLookAhead(siteId?: string): Promise<void> {
-        await CoreUser.invalidateUserPreference('calendar_lookahead', siteId);
+        await CoreUserPreferences.invalidatePreference('calendar_lookahead', siteId);
     }
 
     /**
@@ -1239,7 +1239,7 @@ export class AddonCalendarProvider {
      * @param siteId Site Id. If not defined, use current site.
      */
     async invalidateTimeFormat(siteId?: string): Promise<void> {
-        await CoreUser.invalidateUserPreference('calendar_timeformat', siteId);
+        await CoreUserPreferences.invalidatePreference('calendar_timeformat', siteId);
     }
 
     /**

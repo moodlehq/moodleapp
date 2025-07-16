@@ -19,7 +19,7 @@ import {
     CoreEventCourseStatusChanged,
 } from '@features/course/services/course-download-status-helper';
 import { CoreCourseHelper, CorePrefetchStatusInfo } from '@features/course/services/course-helper';
-import { CoreUser } from '@features/user/services/user';
+import { CoreUserPreferences } from '@features/user/services/user-preferences';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSites } from '@services/sites';
 import { Translate } from '@singletons';
@@ -338,7 +338,7 @@ export class CoreCoursesCourseListItemComponent implements OnInit, OnDestroy, On
 
         // We should use null to unset the preference.
         try {
-            await CoreUser.updateUserPreference(
+            await CoreUserPreferences.setPreferenceOnline(
                 `block_myoverview_hidden_course_${this.course.id}`,
                 hide ? '1' : undefined,
             );
