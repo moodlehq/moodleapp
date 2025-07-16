@@ -65,7 +65,7 @@ export default class AddonBadgesUserBadgesPage implements AfterViewInit, OnDestr
                 type: CoreAnalyticsEventType.VIEW_ITEM_LIST,
                 ws: 'core_badges_view_user_badges',
                 name: Translate.instant('addon.badges.badges'),
-                data: { courseId: this.badges.getSource().COURSE_ID, category: 'badges' },
+                data: { courseId: this.badges.getSource().courseId, category: 'badges' },
                 url: '/badges/mybadges.php',
             });
         });
@@ -95,8 +95,8 @@ export default class AddonBadgesUserBadgesPage implements AfterViewInit, OnDestr
     async refreshBadges(refresher?: HTMLIonRefresherElement): Promise<void> {
         await CorePromiseUtils.ignoreErrors(
             AddonBadges.invalidateUserBadges(
-                this.badges.getSource().COURSE_ID,
-                this.badges.getSource().USER_ID,
+                this.badges.getSource().courseId,
+                this.badges.getSource().userId,
             ),
         );
         await CorePromiseUtils.ignoreErrors(this.badges.reload());

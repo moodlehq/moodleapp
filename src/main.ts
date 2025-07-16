@@ -54,6 +54,7 @@ bootstrapApplication(AppComponent, {
                 navAnimation: moodleTransitionAnimation,
                 innerHTMLTemplatesEnabled: true,
                 sanitizerEnabled: true,
+                useSetInputAPI: true,
             }),
             TranslateModule.forRoot({
                 loader: {

@@ -73,8 +73,8 @@ export class CoreEditorClassicEditorComponent extends CoreEditorBaseComponent im
         });
     }
 
-    protected readonly RESTORE_MESSAGE_CLEAR_TIME = 6000;
-    protected readonly SAVE_MESSAGE_CLEAR_TIME = 2000;
+    protected static readonly RESTORE_MESSAGE_CLEAR_TIME = 6000;
+    protected static readonly SAVE_MESSAGE_CLEAR_TIME = 2000;
 
     protected element: HTMLElement = inject(ElementRef).nativeElement;
 

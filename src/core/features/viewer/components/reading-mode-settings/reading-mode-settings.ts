@@ -37,9 +37,9 @@ import { CoreMath } from '@singletons/math';
 })
 export class CoreReadingModeSettingsModalComponent implements OnInit {
 
-    readonly MAX_TEXT_SIZE_ZOOM = 200;
-    readonly MIN_TEXT_SIZE_ZOOM = 75;
-    readonly TEXT_SIZE_ZOOM_STEP = 25;
+    readonly maxTextSizeZoom = 200;
+    readonly minTextSizeZoom = 75;
+    readonly textSizeZoomStep = 25;
 
     settings = CORE_READING_MODE_DEFAULT_SETTINGS;
 
@@ -76,8 +76,8 @@ export class CoreReadingModeSettingsModalComponent implements OnInit {
     changeTextSizeZoom(newTextSizeZoom: number): void {
         this.settings.zoom = CoreMath.clamp(
             newTextSizeZoom,
-            this.MIN_TEXT_SIZE_ZOOM,
-            this.MAX_TEXT_SIZE_ZOOM,
+            this.minTextSizeZoom,
+            this.maxTextSizeZoom,
         );
 
         this.defaultZoom = this.settings.zoom === 100;

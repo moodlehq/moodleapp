@@ -132,11 +132,11 @@ export default class AddonModAssignSubmissionListPage implements AfterViewInit, 
     }
 
     get moduleId(): number {
-        return this.submissions.getSource().MODULE_ID;
+        return this.submissions.getSource().moduleId;
     }
 
     get courseId(): number {
-        return this.submissions.getSource().COURSE_ID;
+        return this.submissions.getSource().courseId;
     }
 
     get groupId(): number {
@@ -151,7 +151,7 @@ export default class AddonModAssignSubmissionListPage implements AfterViewInit, 
      * @inheritdoc
      */
     ngAfterViewInit(): void {
-        const selectedStatus = this.submissions.getSource().SELECTED_STATUS;
+        const selectedStatus = this.submissions.getSource().selectedStatus;
         this.title = Translate.instant(
             selectedStatus
                 ? (

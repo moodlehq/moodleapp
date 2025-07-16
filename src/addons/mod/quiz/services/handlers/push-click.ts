@@ -36,14 +36,14 @@ export class AddonModQuizPushClickHandlerService implements CorePushNotification
     priority = 200;
     featureName = ADDON_MOD_QUIZ_FEATURE_NAME;
 
-    protected readonly SUPPORTED_NAMES = ['submission', 'confirmation', 'attempt_overdue'];
+    protected static readonly SUPPORTED_NAMES = ['submission', 'confirmation', 'attempt_overdue'];
 
     /**
      * @inheritdoc
      */
     async handles(notification: AddonModQuizPushNotificationData): Promise<boolean> {
         return CoreUtils.isTrueOrOne(notification.notif) && notification.moodlecomponent == 'mod_quiz' &&
-                this.SUPPORTED_NAMES.indexOf(notification.name ?? '') !== -1 &&
+                AddonModQuizPushClickHandlerService.SUPPORTED_NAMES.indexOf(notification.name ?? '') !== -1 &&
                 !!(notification.customdata?.instance || notification.contexturl);
     }
 

@@ -1,34 +1,34 @@
-@if (timeLeft !== undefined) {
+@if (timeLeft() !== -1) {
 
-    @if (mode !== modeBasic) {
-        <ion-item class="core-timer" role="timer" [attr.aria-label]="timerText">
-            <ion-label class="ion-justify-content-{{align}}">
+    @if (mode() !== modeBasic) {
+        <ion-item class="core-timer" role="timer" [attr.aria-label]="timerText()">
+            <ion-label class="ion-justify-content-{{align()}}">
                 <ng-container *ngTemplateOutlet="timerTemplate" />
             </ion-label>
         </ion-item>
     } @else {
-        <div class="core-timer ion-padding ion-justify-content-{{align}}" role="timer" [attr.aria-label]="timerText">
+        <div class="core-timer ion-padding ion-justify-content-{{align()}}" role="timer" [attr.aria-label]="timerText()">
             <ng-container *ngTemplateOutlet="timerTemplate" />
         </div>
     }
 
     <ng-template #timerTemplate>
-        @if (timeLeft > 0) {
+        @if (timeLeft() > 0) {
 
             <div class="ion-text-wrap">
-                @if (timerText) {
-                    <span class="core-timer-text">{{ timerText }}</span>
+                @if (timerText()) {
+                    <span class="core-timer-text">{{ timerText() }}</span>
                 }
-                @if (showTimeLeft) {
+                @if (showTimeLeft()) {
                     <span class="core-timer-time-left">
-                        {{ timeLeft | coreSecondsToHMS }}
+                        {{ timeLeft() | coreSecondsToHMS }}
                     </span>
                 }
             </div>
 
-            @if (hidable) {
+            @if (canHideTimer()) {
                 <div class="core-timer-visibility">
-                    ( @if (showTimeLeft) {
+                    ( @if (showTimeLeft()) {
                         <button class="as-link" (click)="toggleTimeLeftVisibility()">{{ 'core.hide' | translate }}</button>
                     } @else {
                         <button class="as-link" (click)="toggleTimeLeftVisibility()">{{ 'core.show' | translate }}</button>
@@ -37,8 +37,8 @@
             }
         } @else {
             <div class="core-timesup">
-                @if (timeUpText) {
-                    {{ timeUpText }}
+                @if (timeUpText()) {
+                    {{ timeUpText() }}
                 } @else {
                     {{ 'core.timesup' | translate }}
                 }

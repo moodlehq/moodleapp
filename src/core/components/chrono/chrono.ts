@@ -13,18 +13,7 @@
 // limitations under the License.
 
 import { toBoolean } from '@/core/transforms/boolean';
-import {
-    Component,
-    Input,
-    OnInit,
-    OnChanges,
-    OnDestroy,
-    Output,
-    EventEmitter,
-    SimpleChange,
-    ChangeDetectorRef,
-    inject,
-} from '@angular/core';
+import { Component, OnInit, OnDestroy, input, output, signal, effect } from '@angular/core';
 import { CoreBaseModule } from '@/core/base.module';
 import { CoreSecondsToHMSPipe } from '@pipes/seconds-to-hms';
 
@@ -48,45 +37,34 @@ import { CoreSecondsToHMSPipe } from '@pipes/seconds-to-hms';
         CoreSecondsToHMSPipe,
     ],
 })
-export class CoreChronoComponent implements OnInit, OnChanges, OnDestroy {
+export class CoreChronoComponent implements OnInit, OnDestroy {
 
-    @Input({ transform: toBoolean }) running = false; // Set it to true to start the chrono. Set it to false to stop it.
-    @Input() startTime = 0; // Number of milliseconds to put in the chrono before starting.
-    @Input() endTime?: number; // Number of milliseconds to stop the chrono.
-    @Input({ transform: toBoolean }) reset = false; // Set it to true to reset the chrono.
-    @Input({ transform: toBoolean }) hours = true;
-    @Output() onEnd: EventEmitter<void>; // Will emit an event when the endTime is reached.
+    readonly running = input(false, { transform: toBoolean }); // Set it to true to start the chrono. Set it to false to stop it.
+    readonly startTime = input(0); // Number of milliseconds to put in the chrono before starting.
+    readonly endTime = input<number>(); // Number of milliseconds to stop the chrono.
+    readonly reset = input(false, { transform: toBoolean }); // Set it to true to reset the chrono.
+    readonly hours = input(true, { transform: toBoolean }); // Whether to show hours in the chrono or not.
+    readonly onEnd = output(); // Will emit an event when the endTime is reached.
 
-    time = 0;
-
+    readonly time = signal(0); // Current time in milliseconds.
     protected interval?: number;
-    protected changeDetectorRef = inject(ChangeDetectorRef);
 
     constructor() {
-        this.onEnd = new EventEmitter();
+        effect(() => {
+            this.running() ? this.start() : this.stop();
+        });
+        effect(() => {
+            if (this.reset()) {
+                this.resetChrono();
+            }
+        });
     }
 
     /**
      * @inheritdoc
      */
     ngOnInit(): void {
-        this.time = this.startTime || 0;
-    }
-
-    /**
-     * Component being changed.
-     */
-    ngOnChanges(changes: { [name: string]: SimpleChange }): void {
-        if (changes && changes.running) {
-            if (changes.running.currentValue) {
-                this.start();
-            } else {
-                this.stop();
-            }
-        }
-        if (changes && changes.reset && changes.reset.currentValue) {
-            this.resetChrono();
-        }
+        this.time.set(this.startTime() || 0);
     }
 
     /**
@@ -94,7 +72,7 @@ export class CoreChronoComponent implements OnInit, OnChanges, OnDestroy {
      */
     protected resetChrono(): void {
         this.stop();
-        this.time = this.startTime || 0;
+        this.time.set(this.startTime() || 0);
     }
 
     /**
@@ -110,17 +88,15 @@ export class CoreChronoComponent implements OnInit, OnChanges, OnDestroy {
 
         this.interval = window.setInterval(() => {
             // Increase the chrono.
-            this.time += Date.now() - lastExecTime;
+            this.time.update(time => time + Date.now() - lastExecTime);
             lastExecTime = Date.now();
 
-            if (this.endTime !== undefined && this.time > this.endTime) {
+            const endTime = this.endTime();
+            if (endTime !== undefined && this.time() > endTime) {
                 // End time reached, stop the timer and call the end function.
                 this.stop();
                 this.onEnd.emit();
             }
-
-            // Force change detection. Angular doesn't detect these async operations.
-            this.changeDetectorRef.detectChanges();
         }, 200);
     }
 
@@ -132,6 +108,9 @@ export class CoreChronoComponent implements OnInit, OnChanges, OnDestroy {
         delete this.interval;
     }
 
+    /**
+     * @inheritdoc
+     */
     ngOnDestroy(): void {
         this.stop();
     }

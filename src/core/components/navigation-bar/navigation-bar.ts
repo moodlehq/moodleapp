@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { ContextLevel } from '@/core/constants';
-import { Component, EventEmitter, Input, OnChanges, Output, SimpleChange } from '@angular/core';
+import { Component, computed, input, linkedSignal, output } from '@angular/core';
 import { Translate } from '@singletons';
 import { CoreBaseModule } from '@/core/base.module';
 import { CoreProgressBarComponent } from '@components/progress-bar/progress-bar';
@@ -40,60 +40,37 @@ import { CoreUpdateNonReactiveAttributesDirective } from '@directives/update-non
         CoreProgressBarComponent,
     ],
 })
-export class CoreNavigationBarComponent implements OnChanges {
+export class CoreNavigationBarComponent {
 
-    @Input() items: CoreNavigationBarItem[] = []; // List of items.
-    @Input() previousTranslate = 'core.previous'; // Previous translatable text, can admit $a variable.
-    @Input() nextTranslate = 'core.next'; // Next translatable text, can admit $a variable.
-    @Input() component?: string; // Component the bar belongs to.
-    @Input() componentId?: number; // Component ID.
-    @Input() contextLevel?: ContextLevel; // The context level.
-    @Input() contextInstanceId?: number; // The instance ID related to the context.
-    @Input() courseId?: number; // Course ID the text belongs to. It can be used to improve performance with filters.
+    readonly items = input<CoreNavigationBarItem[]>([]); // List of items.
+    readonly previousTranslate = input('core.previous'); // Previous translatable text, can admit $a variable.
+    readonly nextTranslate = input('core.next'); // Next translatable text, can admit $a variable.
+    readonly component = input<string>(); // Component the bar belongs to.
+    readonly componentId = input<number>(); // Component ID.
+    readonly contextLevel = input<ContextLevel>(); // The context level.
+    readonly contextInstanceId = input<number>(); // The instance ID related to the context.
+    readonly courseId = input<number>(); // Course ID the text belongs to. It can be used to improve performance with filters.
+    readonly action = output<unknown>(); // Function to call when arrow is clicked. Will receive as a param the item to load.
 
-    previousTitle?: string; // Previous item title.
-    nextTitle?: string; // Next item title.
-    previousIndex = -1; // Previous item index. If -1, the previous arrow won't be shown.
-    nextIndex = -1; // Next item index. If -1, the next arrow won't be shown.
-    currentIndex = 0;
-    progress = 0;
-    progressText = '';
+    readonly currentIndex = linkedSignal(() => this.items().findIndex(item => item.current));
+    readonly progress = computed(() => this.currentIndex() >= 0 ? ((this.currentIndex() + 1) / this.items().length) * 100 : 0);
+    readonly progressText = computed(() => this.currentIndex() >= 0 ? `${this.currentIndex() + 1} / ${this.items().length}` : '');
 
-    // Function to call when arrow is clicked. Will receive as a param the item to load.
-    @Output() action: EventEmitter<unknown> = new EventEmitter<unknown>();
+    readonly nextIndex = computed(() => this.currentIndex() >= 0 ?
+        this.items().findIndex((item, index) => item.enabled && index > this.currentIndex()) : -1);
 
-    /**
-     * @inheritdoc
-     */
-    ngOnChanges(changes: {[name: string]: SimpleChange}): void {
-        if (!changes.items || !this.items.length) {
-            return;
-        }
+    readonly nextTitle = computed(() => this.items()[this.nextIndex()] ?
+        Translate.instant(this.nextTranslate(), { $a: this.items()[this.nextIndex()].title || '' }) : '');
 
-        this.currentIndex = this.items.findIndex((item) => item.current);
-        if (this.currentIndex < 0) {
-            return;
-        }
+    readonly previousIndex = computed(() => {
+        const reversedIndex = this.currentIndex() >= 0 ?
+            this.items().slice(0, this.currentIndex()).reverse().findIndex(item => item.enabled) : -1;
 
-        this.progress = ((this.currentIndex + 1) / this.items.length) * 100;
-        this.progressText = `${this.currentIndex + 1} / ${this.items.length}`;
+        return reversedIndex >= 0 ? this.currentIndex() - reversedIndex - 1 : -1;
+    });
 
-        this.nextIndex = this.currentIndex + 1;
-        while (this.items[this.nextIndex] && !this.items[this.nextIndex].enabled) {
-            this.nextIndex++;
-        }
-        this.nextTitle = this.items[this.nextIndex]
-            ? Translate.instant(this.nextTranslate, { $a: this.items[this.nextIndex].title || '' })
-            : '';
-
-        this.previousIndex = this.currentIndex - 1;
-        while (this.items[this.previousIndex] && !this.items[this.previousIndex].enabled) {
-            this.previousIndex--;
-        }
-        this.previousTitle = this.items[this.previousIndex]
-            ? Translate.instant(this.previousTranslate, { $a: this.items[this.previousIndex].title || '' })
-            : '';
-    }
+    readonly previousTitle = computed(() => this.items()[this.previousIndex()] ?
+        Translate.instant(this.previousTranslate(), { $a: this.items()[this.previousIndex()].title || '' }) : '');
 
     /**
      * Navigate to an item.
@@ -101,12 +78,12 @@ export class CoreNavigationBarComponent implements OnChanges {
      * @param itemIndex Selected item index.
      */
     navigate(itemIndex: number): void {
-        if (this.currentIndex == itemIndex || !this.items[itemIndex].enabled) {
+        if (!this.items()[itemIndex].enabled) {
             return;
         }
 
-        this.currentIndex = itemIndex;
-        this.action.emit(this.items[itemIndex].item);
+        this.currentIndex.set(itemIndex);
+        this.action.emit(this.items()[itemIndex].item);
     }
 
 }

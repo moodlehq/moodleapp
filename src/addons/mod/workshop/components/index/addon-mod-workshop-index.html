@@ -64,7 +64,7 @@
     }
 
     @if (workshop) {)
-        @if (description && workshop.phase === PHASE_SETUP) {
+        @if (description && workshop.phase === phaseSetup) {
             <!-- Description (setup phase only) -->
             <ion-card>
                 <ion-item class="ion-text-wrap">
@@ -77,9 +77,9 @@
             </ion-card>
         }
 
-        @if (access && workshop.phase >= PHASE_SUBMISSION) {
+        @if (access && workshop.phase >= phaseSubmission) {
             <div>
-                @if (workshop.phase >= PHASE_CLOSED) {
+                @if (workshop.phase >= phaseClosed) {
                     <!-- CLOSED PHASE -->
 
                     @if (workshop.conclusion) {
@@ -123,7 +123,7 @@
 
                 }
 
-                @if (workshop.phase === PHASE_SUBMISSION && workshop.instructauthors) {
+                @if (workshop.phase === phaseSubmission && workshop.instructauthors) {
                     <!-- SUBMISSION PHASE -->
                     <ion-card>
                         <ion-item class="ion-text-wrap">
@@ -141,7 +141,7 @@
                     <ion-card>
                         <ion-item-divider class="ion-text-wrap">
                             <ion-label>
-                                @if (workshop.phase !== PHASE_CLOSED || !submission) {
+                                @if (workshop.phase !== phaseClosed || !submission) {
                                     <h3 class="item-heading">
                                         {{ 'addon.mod_workshop.yoursubmission' | translate }}
                                     </h3>
@@ -166,7 +166,7 @@
                 }
 
 
-                @if (workshop.phase >= PHASE_CLOSED) {
+                @if (workshop.phase >= phaseClosed) {
 
                     @if (publishedSubmissions && publishedSubmissions.length) {
                         <ion-card>
@@ -184,10 +184,10 @@
 
                 }
 
-                @if (workshop.phase >= PHASE_ASSESSMENT) {
+                @if (workshop.phase >= phaseAssessment) {
                     <!-- ASSESSMENT PHASE -->
 
-                    @if (workshop.phase === PHASE_ASSESSMENT && workshop.instructreviewers) {
+                    @if (workshop.phase === phaseAssessment && workshop.instructreviewers) {
                         <ion-card>
                             <ion-item class="ion-text-wrap">
                                 <ion-label>
@@ -224,15 +224,15 @@
 
                 }
 
-                @if (access.canviewallsubmissions && workshop.phase >= PHASE_SUBMISSION &&
+                @if (access.canviewallsubmissions && workshop.phase >= phaseSubmission &&
                     ((grades && grades.length) || (groupInfo && (groupInfo.separateGroups || groupInfo.visibleGroups)))) {
                     <!-- MULTIPLE PHASES SUBMISSION OR GREATER only teachers -->
                     <ion-card>
                         <ion-item-divider class="ion-text-wrap">
                             <ion-label>
-                                @if (workshop.phase === PHASE_SUBMISSION) {
+                                @if (workshop.phase === phaseSubmission) {
                                     <h3 class="item-heading">{{ 'addon.mod_workshop.submissionsreport' | translate }}</h3>
-                                } @else if (workshop.phase > PHASE_SUBMISSION) {
+                                } @else if (workshop.phase > phaseSubmission) {
                                     <h3 class="item-heading">{{ 'addon.mod_workshop.gradesreport' | translate }}
                                     </h3>
                                 }
@@ -277,7 +277,7 @@
 
     @if (!showLoading) {
         <div collapsible-footer slot="fixed">
-            @if (access && workshop?.phase >= PHASE_SUBMISSION && showSubmit) {
+            @if (access && workshop?.phase >= phaseSubmission && showSubmit) {
                 <div class="list-item-limited-width">
                     <!-- Show only on current phase -->
                     @if (access.creatingsubmissionallowed && !submission) {

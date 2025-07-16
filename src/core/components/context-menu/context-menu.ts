@@ -12,9 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, Input, OnInit, OnDestroy, ElementRef, ChangeDetectorRef, inject } from '@angular/core';
-import { Subject, Subscription } from 'rxjs';
-import { auditTime } from 'rxjs/operators';
+import { Component, OnDestroy, ElementRef, input, signal, computed, inject } from '@angular/core';
 import { CorePopovers } from '@services/overlays/popovers';
 import { CoreUtils } from '@singletons/utils';
 import { Translate } from '@singletons';
@@ -36,55 +34,31 @@ import { CoreUpdateNonReactiveAttributesDirective } from '@directives/update-non
         CoreFaIconDirective,
     ],
 })
-export class CoreContextMenuComponent implements OnInit, OnDestroy {
+export class CoreContextMenuComponent implements OnDestroy {
 
-    @Input() icon = 'ellipsis-vertical'; // Icon to be shown on the navigation bar. Default: Kebab menu icon.
-    @Input('aria-label') ariaLabel?: string; // Aria label to be shown on the top of the popover.
+    readonly icon = input('ellipsis-vertical'); // Icon to be shown on the navigation bar. Default: Kebab menu icon.
+    readonly ariaLabel = input(Translate.instant('core.displayoptions'), { // Aria label to be shown on the top of the popover.
+        alias: 'aria-label',
+    });
 
     /**
      * Title to be shown on the top of the popover.
      *
      * @deprecated since 4.4. Use aria-label instead.
      */
-    @Input() title?: string; // Text to be shown on the top of the popover.
+    readonly title = input<string>(); // Text to be shown on the top of the popover.
 
-    hideMenu = true; // It will be unhidden when items are added.
-    uniqueId: string;
+    readonly hideMenu = computed(() => !this.items().some((item) => !item.hidden())); // Hide menu if all items are hidden.
+    readonly uniqueId = `core-context-menu-${CoreUtils.getUniqueId('CoreContextMenuComponent')}`;
 
-    protected items: CoreContextMenuItemComponent[] = [];
+    protected readonly items = signal<CoreContextMenuItemComponent[]>([]);
     protected itemsMovedToParent: CoreContextMenuItemComponent[] = [];
-    protected itemsChangedStream: Subject<void>; // Stream to update the hideMenu boolean when items change.
     protected parentContextMenu?: CoreContextMenuComponent;
     protected expanded = false;
-    protected itemsSubscription: Subscription;
 
     constructor() {
         const element: HTMLElement = inject(ElementRef).nativeElement;
-        const changeDetector = inject(ChangeDetectorRef);
-
-        // Create the stream and subscribe to it. We ignore successive changes during 250ms.
-        this.itemsChangedStream = new Subject<void>();
-        this.itemsSubscription = this.itemsChangedStream.pipe(auditTime(250)).subscribe(() => {
-            // Hide the menu if all items are hidden.
-            this.hideMenu = !this.items.some((item) => !item.hidden);
-
-            // Sort the items by priority.
-            this.items.sort((a, b) => (a.priority || 0) <= (b.priority || 0) ? 1 : -1);
-
-            changeDetector.detectChanges();
-        });
-
-        // Calculate the unique ID.
-        this.uniqueId = `core-context-menu-${CoreUtils.getUniqueId('CoreContextMenuComponent')}`;
-
         CoreDirectivesRegistry.register(element, this);
-    }
-
-    /**
-     * @inheritdoc
-     */
-    ngOnInit(): void {
-        this.ariaLabel = this.ariaLabel || Translate.instant('core.displayoptions');
     }
 
     /**
@@ -100,21 +74,21 @@ export class CoreContextMenuComponent implements OnInit, OnDestroy {
             if (this.itemsMovedToParent.indexOf(item) === -1) {
                 this.itemsMovedToParent.push(item);
             }
-        } else if (this.items.indexOf(item) == -1) {
-            this.items.push(item);
-            this.itemsChanged();
+        } else if (this.items().indexOf(item) == -1) {
+            this.items.update(items => items.concat(item).sort((a, b) => (a.priority || 0) <= (b.priority || 0) ? 1 : -1));
         }
     }
 
     /**
-     * Function called when the items change.
+     * Function called when the visibility of one or more items change.
      */
-    itemsChanged(): void {
+    itemHiddenChanged(): void {
         if (this.parentContextMenu) {
             // All items were moved to the "parent" menu, call the function in there.
-            this.parentContextMenu.itemsChanged();
+            this.parentContextMenu.itemHiddenChanged();
         } else {
-            this.itemsChangedStream.next();
+            // Notify that items have changed since the visibility has changed.
+            this.items.update(items => Array.from(items));
         }
     }
 
@@ -128,15 +102,14 @@ export class CoreContextMenuComponent implements OnInit, OnDestroy {
         this.parentContextMenu = contextMenu;
 
         // Add all the items to the other menu.
-        for (let i = 0; i < this.items.length; i++) {
-            const item = this.items[i];
+        for (let i = 0; i < this.items().length; i++) {
+            const item = this.items()[i];
             contextMenu.addItem(item);
             this.itemsMovedToParent.push(item);
         }
 
         // Remove all items from the current menu.
-        this.items = [];
-        this.itemsChangedStream.next();
+        this.items.set([]);
     }
 
     /**
@@ -154,11 +127,7 @@ export class CoreContextMenuComponent implements OnInit, OnDestroy {
                 this.itemsMovedToParent.splice(index, 1);
             }
         } else {
-            const index = this.items.indexOf(item);
-            if (index >= 0) {
-                this.items.splice(index, 1);
-            }
-            this.itemsChanged();
+            this.items.update(items => items.filter(i => i !== item));
         }
     }
 
@@ -195,21 +164,18 @@ export class CoreContextMenuComponent implements OnInit, OnDestroy {
 
             const { CoreContextMenuPopoverComponent } = await import('./context-menu-popover');
 
-            const popoverData = await CorePopovers.open<CoreContextMenuItemComponent>({
+            const itemClicked = await CorePopovers.open<CoreContextMenuItemComponent>({
                 event,
                 component: CoreContextMenuPopoverComponent,
                 componentProps: {
-                    items: this.items,
+                    items: this.items(),
                 },
                 id: this.uniqueId,
             });
 
             this.expanded = false;
 
-            if (popoverData) {
-                popoverData.onClosed?.emit();
-            }
-
+            itemClicked?.onClosed?.emit();
         }
     }
 
@@ -218,7 +184,6 @@ export class CoreContextMenuComponent implements OnInit, OnDestroy {
      */
     ngOnDestroy(): void {
         this.removeMergedItems();
-        this.itemsSubscription.unsubscribe();
     }
 
 }

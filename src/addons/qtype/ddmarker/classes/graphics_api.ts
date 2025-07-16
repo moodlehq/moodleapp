@@ -20,7 +20,7 @@ import { AddonQtypeDdMarkerQuestion } from './ddmarker';
  */
 export class AddonQtypeDdMarkerGraphicsApi {
 
-    protected readonly NS = 'http://www.w3.org/2000/svg';
+    protected static readonly NS = 'http://www.w3.org/2000/svg';
     protected dropZone?: SVGSVGElement;
 
     constructor(protected instance: AddonQtypeDdMarkerQuestion) { }
@@ -33,7 +33,7 @@ export class AddonQtypeDdMarkerGraphicsApi {
      * @returns The new shape.
      */
     addShape(shapeAttribs: {type: string; color: string}, styles: {[name: string]: number | string}): SVGElement {
-        const shape = document.createElementNS(this.NS, shapeAttribs.type);
+        const shape = document.createElementNS(AddonQtypeDdMarkerGraphicsApi.NS, shapeAttribs.type);
         shape.setAttribute('fill', shapeAttribs.color);
         shape.setAttribute('fill-opacity', '0.5');
         shape.setAttribute('stroke', 'black');
@@ -72,7 +72,7 @@ export class AddonQtypeDdMarkerGraphicsApi {
         markerTexts.style.height = `${bgImg.height}px`;
 
         if (!this.dropZone) {
-            this.dropZone = <SVGSVGElement> document.createElementNS(this.NS, 'svg');
+            this.dropZone = <SVGSVGElement> document.createElementNS(AddonQtypeDdMarkerGraphicsApi.NS, 'svg');
             dropZones.appendChild(this.dropZone);
         } else {
             // Remove all children.

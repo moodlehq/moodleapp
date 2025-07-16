@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { toBoolean } from '@/core/transforms/boolean';
-import { Component, HostBinding, Input } from '@angular/core';
+import { Component, input } from '@angular/core';
 import { CoreBaseModule } from '@/core/base.module';
 import { CoreFaIconDirective } from '@directives/fa-icon';
 
@@ -33,21 +33,20 @@ import { CoreFaIconDirective } from '@directives/fa-icon';
         CoreBaseModule,
         CoreFaIconDirective,
     ],
+    host: {
+        '[class.dimmed]': 'dimmed()',
+    },
 })
 export class CoreEmptyBoxComponent {
 
-    @Input() message = ''; // Message to display.
-    @Input({ transform: toBoolean }) dimmed = false; // Wether the box is dimmed or not.
-    @Input() icon?: string; // Name of the icon to use.
-    @Input() image?: string; // Image source. If an icon is provided, image won't be used.
+    readonly message = input(''); // Message to display.
+    readonly dimmed = input(false, { transform: toBoolean }); // Wether the box is dimmed or not.
+    readonly icon = input(); // Name of the icon to use.
+    readonly image = input(); // Image source. If an icon is provided, image won't be used.
+
     /**
      * @deprecated since 4.4. Not used anymore.
      */
-    @Input({ transform: toBoolean }) flipIconRtl = false;
-
-    @HostBinding('class.dimmed')
-    get isDimmed(): boolean {
-        return this.dimmed;
-    }
+    readonly flipIconRtl = input(false, { transform: toBoolean });
 
 }

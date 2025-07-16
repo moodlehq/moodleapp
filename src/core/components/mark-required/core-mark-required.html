@@ -1,4 +1,4 @@
 <ng-content />
-@if (coreMarkRequired) {
+@if (coreMarkRequired()) {
     <ion-icon class="core-input-required-asterisk" name="fas-circle-exclamation" color="danger" [attr.aria-label]="requiredLabel" />
 }

@@ -33,9 +33,9 @@ export class AddonModForumDiscussionsSource extends CoreRoutedItemsManagerSource
 
     static readonly NEW_DISCUSSION: AddonModForumNewDiscussionForm = { newDiscussion: true };
 
-    readonly DISCUSSIONS_PATH_PREFIX: string;
-    readonly COURSE_ID: number;
-    readonly CM_ID: number;
+    readonly discussionsPathPrefix: string;
+    readonly courseId: number;
+    readonly cmId: number;
 
     forum?: AddonModForumData;
     trackPosts = false;
@@ -51,9 +51,9 @@ export class AddonModForumDiscussionsSource extends CoreRoutedItemsManagerSource
     constructor(courseId: number, cmId: number, discussionsPathPrefix: string) {
         super();
 
-        this.DISCUSSIONS_PATH_PREFIX = discussionsPathPrefix;
-        this.COURSE_ID = courseId;
-        this.CM_ID = cmId;
+        this.discussionsPathPrefix = discussionsPathPrefix;
+        this.courseId = courseId;
+        this.cmId = cmId;
     }
 
     /**
@@ -91,14 +91,14 @@ export class AddonModForumDiscussionsSource extends CoreRoutedItemsManagerSource
      */
     getItemPath(discussion: AddonModForumDiscussionItem): string {
         if (this.isOnlineDiscussion(discussion)) {
-            return this.DISCUSSIONS_PATH_PREFIX + discussion.discussion;
+            return this.discussionsPathPrefix + discussion.discussion;
         }
 
         if (this.isOfflineDiscussion(discussion)) {
-            return `${this.DISCUSSIONS_PATH_PREFIX}new/${discussion.timecreated}`;
+            return `${this.discussionsPathPrefix}new/${discussion.timecreated}`;
         }
 
-        return `${this.DISCUSSIONS_PATH_PREFIX}new/0`;
+        return `${this.discussionsPathPrefix}new/0`;
     }
 
     /**
@@ -106,8 +106,8 @@ export class AddonModForumDiscussionsSource extends CoreRoutedItemsManagerSource
      */
     getItemQueryParams(discussion: AddonModForumDiscussionItem): Params {
         const params: Params = {
-            courseId: this.COURSE_ID,
-            cmId: this.CM_ID,
+            courseId: this.courseId,
+            cmId: this.cmId,
             forumId: this.forum?.id,
         };
 
@@ -145,7 +145,7 @@ export class AddonModForumDiscussionsSource extends CoreRoutedItemsManagerSource
      * Load forum.
      */
     async loadForum(): Promise<void> {
-        this.forum = await AddonModForum.getForum(this.COURSE_ID, this.CM_ID);
+        this.forum = await AddonModForum.getForum(this.courseId, this.cmId);
 
         if (this.forum.istracked !== undefined) {
             this.trackPosts = this.forum.istracked;
@@ -157,8 +157,8 @@ export class AddonModForumDiscussionsSource extends CoreRoutedItemsManagerSource
      */
     async loadGroupInfo(forumId: number): Promise<void> {
         [this.groupInfo, this.allPartsPermissions] = await Promise.all([
-            CoreGroups.getActivityGroupInfo(this.CM_ID, false),
-            CorePromiseUtils.ignoreErrors(AddonModForum.canAddDiscussionToAll(forumId, { cmId: this.CM_ID })),
+            CoreGroups.getActivityGroupInfo(this.cmId, false),
+            CorePromiseUtils.ignoreErrors(AddonModForum.canAddDiscussionToAll(forumId, { cmId: this.cmId })),
         ]);
 
         this.supportsChangeGroup = AddonModForum.isGetDiscussionPostsAvailable();
@@ -177,7 +177,7 @@ export class AddonModForumDiscussionsSource extends CoreRoutedItemsManagerSource
         } else if (this.groupId === 0) {
             this.canAddDiscussionToGroup = !this.allPartsPermissions || this.allPartsPermissions.status;
         } else if (this.forum) {
-            const addDiscussionData = await AddonModForum.canAddDiscussion(this.forum.id, this.groupId, { cmId: this.CM_ID });
+            const addDiscussionData = await AddonModForum.canAddDiscussion(this.forum.id, this.groupId, { cmId: this.cmId });
 
             this.canAddDiscussionToGroup = addDiscussionData.status;
         } else {
@@ -312,7 +312,7 @@ export class AddonModForumDiscussionsSource extends CoreRoutedItemsManagerSource
             }
 
             try {
-                const user = await CoreUser.getProfile(discussion.userid, this.COURSE_ID, true);
+                const user = await CoreUser.getProfile(discussion.userid, this.courseId, true);
 
                 discussion.userfullname = user.fullname;
                 discussion.userpictureurl = user.profileimageurl;
@@ -335,7 +335,7 @@ export class AddonModForumDiscussionsSource extends CoreRoutedItemsManagerSource
     async invalidateCache(): Promise<void> {
         const promises: Promise<void>[] = [];
 
-        promises.push(AddonModForum.invalidateForumData(this.COURSE_ID));
+        promises.push(AddonModForum.invalidateForumData(this.courseId));
 
         if (this.forum) {
             promises.push(AddonModForum.invalidateDiscussionsList(this.forum.id));

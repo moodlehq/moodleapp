@@ -623,7 +623,7 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
             }
         }
 
-        this.sortCourses(this.sort.selected);
+        this.sortCourses(false);
 
         // Refresh prefetch data (if enabled).
         this.prefetchIconsInitialized = false;
@@ -648,15 +648,15 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
     /**
      * Sort courses
      *
-     * @param sort Sort by value.
+     * @param saveSort Whether to save the sort option.
      */
-    sortCourses(sort: string): void {
+    sortCourses(saveSort = true): void {
         if (!this.sort.enabled) {
             return;
         }
 
-        if (this.sort.selected != sort) {
-            this.saveSort(sort);
+        if (saveSort) {
+            this.saveSort(this.sort.selected);
         }
 
         if (this.sort.selected == 'lastaccess') {
@@ -711,17 +711,6 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
         this.sort.selected = sort;
 
         await this.currentSite.setLocalSiteConfig('AddonBlockMyOverviewSort', this.sort.selected);
-    }
-
-    /**
-     * Option selected save and apply filter.
-     *
-     * @param selected Option selected.
-     * @returns Promise resolved when done.
-     */
-    async filterOptionsChanged(selected: string): Promise<void> {
-        this.filters.timeFilterSelected = selected;
-        this.filterCourses();
     }
 
     /**

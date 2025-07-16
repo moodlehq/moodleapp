@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, Input, Output, OnInit, OnDestroy, EventEmitter, OnChanges, SimpleChange, inject } from '@angular/core';
+import { Component, Output, OnInit, OnDestroy, EventEmitter, effect, input, model, computed, inject } from '@angular/core';
 import { CoreContextMenuComponent } from '../context-menu/context-menu';
 import { toBoolean } from '@/core/transforms/boolean';
 import { CoreUtils } from '@singletons/utils';
@@ -34,58 +34,57 @@ import { CoreUtils } from '@singletons/utils';
     selector: 'core-context-menu-item',
     template: '',
 })
-export class CoreContextMenuItemComponent implements OnInit, OnDestroy, OnChanges {
+export class CoreContextMenuItemComponent implements OnInit, OnDestroy {
 
-    @Input() content?: string; // Content of the item.
-    @Input() iconAction?: string; // Name of the icon to show on the right side of the item. Represents the action to do on click.
+    readonly content = input<string>(); // Content of the item.
+    readonly iconAction = input<string>(); // Icon to show on the right side of the item. Represents the action to do on click.
     // If is "spinner" an spinner will be shown.
     // If is "toggle" a toggle switch will be shown.
     // If no icon or spinner is selected, no action or link will work.
     // If href but no iconAction is provided arrow-right will be used.
-    @Input({ transform: toBoolean }) iconSlash = false; // Display a red slash over the icon.
-    @Input() ariaAction?: string; // Aria label to add to iconAction. If not set, it will be equal to content.
-    @Input() href?: string; // Link to go if no action provided.
-    @Input({ transform: toBoolean }) captureLink = false; // Whether the link needs to be captured by the app.
-    @Input({ transform: toBoolean }) autoLogin = true; // Whether the link needs to be opened using auto-login.
-    @Input({ transform: toBoolean }) closeOnClick = true; // Whether to close the popover when the item is clicked.
-    @Input() priority?: number; // Used to sort items. The highest priority, the highest position.
-    @Input() badge?: string; // A badge to show in the item.
-    @Input() badgeClass?: number; // A class to set in the badge.
-    @Input() badgeA11yText?: string; // Description for the badge, if needed.
-    @Input({ transform: toBoolean }) hidden = false; // Whether the item should be hidden.
-    @Input({ transform: toBoolean }) showBrowserWarning = true; // Whether to show a warning before opening browser (for links).
-    @Input({ transform: toBoolean }) toggle = false; // Whether the toggle is on or off.
-    @Output() action?: EventEmitter<() => void>; // Will emit an event when the item clicked.
-    @Output() onClosed?: EventEmitter<() => void>; // Will emit an event when the popover is closed because the item was clicked.
-    @Output() toggleChange = new EventEmitter<boolean>();// Will emit an event when toggle changes to enable 2-way data binding.
+    readonly iconSlash = input(false, { transform: toBoolean }); // Display a red slash over the icon.
+    readonly ariaAction = input<string>(); // Aria label to add to iconAction. If not set, it will be equal to content.
+    readonly href = input<string>(); // Link to go if no action provided.
+    readonly captureLink = input(false, { transform: toBoolean }); // Whether the link needs to be captured by the app.
+    readonly autoLogin = input(true, { transform: toBoolean }); // Whether the link needs to be opened using auto-login.
+    readonly closeOnClick = input(true, { transform: toBoolean }); // Whether to close the popover when the item is clicked.
+    readonly priority = input<number>(1); // Used to sort items. The highest priority, the highest position.
+    readonly badge = input<string>(); // A badge to show in the item.
+    readonly badgeClass = input<number>(); // A class to set in the badge.
+    readonly badgeA11yText = input<string>(); // Description for the badge, if needed.
+    readonly hidden = input(false, { transform: toBoolean }); // Whether the item should be hidden.
+    readonly showBrowserWarning = input(true, { transform: toBoolean }); // Show a warning before opening links in browser.
+    readonly toggle = model(false); // Whether the toggle is on or off.
+
+    // New output syntax doesn't have the 'observed' property, keep EventEmitter for now.
+    // See https://github.com/angular/angular/issues/54837
+    @Output() action = new EventEmitter<() => void>(); // Will emit an event when the item clicked.
+    @Output() onClosed = new EventEmitter<() => void>(); // Will emit an event when the popover is closed because item was clicked.
+    @Output() toggleChange = new EventEmitter<boolean>(); // Will emit an event when toggle changes to enable 2-way data binding.
 
     uniqueId = CoreUtils.getUniqueId('CoreContextMenuItem');
+    // Effective href to use when the item is clicked. Use this instead of href directly.
+    readonly effectiveHref = computed(() => this.action.observed ? undefined : this.href());
 
-    protected hasAction = false;
+    protected previousHiddenValue: boolean | undefined; // Previous value of hidden, used to detect if it's the first change.
     protected destroyed = false;
     protected ctxtMenu = inject(CoreContextMenuComponent);
 
     constructor() {
-        this.action = new EventEmitter();
-        this.onClosed = new EventEmitter();
+        effect(() => {
+            if (this.previousHiddenValue !== undefined) {
+                // Not the first execution, notify that items have changed.
+                this.ctxtMenu.itemHiddenChanged();
+            }
+
+            this.previousHiddenValue = this.hidden();
+        });
     }
 
     /**
      * @inheritdoc
      */
     ngOnInit(): void {
-        // Initialize values.
-        this.priority = this.priority || 1;
-        this.hasAction = !!this.action && this.action.observed;
-        this.ariaAction = this.ariaAction || this.content;
-
-        if (this.hasAction) {
-            this.href = '';
-        }
-
-        // Navigation help if href provided.
-        this.captureLink = this.href && this.captureLink ? this.captureLink : false;
-
         if (!this.destroyed) {
             this.ctxtMenu.addItem(this);
         }
@@ -99,7 +98,7 @@ export class CoreContextMenuItemComponent implements OnInit, OnDestroy, OnChange
     toggleChanged(event: Event): void {
         event.preventDefault();
         event.stopPropagation();
-        this.toggleChange.emit(this.toggle);
+        this.toggleChange.emit(this.toggle());
     }
 
     /**
@@ -108,15 +107,6 @@ export class CoreContextMenuItemComponent implements OnInit, OnDestroy, OnChange
     ngOnDestroy(): void {
         this.destroyed = true;
         this.ctxtMenu.removeItem(this);
-    }
-
-    /**
-     * Detect changes on input properties.
-     */
-    ngOnChanges(changes: { [name: string]: SimpleChange }): void {
-        if (changes.hidden && !changes.hidden.firstChange) {
-            this.ctxtMenu.itemsChanged();
-        }
     }
 
 }

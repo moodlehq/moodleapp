@@ -13,11 +13,10 @@
 // limitations under the License.
 
 import {
-    Component,
-    Input,
-    Output,
-    EventEmitter,
-    ChangeDetectionStrategy,
+  Component,
+  ChangeDetectionStrategy,
+  input,
+  model,
 } from '@angular/core';
 import { CoreGroupInfo } from '@services/groups';
 import { CoreBaseModule } from '@/core/base.module';
@@ -40,10 +39,9 @@ import { CoreFormatTextDirective } from '@directives/format-text';
 })
 export class CoreGroupSelectorComponent {
 
-    @Input() groupInfo?: CoreGroupInfo;
-    @Input() multipleGroupsMessage?: string;
-    @Input({ required: true }) selected!: number;
-    @Input() courseId?: number;
-    @Output() selectedChange = new EventEmitter<number>();
+    readonly groupInfo = input<CoreGroupInfo>();
+    readonly multipleGroupsMessage = input<string>();
+    readonly selected = model.required<number>();
+    readonly courseId = input<number>();
 
 }
