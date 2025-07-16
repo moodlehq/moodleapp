@@ -1,23 +1,31 @@
-<ion-item class="ion-text-wrap">
-    <ion-label>
-        @if (html()) {
-            @if (title()) {
-                <p class="item-heading">
-                    <core-format-text [text]="title()" [siteId]="formatTextOptions()?.siteId" [component]="formatTextOptions()?.component"
+
+@if (item()) {
+    <ion-item class="ion-text-wrap">
+        <ion-label>
+            @if (html()) {
+                @if (title()) {
+                    <p class="item-heading">
+                        <core-format-text [text]="title()" [siteId]="formatTextOptions()?.siteId"
+                            [component]="formatTextOptions()?.component" [componentId]="formatTextOptions()?.componentId"
+                            [contextLevel]="formatTextOptions()?.contextLevel" [contextInstanceId]="formatTextOptions()?.contextInstanceId"
+                            [courseId]="formatTextOptions()?.courseId" />
+                    </p>
+                }
+                <p>
+                    <core-format-text [text]="content()" [siteId]="formatTextOptions()?.siteId" [component]="formatTextOptions()?.component"
                         [componentId]="formatTextOptions()?.componentId" [contextLevel]="formatTextOptions()?.contextLevel"
                         [contextInstanceId]="formatTextOptions()?.contextInstanceId" [courseId]="formatTextOptions()?.courseId" />
                 </p>
+            } @else {
+                @if (title()) {
+                    <p class="item-heading">{{title()}}</p>
+                }
+                <p>{{content()}}</p>
             }
-            <p>
-                <core-format-text [text]="content()" [siteId]="formatTextOptions()?.siteId" [component]="formatTextOptions()?.component"
-                    [componentId]="formatTextOptions()?.componentId" [contextLevel]="formatTextOptions()?.contextLevel"
-                    [contextInstanceId]="formatTextOptions()?.contextInstanceId" [courseId]="formatTextOptions()?.courseId" />
-            </p>
-        } @else {
-            @if (title()) {
-                <p class="item-heading">{{title()}}</p>
-            }
-            <p>{{content()}}</p>
-        }
-    </ion-label>
-</ion-item>
+        </ion-label>
+    </ion-item>
+} @else {
+    <core-format-text [text]="content()" [siteId]="formatTextOptions()?.siteId" [component]="formatTextOptions()?.component"
+        [componentId]="formatTextOptions()?.componentId" [contextLevel]="formatTextOptions()?.contextLevel"
+        [contextInstanceId]="formatTextOptions()?.contextInstanceId" [courseId]="formatTextOptions()?.courseId" />
+}

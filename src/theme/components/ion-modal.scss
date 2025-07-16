@@ -30,6 +30,11 @@ ion-modal {
         }
     }
 
+    &.core-bootstrap-modal {
+        --height: auto;
+        --background: transparent;
+    }
+
     &.modal-sheet::part(handle) {
         background: var(--core-header-buttons-color);
     }
