@@ -55,6 +55,7 @@ import { toBoolean } from '@/core/transforms/boolean';
 import { ADDON_CALENDAR_UNDELETED_EVENT_EVENT } from '@addons/calendar/constants';
 import { CoreAlerts } from '@services/overlays/alerts';
 import { CoreSharedModule } from '@/core/shared.module';
+import { CoreUser } from '@features/user/services/user';
 
 /**
  * Component that displays a calendar.
@@ -507,7 +508,7 @@ class AddonCalendarMonthSlidesItemsManagerSource extends CoreSwipeSlidesDynamicI
      * @returns Promise resolved when done.
      */
     async loadTimeFormat(): Promise<void> {
-        this.timeFormat = await AddonCalendar.getCalendarTimeFormat();
+        this.timeFormat = await CoreUser.getPreferredTimeFormat();
     }
 
     /**

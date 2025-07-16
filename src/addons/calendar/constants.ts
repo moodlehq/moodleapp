@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import { CORE_USER_TF_12, CORE_USER_TF_24 } from '@features/user/constants';
+
 export const ADDON_CALENDAR_COMPONENT = 'AddonCalendarEvents';
 
 export const ADDON_CALENDAR_PAGE_NAME = 'calendar';
@@ -25,8 +27,16 @@ export const ADDON_CALENDAR_SYNC_ID = 'calendar';
 export const ADDON_CALENDAR_DAYS_INTERVAL = 30;
 
 export const ADDON_CALENDAR_STARTING_WEEK_DAY = 'addon_calendar_starting_week_day';
-export const ADDON_CALENDAR_TF_24 = '%H:%M'; // Calendar time in 24 hours format.
-export const ADDON_CALENDAR_TF_12 = '%I:%M %p'; // Calendar time in 12 hours format.
+
+/**
+ * @deprecated since 5.1. Use CORE_USER_TF_24.
+ */
+export const ADDON_CALENDAR_TF_24 = CORE_USER_TF_24;
+
+/**
+ * @deprecated since 5.1. Use CORE_USER_TF_24.
+ */
+export const ADDON_CALENDAR_TF_12 = CORE_USER_TF_12;
 
 export const ADDON_CALENDAR_NEW_EVENT_EVENT = 'addon_calendar_new_event';
 export const ADDON_CALENDAR_NEW_EVENT_DISCARDED_EVENT = 'addon_calendar_new_event_discarded';

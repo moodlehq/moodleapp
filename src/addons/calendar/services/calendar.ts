@@ -54,8 +54,6 @@ import {
     ADDON_CALENDAR_NEW_EVENT_EVENT,
     ADDON_CALENDAR_PAGE_NAME,
     ADDON_CALENDAR_STARTING_WEEK_DAY,
-    ADDON_CALENDAR_TF_12,
-    ADDON_CALENDAR_TF_24,
     ADDON_CALENDAR_UNDELETED_EVENT_EVENT,
     AddonCalendarEventType,
 } from '../constants';
@@ -499,28 +497,10 @@ export class AddonCalendarProvider {
      *
      * @param siteId ID of the site. If not defined, use current site.
      * @returns Promise resolved with the format.
+     * @deprecated since 5.1. Use CoreUser.getPreferredTimeFormat instead.
      */
-    async getCalendarTimeFormat(siteId?: string): Promise<string> {
-        const site = await CoreSites.getSite(siteId);
-        let format: string | undefined | null;
-
-        try {
-            format = await CoreUser.getUserPreference('calendar_timeformat');
-        } catch {
-            // Ignore errors.
-        }
-
-        if (!format || format === '0') {
-            format = site.getStoredConfig('calendar_site_timeformat');
-        }
-
-        if (format === ADDON_CALENDAR_TF_12) {
-            format = Translate.instant('core.strftimetime12');
-        } else if (format === ADDON_CALENDAR_TF_24) {
-            format = Translate.instant('core.strftimetime24');
-        }
-
-        return format && format !== '0' ? format : Translate.instant('core.strftimetime');
+    getCalendarTimeFormat(siteId?: string): Promise<string> {
+        return CoreUser.getPreferredTimeFormat(siteId);
     }
 
     /**

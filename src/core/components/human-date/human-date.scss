@@ -1,0 +1,5 @@
+@use "theme/globals" as *;
+
+ion-icon {
+    @include margin-horizontal(0px, 8px);
+}
