@@ -21,7 +21,6 @@ import { CoreFileUploader } from '@features/fileuploader/services/fileuploader';
 import { CoreRatingInfo, CoreRatingProvider } from '@features/rating/services/rating';
 import { CoreRatingOffline } from '@features/rating/services/rating-offline';
 import { CoreRatingSyncProvider } from '@features/rating/services/rating-sync';
-import { CoreUser } from '@features/user/services/user';
 import { CanLeave } from '@guards/can-leave';
 import { IonContent } from '@ionic/angular';
 import { CoreNetwork } from '@services/network';
@@ -66,6 +65,7 @@ import { CoreObject } from '@singletons/object';
 import { CoreAlerts } from '@services/overlays/alerts';
 import { AddonModForumPostComponent } from '../../components/post/post';
 import { CoreSharedModule } from '@/core/shared.module';
+import { CoreUserPreferences } from '@features/user/services/user-preferences';
 
 type SortType = 'flat-newest' | 'flat-oldest' | 'nested';
 
@@ -365,7 +365,7 @@ export default class AddonModForumDiscussionPage implements OnInit, AfterViewIni
             return value;
         } catch {
             try {
-                const value = await CoreUser.getUserPreference('forum_displaymode');
+                const value = await CoreUserPreferences.getPreference('forum_displaymode');
 
                 switch (Number(value)) {
                     case 1:

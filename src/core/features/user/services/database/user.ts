@@ -46,7 +46,7 @@ export const CORE_USER_CACHE_SITE_SCHEMA: CoreSiteSchema = {
 };
 
 /**
- * Database variables for CoreUserOffline service.
+ * Database variables for CoreUserPreferencesOffline service.
  */
 export const USER_PREFERENCES_TABLE_NAME = 'user_preferences';
 export const CORE_USER_OFFLINE_SITE_SCHEMA: CoreSiteSchema = {

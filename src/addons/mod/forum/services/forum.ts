@@ -54,6 +54,7 @@ import { CoreWSError } from '@classes/errors/wserror';
 import { CoreObject } from '@singletons/object';
 import { CoreTextFormat } from '@singletons/text';
 import { CoreCourseModuleHelper } from '@features/course/services/course-module-helper';
+import { CoreUserPreferences } from '@features/user/services/user-preferences';
 
 declare module '@singletons/events' {
 
@@ -728,7 +729,7 @@ export class AddonModForumProvider {
 
         if (this.isDiscussionListSortingAvailable()) {
             const preferenceValue = await CorePromiseUtils.ignoreErrors(
-                CoreUser.getUserPreference(ADDON_MOD_FORUM_PREFERENCE_SORTORDER),
+                CoreUserPreferences.getPreference(ADDON_MOD_FORUM_PREFERENCE_SORTORDER),
             );
 
             sortOrderValue = preferenceValue ? parseInt(preferenceValue, 10) : null;
@@ -930,7 +931,7 @@ export class AddonModForumProvider {
         });
 
         if (this.isDiscussionListSortingAvailable()) {
-            promises.push(CoreUser.invalidateUserPreference(ADDON_MOD_FORUM_PREFERENCE_SORTORDER));
+            promises.push(CoreUserPreferences.invalidatePreference(ADDON_MOD_FORUM_PREFERENCE_SORTORDER));
         }
 
         return CorePromiseUtils.allPromises(promises);

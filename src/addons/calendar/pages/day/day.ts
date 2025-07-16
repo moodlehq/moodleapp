@@ -59,7 +59,7 @@ import {
 import { CoreObject } from '@singletons/object';
 import { CoreAlerts } from '@services/overlays/alerts';
 import { CoreSharedModule } from '@/core/shared.module';
-import { CoreUser } from '@features/user/services/user';
+import { CoreUserPreferences } from '@features/user/services/user-preferences';
 
 /**
  * Page that displays the calendar events for a certain day.
@@ -650,7 +650,7 @@ class AddonCalendarDaySlidesItemsManagerSource extends CoreSwipeSlidesDynamicIte
      * @returns Promise resolved when done.
      */
     async loadTimeFormat(): Promise<void> {
-        this.timeFormat = await CoreUser.getPreferredTimeFormat();
+        this.timeFormat = await CoreUserPreferences.getTimeFormat();
     }
 
     /**

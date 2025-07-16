@@ -17,7 +17,7 @@ import { CoreBaseModule } from '@/core/base.module';
 import { CoreConstants } from '@/core/constants';
 import { dayjs } from '@/core/utils/dayjs';
 import { CoreTime } from '@singletons/time';
-import { CoreUser } from '@features/user/services/user';
+import { CoreUserPreferences } from '@features/user/services/user-preferences';
 
 /**
  * Component to show a date in a human readable format. It's equivalent to Moodle's humandate renderable.
@@ -75,7 +75,7 @@ export class CoreHumanDateComponent {
      * Load preferred time format.
      */
     protected async loadPreferredTimeFormat(): Promise<void> {
-        const timeFormat = await CoreUser.getPreferredTimeFormat();
+        const timeFormat = await CoreUserPreferences.getTimeFormat();
 
         this.timeFormat.set(timeFormat);
     }
