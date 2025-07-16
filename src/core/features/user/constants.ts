@@ -43,3 +43,7 @@ export const CORE_USER_NOREPLY_USER = -10;
  * Max of participants to retrieve in each WS call.
  */
 export const CORE_USER_PARTICIPANTS_LIST_LIMIT = 50;
+
+// Time formats.
+export const CORE_USER_TF_24 = '%H:%M'; // Time format in 24 hours format.
+export const CORE_USER_TF_12 = '%I:%M %p'; // Time format in 12 hours format.

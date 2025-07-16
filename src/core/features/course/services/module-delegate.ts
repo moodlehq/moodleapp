@@ -266,8 +266,17 @@ export interface CoreCourseModuleHandlerButton {
  * Data to render a course overview item.
  * It can either be a component class to render the item, or a string with content to display (if null, empty content).
  */
-export type CoreCourseOverviewItemContent = ({ component: Type<unknown> } | { content: string | null }) & {
+export type CoreCourseOverviewItemContent = (OverviewItemContentComponentData | { content: string | null }) & {
     classes?: string[];
+};
+
+/**
+ * Data to render a course overview item using a component.
+ */
+type OverviewItemContentComponentData = {
+    component: Type<unknown>;
+    componentData?: Record<string, unknown>; // If set, extra data to pass to the component. By default, the app will pass the
+                                             // item and other data like the activity data and course ID.
 };
 
 /**
