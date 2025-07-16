@@ -4,11 +4,7 @@
             <ion-back-button [text]="'core.back' | translate" />
         </ion-buttons>
         <ion-title>
-            @if (!showOnlyEnrolled) {
-                <h1>{{ 'core.courses.availablecourses' | translate }}</h1>
-            } @else {
-                <h1>{{ 'core.courses.mycourses' | translate }}</h1>
-            }
+            <h1>{{ 'core.courses.availablecourses' | translate }}</h1>
         </ion-title>
         <ion-buttons slot="end">
             <core-context-menu>
@@ -16,8 +12,6 @@
                     <core-context-menu-item [priority]="1000" [content]="'core.settings.showdownloadoptions' | translate"
                         (action)="toggleDownload()" iconAction="toggle" [(toggle)]="downloadEnabled" />
                 }
-                <core-context-menu-item [priority]="900" [content]="'core.courses.showonlyenrolled' | translate" (action)="toggleEnrolled()"
-                    iconAction="toggle" [(toggle)]="showOnlyEnrolled" />
             </core-context-menu>
             <core-user-menu-button />
         </ion-buttons>
@@ -30,8 +24,14 @@
 
     @if (searchEnabled) {
         <core-search-box (onSubmit)="search($event)" (onClear)="clearSearch()" [placeholder]="'core.courses.search' | translate"
-            [searchLabel]="'core.courses.search' | translate" [autoFocus]="searchMode" searchArea="CoreCoursesSearch" [lengthCheck]="1" />
+            [searchLabel]="'core.courses.search' | translate" [autoFocus]="searchMode && !searchText" searchArea="CoreCoursesSearch"
+            [lengthCheck]="1" [initialSearch]="searchText" />
     }
+    <ion-item class="ion-text-wrap" lines="none">
+        <ion-toggle [(ngModel)]="showOnlyEnrolled" (ionChange)="toggleEnrolled()">
+            {{ 'core.courses.showonlyenrolled' | translate }}
+        </ion-toggle>
+    </ion-item>
 
     <core-loading [hideUntil]="loaded" [message]="loadingMessage" placeholderType="column" placeholderHeight="108px">
         @if (searchMode && searchTotal > 0) {

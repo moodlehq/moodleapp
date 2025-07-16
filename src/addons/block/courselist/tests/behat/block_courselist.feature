@@ -32,7 +32,8 @@ Feature: View the my courses block and check it links to the my page
     When I press "Open block drawer" in the app
     Then I should find "My courses" in the app
     When I press "My courses" in the app
-    Then the header should be "My courses" in the app
+    Then the header should be "Available courses" in the app
+    And "Show only my courses" "ion-toggle" should be selected in the app
     And I should find "Course 1" in the app
     And I should find "Course 2" in the app
     And I should find "Course 3" in the app

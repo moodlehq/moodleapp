@@ -6,8 +6,8 @@
             <ion-icon name="fas-magnifying-glass" slot="icon-only" aria-hidden="true" />
         </ion-button>
         @if (showClear) {
-            <ion-button slot="end" fill="clear" [ariaLabel]="'core.clearsearch' | translate" [disabled]="searched === '' || disabled"
-                (click)="clearForm()">
+            <ion-button slot="end" fill="clear" [ariaLabel]="'core.clearsearch' | translate"
+                [disabled]="!initialSearch && (searched === '' || disabled)" (click)="clearForm()">
                 <ion-icon name="fas-delete-left" slot="icon-only" aria-hidden="true" flip-rtl />
             </ion-button>
         }
