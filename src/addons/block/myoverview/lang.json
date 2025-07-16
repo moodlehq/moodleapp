@@ -3,7 +3,7 @@
     "allincludinghidden": "All (including removed from view)",
     "aria:card": "Switch to card view",
     "aria:list": "Switch to list view",
-    "browseallcourses": "Browse all courses",
+    "browseallcourses": "Browse available courses",
     "favourites": "Starred",
     "future": "Future",
     "hiddencourses": "Removed from view",
@@ -15,6 +15,7 @@
     "noresultdescription": "Try adjusting your filters or browse all courses below.",
     "past": "Past",
     "pluginname": "Course overview",
+    "searchavailablecourses": "Search available courses",
     "shortname": "Short name",
     "title": "Course name"
 }
