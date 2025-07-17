@@ -185,3 +185,18 @@ export enum QRScannerCamera {
     BACK_CAMERA = 0,
     FRONT_CAMERA = 1,
 }
+
+export enum QRScannerErrorCode {
+    UNEXPECTED_ERROR = 0, // An unexpected error. Returned only by bugs in QRScanner.
+    CAMERA_ACCESS_DENIED = 1, // The user denied camera access.
+    CAMERA_ACCESS_RESTRICTED = 2, // Camera access is restricted (due to parental controls,
+                                  // organization security configuration profiles, or similar reasons).
+    BACK_CAMERA_UNAVAILABLE = 3, // The back camera is unavailable.
+    FRONT_CAMERA_UNAVAILABLE = 4, // The front camera is unavailable.
+    CAMERA_UNAVAILABLE = 5, // The camera is unavailable because it doesn't exist or is otherwise unable to be configured.
+                            // (Also returned if QRScanner cannot return one of the more specific BACK_CAMERA_UNAVAILABLE
+                            // or FRONT_CAMERA_UNAVAILABLE errors.)
+    SCAN_CANCELED = 6, // Scan was canceled by the cancelScan() method. (Returned exclusively to the QRScanner.scan() method.)
+    LIGHT_UNAVAILABLE = 7, // The device light is unavailable because it doesn't exist or is otherwise unable to be configured.
+    OPEN_SETTINGS_UNAVAILABLE = 8, // The device is unable to open settings.
+}

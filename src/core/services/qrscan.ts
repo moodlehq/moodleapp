@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
-import { makeSingleton } from '@singletons';
+import { makeSingleton, Translate } from '@singletons';
 import { CoreCanceledError } from '@classes/errors/cancelederror';
 import { CorePromisedValue } from '@classes/promised-value';
 import { QRScanner } from '@features/native/plugins';
@@ -22,7 +22,8 @@ import { CorePlatform } from './platform';
 import { Subscription } from 'rxjs';
 import { CoreCustomURLSchemes } from './urlschemes';
 import { QRScannerStatus } from '@moodlehq/cordova-plugin-qrscanner';
-import { QRScannerCamera } from '@features/native/plugins/qrscanner';
+import { QRScannerCamera, QRScannerErrorCode } from '@features/native/plugins/qrscanner';
+import { CoreAlerts } from './overlays/alerts';
 
 /**
  * Handles qr scan services.
@@ -105,8 +106,14 @@ export class CoreQRScanService {
             const status = await QRScanner.prepare();
 
             if (!status.authorized) {
-                // No access to the camera, reject. In android this shouldn't happen, denying access passes through catch.
-                throw new Error('The user denied camera access.');
+                if (status.denied && status.canOpenSettings){
+                    await this.askForPermissionWhenDenied();
+
+                    return;
+                } else {
+                    // No access to the camera, reject. In android this shouldn't happen, denying access passes through catch.
+                    throw new Error(Translate.instant('core.viewer.qrscannerdeniedpermissionmessage'));
+                }
             }
 
             if (this.qrScanData && this.qrScanData.deferred) {
@@ -142,10 +149,34 @@ export class CoreQRScanService {
                 throw error;
             }
         } catch (error) {
+            if (error.code === QRScannerErrorCode.CAMERA_ACCESS_DENIED) {
+                // User denied permission to use the camera.
+                await this.askForPermissionWhenDenied();
+
+                return;
+            }
             // eslint-disable-next-line @typescript-eslint/naming-convention
             error.message = error.message || (error as { _message?: string })._message;
 
             throw error;
+        }
+    }
+
+    protected async askForPermissionWhenDenied(): Promise<void> {
+        try {
+            await CoreAlerts.confirm(
+                Translate.instant('core.viewer.qrscannerdeniedpermissionmessage'),
+                {
+                    header: Translate.instant('core.viewer.qrscannerdeniedpermissiontitle'),
+                    okText: Translate.instant('core.viewer.gotosettings'),
+                    cancelText: Translate.instant('core.cancel'),
+                },
+            );
+
+            QRScanner.openSettings();
+        } catch {
+            // User canceled.
+            throw new CoreCanceledError('');
         }
     }
 
