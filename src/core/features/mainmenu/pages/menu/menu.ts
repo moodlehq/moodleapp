@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, effect } from '@angular/core';
 import { IonTabs } from '@ionic/angular';
 import { BackButtonEvent } from '@ionic/core';
 import { Subscription } from 'rxjs';
@@ -44,6 +44,7 @@ import {
 import { CoreSharedModule } from '@/core/shared.module';
 import { CoreMainMenuUserButtonComponent } from '../../components/user-menu-button/user-menu-button';
 import { BackButtonPriority } from '@/core/constants';
+import { CoreKeyboard } from '@singletons/keyboard';
 
 const ANIMATION_DURATION = 500;
 
@@ -119,6 +120,22 @@ export default class CoreMainMenuPage implements OnInit, OnDestroy {
                 this.isMainScreen = !this.mainTabs?.outlet.canGoBack();
                 this.updateVisibility();
             });
+
+        if (CorePlatform.isIOS()) {
+            effect(() => {
+                const shown = CoreKeyboard.getKeyboardShownSignal();
+                // In iOS, the resize event is triggered before the keyboard is opened/closed and not triggered again once done.
+                // Init handlers again once keyboard is closed since the resize event doesn't have the updated height.
+                if (!shown) {
+                    this.updateHandlers();
+
+                    // If the device is slow it can take a bit more to update the window height. Retry in a few ms.
+                    setTimeout(() => {
+                        this.updateHandlers();
+                    }, 250);
+                }
+            });
+        }
     }
 
     /**
@@ -150,20 +167,6 @@ export default class CoreMainMenuPage implements OnInit, OnDestroy {
         });
         document.addEventListener('ionBackButton', this.backButtonFunction);
 
-        if (CorePlatform.isIOS()) {
-            // In iOS, the resize event is triggered before the keyboard is opened/closed and not triggered again once done.
-            // Init handlers again once keyboard is closed since the resize event doesn't have the updated height.
-            this.keyboardObserver = CoreEvents.on(CoreEvents.KEYBOARD_CHANGE, (kbHeight: number) => {
-                if (kbHeight === 0) {
-                    this.updateHandlers();
-
-                    // If the device is slow it can take a bit more to update the window height. Retry in a few ms.
-                    setTimeout(() => {
-                        this.updateHandlers();
-                    }, 250);
-                }
-            });
-        }
         CoreEvents.trigger(CoreEvents.MAIN_HOME_LOADED);
     }
 

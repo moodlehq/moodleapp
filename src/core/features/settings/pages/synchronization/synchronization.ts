@@ -93,13 +93,13 @@ export default class CoreSettingsSynchronizationPage implements OnInit, OnDestro
         });
 
         this.isOnline = CoreNetwork.isOnline();
-        this.limitedConnection = this.isOnline && CoreNetwork.isNetworkAccessLimited();
+        this.limitedConnection = CoreNetwork.isCellular();
 
         this.networkObserver = CoreNetwork.onChange().subscribe(() => {
             // Execute the callback in the Angular zone, so change detection doesn't stop working.
             NgZone.run(() => {
                 this.isOnline = CoreNetwork.isOnline();
-                this.limitedConnection = this.isOnline && CoreNetwork.isNetworkAccessLimited();
+                this.limitedConnection = CoreNetwork.isCellular();
             });
         });
 

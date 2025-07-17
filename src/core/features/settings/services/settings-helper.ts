@@ -241,7 +241,7 @@ export class CoreSettingsHelperProvider {
         } else if (hasSyncHandlers && !CoreNetwork.isOnline()) {
             // We need connection to execute sync.
             throw new CoreError(Translate.instant('core.settings.cannotsyncoffline'));
-        } else if (hasSyncHandlers && syncOnlyOnWifi && CoreNetwork.isNetworkAccessLimited()) {
+        } else if (hasSyncHandlers && syncOnlyOnWifi && CoreNetwork.isCellular()) {
             throw new CoreError(Translate.instant('core.settings.cannotsyncwithoutwifi'));
         }
 
