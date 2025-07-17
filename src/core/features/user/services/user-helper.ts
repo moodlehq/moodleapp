@@ -17,7 +17,7 @@ import { CoreNavigator } from '@services/navigator';
 import { CoreSites } from '@services/sites';
 
 import { makeSingleton, Translate } from '@singletons';
-import { CoreUser, CoreUserProfile, CoreUserRole } from './user';
+import { CoreUser, CoreUserBasicData, CoreUserProfile, CoreUserRole } from './user';
 import { CoreTime } from '@singletons/time';
 
 /**
@@ -72,15 +72,22 @@ export class CoreUserHelperProvider {
      *
      * @param user User object.
      * @returns User initials.
-     * @deprecated since 4.4. Use getUserInitialsFromParts instead.
      */
     getUserInitials(user: Partial<CoreUserProfile>): string {
-        if (!user.firstname && !user.lastname) {
-            // @TODO: Use local info or check WS to get initials from.
-            return '';
-        }
+        const nameFields = ['firstname', 'lastname'];
+        const dummyUser = {
+            firstname: 'firstname',
+            lastname: 'lastname',
+        };
+        const nameFormat = Translate.instant('core.user.fullnamedisplay', { $a:dummyUser });
+        const availableFieldsSorted = nameFields
+            .filter((field) => nameFormat.indexOf(field) >= 0)
+            .sort((a, b) => nameFormat.indexOf(a) - nameFormat.indexOf(b));
 
-        return (user.firstname?.charAt(0) || '') + (user.lastname?.charAt(0) || '');
+        const initials = availableFieldsSorted.reduce((initials, fieldName) =>
+            initials + (user[fieldName]?.charAt(0) ?? ''), '');
+
+        return initials || 'UNK';
     }
 
     /**
@@ -90,27 +97,15 @@ export class CoreUserHelperProvider {
      * @returns User initials.
      */
     async getUserInitialsFromParts(parts: CoreUserNameParts): Promise<string> {
-        if (!parts.firstname && !parts.lastname) {
-            if (!parts.fullname && parts.userId) {
-                const user = await CoreUser.getProfile(parts.userId, undefined, true);
-                parts.fullname = user.fullname || '';
-            }
-
-            if (parts.fullname) {
-                const split = parts.fullname.split(' ');
-
-                parts.firstname = split[0];
-                if (split.length > 1) {
-                    parts.lastname = split[split.length - 1];
-                }
-            }
+        const initials = this.getUserInitials(parts);
+        if (initials !== 'UNK' || !parts.userId) {
+            return initials;
         }
+        const user = await CoreUser.getProfile(parts.userId, undefined, false);
+        console.error(user, parts.userId);
 
-        if (!parts.firstname && !parts.lastname) {
-            return 'UNK';
-        }
+        return user.initials || 'UNK';
 
-        return (parts.firstname?.charAt(0) || '') + (parts.lastname?.charAt(0) || '');
     }
 
     /**
@@ -124,8 +119,52 @@ export class CoreUserHelperProvider {
         return CoreTime.translateLegacyTimezone(tz);
     }
 
+    normalizeBasicFields<T extends CoreUserBasicData = CoreUserBasicData>(profile: CoreUserDenormalized): T {
+        let normalized = {
+            id: profile.id ?? profile.userid ?? 0,
+            fullname:  profile.fullname ?? profile.userfullname ?? '',
+            profileimageurl: profile.profileimageurl ?? profile.userprofileimageurl ??
+                profile.userpictureurl ?? profile.profileimageurlsmall ?? profile.urls?.profileimage ?? '',
+        } as T;
+
+        delete profile.userid;
+        delete profile.userfullname;
+        delete profile.userpictureurl;
+        delete profile.userprofileimageurl;
+        delete profile.profileimageurlsmall;
+        delete profile.urls;
+
+        normalized = { ...profile, ...normalized };
+
+        if (normalized.id === 0) {
+            throw new Error('Invalid user ID');
+        }
+
+        normalized.initials = CoreUserHelper.getUserInitials(profile);
+
+        return normalized;
+    }
+
 }
 
 export const CoreUserHelper = makeSingleton(CoreUserHelperProvider);
 
 type CoreUserNameParts = { firstname?: string; lastname?: string; fullname?: string; userId?: number };
+
+type CoreUserDenormalized = CoreUserBasicData & {
+    id?: number;
+    userid?: number;
+
+    initials?: string; // Initials.
+
+    fullname?: string;
+    userfullname?: string;
+
+    profileimageurl?: string;
+    userpictureurl?: string;
+    userprofileimageurl?: string;
+    profileimageurlsmall?: string;
+    urls?: {
+        profileimage?: string;
+    };
+};

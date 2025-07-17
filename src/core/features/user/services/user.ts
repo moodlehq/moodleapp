@@ -25,13 +25,15 @@ import { makeSingleton, Translate } from '@singletons';
 import { CoreEvents, CoreEventSiteData, CoreEventUserDeletedData, CoreEventUserSuspendedData } from '@singletons/events';
 import { CoreStatusWithWarningsWSResponse, CoreWSExternalWarning } from '@services/ws';
 import { CoreError } from '@classes/errors/error';
-import { USERS_TABLE_NAME, CoreUserDBRecord } from './database/user';
+import { USERS_CACHE_TABLE_NAME, CoreUserDBRecord } from './database/user';
 import { CoreUrl } from '@singletons/url';
 import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
 import { CoreCacheUpdateFrequency, CoreConstants } from '@/core/constants';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreTextFormat } from '@singletons/text';
 import { CORE_USER_PROFILE_REFRESHED, CORE_USER_PROFILE_PICTURE_UPDATED, CORE_USER_PARTICIPANTS_LIST_LIMIT } from '../constants';
+import { CoreStoredCache } from '@classes/stored-cache';
+import { CoreUserHelper } from './user-helper';
 
 declare module '@singletons/events' {
 
@@ -61,6 +63,7 @@ export class CoreUserProvider {
     static readonly PARTICIPANTS_LIST_LIMIT = CORE_USER_PARTICIPANTS_LIST_LIMIT;
 
     protected logger: CoreLogger;
+    protected userCache = new CoreStoredCache(USERS_CACHE_TABLE_NAME);
 
     constructor() {
         this.logger = CoreLogger.getInstance('CoreUserProvider');
@@ -160,7 +163,7 @@ export class CoreUserProvider {
 
         await Promise.all([
             this.invalidateUserCache(userId, site.getId()),
-            site.getDb().deleteRecords(USERS_TABLE_NAME, { id: userId }),
+            this.userCache.deleteEntry(userId, site.getId()),
         ]);
     }
 
@@ -303,9 +306,7 @@ export class CoreUserProvider {
      * @returns Promise resolve when the user is retrieved.
      */
     protected async getUserFromLocalDb(userId: number, siteId?: string): Promise<CoreUserDBRecord> {
-        const site = await CoreSites.getSite(siteId);
-
-        return site.getDb().getRecord(USERS_TABLE_NAME, { id: userId });
+        return await this.userCache.getEntry(userId, siteId);
     }
 
     /**
@@ -349,7 +350,7 @@ export class CoreUserProvider {
         let users: CoreUserDescriptionExporter[] | CoreUserCourseProfile[] | undefined;
 
         // Determine WS and data to use.
-        if (courseId && courseId != site.getSiteHomeId()) {
+        if (courseId && courseId !== site.getSiteHomeId()) {
             this.logger.debug(`Get participant with ID '${userId}' in course '${courseId}`);
 
             const params: CoreUserGetCourseUserProfilesWSParams = {
@@ -362,6 +363,7 @@ export class CoreUserProvider {
             };
 
             users = await site.read<CoreUserGetCourseUserProfilesWSResponse>('core_user_get_course_user_profiles', params, preSets);
+            console.error('core_user_get_course_user_profiles', users);
         } else {
             this.logger.debug(`Get user with ID '${userId}'`);
 
@@ -371,6 +373,7 @@ export class CoreUserProvider {
             };
 
             users = await site.read<CoreUserGetUsersByFieldWSResponse>('core_user_get_users_by_field', params, preSets);
+            console.error('core_user_get_users_by_field', users);
         }
 
         if (users.length === 0) {
@@ -378,11 +381,12 @@ export class CoreUserProvider {
             throw new CoreError('Cannot retrieve user info.');
         }
 
-        const user = users[0];
-        if ('country' in user && user.country) {
+        const user = CoreUserHelper.normalizeBasicFields<CoreUserData | CoreUserCourseProfile>(users[0]);
+        if (user.country) {
             user.country = CoreCountries.getCountryName(user.country);
         }
-        this.storeUser(user.id, user.fullname, user.profileimageurl);
+
+        this.storeUser(user);
 
         return user;
     }
@@ -706,25 +710,27 @@ export class CoreUserProvider {
     /**
      * Store user basic information in local DB to be retrieved if the WS call fails.
      *
-     * @param userId User ID.
-     * @param fullname User full name.
-     * @param avatar User avatar URL.
+     * @param user User to store.
      * @param siteId ID of the site. If not defined, use current site.
      */
-    protected async storeUser(userId: number, fullname: string, avatar?: string, siteId?: string): Promise<void> {
-        if (!userId) {
+    protected async storeUser(user: CoreUserBasicData, siteId?: string): Promise<void> {
+        if (!user.id) {
             return;
         }
 
-        const site = await CoreSites.getSite(siteId);
-
+        // Filter and map data to store.
         const userRecord: CoreUserDBRecord = {
-            id: userId,
-            fullname: fullname,
-            profileimageurl: avatar,
+            id: user.id,
+            fullname: user.fullname,
+            profileimageurl: user.profileimageurl,
+            firstname: user.firstname,
+            lastname: user.lastname,
+            initials: user.initials,
         };
 
-        await site.getDb().insertRecord(USERS_TABLE_NAME, userRecord);
+        console.error(userRecord);
+
+        await this.userCache.setEntry(user.id, userRecord, siteId);
     }
 
     /**
@@ -733,9 +739,8 @@ export class CoreUserProvider {
      * @param users Users to store.
      * @param siteId ID of the site. If not defined, use current site.
      */
-    async storeUsers(users: CoreUserBasicData[], siteId?: string): Promise<void> {
-        await Promise.all(users.map((user) =>
-            this.storeUser(Number(user.id), user.fullname, user.profileimageurl, siteId)));
+    async storeUsers(users: CoreUserDBRecord[], siteId?: string): Promise<void> {
+        await Promise.all(users.map((user) => this.storeUser(user, siteId)));
     }
 
     /**
@@ -854,6 +859,9 @@ export type CoreUserBasicData = {
     id: number; // ID of the user.
     fullname: string; // The fullname of the user.
     profileimageurl?: string; // User image profile URL - big version.
+    firstname?: string; // The first name(s) of the user.
+    lastname?: string; // The family name of the user.
+    initials?: string; // Initials.
 };
 
 /**
@@ -904,6 +912,33 @@ export type CoreUserEnrolledCourse = {
     id: number; // Id of the course.
     fullname: string; // Fullname of the course.
     shortname: string; // Shortname of the course.
+};
+
+export type CoreUserNormalized = {
+    id: number; // ID of the user.
+    fullname: string; // The fullname of the user.
+    profileimageurl: string; // User image profile URL - big version.
+    username?: string; // The username.
+    firstname?: string; // The first name(s) of the user.
+    lastname?: string; // The family name of the user.
+    initials?: string; // Initials, added by the app.
+    email?: string; // An email address - allow email as root@localhost.
+    address?: string; // Postal address.
+    phone1?: string; // Phone 1.
+    phone2?: string; // Phone 2.
+    department?: string; // Department.
+    idnumber?: string; // An arbitrary ID code number perhaps from the institution.
+    interests?: string; // User interests (separated by commas).
+    firstaccess?: number; // First access to the site (0 if never).
+    lastaccess?: number; // Last access to the site (0 if never).
+    timezone?: string; // Timezone code such as Australia/Perth, or 99 for default.
+    trackforums?: number; // @since 4.4. Whether the user is tracking forums.
+    description?: string; // User profile description.
+    city?: string; // Home city of the user.
+    url?: string; // URL of the user.
+    country?: string; // Home country code of the user, such as AU or CZ.
+    customfields?: CoreUserProfileField[]; // User custom fields (also known as user profile fields).
+    preferences?: CoreUserPreference[]; // Users preferences.
 };
 
 /**
