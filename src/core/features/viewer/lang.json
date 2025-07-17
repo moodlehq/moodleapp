@@ -1,8 +1,10 @@
 {
     "decreasetextsize": "Decrease text size",
     "default": "Default",
+    "editimage": "Edit image",
     "enterreadingmode": "Enter reading mode",
     "exitreadingmode": "Exit reading mode",
+    "fliphorizontally": "Flip horizontally",
     "increasetextsize": "Increase text size",
     "openreadingmodesettings": "Open reading mode settings",
     "readingthemeauto": "Match app",
@@ -10,6 +12,7 @@
     "readingthemehcm": "High contrast",
     "readingthemelight": "Light",
     "readingthemesepia": "Sepia",
+    "rotateleft": "Rotate left",
     "showmedia": "Show Media section",
     "theme": "Theme"
 }
