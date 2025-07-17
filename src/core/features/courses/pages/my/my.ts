@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { AddonBlockMyOverviewComponent } from '@addons/block/myoverview/components/myoverview/myoverview';
-import { Component, OnDestroy, OnInit, ViewChild, inject } from '@angular/core';
+import { Component, effect, OnDestroy, OnInit, viewChild, inject } from '@angular/core';
 import { AsyncDirective } from '@classes/async-directive';
 import { PageLoadsManager } from '@classes/page-loads-manager';
 import { CorePromisedValue } from '@classes/promised-value';
@@ -58,7 +58,7 @@ import { CoreCoursesMyPageName } from '@features/courses/constants';
 })
 export default class CoreCoursesMyPage implements OnInit, OnDestroy, AsyncDirective {
 
-    @ViewChild(CoreBlockComponent) block!: CoreBlockComponent;
+    readonly block = viewChild(CoreBlockComponent);
 
     downloadCoursesEnabled = false;
     userId: number;
@@ -85,6 +85,15 @@ export default class CoreCoursesMyPage implements OnInit, OnDestroy, AsyncDirect
         this.loadsManagerSubscription = this.loadsManager.onRefreshPage.subscribe(() => {
             this.loaded = false;
             this.loadContent();
+        });
+
+        effect(async () => {
+            const dynamicComponent = this.block()?.dynamicComponent();
+
+            if (dynamicComponent) {
+                await dynamicComponent.ready();
+                this.myOverviewBlock = dynamicComponent.instance;
+            }
         });
 
         this.logView = CoreTime.once(async () => {
@@ -137,8 +146,6 @@ export default class CoreCoursesMyPage implements OnInit, OnDestroy, AsyncDirect
                 this.hasSideBlocks = supportsMyParam && CoreBlockDelegate.hasSupportedBlock(blocks.sideBlocks);
 
                 await CoreWait.nextTicks(2);
-
-                this.myOverviewBlock = this.block?.dynamicComponent?.instance as AddonBlockMyOverviewComponent;
 
                 if (!this.loadedBlock && !supportsMyParam) {
                     // In old sites, display the block even if not found in Dashboard.
