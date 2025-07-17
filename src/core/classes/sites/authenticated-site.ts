@@ -1592,7 +1592,7 @@ export class CoreAuthenticatedSite extends CoreUnauthenticatedSite {
         let expirationDelay = CoreAuthenticatedSite.UPDATE_FREQUENCIES[updateFrequency] ||
         CoreAuthenticatedSite.UPDATE_FREQUENCIES[CoreCacheUpdateFrequency.USUALLY];
 
-        if (CoreNetwork.isNetworkAccessLimited()) {
+        if (CoreNetwork.isCellular()) {
             // Not WiFi, increase the expiration delay a 50% to decrease the data usage in this case.
             expirationDelay *= 1.5;
         }

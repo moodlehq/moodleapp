@@ -139,7 +139,7 @@
         <ion-item (longPress)="copyItemInfo($event)">
             <ion-label class="ion-text-wrap">
                 <p class="item-heading">{{ 'core.settings.networkstatus' | translate}}</p>
-                @if (deviceInfo.isOnline) {
+                @if (deviceInfo.isOnline()) {
                     <p>{{ 'core.online' | translate }}</p>
                 } @else {
                     <p>{{ 'core.offline' | translate }}</p>
@@ -149,7 +149,11 @@
         <ion-item (longPress)="copyItemInfo($event)">
             <ion-label class="ion-text-wrap">
                 <p class="item-heading">{{ 'core.settings.wificonnection' | translate}}</p>
-                <p>{{ 'core.' + deviceInfo.wifiConnection | translate }}</p>
+                @if (deviceInfo.wifiConnection()) {
+                    <p>{{ 'core.yes' | translate }}</p>
+                } @else {
+                    <p>{{ 'core.no' | translate }}</p>
+                }
             </ion-label>
         </ion-item>
         @if (deviceInfo.cordovaVersion) {

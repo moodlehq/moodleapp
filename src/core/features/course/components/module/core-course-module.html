@@ -30,9 +30,9 @@
                                 @if (module.visible === 0 || module.uservisible === false) {
                                     <ion-icon name="fas-lock" [attr.aria-label]="'core.restricted' | translate" />
                                 }
-                                @if (prefetchStatusIcon$ | async; as prefetchStatusIcon) {
-                                    <ion-icon [name]="prefetchStatusIcon" color="success"
-                                        [attr.aria-label]="((prefetchStatusText$ | async) || '') | translate" />
+                                @if (prefetchStatusIcon()) {
+                                    <ion-icon [name]="prefetchStatusIcon()" color="success"
+                                        [attr.aria-label]="(prefetchStatusText() || '') | translate" />
                                 }
                             </p>
 
