@@ -2715,6 +2715,8 @@
   "core.viewer.exitreadingmode": "local_moodlemobileapp",
   "core.viewer.increasetextsize": "local_moodlemobileapp",
   "core.viewer.openreadingmodesettings": "local_moodlemobileapp",
+  "core.viewer.qrscannerdeniedpermissionmessage": "local_moodlemobileapp",
+  "core.viewer.qrscannerdeniedpermissiontitle": "local_moodlemobileapp",
   "core.viewer.qrscannerswitchtofrontcamera": "local_moodlemobileapp",
   "core.viewer.qrscannerswitchtorearcamera": "local_moodlemobileapp",
   "core.viewer.qrscannertitle": "local_moodlemobileapp",
