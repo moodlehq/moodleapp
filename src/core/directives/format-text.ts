@@ -59,7 +59,7 @@ import { CoreViewer } from '@features/viewer/services/viewer';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreAlerts } from '@services/overlays/alerts';
 import { CoreLang, CoreLangFormat } from '@services/lang';
-import { CoreBoostrap } from '@singletons/bootstrap';
+import { CoreBootstrap } from '@singletons/bootstrap';
 
 /**
  * Directive to format text rendered. It renders the HTML and treats all links and media, using CoreLinkDirective
@@ -615,7 +615,7 @@ export class CoreFormatTextDirective implements OnChanges, OnDestroy, AsyncDirec
             return new FrameElementController(frame, !this.disabled);
         }).filter((controller): controller is FrameElementController => controller !== undefined);
 
-        CoreBoostrap.handleBootstrapTooltipsAndPopovers(div, {
+        CoreBootstrap.handleJS(div, {
             siteId: this.siteId,
             component: this.component,
             componentId: this.componentId,
