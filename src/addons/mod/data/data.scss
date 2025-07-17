@@ -23,7 +23,6 @@ $grid-column-paddings: (
     padding: 16px;
 
     ::ng-deep {
-        @import "theme/components/moodle";
         @import "theme/components/bootstrap/bootstrap";
 
         table {

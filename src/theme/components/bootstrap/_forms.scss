@@ -1,36 +1,9 @@
-.form-check {
-    position: relative;
-    display: block;
-    padding-left: 1.25rem;
-}
-
-.form-check-input {
-    position: absolute;
-    margin-top: .3rem;
-    margin-left: -1.25rem;
-
-    &[disabled] ~ .form-check-label,
-    &:disabled ~ .form-check-label {
-        color: global.$gray-600;
-    }
-
-}
-
-.form-check-label {
-    margin-bottom: 0;
-}
-
-.form-check-inline {
-    display: inline-flex;
-    align-items: center;
-    padding-left: 0;
-    margin-right: .75rem;
-
-    .form-check-input {
-        position: static;
-        margin-top: 0;
-        margin-right: .3125rem;
-        margin-left: 0;
-    }
-
-}
+@import "forms/labels";
+@import "forms/form-text";
+@import "forms/form-control";
+@import "forms/form-select";
+@import "forms/form-check";
+@import "forms/form-range";
+@import "forms/floating-labels";
+@import "forms/input-group";
+@import "forms/validation";

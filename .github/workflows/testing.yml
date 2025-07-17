@@ -79,7 +79,7 @@ jobs:
         # In order to support Chrome 93 and iOS 15 we need to find Static initialization blocks are not present in the code.
         # See https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Classes/Static_initialization_blocks
         # acorn is used by es-check but cannot check for this feature only, so we need to check it manually.
-        if grep -qE 'static[ ]*\{' www/*.js cordova-plugin-moodleapp/www/*.js; then
+        if grep -qE '(^|[^-])\bstatic[ ]*\{' www/*.js cordova-plugin-moodleapp/www/*.js; then
           echo "::error::Static initialization blocks are not supported in Chrome 93 and iOS 15."
           exit 1
         fi
