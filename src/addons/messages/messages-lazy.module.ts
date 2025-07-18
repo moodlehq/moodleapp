@@ -18,7 +18,6 @@ import { Route, ROUTES, Routes } from '@angular/router';
 
 import { buildTabMainRoutes } from '@features/mainmenu/mainmenu-tab-routing.module';
 import { CoreScreen } from '@services/screen';
-import { messagesIndexGuard } from './guards';
 import { ADDON_MESSAGES_PAGE_NAME } from './constants';
 
 /**
@@ -41,20 +40,11 @@ function buildRoutes(injector: Injector): Routes {
 
     const mobileRoutes: Routes = [
         {
-            path: 'contacts', // 3.6 or greater.
+            path: 'contacts',
             loadComponent: () => import('./pages/contacts/contacts'),
         },
         {
-            path: 'index',
-            data: { mainMenuTabRoot: ADDON_MESSAGES_PAGE_NAME },
-            loadComponent: () => import('./pages/discussions-35/discussions'),
-        },
-        {
-            path: 'contacts-35', // 3.5.
-            loadComponent: () => import('./pages/contacts-35/contacts'),
-        },
-        {
-            path: 'group-conversations', // 3.6 or greater.
+            path: 'group-conversations',
             data: { mainMenuTabRoot: ADDON_MESSAGES_PAGE_NAME },
             loadComponent: () => import('./pages/group-conversations/group-conversations'),
         },
@@ -74,23 +64,12 @@ function buildRoutes(injector: Injector): Routes {
 
     const tabletRoutes: Routes = [
         {
-            path: 'contacts', // 3.6 or greater.
+            path: 'contacts',
             loadComponent: () => import('./pages/contacts/contacts'),
             loadChildren: () => discussionRoutes,
         },
         {
-            path: 'index', // 3.5.
-            data: { mainMenuTabRoot: ADDON_MESSAGES_PAGE_NAME },
-            loadComponent: () => import('./pages/discussions-35/discussions'),
-            loadChildren: () => discussionRoutes,
-        },
-        {
-            path: 'contacts-35', // 3.5.
-            loadComponent: () => import('./pages/contacts-35/contacts'),
-            loadChildren: () => discussionRoutes,
-        },
-        {
-            path: 'group-conversations', // 3.6 or greater.
+            path: 'group-conversations',
             data: { mainMenuTabRoot: ADDON_MESSAGES_PAGE_NAME },
             loadComponent: () => import('./pages/group-conversations/group-conversations'),
             loadChildren: () => discussionRoutes,
@@ -111,7 +90,8 @@ function buildRoutes(injector: Injector): Routes {
             loadComponent: () => import('./pages/settings/settings'),
         },
         ...buildTabMainRoutes(injector, {
-            canActivate: [messagesIndexGuard],
+            redirectTo: 'group-conversations',
+            pathMatch: 'full',
         }),
     ];
 }
