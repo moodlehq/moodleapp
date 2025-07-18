@@ -120,7 +120,9 @@ export class AddonModResourceModuleHandlerService extends CoreModuleHandlerBase 
      */
     protected async hideOpenButton(module: CoreCourseModuleData): Promise<boolean> {
         if (!module.contentsinfo) { // Not informed before 3.7.6.
-            await CoreCourse.loadModuleContents(module, undefined, undefined, false, false, undefined, this.modName);
+            await CorePromiseUtils.ignoreErrors(
+                CoreCourse.loadModuleContents(module, undefined, undefined, false, false, undefined, this.modName),
+            );
         }
 
         const status = await CoreCourseModulePrefetchDelegate.getModuleStatus(module, module.course);
