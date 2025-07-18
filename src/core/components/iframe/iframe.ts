@@ -23,6 +23,7 @@ import {
     SimpleChange,
     OnDestroy,
     inject,
+    input,
 } from '@angular/core';
 import { SafeResourceUrl } from '@angular/platform-browser';
 
@@ -70,6 +71,7 @@ export class CoreIframeComponent implements OnChanges, OnDestroy {
         this.initIframeElement();
     }
 
+    readonly allow = input<string>();
     @Input() src?: string;
     @Input() id: string | null = null;
     @Input() iframeWidth = '100%';
