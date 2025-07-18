@@ -18,11 +18,11 @@
         <!-- allowfullscreen cannot be set dynamically using attribute binding, define 2 iframe elements. -->
         @if (allowFullscreen) {
             <iframe #iframe class="core-iframe" [attr.id]="id" [ngStyle]="{'width': iframeWidth, 'height': iframeHeight}" [src]="safeUrl"
-                allowfullscreen="true" [class.core-iframe-loading]="loading">
+                allowfullscreen="true" [class.core-iframe-loading]="loading" [allow]="allow()">
             </iframe>
         } @else {
             <iframe #iframe class="core-iframe" [attr.id]="id" [ngStyle]="{'width': iframeWidth, 'height': iframeHeight}" [src]="safeUrl"
-                [class.core-iframe-loading]="loading">
+                [class.core-iframe-loading]="loading" [allow]="allow()">
             </iframe>
         }
 
