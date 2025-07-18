@@ -71,6 +71,18 @@
     core-course-module-completion  {
         --margin: 0px;
     }
+
+    ::ng-deep .core-module-additional-info {
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        margin: 4px 8px;
+
+        ion-badge {
+            @include margin-horizontal(null, 4px);
+            font: var(--mdl-typography-body-font-sm);
+        }
+    }
 }
 
 :host-context(.core-iframe-fullscreen) {
