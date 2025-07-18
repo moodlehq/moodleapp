@@ -53,20 +53,11 @@ export class AddonMessagesPushClickHandlerService implements CorePushNotificatio
      * @returns Promise resolved when done.
      */
     async handleClick(notification: AddonMessagesPushNotificationData): Promise<void> {
-        try {
-            await AddonMessages.invalidateDiscussionsCache(notification.site);
-        } catch {
-            // Ignore errors.
-        }
-
-        // Check if group messaging is enabled, to determine which page should be loaded.
-        const enabled = await AddonMessages.isGroupMessagingEnabledInSite(notification.site);
-
         let conversationId: number | undefined;
         let userId: number | undefined;
 
         // Check if we have enough information to open the conversation.
-        if (notification.convid && enabled) {
+        if (notification.convid) {
             conversationId = Number(notification.convid);
         } else if (notification.userfromid) {
             userId = Number(notification.userfromid);

@@ -50,11 +50,8 @@ export class AddonMessagesContactRequestLinkHandlerService extends CoreContentLi
      */
     async isEnabled(siteId: string): Promise<boolean> {
         const enabled = await AddonMessages.isPluginEnabled(siteId);
-        if (!enabled) {
-            return false;
-        }
 
-        return AddonMessages.isGroupMessagingEnabledInSite(siteId);
+        return enabled;
     }
 
 }

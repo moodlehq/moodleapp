@@ -124,10 +124,9 @@ export class AddonMessagesMainMenuHandlerService implements CoreMainMenuHandler,
      * Refreshes badge number.
      *
      * @param siteId Site ID or current Site if undefined.
-     * @param unreadOnly If true only the unread conversations count is refreshed.
      * @returns Resolve when done.
      */
-    async refreshBadge(siteId?: string, unreadOnly?: boolean): Promise<void> {
+    async refreshBadge(siteId?: string): Promise<void> {
         const badgeSiteId = siteId || CoreSites.getCurrentSiteId();
 
         if (!badgeSiteId) {
@@ -141,12 +140,10 @@ export class AddonMessagesMainMenuHandlerService implements CoreMainMenuHandler,
             this.orMore = false;
         }));
 
-        // Refresh the number of contact requests in 3.6+ sites.
-        if (!unreadOnly && AddonMessages.isGroupMessagingEnabled()) {
-            promises.push(AddonMessages.refreshContactRequestsCount(badgeSiteId).catch(() => {
-                this.contactRequestsCount = 0;
-            }));
-        }
+        // Refresh the number of contact requests.
+        promises.push(AddonMessages.refreshContactRequestsCount(badgeSiteId).catch(() => {
+            this.contactRequestsCount = 0;
+        }));
 
         await Promise.all(promises).finally(() => {
             this.updateBadge(badgeSiteId);
@@ -195,11 +192,12 @@ export class AddonMessagesMainMenuHandlerService implements CoreMainMenuHandler,
     async execute(siteId?: string): Promise<void> {
         const site = CoreSites.getCurrentSite();
 
+        const enabled = await this.isEnabled();
         if (
             !CoreSites.isCurrentSite(siteId) ||
             !site ||
             site.isFeatureDisabled('CoreMainMenuDelegate_AddonMessages') ||
-            !site.canUseAdvancedFeature('messaging')
+            !enabled
         ) {
             return;
         }
