@@ -36,6 +36,9 @@ import { CoreUrl } from '@singletons/url';
 import { CoreObject } from '@singletons/object';
 import { IonAccordionGroup } from '@ionic/angular';
 import { CoreCourse } from '@features/course/services/course';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { CoreScreen } from '@services/screen';
+import { map } from 'rxjs';
 
 /**
  * Page that displays an overview of all activities in a course.
@@ -54,8 +57,9 @@ export default class CoreCourseOverviewPage implements OnInit {
     readonly loaded = signal(false);
     readonly modTypes = signal<OverviewModType[]>([]);
 
-    readonly accordionGroup = viewChild(IonAccordionGroup);
+    readonly accordionGroup = viewChild<IonAccordionGroup>('modTypesAccordion');
 
+    readonly isTablet = toSignal(CoreScreen.layoutObservable.pipe(map(() => CoreScreen.isTablet)), { requireSync: true });
     protected courseId!: number;
     protected logView: () => void;
 
@@ -199,7 +203,7 @@ export default class CoreCourseOverviewPage implements OnInit {
      *
      * @param modName Mod name that was expanded, undefined if collapsed and none expanded.
      */
-    accordionChanged(modName?: string): void {
+    modTypeAccordionChanged(modName?: string): void {
         const modType = modName && this.modTypes().find((modType) => modType.modName === modName);
         if (!modType) {
             return;
@@ -282,7 +286,9 @@ export default class CoreCourseOverviewPage implements OnInit {
 
             return {
                 ...activity,
+                nameItemToRender: itemsToRender.find(item => item.key === 'name'),
                 itemsToRender,
+                isExpanded: signal(false),
             };
         }));
 
@@ -330,6 +336,22 @@ export default class CoreCourseOverviewPage implements OnInit {
         return modType;
     }
 
+    /**
+     * Toggle the expansion of an activity.
+     *
+     * @param overview Overview the activity belongs to.
+     * @param activity Activity to toggle.
+     */
+    toggleActivity(overview: OverviewInformation, activity: OverviewActivity): void {
+        overview.activities.forEach((act) => {
+            if (act.cmid === activity.cmid) {
+                act.isExpanded.update(isExpanded => !isExpanded);
+            } else {
+                act.isExpanded.set(false);
+            }
+        });
+    }
+
 }
 
 type OverviewModType = {
@@ -360,7 +382,9 @@ type OverviewHeader = CoreCourseGetOverviewInformationWSHeader & {
  * Overview information for an activity.
  */
 type OverviewActivity = CoreCourseOverviewActivity & {
+    nameItemToRender?: OverviewItemToRender;
     itemsToRender: OverviewItemToRender[];
+    isExpanded: WritableSignal<boolean>;
 };
 
 type OverviewItemToRender = CoreCourseOverviewItem & {
