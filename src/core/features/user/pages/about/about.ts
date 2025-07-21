@@ -40,7 +40,6 @@ import {
 } from '@features/user/constants';
 import { CoreModals } from '@services/overlays/modals';
 import { CoreFile } from '@services/file';
-import { CoreWSUploadFileResult } from '@services/ws';
 
 /**
  * Page that displays info about a user.
@@ -207,7 +206,7 @@ export default class CoreUserAboutPage implements OnInit, OnDestroy {
             }
 
             const result =
-                await CoreFileUploaderHelper.uploadFileEntry(fileEntry, true, maxSize, true, false) as CoreWSUploadFileResult;
+                await CoreFileUploaderHelper.uploadFileEntry(fileEntry, true, maxSize, true, false);
 
             modal = await CoreLoadings.show('core.sending', true);
 
