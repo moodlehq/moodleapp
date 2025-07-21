@@ -23,7 +23,7 @@ import {
     AddonBlogPublishState,
 } from '@addons/blog/services/blog';
 import { AddonBlogOffline } from '@addons/blog/services/blog-offline';
-import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Component, computed, ElementRef, OnDestroy, OnInit, signal, ViewChild } from '@angular/core';
 import { AddonBlogSync } from '@addons/blog/services/blog-sync';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { CoreError } from '@classes/errors/error';
@@ -90,6 +90,8 @@ export default class AddonBlogEditEntryPage implements CanLeave, OnInit, OnDestr
     siteHomeId?: number;
     forceLeave = false;
     isOfflineEntry = false;
+    readonly bloglevel = signal(CoreSiteBlogLevel.BLOG_SITE_LEVEL);
+    readonly isUserLevel = computed(() => this.bloglevel() === CoreSiteBlogLevel.BLOG_USER_LEVEL);
 
     /**
      * Gives if the form is not pristine. (only for existing entries)
@@ -130,6 +132,13 @@ export default class AddonBlogEditEntryPage implements CanLeave, OnInit, OnDestr
 
         if (!site || !isEditingEnabled) {
             return CoreNavigator.back();
+        }
+
+        const bloglevel = parseInt(await site.getConfig('bloglevel'));
+        this.bloglevel.set(bloglevel ?? CoreSiteBlogLevel.BLOG_SITE_LEVEL);
+
+        if (this.isUserLevel()) {
+            this.form.controls.publishState.setValue(AddonBlogPublishState.draft);
         }
 
         const entryId = CoreNavigator.getRouteParam('id');
@@ -212,7 +221,7 @@ export default class AddonBlogEditEntryPage implements CanLeave, OnInit, OnDestr
                 this.entry.summary,
                 this.entry.summaryfiles,
             ),
-            publishState: this.entry.publishstate ?? AddonBlogPublishState.site,
+            publishState: this.entry?.publishstate ?? AddonBlogPublishState.draft,
             associateWithCourse: this.form.controls.associateWithCourse.value,
             associateWithModule: this.form.controls.associateWithModule.value,
         });
@@ -519,3 +528,14 @@ type AddonBlogEditEntrySaveEntryParams = {
 type AddonBlogEditEntryFormattedOfflinePost = Omit<
     AddonBlogEditEntryPost, | 'attachment' | 'attachmentfiles' | 'rating' | 'format' | 'usermodified' | 'module'
 > & { attachmentfiles?: CoreFileEntry[] };
+
+/**
+ * Restriction level of user blog visualization.
+ */
+const enum CoreSiteBlogLevel {
+    BLOG_USER_LEVEL = 1,
+    BLOG_GROUP_LEVEL = 2,
+    BLOG_COURSE_LEVEL = 3,
+    BLOG_SITE_LEVEL = 4,
+    BLOG_GLOBAL_LEVEL = 5,
+}
