@@ -25,6 +25,7 @@ import { Md5 } from 'ts-md5';
 import { fixOverlayAriaHidden } from '../../utils/fix-aria-hidden';
 import { ModalOptions } from '@ionic/angular';
 import { CorePasswordModalResponse, CorePasswordModalParams } from '@components/password-modal/password-modal';
+import { CoreObject } from '@singletons/object';
 
 /**
  * Handles application modals.
@@ -120,6 +121,11 @@ export class CoreModalsService {
         // TODO: Improve this if we need two modals with same component open at the same time.
         const modalId = Md5.hashAsciiStr(options.component?.toString() || '');
         const alreadyDisplayed = !!this.displayedModals[modalId];
+
+        if (modalOptions.componentProps) {
+            // Remove undefined or null fields to allow modal component inputs to define default values.
+            modalOptions.componentProps = CoreObject.withoutEmpty(modalOptions.componentProps);
+        }
 
         const modal = alreadyDisplayed
             ? this.displayedModals[modalId]
