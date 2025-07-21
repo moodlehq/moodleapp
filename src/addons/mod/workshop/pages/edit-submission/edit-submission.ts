@@ -173,10 +173,10 @@ export default class AddonModWorkshopEditSubmissionPage implements OnInit, OnDes
     protected async fetchSubmissionData(): Promise<void> {
         try {
             this.workshop = await AddonModWorkshop.getWorkshop(this.courseId, this.module.id);
-            this.textAvailable = (this.workshop.submissiontypetext != AddonModWorkshopSubmissionType.SUBMISSION_TYPE_DISABLED);
-            this.textRequired = (this.workshop.submissiontypetext == AddonModWorkshopSubmissionType.SUBMISSION_TYPE_REQUIRED);
-            this.fileAvailable = (this.workshop.submissiontypefile != AddonModWorkshopSubmissionType.SUBMISSION_TYPE_DISABLED);
-            this.fileRequired = (this.workshop.submissiontypefile == AddonModWorkshopSubmissionType.SUBMISSION_TYPE_REQUIRED);
+            this.textAvailable = (this.workshop.submissiontypetext !== AddonModWorkshopSubmissionType.SUBMISSION_TYPE_DISABLED);
+            this.textRequired = (this.workshop.submissiontypetext === AddonModWorkshopSubmissionType.SUBMISSION_TYPE_REQUIRED);
+            this.fileAvailable = (this.workshop.submissiontypefile !== AddonModWorkshopSubmissionType.SUBMISSION_TYPE_DISABLED);
+            this.fileRequired = (this.workshop.submissiontypefile === AddonModWorkshopSubmissionType.SUBMISSION_TYPE_REQUIRED);
 
             this.editForm.controls.content.setValidators(this.textRequired ? Validators.required : null);
 

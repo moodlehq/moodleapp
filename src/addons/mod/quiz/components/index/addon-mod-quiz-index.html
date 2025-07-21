@@ -183,13 +183,17 @@
     @if (quiz) {
 
         <!-- Error messages. -->
-        <ion-card class="core-{{preventMessagesColor}}-card addon-mod_quiz-prevent-messages">
-            <ion-item class="ion-text-wrap" *ngFor="let message of preventMessages">
-                <ion-label>
-                    <p>{{ message }}</p>
-                </ion-label>
-            </ion-item>
-        </ion-card>
+        @if (preventMessages?.length) {
+            <ion-card class="core-{{preventMessagesColor}}-card addon-mod_quiz-prevent-messages">
+                @for (message of preventMessages; track message) {
+                    <ion-item class="ion-text-wrap">
+                        <ion-label>
+                            <p>{{ message }}</p>
+                        </ion-label>
+                    </ion-item>
+                }
+            </ion-card>
+        }
         @if (!hasQuestions) {
             <ion-card class="core-danger-card addon-mod_quiz-no-questions">
                 <ion-item class="ion-text-wrap">

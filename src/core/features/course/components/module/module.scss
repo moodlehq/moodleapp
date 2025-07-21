@@ -92,19 +92,6 @@
             margin-top: var(--vertical-spacing);
             margin-bottom: var(--vertical-spacing);
         }
-
-        .core-module-additional-info {
-            display: flex;
-            align-items: center;
-            flex-wrap: wrap;
-            margin-top: 4px;
-            margin-bottom: 4px;
-
-            ion-badge {
-                @include margin-horizontal(null, 4px);
-                font: var(--mdl-typography-body-font-sm);
-            }
-        }
     }
 
     .core-module-description ::ng-deep img,
