@@ -13,7 +13,7 @@
 // limitations under the License.
 import { ContextLevel } from '@/core/constants';
 import { CoreSharedModule } from '@/core/shared.module';
-import { ADDON_BLOG_ENTRY_UPDATED, ADDON_BLOG_SYNC_ID } from '@addons/blog/constants';
+import { ADDON_BLOG_ENTRY_UPDATED, ADDON_BLOG_SYNC_ID, CoreSiteBlogLevel } from '@addons/blog/constants';
 import {
     AddonBlog,
     AddonBlogAddEntryOption,
@@ -23,7 +23,7 @@ import {
     AddonBlogPublishState,
 } from '@addons/blog/services/blog';
 import { AddonBlogOffline } from '@addons/blog/services/blog-offline';
-import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Component, computed, ElementRef, OnDestroy, OnInit, signal, ViewChild } from '@angular/core';
 import { AddonBlogSync } from '@addons/blog/services/blog-sync';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { CoreError } from '@classes/errors/error';
@@ -90,6 +90,8 @@ export default class AddonBlogEditEntryPage implements CanLeave, OnInit, OnDestr
     siteHomeId?: number;
     forceLeave = false;
     isOfflineEntry = false;
+    readonly blogLevel = signal(CoreSiteBlogLevel.BLOG_SITE_LEVEL);
+    readonly isUserLevel = computed(() => this.blogLevel() === CoreSiteBlogLevel.BLOG_USER_LEVEL);
 
     /**
      * Gives if the form is not pristine. (only for existing entries)
@@ -130,6 +132,13 @@ export default class AddonBlogEditEntryPage implements CanLeave, OnInit, OnDestr
 
         if (!site || !isEditingEnabled) {
             return CoreNavigator.back();
+        }
+
+        const blogLevel = Number(await site.getConfig('bloglevel'));
+        this.blogLevel.set(isNaN(blogLevel) ? CoreSiteBlogLevel.BLOG_SITE_LEVEL : blogLevel);
+
+        if (this.isUserLevel()) {
+            this.form.controls.publishState.setValue(AddonBlogPublishState.draft);
         }
 
         const entryId = CoreNavigator.getRouteParam('id');
@@ -212,7 +221,7 @@ export default class AddonBlogEditEntryPage implements CanLeave, OnInit, OnDestr
                 this.entry.summary,
                 this.entry.summaryfiles,
             ),
-            publishState: this.entry.publishstate ?? AddonBlogPublishState.site,
+            publishState: this.entry?.publishstate ?? AddonBlogPublishState.draft,
             associateWithCourse: this.form.controls.associateWithCourse.value,
             associateWithModule: this.form.controls.associateWithModule.value,
         });
