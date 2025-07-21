@@ -14,11 +14,12 @@
 
 import { CorePopovers } from '@services/overlays/popovers';
 import { CoreFormatTextOptions } from '@components/bs-tooltip/bs-tooltip';
+import { CoreModals } from '@services/overlays/modals';
 
 /**
  * Singleton with helper functions for Bootstrap.
  */
-export class CoreBoostrap {
+export class CoreBootstrap {
 
     // Avoid creating singleton instances.
     private constructor() {
@@ -26,12 +27,35 @@ export class CoreBoostrap {
     }
 
     /**
-     * Handle Bootstrap tooltips and popovers in a certain element.
+     * Handle Bootstrap elements in a certain element.
      * Supports both Bootstrap 4 and 5.
      *
      * @param rootElement Element where to search for elements to treat.
+     * @param formatTextOptions Options to format text.
      */
-    static handleBootstrapTooltipsAndPopovers(
+    static handleJS(
+        rootElement: HTMLElement,
+        formatTextOptions?: CoreFormatTextOptions,
+    ): void {
+        this.handleTooltipsAndPopovers(rootElement, formatTextOptions);
+        this.handleAccordionsAndCollapse(rootElement);
+        this.handleModals(rootElement, formatTextOptions);
+        this.enableDismissTrigger(rootElement, 'alert', 'close'); // Alert uses close method.
+        this.enableDismissTrigger(rootElement, 'modal'); // Modal uses hide method
+        this.enableDismissTrigger(rootElement, 'offcanvas'); // Offcanvas uses hide method
+        this.enableDismissTrigger(rootElement, 'toast'); // Toast uses hide method
+    }
+
+    /**
+     * Handle Bootstrap tooltips and popovers in a certain element.
+     * Supports both Bootstrap 4 and 5.
+     * https://getbootstrap.com/docs/5.3/components/tooltips/
+     * https://getbootstrap.com/docs/5.3/components/popovers/
+     *
+     * @param rootElement Element where to search for elements to treat.
+     * @param formatTextOptions Options to format text.
+     */
+    protected static handleTooltipsAndPopovers(
         rootElement: HTMLElement,
         formatTextOptions?: CoreFormatTextOptions,
     ): void {
@@ -124,6 +148,216 @@ export class CoreBoostrap {
                 }
             });
         });
+    }
+
+    /**
+     * Handle Bootstrap accordions and collapse elements in a certain element.
+     * Supports both Bootstrap 4 and 5.
+     * https://getbootstrap.com/docs/5.3/components/accordion/
+     * https://getbootstrap.com/docs/5.3/components/collapse/
+     *
+     * @param rootElement Element where to search for elements to treat.
+     */
+    protected static handleAccordionsAndCollapse(rootElement: HTMLElement): void {
+        const elements = Array.from(rootElement.querySelectorAll<HTMLElement>(
+            '[data-toggle="collapse"], [data-bs-toggle="collapse"]',
+        ));
+
+        elements.forEach((element) => {
+            const targetElements = this.getTargets(rootElement, element);
+            if (!targetElements || !targetElements.length) {
+                return;
+            }
+
+            // Search the parent accordion element.
+            const parentName = targetElements[0].getAttribute('data-parent') ||
+                targetElements[0].getAttribute('data-bs-parent');
+
+            const parentElement = parentName ? rootElement.querySelector<HTMLElement>(parentName) : null;
+            if (!parentName) {
+                const isOpen = targetElements[0].classList.contains('show');
+
+                this.collapseSetExpanded(element, targetElements[0], isOpen);
+            }
+
+            // Initialize the accordion.
+            element.addEventListener('click', async (ev: Event) => {
+                ev.preventDefault();
+                ev.stopPropagation();
+
+                targetElements.forEach((targetElement) => {
+                    const isOpen = targetElement.classList.contains('show');
+
+                    this.collapseSetExpanded(element, targetElement, !isOpen, parentElement);
+                });
+            });
+        });
+    }
+
+    /**
+     * Set the expanded state of a collapse element.
+     *
+     * @param buttonElement Button element that toggles the collapse.
+     * @param targetElement Target element to show/hide.
+     * @param expanded Expanded state.
+     * @param parentElement Parent element of the accordion, if any.
+     */
+    protected static collapseSetExpanded(
+        buttonElement: HTMLElement,
+        targetElement: HTMLElement,
+        expanded: boolean,
+        parentElement: HTMLElement | null = null,
+    ): void {
+        if (expanded && parentElement) {
+            // Close the others.
+            const elements = Array.from(parentElement.querySelectorAll<HTMLElement>(
+                '[data-toggle="collapse"], [data-bs-toggle="collapse"]',
+            ));
+
+            elements.forEach((element) => {
+                const targetElement = this.getTargets(parentElement, element)?.[0];
+                if (!targetElement) {
+                    return;
+                }
+
+                this.collapseSetExpanded(element, targetElement, false);
+            });
+
+        }
+        targetElement.setAttribute('aria-expanded', expanded ? 'true' : 'false');
+        targetElement.classList.toggle('show', expanded);
+        buttonElement.classList.toggle('collapsed', !expanded);
+    }
+
+    /**
+     * Handle Bootstrap modals and alerts in a certain element.
+     * Supports both Bootstrap 4 and 5.
+     * https://getbootstrap.com/docs/5.3/components/modal/
+     *
+     * @param rootElement Element where to search for elements to treat.
+     * @param formatTextOptions Options to format text.
+     */
+    protected static handleModals(rootElement: HTMLElement, formatTextOptions?: CoreFormatTextOptions): void {
+        const elements = Array.from(rootElement.querySelectorAll<HTMLElement>(
+            '[data-toggle="modal"], [data-bs-toggle="modal"]',
+        ));
+
+        elements.forEach((element) => {
+            const targetElement = this.getTargets(rootElement, element)?.[0];
+            if (!targetElement) {
+                return;
+            }
+
+            // Initialize the modal.
+            element.addEventListener('click', async (ev: Event) => {
+                ev.preventDefault();
+                ev.stopPropagation();
+
+                const { CoreBSTooltipComponent } = await import('@components/bs-tooltip/bs-tooltip');
+
+                const cloned = targetElement.cloneNode(true) as HTMLElement;
+                cloned.classList.add('show', 'modal-open'); // Show the modal.
+                cloned.style.display = 'block'; // Set display to block.
+                cloned.style.position = 'static'; // Set position to static to avoid issues with Ionic popovers.
+                cloned.removeAttribute('aria-hidden');
+                cloned.setAttribute('aria-modal', 'true');
+                cloned.setAttribute('role', 'dialog');
+
+                await CoreModals.openModal({
+                    component: CoreBSTooltipComponent,
+                    cssClass: 'core-bootstrap-modal',
+                    closeOnNavigate: true,
+                    componentProps: {
+                        content: cloned.outerHTML,
+                        item: false,
+                        formatTextOptions,
+                    },
+                });
+            });
+        });
+    }
+
+    /**
+     * Enable dismiss trigger for Bootstrap components.
+     * This will add a click event listener to elements with data-dismiss or data-bs-dismiss attributes
+     * that will call the specified method on the closest component element.
+     *
+     * @param rootElement Element where to search for elements to treat.
+     * @param componentName Name of the component to dismiss (e.g., 'alert', 'modal', 'offcanvas', 'toast').
+     * @param method Method to call on the component when dismissed (default is 'hide').
+     *
+     * Adapted from Bootstrap 5 util/component-functions.js
+     */
+    protected static enableDismissTrigger(rootElement: HTMLElement, componentName: string, method = 'hide'): void {
+      const elements = Array.from(rootElement.querySelectorAll(
+            `[data-dismiss="${componentName}"], [data-bs-dismiss="${componentName}"]`,
+        ));
+
+        elements.forEach((element) => {
+            element.addEventListener('click', () => {
+                const target = element.closest(`.${componentName}`);
+                if (!target) {
+                    return;
+                }
+
+                // We cannot access the overlay (Modal and popover) component to dismiss it.
+                const overlay = componentName === 'modal' && (target.closest('ion-modal') || target.closest('ion-popover'));
+                if (overlay) {
+                    // Click on backdrop to close the modal.
+                    const backdrop = overlay.shadowRoot?.querySelector<HTMLElement>('[part="backdrop"]');
+                    backdrop?.click();
+
+                    return;
+                }
+
+                target[method]();
+            });
+        });
+    }
+
+    /**
+     * Get the target element for a Bootstrap component.
+     * This will look for the data-bs-target or data-target attribute on the element,
+     * and if not found, it will look for the href attribute.
+     * If the href attribute is a valid selector (starts with # or .), it will return the element
+     * matching that selector within the rootElement.
+     * If no valid target is found, it will return undefined.
+     *
+     * @param rootElement Element where to search for the target.
+     * @param element Element to get the target from.
+     * @returns The target element or undefined.
+     *
+     * Adapted from Bootstrap 5 dom/selector-engine.js
+     */
+    protected static getTargets(rootElement: HTMLElement, element: HTMLElement): HTMLElement[] | undefined {
+        let selector = element.getAttribute('data-bs-target') || element.getAttribute('data-target');
+        if (!selector || selector === '#') {
+            let hrefAttribute = element.getAttribute('href');
+            hrefAttribute = !hrefAttribute && element.getAttribute('aria-controls')
+                ? `#${element.getAttribute('aria-controls')}`
+                : hrefAttribute;
+
+            // The only valid content that could double as a selector are IDs or classes,
+            // so everything starting with `#` or `.`. If a "real" URL is used as the selector,
+            // `document.querySelector` will rightfully complain it is invalid.
+            // See https://github.com/twbs/bootstrap/issues/32273
+            if (!hrefAttribute || (!hrefAttribute.includes('#') && !hrefAttribute.startsWith('.'))) {
+                return;
+            }
+
+            // Just in case some CMS puts out a full URL with the anchor appended
+            if (hrefAttribute.includes('#') && !hrefAttribute.startsWith('#')) {
+                hrefAttribute = `#${hrefAttribute.split('#')[1]}`;
+            }
+
+            selector = hrefAttribute && hrefAttribute !== '#' ? hrefAttribute.trim() : null;
+        }
+
+        if (!selector) {
+            return;
+        }
+
+        return Array.from(rootElement.querySelectorAll<HTMLElement>(selector)) || undefined;
     }
 
 }
