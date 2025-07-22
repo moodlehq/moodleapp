@@ -38,6 +38,8 @@ import {
     CORE_USER_PROFILE_PICTURE_UPDATED,
     CORE_USER_PROFILE_SERVER_TIMEZONE,
 } from '@features/user/constants';
+import { CoreModals } from '@services/overlays/modals';
+import { CoreFile } from '@services/file';
 
 /**
  * Page that displays info about a user.
@@ -183,7 +185,28 @@ export default class CoreUserAboutPage implements OnInit, OnDestroy {
         let modal: CoreIonLoadingElement | undefined;
 
         try {
-            const result = await CoreFileUploaderHelper.selectAndUploadFile(maxSize, title, mimetypes);
+            let fileEntry = await CoreFileUploaderHelper.selectFile(maxSize, false, title, mimetypes);
+            const fileObject = await CoreFile.getFileObjectFromFileEntry(fileEntry);
+
+            const { CoreViewerImageEditComponent } = await import('@features/viewer/components/image-edit/image-edit');
+
+            const editedImageBlob = await CoreModals.openModal<Blob>({
+                component: CoreViewerImageEditComponent,
+                cssClass: 'core-modal-fullscreen',
+                componentProps: {
+                    image: fileObject,
+                },
+            });
+
+            if (editedImageBlob) {
+                // Override the file entry with the edited image.
+                fileEntry = await CoreFile.writeFile(fileEntry.fullPath, editedImageBlob);
+            } else {
+                return;
+            }
+
+            const result =
+                await CoreFileUploaderHelper.uploadFileEntry(fileEntry, true, maxSize, true, false);
 
             modal = await CoreLoadings.show('core.sending', true);
 

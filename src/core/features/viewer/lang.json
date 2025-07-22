@@ -1,8 +1,10 @@
 {
     "decreasetextsize": "Decrease text size",
     "default": "Default",
+    "editimage": "Edit image",
     "enterreadingmode": "Enter reading mode",
     "exitreadingmode": "Exit reading mode",
+    "fliphorizontally": "Flip horizontally",
     "increasetextsize": "Increase text size",
     "openreadingmodesettings": "Open reading mode settings",
     "qrscannerdeniedpermissionmessage": "Please allow camera access in your device settings to use the QR scanner.",
@@ -17,6 +19,7 @@
     "readingthemehcm": "High contrast",
     "readingthemelight": "Light",
     "readingthemesepia": "Sepia",
+    "rotateleft": "Rotate left",
     "showmedia": "Show Media section",
     "theme": "Theme"
 }

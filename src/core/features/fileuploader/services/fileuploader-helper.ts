@@ -157,7 +157,10 @@ export class CoreFileUploaderHelperProvider {
      * @param name Name to use when uploading the file. If not defined, use the file's name.
      * @returns Promise resolved when the file is uploaded.
      */
-    async copyAndUploadFile(file: IFile | File, upload?: boolean, name?: string): Promise<CoreWSUploadFileResult | FileEntry> {
+    async copyAndUploadFile(file: IFile | File, upload: true, name?: string): Promise<CoreWSUploadFileResult>;
+    async copyAndUploadFile(file: IFile | File, upload: false, name?: string): Promise<FileEntry>;
+    async copyAndUploadFile(file: IFile | File, upload?: boolean, name?: string): Promise<CoreWSUploadFileResult | FileEntry>;
+    async copyAndUploadFile(file: IFile | File, upload = false, name?: string): Promise<CoreWSUploadFileResult | FileEntry> {
         name = name || file.name;
 
         const modal = await CoreLoadings.show('core.fileuploader.readingfile', true);
@@ -698,8 +701,32 @@ export class CoreFileUploaderHelperProvider {
     async uploadFileEntry(
         fileEntry: FileEntry,
         deleteAfter: boolean,
-        maxSize?: number,
+        maxSize: number | undefined,
+        upload: true,
+        allowOffline?: boolean,
+        name?: string,
+    ): Promise<CoreWSUploadFileResult>;
+    async uploadFileEntry(
+        fileEntry: FileEntry,
+        deleteAfter: boolean,
+        maxSize: number | undefined,
+        upload: false,
+        allowOffline?: boolean,
+        name?: string,
+    ): Promise<FileEntry>;
+    async uploadFileEntry(
+        fileEntry: FileEntry,
+        deleteAfter: boolean,
+        maxSize: number | undefined,
         upload?: boolean,
+        allowOffline?: boolean,
+        name?: string,
+    ): Promise<CoreWSUploadFileResult | FileEntry>;
+    async uploadFileEntry(
+        fileEntry: FileEntry,
+        deleteAfter: boolean,
+        maxSize: number | undefined = undefined,
+        upload = false,
         allowOffline?: boolean,
         name?: string,
     ): Promise<CoreWSUploadFileResult | FileEntry> {
@@ -727,7 +754,28 @@ export class CoreFileUploaderHelperProvider {
      */
     async uploadFileObject(
         file: IFile | File,
-        maxSize?: number,
+        maxSize: undefined | number,
+        upload: true,
+        allowOffline?: boolean,
+        name?: string,
+    ): Promise<CoreWSUploadFileResult>;
+    async uploadFileObject(
+        file: IFile | File,
+        maxSize: undefined | number,
+        upload: false,
+        allowOffline?: boolean,
+        name?: string,
+    ): Promise<FileEntry>;
+    async uploadFileObject(
+        file: IFile | File,
+        maxSize: undefined | number,
+        upload?: boolean,
+        allowOffline?: boolean,
+        name?: string,
+    ): Promise<CoreWSUploadFileResult | FileEntry>;
+    async uploadFileObject(
+        file: IFile | File,
+        maxSize: undefined | number = undefined,
         upload?: boolean,
         allowOffline?: boolean,
         name?: string,
@@ -740,7 +788,7 @@ export class CoreFileUploaderHelperProvider {
             }
         }
 
-        if (maxSize !== undefined && maxSize != -1 && file.size > maxSize) {
+        if (maxSize !== undefined && maxSize !== -1 && file.size > maxSize) {
             throw this.createMaxBytesError(maxSize, file.name);
         }
 
