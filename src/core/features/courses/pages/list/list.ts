@@ -150,11 +150,12 @@ export default class CoreCoursesListPage implements OnInit, OnDestroy {
 
         const mode = CoreNavigator.getRouteParam<CoreCoursesListMode>('mode') || 'my';
 
-        if (mode == 'search') {
+        if (mode === 'search') {
             this.searchMode = true;
+            this.searchText = CoreNavigator.getRouteParam('searchText') || '';
         }
 
-        if (mode == 'my') {
+        if (mode === 'my') {
             this.showOnlyEnrolled = true;
         }
 
