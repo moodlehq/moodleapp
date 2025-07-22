@@ -1,8 +1,8 @@
 {
     "app_id": "ca.umontreal.studium",
     "appname": "StudiUM Mobile",
-    "versioncode": 44103,
-    "versionname": "4.4.1",
+    "versioncode": 50003,
+    "versionname": "5.0.0",
     "cache_update_frequency_usually": 420000,
     "cache_update_frequency_often": 1200000,
     "cache_update_frequency_sometimes": 3600000,
@@ -20,7 +20,7 @@
         "high": 120
     },
     "customurlscheme": "studiummobile",
-    "sites": [{"name": "StudiUM PP", "url": "https://studium-pre-prod.ena.umontreal.ca/"}, {"name": "StudiUM formation continue PP", "url": "https://studiumfc-pre-prod.ena.umontreal.ca/"}],
+    "sites": [{"name": "StudiUM PP", "url": "https://udem-moodle-stage.cena-test.catalyst-ca.net/"}, {"name": "StudiUM formation continue PP", "url": "https://udem-fc-stage.cena-test.catalyst-ca.net/"}],
     "multisitesdisplay": "radio",
     "sitefindersettings": {},
     "onlyallowlistedsites": false,
@@ -32,6 +32,7 @@
     "enableonboarding": true,
     "forceColorScheme": "",
     "forceLoginLogo": false,
+    "showTopLogo": "hidden",
     "ioswebviewscheme": "studiumappfs",
     "appstores": {
         "android": "ca.umontreal.studiumprod",
@@ -68,5 +69,7 @@
             ]
         }
     },
+    "clearIABSessionWhenAutoLogin": "android",
+    "collapsibleItemsExpanded": false,
     "docurl": "https://studium.umontreal.ca/mod/page/view.php?id=4792674"
 }

@@ -31,9 +31,9 @@
 
             <div class="ion-text-wrap ion-text-center core-login-info-box">
                 <div class="core-login-site">
-                    <core-site-logo siteNameMode="p" [showLogo]="!showUserAvatar" [site]="site" />
-
-                    <p class="core-siteurl" *ngIf="displaySiteUrl">{{site.siteUrl}}</p>
+                    <div class="core-login-site-logo" *ngIf="!showUserAvatar">
+                        <div class="core-login-site-logo-studium" [attr.aria-label]="siteInfo?.siteName"></div>
+                    </div>
                 </div>
 
                 <div class="core-login-user">
