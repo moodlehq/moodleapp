@@ -131,30 +131,29 @@
 
     @if (filteredCourses.length === 0) {
         <core-empty-box image="assets/img/icons/courses.svg">
-            @if (hasCourses) {
-                <h3 class="item-heading">
-                    {{'addon.block_myoverview.noresult' | translate}}
-                </h3>
-            } @else {
-                <h3 class="item-heading">
-                    {{'addon.block_myoverview.nocoursesenrolled' | translate}}
-                </h3>
-            }
-            @if (searchEnabled) {
+            <h3 class="item-heading">
                 @if (hasCourses) {
-                    <p class="subdued">
-                        {{'addon.block_myoverview.noresultdescription' | translate}}
-                    </p>
+                    {{'addon.block_myoverview.noresult' | translate}}
                 } @else {
-                    <p class="subdued">
-                        {{'addon.block_myoverview.nocoursesenrolleddescription' | translate}}
-                    </p>
+                    {{'addon.block_myoverview.nocoursesenrolled' | translate}}
                 }
+            </h3>
+            @if (searchEnabled) {
+                <p class="subdued">
+                    @if (hasCourses) {
+                        {{'addon.block_myoverview.noresultdescription' | translate}}
+                    } @else {
+                        {{'addon.block_myoverview.nocoursesenrolleddescription' | translate}}
+                    }
+                </p>
                 <ion-button (click)="openSearch()" fill="outline">
                     <ion-icon name="fas-magnifying-glass" slot="start" aria-hidden="true" />
-                    {{'addon.block_myoverview.browseallcourses' | translate}}
+                    @if (hasCourses) {
+                        {{'addon.block_myoverview.searchavailablecourses' | translate}}
+                    } @else {
+                        {{'addon.block_myoverview.browseallcourses' | translate}}
+                    }
                 </ion-button>
-
             }
         </core-empty-box>
     }
