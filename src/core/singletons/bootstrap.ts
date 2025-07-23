@@ -15,6 +15,7 @@
 import { CorePopovers } from '@services/overlays/popovers';
 import { CoreFormatTextOptions } from '@components/bs-tooltip/bs-tooltip';
 import { CoreModals } from '@services/overlays/modals';
+import { CoreDom } from './dom';
 
 /**
  * Singleton with helper functions for Bootstrap.
@@ -40,6 +41,7 @@ export class CoreBootstrap {
         this.handleTooltipsAndPopovers(rootElement, formatTextOptions);
         this.handleAccordionsAndCollapse(rootElement);
         this.handleModals(rootElement, formatTextOptions);
+        this.handleTabs(rootElement);
         this.enableDismissTrigger(rootElement, 'alert', 'close'); // Alert uses close method.
         this.enableDismissTrigger(rootElement, 'modal'); // Modal uses hide method
         this.enableDismissTrigger(rootElement, 'offcanvas'); // Offcanvas uses hide method
@@ -192,6 +194,133 @@ export class CoreBootstrap {
                 });
             });
         });
+    }
+
+    /**
+     * Handle Bootstrap tab elements in a certain element.
+     * Supports both Bootstrap 4 and 5.
+     * https://getbootstrap.com/docs/5.3/components/navs-tabs/#tabs
+     *
+     * @param rootElement Element where to search for elements to treat.
+     */
+    protected static handleTabs(rootElement: HTMLElement): void {
+        const elements = Array.from(rootElement.querySelectorAll<HTMLElement>(
+            '.list-group, .nav, [role="tablist"]',
+        ));
+
+        if (!elements.length) {
+            return;
+        }
+        const toggleSelectorsList = [
+            '[data-bs-toggle="tab"]',
+            '[data-toggle="tab"]',
+            '[data-bs-toggle="pill"]',
+            '[data-toggle="pill"]',
+            '[data-bs-toggle="list"]',
+            '[data-toggle="list"]',
+        ];
+
+        elements.forEach((element) => {
+            if (!element.hasAttribute('role')) {
+                element.setAttribute('role', 'tablist');
+            }
+            const childrenSelectors = [
+                '.nav-link:not(.dropdown-toggle)',
+                '.list-group-item:not(.dropdown-toggle)',
+                '[role="tab"]:not(.dropdown-toggle)',
+                ...toggleSelectorsList,
+            ].join(',');
+
+            const children = Array.from(element.querySelectorAll<HTMLElement>(childrenSelectors));
+
+            children.forEach((child) => {
+                const isActive = child.classList.contains('active');
+                const outerElement = child.closest('.nav-item, .list-group-item');
+                child.setAttribute('aria-selected', isActive ? 'true' : 'false');
+                if (outerElement !== child) {
+                    outerElement?.setAttribute('role', 'presentation');
+                }
+                if (!isActive) {
+                    child.setAttribute('tabindex', '-1');
+                }
+                if (!child.hasAttribute('role')) {
+                    child.setAttribute('role', 'tab');
+                }
+
+                const target = this.getTargets(rootElement, child)?.[0];
+                if (!target) {
+                    return;
+                }
+                if (!target.hasAttribute('role')) {
+                    target.setAttribute('role', 'tabpanel');
+                }
+                if (child.id && !target.hasAttribute('aria-labelledby')) {
+                    target.setAttribute('aria-labelledby', child.id);
+                }
+            });
+        });
+
+        const targetElements = Array.from(rootElement.querySelectorAll<HTMLElement>(toggleSelectorsList.join(',')));
+
+        targetElements.forEach((element) => {
+            // Initialize the accordion.
+            element.addEventListener('click', async (ev: Event) => {
+                if (element.classList.contains('active')) {
+                    return;
+                }
+
+                ev.preventDefault();
+                ev.stopPropagation();
+
+                // After rendering of core-format-text directive, the DOM element wrapped within a div
+                // is moved inside the current DOM core-format-text element. So the div element is not in the DOM and empty.
+                // @see formatAndRenderContents on format-text.ts.
+                const root = CoreDom.isElementInDom(rootElement)
+                    ? rootElement
+                    : element.closest<HTMLElement>('core-format-text');
+
+                if (!root) {
+                    return;
+                }
+
+                const activeSelectors = toggleSelectorsList.map((selector) => `${selector}.active`).join(',');
+                const active = root.querySelector<HTMLElement>(activeSelectors);
+                if (active) {
+                    this.tabSetActive(root, active, false);
+                }
+
+                this.tabSetActive(root, element, true);
+            });
+        });
+    }
+
+    /**
+     * Set the active state of a tab element.
+     *
+     * @param root Root element where the tab is located.
+     * @param element Tab element to set active.
+     * @param isActive Whether the tab should be set as active or not.
+     */
+    protected static tabSetActive(
+        root: HTMLElement,
+        element: HTMLElement,
+        isActive: boolean,
+    ): void {
+        const target = this.getTargets(root, element)?.[0];
+        if (!target) {
+            return;
+        }
+
+        element.classList.toggle('active', isActive);
+        element.setAttribute('aria-selected', isActive ? 'true' : 'false');
+        if (isActive) {
+            element.removeAttribute('tabindex');
+        } else {
+            element.setAttribute('tabindex', '-1');
+        }
+
+        target.classList.toggle('active', isActive);
+        target.classList.toggle('show', isActive);
     }
 
     /**
