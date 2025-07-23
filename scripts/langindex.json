@@ -2098,6 +2098,7 @@
   "core.invalidformdata": "error",
   "core.ioscookieshelp": "local_moodlemobileapp",
   "core.labelsep": "langconfig",
+  "core.labelvalue": "moodle",
   "core.lastaccess": "moodle",
   "core.lastdownloaded": "local_moodlemobileapp",
   "core.lastmodified": "moodle",

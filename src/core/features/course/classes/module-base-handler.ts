@@ -140,6 +140,15 @@ export class CoreModuleHandlerBase implements Partial<CoreCourseModuleHandler> {
             };
         }
 
+        if (item.contenttype === 'core_courseformat\\output\\local\\overview\\overviewdialog') {
+            const { CoreCourseOverviewItemDialogButtonComponent } =
+                await import('@features/course/components/overview-item-dialog/overview-item-dialog-button');
+
+            return {
+                component: CoreCourseOverviewItemDialogButtonComponent,
+            };
+        }
+
         if (item.contenttype === 'basic') {
             // Display basic items as they are. Basic items don't use renderables, they can still contain HTML but it should
             // be displayed properly in the app because it should be standard HTML, no custom classes or similar.
