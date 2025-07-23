@@ -1,0 +1,23 @@
+<div class="ion-padding">
+    @if (title()) {
+        <p class="core-bold">
+            <core-format-text [text]="title()" contextLevel="module" [contextInstanceId]="cmId()" [courseId]="courseId()" />
+        </p>
+    }
+    @if (description()) {
+        <p>
+            <core-format-text [text]="description()" contextLevel="module" [contextInstanceId]="cmId()" [courseId]="courseId()" />
+        </p>
+    }
+    @if (items().length) {
+        <ul>
+            @for (item of items(); track item.label) {
+                <li [innerHTML]="'core.labelvalue' | translate: { $a: {
+                    label: item.label,
+                    value: `<span class='core-bold'>${item.value}</span>`,
+                } }">
+                </li>
+            }
+        </ul>
+    }
+</div>

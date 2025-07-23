@@ -169,6 +169,7 @@
     "invalidusername": "The given username contains invalid characters",
     "ioscookieshelp": "Embedded content might require cookies to work. Please go to the app's iOS settings, enable 'Allow Cross-Website Tracking' and try again.",
     "labelsep": ":",
+    "labelvalue": "{{$a.label}}: {{$a.value}}",
     "lastaccess": "Last access",
     "lastdownloaded": "Last downloaded",
     "lastmodified": "Last modified",
