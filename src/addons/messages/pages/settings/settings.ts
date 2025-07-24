@@ -24,7 +24,6 @@ import { CoreConfig } from '@services/config';
 import { CoreEvents } from '@singletons/events';
 import { CoreSites } from '@services/sites';
 import { CoreConstants } from '@/core/constants';
-import { AddonNotificationsPreferencesNotificationProcessorState } from '@addons/notifications/services/notifications';
 import { CorePlatform } from '@services/platform';
 import { CoreErrorHelper } from '@services/error-helper';
 import { CoreLoadings } from '@services/overlays/loadings';
@@ -49,12 +48,10 @@ export default class AddonMessagesSettingsPage implements OnInit, OnDestroy {
     preferences?: AddonMessagesMessagePreferences;
     preferencesLoaded = false;
     contactablePrivacy?: number | boolean;
-    advancedContactable = false; // Whether the site supports "advanced" contactable privacy.
     allowSiteMessaging = false;
     onlyContactsValue = AddonMessagesMessagePrivacy.ONLYCONTACTS;
     courseMemberValue = AddonMessagesMessagePrivacy.COURSEMEMBER;
     siteValue = AddonMessagesMessagePrivacy.SITE;
-    groupMessagingEnabled = false;
     sendOnEnter = false;
     readonly warningMessage = signal<string | undefined>(undefined);
 
@@ -64,9 +61,7 @@ export default class AddonMessagesSettingsPage implements OnInit, OnDestroy {
     constructor() {
 
         const currentSite = CoreSites.getRequiredCurrentSite();
-        this.advancedContactable = !!currentSite.isVersionGreaterEqualThan('3.6');
-        this.allowSiteMessaging = !!currentSite.canUseAdvancedFeature('messagingallusers');
-        this.groupMessagingEnabled = AddonMessages.isGroupMessagingEnabled();
+        this.allowSiteMessaging = currentSite.canUseAdvancedFeature('messagingallusers');
         this.loggedInOffLegacyMode = !currentSite.isVersionGreaterEqualThan('4.0');
 
         this.asyncInit();
@@ -91,23 +86,21 @@ export default class AddonMessagesSettingsPage implements OnInit, OnDestroy {
     protected async fetchPreferences(): Promise<void> {
         try {
             const preferences = await AddonMessages.getMessagePreferences();
-            if (this.groupMessagingEnabled) {
-                // Simplify the preferences.
-                for (const component of preferences.components) {
-                    // Only display get the notification preferences.
-                    component.notifications = component.notifications.filter((notification) =>
-                        notification.preferencekey === ADDON_MESSAGES_NOTIFICATION_PREFERENCES_KEY);
+            // Simplify the preferences.
+            for (const component of preferences.components) {
+                // Only display get the notification preferences.
+                component.notifications = component.notifications.filter((notification) =>
+                    notification.preferencekey === ADDON_MESSAGES_NOTIFICATION_PREFERENCES_KEY);
 
-                    if (this.loggedInOffLegacyMode) {
-                        // Load enabled from loggedin / loggedoff values.
-                        component.notifications.forEach((notification) => {
-                            notification.processors.forEach(
-                                (processor) => {
-                                    processor.enabled = processor.loggedin.checked || processor.loggedoff.checked;
-                                },
-                            );
-                        });
-                    }
+                if (this.loggedInOffLegacyMode) {
+                    // Load enabled from loggedin / loggedoff values.
+                    component.notifications.forEach((notification) => {
+                        notification.processors.forEach(
+                            (processor) => {
+                                processor.enabled = processor.loggedin.checked || processor.loggedoff.checked;
+                            },
+                        );
+                    });
                 }
             }
 
@@ -163,11 +156,6 @@ export default class AddonMessagesSettingsPage implements OnInit, OnDestroy {
 
         const modal = await CoreLoadings.show('core.sending', true);
 
-        if (!this.advancedContactable) {
-            // Convert from boolean to number.
-            value = value ? 1 : 0;
-        }
-
         try {
             await CoreUser.updateUserPreference('message_blocknoncontacts', String(value));
             // Update the preferences since they were modified.
@@ -183,10 +171,11 @@ export default class AddonMessagesSettingsPage implements OnInit, OnDestroy {
     }
 
     /**
-     * Change the value of a certain preference. Versions 3.6 onwards.
+     * Change the value of a certain preference.
      *
      * @param notification Notification object.
      * @param processor Notification processor.
+     * @since 3.6
      */
     async changePreference(
         notification: AddonMessagesMessagePreferencesNotificationFormatted,
@@ -222,41 +211,6 @@ export default class AddonMessagesSettingsPage implements OnInit, OnDestroy {
             processor.enabled = !processor.enabled;
         } finally {
             notification.updating = false;
-        }
-    }
-
-    /**
-     * Change the value of a certain preference. Only on version 3.5.
-     *
-     * @param notification Notification object.
-     * @param processor Notification processor.
-     * @param state State name, ['loggedin', 'loggedoff'].
-     */
-    async changePreferenceLegacy(
-        notification: AddonMessagesMessagePreferencesNotificationFormatted,
-        processor: AddonMessagesMessagePreferencesNotificationProcessor,
-        state: 'loggedin' | 'loggedoff',
-    ): Promise<void> {
-        // Update only the specified state.
-        const processorState: AddonNotificationsPreferencesNotificationProcessorState = processor[state];
-        const preferenceName = `${notification.preferencekey}_${processorState.name}`;
-
-        const value = notification.processors
-            .filter((processor) => processor[state].checked)
-            .map((processor) => processor.name)
-            .join(',');
-
-        notification[`updating${state}`] = true;
-        try {
-            await CoreUser.updateUserPreference(preferenceName, value);
-            // Update the preferences since they were modified.
-            this.updatePreferencesAfterDelay();
-        } catch (error) {
-            // Show error and revert change.
-            CoreAlerts.showError(error);
-            processorState.checked = !processorState.checked;
-        } finally {
-            notification[`updating${state}`] = false;
         }
     }
 

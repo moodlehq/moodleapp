@@ -31,10 +31,10 @@
             <core-context-menu-item [hidden]="isSelf || !showInfo || !isGroup" [priority]="1000"
                 [content]="'addon.messages.groupinfo' | translate" (action)="viewInfo()" iconAction="fas-circle-info" />
 
-            <core-context-menu-item [hidden]="!groupMessagingEnabled || !conversation || conversation.isfavourite" [priority]="800"
+            <core-context-menu-item [hidden]="!conversation || conversation.isfavourite" [priority]="800"
                 (action)="changeFavourite($event)" [closeOnClick]="false" [content]="'addon.messages.addtofavourites' | translate"
                 [iconAction]="favouriteIcon" />
-            <core-context-menu-item [hidden]="!groupMessagingEnabled || !conversation || !conversation.isfavourite" [priority]="800"
+            <core-context-menu-item [hidden]="!conversation || !conversation.isfavourite" [priority]="800"
                 (action)="changeFavourite($event)" [closeOnClick]="false" [content]="'addon.messages.removefromfavourites' | translate"
                 [iconAction]="favouriteIcon" [iconSlash]="true" />
 
@@ -52,7 +52,7 @@
 
             <core-context-menu-item [hidden]="!canDelete || !messages || !messages.length" [priority]="400"
                 [content]="'addon.messages.showdeletemessages' | translate" iconAction="toggle" [(toggle)]="showDelete" />
-            <core-context-menu-item [hidden]="!groupMessagingEnabled || !conversationId || isGroup || !messages || !messages.length"
+            <core-context-menu-item [hidden]="!conversationId || isGroup || !messages || !messages.length"
                 [priority]="200" [content]="'addon.messages.deleteconversation' | translate" (action)="deleteConversation($event)"
                 [closeOnClick]="false" [iconAction]="deleteIcon" />
             <core-context-menu-item
