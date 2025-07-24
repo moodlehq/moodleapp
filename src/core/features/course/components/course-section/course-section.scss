@@ -36,11 +36,6 @@
         --card-padding-bottom: 0px;
     }
 
-    core-course-module:last-child {
-        --activity-border: 0px;
-        --card-padding-bottom: 0px;
-    }
-
     core-course-module:first-child ::ng-deep ion-card {
         margin-top: 0px;
     }

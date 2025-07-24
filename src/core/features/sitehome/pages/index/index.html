@@ -59,18 +59,18 @@
                         </ion-item>
                     }
 
-                    <ng-container *ngFor="let modOrSubsection of section.contents">
+                    @for (modOrSubsection of section.contents; track modOrSubsection.id) {
                         @if (isModule(modOrSubsection)) {
                             <core-course-module [module]="modOrSubsection" [section]="section" />
                         }
-                    </ng-container>
+                    }
                 </section>
             }
 
             <!-- Site home items: news, categories, courses, etc. -->
             @if (items.length > 0) {
 
-                <ng-container *ngFor="let item of items">
+                @for (item of items; track item) {
                     @switch (item) {
                         @case ('LIST_OF_COURSE') {
                             <ng-template *ngTemplateOutlet="allCourseList" />
@@ -88,8 +88,7 @@
                             <ng-template *ngTemplateOutlet="news" />
                         }
                     }
-                </ng-container>
-
+                }
             }
         </ion-list>
         @if (hasBlocks) {
