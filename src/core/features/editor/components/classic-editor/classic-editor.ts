@@ -28,6 +28,7 @@ import { CoreWait } from '@singletons/wait';
 import { CoreQRScan } from '@services/qrscan';
 import { CoreSharedModule } from '@/core/shared.module';
 import { CoreEditorBaseComponent } from '@features/editor/classes/base-editor-component';
+import { CoreEventObserver } from '@singletons/events';
 
 /**
  * Implementation of the classic rich text editor.
@@ -83,6 +84,7 @@ export class CoreEditorClassicEditorComponent extends CoreEditorBaseComponent im
     protected toolbarButtonWidth = 44;
     protected toolbarArrowWidth = 44;
     protected selectionChangeFunction = (): void => this.updateToolbarStyles();
+    protected resizeListener?: CoreEventObserver;
     protected domPromise?: CoreCancellablePromise<void>;
     protected buttonsDomPromise?: CoreCancellablePromise<void>;
     protected shortcutCommands?: Record<string, EditorCommand>;
@@ -140,6 +142,10 @@ export class CoreEditorClassicEditorComponent extends CoreEditorBaseComponent im
         // Use paragraph on enter.
         // eslint-disable-next-line @typescript-eslint/no-deprecated
         document.execCommand('DefaultParagraphSeparator', false, 'p');
+
+        this.resizeListener = CoreDom.onWindowResize(() => {
+            this.onWindowResize();
+        }, 50);
 
         document.addEventListener('selectionchange', this.selectionChangeFunction);
         this.updateToolbarButtons();
@@ -554,7 +560,8 @@ export class CoreEditorClassicEditorComponent extends CoreEditorBaseComponent im
     /**
      * Window resized callback.
      */
-    async onResize(): Promise<void> {
+    protected async onWindowResize(): Promise<void> {
+        await CoreWait.waitForResizeDone();
         this.isPhone = CoreScreen.isMobile;
 
         this.updateToolbarButtons();
@@ -582,6 +589,7 @@ export class CoreEditorClassicEditorComponent extends CoreEditorBaseComponent im
     ngOnDestroy(): void {
         document.removeEventListener('selectionchange', this.selectionChangeFunction);
 
+        this.resizeListener?.off();
         this.contentObserver?.disconnect();
 
         this.domPromise?.cancel();

@@ -6,12 +6,7 @@
     justify-content: stretch;
     align-items: stretch;
     width: 100%;
-    height: var(--core-rte-height, auto);
-    min-height: 40vh;
-}
-
-:host-context(.keyboard-is-open) {
-    min-height: 200px;
+    scroll-margin: 5px;
 }
 
 :host-context(.item) {

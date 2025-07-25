@@ -51,11 +51,4 @@ export abstract class CoreEditorBaseComponent implements AsyncDirective {
      */
     abstract setContent(value: string): void;
 
-    /**
-     * Called when the editor is resized.
-     */
-    async onResize(): Promise<void> {
-        // Do nothing by default.
-    }
-
 }
