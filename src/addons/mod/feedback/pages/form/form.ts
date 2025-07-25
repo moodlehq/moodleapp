@@ -394,6 +394,8 @@ export default class AddonModFeedbackFormPage implements OnInit, OnDestroy, CanL
                     readingStrategy: this.offline ? CoreSitesReadingStrategy.PREFER_CACHE : CoreSitesReadingStrategy.ONLY_NETWORK,
                     siteId: this.currentSite.getId(),
                 });
+
+                CoreCourse.checkModuleCompletion(this.courseId, this.module?.completiondata);
             } else if (typeof response.jumpto != 'number' || response.jumpto == this.currentPage) {
                 // Errors on questions, stay in page.
             } else {
