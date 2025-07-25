@@ -69,6 +69,7 @@ export class CoreCourseModuleSummaryComponent implements OnInit, OnDestroy {
     removeFilesLoading = false;
     prefetchLoading = false;
     canPrefetch = false;
+    isOfflineUseDisabled = false;
     prefetchDisabled = false;
     size?: number; // Size in bytes
     downloadTimeReadable = ''; // Last download time in a readable format.
@@ -222,6 +223,8 @@ export class CoreCourseModuleSummaryComponent implements OnInit, OnDestroy {
         const moduleInfo =
             await CoreCourseHelper.getModulePrefetchInfo(this.module, this.courseId, refresh, this.component);
 
+        const site = CoreSites.getRequiredCurrentSite();
+        this.isOfflineUseDisabled = site.isFeatureDisabled('NoDelegate_CoreOffline');
         this.canPrefetch = moduleInfo.status !== DownloadStatus.NOT_DOWNLOADABLE;
         this.downloadTimeReadable = '';
 

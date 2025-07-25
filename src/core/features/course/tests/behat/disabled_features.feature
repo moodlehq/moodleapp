@@ -290,3 +290,14 @@ Feature: Test disabled text is shown when opening a disabled activity.
     Then the header should be "Test workshop name" in the app
     And I should find "Test workshop description" in the app
     And I should find "This content is not available in the app" in the app
+
+  Scenario: View activity info download button
+    Given the following "activities" exist:
+      | activity   | course | name            | intro                 | content | showdescription |
+      | page       | C1     | Test page name  | Test page description | CONTENT | 1               |
+    And the following config values are set as admin:
+      | disabledfeatures | NoDelegate_CoreOffline | tool_mobile |
+    When I entered the course "Course 1" as "student1" in the app
+    And I press "Test page name" in the app
+    And I press "Information" "ion-button" in the app
+    Then I should not find "Download" in the app
