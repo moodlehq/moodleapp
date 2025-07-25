@@ -137,6 +137,7 @@
         "@ionic/angular-toolkit": "^12.2.0",
         "@ionic/cli": "^7.2.1",
         "@jsdevtools/coverage-istanbul-loader": "^3.0.5",
+        "@totalpave/cordova-plugin-insets": "^0.3.2",
         "@types/faker": "^5.5.9",
         "@types/jest": "^26.0.24",
         "@types/node": "^24.0.3",
@@ -205,6 +206,7 @@
                 "FCM_VERSION": "23.+",
                 "IOS_FIREBASE_MESSAGING_VERSION": "~> 10.23.0"
             },
+            "@totalpave/cordova-plugin-insets": {},
             "cordova-clipboard": {},
             "cordova-plugin-androidx-adapter": {},
             "cordova-plugin-badge": {},
