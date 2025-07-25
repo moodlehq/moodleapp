@@ -103,7 +103,6 @@
         "cordova-plugin-customurlscheme": "^5.0.2",
         "cordova-plugin-device": "^2.1.0",
         "cordova-plugin-file": "^8.1.3",
-        "cordova-plugin-ionic-keyboard": "^2.2.0",
         "cordova-plugin-local-notification": "1.0.0",
         "cordova-plugin-network-information": "^3.0.0",
         "cordova-plugin-prevent-override": "^1.0.1",
@@ -145,6 +144,7 @@
         "angular-eslint": "^20.1.1",
         "circular-dependency-plugin": "^5.2.2",
         "concurrently": "^8.2.2",
+        "cordova-plugin-ionic-keyboard": "github:moodlemobile/cordova-plugin-ionic-keyboard",
         "cordova-plugin-moodleapp": "file:cordova-plugin-moodleapp",
         "cross-env": "^7.0.3",
         "es-check": "^9.1.4",
@@ -215,7 +215,6 @@
                 "ANDROID_PATHPREFIX": "/"
             },
             "cordova-plugin-device": {},
-            "cordova-plugin-ionic-keyboard": {},
             "cordova-plugin-local-notification": {
                 "ANDROID_SUPPORT_V4_VERSION": "26.+"
             },
@@ -229,7 +228,8 @@
             "cordova-plugin-wkuserscript": {},
             "cordova-plugin-wkwebview-cookies": {},
             "cordova-sqlite-storage": {},
-            "nl.kingsquare.cordova.background-audio": {}
+            "nl.kingsquare.cordova.background-audio": {},
+            "cordova-plugin-ionic-keyboard": {}
         }
     }
 }
