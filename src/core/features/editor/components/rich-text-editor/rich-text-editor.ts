@@ -111,7 +111,7 @@ export class CoreEditorRichTextEditorComponent implements AfterViewInit, OnDestr
 
         effect(() => {
             // Signal will be triggered when the keyboard is shown or hidden.
-            CoreKeyboard.getKeyboardShownSignal();
+            CoreKeyboard.keyboardShownSignal();
 
             // Opening or closing the keyboard also calls the resize function, but sometimes the resize is called too soon.
             // Check the height again, now the window height should have been updated.

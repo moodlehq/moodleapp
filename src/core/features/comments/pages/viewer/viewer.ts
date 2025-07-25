@@ -129,10 +129,10 @@ export default class CoreCommentsViewerPage implements OnInit, OnDestroy, AfterV
         });
 
         effect(() => {
-            const shown = CoreKeyboard.getKeyboardShownSignal();
+            const shown = CoreKeyboard.keyboardShownSignal();
 
             /// Force when opening.
-            this.scrollToBottom(shown());
+            this.scrollToBottom(shown);
         });
     }
 
