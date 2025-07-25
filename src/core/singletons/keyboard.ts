@@ -58,7 +58,7 @@ export class CoreKeyboard {
      *
      * @returns Signal indicating whether the keyboard is shown.
      */
-    static getKeyboardShownSignal(): Signal<boolean> {
+    static get keyboardShownSignal(): Signal<boolean> {
         return CoreKeyboard.IS_KEYBOARD_SHOWN.asReadonly();
     }
 
@@ -67,7 +67,7 @@ export class CoreKeyboard {
      *
      * @returns Signal indicating the keyboard height.
      */
-    static getKeyboardHeightSignal(): Signal<number> {
+    static get keyboardHeightSignal(): Signal<number> {
         return CoreKeyboard.KEYBOARD_HEIGHT.asReadonly();
     }
 

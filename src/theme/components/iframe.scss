@@ -25,13 +25,7 @@ body.core-iframe-fullscreen {
 
             // Restore original safe area.
             .tabs-inner {
-                @supports (padding-left: constant(safe-area-inset-left)) {
-                    --ion-safe-area-left: constant(safe-area-inset-left);
-                }
-
-                @supports (padding-left: env(safe-area-inset-left)) {
-                    --ion-safe-area-left: env(safe-area-inset-left);
-                }
+                --ion-safe-area-left: var(--root-safe-area-left);
             }
         }
 

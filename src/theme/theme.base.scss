@@ -14,6 +14,13 @@
     &.ios {
         font-size: var(--zoom-level);
     }
+
+    // Store safe area variables as --root-safe-area-*.
+    // Contrary to the --ion-safe-area-* variables, these are never overridden.
+    --root-safe-area-left: var(--ion-safe-area-left);
+    --root-safe-area-right: var(--ion-safe-area-right);
+    --root-safe-area-top: var(--ion-safe-area-top);
+    --root-safe-area-bottom: var(--ion-safe-area-bottom);
 }
 
 a {
@@ -130,6 +137,24 @@ ion-list {
 
 .ion-margin.safe-margin-horizontal {
     @include safe-area-margin-horizontal(16px, 16px);
+}
+
+// Make sure pages do not overlap the bottom system bar.
+ion-app > ion-router-outlet > .ion-page:not(page-core-mainmenu),
+ion-app > ion-router-outlet > page-core-mainmenu > ion-tabs.placement-side > .tabs-inner,
+ion-app > ion-modal > .ion-page {
+    height: calc(100% - var(--ion-safe-area-bottom, 0px));
+    * {
+        --ion-safe-area-bottom: 0px;
+    }
+}
+
+// On tablets, Ionic unsets the safe area variables in modals.
+ion-app > ion-modal {
+    --ion-safe-area-bottom: inherit;
+}
+ion-app > ion-modal.core-modal-lateral {
+    --ion-safe-area-top: inherit;
 }
 
 ion-tabs.placement-side .tabs-inner {
