@@ -823,11 +823,11 @@ export class CoreLoginHelperProvider {
         const params: Record<string, string> = {};
 
         if (username) {
-            params.username = username.trim();
+            params.username = username.trim().toLowerCase();
         }
 
         if (email) {
-            params.email = email.trim();
+            params.email = email.trim().toLowerCase();
         }
 
         return CoreWS.callAjax('core_auth_request_password_reset', params, { siteUrl });
@@ -1037,7 +1037,7 @@ export class CoreLoginHelperProvider {
 
             // Call the WS to resend the confirmation email.
             const modal = await CoreLoadings.show('core.sending', true);
-            const data = { username, password };
+            const data = { username: username?.toLowerCase(), password };
             const preSets = { siteUrl };
 
             try {
