@@ -26,6 +26,9 @@ import {
     EventEmitter,
     inject,
     effect,
+    signal,
+    afterNextRender,
+    Injector,
 } from '@angular/core';
 import { IonContent } from '@ionic/angular';
 import { CoreSharedModule } from '@/core/shared.module';
@@ -67,10 +70,14 @@ import { CoreKeyboard } from '@singletons/keyboard';
         CoreSharedModule,
     ],
     schemas: [CUSTOM_ELEMENTS_SCHEMA],
+    host: {
+        '[style.height]': 'height() + "px"',
+    },
 })
 export class CoreEditorRichTextEditorComponent implements AfterViewInit, OnDestroy, OnInit {
 
     private static readonly MIN_HEIGHT = 200; // Minimum height of the editor.
+    private static readonly MAX_HEIGHT = 400; // Maximum height of the editor.
     private static readonly DRAFT_AUTOSAVE_FREQUENCY = 30000;
 
     @Input() placeholder = ''; // Placeholder to set in textarea.
@@ -87,12 +94,14 @@ export class CoreEditorRichTextEditorComponent implements AfterViewInit, OnDestr
 
     @ViewChild(CoreDynamicComponent) dynamicComponent!: CoreDynamicComponent<CoreEditorBaseComponent>;
 
+    protected injector = inject(Injector);
     protected resizeListener?: CoreEventObserver;
     protected editorComponentClass?: Type<CoreEditorBaseComponent>;
     protected editorComponentData: Record<string, unknown> = {};
     protected controlSubscription?: Subscription;
     protected labelObserver?: MutationObserver;
     protected setContentId = 0;
+    protected readonly height = signal(CoreEditorRichTextEditorComponent.MAX_HEIGHT);
 
     // Autosave.
     protected pageInstance: string;
@@ -109,13 +118,13 @@ export class CoreEditorRichTextEditorComponent implements AfterViewInit, OnDestr
          // Generate a "unique" ID based on timestamp.
         this.pageInstance = `app_${Date.now()}`;
 
+        // Resize the keyboard when opening or closing the keyboard.
+        // The window resize event is not fired because the webview is not resized anymore on both Android and iOS.
         effect(() => {
             // Signal will be triggered when the keyboard is shown or hidden.
             CoreKeyboard.keyboardShownSignal();
 
-            // Opening or closing the keyboard also calls the resize function, but sometimes the resize is called too soon.
-            // Check the height again, now the window height should have been updated.
-            this.maximizeEditorSize();
+            this.resizeEditor(false);
         });
     }
 
@@ -179,8 +188,6 @@ export class CoreEditorRichTextEditorComponent implements AfterViewInit, OnDestr
             this.element.setAttribute('id', this.elementId);
         }
 
-        this.maximizeEditorSize();
-
         this.setupIonItem();
 
         this.setContent(this.control?.value ?? '');
@@ -191,8 +198,10 @@ export class CoreEditorRichTextEditorComponent implements AfterViewInit, OnDestr
             this.deleteDraftOnSubmitOrCancel();
         }
 
-        this.resizeListener = CoreDom.onWindowResize(() => {
-            this.onWindowResize();
+        this.resizeListener = CoreDom.onWindowResize(async () => {
+            await CoreWait.waitForResizeDone();
+
+            await this.resizeEditor(true);
         }, 50);
 
         this.controlSubscription = this.control?.valueChanges.subscribe((newValue) => {
@@ -209,19 +218,6 @@ export class CoreEditorRichTextEditorComponent implements AfterViewInit, OnDestr
         this.resetObserver?.off();
         this.labelObserver?.disconnect();
         clearInterval(this.autoSaveInterval);
-    }
-
-    /**
-     * @inheritdoc
-     */
-    async onWindowResize(): Promise<void> {
-        await CoreWait.waitForResizeDone();
-
-        await this.maximizeEditorSize();
-
-        // Call onResize on editor implementation once it is loaded.
-        await this.dynamicComponent.ready();
-        await this.dynamicComponent.callComponentMethod('onResize');
     }
 
     /**
@@ -382,50 +378,39 @@ export class CoreEditorRichTextEditorComponent implements AfterViewInit, OnDestr
     }
 
     /**
-     * Resize editor to maximize the space occupied.
-     */
-    protected async maximizeEditorSize(): Promise<void> {
-        await this.waitLoadingsDone();
-
-        // Editor is ready, adjust Height if needed.
-        const blankHeight = await this.getBlankHeightInContent();
-        const newHeight = blankHeight + this.element.getBoundingClientRect().height;
-
-        if (newHeight > CoreEditorRichTextEditorComponent.MIN_HEIGHT) {
-            this.element.style.setProperty('--core-rte-height', `${newHeight - 1}px`);
-        } else {
-            this.element.style.removeProperty('--core-rte-height');
-        }
-    }
-
-    /**
-     * Get the height of the space in blank at the end of the page.
+     * Resizes the editor to fit the available space.
      *
-     * @returns Blank height in px. Will be negative if no blank space.
+     * @param allowGrow Allows increasing editor size if true, otherwise, only shrinking is allowed.
      */
-    protected async getBlankHeightInContent(): Promise<number> {
+    protected async resizeEditor(allowGrow: boolean): Promise<void> {
+        await this.waitLoadingsDone();
         await CoreDom.waitToBeInDOM(this.element);
         await CoreWait.nextTicks(10);
 
-        let content: Element | null = this.element.closest('ion-content');
         const contentHeight = await CoreDom.getContentHeight(this.content);
 
-        // Get first children with content, not fixed.
-        let scrollContentHeight = 0;
-        if (content) {
-            while (scrollContentHeight === 0 && content?.children) {
-                const children = Array.from(content.children)
-                    .filter((element) => element.slot !== 'fixed' && !element.classList.contains('core-loading-container'));
-
-                scrollContentHeight = children
-                    .map((element) => element.getBoundingClientRect().height)
-                    .reduce((a, b) => a + b, 0);
-
-                content = children[0];
-            }
+        if (contentHeight === 0) {
+            // The editor has probably been removed or hidden.
+            return;
         }
 
-        return contentHeight - scrollContentHeight;
+        // Reset to maximum size if orientation has changed.
+        if (allowGrow) {
+            this.height.set(CoreEditorRichTextEditorComponent.MAX_HEIGHT);
+        }
+
+        // Limit size to the available screen space.
+        this.height.set(Math.min(this.height(), contentHeight - 10));
+
+        // Make sure there is enough space to render the editor.
+        this.height.set(Math.max(this.height(), CoreEditorRichTextEditorComponent.MIN_HEIGHT));
+
+        afterNextRender(() => {
+            // Scroll editor into view if it has focus.
+            if (this.element.contains(document.activeElement)) {
+                this.element.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            }
+        }, { injector: this.injector });
     }
 
     /**
