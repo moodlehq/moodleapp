@@ -29,6 +29,7 @@ import { CoreFormatTextDirective } from './format-text';
 import { CoreWait } from '@singletons/wait';
 import { toBoolean } from '../transforms/boolean';
 import { AsyncDirective } from '@classes/async-directive';
+import { CoreSplitViewComponent } from '@components/split-view/split-view';
 
 declare module '@singletons/events' {
 
@@ -87,6 +88,7 @@ export class CoreCollapsibleHeaderDirective implements OnInit, OnChanges, OnDest
     protected content?: HTMLIonContentElement;
     protected contentScrollListener?: EventListener;
     protected endContentScrollListener?: EventListener;
+    protected hasSplitView?: boolean;
     protected pageDidEnterListener?: EventListener;
     protected resizeListener?: CoreEventObserver;
     protected floatingTitle?: HTMLHeadingElement;
@@ -204,6 +206,7 @@ export class CoreCollapsibleHeaderDirective implements OnInit, OnChanges, OnDest
     protected listenEvents(): void {
         this.resizeListener = CoreDom.onWindowResize(() => {
             this.initializeFloatingTitle();
+            this.calculateContentWidth();
         }, 50);
 
         this.subscriptions.push(CoreSettingsHelper.onDarkModeChange().subscribe(() => {
@@ -328,6 +331,18 @@ export class CoreCollapsibleHeaderDirective implements OnInit, OnChanges, OnDest
         }
 
         this.trackContentScroll(content as HTMLIonContentElement);
+        this.calculateContentWidth();
+    }
+
+    /**
+     * Calculates the width of the content and stores it in a CSS variable.
+     */
+    protected async calculateContentWidth(): Promise<void> {
+        if (this.content && this.hasSplitView) {
+            this.page?.style.setProperty('--collapsible-header-content-width', `${this.content.offsetWidth}px`);
+        } else {
+            this.page?.style.removeProperty('--collapsible-header-content-width');
+        }
     }
 
     /**
@@ -514,6 +529,10 @@ export class CoreCollapsibleHeaderDirective implements OnInit, OnChanges, OnDest
         }
 
         this.content = content;
+
+        const splitViewEl = this.content.closest('core-split-view');
+        const splitView = splitViewEl ? CoreDirectivesRegistry.resolve(splitViewEl, CoreSplitViewComponent) : null;
+        this.hasSplitView = !!splitView?.outletActivated;
 
         const page = this.page;
         const expandedHeader = this.expandedHeader;
