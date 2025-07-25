@@ -14,6 +14,13 @@
     &.ios {
         font-size: var(--zoom-level);
     }
+
+    // Store safe area variables as --root-safe-area-*.
+    // Contrary to the --ion-safe-area-* variables, these are never overridden.
+    --root-safe-area-left: var(--ion-safe-area-left);
+    --root-safe-area-right: var(--ion-safe-area-right);
+    --root-safe-area-top: var(--ion-safe-area-top);
+    --root-safe-area-bottom: var(--ion-safe-area-bottom);
 }
 
 a {

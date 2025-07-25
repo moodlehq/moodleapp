@@ -55,7 +55,7 @@
     <preference name="StatusBarOverlaysWebView" value="false" />
     <preference name="StatusBarBackgroundColor" value="#FFFFFF" />
     <preference name="NavigationBarBackgroundColor" value="#FFFFFF" />
-    <preference name="AndroidEdgeToEdge" value="false" />
+    <preference name="AndroidEdgeToEdge" value="true" />
     <feature name="StatusBar">
         <param name="ios-package" onload="true" value="CDVStatusBar" />
     </feature>
