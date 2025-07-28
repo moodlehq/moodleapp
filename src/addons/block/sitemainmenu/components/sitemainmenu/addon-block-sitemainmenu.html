@@ -15,11 +15,11 @@
                 </ion-item>
             }
 
-            <ng-container *ngFor="let modOrSubsection of mainMenuBlock.contents">
+            @for (modOrSubsection of mainMenuBlock.contents; track modOrSubsection.id) {
                 @if (isModule(modOrSubsection)) {
                     <core-course-module [module]="modOrSubsection" [section]="mainMenuBlock" />
                 }
-            </ng-container>
+            }
         </ion-list>
     }
 </core-loading>

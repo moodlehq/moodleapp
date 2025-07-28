@@ -33,10 +33,6 @@ import { CoreCourseModuleHelper } from '@features/course/services/course-module-
 @Component({
     selector: 'page-core-course-list-mod-type',
     templateUrl: 'list-mod-type.html',
-    styles: `core-course-module:last-child {
-        --activity-border: 0px;
-        --card-padding-bottom: 0px;
-    }`,
     imports: [
         CoreSharedModule,
         CoreCourseModuleComponent,

@@ -10,6 +10,11 @@
     --activity-border: 1px solid var(--stroke);
     --card-padding-bottom: var(--vertical-spacing);
 
+    &:last-child {
+        --activity-border: 0px;
+        --card-padding-bottom: 0px;
+    }
+
     ion-card {
         margin: var(--vertical-spacing) var(--horizontal-spacing);
         padding: 0px;
