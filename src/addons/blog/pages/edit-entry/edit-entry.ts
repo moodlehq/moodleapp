@@ -92,6 +92,7 @@ export default class AddonBlogEditEntryPage implements CanLeave, OnInit, OnDestr
     isOfflineEntry = false;
     readonly blogLevel = signal(CoreSiteBlogLevel.BLOG_SITE_LEVEL);
     readonly isUserLevel = computed(() => this.blogLevel() === CoreSiteBlogLevel.BLOG_USER_LEVEL);
+    readonly isGlobalLevel = computed(() => this.blogLevel() === CoreSiteBlogLevel.BLOG_GLOBAL_LEVEL);
 
     /**
      * Gives if the form is not pristine. (only for existing entries)
