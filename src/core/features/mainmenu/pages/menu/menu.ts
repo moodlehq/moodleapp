@@ -123,7 +123,7 @@ export default class CoreMainMenuPage implements OnInit, OnDestroy {
 
         if (CorePlatform.isIOS()) {
             effect(() => {
-                const shown = CoreKeyboard.getKeyboardShownSignal();
+                const shown = CoreKeyboard.keyboardShownSignal();
                 // In iOS, the resize event is triggered before the keyboard is opened/closed and not triggered again once done.
                 // Init handlers again once keyboard is closed since the resize event doesn't have the updated height.
                 if (!shown) {
