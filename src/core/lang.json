@@ -165,6 +165,7 @@
     "imageviewer": "Image viewer",
     "info": "Information",
     "invalidformdata": "Incorrect form data",
+    "invalidusername": "The given username contains invalid characters",
     "ioscookieshelp": "Embedded content might require cookies to work. Please go to the app's iOS settings, enable 'Allow Cross-Website Tracking' and try again.",
     "labelsep": ":",
     "lastaccess": "Last access",
