@@ -16,7 +16,7 @@ import { CoreNavigationOptions, CoreNavigator } from '@services/navigator';
 import { CoreCourseModuleHelper } from '../services/course-module-helper';
 import { CoreCourseModuleData } from '../services/course-helper';
 import { CoreCourseModuleHandler, CoreCourseModuleHandlerData, CoreCourseOverviewItemContent } from '../services/module-delegate';
-import { CoreCourseOverviewItem } from '../services/course-overview';
+import { CoreCourseOverviewActivity, CoreCourseOverviewItem } from '../services/course-overview';
 
 /**
  * Base module handler to be registered.
@@ -94,7 +94,11 @@ export class CoreModuleHandlerBase implements Partial<CoreCourseModuleHandler> {
     /**
      * @inheritdoc
      */
-    async getOverviewItemContent(item: CoreCourseOverviewItem): Promise<CoreCourseOverviewItemContent | undefined> {
+    async getOverviewItemContent(
+        item: CoreCourseOverviewItem,
+        activity: CoreCourseOverviewActivity, // eslint-disable-line @typescript-eslint/no-unused-vars
+        courseId: number, // eslint-disable-line @typescript-eslint/no-unused-vars
+    ): Promise<CoreCourseOverviewItemContent | undefined> {
         // Handle items common to all modules or items using common renderables.
         if (item.key === 'name') {
             const { CoreCourseOverviewItemNameComponent } =
