@@ -198,7 +198,7 @@
             </ion-card>
         }
 
-        @if ((canPrefetch && displayOptions.displayPrefetch) || (size && displayOptions.displaySize)) {
+        @if (!isOfflineUseDisabled && ((canPrefetch && displayOptions.displayPrefetch) || (size && displayOptions.displaySize))) {
             <ion-card>
                 <ion-item lines="full" class="ion-text-wrap card-header">
                     <ion-label>
