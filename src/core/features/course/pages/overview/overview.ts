@@ -262,7 +262,7 @@ export default class CoreCourseOverviewPage implements OnInit {
                 }
 
                 // Get the data to render the item.
-                const content = await CoreCourseModuleDelegate.getOverviewItemContent(modName, item);
+                const content = await CoreCourseModuleDelegate.getOverviewItemContent(modName, item, activity, this.courseId);
 
                 if (content === undefined) {
                     // The app doesn't know how to render the item, mark the mod type as not supported and render an empty item.

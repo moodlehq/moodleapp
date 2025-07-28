@@ -16,7 +16,11 @@ import { Type } from '@angular/core';
 
 import { CoreCourseModuleHelper } from '@features/course/services/course-module-helper';
 import { CoreCourseHelper, CoreCourseModuleData } from '@features/course/services/course-helper';
-import { CoreCourseModuleHandler, CoreCourseModuleHandlerData } from '@features/course/services/module-delegate';
+import {
+    CoreCourseModuleHandler,
+    CoreCourseModuleHandlerData,
+    CoreCourseOverviewItemContent,
+} from '@features/course/services/module-delegate';
 import {
     CoreSitePlugins,
     CoreSitePluginsContent,
@@ -25,16 +29,17 @@ import {
 } from '@features/siteplugins/services/siteplugins';
 import { CoreNavigationOptions, CoreNavigator } from '@services/navigator';
 import { CoreLogger } from '@singletons/logger';
-import { CoreSitePluginsBaseHandler } from './base-handler';
 import { CoreEvents } from '@singletons/events';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CORE_SITE_PLUGINS_UPDATE_COURSE_CONTENT } from '@features/siteplugins/constants';
 import { ModFeature } from '@addons/mod/constants';
+import { CoreCourseOverviewActivity, CoreCourseOverviewItem } from '@features/course/services/course-overview';
+import { CoreModuleHandlerBase } from '@features/course/classes/module-base-handler';
 
 /**
  * Handler to support a module using a site plugin.
  */
-export class CoreSitePluginsModuleHandler extends CoreSitePluginsBaseHandler implements CoreCourseModuleHandler {
+export class CoreSitePluginsModuleHandler extends CoreModuleHandlerBase implements CoreCourseModuleHandler {
 
     supportedFeatures?: Record<ModFeature, unknown>;
     supportsFeature?: (feature: ModFeature) => unknown;
@@ -42,13 +47,13 @@ export class CoreSitePluginsModuleHandler extends CoreSitePluginsBaseHandler imp
     protected logger: CoreLogger;
 
     constructor(
-        name: string,
+        public name: string,
         public modName: string,
         protected plugin: CoreSitePluginsPlugin,
         protected handlerSchema: CoreSitePluginsCourseModuleHandlerData,
         protected initResult: CoreSitePluginsContent | null,
     ) {
-        super(name);
+        super();
 
         this.logger = CoreLogger.getInstance('CoreSitePluginsModuleHandler');
         this.supportedFeatures = handlerSchema.supportedfeatures;
@@ -242,6 +247,52 @@ export class CoreSitePluginsModuleHandler extends CoreSitePluginsBaseHandler imp
         });
 
         CoreNavigator.navigateToSitePath(`siteplugins/module/${courseId}/${module.id}`, options);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    async getOverviewItemContent(
+        item: CoreCourseOverviewItem,
+        activity: CoreCourseOverviewActivity,
+        courseId: number,
+    ): Promise<CoreCourseOverviewItemContent | undefined> {
+        const content = await this.getOverviewItemContentFromInitTemplates(item, activity, courseId);
+
+        return content ?? super.getOverviewItemContent(item, activity, courseId);
+    }
+
+    /**
+     * If there is a template in the init result to render the item, use it to render the content.
+     *
+     * @param item Item to render.
+     * @param activity Activity data the item belongs to.
+     * @param courseId Course ID the item belongs to.
+     * @returns Content to render, undefined if no template found.
+     */
+    protected async getOverviewItemContentFromInitTemplates(
+        item: CoreCourseOverviewItem,
+        activity: CoreCourseOverviewActivity,
+        courseId: number,
+    ): Promise<CoreCourseOverviewItemContent | undefined> {
+        const template = this.initResult?.templates?.find(template => template.id === item.key);
+        if (!template) {
+            return;
+        }
+
+        const { CoreSitePluginsOverviewItemComponent } =
+                await import('@features/siteplugins/components/overview-item/overview-item');
+
+        return {
+            component: CoreSitePluginsOverviewItemComponent,
+            componentData: {
+                item,
+                activity,
+                courseId,
+                html: template.html,
+                otherData: this.initResult?.otherdata,
+            },
+        };
     }
 
 }

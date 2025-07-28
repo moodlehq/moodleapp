@@ -27,7 +27,7 @@ import { CoreNavigationOptions } from '@services/navigator';
 import { DownloadStatus } from '@/core/constants';
 import { CORE_COURSE_MODULE_FEATURE_PREFIX } from '../constants';
 import { ModFeature } from '@addons/mod/constants';
-import { CoreCourseOverviewItem } from './course-overview';
+import { CoreCourseOverviewActivity, CoreCourseOverviewItem } from './course-overview';
 
 /**
  * Interface that all course module handlers must implement.
@@ -129,9 +129,15 @@ export interface CoreCourseModuleHandler extends CoreDelegateHandler {
      * Get the data to render a course overview item.
      *
      * @param item Item to get the content for.
+     * @param activity Activity data the item belongs to.
+     * @param courseId Course ID the item belongs to.
      * @returns Data to render the item content. If undefined it means the app doesn't know how to render the item.
      */
-    getOverviewItemContent?(item: CoreCourseOverviewItem): Promise<CoreCourseOverviewItemContent | undefined>;
+    getOverviewItemContent?(
+        item: CoreCourseOverviewItem,
+        activity: CoreCourseOverviewActivity,
+        courseId: number,
+    ): Promise<CoreCourseOverviewItemContent | undefined>;
 }
 
 /**
@@ -422,14 +428,22 @@ export class CoreCourseModuleDelegateService extends CoreDelegate<CoreCourseModu
      *
      * @param modname The name of the module type.
      * @param item Overview item data.
+     * @param activity Activity data the item belongs to.
+     * @param courseId Course ID the item belongs to.
      * @returns Data to render the item.
      */
     async getOverviewItemContent(
         modname: string,
         item: CoreCourseOverviewItem,
+        activity: CoreCourseOverviewActivity,
+        courseId: number,
     ): Promise<CoreCourseOverviewItemContent | undefined> {
         // Support overview even if the handler is disabled.
-        return await this.executeFunction<CoreCourseOverviewItemContent>(modname, 'getOverviewItemContent', [item]);
+        return await this.executeFunction<CoreCourseOverviewItemContent>(
+            modname,
+            'getOverviewItemContent',
+            [item, activity, courseId],
+        );
     }
 
     /**
