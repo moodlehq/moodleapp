@@ -18,6 +18,9 @@ import { Component, Input, Output, EventEmitter } from '@angular/core';
 
 import { CoreQuestionBehaviourButton, CoreQuestionQuestion } from '@features/question/services/question-helper';
 import { CoreSharedModule } from '@/core/shared.module';
+import { CoreAlerts } from '@services/overlays/alerts';
+import { Translate } from '@singletons';
+import { CoreMarkdown } from '@singletons/markdown';
 
 /**
  * Component to render the deferred CBM in a question.
@@ -43,5 +46,16 @@ export class AddonQbehaviourDeferredCBMComponent {
     @Input() preferredBehaviour?: string; // Preferred behaviour.
     @Output() buttonClicked = new EventEmitter<CoreQuestionBehaviourButton>(); // Will emit when a behaviour button is clicked.
     @Output() onAbort = new EventEmitter<void>(); // Should emit an event if the question should be aborted.
+
+    /**
+     * Show help modal.
+     */
+    showCertaintyHelp(): void {
+        const message = Translate.instant('core.question.certainty_help');
+
+        CoreAlerts.show({
+            message: CoreMarkdown.toHtml(message),
+        });
+    }
 
 }
