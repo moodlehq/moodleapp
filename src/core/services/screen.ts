@@ -16,7 +16,7 @@ import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { distinctUntilChanged, map } from 'rxjs/operators';
 
-import { makeSingleton } from '@singletons';
+import { makeSingleton, StatusBar } from '@singletons';
 import { CoreEvents } from '@singletons/events';
 import { CorePlatform } from '@services/platform';
 
@@ -125,6 +125,27 @@ export class CoreScreenService {
 
         screen.orientation.addEventListener('change', () => {
             CoreEvents.trigger(CoreEvents.ORIENTATION_CHANGE, { orientation: this.orientation });
+        });
+    }
+
+    /**
+     * Watch fullscreen changes.
+     */
+    async watchFullscreen(): Promise<void> {
+        await CorePlatform.ready();
+
+        // During video playback, Android 11 and previous versions show the status bar on the first click.
+        // We're not hiding the status bar in this case to avoid this issue.
+        if (CorePlatform.isAndroid() && CorePlatform.getPlatformMajorVersion() < 12) {
+            return;
+        }
+
+        document.addEventListener('fullscreenchange', () => {
+            if (document.fullscreenElement) {
+                StatusBar.hide();
+            } else {
+                StatusBar.show();
+            }
         });
     }
 
