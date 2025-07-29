@@ -30,9 +30,17 @@
                     <ion-select-option class="core-select-option-title" [value]="publishState.draft">
                         {{ 'addon.blog.publishtonoone' | translate }}
                     </ion-select-option>
-                    <ion-select-option class="core-select-option-title" [value]="publishState.site">
-                        {{ 'addon.blog.publishtosite' | translate }}
-                    </ion-select-option>
+                    @if (!isUserLevel()) {
+                        <ion-select-option class="core-select-option-title" [value]="publishState.site">
+                            {{ 'addon.blog.publishtosite' | translate }}
+                        </ion-select-option>
+                    }
+
+                    @if (isGlobalLevel()) {
+                        <ion-select-option class="core-select-option-title" [value]="publishState.public">
+                            {{ 'addon.blog.publishtoworld' | translate }}
+                        </ion-select-option>
+                    }
                 </core-combobox>
             </ion-item>
 
