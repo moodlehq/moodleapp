@@ -27,6 +27,7 @@ import { CoreLoadings } from '@services/overlays/loadings';
 import { CoreAlerts } from '@services/overlays/alerts';
 import { CoreSharedModule } from '@/core/shared.module';
 import { CoreLoginExceededAttemptsComponent } from '../../components/exceeded-attempts/exceeded-attempts';
+import { CoreError } from '@classes/errors/error';
 
 /**
  * Page to recover a forgotten password.
@@ -125,7 +126,13 @@ export default class CoreLoginForgottenPasswordPage implements OnInit {
                 await CoreLoginHelper.passwordResetRequested(this.site.getURL());
             }
         } catch (error) {
-            CoreAlerts.showError(error);
+            if (error.errorcode === 'invalidparameter') {
+                CoreAlerts.showError(new CoreError(
+                    Translate.instant(isMail ? 'core.login.invalidemail' : 'core.invalidusername'),
+                ));
+            } else {
+                CoreAlerts.showError(error);
+            }
         } finally {
             modal.dismiss();
         }
