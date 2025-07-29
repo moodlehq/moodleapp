@@ -255,7 +255,8 @@ export default class CoreCourseOverviewPage implements OnInit {
         const activities = await Promise.all(overview.activities.map(async (activity) => {
             // Only render the items that have a header. The other items are probably empty so the header is not displayed.
             const itemsToRender = await Promise.all(headers.map(async (header) => {
-                const item = activity.items.find(item => item.key === header.key);
+                // Search by name along with key because in some cases the key can be empty (see MDL-86146).
+                const item = activity.items.find(item => item.key === header.key || item.name === header.name);
                 if (!item) {
                     // Item not found, it shouldn't happen. Render an empty item.
                     return this.getEmptyOverviewItem(header.key, header.name);
@@ -286,7 +287,8 @@ export default class CoreCourseOverviewPage implements OnInit {
 
             return {
                 ...activity,
-                nameItemToRender: itemsToRender.find(item => item.key === 'name'),
+                nameItemToRender: itemsToRender.find(item => item.key === 'name') ??
+                    itemsToRender.find(item => item.contenttype === 'core_courseformat\\output\\local\\overview\\activityname'),
                 itemsToRender,
                 isExpanded: signal(false),
             };

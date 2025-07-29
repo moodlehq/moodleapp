@@ -1,3 +1,5 @@
+@use "theme/globals" as *;
+
 :host {
     p {
         margin-top: 8px;
@@ -8,7 +10,9 @@
         font-weight: bold;
     }
 
-    a {
-        text-decoration: none;
+    .core-course-overview-item-name-error {
+        display: flex;
+        align-items: center;
+        gap: 8px;
     }
 }

@@ -20,4 +20,15 @@
             margin-bottom: 8px;
         }
     }
+
+    tr.core-course-overview-activity-has-error,
+    table.core-table tbody.auto-striped tr.core-course-overview-activity-has-error {
+        background-color: var(--danger-tint);
+        color: var(--danger-shade);
+    }
+
+    ion-card .item.core-course-overview-activity-has-error {
+        --background: var(--danger-tint);
+        --color: var(--danger-shade);
+    }
 }
