@@ -100,7 +100,7 @@ export class CoreModuleHandlerBase implements Partial<CoreCourseModuleHandler> {
         courseId: number, // eslint-disable-line @typescript-eslint/no-unused-vars
     ): Promise<CoreCourseOverviewItemContent | undefined> {
         // Handle items common to all modules or items using common renderables.
-        if (item.key === 'name') {
+        if (item.key === 'name' || item.contenttype === 'core_courseformat\\output\\local\\overview\\activityname') {
             const { CoreCourseOverviewItemNameComponent } =
                         await import('@features/course/components/overview-item-name/overview-item-name');
 
@@ -109,7 +109,7 @@ export class CoreModuleHandlerBase implements Partial<CoreCourseModuleHandler> {
             };
         }
 
-        if (item.key === 'completion') {
+        if (item.key === 'completion' || item.contenttype === 'core_courseformat\\output\\local\\content\\cm\\completion') {
             if ('value' in item.parsedData && item.parsedData.value === null) {
                 return {
                     content: null,

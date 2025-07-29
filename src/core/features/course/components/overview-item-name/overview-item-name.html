@@ -25,3 +25,10 @@
         {{ 'core.course.hiddenoncoursepage' | translate }}
     </ion-badge>
 }
+
+@for (message of item().parsedData.errormessages || []; track message) {
+    <p class="core-course-overview-item-name-error">
+        <ion-icon name="fas-triangle-exclamation" aria-hidden="true" />
+        <span [innerHTML]="message"></span>
+    </p>
+}
