@@ -42,4 +42,5 @@ type ItemData = {
     hidden: boolean;
     stealth: boolean;
     sectiontitle?: string;
+    errormessages?: string[];
 };
