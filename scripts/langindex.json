@@ -2093,6 +2093,7 @@
   "core.imageviewer": "local_moodlemobileapp",
   "core.info": "moodle",
   "core.invalidformdata": "error",
+  "core.invalidusername": "error",
   "core.ioscookieshelp": "local_moodlemobileapp",
   "core.labelsep": "langconfig",
   "core.lastaccess": "moodle",
