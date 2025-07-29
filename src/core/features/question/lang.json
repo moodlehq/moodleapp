@@ -3,6 +3,7 @@
     "answersaved": "Answer saved",
     "cannotdeterminestatus": "Cannot determine status",
     "certainty": "Certainty",
+    "certainty_help": "Certainty-based marking requires you to indicate how reliable you think your answer is. The available levels are:\n\nCertainty level     | C=1 (Unsure) | C=2 (Mid) | C=3 (Quite sure)\n------------------- | ------------ | --------- | ----------------\nMark if correct     |   1          |    2      |      3\nMark if wrong       |   0          |   -2      |     -6\nProbability correct |  <67%        | 67-80%    |    >80%\n\nBest marks are gained by acknowledging uncertainty. For example, if you think there is more than a 1 in 3 chance of being wrong, you should enter C=1 and avoid the risk of a negative mark.",
     "complete": "Complete",
     "correct": "Correct",
     "errorattachmentsnotsupportedinsite": "Your site doesn't support attaching files to answers yet.",
