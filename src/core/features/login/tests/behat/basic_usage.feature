@@ -216,3 +216,13 @@ Feature: Test basic usage of login in app
     When I go back in the app
     And I press "Contact support" in the app
     Then the app should have opened a browser tab with url ".*\/user\/contactsitesupport\.php"
+
+  Scenario: Reset password invalid parameters
+    When I launch the app
+    And I set the field "Your site" to "$WWWROOT" in the app
+    And I press "Connect to your site" in the app
+    And I press "Lost password?" in the app
+    Then I set the following fields to these values in the app:
+      | Enter either username or email address | test#test |
+    And I press "Search" in the app
+    And I should find "The given username contains invalid characters" in the app
