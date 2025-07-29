@@ -67,3 +67,33 @@ Feature: Edit blog entries
     And I should find "Entry with attachments" in the app
     And I should find "stub6.txt" in the app
     And I should find "stub7.txt" in the app
+
+  Scenario: Changing blog visibility to Users can only see their own blog
+    Given the following config values are set as admin:
+      | bloglevel | 1 |
+    And I entered the app as "testuser"
+    When I press the user menu button in the app
+    And I press "Blog entries" in the app
+    And I press "Add a new entry" in the app
+    And I press "Publish to" in the app
+    Then I should not find "Anyone on this site" in the app
+
+  Scenario: Changing blog visibility to All site users can see all blog entries
+    Given the following config values are set as admin:
+      | bloglevel | 4 |
+    And I entered the app as "testuser"
+    When I press the user menu button in the app
+    And I press "Blog entries" in the app
+    And I press "Add a new entry" in the app
+    And I press "Publish to" in the app
+    Then I should find "Anyone on this site" in the app
+
+  Scenario: Changing blog visibility to The world can read entries set to be world-accessible
+    Given the following config values are set as admin:
+      | bloglevel | 5 |
+    And I entered the app as "testuser"
+    When I press the user menu button in the app
+    And I press "Blog entries" in the app
+    And I press "Add a new entry" in the app
+    And I press "Publish to" in the app
+    Then I should find "Anyone in the world" in the app
