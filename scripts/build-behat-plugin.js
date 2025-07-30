@@ -154,7 +154,11 @@ function guessPluginPath() {
     }
 
     if (process.env.MOODLE_DOCKER_WWWROOT) {
-        return `${process.env.MOODLE_DOCKER_WWWROOT}/local/moodleappbehat`;
+        if (existsSync(`${process.env.MOODLE_DOCKER_WWWROOT}/public`)) {
+            return `${process.env.MOODLE_DOCKER_WWWROOT}/public/local/moodleappbehat`;
+        } else {
+            return `${process.env.MOODLE_DOCKER_WWWROOT}/local/moodleappbehat`;
+        }
     }
 
     return null;
