@@ -135,13 +135,14 @@ export class CoreComboboxComponent implements ControlValueAccessor {
 
         this.expanded.set(true);
 
-        const data = await CoreModals.openModal({
+        const data = await CoreModals.openModal<string>({
             ...modalOptions,
             id: this.listboxId() || modalOptions.id,
         });
         this.expanded.set(false);
 
         if (data) {
+            this.selection.set(data);
             this.onValueChanged(data);
         }
     }
