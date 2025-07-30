@@ -37,7 +37,7 @@
         <ion-row class="ion-justify-content-between ion-align-items-center addon-block-myoverview-filter">
             @if (filters.enabled) {
                 <ion-col size="auto">
-                    <core-combobox [label]="'core.courses.filtermycourses' | translate" [selection]="filters.timeFilterSelected"
+                    <core-combobox [label]="'core.courses.filtermycourses' | translate" [(selection)]="filters.timeFilterSelected"
                         (selectionChange)="filterCourses()">
                         @if (filters.show.allincludinghidden) {
                             <ion-select-option class="ion-text-wrap core-select-option-border-bottom" value="allincludinghidden">
@@ -95,7 +95,7 @@
             </ion-col>
             @if (sort.enabled) {
                 <ion-col size="auto">
-                    <core-combobox [label]="'core.sortby' | translate" [selection]="sort.selected" (selectionChange)="sortCourses()"
+                    <core-combobox [label]="'core.sortby' | translate" [(selection)]="sort.selected" (selectionChange)="sortCourses()"
                         icon="fas-arrow-down-short-wide" class="no-border">
                         <ion-select-option class="ion-text-wrap" value="fullname">
                             {{'addon.block_myoverview.title' | translate}}
