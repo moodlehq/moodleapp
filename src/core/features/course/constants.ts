@@ -68,3 +68,15 @@ export const CoreCourseAccessDataType = {
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export type CoreCourseAccessDataType = typeof CoreCourseAccessDataType[keyof typeof CoreCourseAccessDataType];
+
+/**
+ * Core content types used in course overview and supported by the app by default.
+ */
+export const enum CoreCourseOverviewContentType {
+    BASIC = 'basic',
+    ACTIVITY_NAME = 'core_courseformat\\output\\local\\overview\\activityname',
+    CM_COMPLETION = 'core_courseformat\\output\\local\\content\\cm\\completion',
+    HUMAN_DATE = 'core_calendar\\output\\humandate',
+    ACTION_LINK = 'core\\output\\action_link',
+    OVERVIEW_DIALOG = 'core_courseformat\\output\\local\\overview\\overviewdialog',
+};
