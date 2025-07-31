@@ -34,7 +34,7 @@ import {
     AddonModForumSyncResult,
 } from '@addons/mod/forum/services/forum-sync';
 import { CoreSites } from '@services/sites';
-import { CoreUser } from '@features/user/services/user';
+import { CoreUserPreferences } from '@features/user/services/user-preferences';
 import { CoreCourse } from '@features/course/services/course';
 import { CoreSplitViewComponent } from '@components/split-view/split-view';
 import { CoreScreen } from '@services/screen';
@@ -515,7 +515,7 @@ export class AddonModForumIndexComponent extends CoreCourseModuleMainActivityCom
         }
 
         if (this.sortingAvailable) {
-            promises.push(CoreUser.invalidateUserPreference(ADDON_MOD_FORUM_PREFERENCE_SORTORDER));
+            promises.push(CoreUserPreferences.invalidatePreference(ADDON_MOD_FORUM_PREFERENCE_SORTORDER));
         }
 
         await Promise.all(promises);
@@ -618,7 +618,7 @@ export class AddonModForumIndexComponent extends CoreCourseModuleMainActivityCom
             this.discussions.getSource().setDirty(true);
 
             try {
-                await CoreUser.setUserPreference(ADDON_MOD_FORUM_PREFERENCE_SORTORDER, sortOrder.value.toFixed(0));
+                await CoreUserPreferences.setPreference(ADDON_MOD_FORUM_PREFERENCE_SORTORDER, sortOrder.value.toFixed(0));
                 await this.showLoadingAndFetch();
             } catch (error) {
                 CoreAlerts.showError(error, { default: 'Error updating preference.' });

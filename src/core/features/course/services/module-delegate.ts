@@ -27,6 +27,7 @@ import { CoreNavigationOptions } from '@services/navigator';
 import { DownloadStatus } from '@/core/constants';
 import { CORE_COURSE_MODULE_FEATURE_PREFIX } from '../constants';
 import { ModFeature } from '@addons/mod/constants';
+import { CoreCourseOverviewActivity, CoreCourseOverviewItem } from './course-overview';
 
 /**
  * Interface that all course module handlers must implement.
@@ -123,6 +124,20 @@ export interface CoreCourseModuleHandler extends CoreDelegateHandler {
      * @returns bool True if the activity is branded, false otherwise.
      */
     isBranded?(): Promise<boolean>;
+
+    /**
+     * Get the data to render a course overview item.
+     *
+     * @param item Item to get the content for.
+     * @param activity Activity data the item belongs to.
+     * @param courseId Course ID the item belongs to.
+     * @returns Data to render the item content. If undefined it means the app doesn't know how to render the item.
+     */
+    getOverviewItemContent?(
+        item: CoreCourseOverviewItem,
+        activity: CoreCourseOverviewActivity,
+        courseId: number,
+    ): Promise<CoreCourseOverviewItemContent | undefined>;
 }
 
 /**
@@ -252,6 +267,23 @@ export interface CoreCourseModuleHandlerButton {
      */
     action(event: Event, module: CoreCourseModuleData, courseId: number, options?: CoreNavigationOptions): Promise<void> | void;
 }
+
+/**
+ * Data to render a course overview item.
+ * It can either be a component class to render the item, or a string with content to display (if null, empty content).
+ */
+export type CoreCourseOverviewItemContent = (OverviewItemContentComponentData | { content: string | null }) & {
+    classes?: string[];
+};
+
+/**
+ * Data to render a course overview item using a component.
+ */
+type OverviewItemContentComponentData = {
+    component: Type<unknown>;
+    componentData?: Record<string, unknown>; // If set, extra data to pass to the component. By default, the app will pass the
+                                             // item and other data like the activity data and course ID.
+};
 
 /**
  * Delegate to register module handlers.
@@ -389,6 +421,29 @@ export class CoreCourseModuleDelegateService extends CoreDelegate<CoreCourseModu
         const icon = await this.executeFunctionOnEnabled<Promise<string>>(modname, 'getIconSrc', [module, modicon]);
 
         return icon ?? CoreCourseModuleHelper.getModuleIconSrc(modname, modicon) ?? '';
+    }
+
+    /**
+     * Get the data to render a course overview item.
+     *
+     * @param modname The name of the module type.
+     * @param item Overview item data.
+     * @param activity Activity data the item belongs to.
+     * @param courseId Course ID the item belongs to.
+     * @returns Data to render the item.
+     */
+    async getOverviewItemContent(
+        modname: string,
+        item: CoreCourseOverviewItem,
+        activity: CoreCourseOverviewActivity,
+        courseId: number,
+    ): Promise<CoreCourseOverviewItemContent | undefined> {
+        // Support overview even if the handler is disabled.
+        return await this.executeFunction<CoreCourseOverviewItemContent>(
+            modname,
+            'getOverviewItemContent',
+            [item, activity, courseId],
+        );
     }
 
     /**

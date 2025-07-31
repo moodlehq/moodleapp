@@ -15,7 +15,9 @@
 import { CoreNavigationOptions, CoreNavigator } from '@services/navigator';
 import { CoreCourseModuleHelper } from '../services/course-module-helper';
 import { CoreCourseModuleData } from '../services/course-helper';
-import { CoreCourseModuleHandler, CoreCourseModuleHandlerData } from '../services/module-delegate';
+import { CoreCourseModuleHandler, CoreCourseModuleHandlerData, CoreCourseOverviewItemContent } from '../services/module-delegate';
+import { CoreCourseOverviewActivity, CoreCourseOverviewItem } from '../services/course-overview';
+import { CoreCourseOverviewContentType } from '../constants';
 
 /**
  * Base module handler to be registered.
@@ -88,6 +90,78 @@ export class CoreModuleHandlerBase implements Partial<CoreCourseModuleHandler> {
         }
 
         return CoreCourseModuleHelper.getModuleIconSrc(module.modname, modicon);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    async getOverviewItemContent(
+        item: CoreCourseOverviewItem,
+        activity: CoreCourseOverviewActivity, // eslint-disable-line @typescript-eslint/no-unused-vars
+        courseId: number, // eslint-disable-line @typescript-eslint/no-unused-vars
+    ): Promise<CoreCourseOverviewItemContent | undefined> {
+        // Handle items common to all modules or items using common renderables.
+        if (item.key === 'name' || item.contenttype === CoreCourseOverviewContentType.ACTIVITY_NAME) {
+            const { CoreCourseOverviewItemNameComponent } =
+                await import('@features/course/components/overview-item-name/overview-item-name');
+
+            return {
+                component: CoreCourseOverviewItemNameComponent,
+            };
+        }
+
+        if (item.key === 'completion' || item.contenttype === CoreCourseOverviewContentType.CM_COMPLETION) {
+            if ('value' in item.parsedData && item.parsedData.value === null) {
+                return {
+                    content: null,
+                };
+            }
+
+            const { CoreCourseOverviewItemCompletionComponent } =
+                await import('@features/course/components/overview-item-completion/overview-item-completion');
+
+            return {
+                component: CoreCourseOverviewItemCompletionComponent,
+            };
+        }
+
+        if (item.contenttype === CoreCourseOverviewContentType.HUMAN_DATE && Number(item.parsedData.timestamp)) {
+            const { CoreHumanDateComponent } = await import('@components/human-date/human-date');
+
+            return {
+                component: CoreHumanDateComponent,
+                componentData: {
+                    timestamp: Number(item.parsedData.timestamp) * 1000,
+                },
+            };
+        }
+
+        if (item.contenttype === CoreCourseOverviewContentType.ACTION_LINK) {
+            const { CoreCourseOverviewItemActionLinkComponent } =
+                await import('@features/course/components/overview-item-action-link/overview-item-action-link');
+
+            return {
+                component: CoreCourseOverviewItemActionLinkComponent,
+            };
+        }
+
+        if (item.contenttype === CoreCourseOverviewContentType.OVERVIEW_DIALOG) {
+            const { CoreCourseOverviewItemDialogButtonComponent } =
+                await import('@features/course/components/overview-item-dialog/overview-item-dialog-button');
+
+            return {
+                component: CoreCourseOverviewItemDialogButtonComponent,
+            };
+        }
+
+        if (item.contenttype === CoreCourseOverviewContentType.BASIC) {
+            // Display basic items as they are. Basic items don't use renderables, they can still contain HTML but it should
+            // be displayed properly in the app because it should be standard HTML, no custom classes or similar.
+            // E.g. a language string that contains HTML like <strong> or <a>.
+            return {
+                content: String(item.parsedData.content ?? item.parsedData.value ?? '-'),
+            };
+        }
     }
 
 }

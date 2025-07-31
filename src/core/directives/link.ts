@@ -34,6 +34,9 @@ import { CoreAlerts } from '@services/overlays/alerts';
  */
 @Directive({
     selector: '[core-link]',
+    host: {
+        href: 'href', // Make sure href is in the DOM for a11y.
+    },
 })
 export class CoreLinkDirective implements OnInit {
 

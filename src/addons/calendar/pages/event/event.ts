@@ -55,6 +55,7 @@ import {
 import { REMINDERS_DEFAULT_NOTIFICATION_TIME_CHANGED } from '@features/reminders/constants';
 import { CoreAlerts, CoreAlertsConfirmOptions } from '@services/overlays/alerts';
 import { CoreSharedModule } from '@/core/shared.module';
+import { CoreUserPreferences } from '@features/user/services/user-preferences';
 
 /**
  * Page that displays a single calendar event.
@@ -314,7 +315,7 @@ export default class AddonCalendarEventPage implements OnInit, OnDestroy {
             }));
 
             // Re-calculate the formatted time so it uses the device date.
-            promises.push(AddonCalendar.getCalendarTimeFormat().then(async (timeFormat) => {
+            promises.push(CoreUserPreferences.getTimeFormat().then(async (timeFormat) => {
                 event.formattedtime = await AddonCalendar.formatEventTime(event, timeFormat);
 
                 return;

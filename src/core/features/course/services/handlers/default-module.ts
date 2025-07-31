@@ -19,23 +19,16 @@ import { CoreCourseModuleHandler, CoreCourseModuleHandlerData } from '../module-
 import { CoreCourseModuleData } from '../course-helper';
 import { CoreNavigationOptions, CoreNavigator } from '@services/navigator';
 import { CoreCourseModuleHelper } from '../course-module-helper';
+import { CoreModuleHandlerBase } from '@features/course/classes/module-base-handler';
 
 /**
  * Default handler used when the module doesn't have a specific implementation.
  */
 @Injectable({ providedIn: 'root' })
-export class CoreCourseModuleDefaultHandler implements CoreCourseModuleHandler {
+export class CoreCourseModuleDefaultHandler extends CoreModuleHandlerBase implements CoreCourseModuleHandler {
 
     name = 'CoreCourseModuleDefault';
     modName = 'default';
-    protected pageName = '';
-
-    /**
-     * @inheritdoc
-     */
-    async isEnabled(): Promise<boolean> {
-        return true;
-    }
 
     /**
      * @inheritdoc

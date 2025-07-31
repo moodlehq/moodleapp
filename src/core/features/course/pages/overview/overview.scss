@@ -1,0 +1,34 @@
+@use "theme/globals" as *;
+
+:host {
+    ion-accordion ion-item core-mod-icon {
+        --margin-vertical: 0px;
+        --margin-end: 0px;
+    }
+
+    --rotate-expandable: rotate(180deg);
+
+    .expandable-status-icon {
+        font-size: var(--text-size);
+        @include margin-horizontal(0px, 2px);
+        @include core-transition(transform, 200ms);
+    }
+
+    .core-course-overview-activity-content {
+        .core-course-overview-item-header {
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+    }
+
+    tr.core-course-overview-activity-has-error,
+    table.core-table tbody.auto-striped tr.core-course-overview-activity-has-error {
+        background-color: var(--danger-tint);
+        color: var(--danger-shade);
+    }
+
+    ion-card .item.core-course-overview-activity-has-error {
+        --background: var(--danger-tint);
+        --color: var(--danger-shade);
+    }
+}

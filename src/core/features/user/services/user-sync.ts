@@ -19,8 +19,8 @@ import { CoreErrorHelper } from '@services/error-helper';
 import { CoreWSError } from '@classes/errors/wserror';
 import { CoreSyncBaseProvider } from '@classes/base-sync';
 import { makeSingleton } from '@singletons';
-import { CoreUserOffline } from './user-offline';
-import { CoreUser } from './user';
+import { CoreUserPreferencesOffline } from './user-preferences-offline';
+import { CoreUserPreferences } from './user-preferences';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 
 /**
@@ -76,18 +76,18 @@ export class CoreUserSyncProvider extends CoreSyncBaseProvider<string[]> {
     protected async performSyncSitePreferences(siteId: string): Promise<string[]> {
         const warnings: string[] = [];
 
-        const preferences = await CoreUserOffline.getChangedPreferences(siteId);
+        const preferences = await CoreUserPreferencesOffline.getChangedPreferences(siteId);
 
         await CorePromiseUtils.allPromises(preferences.map(async (preference) => {
-            const onlineValue = await CoreUser.getUserPreferenceOnline(preference.name, siteId);
+            const onlineValue = await CoreUserPreferences.getPreferenceOnline(preference.name, siteId);
 
             if (onlineValue !== null && preference.onlinevalue != onlineValue) {
                 // Preference was changed on web while the app was offline, do not sync.
-                return CoreUserOffline.setPreference(preference.name, onlineValue, onlineValue, siteId);
+                return CoreUserPreferencesOffline.setPreference(preference.name, onlineValue, onlineValue, siteId);
             }
 
             try {
-                await CoreUser.setUserPreference(preference.name, preference.value, siteId);
+                await CoreUserPreferences.setPreferenceOnline(preference.name, preference.value, undefined, siteId);
             } catch (error) {
                 if (CoreWSError.isWebServiceError(error)) {
                     const warning = CoreErrorHelper.getErrorMessageFromError(error);

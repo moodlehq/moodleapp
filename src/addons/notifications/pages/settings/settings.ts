@@ -18,7 +18,7 @@ import { CoreConfig } from '@services/config';
 import { CoreLocalNotifications } from '@services/local-notifications';
 import { CoreSites } from '@services/sites';
 import { CorePromiseUtils } from '@singletons/promise-utils';
-import { CoreUser } from '@features/user/services/user';
+import { CoreUserPreferences } from '@features/user/services/user-preferences';
 import { AddonMessageOutputDelegate, AddonMessageOutputHandlerData } from '@addons/messageoutput/services/messageoutput-delegate';
 import { CoreConstants } from '@/core/constants';
 import { CoreError } from '@classes/errors/error';
@@ -253,7 +253,7 @@ export default class AddonNotificationsSettingsPage implements OnInit, OnDestroy
         processorState.updating = true;
 
         try {
-            await CoreUser.updateUserPreference(preferenceName, value);
+            await CoreUserPreferences.setPreferenceOnline(preferenceName, value);
 
             // Update the preferences since they were modified.
             this.updatePreferencesAfterDelay();
@@ -292,7 +292,7 @@ export default class AddonNotificationsSettingsPage implements OnInit, OnDestroy
         processor.updating = true;
 
         try {
-            await CoreUser.updateUserPreference(preferenceName, value);
+            await CoreUserPreferences.setPreferenceOnline(preferenceName, value);
 
             // Update the preferences since they were modified.
             this.updatePreferencesAfterDelay();
@@ -319,7 +319,7 @@ export default class AddonNotificationsSettingsPage implements OnInit, OnDestroy
         const modal = await CoreLoadings.show('core.sending', true);
 
         try {
-            CoreUser.updateUserPreferences([], !enable);
+            CoreUserPreferences.setPreferencesOnline([], !enable);
 
             // Update the preferences since they were modified.
             this.updatePreferencesAfterDelay();
