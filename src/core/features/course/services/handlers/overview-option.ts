@@ -21,7 +21,7 @@ import {
 import { CoreCourseUserAdminOrNavOptionIndexed } from '@features/courses/services/courses';
 import { makeSingleton } from '@singletons';
 import { CoreCourseOverview } from '../course-overview';
-import { CORE_COURSE_OVERVIEW_PAGE_NAME } from '@features/course/constants';
+import { CORE_COURSE_OVERVIEW_OPTION_NAME, CORE_COURSE_OVERVIEW_PAGE_NAME } from '@features/course/constants';
 
 /**
  * Course option to display course overview.
@@ -29,7 +29,7 @@ import { CORE_COURSE_OVERVIEW_PAGE_NAME } from '@features/course/constants';
 @Injectable({ providedIn: 'root' })
 export class CoreCourseOverviewOptionHandlerService implements CoreCourseOptionsHandler {
 
-    name = 'CoreCourseOverview';
+    name = CORE_COURSE_OVERVIEW_OPTION_NAME;
     priority = 300;
 
     /**

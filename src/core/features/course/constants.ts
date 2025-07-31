@@ -33,6 +33,8 @@ export const COURSE_STATUS_CHANGED_EVENT = 'course_status_changed';
 
 export const CORE_COURSE_COMPONENT = 'CoreCourse';
 
+export const CORE_COURSE_OVERVIEW_OPTION_NAME = 'CoreCourseOverview';
+
 export const CORE_COURSE_CORE_MODULES = [
     'assign', 'bigbluebuttonbn', 'book', 'chat', 'choice', 'data', 'feedback', 'folder', 'forum', 'glossary', 'h5pactivity',
     'imscp', 'label', 'lesson', 'lti', 'page', 'quiz', 'resource', 'scorm', 'survey', 'url', 'wiki', 'workshop',

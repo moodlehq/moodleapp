@@ -34,6 +34,8 @@ import { CoreCourseIndexRoutingModule } from '@features/course/course-routing.mo
 import { CORE_COURSE_PAGE_NAME, CORE_COURSE_CONTENTS_PAGE_NAME, CORE_COURSE_OVERVIEW_PAGE_NAME } from './constants';
 import { CoreCourseOptionsDelegate } from '@features/course/services/course-options-delegate';
 import { CoreCourseOverviewOptionHandler } from './services/handlers/overview-option';
+import { CoreCourseOverviewLinkHandler } from './services/handlers/overview-link';
+import { CoreContentLinksDelegate } from '@features/contentlinks/services/contentlinks-delegate';
 
 /**
  * Get course services.
@@ -181,6 +183,7 @@ const courseIndexRoutes: Routes = [
             CoreTagAreaDelegate.registerHandler(CoreCourseTagAreaHandler.instance);
             CoreTagAreaDelegate.registerHandler(CoreCourseModulesTagAreaHandler.instance);
             CoreCourseOptionsDelegate.registerHandler(CoreCourseOverviewOptionHandler.instance);
+            CoreContentLinksDelegate.registerHandler(CoreCourseOverviewLinkHandler.instance);
 
             CoreCourse.initialize();
             CoreCourseModulePrefetchDelegate.initialize();
