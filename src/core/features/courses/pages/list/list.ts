@@ -357,6 +357,7 @@ export default class CoreCoursesListPage implements OnInit, OnDestroy {
      */
     toggleEnrolled(): void {
         this.loaded = false;
+        this.searchPage = 0;
         this.fetchCourses();
     }
 
