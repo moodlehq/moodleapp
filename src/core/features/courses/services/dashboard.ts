@@ -25,6 +25,7 @@ import { asyncObservable } from '@/core/utils/rxjs';
 import { CoreSiteWSPreSets, WSObservable } from '@classes/sites/authenticated-site';
 import { CoreCacheUpdateFrequency } from '@/core/constants';
 import { CoreCoursesMyPageName } from '../constants';
+import { ADDON_BLOCK_MYOVERVIEW_BLOCK_NAME } from '@addons/block/myoverview/constants';
 
 /**
  * Service that provides some features regarding course overview.
@@ -117,7 +118,7 @@ export class CoreCoursesDashboardProvider {
                     // To be removed in a near future.
                     // Remove myoverview when is forced. See MDL-72092.
                     result.blocks = result.blocks.filter((block) =>
-                        block.instanceid != 0 || block.name != 'myoverview' || block.region != 'forced');
+                        block.instanceid !== 0 || block.name !== ADDON_BLOCK_MYOVERVIEW_BLOCK_NAME || block.region != 'forced');
                 }
 
                 return result.blocks || [];

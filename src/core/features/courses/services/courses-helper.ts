@@ -360,7 +360,7 @@ export class CoreCoursesHelperProvider {
             return of(course);
         }
 
-        if (!this.isCompletionEnabledInCourse(course)) {
+        if (!AddonCourseCompletion.isCompletionEnabledInCourse(course)) {
             // Completion is disabled for this course, there is no need to fetch the completion status.
             return of(course);
         }
@@ -415,7 +415,7 @@ export class CoreCoursesHelperProvider {
         gradePeriodAfter = 0,
         gradePeriodBefore = 0,
     ): boolean {
-        if (this.isPastCourse(course, gradePeriodAfter) || !course.startdate) {
+        if (!course.startdate || this.isPastCourse(course, gradePeriodAfter)) {
             return false;
         }
 
@@ -441,6 +441,7 @@ export class CoreCoursesHelperProvider {
      * @param course Course.
      * @param site Site. If not defined, use current site.
      * @returns True if available.
+     * @deprecated since 5.1. Use AddonCourseCompletion.isCompletionEnabledInCourse instead.
      */
     isCompletionEnabledInCourse(course: CoreCourseAnyCourseData, site?: CoreSite): boolean {
         return AddonCourseCompletion.isCompletionEnabledInCourse(course, site);

@@ -29,6 +29,8 @@ import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreAlerts } from '@services/overlays/alerts';
 import { CoreBlockSideBlocksButtonComponent } from '../../../block/components/side-blocks-button/side-blocks-button';
 import { CoreSharedModule } from '@/core/shared.module';
+import { ADDON_BLOCK_MYOVERVIEW_BLOCK_NAME } from '@addons/block/myoverview/constants';
+import { ADDON_BLOCK_TIMELINE_BLOCK_NAME } from '@addons/block/timeline/constants';
 
 /**
  * Page that displays the dashboard page.
@@ -135,16 +137,17 @@ export default class CoreCoursesDashboardPage implements OnInit, OnDestroy {
     protected loadFallbackBlocks(): void {
         this.blocks = [
             {
-                name: 'myoverview',
+                name: ADDON_BLOCK_MYOVERVIEW_BLOCK_NAME,
                 visible: true,
             },
             {
-                name: 'timeline',
+                name: ADDON_BLOCK_TIMELINE_BLOCK_NAME,
                 visible: true,
             },
         ];
 
-        this.hasMainBlocks = CoreBlockDelegate.isBlockSupported('myoverview') || CoreBlockDelegate.isBlockSupported('timeline');
+        this.hasMainBlocks = CoreBlockDelegate.isBlockSupported(ADDON_BLOCK_MYOVERVIEW_BLOCK_NAME) ||
+            CoreBlockDelegate.isBlockSupported(ADDON_BLOCK_TIMELINE_BLOCK_NAME);
     }
 
     /**

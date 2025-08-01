@@ -21,12 +21,12 @@ import {
 import { CoreCourseHelper, CoreCourseModuleData, CoreCourseSection } from '@features/course/services/course-helper';
 import { CoreCourseFormatCurrentSectionData, CoreCourseFormatDelegate } from '@features/course/services/format-delegate';
 import { CoreCourseAnyCourseData } from '@features/courses/services/courses';
-import { CoreCoursesHelper } from '@features/courses/services/courses-helper';
 import { CoreSites } from '@services/sites';
 import { CoreWait } from '@singletons/wait';
 import { ModalController } from '@singletons';
 import { CoreDom } from '@singletons/dom';
 import { CoreCourseModuleCompletionStatus, CORE_COURSE_ALL_SECTIONS_ID } from '@features/course/constants';
+import { AddonCourseCompletion } from '@addons/coursecompletion/services/coursecompletion';
 
 /**
  * Component to display course index modal.
@@ -63,7 +63,7 @@ export class CoreCourseCourseIndexComponent implements OnInit {
             return;
         }
 
-        let completionEnabled = CoreCoursesHelper.isCompletionEnabledInCourse(this.course);
+        let completionEnabled = AddonCourseCompletion.isCompletionEnabledInCourse(this.course);
         if (completionEnabled && 'completionusertracked' in this.course && this.course.completionusertracked !== undefined) {
             completionEnabled = this.course.completionusertracked;
         }
