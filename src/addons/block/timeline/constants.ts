@@ -12,14 +12,4 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-export const GRADES_PAGE_NAME = 'grades';
-export const GRADES_PARTICIPANTS_PAGE_NAME = 'participant-grades';
-
-export const CORE_GRADES_COURSE_OPTION_NAME = 'CoreGrades'; // Tabname.
-
-export const enum CoreGradeType {
-    NONE = 0, // Moodle's GRADE_TYPE_NONE.
-    VALUE = 1, // Moodle's GRADE_TYPE_VALUE.
-    SCALE = 2, // Moodle's GRADE_TYPE_SCALE.
-    TEXT = 3, // Moodle's GRADE_TYPE_TEXT.
-}
+export const ADDON_BLOCK_TIMELINE_BLOCK_NAME = 'timeline';

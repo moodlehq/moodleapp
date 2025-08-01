@@ -18,6 +18,7 @@ import { CoreBlockHandlerData } from '@features/block/services/block-delegate';
 import { CoreCourses } from '@features/courses/services/courses';
 import { CoreBlockBaseHandler } from '@features/block/classes/base-block-handler';
 import { makeSingleton } from '@singletons';
+import { ADDON_BLOCK_MYOVERVIEW_BLOCK_NAME } from '../constants';
 
 /**
  * Block handler.
@@ -26,7 +27,7 @@ import { makeSingleton } from '@singletons';
 export class AddonBlockMyOverviewHandlerService extends CoreBlockBaseHandler {
 
     name = 'AddonBlockMyOverview';
-    blockName = 'myoverview';
+    blockName = ADDON_BLOCK_MYOVERVIEW_BLOCK_NAME;
 
     /**
      * @inheritdoc

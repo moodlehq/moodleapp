@@ -1,5 +1,4 @@
 @use "theme/globals" as *;
-@use "sass:list";
 
 :host {
     --thumb-height: 180px;
@@ -8,39 +7,8 @@
         position: absolute;
     }
 
-    .core-course-thumb {
-        background: var(--course-color, white);
-        overflow: hidden;
-        text-align: center;
-        height: var(--thumb-height);
-        position: fixed;
-        z-index: -1;
-        width: 100%;
-
-        @for $i from 0 to list.length($core-course-image-background) {
-            &.course-color-#{$i} {
-                --course-color: var(--core-course-color-#{$i});
-                --course-color-tint: var(--core-course-color-#{$i}-tint);
-            }
-        }
-
-        img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-
-            // Fill geopaterns
-            &[src$=".svg"] {
-                min-width: 100%;
-            }
-        }
-
-        /** Deprecated icon */
-        ion-icon.course-icon {
-            padding: 24px;
-            font-size: calc(var(--thumb-height) - 48px);
-            color: var(--course-color-tint);
-        }
+    core-course-image {
+        --core-image-size: var(--thumb-height);
     }
 
     .course-container {

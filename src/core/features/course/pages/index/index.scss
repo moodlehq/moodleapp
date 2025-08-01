@@ -1,47 +1,17 @@
 @use "theme/globals" as *;
-@use "sass:list";
 
 :host {
     .core-format-progress-list {
         width: 100%;
     }
 
-    .core-course-thumb {
-        height: var(--core-courseimage-on-course-size);
-        min-height: var(--core-courseimage-on-course-size);
-        width: var(--core-courseimage-on-course-size);
-        min-width: var(--core-courseimage-on-course-size);
-        --border-radius: var(--core-courseimage-radius);
+    core-course-image {
+        --core-image-size: var(--core-courseimage-on-course-size);
         @include margin(8px, 16px, 8px, 0px);
-
-        @for $i from 0 to list.length($core-course-image-background) {
-            &.course-color-#{$i} {
-                --course-color: var(--core-course-color-#{$i});
-                --course-color-tint: var(--core-course-color-#{$i}-tint);
-            }
-        }
-
-        /** Deprecated icon */
-        ion-icon.course-icon {
-            padding: 12px;
-            font-size: calc(var(--core-courseimage-on-course-size) - 24px);
-            border-radius: var(--border-radius);
-            color: var(--course-color-tint);
-            background: var(--course-color, white);
-        }
-
-        img {
-            background: var(--course-color, white);
-        }
-
-        // Fill geopaterns
-        img[src$=".svg"] {
-            min-width: 100%;
-        }
     }
 
     @if ($core-hide-courseimage-on-course) {
-        .core-course-thumb {
+        core-course-image {
             display: none;
         }
     }

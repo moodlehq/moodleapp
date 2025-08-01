@@ -18,6 +18,9 @@ section.core-course-module-list-wrapper {
     ion-card {
         --ion-card-background: transparent;
     }
+    ion-item {
+        --background: transparent;
+    }
 
     ion-item-divider {
         --background: transparent;
