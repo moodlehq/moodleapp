@@ -17,6 +17,7 @@ import { Injectable } from '@angular/core';
 import { CoreContentLinksHandlerBase } from '@features/contentlinks/classes/base-handler';
 import { CoreContentLinksAction } from '@features/contentlinks/services/contentlinks-delegate';
 import { CoreCourseHelper } from '@features/course/services/course-helper';
+import { CORE_PARTICIPANTS_COURSE_OPTION_NAME } from '@features/user/constants';
 import { makeSingleton } from '@singletons';
 
 /**
@@ -41,7 +42,11 @@ export class CoreUserParticipantsLinkHandlerService extends CoreContentLinksHand
 
         return [{
             action: async (siteId): Promise<void> => {
-                await CoreCourseHelper.getAndOpenCourse(courseIdentifier, { selectedTab: 'CoreUserParticipants' }, siteId);
+                await CoreCourseHelper.getAndOpenCourse(
+                    courseIdentifier,
+                    { selectedTab: CORE_PARTICIPANTS_COURSE_OPTION_NAME },
+                    siteId,
+                );
             },
         }];
     }

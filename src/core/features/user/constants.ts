@@ -14,6 +14,8 @@
 
 export const PARTICIPANTS_PAGE_NAME = 'participants';
 
+export const CORE_PARTICIPANTS_COURSE_OPTION_NAME = 'CoreUserParticipants'; // Tabname.
+
 // Events.
 export const CORE_USER_AUTO_SYNCED = 'core_user_autom_synced';
 

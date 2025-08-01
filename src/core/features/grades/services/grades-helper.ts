@@ -49,7 +49,7 @@ import { CoreCourseAccessDataType } from '@features/course/constants';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreArray } from '@singletons/array';
 import { CoreCourseModuleHelper } from '@features/course/services/course-module-helper';
-import { GRADES_PAGE_NAME } from '../constants';
+import { CORE_GRADES_COURSE_OPTION_NAME, GRADES_PAGE_NAME } from '../constants';
 
 /**
  * Service that provides some features regarding grades information.
@@ -505,13 +505,13 @@ export class CoreGradesHelperProvider {
                 // View own grades. Check if we already are in the course index page.
                 if (CoreCourse.currentViewIsCourse(courseId)) {
                     // Current view is this course, just select the grades tab.
-                    CoreCourse.selectCourseTab('CoreGrades');
+                    CoreCourse.selectCourseTab(CORE_GRADES_COURSE_OPTION_NAME);
 
                     return;
                 }
 
                 // Open the course with the grades tab selected.
-                await CoreCourseHelper.getAndOpenCourse(courseId, { selectedTab: 'CoreGrades' }, siteId);
+                await CoreCourseHelper.getAndOpenCourse(courseId, { selectedTab: CORE_GRADES_COURSE_OPTION_NAME }, siteId);
             } catch {
                 // Cannot get course for some reason, just open the grades page.
                 await CoreNavigator.navigateToSitePath(`/${GRADES_PAGE_NAME}/${courseId}`, { siteId });
