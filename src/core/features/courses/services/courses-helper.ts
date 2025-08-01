@@ -109,6 +109,7 @@ export class CoreCoursesHelperProvider {
      * @deprecated since 5.0. Use loadCourseColorAndImage instead.
      */
     async loadCoursesColorAndImage(courses: CoreCourseSearchedData[]): Promise<void> {
+        // eslint-disable-next-line @typescript-eslint/no-deprecated
         await Promise.all(courses.map((course) => this.loadCourseColorAndImage(course)));
     }
 
@@ -168,7 +169,7 @@ export class CoreCoursesHelperProvider {
      *
      * @returns course colors RGB.
      */
-    protected async loadCourseSiteColors(): Promise<(string | undefined)[]> {
+    async getCourseSiteColors(): Promise<(string | undefined)[]> {
         const site = CoreSites.getRequiredCurrentSite();
         const siteId = site.getId();
 
@@ -202,9 +203,10 @@ export class CoreCoursesHelperProvider {
      * Loads the color of the course or the thumb image.
      *
      * @param course Course data.
+     * @deprecated since 5.1. Not used anymore, use CoreCourseImageComponent component instead.
      */
     async loadCourseColorAndImage(course: CoreCourseWithImageAndColor): Promise<void> {
-        // Moodle 4.1 downwards geopatterns are embedded in b64 in only some WS, remote them to keep it coherent.
+        // Moodle 4.1 downwards geopatterns are embedded in b64 in only some WS, remove them to keep it coherent.
         if (course.courseimage?.startsWith('data')) {
             course.courseimage = undefined;
         }
@@ -219,7 +221,7 @@ export class CoreCoursesHelperProvider {
             return;
         }
 
-        const colors = await this.loadCourseSiteColors();
+        const colors = await this.getCourseSiteColors();
 
         course.colorNumber = course.id % 10;
         course.color = colors.length ? colors[course.colorNumber] : undefined;
@@ -454,8 +456,8 @@ export const CoreCoursesHelper = makeSingleton(CoreCoursesHelperProvider);
 export type CoreCourseWithImageAndColor = {
     id: number; // Course id.
     overviewfiles?: CoreWSExternalFile[];
-    colorNumber?: number; // Color index number.
-    color?: string; // Color RGB.
+    colorNumber?: number; // Color index number. @deprecated since 5.1, use CoreCourseImageComponent instead.
+    color?: string; // Color RGB. @deprecated since 5.1, use CoreCourseImageComponent instead.
     courseimage?: string; // Course thumbnail.
 };
 

@@ -29,17 +29,7 @@
 <div class="core-course-header">
     <ion-item class="core-format-progress-list ion-text-wrap list-item-limited-width" collapsible>
         @if (course) {
-
-            @if (!course.courseimage) {
-                <div #courseThumb slot="start" class="core-course-thumb">
-                    <ion-icon name="fas-graduation-cap" class="course-icon" aria-hidden="true" />
-                </div>
-            } @else {
-                <ion-avatar slot="start" class="core-course-thumb">
-                    <img [url]="course.courseimage" core-external-content alt="" />
-                </ion-avatar>
-            }
-
+            <core-course-image [course]="course" />
         }
 
         <ion-label>
