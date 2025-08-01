@@ -515,6 +515,13 @@ video::-webkit-media-text-track-display {
     white-space: normal !important;
 }
 
+*:fullscreen {
+    padding-top: var(--root-safe-area-top);
+    padding-left: var(--root-safe-area-left);
+    padding-bottom: var(--root-safe-area-bottom);
+    padding-right: var(--root-safe-area-right);
+}
+
 /**
  * https://github.com/ionic-team/ionic-framework/blob/6ffbdbb3b2b69290cf25753d535bc7483bd7c6e8/BREAKING.md#css-utilities
  */

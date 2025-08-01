@@ -22,4 +22,6 @@ export default function(): void {
     CoreScreen.watchViewport();
 
     CoreScreen.watchOrientation();
+
+    CoreScreen.watchFullscreen();
 }
