@@ -385,7 +385,7 @@ export class CoreSettingsHelperProvider {
     applyZoomLevel(zoomLevel: CoreZoomLevel): void {
         const zoom = CoreConstants.CONFIG.zoomlevels[zoomLevel];
 
-        document.documentElement.style.setProperty('--zoom-level', `${zoom}%`);
+        document.documentElement.style.setProperty('--zoom-ratio', `${zoom / 100}`);
     }
 
     /**

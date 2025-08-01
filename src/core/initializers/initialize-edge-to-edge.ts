@@ -37,7 +37,7 @@ export default async function(): Promise<void> {
     });
 
     // Listener for keyboard height changes.
-    // We need to update the CSS variables and the ion-app height at the same time.
+    // We need to update safe area and keyboard height CSS variables at the same time.
     const imeInsetListener = await Inset.create({
         mask: InsetMask.IME,
         includeRoundedCorners: false,
@@ -54,14 +54,9 @@ export default async function(): Promise<void> {
         rootStyle.setProperty('--ion-safe-area-top', `${insets.top}px`);
         rootStyle.setProperty('--ion-safe-area-bottom', `${keyboardHeight > 0 ? 0 : insets.bottom}px`);
 
-        // Update ion-app height.
-        // This is the behaviour of the Cordova keyboard plugin on iOS.
-        const appStyle = document.querySelector('ion-app')?.style;
-        appStyle?.setProperty('height', keyboardHeight > 0 ? `${window.innerHeight - keyboardHeight}px` : null);
-
         // Update the CSS variable with the kebyoard height.
         // On iOS, the variable is updated in the forked Cordova keyboard plugin.
-        rootStyle.setProperty('--keyboard-height', keyboardHeight > 0 ? `${keyboardHeight}px` : null);
+        rootStyle.setProperty('--keyboard-height', `${keyboardHeight}px`);
     };
 
     systemInsetListener.addListener(update);

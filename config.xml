@@ -33,7 +33,7 @@
     <preference name="ScrollEnabled" value="true" />
     <preference name="KeyboardDisplayRequiresUserAction" value="false" />
     <preference name="HideKeyboardFormAccessoryBar" value="false" />
-    <preference name="KeyboardResizeMode" value="ionic" />
+    <preference name="KeyboardResizeMode" value="none" />
     <preference name="AllowInlineMediaPlayback" value="true" />
     <preference name="LoadUrlTimeoutValue" value="60000" />
     <preference name="load-url-timeout" value="60000" />

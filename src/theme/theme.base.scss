@@ -8,19 +8,29 @@
 }
 
 :root {
-    --zoom-level: 100%;
-    zoom: var(--zoom-level);
+    --zoom-ratio: 1;
+    --zoom-level: calc(100% * var(--zoom-ratio));  // @deprecated since 5.1.
+    zoom: calc(100% * var(--zoom-ratio));
 
     &.ios {
-        font-size: var(--zoom-level);
+        font-size: calc(100% * var(--zoom-ratio));
     }
 
-    // Store safe area variables as --root-safe-area-*.
+    // Apply zoom ratio to safe area and keyboard height CSS variable.
+    // Also, store safe area variables as --root-safe-area-*.
     // Contrary to the --ion-safe-area-* variables, these are never overridden.
-    --root-safe-area-left: var(--ion-safe-area-left);
-    --root-safe-area-right: var(--ion-safe-area-right);
-    --root-safe-area-top: var(--ion-safe-area-top);
-    --root-safe-area-bottom: var(--ion-safe-area-bottom);
+    --root-safe-area-left: calc(var(--ion-safe-area-left, 0px) / var(--zoom-ratio));
+    --root-safe-area-right: calc(var(--ion-safe-area-right, 0px) / var(--zoom-ratio));
+    --root-safe-area-top: calc(var(--ion-safe-area-top, 0px) / var(--zoom-ratio));
+    --root-safe-area-bottom: calc(var(--ion-safe-area-bottom, 0px) / var(--zoom-ratio));
+    --root-keyboard-height: calc(var(--keyboard-height, 0px) / var(--zoom-ratio));
+    & > body {
+        --ion-safe-area-left: var(--root-safe-area-left);
+        --ion-safe-area-right: var(--root-safe-area-right);
+        --ion-safe-area-top: var(--root-safe-area-top);
+        --ion-safe-area-bottom: var(--root-safe-area-bottom);
+        --keyboard-height: var(--root-keyboard-height);
+    }
 }
 
 a {
@@ -185,6 +195,11 @@ core-split-view.menu-and-content {
     .content-outlet {
         --ion-safe-area-left: 0px;
     }
+}
+
+// Set ion-app height based on the keyboard height.
+ion-app {
+    height: calc(100% - var(--keyboard-height, 0px));
 }
 
 // Hidden submit button.
