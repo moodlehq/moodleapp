@@ -20,7 +20,7 @@ import {
     CoreCourseOptionsHandlerData,
 } from '@features/course/services/course-options-delegate';
 import { CoreCourseAnyCourseData, CoreCourseUserAdminOrNavOptionIndexed } from '@features/courses/services/courses';
-import { PARTICIPANTS_PAGE_NAME } from '@features/user/constants';
+import { CORE_PARTICIPANTS_COURSE_OPTION_NAME, PARTICIPANTS_PAGE_NAME } from '@features/user/constants';
 import { makeSingleton } from '@singletons';
 import { CoreUser } from '../user';
 
@@ -30,7 +30,7 @@ import { CoreUser } from '../user';
 @Injectable({ providedIn: 'root' })
 export class CoreUserCourseOptionHandlerService implements CoreCourseOptionsHandler {
 
-    name = 'CoreUserParticipants';
+    name = CORE_PARTICIPANTS_COURSE_OPTION_NAME;
     priority = 600;
 
     /**
