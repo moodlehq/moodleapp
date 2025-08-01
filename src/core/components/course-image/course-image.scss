@@ -4,12 +4,16 @@
 :host {
     --core-image-radius: var(--core-courseimage-radius);
     --core-image-size: 60px;
+    --core-card-top-padding: 40%;
+    --core-image-visibility: visible;
 
     display: flex;
     justify-content: center;
     align-items: center;
     background: var(--course-color, white);
     border-radius: var(--core-image-radius);
+    background-position: center;
+    background-size: cover;
 
     @for $i from 0 to list.length($core-course-image-background) {
         &.course-color-#{$i} {
@@ -18,12 +22,13 @@
         }
     }
 
-    ion-icon {
+    ion-icon.course-icon-fallback {
         --padding: 12px;
 
         padding: var(--padding);
         font-size: calc(var(--core-image-size) - var(--padding) * 2);
         color: var(--course-color-tint);
+        visibility: var(--core-image-visibility);
     }
 
     ion-avatar {
@@ -33,6 +38,7 @@
 
         img {
            background: transparent;
+           visibility: var(--core-image-visibility);
         }
 
     }
@@ -51,12 +57,69 @@
         --core-image-radius: 0px;
         --core-image-size: 100%;
 
-        ion-icon {
+        ion-icon.course-icon-fallback {
             opacity: 0.5;
             width: 80px;
             height: 80px;
         }
 
+    }
+
+    &.card-top {
+        --core-image-size: auto;
+        --core-image-radius: none;
+
+        padding-top: var(--core-card-top-padding);
+        overflow: hidden;
+        cursor: pointer;
+        pointer-events: auto;
+        position: relative;
+
+
+        ion-icon.course-icon-fallback {
+            color: white;
+            opacity: 0.5;
+            position: absolute;
+            left: 0;
+            right: 0;
+            top: 50%;
+            bottom: 0;
+            width: 80px;
+            height: 80px;
+            margin: 0 auto;
+            transform: translateY(-50%);
+        }
+
+        ion-avatar img {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            right: 0;
+            left: 0;
+            margin: auto;
+            width: auto;
+            height: auto;
+        }
+    }
+
+    &.page-top {
+        --core-image-radius: none;
+
+        overflow: hidden;
+        text-align: center;
+        height: var(--core-image-size);
+        position: fixed;
+        z-index: -1;
+        width: 100%;
+
+        ion-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        ion-icon.course-icon-fallback {
+            --padding: 24px;
+        }
     }
 
 }

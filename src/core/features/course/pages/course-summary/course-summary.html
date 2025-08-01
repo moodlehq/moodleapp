@@ -21,13 +21,7 @@
     </ion-refresher>
     <core-loading [hideUntil]="dataLoaded">
         @if (course) {
-            <div class="core-course-thumb" #courseThumb>
-                @if (course.courseimage) {
-                    <img [url]="course.courseimage" core-external-content alt="" (error)="loadFallbackCourseIcon()" />
-                } @else {
-                    <ion-icon name="fas-graduation-cap" class="course-icon" aria-hidden="true" />
-                }
-            </div>
+            <core-course-image [course]="course" class="page-top" />
 
             <div class="course-container">
                 <div class="list-item-limited-width">
@@ -113,16 +107,16 @@
                                 </ion-label>
                             </ion-item>
                             @if (contactsExpanded || course.contacts.length < 5) {
-
-                                <ion-item button class="ion-text-wrap" *ngFor="let contact of course.contacts" core-user-link
-                                    [userId]="contact.id" [courseId]="isEnrolled ? course.id : null" [detail]="true">
-                                    <core-user-avatar [user]="contact" slot="start" [userId]="contact.id"
-                                        [courseId]="isEnrolled ? course.id : null" [linkProfile]="false" />
-                                    <ion-label>
-                                        <p class="item-heading">{{contact.fullname}}</p>
-                                    </ion-label>
-                                </ion-item>
-
+                                @for (contact of course.contacts; track contact.id) {
+                                    <ion-item button class="ion-text-wrap" core-user-link
+                                        [userId]="contact.id" [courseId]="isEnrolled ? course.id : null" [detail]="true">
+                                        <core-user-avatar [user]="contact" slot="start" [userId]="contact.id"
+                                            [courseId]="isEnrolled ? course.id : null" [linkProfile]="false" />
+                                        <ion-label>
+                                            <p class="item-heading">{{contact.fullname}}</p>
+                                        </ion-label>
+                                    </ion-item>
+                                }
                             }
                             <core-spacer />
                         </ion-list>
@@ -131,7 +125,7 @@
                     @if (course.customfields) {
                         <ion-item class="ion-text-wrap">
                             <ion-label>
-                                <ng-container *ngFor="let field of course.customfields">
+                                @for (field of course.customfields; track field.shortname) {
                                     @if (field.value) {
                                         <div class="core-customfield core-customfield_{{field.type}} core-customfield_{{field.shortname}}">
                                             <span class="core-customfieldname">
@@ -146,7 +140,7 @@
                                             </span>
                                         </div>
                                     }
-                                </ng-container>
+                                }
                             </ion-label>
                         </ion-item>
                     }
@@ -160,15 +154,15 @@
     <ion-footer>
         <div class="list-item-limited-width">
             @if (canAccessCourse) {
-
-                <ion-button *ngFor="let item of courseMenuHandlers" (click)="openMenuItem(item)" [class]="'ion-text-wrap '+ item.data.class"
-                    expand="block">
-                    @if (item.data.icon) {
-                        <ion-icon [name]="item.data.icon" slot="start" aria-hidden="true" />
-                    }
-                    <ion-label>{{item.data.title | translate }}</ion-label>
-                </ion-button>
-
+                @for (item of courseMenuHandlers; track item.name) {
+                    <ion-button (click)="openMenuItem(item)" [class]="'ion-text-wrap '+ item.data.class"
+                        expand="block">
+                        @if (item.data.icon) {
+                            <ion-icon [name]="item.data.icon" slot="start" aria-hidden="true" />
+                        }
+                        <ion-label>{{item.data.title | translate }}</ion-label>
+                    </ion-button>
+                }
             }
             @if (!isEnrolled) {
 

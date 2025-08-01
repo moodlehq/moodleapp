@@ -23,10 +23,9 @@ import { CoreUser } from '@features/user/services/user';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSites } from '@services/sites';
 import { Translate } from '@singletons';
-import { CoreColors } from '@singletons/colors';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { CoreCourseListItem, CoreCourses } from '../../services/courses';
-import { CoreCoursesHelper, CoreEnrolledCourseDataWithExtraInfoAndOptions } from '../../services/courses-helper';
+import { CoreEnrolledCourseDataWithExtraInfoAndOptions } from '../../services/courses-helper';
 import { CoreEnrolHelper } from '@features/enrol/services/enrol-helper';
 import { CoreDownloadStatusTranslatable } from '@components/download-refresh/download-refresh';
 import { toBoolean } from '@/core/transforms/boolean';
@@ -116,8 +115,6 @@ export class CoreCoursesCourseListItemComponent implements OnInit, OnDestroy, On
      * @inheritdoc
      */
     async ngOnInit(): Promise<void> {
-        this.setCourseColor();
-
         // Assume is enroled if mode is not listwithenrol.
         this.isEnrolled = this.layout !== 'listwithenrol' || this.course.progress !== undefined;
 
@@ -142,32 +139,6 @@ export class CoreCoursesCourseListItemComponent implements OnInit, OnDestroy, On
 
         } else if ('enrollmentmethods' in this.course) {
             this.enrolmentIcons = await CoreEnrolHelper.getEnrolmentIcons(this.course.enrollmentmethods, this.course.id);
-        }
-    }
-
-    /**
-     * Removes the course image set because it cannot be loaded and set the fallback icon color.
-     */
-    loadFallbackCourseIcon(): void {
-        this.course.courseimage = undefined;
-
-        // Set the color because it won't be set at this point.
-        this.setCourseColor();
-    }
-
-    /**
-     * Set course color.
-     */
-    protected async setCourseColor(): Promise<void> {
-        await CoreCoursesHelper.loadCourseColorAndImage(this.course);
-
-        if (this.course.color) {
-            this.element.style.setProperty('--course-color', this.course.color);
-
-            const tint = CoreColors.lighter(this.course.color, 50);
-            this.element.style.setProperty('--course-color-tint', tint);
-        } else if(this.course.colorNumber !== undefined) {
-            this.element.classList.add(`course-color-${this.course.colorNumber}`);
         }
     }
 

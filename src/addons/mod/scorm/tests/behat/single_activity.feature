@@ -22,8 +22,8 @@ Feature: Test single activity of scorm type in app
     Given I entered the course "Course 1" as "student1" in the app
     And I replace "/.*/" within ".addon-scorm-last-sync-date" with "[Date]"
 
-    When I set "page-core-course-index .core-course-thumb" styles to "background" "lightblue"
-    And I set "page-core-course-index .core-course-thumb img" styles to "display" "none"
+    When I set "page-core-course-index core-course-image" styles to "background" "lightblue"
+    And I set "page-core-course-index core-course-image" styles to "--core-image-visibility" "hidden"
     Then the UI should match the snapshot
 
     When I press "Enter" in the app
