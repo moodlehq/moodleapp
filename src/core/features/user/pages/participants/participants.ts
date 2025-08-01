@@ -69,7 +69,7 @@ export default class CoreUserParticipantsPage implements OnInit, AfterViewInit, 
      * @inheritdoc
      */
     async ngOnInit(): Promise<void> {
-        this.searchEnabled = await CoreUser.canSearchParticipantsInSite();
+        this.searchEnabled = CoreUser.canSearchParticipantsInSite();
     }
 
     /**

@@ -15,47 +15,49 @@
                     [attr.role]="searchQuery ? 'alert' : null" />
             } @else if (!participants.empty) {
                 <ion-list>
-                    <ion-item *ngFor="let participant of participants.items" class="ion-text-wrap"
-                        [attr.aria-current]="participants.getItemAriaCurrent(participant)" [attr.aria-label]="participant.fullname"
-                        (click)="participants.select(participant)" button [detail]="true">
+                    @for (participant of participants.items; track participant.id) {
+                        <ion-item class="ion-text-wrap"
+                            [attr.aria-current]="participants.getItemAriaCurrent(participant)" [attr.aria-label]="participant.fullname"
+                            (click)="participants.select(participant)" button [detail]="true">
 
-                        <core-user-avatar [user]="participant" [linkProfile]="false" [checkOnline]="true" slot="start" />
+                            <core-user-avatar [user]="participant" [linkProfile]="false" [checkOnline]="true" slot="start" />
 
-                        <ion-label>
-                            @if (!searchQuery) {
+                            <ion-label>
+                                @if (!searchQuery) {
 
-                                <p class="item-heading">{{ participant.fullname }}</p>
-                                @if (participant.lastcourseaccess !== undefined) {
-                                    <p>
-                                        <strong>{{ 'core.user.lastcourseaccess' | translate }}: </strong>
-                                        @if (participant.lastcourseaccess) {
-                                            {{ participant.lastcourseaccess | coreTimeAgo }}
+                                    <p class="item-heading">{{ participant.fullname }}</p>
+                                    @if ('lastcourseaccess' in participant && participant.lastcourseaccess !== undefined) {
+                                        <p>
+                                            <strong>{{ 'core.user.lastcourseaccess' | translate }}: </strong>
+                                            @if (participant.lastcourseaccess) {
+                                                {{ participant.lastcourseaccess | coreTimeAgo }}
 
-                                        }
-                                        @if (!participant.lastcourseaccess) {
-                                            {{ 'core.never' | translate }}
-                                        }
-                                    </p>
-                                } @else if (participant.lastaccess !== undefined) {
-                                    <p>
-                                        <strong>{{ 'core.lastaccess' | translate }}: </strong>
-                                        @if (participant.lastaccess) {
-                                            {{ participant.lastaccess | coreTimeAgo }}
-                                        }
-                                        @if (!participant.lastaccess) {
-                                            {{ 'core.never' | translate }}
-                                        }
+                                            }
+                                            @if (!participant.lastcourseaccess) {
+                                                {{ 'core.never' | translate }}
+                                            }
+                                        </p>
+                                    } @else if (participant.lastaccess !== undefined) {
+                                        <p>
+                                            <strong>{{ 'core.lastaccess' | translate }}: </strong>
+                                            @if (participant.lastaccess) {
+                                                {{ participant.lastaccess | coreTimeAgo }}
+                                            }
+                                            @if (!participant.lastaccess) {
+                                                {{ 'core.never' | translate }}
+                                            }
+                                        </p>
+                                    }
+
+                                } @else {
+                                    <p class="item-heading">
+                                        <core-format-text [text]="participant.fullname" [highlight]="searchQuery" [filter]="false" />
                                     </p>
                                 }
+                            </ion-label>
 
-                            } @else {
-                                <p class="item-heading">
-                                    <core-format-text [text]="participant.fullname" [highlight]="searchQuery" [filter]="false" />
-                                </p>
-                            }
-                        </ion-label>
-
-                    </ion-item>
+                        </ion-item>
+                    }
                 </ion-list>
             }
             <core-infinite-loading [enabled]="participants.loaded && !participants.completed" (action)="fetchMoreParticipants($event)"
