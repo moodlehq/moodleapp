@@ -87,7 +87,7 @@ export default class CoreCourseIndexPage implements OnInit, OnDestroy {
                 // Select course contents.
                 this.tabsComponent?.selectByIndex(0);
             } else if (this.tabs) {
-                const index = this.tabs.findIndex((tab) => tab.name == data.name);
+                const index = this.tabs.findIndex((tab) => tab.name === data.name);
 
                 if (index >= 0) {
                     this.tabsComponent?.selectByIndex(index);

@@ -180,9 +180,9 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
             let section: CoreCourseSection | undefined;
 
             if (data.sectionId !== undefined && this.sections) {
-                section = this.sections.find((section) => section.id == data.sectionId);
+                section = this.sections.find((section) => section.id === data.sectionId);
             } else if (data.sectionNumber !== undefined && this.sections) {
-                section = this.sections.find((section) => section.section == data.sectionNumber);
+                section = this.sections.find((section) => section.section === data.sectionNumber);
             }
 
             if (section) {
