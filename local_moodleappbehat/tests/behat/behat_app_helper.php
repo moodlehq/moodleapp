@@ -327,10 +327,13 @@ class behat_app_helper extends behat_base {
         preg_match_all("/\\$\\{([^:}]+):([^}]+)\\}/", $text, $matches);
 
         foreach ($matches[0] as $index => $match) {
-            if ($matches[2][$index] == 'cmid') {
-                $coursemodule = $DB->get_record('course_modules', ['idnumber' => $matches[1][$index]]);
-                $text = str_replace($match, $coursemodule->id, $text);
+            $coursemodule = (array) $DB->get_record('course_modules', ['idnumber' => $matches[1][$index]]);
+            $property = $matches[2][$index] === 'cmid' ? 'id' : $matches[2][$index];
+            if (!isset($coursemodule[$property])) {
+                throw new DriverException("Property '$matches[2][$index]' not found in activity '$matches[1][$index]'.");
             }
+
+            $text = str_replace($match, $coursemodule[$property], $text);
         }
 
         return $text;
