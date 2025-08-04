@@ -18,7 +18,6 @@ import { CoreContentLinksAction } from '@features/contentlinks/services/contentl
 import { CoreCourse } from '@features/course/services/course';
 import { CoreLoadings } from '@services/overlays/loadings';
 import { makeSingleton } from '@singletons';
-import { CoreSites } from '@services/sites';
 import { CoreCourseHelper } from '@features/course/services/course-helper';
 import { CoreAlerts } from '@services/overlays/alerts';
 import { ADDON_MOD_SUBSECTION_COMPONENT, ADDON_MOD_SUBSECTION_MODNAME } from '../../constants';
@@ -48,14 +47,7 @@ export class AddonModSubsectionIndexLinkHandlerService extends CoreContentLinksM
             sectionId,
         };
 
-        if (
-            (!siteId || siteId === CoreSites.getCurrentSiteId()) &&
-            CoreCourse.currentViewIsCourse(courseId)
-        ) {
-            CoreCourse.selectCourseTab('', pageParams);
-        } else {
-            await CoreCourseHelper.getAndOpenCourse(courseId, pageParams, siteId);
-        }
+        await CoreCourseHelper.getAndOpenCourse(courseId, pageParams, siteId);
     }
 
     /**

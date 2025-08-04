@@ -257,7 +257,7 @@ export class CoreCourseProvider {
             return false;
         }
 
-        return Number(CoreNavigator.getRouteParams(route).courseId) == courseId;
+        return Number(CoreNavigator.getRouteParams(route).courseId) === courseId;
     }
 
     /**

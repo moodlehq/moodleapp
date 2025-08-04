@@ -102,8 +102,8 @@ Feature: Test basic usage of one course in app
     And I should not find "Web links" in the app
     And I should not find "Test glossary" in the app
 
-    When I set "page-core-course-index .core-course-thumb" styles to "background" "lightblue"
-    And I set "page-core-course-index .core-course-thumb img" styles to "display" "none"
+    When I set "page-core-course-index core-course-image" styles to "background" "lightblue"
+    And I set "page-core-course-index core-course-image" styles to "--core-image-visibility" "hidden"
     Then the UI should match the snapshot
 
     # Test infinite scroll on course
