@@ -76,7 +76,7 @@
 
             <tbody class="auto-striped">
                 @for (activity of overview.activities; track activity.cmid) {
-                    <tr [ngClass]="{'core-course-overview-activity-has-error': activity.haserror}">
+                    <tr [class.core-course-overview-activity-has-error]="activity.haserror">
                         @for (item of activity.itemsToRender; track item.key) {
                             <td [ngClass]="item.classes">
                                 @if (item.component) {
@@ -114,9 +114,9 @@
 
         @for (activity of overview.activities; track activity.cmid) {
             <ion-card>
-                @if (activity.haserror) {
+                @if (activity.haserror || !activity.hasItemsBesidesName) {
                     <!-- If activity has an error, display just the header without being expandable. -->
-                    <ion-item class="ion-text-wrap core-course-overview-activity-has-error">
+                    <ion-item class="ion-text-wrap" [class.core-course-overview-activity-has-error]="activity.haserror">
                         <ion-label>
                             @if (activity.nameItemToRender) {
                                 <core-dynamic-component [component]="activity.nameItemToRender.component"
