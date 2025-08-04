@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, ViewChild, OnDestroy, OnInit, ElementRef, inject } from '@angular/core';
+import { Component, ViewChild, OnDestroy, OnInit, inject } from '@angular/core';
 import { ActivatedRoute, Params } from '@angular/router';
 
 import { CoreTabsOutletTab, CoreTabsOutletComponent } from '@components/tabs-outlet/tabs-outlet';
@@ -25,8 +25,7 @@ import { CoreCourseHelper, CoreCourseModuleData } from '@features/course/service
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreNavigationOptions, CoreNavigator } from '@services/navigator';
 import { CORE_COURSE_CONTENTS_PAGE_NAME, CORE_COURSE_PROGRESS_UPDATED_EVENT } from '@features/course/constants';
-import { CoreCoursesHelper, CoreCourseWithImageAndColor } from '@features/courses/services/courses-helper';
-import { CoreColors } from '@singletons/colors';
+import { CoreCourseWithImageAndColor } from '@features/courses/services/courses-helper';
 import { CorePath } from '@singletons/path';
 import { CoreSites } from '@services/sites';
 import { CoreWait } from '@singletons/wait';
@@ -47,7 +46,6 @@ import { CoreSharedModule } from '@/core/shared.module';
 export default class CoreCourseIndexPage implements OnInit, OnDestroy {
 
     @ViewChild(CoreTabsOutletComponent) tabsComponent?: CoreTabsOutletComponent;
-    @ViewChild('courseThumb') courseThumb?: ElementRef;
 
     title = '';
     category = '';
@@ -89,7 +87,7 @@ export default class CoreCourseIndexPage implements OnInit, OnDestroy {
                 // Select course contents.
                 this.tabsComponent?.selectByIndex(0);
             } else if (this.tabs) {
-                const index = this.tabs.findIndex((tab) => tab.name == data.name);
+                const index = this.tabs.findIndex((tab) => tab.name === data.name);
 
                 if (index >= 0) {
                     this.tabsComponent?.selectByIndex(index);
@@ -235,8 +233,6 @@ export default class CoreCourseIndexPage implements OnInit, OnDestroy {
         // Get the title to display initially.
         this.title = CoreCourseFormatDelegate.getCourseTitle(this.course);
 
-        await this.setCourseColor();
-
         this.updateProgress();
 
         // Load sections.
@@ -302,30 +298,6 @@ export default class CoreCourseIndexPage implements OnInit, OnDestroy {
         }
 
         this.progress = this.course.progress;
-    }
-
-    /**
-     * Set course color.
-     */
-    protected async setCourseColor(): Promise<void> {
-        if (!this.course) {
-            return;
-        }
-
-        await CoreCoursesHelper.loadCourseColorAndImage(this.course);
-
-        if (!this.courseThumb) {
-            return;
-        }
-
-        if (this.course.color) {
-            this.courseThumb.nativeElement.style.setProperty('--course-color', this.course.color);
-
-            const tint = CoreColors.lighter(this.course.color, 50);
-            this.courseThumb.nativeElement.style.setProperty('--course-color-tint', tint);
-        } else if(this.course.colorNumber !== undefined) {
-            this.courseThumb.nativeElement.classList.add(`course-color-${this.course.colorNumber}`);
-        }
     }
 
 }

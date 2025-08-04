@@ -3,27 +3,13 @@
     tappable [attr.aria-label]="course.displayname || course.fullname">
 
     @if (layout === 'card' || layout === 'summarycard') {
-        <div class="core-course-thumb">
-            @if (course.courseimage) {
-                <img [url]="course.courseimage" core-external-content alt="" (error)="loadFallbackCourseIcon()" />
-            } @else {
-                <ion-icon name="fas-graduation-cap" class="course-icon" aria-hidden="true" />
-            }
-        </div>
+        <core-course-image [course]="course" class="card-top" />
     }
 
     <ion-item class="ion-text-wrap">
 
         @if (layout === 'list' || layout === 'listwithenrol') {
-
-            @if (!course.courseimage) {
-                <ion-icon name="fas-graduation-cap" slot="start" class="course-icon core-course-thumb" aria-hidden="true" />
-            } @else {
-                <ion-avatar slot="start" class="core-course-thumb">
-                    <img [url]="course.courseimage" core-external-content alt="" (error)="loadFallbackCourseIcon()" />
-                </ion-avatar>
-            }
-
+            <core-course-image [course]="course" />
         }
 
         <ion-label>
@@ -47,8 +33,10 @@
 
                     @if ((layout === 'list' || layout === 'listwithenrol') && !isEnrolled) {
                         <span class="core-course-enrol-icons">
-                            <ion-icon *ngFor="let icon of enrolmentIcons" color="medium" [name]="icon.icon" [title]="icon.label | translate"
-                                [attr.aria-label]="icon.label | translate" [ngClass]="[icon.className]" />
+                            @for (icon of enrolmentIcons; track icon.label) {
+                                <ion-icon color="medium" [name]="icon.icon" [title]="icon.label | translate"
+                                    [attr.aria-label]="icon.label | translate" [ngClass]="[icon.className]" />
+                            }
                         </span>
                     }
 

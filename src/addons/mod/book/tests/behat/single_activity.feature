@@ -28,8 +28,8 @@ Feature: Test single activity of book type in app
     Then I should find "Chapt 1" in the app
     And I should find "Chapt 2" in the app
 
-    When I set "page-core-course-index .core-course-thumb" styles to "background" "lightblue"
-    And I set "page-core-course-index .core-course-thumb img" styles to "display" "none"
+    When I set "page-core-course-index core-course-image" styles to "background" "lightblue"
+    And I set "page-core-course-index core-course-image" styles to "--core-image-visibility" "hidden"
     Then the UI should match the snapshot
 
     Then I press "Chapt 1" in the app
