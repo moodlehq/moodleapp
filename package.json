@@ -83,7 +83,7 @@
         "@moodlehq/cordova-plugin-ionic-webview": "5.0.0-moodle.5",
         "@moodlehq/cordova-plugin-media-capture": "5.0.0-moodle.1",
         "@moodlehq/cordova-plugin-qrscanner": "3.0.1-moodle.5",
-        "@moodlehq/cordova-plugin-statusbar": "4.0.0-moodle.4",
+        "@moodlehq/cordova-plugin-statusbar": "4.0.0-moodle.5",
         "@moodlehq/cordova-plugin-zip": "3.1.0-moodle.1",
         "@moodlehq/phonegap-plugin-push": "4.0.0-moodle.12",
         "@ngx-translate/core": "^16.0.4",

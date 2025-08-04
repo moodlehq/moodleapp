@@ -1,5 +1,5 @@
 @addon_block_site_main_menu @app @block @block_site_main_menu @javascript @lms_from5.0
-Feature: Basic tests of Main menu block
+Feature: Basic tests of Additional activities block
 
   Background:
     Given the Moodle site is compatible with this feature
@@ -10,18 +10,18 @@ Feature: Basic tests of Main menu block
       | blockname      | contextlevel | reference | pagetypepattern | defaultregion |
       | site_main_menu | System       | 1         | site-index      | side-pre      |
 
-  Scenario: View the Main menu block in site home
+  Scenario: View the Additional activities block in site home
     Given the following "activities" exist:
       | activity | course               | section | name          |
       | forum    | Acceptance test site | 0       | My forum name |
     And I entered the app as "student1"
     When I press "Site home" in the app
     And I press "Open block drawer" in the app
-    Then I should find "My forum name" within "Main menu" "ion-card" in the app
+    Then I should find "My forum name" within "Additional activities" "ion-card" in the app
     When I press "My forum name" in the app
     Then the header should be "My forum name" in the app
 
-  Scenario: Activities in main menu block can be made available but not visible on a course page
+  Scenario: Activities in additional activities block can be made available but not visible on a course page
     Given the following config values are set as admin:
       | allowstealth | 1 |
     And the following "activities" exist:
@@ -36,8 +36,8 @@ Feature: Basic tests of Main menu block
     And I entered the app as "student1"
     When I press "Site home" in the app
     And I press "Open block drawer" in the app
-    Then I should find "Visible forum" within "Main menu" "ion-card" in the app
-    Then I should not find "My forum name" within "Main menu" "ion-card" in the app
+    Then I should find "Visible forum" within "Additional activities" "ion-card" in the app
+    Then I should not find "My forum name" within "Additional activities" "ion-card" in the app
     When I press "Visible forum" in the app
     Then the header should be "Visible forum" in the app
 
@@ -51,4 +51,4 @@ Feature: Basic tests of Main menu block
     And I entered the app as "student1"
     When I press "Site home" in the app
     And I press "Open block drawer" in the app
-    Then I should not find "Main menu" in the app
+    Then I should not find "Additional activities" in the app
