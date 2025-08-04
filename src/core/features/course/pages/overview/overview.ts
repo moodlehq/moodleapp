@@ -39,6 +39,7 @@ import { CoreCourse } from '@features/course/services/course';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { CoreScreen } from '@services/screen';
 import { map } from 'rxjs';
+import { CoreCourseOverviewContentType } from '@features/course/constants';
 
 /**
  * Page that displays an overview of all activities in a course.
@@ -285,12 +286,15 @@ export default class CoreCourseOverviewPage implements OnInit {
                 };
             }));
 
+            const nameItemToRender = itemsToRender.find(item => item.key === 'name') ??
+                itemsToRender.find(item => item.contenttype === CoreCourseOverviewContentType.ACTIVITY_NAME);
+
             return {
                 ...activity,
-                nameItemToRender: itemsToRender.find(item => item.key === 'name') ??
-                    itemsToRender.find(item => item.contenttype === 'core_courseformat\\output\\local\\overview\\activityname'),
+                nameItemToRender,
                 itemsToRender,
                 isExpanded: signal(false),
+                hasItemsBesidesName: itemsToRender.some(item => item !== nameItemToRender),
             };
         }));
 
@@ -298,6 +302,7 @@ export default class CoreCourseOverviewPage implements OnInit {
             // Remove the unsupported columns for each activity.
             activities.forEach((activity) => {
                 activity.itemsToRender = activity.itemsToRender.filter((item) => !columnsToRemove.includes(item.key ?? ''));
+                activity.hasItemsBesidesName = activity.itemsToRender.some(item => item !== activity.nameItemToRender);
             });
         }
 
@@ -387,6 +392,7 @@ type OverviewActivity = CoreCourseOverviewActivity & {
     nameItemToRender?: OverviewItemToRender;
     itemsToRender: OverviewItemToRender[];
     isExpanded: WritableSignal<boolean>;
+    hasItemsBesidesName: boolean;
 };
 
 type OverviewItemToRender = CoreCourseOverviewItem & {
