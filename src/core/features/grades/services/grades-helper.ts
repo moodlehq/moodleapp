@@ -495,19 +495,11 @@ export class CoreGradesHelperProvider {
         } catch {
             try {
                 // Cannot get grade items or there's no need to.
-                if (userId && userId != currentUserId) {
+                if (userId && userId !== currentUserId) {
                     // View another user grades. Open the grades page directly.
                     await CorePromiseUtils.ignoreErrors(
                         CoreNavigator.navigateToSitePath(`/${GRADES_PAGE_NAME}/${courseId}`, { siteId }),
                     );
-                }
-
-                // View own grades. Check if we already are in the course index page.
-                if (CoreCourse.currentViewIsCourse(courseId)) {
-                    // Current view is this course, just select the grades tab.
-                    CoreCourse.selectCourseTab(CORE_GRADES_COURSE_OPTION_NAME);
-
-                    return;
                 }
 
                 // Open the course with the grades tab selected.
