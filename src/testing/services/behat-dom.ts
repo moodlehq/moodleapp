@@ -67,6 +67,12 @@ export class TestingBehatDomUtilsService {
             return false;
         }
 
+        if (element.closest('.ion-page.ion-page-hidden')) {
+            // Element is inside a hidden page, this happens for example with tabs-outlet.
+            // Without this check, behat finds elements in tabs (pages) that aren't active.
+            return false;
+        }
+
         if (element.tagName === 'SWIPER-SLIDE') {
             // Check if the slide is visible (in the viewport).
             const bounding = element.getBoundingClientRect();
