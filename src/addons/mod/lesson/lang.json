@@ -38,7 +38,7 @@
     "loginfail": "Login failed, please try again...",
     "lowscore": "Low score",
     "lowtime": "Low time",
-    "maximumnumberofattemptsreached": "Maximum number of attempts reached - Moving to next page",
+    "maximumnumberofattemptsreached": "You have reached the maximum number of tries for this question. The lesson will now move to the next page.",
     "modattemptsnoteacher": "Student review only works for students.",
     "modulenameplural": "Lessons",
     "noanswer": "One or more questions have no answer given.  Please go back and submit an answer.",
