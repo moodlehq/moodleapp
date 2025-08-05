@@ -189,7 +189,7 @@ jobs:
         if: ${{ failure() }}
         with:
           name: snapshot_failures-${{ matrix.tags }}
-          path: moodle/local/moodleappbehat/tests/behat/snapshots/failures/*
+          path: moodle/public/local/moodleappbehat/tests/behat/snapshots/failures/*
 
       - name: Upload Behat failures
         uses: actions/upload-artifact@v4
