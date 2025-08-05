@@ -1,6 +1,6 @@
 <core-navbar-buttons slot="end" prepend>
     @if (searchEnabled) {
-        <ion-button (click)="openSearch()" [ariaLabel]="'core.courses.searchcourses' | translate">
+        <ion-button fill="clear" (click)="openSearch()" [ariaLabel]="'core.courses.searchcourses' | translate">
             <ion-icon name="fas-magnifying-glass" slot="icon-only" aria-hidden="true" />
         </ion-button>
     }
