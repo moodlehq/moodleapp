@@ -16,7 +16,6 @@ import { Component, input, signal, viewChild } from '@angular/core';
 import { ModalController } from '@singletons';
 import { CoreSharedModule } from '@/core/shared.module';
 import { ImageCropperComponent, ImageTransform } from 'ngx-image-cropper';
-import { IFile } from '@awesome-cordova-plugins/file/ngx';
 import { CoreAlerts } from '@services/overlays/alerts';
 
 /**
@@ -35,7 +34,7 @@ import { CoreAlerts } from '@services/overlays/alerts';
 export class CoreViewerImageEditComponent {
 
     readonly editTool = viewChild.required(ImageCropperComponent);
-    readonly image = input.required<IFile>();
+    readonly image = input.required<Blob>();
     readonly transform = signal<ImageTransform>({
         scale: 1,
         rotate: 0,
