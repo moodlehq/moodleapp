@@ -2,12 +2,12 @@
 <core-navbar-buttons slot="end">
     @if (!showLoading && glossary) {
         @if (glossary.browsemodes && glossary.browsemodes.length > 1) {
-            <ion-button (click)="openModePicker($event)" [ariaLabel]="'addon.mod_glossary.browsemode' | translate">
+            <ion-button fill="clear" (click)="openModePicker($event)" [ariaLabel]="'addon.mod_glossary.browsemode' | translate">
                 <ion-icon name="fas-sort" slot="icon-only" aria-hidden="true" />
             </ion-button>
         }
 
-        <ion-button (click)="toggleSearch()" [ariaLabel]="'addon.mod_glossary.bysearch' | translate">
+        <ion-button fill="clear" (click)="toggleSearch()" [ariaLabel]="'addon.mod_glossary.bysearch' | translate">
             <ion-icon name="fas-magnifying-glass" slot="icon-only" aria-hidden="true" />
         </ion-button>
     }

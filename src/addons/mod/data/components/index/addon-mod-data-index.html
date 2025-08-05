@@ -1,7 +1,7 @@
 <!-- Buttons to add to the header. -->
 <core-navbar-buttons slot="end">
     @if (canSearch) {
-        <ion-button (click)="showSearch()" [ariaLabel]="'addon.mod_data.search' | translate">
+        <ion-button fill="clear" (click)="showSearch()" [ariaLabel]="'addon.mod_data.search' | translate">
             <ion-icon name="fas-magnifying-glass" slot="icon-only" aria-hidden="true" />
         </ion-button>
     }
