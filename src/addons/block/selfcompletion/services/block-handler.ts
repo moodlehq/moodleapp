@@ -18,6 +18,7 @@ import { CoreBlockBaseHandler } from '@features/block/classes/base-block-handler
 import { CoreCourseBlock } from '@features/course/services/course';
 import { makeSingleton } from '@singletons';
 import { AddonCourseCompletion } from '@addons/coursecompletion/services/coursecompletion';
+import { CoreCourseCompletion } from '@features/course/services/course-completion';
 import { ContextLevel } from '@/core/constants';
 
 /**
@@ -33,7 +34,7 @@ export class AddonBlockSelfCompletionHandlerService extends CoreBlockBaseHandler
      * @inheritdoc
      */
     async isEnabled(): Promise<boolean> {
-        return AddonCourseCompletion.isCompletionEnabledInSite();
+        return CoreCourseCompletion.isCompletionEnabledInSite();
     }
 
     /**
