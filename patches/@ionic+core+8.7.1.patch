@@ -1,42 +1,8 @@
-diff --git a/node_modules/@ionic/core/components/input-shims.js b/node_modules/@ionic/core/components/input-shims.js
-index 790c8d2..7c71111 100644
---- a/node_modules/@ionic/core/components/input-shims.js
-+++ b/node_modules/@ionic/core/components/input-shims.js
-@@ -336,7 +336,8 @@ const enableScrollAssist = (componentEl, inputEl, contentEl, footerEl, keyboardH
-     const focusOut = () => {
-         hasKeyboardBeenPresentedForTextField = false;
-         win === null || win === void 0 ? void 0 : win.removeEventListener('ionKeyboardDidShow', keyboardShow);
--        componentEl.removeEventListener('focusout', focusOut);
-+        // Patched: Attach focusin/focusout events to inputEl instead of componentEl to allow focusing buttons inside <ion-input>.
-+        inputEl.removeEventListener('focusout', focusOut);
-     };
-     /**
-      * When the input is about to receive
-@@ -356,13 +357,15 @@ const enableScrollAssist = (componentEl, inputEl, contentEl, footerEl, keyboardH
-         }
-         jsSetFocus(componentEl, inputEl, contentEl, footerEl, keyboardHeight, addScrollPadding, disableClonedInput, platformHeight);
-         win === null || win === void 0 ? void 0 : win.addEventListener('ionKeyboardDidShow', keyboardShow);
--        componentEl.addEventListener('focusout', focusOut);
-+        // Patched: Attach focusin/focusout events to inputEl instead of componentEl to allow focusing buttons inside <ion-input>.
-+        inputEl.addEventListener('focusout', focusOut);
-     };
--    componentEl.addEventListener('focusin', focusIn);
-+    // Patched: Attach focusin/focusout events to inputEl instead of componentEl to allow focusing buttons inside <ion-input>.
-+    inputEl.addEventListener('focusin', focusIn);
-     return () => {
--        componentEl.removeEventListener('focusin', focusIn);
-+        inputEl.removeEventListener('focusin', focusIn);
-         win === null || win === void 0 ? void 0 : win.removeEventListener('ionKeyboardDidShow', keyboardShow);
--        componentEl.removeEventListener('focusout', focusOut);
-+        inputEl.removeEventListener('focusout', focusOut);
-     };
- };
- /**
 diff --git a/node_modules/@ionic/core/components/item.js b/node_modules/@ionic/core/components/item.js
-index 3374c22..f2e0b6d 100644
+index ec9ab81..a384b35 100644
 --- a/node_modules/@ionic/core/components/item.js
 +++ b/node_modules/@ionic/core/components/item.js
-@@ -119,7 +119,7 @@ const Item = /*@__PURE__*/ proxyCustomElement(class Item extends HTMLElement {
+@@ -139,7 +139,7 @@ const Item = /*@__PURE__*/ proxyCustomElement(class Item extends HTMLElement {
      // inputs, then those need to individually get each click
      hasCover() {
          const inputs = this.el.querySelectorAll('ion-checkbox, ion-datetime, ion-select, ion-radio');
@@ -46,7 +12,7 @@ index 3374c22..f2e0b6d 100644
      // If the item has an href or button property it will render a native
      // anchor or button that is clickable
 diff --git a/node_modules/@ionic/core/components/popover.js b/node_modules/@ionic/core/components/popover.js
-index 624a909..2598584 100644
+index 56b1107..560b1d6 100644
 --- a/node_modules/@ionic/core/components/popover.js
 +++ b/node_modules/@ionic/core/components/popover.js
 @@ -763,8 +763,10 @@ const iosEnterAnimation = (baseEl, opts) => {
@@ -75,45 +41,11 @@ index 624a909..2598584 100644
      const root = getElementRoot(baseEl);
      const contentEl = root.querySelector('.popover-content');
      const referenceSizeEl = trigger || ((_a = ev === null || ev === void 0 ? void 0 : ev.detail) === null || _a === void 0 ? void 0 : _a.ionShadowTarget) || (ev === null || ev === void 0 ? void 0 : ev.target);
-diff --git a/node_modules/@ionic/core/dist/cjs/input-shims-D1Mfgd4s.js b/node_modules/@ionic/core/dist/cjs/input-shims-D1Mfgd4s.js
-index 337ca61..6dbb29c 100644
---- a/node_modules/@ionic/core/dist/cjs/input-shims-D1Mfgd4s.js
-+++ b/node_modules/@ionic/core/dist/cjs/input-shims-D1Mfgd4s.js
-@@ -340,7 +340,8 @@ const enableScrollAssist = (componentEl, inputEl, contentEl, footerEl, keyboardH
-     const focusOut = () => {
-         hasKeyboardBeenPresentedForTextField = false;
-         index.win === null || index.win === void 0 ? void 0 : index.win.removeEventListener('ionKeyboardDidShow', keyboardShow);
--        componentEl.removeEventListener('focusout', focusOut);
-+        // Patched: Attach focusin/focusout events to inputEl instead of componentEl to allow focusing buttons inside <ion-input>.
-+        inputEl.removeEventListener('focusout', focusOut);
-     };
-     /**
-      * When the input is about to receive
-@@ -360,13 +361,15 @@ const enableScrollAssist = (componentEl, inputEl, contentEl, footerEl, keyboardH
-         }
-         jsSetFocus(componentEl, inputEl, contentEl, footerEl, keyboardHeight, addScrollPadding, disableClonedInput, platformHeight);
-         index.win === null || index.win === void 0 ? void 0 : index.win.addEventListener('ionKeyboardDidShow', keyboardShow);
--        componentEl.addEventListener('focusout', focusOut);
-+        // Patched: Attach focusin/focusout events to inputEl instead of componentEl to allow focusing buttons inside <ion-input>.
-+        inputEl.addEventListener('focusout', focusOut);
-     };
--    componentEl.addEventListener('focusin', focusIn);
-+    // Patched: Attach focusin/focusout events to inputEl instead of componentEl to allow focusing buttons inside <ion-input>.
-+    inputEl.addEventListener('focusin', focusIn);
-     return () => {
--        componentEl.removeEventListener('focusin', focusIn);
-+        inputEl.removeEventListener('focusin', focusIn);
-         index.win === null || index.win === void 0 ? void 0 : index.win.removeEventListener('ionKeyboardDidShow', keyboardShow);
--        componentEl.removeEventListener('focusout', focusOut);
-+        inputEl.removeEventListener('focusout', focusOut);
-     };
- };
- /**
 diff --git a/node_modules/@ionic/core/dist/cjs/ion-item_8.cjs.entry.js b/node_modules/@ionic/core/dist/cjs/ion-item_8.cjs.entry.js
-index 261bfc2..f6782ff 100644
+index 4ce05a4..cc5562b 100644
 --- a/node_modules/@ionic/core/dist/cjs/ion-item_8.cjs.entry.js
 +++ b/node_modules/@ionic/core/dist/cjs/ion-item_8.cjs.entry.js
-@@ -116,7 +116,7 @@ const Item = class {
+@@ -137,7 +137,7 @@ const Item = class {
      // inputs, then those need to individually get each click
      hasCover() {
          const inputs = this.el.querySelectorAll('ion-checkbox, ion-datetime, ion-select, ion-radio');
@@ -123,10 +55,10 @@ index 261bfc2..f6782ff 100644
      // If the item has an href or button property it will render a native
      // anchor or button that is clickable
 diff --git a/node_modules/@ionic/core/dist/cjs/ion-popover.cjs.entry.js b/node_modules/@ionic/core/dist/cjs/ion-popover.cjs.entry.js
-index c979cff..4d26452 100644
+index 2d6c773..1c92c34 100644
 --- a/node_modules/@ionic/core/dist/cjs/ion-popover.cjs.entry.js
 +++ b/node_modules/@ionic/core/dist/cjs/ion-popover.cjs.entry.js
-@@ -765,8 +765,10 @@ const iosEnterAnimation = (baseEl, opts) => {
+@@ -766,8 +766,10 @@ const iosEnterAnimation = (baseEl, opts) => {
      const { event: ev, size, trigger, reference, side, align } = opts;
      const doc = baseEl.ownerDocument;
      const isRTL = doc.dir === 'rtl';
@@ -139,7 +71,7 @@ index c979cff..4d26452 100644
      const root = helpers.getElementRoot(baseEl);
      const contentEl = root.querySelector('.popover-content');
      const arrowEl = root.querySelector('.popover-arrow');
-@@ -886,8 +888,10 @@ const mdEnterAnimation = (baseEl, opts) => {
+@@ -887,8 +889,10 @@ const mdEnterAnimation = (baseEl, opts) => {
      const { event: ev, size, trigger, reference, side, align } = opts;
      const doc = baseEl.ownerDocument;
      const isRTL = doc.dir === 'rtl';
@@ -153,10 +85,10 @@ index c979cff..4d26452 100644
      const contentEl = root.querySelector('.popover-content');
      const referenceSizeEl = trigger || ((_a = ev === null || ev === void 0 ? void 0 : ev.detail) === null || _a === void 0 ? void 0 : _a.ionShadowTarget) || (ev === null || ev === void 0 ? void 0 : ev.target);
 diff --git a/node_modules/@ionic/core/dist/collection/components/item/item.js b/node_modules/@ionic/core/dist/collection/components/item/item.js
-index efaef55..3411553 100644
+index 5bcc20e..ba8f46f 100644
 --- a/node_modules/@ionic/core/dist/collection/components/item/item.js
 +++ b/node_modules/@ionic/core/dist/collection/components/item/item.js
-@@ -119,7 +119,7 @@ export class Item {
+@@ -139,7 +139,7 @@ export class Item {
      // inputs, then those need to individually get each click
      hasCover() {
          const inputs = this.el.querySelectorAll('ion-checkbox, ion-datetime, ion-select, ion-radio');
@@ -199,80 +131,11 @@ index 603923a..ff10a25 100644
      const root = getElementRoot(baseEl);
      const contentEl = root.querySelector('.popover-content');
      const referenceSizeEl = trigger || ((_a = ev === null || ev === void 0 ? void 0 : ev.detail) === null || _a === void 0 ? void 0 : _a.ionShadowTarget) || (ev === null || ev === void 0 ? void 0 : ev.target);
-diff --git a/node_modules/@ionic/core/dist/collection/utils/input-shims/hacks/scroll-assist.js b/node_modules/@ionic/core/dist/collection/utils/input-shims/hacks/scroll-assist.js
-index 1a8303d..a55e85b 100644
---- a/node_modules/@ionic/core/dist/collection/utils/input-shims/hacks/scroll-assist.js
-+++ b/node_modules/@ionic/core/dist/collection/utils/input-shims/hacks/scroll-assist.js
-@@ -96,7 +96,8 @@ export const enableScrollAssist = (componentEl, inputEl, contentEl, footerEl, ke
-     const focusOut = () => {
-         hasKeyboardBeenPresentedForTextField = false;
-         win === null || win === void 0 ? void 0 : win.removeEventListener('ionKeyboardDidShow', keyboardShow);
--        componentEl.removeEventListener('focusout', focusOut);
-+        // Patched: Attach focusin/focusout events to inputEl instead of componentEl to allow focusing buttons inside <ion-input>.
-+        inputEl.removeEventListener('focusout', focusOut);
-     };
-     /**
-      * When the input is about to receive
-@@ -116,13 +117,15 @@ export const enableScrollAssist = (componentEl, inputEl, contentEl, footerEl, ke
-         }
-         jsSetFocus(componentEl, inputEl, contentEl, footerEl, keyboardHeight, addScrollPadding, disableClonedInput, platformHeight);
-         win === null || win === void 0 ? void 0 : win.addEventListener('ionKeyboardDidShow', keyboardShow);
--        componentEl.addEventListener('focusout', focusOut);
-+        // Patched: Attach focusin/focusout events to inputEl instead of componentEl to allow focusing buttons inside <ion-input>.
-+        inputEl.addEventListener('focusout', focusOut);
-     };
--    componentEl.addEventListener('focusin', focusIn);
-+    // Patched: Attach focusin/focusout events to inputEl instead of componentEl to allow focusing buttons inside <ion-input>.
-+    inputEl.addEventListener('focusin', focusIn);
-     return () => {
--        componentEl.removeEventListener('focusin', focusIn);
-+        inputEl.removeEventListener('focusin', focusIn);
-         win === null || win === void 0 ? void 0 : win.removeEventListener('ionKeyboardDidShow', keyboardShow);
--        componentEl.removeEventListener('focusout', focusOut);
-+        inputEl.removeEventListener('focusout', focusOut);
-     };
- };
- /**
-diff --git a/node_modules/@ionic/core/dist/esm/input-shims-C3lNp93k.js b/node_modules/@ionic/core/dist/esm/input-shims-C3lNp93k.js
-index 3d2281c..0279722 100644
---- a/node_modules/@ionic/core/dist/esm/input-shims-C3lNp93k.js
-+++ b/node_modules/@ionic/core/dist/esm/input-shims-C3lNp93k.js
-@@ -338,8 +338,8 @@ const enableScrollAssist = (componentEl, inputEl, contentEl, footerEl, keyboardH
-     const focusOut = () => {
-         hasKeyboardBeenPresentedForTextField = false;
-         win === null || win === void 0 ? void 0 : win.removeEventListener('ionKeyboardDidShow', keyboardShow);
--        componentEl.removeEventListener('focusout', focusOut);
--    };
-+        // Patched: Attach focusin/focusout events to inputEl instead of componentEl to allow focusing buttons inside <ion-input>.
-+        inputEl.removeEventListener('focusout', focusOut);    };
-     /**
-      * When the input is about to receive
-      * focus, we need to move it to prevent
-@@ -358,13 +358,15 @@ const enableScrollAssist = (componentEl, inputEl, contentEl, footerEl, keyboardH
-         }
-         jsSetFocus(componentEl, inputEl, contentEl, footerEl, keyboardHeight, addScrollPadding, disableClonedInput, platformHeight);
-         win === null || win === void 0 ? void 0 : win.addEventListener('ionKeyboardDidShow', keyboardShow);
--        componentEl.addEventListener('focusout', focusOut);
-+        // Patched: Attach focusin/focusout events to inputEl instead of componentEl to allow focusing buttons inside <ion-input>.
-+        inputEl.addEventListener('focusout', focusOut);
-     };
--    componentEl.addEventListener('focusin', focusIn);
-+    // Patched: Attach focusin/focusout events to inputEl instead of componentEl to allow focusing buttons inside <ion-input>.
-+    inputEl.addEventListener('focusin', focusIn);
-     return () => {
--        componentEl.removeEventListener('focusin', focusIn);
-+        inputEl.removeEventListener('focusin', focusIn);
-         win === null || win === void 0 ? void 0 : win.removeEventListener('ionKeyboardDidShow', keyboardShow);
--        componentEl.removeEventListener('focusout', focusOut);
-+        inputEl.removeEventListener('focusout', focusOut);
-     };
- };
- /**
 diff --git a/node_modules/@ionic/core/dist/esm/ion-item_8.entry.js b/node_modules/@ionic/core/dist/esm/ion-item_8.entry.js
-index e6253dd..ea76c1d 100644
+index 215918e..b83a6b1 100644
 --- a/node_modules/@ionic/core/dist/esm/ion-item_8.entry.js
 +++ b/node_modules/@ionic/core/dist/esm/ion-item_8.entry.js
-@@ -114,7 +114,7 @@ const Item = class {
+@@ -135,7 +135,7 @@ const Item = class {
      // inputs, then those need to individually get each click
      hasCover() {
          const inputs = this.el.querySelectorAll('ion-checkbox, ion-datetime, ion-select, ion-radio');
@@ -282,10 +145,10 @@ index e6253dd..ea76c1d 100644
      // If the item has an href or button property it will render a native
      // anchor or button that is clickable
 diff --git a/node_modules/@ionic/core/dist/esm/ion-popover.entry.js b/node_modules/@ionic/core/dist/esm/ion-popover.entry.js
-index 95cd830..c421c03 100644
+index e651930..a5147b6 100644
 --- a/node_modules/@ionic/core/dist/esm/ion-popover.entry.js
 +++ b/node_modules/@ionic/core/dist/esm/ion-popover.entry.js
-@@ -763,8 +763,10 @@ const iosEnterAnimation = (baseEl, opts) => {
+@@ -764,8 +764,10 @@ const iosEnterAnimation = (baseEl, opts) => {
      const { event: ev, size, trigger, reference, side, align } = opts;
      const doc = baseEl.ownerDocument;
      const isRTL = doc.dir === 'rtl';
@@ -298,7 +161,7 @@ index 95cd830..c421c03 100644
      const root = getElementRoot(baseEl);
      const contentEl = root.querySelector('.popover-content');
      const arrowEl = root.querySelector('.popover-arrow');
-@@ -884,8 +886,10 @@ const mdEnterAnimation = (baseEl, opts) => {
+@@ -885,8 +887,10 @@ const mdEnterAnimation = (baseEl, opts) => {
      const { event: ev, size, trigger, reference, side, align } = opts;
      const doc = baseEl.ownerDocument;
      const isRTL = doc.dir === 'rtl';
@@ -312,10 +175,10 @@ index 95cd830..c421c03 100644
      const contentEl = root.querySelector('.popover-content');
      const referenceSizeEl = trigger || ((_a = ev === null || ev === void 0 ? void 0 : ev.detail) === null || _a === void 0 ? void 0 : _a.ionShadowTarget) || (ev === null || ev === void 0 ? void 0 : ev.target);
 diff --git a/node_modules/@ionic/core/hydrate/index.js b/node_modules/@ionic/core/hydrate/index.js
-index 79f3a45..c0920ba 100644
+index e83d43d..65f0732 100644
 --- a/node_modules/@ionic/core/hydrate/index.js
 +++ b/node_modules/@ionic/core/hydrate/index.js
-@@ -17775,7 +17775,7 @@ class Item {
+@@ -18034,7 +18034,7 @@ class Item {
      // inputs, then those need to individually get each click
      hasCover() {
          const inputs = this.el.querySelectorAll('ion-checkbox, ion-datetime, ion-select, ion-radio');
@@ -324,7 +187,7 @@ index 79f3a45..c0920ba 100644
      }
      // If the item has an href or button property it will render a native
      // anchor or button that is clickable
-@@ -26611,8 +26611,10 @@ const iosEnterAnimation$1 = (baseEl, opts) => {
+@@ -26948,8 +26948,10 @@ const iosEnterAnimation$1 = (baseEl, opts) => {
      const { event: ev, size, trigger, reference, side, align } = opts;
      const doc = baseEl.ownerDocument;
      const isRTL = doc.dir === 'rtl';
@@ -337,7 +200,7 @@ index 79f3a45..c0920ba 100644
      const root = getElementRoot(baseEl);
      const contentEl = root.querySelector('.popover-content');
      const arrowEl = root.querySelector('.popover-arrow');
-@@ -26732,8 +26734,10 @@ const mdEnterAnimation$1 = (baseEl, opts) => {
+@@ -27069,8 +27071,10 @@ const mdEnterAnimation$1 = (baseEl, opts) => {
      const { event: ev, size, trigger, reference, side, align } = opts;
      const doc = baseEl.ownerDocument;
      const isRTL = doc.dir === 'rtl';
@@ -351,10 +214,10 @@ index 79f3a45..c0920ba 100644
      const contentEl = root.querySelector('.popover-content');
      const referenceSizeEl = trigger || ((_a = ev === null || ev === void 0 ? void 0 : ev.detail) === null || _a === void 0 ? void 0 : _a.ionShadowTarget) || (ev === null || ev === void 0 ? void 0 : ev.target);
 diff --git a/node_modules/@ionic/core/hydrate/index.mjs b/node_modules/@ionic/core/hydrate/index.mjs
-index 4ff4fb0..f05fe59 100644
+index 7dab4fc..08679d7 100644
 --- a/node_modules/@ionic/core/hydrate/index.mjs
 +++ b/node_modules/@ionic/core/hydrate/index.mjs
-@@ -17773,7 +17773,7 @@ class Item {
+@@ -18032,7 +18032,7 @@ class Item {
      // inputs, then those need to individually get each click
      hasCover() {
          const inputs = this.el.querySelectorAll('ion-checkbox, ion-datetime, ion-select, ion-radio');
@@ -363,7 +226,7 @@ index 4ff4fb0..f05fe59 100644
      }
      // If the item has an href or button property it will render a native
      // anchor or button that is clickable
-@@ -26609,8 +26609,10 @@ const iosEnterAnimation$1 = (baseEl, opts) => {
+@@ -26946,8 +26946,10 @@ const iosEnterAnimation$1 = (baseEl, opts) => {
      const { event: ev, size, trigger, reference, side, align } = opts;
      const doc = baseEl.ownerDocument;
      const isRTL = doc.dir === 'rtl';
@@ -376,3 +239,16 @@ index 4ff4fb0..f05fe59 100644
      const root = getElementRoot(baseEl);
      const contentEl = root.querySelector('.popover-content');
      const arrowEl = root.querySelector('.popover-arrow');
+@@ -27067,8 +27069,10 @@ const mdEnterAnimation$1 = (baseEl, opts) => {
+     const { event: ev, size, trigger, reference, side, align } = opts;
+     const doc = baseEl.ownerDocument;
+     const isRTL = doc.dir === 'rtl';
+-    const bodyWidth = doc.defaultView.innerWidth;
+-    const bodyHeight = doc.defaultView.innerHeight;
++    // Patched: use document.body.clientXXX instead of doc.defaultView.innerXXXX because the latter doesn't return the correct
++    // dimensions when the `zoom` CSS property is being used.
++    const bodyWidth = document.body.clientWidth;
++    const bodyHeight = document.body.clientHeight;
+     const root = getElementRoot(baseEl);
+     const contentEl = root.querySelector('.popover-content');
+     const referenceSizeEl = trigger || ((_a = ev === null || ev === void 0 ? void 0 : ev.detail) === null || _a === void 0 ? void 0 : _a.ionShadowTarget) || (ev === null || ev === void 0 ? void 0 : ev.target);
