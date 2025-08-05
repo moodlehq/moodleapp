@@ -36,6 +36,7 @@ import { CoreSiteLogoComponent } from '../../../../components/site-logo/site-log
 import { CoreMainMenuUserButtonComponent } from '../../../mainmenu/components/user-menu-button/user-menu-button';
 import { CoreBlockSideBlocksButtonComponent } from '../../../block/components/side-blocks-button/side-blocks-button';
 import { CoreCoursesMyPageName } from '@features/courses/constants';
+import { ADDON_BLOCK_MYOVERVIEW_BLOCK_NAME } from '@addons/block/myoverview/constants';
 
 /**
  * Page that shows a my courses.
@@ -142,7 +143,8 @@ export default class CoreCoursesMyPage implements OnInit, OnDestroy, AsyncDirect
                 );
 
                 // My overview block should always be in main blocks, but check side blocks too just in case.
-                this.loadedBlock = blocks.mainBlocks.concat(blocks.sideBlocks).find((block) => block.name === 'myoverview');
+                this.loadedBlock = blocks.mainBlocks.concat(blocks.sideBlocks).find((block) =>
+                    block.name === ADDON_BLOCK_MYOVERVIEW_BLOCK_NAME);
                 this.hasSideBlocks = supportsMyParam && CoreBlockDelegate.hasSupportedBlock(blocks.sideBlocks);
 
                 await CoreWait.nextTicks(2);
@@ -176,7 +178,7 @@ export default class CoreCoursesMyPage implements OnInit, OnDestroy, AsyncDirect
      */
     protected loadFallbackBlock(): void {
         this.loadedBlock = {
-            name: 'myoverview',
+            name: ADDON_BLOCK_MYOVERVIEW_BLOCK_NAME,
             visible: true,
         };
     }

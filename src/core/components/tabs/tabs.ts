@@ -35,7 +35,7 @@ import { CoreUpdateNonReactiveAttributesDirective } from '@directives/update-non
  * Example usage:
  *
  * <core-tabs selectedIndex="1">
- *     <core-tab [title]="'core.courses.timeline' | translate" (ionSelect)="switchTab('timeline')">
+ *     <core-tab [title]="'core.courses.tabname' | translate" (ionSelect)="switchTab('tabname')">
  *         <ng-template> <!-- This ng-template is required, @see CoreTabComponent. -->
  *             <!-- Tab contents. -->
  *         </ng-template>
