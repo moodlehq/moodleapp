@@ -37,7 +37,7 @@ import {
 } from '@singletons/events';
 import { CoreNavigator } from '@services/navigator';
 import { CoreRefreshContext, CORE_REFRESH_CONTEXT } from '@/core/utils/refresh-context';
-import { CoreCoursesHelper } from '@features/courses/services/courses-helper';
+import { CoreCourseCompletion } from '@features/course/services/course-completion';
 import { CoreSites } from '@services/sites';
 import { CoreWait } from '@singletons/wait';
 import {
@@ -238,7 +238,7 @@ export default class CoreCourseContentsPage implements OnInit, OnDestroy, CoreRe
         let completionStatus: Record<string, CoreCourseCompletionActivityStatus> = {};
 
         // Get the completion status.
-        if (CoreCoursesHelper.isCompletionEnabledInCourse(this.course)) {
+        if (CoreCourseCompletion.isCompletionEnabledInCourse(this.course)) {
             if (!modules) {
                 modules = CoreCourse.getSectionsModules(sections);
             }
@@ -284,7 +284,7 @@ export default class CoreCourseContentsPage implements OnInit, OnDestroy, CoreRe
     protected async loadCourseFormatOptions(): Promise<void> {
 
         // Load the course format options when course completion is enabled to show completion progress on sections.
-        if (!CoreCoursesHelper.isCompletionEnabledInCourse(this.course)) {
+        if (!CoreCourseCompletion.isCompletionEnabledInCourse(this.course)) {
             return;
         }
 
