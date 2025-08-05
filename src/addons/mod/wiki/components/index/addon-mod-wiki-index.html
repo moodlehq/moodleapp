@@ -2,7 +2,8 @@
 <core-navbar-buttons slot="end">
     <!-- Select subwiki. -->
     @if (subwikiData.count > 1) {
-        <ion-button (click)="showSubwikiPicker($event)" [ariaLabel]="'addon.mod_wiki.subwiki' | translate" aria-haspopup="true">
+        <ion-button fill="clear" (click)="showSubwikiPicker($event)" [ariaLabel]="'addon.mod_wiki.subwiki' | translate"
+            aria-haspopup="true">
             @if (!groupWiki) {
                 <ion-icon name="fas-user" aria-hidden="true" />
             } @else {
@@ -12,7 +13,7 @@
     }
 
     @if (!showLoading && currentPageObj) {
-        <ion-button (click)="openMap()" [ariaLabel]="'addon.mod_wiki.map' | translate" aria-haspopup="true">
+        <ion-button fill="clear" (click)="openMap()" [ariaLabel]="'addon.mod_wiki.map' | translate" aria-haspopup="true">
             <ion-icon name="fas-map" aria-hidden="true" />
         </ion-button>
     }

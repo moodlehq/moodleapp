@@ -113,7 +113,10 @@ export class AddonQtypeOrderingComponent extends CoreQuestionBaseComponent<Addon
      * @param eventDetail Details of the reorder.
      */
     moveItem(eventDetail: ItemReorderEventDetail): void {
-        if (!this.question?.items) {
+        if (!this.question?.items || eventDetail.from === eventDetail.to) {
+            // No change.
+            eventDetail.complete();
+
             return;
         }
 

@@ -191,7 +191,7 @@ jobs:
           for path in `find app/src -path "**/behat/snapshots/*.png"`
           do
               filename=`basename $path`
-              overriden="moodle/local/moodleappbehat/tests/behat/snapshots/$filename"
+              overriden="moodle/public/local/moodleappbehat/tests/behat/snapshots/$filename"
               if ! cmp -s $path $overriden; then
                   cp "$overriden" "snapshots/$filename"
                   echo "Changed snapshot: $filename"
