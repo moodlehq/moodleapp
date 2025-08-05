@@ -29,6 +29,7 @@ import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreAlerts } from '@services/overlays/alerts';
 import { CoreBlockSideBlocksButtonComponent } from '../../../block/components/side-blocks-button/side-blocks-button';
 import { CoreSharedModule } from '@/core/shared.module';
+import { CORE_BLOCKS_DASHBOARD_FALLBACK_BLOCKS } from '@features/block/constants';
 
 /**
  * Page that displays the dashboard page.
@@ -133,18 +134,13 @@ export default class CoreCoursesDashboardPage implements OnInit, OnDestroy {
      * Load fallback blocks to shown before 3.6 when dashboard blocks are not supported.
      */
     protected loadFallbackBlocks(): void {
-        this.blocks = [
-            {
-                name: 'myoverview',
-                visible: true,
-            },
-            {
-                name: 'timeline',
-                visible: true,
-            },
-        ];
+        this.blocks = CORE_BLOCKS_DASHBOARD_FALLBACK_BLOCKS.map((blockName) => ({
+            name: blockName,
+            visible: true,
+        }));
 
-        this.hasMainBlocks = CoreBlockDelegate.isBlockSupported('myoverview') || CoreBlockDelegate.isBlockSupported('timeline');
+        this.hasMainBlocks = CORE_BLOCKS_DASHBOARD_FALLBACK_BLOCKS.some((blockName) =>
+            CoreBlockDelegate.isBlockSupported(blockName));
     }
 
     /**
