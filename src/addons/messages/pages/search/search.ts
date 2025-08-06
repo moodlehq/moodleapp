@@ -115,7 +115,7 @@ export default class AddonMessagesSearchPage implements OnDestroy {
     /**
      * Clear search.
      */
-    clearSearch(): void {
+    protected clearSearch(): void {
         this.query = '';
         this.displayResults = false;
 
@@ -135,6 +135,12 @@ export default class AddonMessagesSearchPage implements OnDestroy {
      * @returns Resolved when done.
      */
     async search(query: string, loadMore?: 'contacts' | 'noncontacts' | 'messages', infiniteComplete?: () => void): Promise<void> {
+        if (query.trim() === '') {
+            this.clearSearch();
+
+            return;
+        }
+
         CoreKeyboard.close();
 
         this.query = query;

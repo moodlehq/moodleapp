@@ -44,7 +44,7 @@ import { CoreSearchBoxComponent } from '../../../search/components/search-box/se
 export default class CoreTagSearchPage implements OnInit {
 
     collectionId!: number;
-    query!: string;
+    query = '';
     collections: CoreTagCollection[] = [];
     cloud?: CoreTagCloud;
     loaded = false;
@@ -66,7 +66,7 @@ export default class CoreTagSearchPage implements OnInit {
     }
 
     /**
-     * View loaded.
+     * @inheritdoc
      */
     ngOnInit(): void {
         this.collectionId = CoreNavigator.getRouteNumberParam('collectionId') || 0;

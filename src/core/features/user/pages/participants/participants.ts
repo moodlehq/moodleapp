@@ -97,7 +97,7 @@ export default class CoreUserParticipantsPage implements OnInit, AfterViewInit, 
     /**
      * Clear search.
      */
-    async clearSearch(): Promise<void> {
+    protected async clearSearch(): Promise<void> {
         if (this.searchQuery === null) {
             // Nothing to clear.
             return;
@@ -118,6 +118,12 @@ export default class CoreUserParticipantsPage implements OnInit, AfterViewInit, 
      * @param query Text to search for.
      */
     async search(query: string): Promise<void> {
+        if (query.trim() === '') {
+            this.clearSearch();
+
+            return;
+        }
+
         CoreKeyboard.close();
 
         const newSource = CoreRoutedItemsManagerSourcesTracker.getOrCreateSource(
