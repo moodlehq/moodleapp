@@ -18,7 +18,7 @@
     <ion-grid class="safe-area-padding">
         <ion-row class="ion-no-padding ion-wrap">
             <ion-col class="ion-no-padding" size="12" size-sm="6" [attr.col-sm-6]="collections && collections.length > 1 ? '' : null">
-                <core-search-box (onSubmit)="searchTags($event)" (onClear)="searchTags('')" [initialSearch]="query" [disabled]="searching"
+                <core-search-box (searchTextChange)="searchTags($event)" [searchText]="query" [disabled]="searching"
                     autocorrect="off" [spellcheck]="false" [autoFocus]="false" [lengthCheck]="1" searchArea="CoreTag" />
             </ion-col>
             @if (collections && collections.length > 1) {

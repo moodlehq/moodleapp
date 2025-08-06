@@ -443,6 +443,12 @@ export class AddonModGlossaryIndexComponent extends CoreCourseModuleMainActivity
      * @param query Text entered on the search box.
      */
     search(query: string): void {
+        if (query.trim() === '') {
+            this.toggleSearch();
+
+            return;
+        }
+
         this.loadingMessage = Translate.instant('core.searching');
         this.showLoading = true;
         this.logSearch = CoreTime.once(() => this.performLogSearch(query));

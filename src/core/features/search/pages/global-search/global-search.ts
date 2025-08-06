@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit, OnDestroy, AfterViewInit, ViewChild } from '@angular/core';
+import { Component, OnInit, OnDestroy, AfterViewInit } from '@angular/core';
 import { CoreSearchGlobalSearchResultsSource } from '@features/search/classes/global-search-results-source';
 import { CoreSites } from '@services/sites';
 import { CoreUtils } from '@singletons/utils';
@@ -53,8 +53,7 @@ export default class CoreSearchGlobalSearchPage implements OnInit, OnDestroy, Af
     searchBanner: string | null = null;
     resultsSource = new CoreSearchGlobalSearchResultsSource('', {});
     private filtersObserver?: CoreEventObserver;
-
-    @ViewChild(CoreSearchBoxComponent) searchBox?: CoreSearchBoxComponent;
+    searchText = '';
 
     /**
      * @inheritdoc
@@ -86,9 +85,7 @@ export default class CoreSearchGlobalSearchPage implements OnInit, OnDestroy, Af
         const query = CoreNavigator.getRouteParam('query');
 
         if (query) {
-            if (this.searchBox) {
-                this.searchBox.searchText = query;
-            }
+            this.searchText = query;
 
             this.search(query);
         }
@@ -107,6 +104,12 @@ export default class CoreSearchGlobalSearchPage implements OnInit, OnDestroy, Af
      * @param query Search query.
      */
     async search(query: string): Promise<void> {
+        if (query.trim() === '') {
+            this.clearSearch();
+
+            return;
+        }
+
         this.resultsSource.setQuery(query);
 
         if (this.resultsSource.hasEmptyQuery()) {
@@ -137,7 +140,7 @@ export default class CoreSearchGlobalSearchPage implements OnInit, OnDestroy, Af
     /**
      * Clear search results.
      */
-    clearSearch(): void {
+    protected clearSearch(): void {
         this.loadMoreError = false;
 
         this.resultsSource.setQuery('');
