@@ -1,0 +1,18 @@
+@use "theme/globals" as *;
+
+:host {
+    p {
+        margin-top: 8px;
+        margin-bottom: 8px;
+    }
+
+    p.item-heading {
+        font-weight: bold;
+    }
+
+    .core-course-overview-item-name-error {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+}

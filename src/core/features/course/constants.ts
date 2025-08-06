@@ -15,6 +15,7 @@
 export const CORE_COURSE_INDEX_PATH = ':courseId';
 export const CORE_COURSE_PAGE_NAME = 'course';
 export const CORE_COURSE_CONTENTS_PAGE_NAME = 'contents';
+export const CORE_COURSE_OVERVIEW_PAGE_NAME = 'overview';
 export const CORE_COURSE_CONTENTS_PATH = `${CORE_COURSE_PAGE_NAME}/${CORE_COURSE_INDEX_PATH}/${CORE_COURSE_CONTENTS_PAGE_NAME}`;
 
 export const CORE_COURSE_ALL_SECTIONS_PREFERRED_PREFIX = 'CoreCourseFormatAllSectionsPreferred-';
@@ -31,6 +32,8 @@ export const CORE_COURSE_AUTO_SYNCED = 'core_course_autom_synced';
 export const COURSE_STATUS_CHANGED_EVENT = 'course_status_changed';
 
 export const CORE_COURSE_COMPONENT = 'CoreCourse';
+
+export const CORE_COURSE_OVERVIEW_OPTION_NAME = 'CoreCourseOverview';
 
 export const CORE_COURSE_CORE_MODULES = [
     'assign', 'bigbluebuttonbn', 'book', 'chat', 'choice', 'data', 'feedback', 'folder', 'forum', 'glossary', 'h5pactivity',
@@ -65,3 +68,15 @@ export const CoreCourseAccessDataType = {
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export type CoreCourseAccessDataType = typeof CoreCourseAccessDataType[keyof typeof CoreCourseAccessDataType];
+
+/**
+ * Core content types used in course overview and supported by the app by default.
+ */
+export const enum CoreCourseOverviewContentType {
+    BASIC = 'basic',
+    ACTIVITY_NAME = 'core_courseformat\\output\\local\\overview\\activityname',
+    CM_COMPLETION = 'core_courseformat\\output\\local\\content\\cm\\completion',
+    HUMAN_DATE = 'core_calendar\\output\\humandate',
+    ACTION_LINK = 'core\\output\\action_link',
+    OVERVIEW_DIALOG = 'core_courseformat\\output\\local\\overview\\overviewdialog',
+};

@@ -19,7 +19,7 @@ import {
     AddonMessagesMessagePreferencesNotificationProcessor,
     AddonMessages,
 } from '../../services/messages';
-import { CoreUser } from '@features/user/services/user';
+import { CoreUserPreferences } from '@features/user/services/user-preferences';
 import { CoreConfig } from '@services/config';
 import { CoreEvents } from '@singletons/events';
 import { CoreSites } from '@services/sites';
@@ -157,7 +157,7 @@ export default class AddonMessagesSettingsPage implements OnInit, OnDestroy {
         const modal = await CoreLoadings.show('core.sending', true);
 
         try {
-            await CoreUser.updateUserPreference('message_blocknoncontacts', String(value));
+            await CoreUserPreferences.setPreferenceOnline('message_blocknoncontacts', String(value));
             // Update the preferences since they were modified.
             this.updatePreferencesAfterDelay();
             this.previousContactableValue = this.contactablePrivacy;
@@ -195,10 +195,10 @@ export default class AddonMessagesSettingsPage implements OnInit, OnDestroy {
 
         const promises: Promise<void>[] = [];
         if (this.loggedInOffLegacyMode) {
-            promises.push(CoreUser.updateUserPreference(`${notification.preferencekey}_loggedin`, value));
-            promises.push(CoreUser.updateUserPreference(`${notification.preferencekey}_loggedoff`, value));
+            promises.push(CoreUserPreferences.setPreferenceOnline(`${notification.preferencekey}_loggedin`, value));
+            promises.push(CoreUserPreferences.setPreferenceOnline(`${notification.preferencekey}_loggedoff`, value));
         }  else {
-            promises.push(CoreUser.updateUserPreference(`${notification.preferencekey}_enabled`, value));
+            promises.push(CoreUserPreferences.setPreferenceOnline(`${notification.preferencekey}_enabled`, value));
         }
 
         try {

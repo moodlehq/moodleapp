@@ -85,7 +85,7 @@ export default class CoreCourseModulePreviewPage implements OnInit {
             this.module = await CoreCourse.getModule(this.module.id, this.courseId);
         }
 
-        await CoreCourseHelper.loadModuleOfflineCompletion(this.courseId, this.module);
+        this.module.completiondata = await CoreCourseHelper.loadOfflineCompletionData(this.module.id, this.module.completiondata);
 
         this.unsupported = !CoreCourseModuleDelegate.getHandlerName(this.module.modname);
         if (!this.unsupported) {
