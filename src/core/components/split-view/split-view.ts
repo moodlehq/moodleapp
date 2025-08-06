@@ -20,6 +20,7 @@ import { BehaviorSubject, Observable, Subscription } from 'rxjs';
 import { CoreBaseModule } from '@/core/base.module';
 import { CoreEmptyBoxComponent } from '../empty-box/empty-box';
 import { CoreContentDirective } from '@directives/content';
+import { CoreDirectivesRegistry } from '@singletons/directives-registry';
 
 export enum CoreSplitViewMode {
     MENU_ONLY = 'menu-only', // Hides content.
@@ -51,6 +52,10 @@ export class CoreSplitViewComponent implements AfterViewInit, OnDestroy {
     private outletRouteSubject = new BehaviorSubject<ActivatedRouteSnapshot | null>(null);
     private subscriptions?: Subscription[];
     protected element: HTMLElement = inject(ElementRef).nativeElement;
+
+    constructor() {
+        CoreDirectivesRegistry.register(this.element, this);
+    }
 
     get outletRoute(): ActivatedRouteSnapshot | null {
         return this.outletRouteSubject.value;
