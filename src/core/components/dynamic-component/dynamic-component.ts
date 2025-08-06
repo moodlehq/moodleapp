@@ -89,6 +89,7 @@ export class CoreDynamicComponent<ComponentClass> implements OnChanges, DoCheck,
     protected lastComponent?: Type<unknown>;
     protected cdr = inject(ChangeDetectorRef);
     protected element: HTMLElement = inject(ElementRef).nativeElement;
+    protected componentRef?: ComponentRef<ComponentClass>;
 
     get instance(): any { // eslint-disable-line @typescript-eslint/no-explicit-any
         return this.promisedInstance.value;
@@ -184,6 +185,7 @@ export class CoreDynamicComponent<ComponentClass> implements OnChanges, DoCheck,
         if (this.component instanceof ComponentRef) {
             // A ComponentRef was supplied instead of the component class. Add it to the view.
             this.container.insert(this.component.hostView);
+            this.componentRef = this.component;
 
             // This feature is usually meant for site plugins. Inject some properties.
             this.component.instance['ChangeDetectorRef'] = this.cdr;
@@ -193,9 +195,9 @@ export class CoreDynamicComponent<ComponentClass> implements OnChanges, DoCheck,
         } else {
             try {
                 // Create the component and add it to the container.
-                const componentRef = this.container.createComponent(this.component);
+                this.componentRef = this.container.createComponent(this.component);
 
-                this.promisedInstance.resolve(componentRef.instance);
+                this.promisedInstance.resolve(this.componentRef.instance);
             } catch (ex) {
                 this.logger.error('Error creating component', ex);
 
@@ -212,12 +214,12 @@ export class CoreDynamicComponent<ComponentClass> implements OnChanges, DoCheck,
      * Set the input data for the component.
      */
     protected setInputData(): void {
-        if (!this.instance) {
+        if (!this.componentRef) {
             return;
         }
 
         for (const name in this.data) {
-            this.instance[name] = this.data[name];
+            this.componentRef.setInput(name, this.data[name]);
         }
     }
 

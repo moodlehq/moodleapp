@@ -14,11 +14,9 @@
 
 import { Injectable } from '@angular/core';
 
-import { CoreNetwork } from '@services/network';
 import { CoreFilepool } from '@services/filepool';
 import { CoreSites } from '@services/sites';
 import { CoreCountries } from '@singletons/countries';
-import { CoreUserOffline } from './user-offline';
 import { CoreLogger } from '@singletons/logger';
 import { CoreSite } from '@classes/sites/site';
 import { makeSingleton, Translate } from '@singletons';
@@ -28,10 +26,15 @@ import { CoreError } from '@classes/errors/error';
 import { USERS_TABLE_NAME, CoreUserDBRecord } from './database/user';
 import { CoreUrl } from '@singletons/url';
 import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
-import { CoreCacheUpdateFrequency, CoreConstants } from '@/core/constants';
+import { CoreCacheUpdateFrequency } from '@/core/constants';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreTextFormat } from '@singletons/text';
-import { CORE_USER_PROFILE_REFRESHED, CORE_USER_PROFILE_PICTURE_UPDATED, CORE_USER_PARTICIPANTS_LIST_LIMIT } from '../constants';
+import {
+    CORE_USER_PROFILE_REFRESHED,
+    CORE_USER_PROFILE_PICTURE_UPDATED,
+    CORE_USER_PARTICIPANTS_LIST_LIMIT,
+} from '../constants';
+import { CoreUserPreferences } from './user-preferences';
 
 declare module '@singletons/events' {
 
@@ -271,18 +274,10 @@ export class CoreUserProvider {
      * Get the starting week day based on the user preference.
      *
      * @returns Starting week day.
+     * @deprecated since 5.1. Use CoreUserPreferences.getStartingWeekDay instead.
      */
     async getStartingWeekDay(): Promise<number> {
-        const preference = await CorePromiseUtils.ignoreErrors(this.getUserPreference('calendar_startwday'));
-
-        if (preference && !isNaN(Number(preference))) {
-            return Number(preference);
-        }
-
-        const defaultValue = Number(CoreSites.getCurrentSite()?.getStoredConfig('calendar_startwday') ??
-            Translate.instant('core.firstdayofweek'));
-
-        return !isNaN(defaultValue) ? defaultValue % 7 : CoreConstants.CALENDAR_DEFAULT_STARTING_WEEKDAY;
+        return CoreUserPreferences.getStartingWeekDay();
     }
 
     /**
@@ -393,41 +388,10 @@ export class CoreUserProvider {
      * @param name Name of the preference.
      * @param siteId Site Id. If not defined, use current site.
      * @returns Preference value or null if preference not set.
+     * @deprecated since 5.1. Use CoreUserPreferences.getPreference instead.
      */
     async getUserPreference(name: string, siteId?: string): Promise<string | null> {
-        siteId = siteId || CoreSites.getCurrentSiteId();
-
-        const preference = await CorePromiseUtils.ignoreErrors(CoreUserOffline.getPreference(name, siteId));
-
-        if (preference && !CoreNetwork.isOnline()) {
-            // Offline, return stored value.
-            return preference.value;
-        }
-
-        const wsValue = await this.getUserPreferenceOnline(name, siteId);
-
-        if (preference && preference.value != preference.onlinevalue && preference.onlinevalue == wsValue) {
-            // Sync is pending for this preference, return stored value.
-            return preference.value;
-        }
-
-        if (!wsValue) {
-            return null;
-        }
-
-        await CoreUserOffline.setPreference(name, wsValue, wsValue);
-
-        return wsValue;
-    }
-
-    /**
-     * Get cache key for a user preference WS call.
-     *
-     * @param name Preference name.
-     * @returns Cache key.
-     */
-    protected getUserPreferenceCacheKey(name: string): string {
-        return `${CoreUserProvider.ROOT_CACHE_KEY}preference:${name}`;
+        return CoreUserPreferences.getPreference(name, siteId);
     }
 
     /**
@@ -436,21 +400,10 @@ export class CoreUserProvider {
      * @param name Name of the preference.
      * @param siteId Site Id. If not defined, use current site.
      * @returns Preference value or null if preference not set.
+     * @deprecated since 5.1. Use CoreUserPreferences.getPreferenceOnline instead.
      */
     async getUserPreferenceOnline(name: string, siteId?: string): Promise<string | null> {
-        const site = await CoreSites.getSite(siteId);
-
-        const params: CoreUserGetUserPreferencesWSParams = {
-            name,
-        };
-        const preSets: CoreSiteWSPreSets = {
-            cacheKey: this.getUserPreferenceCacheKey(name),
-            updateFrequency: CoreCacheUpdateFrequency.SOMETIMES,
-        };
-
-        const result = await site.read<CoreUserGetUserPreferencesWSResponse>('core_user_get_user_preferences', params, preSets);
-
-        return result.preferences[0] ? result.preferences[0].value : null;
+        return CoreUserPreferences.getPreferenceOnline(name, siteId);
     }
 
     /**
@@ -483,11 +436,10 @@ export class CoreUserProvider {
      *
      * @param name Name of the preference.
      * @param siteId Site Id. If not defined, use current site.
+     * @deprecated since 5.1. Use CoreUserPreferences.invalidatePreference instead.
      */
     async invalidateUserPreference(name: string, siteId?: string): Promise<void> {
-        const site = await CoreSites.getSite(siteId);
-
-        await site.invalidateWsCacheForKey(this.getUserPreferenceCacheKey(name));
+        await CoreUserPreferences.invalidatePreference(name, siteId);
     }
 
     /**
@@ -744,33 +696,10 @@ export class CoreUserProvider {
      * @param name Name of the preference.
      * @param value Value of the preference.
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved on success.
+     * @deprecated since 5.1. Use CoreUserPreferences.setPreference instead.
      */
     async setUserPreference(name: string, value: string, siteId?: string): Promise<void> {
-        siteId = siteId || CoreSites.getCurrentSiteId();
-
-        if (!CoreNetwork.isOnline()) {
-            // Offline, just update the preference.
-            return CoreUserOffline.setPreference(name, value);
-        }
-
-        try {
-            // Update the preference in the site.
-            const preferences = [
-                { type: name, value },
-            ];
-
-            await this.updateUserPreferences(preferences, undefined, undefined, siteId);
-
-            // Update preference and invalidate data.
-            await Promise.all([
-                CoreUserOffline.setPreference(name, value, value),
-                CorePromiseUtils.ignoreErrors(this.invalidateUserPreference(name)),
-            ]);
-        } catch {
-            // Preference not saved online. Update the offline one.
-            await CoreUserOffline.setPreference(name, value);
-        }
+        await CoreUserPreferences.setPreference(name, value, siteId);
     }
 
     /**
@@ -780,17 +709,10 @@ export class CoreUserProvider {
      * @param value Preference new value.
      * @param userId User ID. If not defined, site's current user.
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved if success.
+     * @deprecated since 5.1. Use CoreUserPreferences.setPreferenceOnline instead.
      */
-    updateUserPreference(name: string, value: string | undefined, userId?: number, siteId?: string): Promise<void> {
-        const preferences = [
-            {
-                type: name,
-                value: value,
-            },
-        ];
-
-        return this.updateUserPreferences(preferences, undefined, userId, siteId);
+    async updateUserPreference(name: string, value: string | undefined, userId?: number, siteId?: string): Promise<void> {
+        await CoreUserPreferences.setPreferenceOnline(name, value, userId, siteId);
     }
 
     /**
@@ -800,7 +722,7 @@ export class CoreUserProvider {
      * @param disableNotifications Whether to disable all notifications. Undefined to not update this value.
      * @param userId User ID. If not defined, site's current user.
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved if success.
+     * @deprecated since 5.1. Use CoreUserPreferences.setPreferencesOnline instead.
      */
     async updateUserPreferences(
         preferences: { type: string; value: string | undefined }[],
@@ -808,23 +730,7 @@ export class CoreUserProvider {
         userId?: number,
         siteId?: string,
     ): Promise<void> {
-        const site = await CoreSites.getSite(siteId);
-
-        userId = userId || site.getUserId();
-
-        const params: CoreUserUpdateUserPreferencesWSParams = {
-            userid: userId,
-            preferences: preferences,
-        };
-        const preSets: CoreSiteWSPreSets = {
-            responseExpected: false,
-        };
-
-        if (disableNotifications !== undefined) {
-            params.emailstop = disableNotifications ? 1 : 0;
-        }
-
-        await site.write('core_user_update_user_preferences', params, preSets);
+        await CoreUserPreferences.setPreferencesOnline(preferences, disableNotifications, userId, siteId);
     }
 
 }
@@ -1076,25 +982,6 @@ type CoreUserGetUsersByFieldWSParams = {
 type CoreUserGetUsersByFieldWSResponse = CoreUserDescriptionExporter[];
 
 /**
- * Params of core_user_get_user_preferences WS.
- */
-type CoreUserGetUserPreferencesWSParams = {
-    name?: string; // Preference name, empty for all.
-    userid?: number; // Id of the user, default to current user.
-};
-
-/**
- * Data returned by core_user_get_user_preferences WS.
- */
-type CoreUserGetUserPreferencesWSResponse = {
-    preferences: { // User custom fields (also known as user profile fields).
-        name: string; // The name of the preference.
-        value: string | null; // The value of the preference.
-    }[];
-    warnings?: CoreWSExternalWarning[];
-};
-
-/**
  * Params of core_user_view_user_list WS.
  */
 type CoreUserViewUserListWSParams = {
@@ -1107,18 +994,6 @@ type CoreUserViewUserListWSParams = {
 type CoreUserViewUserProfileWSParams = {
     userid: number; // Id of the user, 0 for current user.
     courseid?: number; // Id of the course, default site course.
-};
-
-/**
- * Params of core_user_update_user_preferences WS.
- */
-type CoreUserUpdateUserPreferencesWSParams = {
-    userid?: number; // Id of the user, default to current user.
-    emailstop?: number; // Enable or disable notifications for this user.
-    preferences?: { // User preferences.
-        type: string; // The name of the preference.
-        value?: string; // The value of the preference, do not set this field if you want to remove (unset) the current value.
-    }[];
 };
 
 /**

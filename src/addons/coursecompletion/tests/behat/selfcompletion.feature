@@ -23,7 +23,8 @@ Feature: Student should be able to complete a course with self completion enable
 
   Scenario: Manually complete the course
     Given I entered the course "Course 1" as "student1" in the app
-    When I press "Completion" in the app
+    And I press "Next" within "Course" "ion-tab-bar" in the app
+    And I press "Completion" in the app
     Then I should find "Not yet started" within "Status" "ion-item" in the app
     And I should find "Marking yourself complete" in the app
     And I should find "No" within "Self completion" "ion-item" in the app

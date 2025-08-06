@@ -23,7 +23,7 @@ import { USER_PREFERENCES_TABLE_NAME, CoreUserPreferenceDBRecord } from './datab
  * Service to handle offline user preferences.
  */
 @Injectable({ providedIn: 'root' })
-export class CoreUserOfflineProvider {
+export class CoreUserPreferencesOfflineService {
 
     /**
      * Get preferences that were changed offline.
@@ -86,4 +86,4 @@ export class CoreUserOfflineProvider {
 
 }
 
-export const CoreUserOffline = makeSingleton(CoreUserOfflineProvider);
+export const CoreUserPreferencesOffline = makeSingleton(CoreUserPreferencesOfflineService);

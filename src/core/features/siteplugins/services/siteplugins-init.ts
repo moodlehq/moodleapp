@@ -89,6 +89,7 @@ import { CoreEnrolAction, CoreEnrolDelegate } from '@features/enrol/services/enr
 import { CoreSitePluginsEnrolHandler } from '../classes/handlers/enrol-handler';
 import { CORE_SITE_PLUGINS_COMPONENT } from '../constants';
 import { CORE_COURSES_MY_COURSES_CHANGED_EVENT } from '@features/courses/constants';
+import { CoreSitePluginsBaseHandler } from '../classes/handlers/base-handler';
 
 /**
  * Helper service to provide functionalities regarding site plugins. It basically has the features to load and register site
@@ -598,18 +599,7 @@ export class CoreSitePluginsInitService {
             handlerSchema.methodJSResult = result.jsResult;
             handlerSchema.methodOtherdata = result.otherdata;
 
-            if (result.jsResult) {
-                // Override default handler functions with the result of the method JS.
-                const jsResult = <Record<string, unknown>> result.jsResult;
-                const handlerProperties = CoreObject.getAllPropertyNames(handler);
-
-                for (const property of handlerProperties) {
-                    if (property !== 'constructor' && typeof handler[property] === 'function' &&
-                            typeof jsResult[property] === 'function') {
-                        handler[property] = (<Function> jsResult[property]).bind(handler);
-                    }
-                }
-            }
+            this.overrideHandlerFunctions(handler, result);
 
             delegate.registerHandler(handler);
 
@@ -821,18 +811,7 @@ export class CoreSitePluginsInitService {
                 return;
             }
 
-            if (result.jsResult) {
-                // Override default handler functions with the result of the method JS.
-                const jsResult = <Record<string, unknown>> result.jsResult;
-                const handlerProperties = CoreObject.getAllPropertyNames(handler);
-
-                for (const property of handlerProperties) {
-                    if (property !== 'constructor' && typeof handler[property] === 'function' &&
-                            typeof jsResult[property] === 'function') {
-                        handler[property] = (<Function> jsResult[property]).bind(handler);
-                    }
-                }
-            }
+            this.overrideHandlerFunctions(handler, result);
         }
 
         CoreEnrolDelegate.registerHandler(handler);
@@ -1238,6 +1217,33 @@ export class CoreSitePluginsInitService {
         );
 
         return uniqueName;
+    }
+
+    /**
+     * Override some functions in a handler with the result of the JS returned by a get_content call.
+     *
+     * @param handler Handler to override.
+     * @param result Result of the get_content call.
+     */
+    protected overrideHandlerFunctions(handler: CoreSitePluginsBaseHandler, result: CoreSitePluginsContent | null): void {
+        if (!result || !result.jsResult) {
+            // No JS result, nothing to do.
+            return;
+        }
+
+        // Override default handler functions with the result of the method JS.
+        const jsResult = <Record<string, unknown>> result.jsResult;
+        const handlerProperties = CoreObject.getAllPropertyNames(handler);
+
+        for (const property of handlerProperties) {
+            if (
+                property !== 'constructor' &&
+                typeof handler[property] === 'function' &&
+                typeof jsResult[property] === 'function'
+            ) {
+                handler[property] = (<Function> jsResult[property]).bind(handler);
+            }
+        }
     }
 
 }
