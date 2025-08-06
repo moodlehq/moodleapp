@@ -4,7 +4,7 @@
     </ion-label>
 </ion-item-divider>
 <core-loading [hideUntil]="loaded" placeholderType="column" placeholderHeight="120px" [placeholderLimit]="1">
-    @if ((search$ | async) !== null) {
+    @if (search() !== null) {
         <ion-row class="ion-hide-md-up addon-block-timeline-filter">
             <ion-col>
                 <!-- Filter courses. -->
@@ -16,21 +16,25 @@
     }
     <ion-row class="ion-justify-content-between ion-align-items-center addon-block-timeline-filter">
         <ion-col size="auto">
-            <core-combobox [formControl]="filter" (selectionChange)="filterChanged($event)"
+            <core-combobox [formControl]="filterFormControl" (selectionChange)="filterChanged($event)"
                 [label]="'addon.block_timeline.ariadayfilter' | translate">
-                <ion-select-option *ngFor="let option of statusFilterOptions; last as last"
-                    [attr.class]="'ion-text-wrap' + last ? ' core-select-option-border-bottom' : ''" [value]="option.value">
-                    {{ option.name | translate }}
-                </ion-select-option>
+                @for (option of statusFilterOptions; let last = $last; track option.value) {
+                    <ion-select-option
+                        [attr.class]="'ion-text-wrap' + last ? ' core-select-option-border-bottom' : ''" [value]="option.value">
+                        {{ option.name | translate }}
+                    </ion-select-option>
+                }
                 <ion-select-option class="ion-text-wrap core-select-option-title" disabled value="disabled">
                     {{ 'addon.block_timeline.duedate' | translate }}
                 </ion-select-option>
-                <ion-select-option *ngFor="let option of dateFilterOptions" class="ion-text-wrap" [value]="option.value">
-                    {{ option.name | translate }}
-                </ion-select-option>
+                @for (option of dateFilterOptions; track option.value) {
+                    <ion-select-option class="ion-text-wrap" [value]="option.value">
+                        {{ option.name | translate }}
+                    </ion-select-option>
+                }
             </core-combobox>
         </ion-col>
-        @if ((search$ | async) !== null) {
+        @if (search() !== null) {
             <ion-col class="ion-hide-md-down">
                 <!-- Filter courses. -->
                 <core-search-box (onSubmit)="searchChanged($event)" (onClear)="searchChanged('')"
@@ -39,25 +43,23 @@
             </ion-col>
         }
         <ion-col size="auto">
-            <core-combobox [label]="'core.sortby' | translate" [formControl]="sort" (selectionChange)="sortChanged($event)"
+            <core-combobox [label]="'core.sortby' | translate" [formControl]="sortFormControl" (selectionChange)="sortChanged($event)"
                 icon="fas-arrow-down-short-wide" class="no-border">
-                <ion-select-option *ngFor="let option of sortOptions" class="ion-text-wrap" [value]="option.value">
-                    {{ option.name | translate }}
-                </ion-select-option>
+                @for (option of sortOptions; track option.value) {
+                    <ion-select-option class="ion-text-wrap" [value]="option.value">
+                        {{ option.name | translate }}
+                    </ion-select-option>
+                }
             </core-combobox>
         </ion-col>
     </ion-row>
-    @if (sections$ | async; as sections) {
-        @for (section of sections; track section.course?.id || section.dateRange.from) {
-            @if (section.data$ | async; as data) {
-                <addon-block-timeline-events [events]="data.events" [showInlineCourse]="(sort$ | async) === AddonBlockTimelineSort.ByDates"
-                    [canLoadMore]="data.canLoadMore" [loadingMore]="data.loadingMore" (loadMore)="section.loadMore()"
-                    [course]="section.course" />
-            }
+    @for (section of sections(); track section.course?.id || section.dateRange.from) {
+        @if (section) {
+            <addon-block-timeline-events [events]="section.events()" [showInlineCourse]="sort() === AddonBlockTimelineSort.ByDates"
+                [canLoadMore]="section.canLoadMore()" [loadingMore]="section.loadingMore()" (loadMore)="section.loadMore()"
+                [course]="section.course" />
         }
-        @if (sections && sections.length === 0) {
-            <core-empty-box image="assets/img/icons/courses.svg" [message]="'addon.block_timeline.noevents' | translate" />
-        }
-
+    } @empty {
+        <core-empty-box image="assets/img/icons/courses.svg" [message]="'addon.block_timeline.noevents' | translate" />
     }
 </core-loading>

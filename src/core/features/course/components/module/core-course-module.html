@@ -5,7 +5,6 @@
         [class.ion-activatable]="module.handlerData.action && module.uservisible"
         [attr.aria-label]="module.handlerData.a11yTitle ? module.handlerData.a11yTitle : null" id="core-course-module-{{module.id}}">
         @if (!module.handlerData.loading) {
-
             <ion-item class="ion-text-wrap">
                 <ion-label>
                     <div class="activity-main">
@@ -137,10 +136,8 @@
                 <ion-ripple-effect />
             }
 
-        }
-
-        <!-- Loading. -->
-        @if (module.handlerData.loading) {
+        } @else {
+            <!-- Loading. Normally used in site plugins. -->
             <ion-item role="status" class="ion-text-wrap core-module-loading" [attr.aria-label]="module.handlerData.a11yTitle"
                 [detail]="false">
                 <ion-label>

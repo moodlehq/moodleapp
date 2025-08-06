@@ -12,78 +12,59 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { AddonBlockTimeline } from '@addons/block/timeline/services/timeline';
+import { AddonBlockTimeline, AddonBlockTimelineActionEvents } from '@addons/block/timeline/services/timeline';
 import { AddonCalendarEvent } from '@addons/calendar/services/calendar';
+import { signal } from '@angular/core';
 import { CoreCourseModuleHelper } from '@features/course/services/course-module-helper';
 import { CoreCourseModuleDelegate } from '@features/course/services/module-delegate';
 import { CoreEnrolledCourseDataWithOptions } from '@features/courses/services/courses-helper';
 import { CoreTime } from '@singletons/time';
-import { BehaviorSubject, Observable } from 'rxjs';
 
 /**
  * A collection of events displayed in the timeline block.
  */
 export class AddonBlockTimelineSection {
 
-    search: string | null;
-    overdue: boolean;
-    dateRange: AddonBlockTimelineDateRange;
-    course?: CoreEnrolledCourseDataWithOptions;
-
-    private dataSubject$: BehaviorSubject<AddonBlockTimelineSectionData>;
+    readonly events = signal<AddonBlockTimelineDayEvents[]>([]);
+    readonly lastEventId = signal<number | undefined>(undefined);
+    readonly canLoadMore = signal(false);
+    readonly loadingMore = signal(false);
 
     constructor(
-        search: string | null,
-        overdue: boolean,
-        dateRange: AddonBlockTimelineDateRange,
-        course?: CoreEnrolledCourseDataWithOptions,
-        courseEvents?: AddonCalendarEvent[],
-        canLoadMore?: number,
+        public search: string,
+        public overdue: boolean,
+        public dateRange: AddonBlockTimelineDateRange,
+        public course?: CoreEnrolledCourseDataWithOptions,
     ) {
-        this.search = search;
-        this.overdue = overdue;
-        this.dateRange = dateRange;
-        this.course = course;
-        this.dataSubject$ = new BehaviorSubject<AddonBlockTimelineSectionData>({
-            events: [],
-            lastEventId: canLoadMore,
-            canLoadMore: typeof canLoadMore !== 'undefined',
-            loadingMore: false,
-        });
-
-        if (courseEvents) {
-            // eslint-disable-next-line promise/catch-or-return
-            this.reduceEvents(courseEvents, overdue, dateRange).then(events => this.dataSubject$.next({
-                ...this.dataSubject$.value,
-                events,
-            }));
-        }
-    }
-
-    get data$(): Observable<AddonBlockTimelineSectionData> {
-        return this.dataSubject$;
     }
 
     /**
      * Load more events.
      */
     async loadMore(): Promise<void> {
-        this.dataSubject$.next({
-            ...this.dataSubject$.value,
-            loadingMore: true,
-        });
+        this.loadingMore.set(true);
 
-        const lastEventId = this.dataSubject$.value.lastEventId;
-        const { events, canLoadMore } = this.course
-            ? await AddonBlockTimeline.getActionEventsByCourse(this.course.id, lastEventId, this.search ?? '')
-            : await AddonBlockTimeline.getActionEventsByTimesort(lastEventId, this.search ?? '');
+        const result = this.course
+            ? await AddonBlockTimeline.getActionEventsByCourse(this.course.id, this.lastEventId(), this.search)
+            : await AddonBlockTimeline.getActionEventsByTimesort(this.lastEventId(), this.search);
 
-        this.dataSubject$.next({
-            events: this.dataSubject$.value.events.concat(await this.reduceEvents(events, this.overdue, this.dateRange)),
-            lastEventId: canLoadMore,
-            canLoadMore: canLoadMore !== undefined,
-            loadingMore: false,
-        });
+        await this.addEvents(result);
+    }
+
+    /**
+     * Add events to the section.
+     *
+     * @param actionEvents Action events object with events to be added and additional info.
+     */
+    async addEvents(actionEvents: AddonBlockTimelineActionEvents): Promise<void> {
+        const { events, lastEventId, canLoadMore } = actionEvents;
+
+        const newEvents = await this.reduceEvents(events, this.overdue, this.dateRange);
+
+        this.events.update((events) => events.concat(newEvents));
+        this.lastEventId.set(lastEventId);
+        this.canLoadMore.set(canLoadMore);
+        this.loadingMore.set(false);
     }
 
     /**
@@ -176,16 +157,6 @@ export class AddonBlockTimelineSection {
     }
 
 }
-
-/**
- * Section data.
- */
-export type AddonBlockTimelineSectionData = {
-    events: AddonBlockTimelineDayEvents[];
-    lastEventId?: number;
-    canLoadMore: boolean;
-    loadingMore: boolean;
-};
 
 /**
  * Timestamps to use during event filtering.

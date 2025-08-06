@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, Input, Output, EventEmitter, OnInit, HostBinding } from '@angular/core';
+import { Component, OnInit, input, output, signal } from '@angular/core';
 import { CoreSites } from '@services/sites';
 import { CoreLoadings } from '@services/overlays/loadings';
 import { CoreText } from '@singletons/text';
@@ -32,28 +32,27 @@ import { CoreContentLinksHelper } from '@features/contentlinks/services/contentl
     imports: [
         CoreSharedModule,
     ],
+    host: {
+        '[attr.data-course-id]': 'course()?.id ?? null',
+    },
 })
 export class AddonBlockTimelineEventsComponent implements OnInit {
 
-    @Input() events: AddonBlockTimelineDayEvents[] = []; // The events to render.
-    @Input() course?: CoreEnrolledCourseDataWithOptions; // Whether to show the course name.
-    @Input({ transform: toBoolean }) showInlineCourse = true; // Whether to show the course name within event items.
-    @Input({ transform: toBoolean }) canLoadMore = false; // Whether more events can be loaded.
-    @Input({ transform: toBoolean }) loadingMore = false; // Whether loading is ongoing.
-    @Output() loadMore = new EventEmitter(); // Notify that more events should be loaded.
+    readonly events = input.required<AddonBlockTimelineDayEvents[]>(); // The events to render.
+    readonly course = input.required<CoreEnrolledCourseDataWithOptions>(); // The course the events belong to.
+    readonly showInlineCourse = input(true, { transform: toBoolean }); // Whether to show the course name within event items.
+    readonly canLoadMore = input(false, { transform: toBoolean }); // Whether more events can be loaded.
+    readonly loadingMore = input(false, { transform: toBoolean }); // Whether loading is ongoing.
+    readonly loadMore = output(); // Notify that more events should be loaded.
 
-    colorizeIcons = false;
-
-    @HostBinding('attr.data-course-id') protected get courseId(): number | null {
-        return this.course?.id ?? null;
-    }
+    readonly colorizeIcons = signal(false);
 
     /**
      * @inheritdoc
      */
     ngOnInit(): void {
         // Only colorize icons on 4.0 to 4.3 sites.
-        this.colorizeIcons = !CoreSites.getCurrentSite()?.isVersionGreaterEqualThan('4.4');
+        this.colorizeIcons.set(!CoreSites.getCurrentSite()?.isVersionGreaterEqualThan('4.4'));
     }
 
     /**
@@ -61,7 +60,6 @@ export class AddonBlockTimelineEventsComponent implements OnInit {
      *
      * @param event Click event.
      * @param url Url of the action.
-     * @returns Promise resolved when done.
      */
     async action(event: Event, url: string): Promise<void> {
         event.preventDefault();
