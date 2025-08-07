@@ -18,7 +18,6 @@ import {
     Component,
     ElementRef,
     EventEmitter,
-    HostBinding,
     inject,
     Input,
     OnDestroy,
@@ -51,6 +50,11 @@ import { BackButtonPriority } from '@/core/constants';
     imports: [
         CoreSharedModule,
     ],
+    host: {
+        '[class.is-active]': 'active',
+        '[class.is-popover]': 'popover',
+        '[class.backdrop]': 'backdrop',
+    },
 })
 export class CoreUserToursUserTourComponent implements AfterViewInit, OnDestroy {
 
@@ -63,9 +67,11 @@ export class CoreUserToursUserTourComponent implements AfterViewInit, OnDestroy 
     @Input() alignment?: CoreUserToursAlignment;
     @Output() beforeDismiss = new EventEmitter<void>();
     @Output() afterDismiss = new EventEmitter<void>();
-    @HostBinding('class.is-active') active = false;
-    @HostBinding('class.is-popover') popover = false;
-    @HostBinding('class.backdrop') backdrop = true;
+
+    protected active = false;
+    protected popover = false;
+    protected backdrop = true;
+
     @ViewChild('wrapper') wrapper?: ElementRef<HTMLElement>;
 
     protected static readonly ANIMATION_DURATION = 200;

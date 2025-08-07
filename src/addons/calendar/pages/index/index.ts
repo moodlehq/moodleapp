@@ -159,7 +159,7 @@ export default class AddonCalendarIndexPage implements OnInit, OnDestroy {
         this.filterChangedObserver = CoreEvents.on(
             ADDON_CALENDAR_FILTER_CHANGED_EVENT,
             async (filterData) => {
-                this.filter = filterData;
+                this.filter = { ...filterData };
 
                 // Course viewed has changed, check if the user can create events for this course calendar.
                 this.canCreate = await AddonCalendarHelper.canEditEvents(this.filter.courseId);

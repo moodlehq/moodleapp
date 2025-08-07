@@ -22,7 +22,6 @@ import {
     KeyValueDiffers,
     ViewChild,
     KeyValueDiffer,
-    HostBinding,
     inject,
 } from '@angular/core';
 import { Subject } from 'rxjs';
@@ -51,13 +50,16 @@ import { ContextLevel } from '@/core/constants';
         CoreSharedModule,
         CoreCompileHtmlComponent,
     ],
+    host: {
+        '[class]': 'component',
+    },
 })
 export class CoreSitePluginsPluginContentComponent implements OnInit, DoCheck {
 
     // Get the compile element. Don't set the right type to prevent circular dependencies.
     @ViewChild('compile') compileComponent?: CoreCompileHtmlComponent;
 
-    @HostBinding('class') @Input() component = '';
+    @Input() component = '';
     @Input({ required: true }) method!: string;
     @Input() args?: Record<string, unknown>;
     @Input() initResult?: CoreSitePluginsContent | null; // Result of the init WS call of the handler.

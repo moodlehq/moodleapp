@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit, OnDestroy, Input, ViewChild, HostBinding, inject } from '@angular/core';
+import { Component, OnInit, OnDestroy, Input, ViewChild, inject } from '@angular/core';
 
 import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
 import { CoreCourseModuleSummaryResult } from '@features/course/components/module-summary/module-summary';
@@ -48,6 +48,9 @@ import { CoreCourseModuleNavigationComponent } from '@features/course/components
         CoreCourseModuleInfoComponent,
         CoreCourseModuleNavigationComponent,
     ],
+    host: {
+        '[class]': 'component',
+    },
 })
 export class CoreSitePluginsModuleIndexComponent implements OnInit, OnDestroy, CoreCourseModuleMainComponent {
 
@@ -57,7 +60,7 @@ export class CoreSitePluginsModuleIndexComponent implements OnInit, OnDestroy, C
 
     @ViewChild(CoreSitePluginsPluginContentComponent) content?: CoreSitePluginsPluginContentComponent;
 
-    @HostBinding('class') component?: string;
+    component?: string;
     method?: string;
     args?: Record<string, unknown>;
     initResult?: CoreSitePluginsContent | null;
