@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, ViewChildren, Input, OnInit, QueryList, ElementRef, inject } from '@angular/core';
+import { Component, OnInit, ElementRef, inject, input, signal, viewChildren } from '@angular/core';
 import { ModalController } from '@singletons';
 import { CoreCourse, CoreCourseBlock } from '@features/course/services/course';
 import { CoreBlockHelper } from '../../services/block-helper';
@@ -40,15 +40,15 @@ import { CoreCoursesMyPageName } from '@features/courses/constants';
 })
 export class CoreBlockSideBlocksComponent implements OnInit {
 
-    @Input({ required: true }) contextLevel!: ContextLevel;
-    @Input({ required: true }) instanceId!: number;
-    @Input() initialBlockInstanceId?: number;
-    @Input() myDashboardPage?: CoreCoursesMyPageName;
+    readonly contextLevel = input.required<ContextLevel>();
+    readonly instanceId = input.required<number>();
+    readonly initialBlockInstanceId = input<number>();
+    readonly myDashboardPage = input<CoreCoursesMyPageName>();
 
-    @ViewChildren(CoreBlockComponent) blocksComponents?: QueryList<CoreBlockComponent>;
+    readonly blocksComponents = viewChildren(CoreBlockComponent);
 
-    loaded = false;
-    blocks: CoreCourseBlock[] = [];
+    readonly loaded = signal(false);
+    readonly blocks = signal<CoreCourseBlock[]>([]);
 
     protected element: HTMLElement = inject(ElementRef).nativeElement;
 
@@ -57,7 +57,7 @@ export class CoreBlockSideBlocksComponent implements OnInit {
      */
     async ngOnInit(): Promise<void> {
         this.loadContent().finally(() => {
-            this.loaded = true;
+            this.loaded.set(true);
 
             this.focusInitialBlock();
         });
@@ -65,49 +65,50 @@ export class CoreBlockSideBlocksComponent implements OnInit {
 
     /**
      * Invalidate blocks data.
-     *
-     * @returns Promise resolved when done.
      */
     async invalidateBlocks(): Promise<void> {
         const promises: Promise<void>[] = [];
 
-        if (this.contextLevel === ContextLevel.COURSE) {
-            promises.push(CoreCourse.invalidateCourseBlocks(this.instanceId));
+        if (this.contextLevel() === ContextLevel.COURSE) {
+            promises.push(CoreCourse.invalidateCourseBlocks(this.instanceId()));
         } else {
             promises.push(CoreCoursesDashboard.invalidateDashboardBlocks());
         }
 
         // Invalidate the blocks.
-        this.blocksComponents?.forEach((blockComponent) => {
+        this.blocksComponents()?.forEach((blockComponent) => {
             promises.push(blockComponent.invalidate().catch(() => {
                 // Ignore errors.
             }));
         });
 
-        await Promise.all(promises);
+        await CorePromiseUtils.allPromisesIgnoringErrors(promises);
     }
 
     /**
      * Convenience function to fetch the data.
-     *
-     * @returns Promise resolved when done.
      */
     async loadContent(): Promise<void> {
+        let blocks: CoreCourseBlock[] = [];
         try {
-            if (this.contextLevel === ContextLevel.COURSE) {
-                this.blocks = await CoreBlockHelper.getCourseBlocks(this.instanceId);
+            if (this.contextLevel() === ContextLevel.COURSE) {
+                blocks = await CoreBlockHelper.getCourseBlocks(this.instanceId());
             } else {
-                const blocks = await CoreCoursesDashboard.getDashboardBlocks(undefined, undefined, this.myDashboardPage);
+                const allBlocks = await CoreCoursesDashboard.getDashboardBlocks(undefined, undefined, this.myDashboardPage());
 
-                this.blocks = blocks.sideBlocks;
+                blocks = allBlocks.sideBlocks;
             }
         } catch (error) {
             CoreAlerts.showError(error);
-            this.blocks = [];
+            this.blocks.set([]);
+
+            return;
         }
 
-        this.blocks = this.blocks.filter(block =>
+        blocks = blocks.filter(block =>
             block.name !== 'html' || (block.contents && !CoreDom.htmlIsBlank(block.contents.content)));
+
+        this.blocks.set(blocks);
     }
 
     /**
@@ -118,7 +119,12 @@ export class CoreBlockSideBlocksComponent implements OnInit {
     async doRefresh(refresher?: HTMLIonRefresherElement): Promise<void> {
         await CorePromiseUtils.ignoreErrors(this.invalidateBlocks());
 
-        await this.loadContent().finally(() => {
+        await this.loadContent().finally(async () => {
+            await CorePromiseUtils.allPromisesIgnoringErrors(
+                this.blocksComponents()?.map((blockComponent) =>
+                    blockComponent.reload()),
+            );
+
             refresher?.complete();
         });
     }
@@ -134,11 +140,12 @@ export class CoreBlockSideBlocksComponent implements OnInit {
      * Focus the initial block, if any.
      */
     private async focusInitialBlock(): Promise<void> {
-        if (!this.initialBlockInstanceId) {
+        const initialBlockInstanceId = this.initialBlockInstanceId();
+        if (!initialBlockInstanceId) {
             return;
         }
 
-        const selector = `#block-${this.initialBlockInstanceId}`;
+        const selector = `#block-${initialBlockInstanceId}`;
 
         await CoreWait.waitFor(() => !!this.element.querySelector(selector));
         await CoreWait.wait(200);
