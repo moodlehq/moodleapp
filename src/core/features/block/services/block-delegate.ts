@@ -97,17 +97,11 @@ export interface CoreBlockHandlerData {
 @Injectable({ providedIn: 'root' })
 export class CoreBlockDelegateService extends CoreDelegate<CoreBlockHandler> {
 
-    blocksUpdateObservable: Subject<void>;
+    blocksUpdateObservable = new Subject<void>();
 
     protected defaultHandler = inject(CoreBlockDefaultHandler);
     protected handlerNameProperty = 'blockName';
     protected featurePrefix = 'CoreBlockDelegate_';
-
-    constructor() {
-        super();
-
-        this.blocksUpdateObservable = new Subject<void>();
-    }
 
     /**
      * @inheritdoc

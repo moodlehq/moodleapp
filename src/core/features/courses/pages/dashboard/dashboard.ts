@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnDestroy, OnInit, QueryList, ViewChildren } from '@angular/core';
+import { Component, OnDestroy, OnInit, signal, viewChildren } from '@angular/core';
 
 import { CoreCourses } from '../../services/courses';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
@@ -45,7 +45,7 @@ import { CORE_BLOCKS_DASHBOARD_FALLBACK_BLOCKS } from '@features/block/constants
 })
 export default class CoreCoursesDashboardPage implements OnInit, OnDestroy {
 
-    @ViewChildren(CoreBlockComponent) blocksComponents?: QueryList<CoreBlockComponent>;
+    readonly blocksComponents = viewChildren(CoreBlockComponent);
 
     hasMainBlocks = false;
     hasSideBlocks = false;
@@ -53,7 +53,7 @@ export default class CoreCoursesDashboardPage implements OnInit, OnDestroy {
     downloadCourseEnabled = false;
     downloadCoursesEnabled = false;
     userId?: number;
-    blocks: Partial<CoreCourseBlock>[] = [];
+    readonly blocks = signal<Partial<CoreCourseBlock>[]>([]);
     loaded = false;
 
     protected updateSiteObserver: CoreEventObserver;
@@ -107,7 +107,7 @@ export default class CoreCoursesDashboardPage implements OnInit, OnDestroy {
             try {
                 const blocks = await CoreCoursesDashboard.getDashboardBlocks();
 
-                this.blocks = blocks.mainBlocks;
+                this.blocks.set(blocks.mainBlocks);
 
                 this.hasMainBlocks = CoreBlockDelegate.hasSupportedBlock(blocks.mainBlocks);
                 this.hasSideBlocks = CoreBlockDelegate.hasSupportedBlock(blocks.sideBlocks);
@@ -122,7 +122,7 @@ export default class CoreCoursesDashboardPage implements OnInit, OnDestroy {
             this.loadFallbackBlocks();
         } else {
             // Disabled.
-            this.blocks = [];
+            this.blocks.set([]);
         }
 
         this.loaded = true;
@@ -134,10 +134,10 @@ export default class CoreCoursesDashboardPage implements OnInit, OnDestroy {
      * Load fallback blocks to shown before 3.6 when dashboard blocks are not supported.
      */
     protected loadFallbackBlocks(): void {
-        this.blocks = CORE_BLOCKS_DASHBOARD_FALLBACK_BLOCKS.map((blockName) => ({
+        this.blocks.set(CORE_BLOCKS_DASHBOARD_FALLBACK_BLOCKS.map((blockName) => ({
             name: blockName,
             visible: true,
-        }));
+        })));
 
         this.hasMainBlocks = CORE_BLOCKS_DASHBOARD_FALLBACK_BLOCKS.some((blockName) =>
             CoreBlockDelegate.isBlockSupported(blockName));
@@ -154,14 +154,17 @@ export default class CoreCoursesDashboardPage implements OnInit, OnDestroy {
         promises.push(CoreCoursesDashboard.invalidateDashboardBlocks());
 
         // Invalidate the blocks.
-        this.blocksComponents?.forEach((blockComponent) => {
-            promises.push(blockComponent.invalidate().catch(() => {
-                // Ignore errors.
-            }));
+        this.blocksComponents()?.forEach((blockComponent) => {
+            promises.push(blockComponent.invalidate());
         });
 
-        Promise.all(promises).finally(() => {
-            this.loadContent().finally(() => {
+        CorePromiseUtils.allPromisesIgnoringErrors(promises).finally(() => {
+            this.loadContent().finally(async () => {
+                await CorePromiseUtils.allPromisesIgnoringErrors(
+                    this.blocksComponents()?.map((blockComponent) =>
+                        blockComponent.reload()),
+                );
+
                 refresher?.complete();
             });
         });
