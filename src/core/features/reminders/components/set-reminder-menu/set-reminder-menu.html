@@ -8,39 +8,39 @@
 <ion-content>
     <ion-content>
         <!-- Preset options. -->
-        <ng-container *ngFor="let option of presetOptions">
+        @for (option of presetOptions; track option.radioValue) {
             @if (option.enabled) {
                 <ion-item button class="ion-text-wrap" (click)="setReminder(option.radioValue)" [detail]="false"
-                    [attr.aria-selected]="currentValue === option.radioValue">
+                    [attr.aria-selected]="currentValue() === option.radioValue">
                     <ion-label>
                         <p class="item-heading">{{ option.label }}</p>
                     </ion-label>
-                    @if (currentValue === option.radioValue) {
+                    @if (currentValue() === option.radioValue) {
                         <ion-icon name="fas-check" slot="end" aria-hidden="true" />
                     }
                 </ion-item>
             }
-        </ng-container>
+         }
 
         <!-- Custom value. -->
         <ion-item button class="ion-text-wrap" (click)="setCustom($event)" [detail]="false"
-            [attr.aria-selected]="currentValue === 'custom'">
+            [attr.aria-selected]="currentValue() === 'custom'">
             <ion-label>
                 <p class="item-heading">{{ 'core.reminders.custom' | translate }}</p>
-                <p>{{ customLabel }}</p>
+                <p>{{ customLabel() }}</p>
             </ion-label>
-            @if (currentValue === 'custom') {
+            @if (currentValue() === 'custom') {
                 <ion-icon name="fas-check" slot="end" aria-hidden="true" />
             }
         </ion-item>
 
-        @if (noReminderLabel) {
+        @if (noReminderLabel()) {
             <ion-item button class="ion-text-wrap text-danger border-top" (click)="disableReminder()" [detail]="false"
-                [attr.aria-selected]="currentValue === 'disabled'">
+                [attr.aria-selected]="currentValue() === 'disabled'">
                 <ion-label>
-                    <p class="item-heading">{{ noReminderLabel | translate }}</p>
+                    <p class="item-heading">{{ noReminderLabel() | translate }}</p>
                 </ion-label>
-                @if (currentValue === 'disabled') {
+                @if (currentValue() === 'disabled') {
                     <ion-icon name="fas-check" slot="end" aria-hidden="true" />
                 }
             </ion-item>

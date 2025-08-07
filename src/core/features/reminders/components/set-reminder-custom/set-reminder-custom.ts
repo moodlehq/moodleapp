@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { CoreSharedModule } from '@/core/shared.module';
-import { Component, Input } from '@angular/core';
+import { Component, model } from '@angular/core';
 import { CoreRemindersUnits } from '@features/reminders/constants';
 import { PopoverController } from '@singletons';
 
@@ -28,10 +28,10 @@ import { PopoverController } from '@singletons';
 })
 export class CoreRemindersSetReminderCustomComponent {
 
-    @Input() customValue = 10;
-    @Input() customUnits = CoreRemindersUnits.MINUTE;
+    readonly customValue = model(10);
+    readonly customUnits = model(CoreRemindersUnits.MINUTE);
 
-    customUnitsOptions = [
+    readonly customUnitsOptions: readonly Readonly<{ value: CoreRemindersUnits; label: string }>[] = [
         {
             value: CoreRemindersUnits.MINUTE,
             label: 'core.minutes',
@@ -55,7 +55,7 @@ export class CoreRemindersSetReminderCustomComponent {
      */
     set(): void {
         // Return it as an object because 0 means undefined if not.
-        PopoverController.dismiss({ value: this.customValue, unit: this.customUnits });
+        PopoverController.dismiss({ value: this.customValue(), unit: this.customUnits() });
     }
 
     /**

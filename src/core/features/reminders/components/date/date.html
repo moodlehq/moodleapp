@@ -1,9 +1,9 @@
 <div>
     <ion-icon name="fas-calendar" aria-hidden="true" />
-    <strong>{{ label }}</strong> {{ readableTime }}
+    <strong>{{ label() }}</strong> {{ readableTime() }}
 </div>
 
-@if (showReminderButton) {
-    <core-reminders-set-button slot="end" [component]="component" [instanceId]="instanceId" [type]="type" [label]="label"
-        [initialTimebefore]="timebefore" [time]="time" [title]="title" [url]="url" />
+@if (showReminderButton()) {
+    <core-reminders-set-button slot="end" [component]="component()" [instanceId]="instanceId()" [type]="type()" [label]="label()"
+        [initialTimebefore]="timebefore()" [time]="time()" [title]="title()" [url]="url()" />
 }
