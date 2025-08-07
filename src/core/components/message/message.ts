@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { ContextLevel } from '@/core/constants';
-import { Component, HostBinding, computed, input, output } from '@angular/core';
+import { Component, computed, input, output } from '@angular/core';
 import { CoreAnimations } from '@components/animations';
 import { CoreSites } from '@services/sites';
 import { CoreText } from '@singletons/text';
@@ -46,6 +46,7 @@ import { CoreFormatDatePipe } from '@pipes/format-date';
     host: {
         '[@coreSlideInOut]': 'isMine() ? "" : "fromLeft"',
         '[class.is-mine]': 'isMine()',
+        '[class.no-user]': '!message()?.showUserData',
     },
 })
 export class CoreMessageComponent {
@@ -67,10 +68,6 @@ export class CoreMessageComponent {
 
     protected readonly userId = computed(() => this.user()?.userid || this.user()?.id);
     protected readonly isMine = computed(() => this.userId() === CoreSites.getCurrentSiteUserId());
-
-    @HostBinding('class.no-user') get showUser(): boolean {
-        return !this.message()?.showUserData;
-    }
 
     /**
      * Emits the delete action.
