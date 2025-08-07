@@ -22,8 +22,8 @@ import {
     OnInit,
     Output,
     SimpleChange,
-    ViewChild,
     inject,
+    viewChild,
 } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { CoreEvents } from '@singletons/events';
@@ -102,7 +102,7 @@ export class AddonModForumPostComponent implements OnInit, OnDestroy, OnChanges 
     @Input({ transform: toBoolean }) highlight = false;
     @Output() onPostChange: EventEmitter<void> = new EventEmitter<void>(); // Event emitted when a reply is posted or modified.
 
-    @ViewChild('replyFormEl') formElement!: ElementRef;
+    readonly formElement = viewChild.required<ElementRef>('replyFormEl');
 
     messageControl = new FormControl<string | null>(null);
 
@@ -157,7 +157,7 @@ export class AddonModForumPostComponent implements OnInit, OnDestroy, OnChanges 
     ngOnChanges(changes: {[name: string]: SimpleChange}): void {
         if (changes.leavingPage && this.leavingPage) {
             // Download all courses is enabled now, initialize it.
-            CoreForms.triggerFormCancelledEvent(this.formElement, CoreSites.getCurrentSiteId());
+            CoreForms.triggerFormCancelledEvent(this.formElement(), CoreSites.getCurrentSiteId());
         }
     }
 
@@ -490,7 +490,7 @@ export class AddonModForumPostComponent implements OnInit, OnDestroy, OnChanges 
 
             this.onPostChange.emit();
 
-            CoreForms.triggerFormSubmittedEvent(this.formElement, sent, CoreSites.getCurrentSiteId());
+            CoreForms.triggerFormSubmittedEvent(this.formElement(), sent, CoreSites.getCurrentSiteId());
 
             this.unblockOperation();
         } catch (error) {
@@ -587,7 +587,7 @@ export class AddonModForumPostComponent implements OnInit, OnDestroy, OnChanges 
             // Reset data.
             this.setFormData();
 
-            CoreForms.triggerFormCancelledEvent(this.formElement, CoreSites.getCurrentSiteId());
+            CoreForms.triggerFormCancelledEvent(this.formElement(), CoreSites.getCurrentSiteId());
 
             this.unblockOperation();
         } catch {

@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { ContextLevel } from '@/core/constants';
-import { AfterViewInit, Component, OnDestroy, OnInit, ViewChild, inject } from '@angular/core';
+import { AfterViewInit, Component, OnDestroy, OnInit, viewChild, inject } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { CoreListItemsManager } from '@classes/items-management/list-items-manager';
 import { CoreRoutedItemsManagerSourcesTracker } from '@classes/items-management/routed-items-manager-sources-tracker';
@@ -79,7 +79,7 @@ import { CoreSharedModule } from '@/core/shared.module';
 export class AddonModGlossaryIndexComponent extends CoreCourseModuleMainActivityComponent
     implements OnInit, AfterViewInit, OnDestroy {
 
-    @ViewChild(CoreSplitViewComponent) splitView!: CoreSplitViewComponent;
+    readonly splitView = viewChild.required(CoreSplitViewComponent);
 
     component = ADDON_MOD_GLOSSARY_COMPONENT_LEGACY;
     pluginName = 'glossary';
@@ -210,7 +210,7 @@ export class AddonModGlossaryIndexComponent extends CoreCourseModuleMainActivity
         const entries = await this.promisedEntries;
 
         await this.loadContent(false, true);
-        await entries.start(this.splitView);
+        await entries.start(this.splitView());
     }
 
     /**

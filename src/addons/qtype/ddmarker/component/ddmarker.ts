@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnDestroy, ElementRef, ViewChild } from '@angular/core';
+import { Component, OnDestroy, ElementRef, viewChild } from '@angular/core';
 
 import { AddonModQuizQuestionBasicData, CoreQuestionBaseComponent } from '@features/question/classes/base-question-component';
 import { CoreQuestionHelper } from '@features/question/services/question-helper';
@@ -38,7 +38,7 @@ export class AddonQtypeDdMarkerComponent
     extends CoreQuestionBaseComponent<AddonQtypeDdMarkerQuestionData>
     implements OnDestroy {
 
-    @ViewChild('questiontext') questionTextEl?: ElementRef;
+    readonly questionTextEl = viewChild<ElementRef>('questiontext');
 
     protected questionInstance?: AddonQtypeDdMarkerQuestion;
     protected dropZones: unknown[] = []; // The drop zones received in the init object of the question.
@@ -166,8 +166,9 @@ export class AddonQtypeDdMarkerComponent
             );
         }
 
-        if (this.questionTextEl) {
-            await CoreWait.waitForImages(this.questionTextEl.nativeElement);
+        const questionTextEl = this.questionTextEl();
+        if (questionTextEl) {
+            await CoreWait.waitForImages(questionTextEl.nativeElement);
         }
 
         // Create the instance.

@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { ChangeDetectorRef, Component, ElementRef, OnDestroy, OnInit, ViewChild, inject } from '@angular/core';
+import { ChangeDetectorRef, Component, ElementRef, OnDestroy, OnInit, inject, viewChild } from '@angular/core';
 
 import { CoreSites, CoreSitesReadingStrategy } from '@services/sites';
 import { CoreMimetype } from '@singletons/mimetype';
@@ -48,7 +48,7 @@ import { CoreSharedModule } from '@/core/shared.module';
 })
 export default class CorePolicySitePolicyPage implements OnInit, OnDestroy {
 
-    @ViewChild(IonContent) content?: IonContent;
+    readonly content = viewChild(IonContent);
 
     siteName?: string;
     isManageAcceptancesAvailable = false;
@@ -344,7 +344,7 @@ export default class CorePolicySitePolicyPage implements OnInit, OnDestroy {
     protected async checkScroll(): Promise<void> {
         await CoreWait.wait(400);
 
-        const scrollElement = await this.content?.getScrollElement();
+        const scrollElement = await this.content()?.getScrollElement();
 
         this.hasScroll = !!scrollElement && scrollElement.scrollHeight > scrollElement.clientHeight + 2; // Add 2px of error margin.
     }
@@ -460,7 +460,7 @@ export default class CorePolicySitePolicyPage implements OnInit, OnDestroy {
         event?.preventDefault();
         event?.stopPropagation();
 
-        this.content?.scrollToTop(400);
+        this.content()?.scrollToTop(400);
     }
 
     /**

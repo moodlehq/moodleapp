@@ -22,7 +22,7 @@ import {
     Input,
     OnDestroy,
     Output,
-    ViewChild,
+    viewChild,
 } from '@angular/core';
 import { CorePromisedValue } from '@classes/promised-value';
 import { CoreUserToursFocusLayout } from '@features/usertours/classes/focus-layout';
@@ -72,7 +72,7 @@ export class CoreUserToursUserTourComponent implements AfterViewInit, OnDestroy 
     protected popover = false;
     protected backdrop = true;
 
-    @ViewChild('wrapper') wrapper?: ElementRef<HTMLElement>;
+    readonly wrapper = viewChild<ElementRef<HTMLElement>>('wrapper');
 
     protected static readonly ANIMATION_DURATION = 200;
     protected static readonly BACKDROP_DISMISS_SAFETY_TRESHOLD = 1000;
@@ -103,11 +103,12 @@ export class CoreUserToursUserTourComponent implements AfterViewInit, OnDestroy 
      * @inheritdoc
      */
     ngAfterViewInit(): void {
-        if (!this.wrapper) {
+        const wrapper = this.wrapper();
+        if (!wrapper) {
             return;
         }
 
-        this.wrapperElement.resolve(this.wrapper.nativeElement);
+        this.wrapperElement.resolve(wrapper.nativeElement);
     }
 
     /**

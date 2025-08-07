@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, ViewChild, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, viewChild } from '@angular/core';
 import { CoreSendMessageFormComponent } from '@components/send-message-form/send-message-form';
 import { CanLeave } from '@guards/can-leave';
 import { IonContent } from '@ionic/angular';
@@ -50,8 +50,8 @@ export default class AddonModChatChatPage implements OnInit, OnDestroy, CanLeave
 
     protected static readonly POLL_INTERVAL = 4000;
 
-    @ViewChild(IonContent) content?: IonContent;
-    @ViewChild(CoreSendMessageFormComponent) sendMessageForm?: CoreSendMessageFormComponent;
+    readonly content = viewChild(IonContent);
+    readonly sendMessageForm = viewChild(CoreSendMessageFormComponent);
 
     loaded = false;
     title = '';
@@ -205,7 +205,7 @@ export default class AddonModChatChatPage implements OnInit, OnDestroy, CanLeave
 
         if (modalData) {
             if (modalData.talkTo) {
-                this.newMessage = `To ${modalData.talkTo}: ${this.sendMessageForm?.message || ''}`;
+                this.newMessage = `To ${modalData.talkTo}: ${this.sendMessageForm()?.message || ''}`;
             }
             if (modalData.beepTo) {
                 this.sendMessage('', modalData.beepTo);
@@ -369,7 +369,7 @@ export default class AddonModChatChatPage implements OnInit, OnDestroy, CanLeave
         // Need a timeout to leave time to the view to be rendered.
         await CoreWait.nextTick();
         if (!this.viewDestroyed) {
-            this.content?.scrollToBottom();
+            this.content()?.scrollToBottom();
         }
     }
 

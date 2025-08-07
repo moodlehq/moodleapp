@@ -18,7 +18,7 @@ import {
     OnChanges,
     OnDestroy,
     AfterViewInit,
-    ViewChild,
+    viewChild,
     SimpleChange,
     CUSTOM_ELEMENTS_SCHEMA,
     ComponentRef,
@@ -78,7 +78,7 @@ export class CoreTabsOutletComponent extends CoreTabsBaseComponent<CoreTabsOutle
         return tabs.map((tab) => CoreTabsOutletComponent.formatTab(tab));
     } }) tabs: CoreTabsOutletTabWithId[] = [];
 
-    @ViewChild(IonTabs) protected ionTabs!: IonTabs;
+    readonly ionTabs = viewChild.required(IonTabs);
 
     protected lastActiveComponent?: Partial<ViewDidLeave>;
     protected existsInNavigationStack = false;
@@ -109,7 +109,7 @@ export class CoreTabsOutletComponent extends CoreTabsBaseComponent<CoreTabsOutle
             return;
         }
 
-        this.subscriptions.push(this.ionTabs.outlet.stackDidChange.subscribe(async (stackEvent: StackDidChangeEvent) => {
+        this.subscriptions.push(this.ionTabs().outlet.stackDidChange.subscribe(async (stackEvent: StackDidChangeEvent) => {
             if (!this.isCurrentView) {
                 return;
             }
@@ -130,8 +130,8 @@ export class CoreTabsOutletComponent extends CoreTabsBaseComponent<CoreTabsOutle
 
             this.showHideNavBarButtons();
         }));
-        this.subscriptions.push(this.ionTabs.outlet.activateEvents.subscribe(() => {
-            this.lastActiveComponent = this.ionTabs.outlet.component;
+        this.subscriptions.push(this.ionTabs().outlet.activateEvents.subscribe(() => {
+            this.lastActiveComponent = this.ionTabs().outlet.component;
         }));
     }
 
@@ -155,8 +155,8 @@ export class CoreTabsOutletComponent extends CoreTabsBaseComponent<CoreTabsOutle
         // The `ionViewDidEnter` method is not called on nested outlets unless the parent page is leaving the navigation stack,
         // that's why we need to call it manually if the page that is entering already existed in the stack (meaning that it is
         // entering in response to a back navigation from the page on top).
-        if (this.existsInNavigationStack && this.ionTabs.outlet.isActivated) {
-            (this.ionTabs.outlet.component as Partial<ViewDidEnter>).ionViewDidEnter?.();
+        if (this.existsInNavigationStack && this.ionTabs().outlet.isActivated) {
+            (this.ionTabs().outlet.component as Partial<ViewDidEnter>).ionViewDidEnter?.();
         }
 
         // After the view has entered for the first time, we can assume that it'll always be in the navigation stack
@@ -204,7 +204,7 @@ export class CoreTabsOutletComponent extends CoreTabsBaseComponent<CoreTabsOutle
      * @returns Router outlet
      */
     getOutlet(): IonRouterOutlet {
-        return this.ionTabs.outlet;
+        return this.ionTabs().outlet;
     }
 
     /**
@@ -226,7 +226,7 @@ export class CoreTabsOutletComponent extends CoreTabsBaseComponent<CoreTabsOutle
      * https://github.com/angular/angular/issues/14842
      */
     protected showHideNavBarButtons(): void {
-        const elements = this.ionTabs.outlet.nativeEl.querySelectorAll('core-navbar-buttons');
+        const elements = this.ionTabs().outlet.nativeEl.querySelectorAll('core-navbar-buttons');
         elements.forEach((element) => {
             const instance = CoreDirectivesRegistry.resolve(element, CoreNavBarButtonsComponent);
 

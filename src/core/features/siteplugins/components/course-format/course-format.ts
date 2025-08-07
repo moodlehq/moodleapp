@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnChanges, Input, ViewChild } from '@angular/core';
+import { Component, OnChanges, Input, viewChild } from '@angular/core';
 
 import { CoreCourseFormatComponent } from '@features/course/components/course-format/course-format';
 import { CoreCourseSection } from '@features/course/services/course-helper';
@@ -50,7 +50,7 @@ export class CoreSitePluginsCourseFormatComponent implements OnChanges {
     // However, we decided to keep them to support ngOnChanges and to make templates easier to read.
     @Input() coreCourseFormatComponent?: CoreCourseFormatComponent;
 
-    @ViewChild(CoreSitePluginsPluginContentComponent) content?: CoreSitePluginsPluginContentComponent;
+    readonly content = viewChild(CoreSitePluginsPluginContentComponent);
 
     component?: string;
     method?: string;
@@ -101,7 +101,7 @@ export class CoreSitePluginsCourseFormatComponent implements OnChanges {
      * @returns Promise resolved when done.
      */
     async doRefresh(refresher?: HTMLIonRefresherElement, done?: () => void, afterCompletionChange?: boolean): Promise<void> {
-        await this.content?.refreshContent(afterCompletionChange);
+        await this.content()?.refreshContent(afterCompletionChange);
     }
 
 }

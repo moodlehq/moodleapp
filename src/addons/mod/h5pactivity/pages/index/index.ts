@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnDestroy, ViewChild } from '@angular/core';
+import { Component, OnDestroy, viewChild } from '@angular/core';
 
 import { CoreCourseModuleMainActivityPage } from '@features/course/classes/main-activity-page';
 import { CanLeave } from '@guards/can-leave';
@@ -37,13 +37,14 @@ export default class AddonModH5PActivityIndexPage extends CoreCourseModuleMainAc
     canLeaveSafely = false;
     remainingTimeout?: number;
 
-    @ViewChild(AddonModH5PActivityIndexComponent) activityComponent?: AddonModH5PActivityIndexComponent;
+    readonly activityComponent = viewChild(AddonModH5PActivityIndexComponent);
 
     /**
      * @inheritdoc
      */
     async canLeave(): Promise<boolean> {
-        if (!this.activityComponent?.playing || this.activityComponent.isOpeningPage || this.activityComponent.saveStateEnabled) {
+        const activityComponent = this.activityComponent();
+        if (!activityComponent?.playing || activityComponent.isOpeningPage || activityComponent.saveStateEnabled) {
             return true;
         }
 

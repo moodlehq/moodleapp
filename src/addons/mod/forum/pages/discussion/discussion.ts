@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { ContextLevel, CoreConstants } from '@/core/constants';
-import { Component, OnDestroy, ViewChild, OnInit, AfterViewInit, ElementRef, inject } from '@angular/core';
+import { Component, OnDestroy, OnInit, AfterViewInit, ElementRef, inject, viewChild } from '@angular/core';
 import { ActivatedRoute, ActivatedRouteSnapshot } from '@angular/router';
 import { CoreRoutedItemsManagerSourcesTracker } from '@classes/items-management/routed-items-manager-sources-tracker';
 import { CoreSplitViewComponent } from '@components/split-view/split-view';
@@ -85,7 +85,7 @@ type Post = AddonModForumPost & { children?: Post[] };
 })
 export default class AddonModForumDiscussionPage implements OnInit, AfterViewInit, OnDestroy, CanLeave {
 
-    @ViewChild(IonContent) content!: IonContent;
+    readonly content = viewChild.required(IonContent);
 
     protected splitView = inject(CoreSplitViewComponent, { optional: true });
     protected element: HTMLElement = inject(ElementRef).nativeElement;
@@ -684,7 +684,7 @@ export default class AddonModForumDiscussionPage implements OnInit, AfterViewIni
      * @returns Promise resolved when done.
      */
     async refreshPosts(sync?: boolean, showErrors?: boolean): Promise<void> {
-        this.content.scrollToTop();
+        this.content().scrollToTop();
         this.refreshIcon = CoreConstants.ICON_LOADING;
         this.syncIcon = CoreConstants.ICON_LOADING;
 
@@ -710,7 +710,7 @@ export default class AddonModForumDiscussionPage implements OnInit, AfterViewIni
         this.discussionLoaded = false;
         this.sort = type;
         CoreSites.getRequiredCurrentSite().setLocalSiteConfig('AddonModForumDiscussionSort', this.sort);
-        this.content.scrollToTop();
+        this.content().scrollToTop();
 
         return this.fetchPosts();
     }

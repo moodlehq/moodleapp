@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { AfterViewInit, Component, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, OnInit, viewChild } from '@angular/core';
 import { IonRouterOutlet, IonicModule } from '@ionic/angular';
 import { BackButtonEvent } from '@ionic/core';
 
@@ -39,7 +39,7 @@ register();
 })
 export class AppComponent implements OnInit, AfterViewInit {
 
-    @ViewChild(IonRouterOutlet) outlet?: IonRouterOutlet;
+    readonly outlet = viewChild.required(IonRouterOutlet);
 
     protected logger = CoreLogger.getInstance('AppComponent');
 
@@ -129,13 +129,9 @@ export class AppComponent implements OnInit, AfterViewInit {
      * @inheritdoc
      */
     ngAfterViewInit(): void {
-        if (!this.outlet) {
-            return;
-        }
-
         this.logger.debug('App component initialized');
 
-        CoreSubscriptions.once(this.outlet.activateEvents, async () => {
+        CoreSubscriptions.once(this.outlet().activateEvents, async () => {
             await CorePlatform.ready();
 
             this.logger.debug('Hide splash screen');

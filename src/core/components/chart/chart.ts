@@ -14,7 +14,7 @@
 
 import { ContextLevel } from '@/core/constants';
 import { toBoolean } from '@/core/transforms/boolean';
-import { Component, Input, OnDestroy, OnInit, ElementRef, OnChanges, ViewChild, SimpleChange } from '@angular/core';
+import { Component, Input, OnDestroy, OnInit, ElementRef, OnChanges, SimpleChange, viewChild } from '@angular/core';
 import { CoreFilter } from '@features/filter/services/filter';
 import { CoreFilterHelper } from '@features/filter/services/filter-helper';
 import { LegendOptions, ChartTypeRegistry, ChartType, type Chart, LegendItem } from 'chart.js';
@@ -62,7 +62,7 @@ export class CoreChartComponent implements OnDestroy, OnInit, OnChanges {
     @Input() contextInstanceId?: number; // The instance ID related to the context.
     @Input() courseId?: number; // Course ID the text belongs to. It can be used to improve performance with filters.
     @Input({ transform: toBoolean }) wsNotFiltered = false; // If true it means the WS didn't filter the labels for some reason.
-    @ViewChild('canvas') canvas?: ElementRef<HTMLCanvasElement>;
+    readonly canvas = viewChild<ElementRef<HTMLCanvasElement>>('canvas');
 
     chart?: ChartWithLegend;
     legendItems: LegendItem[] = [];
@@ -99,7 +99,7 @@ export class CoreChartComponent implements OnDestroy, OnInit, OnChanges {
         // Format labels if needed.
         await this.formatLabels();
 
-        const context = this.canvas?.nativeElement.getContext('2d');
+        const context = this.canvas()?.nativeElement.getContext('2d');
         if (!context) {
             return;
         }

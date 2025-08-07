@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, viewChild } from '@angular/core';
 import { CoreCourseModuleMainActivityPage } from '@features/course/classes/main-activity-page';
 import { CoreNavigator } from '@services/navigator';
 import { AddonModFeedbackIndexComponent } from '../../components/index/index';
@@ -33,7 +33,7 @@ import { CoreSharedModule } from '@/core/shared.module';
 export default class AddonModFeedbackIndexPage extends CoreCourseModuleMainActivityPage<AddonModFeedbackIndexComponent>
     implements OnInit {
 
-    @ViewChild(AddonModFeedbackIndexComponent) activityComponent?: AddonModFeedbackIndexComponent;
+    readonly activityComponent = viewChild(AddonModFeedbackIndexComponent);
 
     selectedTab?: AddonModFeedbackIndexTabName;
     selectedGroup?: number;

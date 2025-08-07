@@ -20,9 +20,9 @@ import {
     EventEmitter,
     DoCheck,
     KeyValueDiffers,
-    ViewChild,
     KeyValueDiffer,
     inject,
+    viewChild,
 } from '@angular/core';
 import { Subject } from 'rxjs';
 import { Md5 } from 'ts-md5';
@@ -57,7 +57,7 @@ import { ContextLevel } from '@/core/constants';
 export class CoreSitePluginsPluginContentComponent implements OnInit, DoCheck {
 
     // Get the compile element. Don't set the right type to prevent circular dependencies.
-    @ViewChild('compile') compileComponent?: CoreCompileHtmlComponent;
+    readonly compileComponent = viewChild<CoreCompileHtmlComponent>('compile');
 
     @Input() component = '';
     @Input({ required: true }) method!: string;
@@ -275,7 +275,7 @@ export class CoreSitePluginsPluginContentComponent implements OnInit, DoCheck {
      * @returns Result of the call. Undefined if no component instance or the function doesn't exist.
      */
     callComponentFunction(name: string, params?: unknown[]): unknown | undefined {
-        return this.compileComponent?.callComponentFunction(name, params);
+        return this.compileComponent()?.callComponentFunction(name, params);
     }
 
     /**

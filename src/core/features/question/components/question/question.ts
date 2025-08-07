@@ -69,14 +69,13 @@ export class CoreQuestionComponent implements OnInit, AsyncDirective {
     @Output() buttonClicked = new EventEmitter<CoreQuestionBehaviourButton>(); // Will emit when a behaviour button is clicked.
     @Output() onAbort= new EventEmitter<void>(); // Will emit an event if the question should be aborted.
 
-    @ViewChild(CoreDynamicComponent)
-        set dynComponent(el: CoreDynamicComponent<CoreQuestionBaseComponent>) {
-            if (!el) {
-                return;
-            }
-
-            this.promisedDynamicComponent.resolve(el);
+    @ViewChild(CoreDynamicComponent) set dynComponent(el: CoreDynamicComponent<CoreQuestionBaseComponent>) {
+        if (!el) {
+            return;
         }
+
+        this.promisedDynamicComponent.resolve(el);
+    }
 
     componentClass?: Type<unknown>; // The class of the component to render.
     data: Record<string, unknown> = {}; // Data to pass to the component.
