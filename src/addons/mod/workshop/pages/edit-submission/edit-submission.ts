@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit, OnDestroy, ViewChild, ElementRef, inject } from '@angular/core';
+import { Component, OnInit, OnDestroy, ElementRef, inject, viewChild } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { CoreError } from '@classes/errors/error';
 import { CoreCourseModuleData } from '@features/course/services/course-helper';
@@ -63,7 +63,7 @@ import { CorePromiseUtils } from '@singletons/promise-utils';
 })
 export default class AddonModWorkshopEditSubmissionPage implements OnInit, OnDestroy, CanLeave {
 
-    @ViewChild('editFormEl') formElement!: ElementRef;
+    readonly formElement = viewChild.required<ElementRef>('editFormEl');
 
     module!: CoreCourseModuleData;
     courseId!: number;
@@ -160,7 +160,7 @@ export default class AddonModWorkshopEditSubmissionPage implements OnInit, OnDes
             CoreFileUploader.clearTmpFiles(this.submission.attachmentfiles);
         }
 
-        CoreForms.triggerFormCancelledEvent(this.formElement, this.siteId);
+        CoreForms.triggerFormCancelledEvent(this.formElement(), this.siteId);
 
         return true;
     }
@@ -472,7 +472,7 @@ export default class AddonModWorkshopEditSubmissionPage implements OnInit, OnDes
                 }
             }
 
-            CoreForms.triggerFormSubmittedEvent(this.formElement, !!newSubmissionId, this.siteId);
+            CoreForms.triggerFormSubmittedEvent(this.formElement(), !!newSubmissionId, this.siteId);
 
             const data: AddonModWorkshopSubmissionChangedEventData = {
                 workshopId: this.workshopId,

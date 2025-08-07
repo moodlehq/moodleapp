@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, ViewChild, ElementRef, OnInit, inject } from '@angular/core';
+import { Component, ElementRef, OnInit, inject, viewChild } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { CoreLoginHelper } from '@features/login/services/login-helper';
 import { Translate } from '@singletons';
@@ -42,7 +42,7 @@ import { CoreError } from '@classes/errors/error';
 })
 export default class CoreLoginForgottenPasswordPage implements OnInit {
 
-    @ViewChild('resetPasswordForm') formElement?: ElementRef;
+    readonly formElement = viewChild<ElementRef>('resetPasswordForm');
 
     myForm!: FormGroup;
     site!: CoreUnauthenticatedSite;
@@ -119,7 +119,7 @@ export default class CoreLoginForgottenPasswordPage implements OnInit {
                 CoreAlerts.showError(response.notice);
             } else {
                 // Success.
-                CoreForms.triggerFormSubmittedEvent(this.formElement, true);
+                CoreForms.triggerFormSubmittedEvent(this.formElement(), true);
 
                 await CoreAlerts.show({ header: Translate.instant('core.success'), message: response.notice });
                 await CoreNavigator.back();

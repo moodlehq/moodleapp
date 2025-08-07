@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit, OnChanges, ViewChild, Input, Output, SimpleChange, Type, EventEmitter } from '@angular/core';
+import { Component, OnInit, OnChanges, Input, Output, SimpleChange, Type, EventEmitter, viewChild } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 import { CoreDynamicComponent } from '@components/dynamic-component/dynamic-component';
 import { CoreFormFields } from '@singletons/form';
@@ -35,7 +35,7 @@ import { toBoolean } from '@/core/transforms/boolean';
 })
 export class AddonModDataFieldPluginComponent implements OnInit, OnChanges {
 
-    @ViewChild(CoreDynamicComponent) dynamicComponent?: CoreDynamicComponent<AddonModDataFieldPluginBaseComponent>;
+    readonly dynamicComponent = viewChild<CoreDynamicComponent<AddonModDataFieldPluginBaseComponent>>(CoreDynamicComponent);
 
     @Input({ required: true }) mode!: AddonModDataTemplateMode; // The render mode.
     @Input({ required: true }) field!: AddonModDataField; // The field to render.

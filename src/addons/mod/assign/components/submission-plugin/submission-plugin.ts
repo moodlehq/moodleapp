@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, Input, OnChanges, SimpleChanges, Type, ViewChild  } from '@angular/core';
+import { Component, Input, OnChanges, SimpleChanges, Type, viewChild } from '@angular/core';
 import { CoreDynamicComponent } from '@components/dynamic-component/dynamic-component';
 import {
     AddonModAssignAssign,
@@ -40,7 +40,7 @@ import { CoreSharedModule } from '@/core/shared.module';
 })
 export class AddonModAssignSubmissionPluginComponent implements OnChanges {
 
-    @ViewChild(CoreDynamicComponent) dynamicComponent!: CoreDynamicComponent<AddonModAssignSubmissionPluginBaseComponent>;
+    readonly dynamicComponent = viewChild.required(CoreDynamicComponent<AddonModAssignSubmissionPluginBaseComponent>);
 
     @Input({ required: true }) assign!: AddonModAssignAssign; // The assignment.
     @Input({ required: true }) submission!: AddonModAssignSubmission; // The submission.
@@ -110,7 +110,7 @@ export class AddonModAssignSubmissionPluginComponent implements OnChanges {
      * @returns Promise resolved when done.
      */
     async invalidate(): Promise<void> {
-        await this.dynamicComponent.callComponentMethod('invalidate');
+        await this.dynamicComponent().callComponentMethod('invalidate');
     }
 
 }

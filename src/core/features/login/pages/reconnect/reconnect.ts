@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit, OnDestroy, ViewChild, ElementRef, inject } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, ElementRef, inject, viewChild } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 
 import { CoreNetwork } from '@services/network';
@@ -57,7 +57,7 @@ import { CoreLoginIdentityProviderComponent } from '../../components/identity-pr
 })
 export default class CoreLoginReconnectPage implements OnInit, OnDestroy {
 
-    @ViewChild('reconnectForm') formElement?: ElementRef;
+    readonly formElement = viewChild<ElementRef>('reconnectForm');
     @ViewChild(CoreLoginMethodsComponent) set loginMethods(loginMethods: CoreLoginMethodsComponent) {
         if (loginMethods && !this.currentLogin) {
             loginMethods.getCurrentLogin().then(login => {
@@ -282,7 +282,7 @@ export default class CoreLoginReconnectPage implements OnInit, OnDestroy {
 
             await CoreSites.updateSiteToken(url, this.username, data.token, data.privateToken);
 
-            CoreForms.triggerFormSubmittedEvent(this.formElement, true);
+            CoreForms.triggerFormSubmittedEvent(this.formElement(), true);
 
             // Unset oAuthID if it's set.
             await CoreSites.removeSiteOauthId(this.siteId);

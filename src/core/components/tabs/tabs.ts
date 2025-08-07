@@ -58,8 +58,7 @@ export class CoreTabsComponent extends CoreTabsBaseComponent<CoreTabComponent> i
     @Input({ transform: toBoolean }) parentScrollable = false; // Determine if scroll should be in the parent content or the tab.
     @Input() layout: 'icon-top' | 'icon-start' | 'icon-end' | 'icon-bottom' | 'icon-hide' | 'label-hide' = 'icon-hide';
 
-    @ViewChild('originalTabs')
-    set originalTabs(originalTabs: ElementRef) {
+    @ViewChild('originalTabs') set originalTabs(originalTabs: ElementRef) {
         /**
          * This setTimeout waits for Ionic's async initialization to complete.
          * Otherwise, an outdated swiper reference will be used.

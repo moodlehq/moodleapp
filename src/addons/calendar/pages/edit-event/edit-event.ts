@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit, OnDestroy, ViewChild, ElementRef, inject } from '@angular/core';
+import { Component, OnInit, OnDestroy, ElementRef, inject, viewChild } from '@angular/core';
 import { FormControl, FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { CoreEvents } from '@singletons/events';
 import { CoreGroup, CoreGroups } from '@services/groups';
@@ -71,8 +71,8 @@ import { DEFAULT_TEXT_FORMAT } from '@singletons/text';
 })
 export default class AddonCalendarEditEventPage implements OnInit, OnDestroy, CanLeave {
 
-    @ViewChild(CoreEditorRichTextEditorComponent) descriptionEditor!: CoreEditorRichTextEditorComponent;
-    @ViewChild('editEventForm') formElement!: ElementRef;
+    readonly descriptionEditor = viewChild.required(CoreEditorRichTextEditorComponent);
+    readonly formElement = viewChild.required<ElementRef<HTMLFormElement>>('editEventForm');
 
     title = 'addon.calendar.newevent';
     component = ADDON_CALENDAR_COMPONENT;
@@ -546,7 +546,7 @@ export default class AddonCalendarEditEventPage implements OnInit, OnDestroy, Ca
             });
             event = result.event;
 
-            CoreForms.triggerFormSubmittedEvent(this.formElement, result.sent, this.currentSite.getId());
+            CoreForms.triggerFormSubmittedEvent(this.formElement(), result.sent, this.currentSite.getId());
 
             if (result.sent) {
                 // Event created or edited, invalidate right days & months.
@@ -613,7 +613,7 @@ export default class AddonCalendarEditEventPage implements OnInit, OnDestroy, Ca
             await CoreAlerts.confirmLeaveWithChanges();
         }
 
-        CoreForms.triggerFormCancelledEvent(this.formElement, this.currentSite.getId());
+        CoreForms.triggerFormCancelledEvent(this.formElement(), this.currentSite.getId());
 
         return true;
     }

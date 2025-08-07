@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit, ViewChild, ElementRef, Type } from '@angular/core';
+import { Component, OnInit, ElementRef, Type, viewChild } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 import { CoreError } from '@classes/errors/error';
 import { CoreFileUploader } from '@features/fileuploader/services/fileuploader';
@@ -64,8 +64,8 @@ import { CoreSharedModule } from '@/core/shared.module';
 })
 export default class AddonModDataEditPage implements OnInit {
 
-    @ViewChild(IonContent) content?: IonContent;
-    @ViewChild('editFormEl') formElement!: ElementRef;
+    readonly content = viewChild(IonContent);
+    readonly formElement = viewChild.required<ElementRef>('editFormEl');
 
     protected entryId?: number;
     protected fieldsArray: AddonModDataField[] = [];
@@ -171,7 +171,7 @@ export default class AddonModDataEditPage implements OnInit {
         const files = await AddonModDataHelper.getEditTmpFiles(inputData, this.fieldsArray, this.entry!.contents);
         CoreFileUploader.clearTmpFiles(files);
 
-        CoreForms.triggerFormCancelledEvent(this.formElement, this.siteId);
+        CoreForms.triggerFormCancelledEvent(this.formElement(), this.siteId);
 
         return true;
     }
@@ -363,7 +363,7 @@ export default class AddonModDataEditPage implements OnInit {
                 if ((this.isEditing && 'updated' in updateEntryResult && updateEntryResult.updated) ||
                     (!this.isEditing && 'newentryid' in updateEntryResult && updateEntryResult.newentryid)) {
 
-                    CoreForms.triggerFormSubmittedEvent(this.formElement, updateEntryResult.sent, this.siteId);
+                    CoreForms.triggerFormSubmittedEvent(this.formElement(), updateEntryResult.sent, this.siteId);
 
                     const promises: Promise<void>[] = [];
 
@@ -552,9 +552,9 @@ export default class AddonModDataEditPage implements OnInit {
      * Scroll to first error or to the top if not found.
      */
     protected async scrollToFirstError(): Promise<void> {
-        const scrolled = await CoreDom.scrollToElement(this.formElement.nativeElement, '.addon-data-error');
+        const scrolled = await CoreDom.scrollToElement(this.formElement().nativeElement, '.addon-data-error');
         if (!scrolled) {
-            this.content?.scrollToTop();
+            this.content()?.scrollToTop();
         }
     }
 

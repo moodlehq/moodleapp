@@ -21,10 +21,10 @@ import {
     OnChanges,
     SimpleChange,
     ViewContainerRef,
-    ViewChild,
     OnDestroy,
     ChangeDetectorRef,
     inject,
+    viewChild,
 } from '@angular/core';
 
 import { CoreSites } from '@services/sites';
@@ -75,7 +75,7 @@ import { CoreBootstrap } from '@singletons/bootstrap';
 })
 export class CoreFormatTextDirective implements OnChanges, OnDestroy, AsyncDirective {
 
-    @ViewChild(CoreCollapsibleItemDirective) collapsible?: CoreCollapsibleItemDirective;
+    readonly collapsible = viewChild(CoreCollapsibleItemDirective);
 
     @Input() text?: string; // The text to format.
     @Input() siteId?: string; // Site ID to use.
@@ -339,7 +339,7 @@ export class CoreFormatTextDirective implements OnChanges, OnDestroy, AsyncDirec
             return;
         }
 
-        this.collapsible?.elementClicked(e);
+        this.collapsible()?.elementClicked(e);
     }
 
     /**

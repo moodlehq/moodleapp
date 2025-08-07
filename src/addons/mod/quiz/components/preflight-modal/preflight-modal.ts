@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit, ViewChild, ElementRef, Input, Type, inject } from '@angular/core';
+import { Component, OnInit, ElementRef, Input, Type, inject, viewChild } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { CoreSites } from '@services/sites';
 import { CoreForms } from '@singletons/form';
@@ -36,7 +36,7 @@ import { CoreAlerts } from '@services/overlays/alerts';
 })
 export class AddonModQuizPreflightModalComponent implements OnInit {
 
-    @ViewChild('preflightFormEl') formElement?: ElementRef;
+    readonly formElement = viewChild<ElementRef>('preflightFormEl');
 
     @Input({ required: true }) title!: string;
     @Input() quiz?: AddonModQuizQuizWSData;
@@ -132,7 +132,7 @@ export class AddonModQuizPreflightModalComponent implements OnInit {
                 CoreAlerts.showError(Translate.instant('core.errorinvalidform'));
             }
         } else {
-            CoreForms.triggerFormSubmittedEvent(this.formElement, false, this.siteId);
+            CoreForms.triggerFormSubmittedEvent(this.formElement(), false, this.siteId);
 
             ModalController.dismiss(this.preflightForm.value);
         }
@@ -142,7 +142,7 @@ export class AddonModQuizPreflightModalComponent implements OnInit {
      * Close modal.
      */
     closeModal(): void {
-        CoreForms.triggerFormCancelledEvent(this.formElement, this.siteId);
+        CoreForms.triggerFormCancelledEvent(this.formElement(), this.siteId);
 
         ModalController.dismiss();
     }

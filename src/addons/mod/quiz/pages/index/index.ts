@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, ViewChild } from '@angular/core';
+import { Component, viewChild } from '@angular/core';
 import { CoreCourseModuleMainActivityPage } from '@features/course/classes/main-activity-page';
 import { AddonModQuizIndexComponent } from '../../components/index/index';
 import { CoreSharedModule } from '@/core/shared.module';
@@ -30,6 +30,6 @@ import { CoreSharedModule } from '@/core/shared.module';
 })
 export default class AddonModQuizIndexPage extends CoreCourseModuleMainActivityPage<AddonModQuizIndexComponent> {
 
-    @ViewChild(AddonModQuizIndexComponent) activityComponent?: AddonModQuizIndexComponent;
+    readonly activityComponent = viewChild(AddonModQuizIndexComponent);
 
 }

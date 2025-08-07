@@ -19,7 +19,7 @@ import {
     ElementRef,
     OnDestroy,
     Type,
-    ViewChild,
+    viewChild,
     OnInit,
     Input,
     Output,
@@ -92,7 +92,7 @@ export class CoreEditorRichTextEditorComponent implements AfterViewInit, OnDestr
     @Input() draftExtraParams?: Record<string, unknown>; // Extra params to identify the draft.
     @Output() contentChanged: EventEmitter<string | undefined | null> = new EventEmitter();
 
-    @ViewChild(CoreDynamicComponent) dynamicComponent!: CoreDynamicComponent<CoreEditorBaseComponent>;
+    readonly dynamicComponent = viewChild.required(CoreDynamicComponent<CoreEditorBaseComponent>);
 
     protected injector = inject(Injector);
     protected resizeListener?: CoreEventObserver;
@@ -429,11 +429,11 @@ export class CoreEditorRichTextEditorComponent implements AfterViewInit, OnDestr
             await this.treatExternalContent(container);
         } finally {
             // Set content on once the editor implementation is ready.
-            await this.dynamicComponent.ready();
+            await this.dynamicComponent().ready();
 
             // Only set the content if the function was not called again while treating external content.
             if (id === this.setContentId) {
-                this.dynamicComponent.callComponentMethod('setContent', container.innerHTML);
+                this.dynamicComponent().callComponentMethod('setContent', container.innerHTML);
             }
         }
     }
@@ -532,7 +532,7 @@ export class CoreEditorRichTextEditorComponent implements AfterViewInit, OnDestr
         }
 
         const updateArialabelledBy = async () => {
-            await this.dynamicComponent.ready();
+            await this.dynamicComponent().ready();
             this.editorComponentData.ariaLabelledBy = label.getAttribute('id') ?? undefined;
         };
 

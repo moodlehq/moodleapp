@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Component, OnDestroy, OnInit, viewChild } from '@angular/core';
 import { CoreError } from '@classes/errors/error';
 import { CoreSwipeSlidesItemsManager } from '@classes/items-management/swipe-slides-items-manager';
 import { CoreSwipeSlidesItemsManagerSource } from '@classes/items-management/swipe-slides-items-manager-source';
@@ -55,7 +55,7 @@ import { CoreSharedModule } from '@/core/shared.module';
 })
 export default class AddonModBookContentsPage implements OnInit, OnDestroy {
 
-    @ViewChild(CoreSwipeSlidesComponent) swipeSlidesComponent?: CoreSwipeSlidesComponent;
+    readonly swipeSlidesComponent = viewChild(CoreSwipeSlidesComponent<LoadedChapter>);
 
     title = '';
     cmId!: number;
@@ -157,7 +157,7 @@ export default class AddonModBookContentsPage implements OnInit, OnDestroy {
             return;
         }
 
-        this.swipeSlidesComponent?.slideToItem({ id: chapterId });
+        this.swipeSlidesComponent()?.slideToItem({ id: chapterId });
     }
 
     /**

@@ -14,7 +14,7 @@
 
 import { CoreSharedModule } from '@/core/shared.module';
 import { toBoolean } from '@/core/transforms/boolean';
-import { AfterViewInit, ChangeDetectionStrategy, Component, ElementRef, inject, Input, OnDestroy, ViewChild } from '@angular/core';
+import { AfterViewInit, ChangeDetectionStrategy, Component, ElementRef, inject, Input, OnDestroy, viewChild } from '@angular/core';
 
 @Component({
     selector: 'core-audio-histogram',
@@ -33,7 +33,7 @@ export class CoreFileUploaderAudioHistogramComponent implements AfterViewInit, O
 
     @Input({ required: true }) analyser!: AnalyserNode;
     @Input({ transform: toBoolean }) paused = false;
-    @ViewChild('canvas') canvasRef?: ElementRef<HTMLCanvasElement>;
+    readonly canvasRef = viewChild<ElementRef<HTMLCanvasElement>>('canvas');
 
     private element: HTMLElement = inject(ElementRef).nativeElement;
     private canvas?: HTMLCanvasElement;
@@ -45,7 +45,7 @@ export class CoreFileUploaderAudioHistogramComponent implements AfterViewInit, O
      * @inheritdoc
      */
     ngAfterViewInit(): void {
-        this.canvas = this.canvasRef?.nativeElement;
+        this.canvas = this.canvasRef()?.nativeElement;
         this.context = this.canvas?.getContext('2d');
         this.buffer = new Uint8Array(this.analyser.fftSize);
 

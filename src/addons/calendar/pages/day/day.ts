@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
+import { Component, OnInit, OnDestroy, viewChild } from '@angular/core';
 import { CoreNetwork } from '@services/network';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { CoreSites } from '@services/sites';
@@ -74,7 +74,7 @@ import { CoreUserPreferences } from '@features/user/services/user-preferences';
 })
 export default class AddonCalendarDayPage implements OnInit, OnDestroy {
 
-    @ViewChild(CoreSwipeSlidesComponent) swipeSlidesComponent?: CoreSwipeSlidesComponent<PreloadedDay>;
+    readonly swipeSlidesComponent = viewChild(CoreSwipeSlidesComponent<PreloadedDay>);
 
     protected currentSiteId: string;
 
@@ -443,7 +443,8 @@ export default class AddonCalendarDayPage implements OnInit, OnDestroy {
      */
     async goToCurrentDay(): Promise<void> {
         const manager = this.manager;
-        if (!manager || !this.swipeSlidesComponent) {
+        const swipeSlidesComponent = this.swipeSlidesComponent();
+        if (!manager || !swipeSlidesComponent) {
             return;
         }
 
@@ -456,7 +457,7 @@ export default class AddonCalendarDayPage implements OnInit, OnDestroy {
             // Make sure the day is loaded.
             await manager.getSource().loadItem(currentDay);
 
-            this.swipeSlidesComponent.slideToItem(currentDay);
+            swipeSlidesComponent.slideToItem(currentDay);
         } catch (error) {
             CoreAlerts.showError(error, { default: Translate.instant('addon.calendar.errorloadevents') });
         } finally {
@@ -468,14 +469,14 @@ export default class AddonCalendarDayPage implements OnInit, OnDestroy {
      * Load next day.
      */
     async loadNext(): Promise<void> {
-        this.swipeSlidesComponent?.slideNext();
+        this.swipeSlidesComponent()?.slideNext();
     }
 
     /**
      * Load previous day.
      */
     async loadPrevious(): Promise<void> {
-        this.swipeSlidesComponent?.slidePrev();
+        this.swipeSlidesComponent()?.slidePrev();
     }
 
     /**
