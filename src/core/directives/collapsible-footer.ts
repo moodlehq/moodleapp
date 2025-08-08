@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Directive, ElementRef, Input, OnDestroy, OnInit, inject } from '@angular/core';
+import { Directive, ElementRef, OnDestroy, OnInit, inject, input } from '@angular/core';
 import { ScrollDetail } from '@ionic/core';
 import { IonContent } from '@ionic/angular';
 import { CoreUtils } from '@singletons/utils';
@@ -38,7 +38,7 @@ import { toBoolean } from '../transforms/boolean';
 })
 export class CoreCollapsibleFooterDirective implements OnInit, OnDestroy {
 
-    @Input({ transform: toBoolean }) appearOnBottom = false; // Whether footer should re-appear when reaching the bottom.
+    readonly appearOnBottom = input(false, { transform: toBoolean }); // Whether footer should re-appear when reaching the bottom.
 
     protected id = '0';
     protected element: HTMLElement = inject(ElementRef).nativeElement;
@@ -218,7 +218,7 @@ export class CoreCollapsibleFooterDirective implements OnInit, OnDestroy {
     protected onScroll(scrollDetail: ScrollDetail, scrollElement: HTMLElement): void {
         const maxScroll = scrollElement.scrollHeight - scrollElement.offsetHeight;
         const footerHasFocus = this.moduleNav?.contains(document.activeElement);
-        if (scrollDetail.scrollTop <= 0 || (this.appearOnBottom && scrollDetail.scrollTop >= maxScroll) || footerHasFocus) {
+        if (scrollDetail.scrollTop <= 0 || (this.appearOnBottom() && scrollDetail.scrollTop >= maxScroll) || footerHasFocus) {
             // Reset.
             this.setBarHeight(this.initialHeight);
         } else {

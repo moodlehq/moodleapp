@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Directive, ElementRef, OnInit, Output, EventEmitter, OnChanges, SimpleChanges, Input, inject } from '@angular/core';
+import { Directive, ElementRef, OnInit, inject, input, effect, output } from '@angular/core';
 import { CoreDom } from '@singletons/dom';
 import { toBoolean } from '../transforms/boolean';
 
@@ -22,35 +22,31 @@ import { toBoolean } from '../transforms/boolean';
 @Directive({
     selector: '[ariaButtonClick]',
 })
-export class CoreAriaButtonClickDirective implements OnInit, OnChanges {
+export class CoreAriaButtonClickDirective implements OnInit {
 
-    @Input({ transform: toBoolean }) disabled = false;
-    @Output() ariaButtonClick = new EventEmitter();
+    readonly disabled = input(false, { transform: toBoolean });
+    readonly ariaButtonClick = output<MouseEvent | KeyboardEvent>();// Emit when the button is clicked.
 
     protected element: HTMLElement = inject(ElementRef).nativeElement;
+
+    constructor() {
+        effect(() => {
+            const disabled = this.disabled();
+            if (this.element.getAttribute('tabindex') === '0' && disabled) {
+                this.element.setAttribute('tabindex', '-1');
+            }
+
+            if (this.element.getAttribute('tabindex') === '-1' && !disabled) {
+                this.element.setAttribute('tabindex', '0');
+            }
+        });
+    }
 
     /**
      * @inheritdoc
      */
     ngOnInit(): void {
         CoreDom.initializeClickableElementA11y(this.element, (event) => this.ariaButtonClick.emit(event));
-    }
-
-    /**
-     * @inheritdoc
-     */
-    ngOnChanges(changes: SimpleChanges): void {
-        if (!changes.disabled) {
-            return;
-        }
-
-        if (this.element.getAttribute('tabindex') === '0' && this.disabled) {
-            this.element.setAttribute('tabindex', '-1');
-        }
-
-        if (this.element.getAttribute('tabindex') === '-1' && !this.disabled) {
-            this.element.setAttribute('tabindex', '0');
-        }
     }
 
 }

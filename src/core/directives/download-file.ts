@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Directive, Input, OnInit, ElementRef, inject } from '@angular/core';
+import { Directive, OnInit, ElementRef, inject, input } from '@angular/core';
 import { CoreFileHelper } from '@services/file-helper';
 import { CoreAlerts } from '@services/overlays/alerts';
 import { CoreLoadings } from '@services/overlays/loadings';
@@ -28,9 +28,9 @@ import { Translate } from '@singletons';
 })
 export class CoreDownloadFileDirective implements OnInit {
 
-    @Input('core-download-file') file?: CoreWSFile; // The file to download.
-    @Input() component?: string; // Component to link the file to.
-    @Input() componentId?: string | number; // Component ID to use in conjunction with the component.
+    readonly file = input<CoreWSFile>(undefined, { alias: 'core-download-file' }); // The file to download.
+    readonly component = input<string>(); // Component to link the file to.
+    readonly componentId = input<string | number>(); // Component ID to use in conjunction with the component.
 
     protected element: HTMLElement = inject(ElementRef).nativeElement;
 
@@ -39,7 +39,8 @@ export class CoreDownloadFileDirective implements OnInit {
      */
     ngOnInit(): void {
         this.element.addEventListener('click', async (ev: Event) => {
-            if (!this.file) {
+            const file = this.file();
+            if (!file) {
                 return;
             }
 
@@ -49,7 +50,7 @@ export class CoreDownloadFileDirective implements OnInit {
             const modal = await CoreLoadings.show();
 
             try {
-                await CoreFileHelper.downloadAndOpenFile(this.file, this.component, this.componentId);
+                await CoreFileHelper.downloadAndOpenFile(file, this.component(), this.componentId());
             } catch (error) {
                 CoreAlerts.showError(error, { default: Translate.instant('core.errordownloading') });
             } finally {
