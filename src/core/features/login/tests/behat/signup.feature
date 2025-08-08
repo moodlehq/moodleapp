@@ -114,6 +114,7 @@ Feature: Test signup in app
     And I press "Create my new account" in the app
     Then I should find "An email should have been sent to your address" in the app
 
+  @lms_from4.5
   Scenario: Signup with custom profile fields
     # Use default options Yes/No for menu field because it's not possible to add new lines. See MDL-75788.
     Given the following "custom profile fields" exist:
@@ -141,7 +142,7 @@ Feature: Test signup in app
     And I should find "Date and time" in the app
     And I should find "Describe yourself" in the app
     And the field "Describe yourself" matches value "Sample text" in the app
-    And I should find "Web page" in the app
+    And I should find "Website" in the app
     But I should not find "Favourite beverage" in the app
 
     When I set the following fields to these values in the app:
@@ -153,7 +154,7 @@ Feature: Test signup in app
       | Last name | Test |
       | City/town | Barcelona |
       | Country | Spain |
-      | Web page | https://moodle.com |
+      | Website | https://moodle.com |
     And I press "Create my new account" in the app
     Then I should find "Required" in the app
 
