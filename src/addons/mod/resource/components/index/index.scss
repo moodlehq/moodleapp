@@ -12,4 +12,25 @@
     .addon-mod_resource-afterlink {
         font-size: var(--text-size);
     }
+
+    // Styles for inline document viewer
+    iframe {
+        width: 100%;
+        height: 80vh;
+        min-height: 600px;
+        border: none;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        border-radius: 8px;
+        background-color: #fff;
+        display: block;
+        margin-top: 16px;
+    }
+
+    // Hide elements when showing iframe
+    &.iframe-mode {
+        .description,
+        .addon-mod_resource-afterlink {
+            display: none;
+        }
+    }
 }

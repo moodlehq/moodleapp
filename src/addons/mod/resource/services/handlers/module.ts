@@ -106,6 +106,21 @@ export class AddonModResourceModuleHandlerService extends CoreModuleHandlerBase 
 
         handlerData.icon = this.getIconSrc(module);
 
+        // Add preview functionality for PDFs, Word docs, and PowerPoints
+        if (module.contents && module.contents[0]) {
+            const file = module.contents[0];
+            const filename = file.filename || '';
+            const fileExtension = CoreMimetypeUtils.getFileExtension(filename);
+            const mimetype = module.contentsinfo?.mimetypes[0] || 
+                (fileExtension ? CoreMimetypeUtils.getMimeType(fileExtension) : '') || '';
+            
+            // Check if file is previewable
+            const isPreviewable = this.isPreviewableFile(mimetype, filename);
+            if (isPreviewable && forCoursePage) {
+                handlerData.extraContent = await this.getPreviewContent(module, file, mimetype);
+            }
+        }
+
         return handlerData;
     }
 
@@ -168,6 +183,137 @@ export class AddonModResourceModuleHandlerService extends CoreModuleHandlerBase 
         const { AddonModResourceIndexComponent } = await import('../../components/index');
 
         return AddonModResourceIndexComponent;
+    }
+
+    /**
+     * Check if a file is previewable (PDF, Word, PowerPoint).
+     *
+     * @param mimetype The file mimetype.
+     * @param filename The filename.
+     * @returns Whether the file is previewable.
+     */
+    protected isPreviewableFile(mimetype: string, filename: string): boolean {
+        const extensionResult = CoreMimetypeUtils.getFileExtension(filename);
+        const extension = extensionResult ? extensionResult.toLowerCase() : '';
+        
+        // Check for PDF
+        if (mimetype === 'application/pdf' || extension === 'pdf') {
+            return true;
+        }
+        
+        // Check for Word documents
+        if (mimetype === 'application/msword' || 
+            mimetype === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' ||
+            extension === 'doc' || extension === 'docx') {
+            return true;
+        }
+        
+        // Check for PowerPoint
+        if (mimetype === 'application/vnd.ms-powerpoint' || 
+            mimetype === 'application/vnd.openxmlformats-officedocument.presentationml.presentation' ||
+            extension === 'ppt' || extension === 'pptx') {
+            return true;
+        }
+        
+        return false;
+    }
+
+    /**
+     * Get preview content for the file.
+     *
+     * @param module The module.
+     * @param file The file to preview.
+     * @param mimetype The file mimetype.
+     * @returns Preview content HTML.
+     */
+    protected async getPreviewContent(module: CoreCourseModuleData, file: any, mimetype: string): Promise<string> {
+        const filename = file.filename || '';
+        const extensionResult = CoreMimetypeUtils.getFileExtension(filename);
+        const extension = extensionResult ? extensionResult.toLowerCase() : '';
+        
+        // For PDFs, we can show an embedded preview using iframe
+        if (mimetype === 'application/pdf' || extension === 'pdf') {
+            // Get the file URL with authentication token for PDF viewer
+            const fileUrl = await CoreFileHelper.getFileUrl(file);
+            
+            return `
+                <div class="addon-mod-resource-inline-viewer">
+                    <div class="viewer-header">
+                        <ion-icon name="fas-file-pdf" class="file-icon pdf"></ion-icon>
+                        <span class="file-name">${filename}</span>
+                    </div>
+                    <div class="pdf-viewer-container">
+                        <iframe src="${fileUrl}" 
+                            title="${filename}"
+                            class="pdf-iframe"
+                            frameborder="0">
+                        </iframe>
+                    </div>
+                </div>
+            `;
+        }
+        
+        // For Word documents and PowerPoint, check if we can use Office viewer
+        if (mimetype === 'application/msword' || 
+            mimetype === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' ||
+            extension === 'doc' || extension === 'docx' ||
+            mimetype === 'application/vnd.ms-powerpoint' || 
+            mimetype === 'application/vnd.openxmlformats-officedocument.presentationml.presentation' ||
+            extension === 'ppt' || extension === 'pptx') {
+            
+            const iconName = (extension === 'doc' || extension === 'docx') ? 'fas-file-word' : 'fas-file-powerpoint';
+            const iconClass = (extension === 'doc' || extension === 'docx') ? 'word' : 'powerpoint';
+            const fileType = (extension === 'doc' || extension === 'docx') ? 'Word Document' : 'PowerPoint Presentation';
+            
+            // Check if the file is publicly accessible (not requiring authentication)
+            if (file.isexternalfile || (file.fileurl && !file.fileurl.includes('/webservice/'))) {
+                // Use Office Online viewer for public files
+                const encodedUrl = encodeURIComponent(file.fileurl);
+                const viewerUrl = `https://view.officeapps.live.com/op/embed.aspx?src=${encodedUrl}`;
+                
+                return `
+                    <div class="addon-mod-resource-inline-viewer">
+                        <div class="viewer-header">
+                            <ion-icon name="${iconName}" class="file-icon ${iconClass}"></ion-icon>
+                            <span class="file-name">${filename}</span>
+                        </div>
+                        <div class="office-viewer-container">
+                            <iframe src="${viewerUrl}" 
+                                title="${filename}"
+                                class="office-iframe"
+                                frameborder="0"
+                                sandbox="allow-forms allow-popups allow-same-origin allow-scripts">
+                            </iframe>
+                        </div>
+                    </div>
+                `;
+            } else {
+                // For private files, show a download preview
+                return `
+                    <div class="addon-mod-resource-inline-viewer">
+                        <div class="viewer-header">
+                            <ion-icon name="${iconName}" class="file-icon ${iconClass}"></ion-icon>
+                            <span class="file-name">${filename}</span>
+                        </div>
+                        <div class="file-preview-info">
+                            <div class="file-type-indicator">
+                                <ion-icon name="${iconName}" class="large-icon ${iconClass}"></ion-icon>
+                                <p class="file-type">${fileType}</p>
+                            </div>
+                            <div class="file-actions">
+                                <p class="preview-note">This document requires download to view</p>
+                                <ion-button class="download-button" fill="outline" size="small">
+                                    <ion-icon name="fas-download" slot="start"></ion-icon>
+                                    Download to View
+                                </ion-button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+        }
+        
+        return '';
     }
 
 }

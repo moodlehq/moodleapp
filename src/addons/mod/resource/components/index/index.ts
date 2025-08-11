@@ -43,6 +43,9 @@ import { ADDON_MOD_RESOURCE_COMPONENT } from '../../constants';
     selector: 'addon-mod-resource-index',
     templateUrl: 'addon-mod-resource-index.html',
     styleUrls: ['index.scss'],
+    host: {
+        '[class.iframe-mode]': 'mode === "iframe"'
+    }
 })
 export class AddonModResourceIndexComponent extends CoreCourseModuleMainResourceComponent implements OnInit, OnDestroy {
 
@@ -159,8 +162,6 @@ export class AddonModResourceIndexComponent extends CoreCourseModuleMainResource
             this.contentText = await AddonModResourceHelper.getEmbeddedHtml(this.module);
             this.mode = this.contentText.length > 0 ? 'embedded' : 'external';
         } else {
-            this.mode = 'external';
-            this.warning = '';
             let mimetype: string;
 
             // Always show description on external.
@@ -184,6 +185,73 @@ export class AddonModResourceIndexComponent extends CoreCourseModuleMainResource
             this.isExternalFile = !!contents[0].isexternalfile;
             this.type = CoreMimetypeUtils.getMimetypeDescription(mimetype);
             this.isStreamedFile = CoreMimetypeUtils.isStreamedMimetype(mimetype);
+            
+            // Check if we can show the file inline (PDFs, Word docs, PowerPoints)
+            const file = contents[0];
+            const filename = file.filename || '';
+            const extension = CoreMimetypeUtils.getFileExtension(filename)?.toLowerCase() || '';
+            
+            // For PDFs, show inline
+            if (mimetype === 'application/pdf' || extension === 'pdf') {
+                let fileUrl: string;
+                if (file.isexternalfile || (file.fileurl && !file.fileurl.includes('/webservice/'))) {
+                    // External file, use the URL directly
+                    fileUrl = file.fileurl;
+                } else {
+                    // Internal file, get the proper URL with authentication
+                    const currentSite = CoreSites.getCurrentSite();
+                    if (currentSite) {
+                        fileUrl = await CoreFileHelper.getFileUrl(file);
+                        fileUrl = await currentSite.checkAndFixPluginfileURL(fileUrl);
+                        fileUrl = await currentSite.getAutoLoginUrl(fileUrl, false);
+                    } else {
+                        fileUrl = await CoreFileHelper.getFileUrl(file);
+                    }
+                }
+                this.mode = 'iframe';
+                this.src = fileUrl;
+                this.displayDescription = false;
+                this.warning = '';
+                return;
+            }
+            
+            // For Word and PowerPoint files, check if we can use iframe
+            if ((mimetype === 'application/msword' || 
+                mimetype === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' ||
+                extension === 'doc' || extension === 'docx' ||
+                mimetype === 'application/vnd.ms-powerpoint' || 
+                mimetype === 'application/vnd.openxmlformats-officedocument.presentationml.presentation' ||
+                extension === 'ppt' || extension === 'pptx')) {
+                
+                let fileUrl: string;
+                if (file.isexternalfile || (file.fileurl && !file.fileurl.includes('/webservice/'))) {
+                    // External file, use the URL directly
+                    fileUrl = file.fileurl;
+                } else {
+                    // Internal file, get the proper URL with authentication
+                    const currentSite = CoreSites.getCurrentSite();
+                    if (currentSite) {
+                        fileUrl = await CoreFileHelper.getFileUrl(file);
+                        fileUrl = await currentSite.checkAndFixPluginfileURL(fileUrl);
+                        fileUrl = await currentSite.getAutoLoginUrl(fileUrl, false);
+                    } else {
+                        fileUrl = await CoreFileHelper.getFileUrl(file);
+                    }
+                }
+                
+                // Use Office Online viewer
+                const encodedUrl = encodeURIComponent(fileUrl);
+                const viewerUrl = `https://view.officeapps.live.com/op/embed.aspx?src=${encodedUrl}`;
+                this.mode = 'iframe';
+                this.src = viewerUrl;
+                this.displayDescription = false;
+                this.warning = '';
+                return;
+            }
+            
+            // Default to external mode for other files
+            this.mode = 'external';
+            this.warning = '';
         }
     }
 

@@ -90,6 +90,10 @@
 
                 <div *ngIf="showExtra && module.handlerData.extraBadge" class="ion-text-wrap activity-extrabadges activity-extra"
                     [innerHTML]="module.handlerData.extraBadge"></div>
+                    
+                <!-- File preview for resources -->
+                <div *ngIf="module.handlerData.extraContent" class="ion-text-wrap activity-preview activity-extra"
+                    [innerHTML]="module.handlerData.extraContent"></div>
             </ion-label>
 
         </ion-item>

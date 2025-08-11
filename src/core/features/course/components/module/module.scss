@@ -208,6 +208,133 @@
         display: none;
     }
 
+    // Resource inline viewer styles
+    .activity-preview {
+        margin-top: var(--vertical-spacing);
+        
+        ::ng-deep .addon-mod-resource-inline-viewer {
+            background: var(--ion-color-light);
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid var(--ion-color-medium-tint);
+            
+            .viewer-header {
+                display: flex;
+                align-items: center;
+                padding: 12px;
+                background: var(--ion-color-light-shade);
+                border-bottom: 1px solid var(--ion-color-medium-tint);
+                
+                .file-icon {
+                    font-size: 20px;
+                    margin-right: 8px;
+                    
+                    &.pdf {
+                        color: #dc2626;
+                    }
+                    
+                    &.word {
+                        color: #2563eb;
+                    }
+                    
+                    &.powerpoint {
+                        color: #dc2626;
+                    }
+                }
+                
+                .file-name {
+                    font-weight: 600;
+                    font-size: 14px;
+                    flex: 1;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                    white-space: nowrap;
+                }
+            }
+            
+            .pdf-viewer-container,
+            .office-viewer-container {
+                position: relative;
+                width: 100%;
+                height: 400px;
+                background: #f8f8f8;
+                
+                iframe {
+                    width: 100%;
+                    height: 100%;
+                    border: none;
+                    display: block;
+                }
+                
+                // Loading state
+                &::before {
+                    content: '';
+                    position: absolute;
+                    top: 50%;
+                    left: 50%;
+                    transform: translate(-50%, -50%);
+                    width: 40px;
+                    height: 40px;
+                    border: 3px solid var(--ion-color-primary-tint);
+                    border-top-color: var(--ion-color-primary);
+                    border-radius: 50%;
+                    animation: spin 1s linear infinite;
+                    z-index: -1;
+                }
+            }
+            
+            @keyframes spin {
+                to { transform: translate(-50%, -50%) rotate(360deg); }
+            }
+            
+            .file-preview-info {
+                padding: 40px 20px;
+                text-align: center;
+                
+                .file-type-indicator {
+                    margin-bottom: 20px;
+                    
+                    .large-icon {
+                        font-size: 64px;
+                        margin-bottom: 10px;
+                        
+                        &.pdf {
+                            color: #dc2626;
+                        }
+                        
+                        &.word {
+                            color: #2563eb;
+                        }
+                        
+                        &.powerpoint {
+                            color: #dc2626;
+                        }
+                    }
+                    
+                    .file-type {
+                        font-size: 16px;
+                        font-weight: 600;
+                        color: var(--ion-text-color);
+                        margin: 0;
+                    }
+                }
+                
+                .file-actions {
+                    .preview-note {
+                        font-size: 14px;
+                        color: var(--ion-color-medium-shade);
+                        margin-bottom: 15px;
+                    }
+                    
+                    .download-button {
+                        --padding-start: 16px;
+                        --padding-end: 16px;
+                    }
+                }
+            }
+        }
+    }
+
 }
 
 
