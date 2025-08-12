@@ -30,6 +30,7 @@ import { CoreConfig } from '@services/config';
 import { CoreEvents } from '@singletons/events';
 import { CoreColors } from './colors';
 import { CorePrompts } from '@services/overlays/prompts';
+import { CoreNativeCordovaPluginResultStatus } from '@features/native/constants';
 
 /**
  * Singleton with helper functions to handler open files and urls.
@@ -124,7 +125,7 @@ export class CoreOpener {
             // Error, use the original path.
         }
 
-        const openFile = async (path: string, mimetype?: string) => {
+        const openFile = async (path: string, mimetype?: string, hasFailed?: boolean) => {
             try {
                 if (CoreOpener.shouldOpenWithDialog(options)) {
                     await FileOpener.showOpenWithDialog(path, mimetype || '');
@@ -132,10 +133,19 @@ export class CoreOpener {
                     await FileOpener.open(path, mimetype || '');
                 }
             } catch (error) {
+                if (
+                    hasFailed ||
+                    error.status !== CoreNativeCordovaPluginResultStatus.ERROR ||
+                    error.message.includes('Activity not found')
+                ) {
+                    throw error;
+                }
+
                 // If the file contains the % character without encoding the open can fail. Try again encoding it.
                 const encodedPath = encodeURI(path);
+
                 if (path !== encodedPath) {
-                    return await openFile(encodedPath, mimetype);
+                    return await openFile(encodedPath, mimetype, true);
                 }
 
                 throw error;
