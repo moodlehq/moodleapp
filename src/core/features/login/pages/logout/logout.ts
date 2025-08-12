@@ -66,6 +66,10 @@ export default class CoreLoginLogoutPage implements OnInit {
             // We need to reload the app to unload all the plugins. Leave the logout page first.
             await CoreNavigator.navigate('/login', { reset: true });
 
+            // The ionViewWillLeave callback will also be called in this case because of the navigation, but we call
+            // finishLogoutProcess before the reload just in case, to make sure the promise is resolved before reloading.
+            CoreSites.finishLogoutProcess();
+
             window.location.reload();
 
             return;
@@ -98,6 +102,13 @@ export default class CoreLoginLogoutPage implements OnInit {
         }
 
         await CoreNavigator.navigateToSiteHome({ params: redirectData, preferCurrentTab: false, siteId });
+    }
+
+    /**
+     * The page is about to leave and no longer be the active page.
+     */
+    ionViewWillLeave(): void {
+        CoreSites.finishLogoutProcess();
     }
 
 }

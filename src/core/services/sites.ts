@@ -343,6 +343,7 @@ export class CoreSitesProvider {
     protected sessionRestored = false;
     protected currentSite?: CoreSite;
     protected sites: { [s: string]: CoreSite } = {};
+    protected logoutPromise?: CorePromisedValue<void>;
 
     protected sitesTable = asyncInstance<CoreDatabaseTable<SiteDBEntry>>();
     protected sitesDB: CoreSitesDB; // To handle sites DB.
@@ -1677,10 +1678,17 @@ export class CoreSitesProvider {
      * @param options Options.
      */
     async logout(options: CoreSitesLogoutOptions = {}): Promise<void> {
+        this.logoutPromise = this.logoutPromise ?? new CorePromisedValue<void>();
+
         await CoreNavigator.navigate('/logout', {
             params: { ...options },
             reset: true,
         });
+
+        // Wait for the logout process to finish, otherwise the callers would only know when has the navigation finished.
+        // E.g. this is useful for behat code, to wait for the logout to finish.
+        // The logout should be fast, add a timeout to make sure this doesn't block the app forever by mistake.
+        await CorePromiseUtils.ignoreErrors(CorePromiseUtils.timeoutPromise(this.logoutPromise, 3000));
     }
 
     /**
@@ -1716,6 +1724,14 @@ export class CoreSitesProvider {
         }
 
         CoreEvents.trigger(CoreEvents.LOGOUT, {}, siteId);
+    }
+
+    /**
+     * Finish the logout process. This function is meant to be used only by the logout page.
+     */
+    finishLogoutProcess(): void {
+        this.logoutPromise?.resolve();
+        this.logoutPromise = undefined;
     }
 
     /**
