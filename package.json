@@ -246,7 +246,8 @@
                 "MAX_STORE": "2",
                 "MIN_BACKGROUND_DURATION": "30",
                 "UPDATE_API": "https://api.ionicjs.com"
-            }
+            },
+            "cordova-plugin-add-swift-support": {}
         }
     }
 }
