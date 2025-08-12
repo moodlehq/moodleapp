@@ -1179,16 +1179,16 @@ class behat_app extends behat_app_helper {
     public function i_switch_network_connection(string $mode) {
         switch ($mode) {
             case 'wifi':
-                $this->runtime_js("network.setForceConnectionMode('wifi');");
+                $this->runtime_js("network.setForceConnectionMode('wifi')");
                 break;
             case 'cellular':
-                $this->runtime_js("network.setForceConnectionMode('cellular');");
+                $this->runtime_js("network.setForceConnectionMode('cellular')");
                 break;
             case 'offline':
-                $this->runtime_js("network.setForceConnectionMode('offline');");
+                $this->runtime_js("network.setForceConnectionMode('offline')");
                 break;
             default:
-                $this->runtime_js("network.setForceConnectionMode('unknown');");
+                $this->runtime_js("network.setForceConnectionMode('unknown')");
                 break;
         }
     }

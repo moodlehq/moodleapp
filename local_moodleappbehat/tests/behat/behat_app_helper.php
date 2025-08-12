@@ -217,6 +217,11 @@ class behat_app_helper extends behat_base {
 
         // Wait the application to load.
         $this->spin(function($context) {
+            // Make sure the behat API has been loaded.
+            if (!$this->evaluate_script('window.behat')) {
+                throw new DriverException('Behat API not found in window');
+            }
+
             $title = $context->getSession()->getPage()->find('xpath', '//title');
 
             if ($title) {
@@ -364,7 +369,7 @@ class behat_app_helper extends behat_base {
      * @return mixed Result.
      */
     protected function runtime_js(string $script) {
-        return $this->evaluate_script("window.behat?.$script");
+        return $this->evaluate_script("window.behat ? window.behat.$script : 'ERROR - Behat API not loaded'");
     }
 
     /**
