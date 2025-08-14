@@ -117,4 +117,13 @@ describe('CoreText singleton', () => {
         expect(CoreText.countWords('<span>a</span><span>b</span>')).toEqual(1);
     });
 
+    it('converts camelCase to kebab-case', () => {
+        expect(CoreText.camelCaseToKebabCase('camelCase')).toEqual('camel-case');
+        expect(CoreText.camelCaseToKebabCase('camelCaseWithNumbers123')).toEqual('camel-case-with-numbers123');
+        expect(CoreText.camelCaseToKebabCase('')).toEqual('');
+        expect(CoreText.camelCaseToKebabCase('snake_case')).toEqual('snake_case');
+        expect(CoreText.camelCaseToKebabCase('already-kebab-case')).toEqual('already-kebab-case');
+        expect(CoreText.camelCaseToKebabCase('mix_of-differentTextCases')).toEqual('mix_of-different-text-cases');
+    });
+
 });
