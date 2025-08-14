@@ -495,6 +495,9 @@ export class CoreFormatTextDirective implements OnChanges, OnDestroy, AsyncDirec
      * @returns Promise resolved when done.
      */
     protected treatHTMLElements(div: HTMLElement, site?: CoreSite): ElementController[] {
+        // Treat alternative content elements first, that way the search of elements won't treat the elements that are removed.
+        this.treatAlternativeContentElements(div);
+
         const images = Array.from(div.querySelectorAll('img'));
         const anchors = Array.from(div.querySelectorAll('a'));
         const audios = Array.from(div.querySelectorAll('audio'));
@@ -648,6 +651,40 @@ export class CoreFormatTextDirective implements OnChanges, OnDestroy, AsyncDirec
             ...iframeControllers,
             ...frameControllers,
         ];
+    }
+
+    /**
+     * Treat elements with data attributes to display an alternative content in the app.
+     *
+     * @param div Container where to search the elements.
+     */
+    protected treatAlternativeContentElements(div: HTMLElement): void {
+        const appAltElements = Array.from(div.querySelectorAll<HTMLElement>(
+            '*[data-app-alt-url],*[data-app-alt-msg]',
+        ));
+
+        appAltElements.forEach((element) => {
+            const url = element.dataset.appAltUrl;
+            const message = element.dataset.appAltMsg;
+            if (!message && !url) {
+                return;
+            }
+
+            let newContent = message ? `<p>${message}</p>` : '';
+            if (url) {
+                // Create a link using the appUrl format to reuse all the logic of appUrl data attributes.
+                let dataAttributes = `data-app-url="${url}"`;
+                for (const attr in element.dataset) {
+                    if (!['appUrl', 'appAltUrl', 'appAltMsg'].includes(attr)) {
+                        dataAttributes += ` data-${CoreText.camelCaseToKebabCase(attr)}="${element.dataset[attr]}"`;
+                    }
+                }
+
+                newContent += `<p><a href="${url}" ${dataAttributes}>${url}</a></p>`;
+            }
+
+            element.innerHTML = newContent;
+        });
     }
 
     /**
