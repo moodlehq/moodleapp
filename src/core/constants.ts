@@ -114,6 +114,18 @@ export const enum BackButtonPriority {
 }
 
 /**
+ * LMS enum with the different badge styles.
+ */
+export const enum LMSBadgeStyle {
+    PRIMARY = 'primary',
+    SECONDARY = 'secondary',
+    SUCCESS = 'success',
+    DANGER = 'danger',
+    WARNING = 'warning',
+    INFO = 'info',
+}
+
+/**
  * Static class to contain all the core constants.
  */
 export class CoreConstants {
