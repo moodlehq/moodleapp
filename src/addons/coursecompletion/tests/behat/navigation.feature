@@ -34,13 +34,13 @@ Feature: Course completion navigation
       | name     | P1   |
     And I enable "selfcompletion" "block" plugin
     And the following "blocks" exist:
-      | blockname        | contextlevel | reference |
-      | completionstatus | Course       | C1        |
-      | selfcompletion   | Course       | C1        |
-      | activity_modules | Course       | C1        |
-      | completionstatus | Course       | C2        |
-      | selfcompletion   | Course       | C2        |
-      | activity_modules | Course       | C2        |
+      | blockname        | contextlevel | reference | pagetypepattern | defaultregion | configdata                                                                                                   |
+      | completionstatus | Course       | C1        | course-view-*   | side-pre      |                                                                                                              |
+      | selfcompletion   | Course       | C1        | course-view-*   | side-pre      |                                                                                                              |
+      | html             | Course       | C1        | course-view-*   | side-pre      | Tzo4OiJzdGRDbGFzcyI6Mjp7czo1OiJ0aXRsZSI7czoxNToiSFRNTCB0aXRsZSB0ZXN0IjtzOjQ6InRleHQiO3M6OToiYm9keSB0ZXN0Ijt9 |
+      | completionstatus | Course       | C2        | course-view-*   | side-pre      |                                                                                                              |
+      | selfcompletion   | Course       | C2        | course-view-*   | side-pre      |                                                                                                              |
+      | html             | Course       | C2        | course-view-*   | side-pre      | Tzo4OiJzdGRDbGFzcyI6Mjp7czo1OiJ0aXRsZSI7czoxNToiSFRNTCB0aXRsZSB0ZXN0IjtzOjQ6InRleHQiO3M6OToiYm9keSB0ZXN0Ijt9 |
     And the following config values are set as admin:
       | enablecompletion  | 1 |
     And I am on the "Course 1" course page logged in as teacher1
