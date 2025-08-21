@@ -21,15 +21,23 @@ a {
     cursor: pointer;
 }
 
-:root[dir=rtl] {
+:root[dir="rtl"] {
     --rotate-expandable: rotate(-90deg);
 }
 
 // Common styles.
-.text-left           { text-align: left; }
-.text-right          { text-align: right; }
-.text-center         { text-align: center; }
-.text-justify        { text-align: justify; }
+.text-left {
+    text-align: left;
+}
+.text-right {
+    text-align: right;
+}
+.text-center {
+    text-align: center;
+}
+.text-justify {
+    text-align: justify;
+}
 .clearfix {
     &:after {
         content: "";
@@ -50,13 +58,25 @@ a {
     }
 }
 
-.opacity-hide { opacity: 0; }
-.core-big   { font-size: 115%; }
-.invisible { visibility: hidden; }
+.opacity-hide {
+    opacity: 0;
+}
+.core-big {
+    font-size: 115%;
+}
+.invisible {
+    visibility: hidden;
+}
 
-.flex { display: flex; }
-.inline-block { display: inline-block; }
-.block { display: block; }
+.flex {
+    display: flex;
+}
+.inline-block {
+    display: inline-block;
+}
+.block {
+    display: block;
+}
 
 .flex-row {
     display: flex;
@@ -73,13 +93,25 @@ a {
     flex-grow: 1;
 }
 
-.margin-bottom-sm { margin-bottom: 8px; }
-.margin-bottom-md { margin-bottom: 12px; }
+.margin-bottom-sm {
+    margin-bottom: 8px;
+}
+.margin-bottom-md {
+    margin-bottom: 12px;
+}
 
-.font-bold { font-weight: bold; }
-.font-italic { font-style: italic; }
-.font-lg { font-size: 1.7rem; }
-.font-sm { font-size: 1.2rem; }
+.font-bold {
+    font-weight: bold;
+}
+.font-italic {
+    font-style: italic;
+}
+.font-lg {
+    font-size: 1.7rem;
+}
+.font-sm {
+    font-size: 1.2rem;
+}
 
 @each $color-name, $unused in $colors {
     .text-#{$color-name},
@@ -114,12 +146,18 @@ ion-list {
 // Safe areas
 .safe-area-padding,
 .safe-area-padding-horizontal {
-    @include padding-horizontal(var(--ion-safe-area-left), var(--ion-safe-area-right));
+    @include padding-horizontal(
+        var(--ion-safe-area-left),
+        var(--ion-safe-area-right)
+    );
 }
 
 .safe-area-margin,
 .safe-margin-horizontal {
-    @include margin-horizontal(var(--ion-safe-area-left), var(--ion-safe-area-right));
+    @include margin-horizontal(
+        var(--ion-safe-area-left),
+        var(--ion-safe-area-right)
+    );
 }
 
 .ion-padding.safe-area-padding-horizontal {
@@ -138,7 +176,8 @@ ion-tabs.placement-bottom .tabs-inner {
     --ion-safe-area-bottom: 0px;
 }
 
-core-tabs, core-tabs-outlet {
+core-tabs,
+core-tabs-outlet {
     swiper-slide {
         --background: var(--core-tab-background);
         --color: var(--core-tab-color);
@@ -179,7 +218,11 @@ core-split-view.menu-and-content {
 // Item styles
 [aria-current="page"],
 .item.item-current {
-    @include safe-area-border-start(var(--selected-item-border-width), solid,  var(--selected-item-color));
+    @include safe-area-border-start(
+        var(--selected-item-border-width),
+        solid,
+        var(--selected-item-color)
+    );
     --padding-start: calc(16px - var(--selected-item-border-width));
 
     > * {
@@ -201,7 +244,10 @@ img[core-external-content]:not([src]) {
     visibility: hidden;
 }
 
-.core-course-module-handler:not(.addon-mod-label-handler) .item-heading .filter_mathjaxloader_equation div {
+.core-course-module-handler:not(.addon-mod-label-handler)
+    .item-heading
+    .filter_mathjaxloader_equation
+    div {
     display: inline !important;
 }
 
@@ -231,12 +277,12 @@ ion-content.limited-width > :not([slot]) {
     min-height: 100%;
 }
 
-.core-anchor, core-format-text a {
+.core-anchor,
+core-format-text a {
     color: var(--core-link-color);
     cursor: pointer;
     text-decoration: underline;
 }
-
 
 // Horizontal scrolling elements
 .core-horizontal-scroll {
@@ -252,7 +298,8 @@ ion-content.limited-width > :not([slot]) {
 
 // Text formats.
 // Highlight text.
-mark, .matchtext {
+mark,
+.matchtext {
     background-color: var(--text-hightlight-background-color);
 }
 
@@ -262,12 +309,16 @@ mark, .matchtext {
 }
 
 .core-scanning-qr {
-    .ion-page, ion-modal::part(content) {
+    .ion-page,
+    ion-modal::part(content) {
         background-color: transparent !important;
         --background: transparent;
     }
 
-    ion-content, ion-backdrop, ion-modal:not(.core-modal-fullscreen), ion-tabs {
+    ion-content,
+    ion-backdrop,
+    ion-modal:not(.core-modal-fullscreen),
+    ion-tabs {
         display: none !important;
     }
 }
@@ -331,7 +382,8 @@ td {
     @include core-focus-background();
 }
 
-:not(.hydrated):not(.native-input):not(.native-textarea) { // Not an ionic component.
+:not(.hydrated):not(.native-input):not(.native-textarea) {
+    // Not an ionic component.
     @include core-focus-outline();
 }
 
@@ -396,7 +448,6 @@ ion-grid.core-no-grid > ion-row {
                 opacity: 0;
                 @include core-transition(all, 200ms);
             }
-
         }
         &.footer-expanded {
             --core-collapsible-footer-height: auto;
@@ -443,7 +494,6 @@ ion-grid.core-no-grid > ion-row {
     }
 }
 
-
 .core-flex-no-grow {
     flex-grow: 0;
 }
@@ -467,12 +517,19 @@ ion-grid.core-no-grid > ion-row {
     }
 
     &::after {
-        content: '';
+        content: "";
         position: absolute;
         left: -45%;
         height: 100%;
         width: 45%;
-        background-image: linear-gradient(to left, rgb(var(--loader-shine) / 5%), rgb(var(--loader-shine) / 30%), rgb(var(--loader-shine) / 60%), rgb(var(--loader-shine) / 30%), rgb(var(--loader-shine) / 5%));
+        background-image: linear-gradient(
+            to left,
+            rgb(var(--loader-shine) / 5%),
+            rgb(var(--loader-shine) / 30%),
+            rgb(var(--loader-shine) / 60%),
+            rgb(var(--loader-shine) / 30%),
+            rgb(var(--loader-shine) / 5%)
+        );
         animation: loading 1s infinite;
         display: block;
         top: 0;
@@ -488,11 +545,26 @@ video::-webkit-media-text-track-display {
 /**
  * https://github.com/ionic-team/ionic-framework/blob/6ffbdbb3b2b69290cf25753d535bc7483bd7c6e8/BREAKING.md#css-utilities
  */
-[hidden], .hidden {
+[hidden],
+.hidden {
     display: none !important;
 }
 
 .x-scrollable {
     overflow-x: auto;
     display: block;
+}
+
+// Reduce bottom tab bar padding to bring it closer to bottom
+ion-tabs.placement-bottom ion-tab-bar {
+    --ion-safe-area-bottom: 2px !important;
+    margin-bottom: 0px !important;
+    padding-bottom: 2px !important;
+    margin-top: 0px !important;
+    padding-top: 2px !important;
+}
+
+// Ensure tab buttons don't have extra bottom spacing
+ion-tabs.placement-bottom ion-tab-button {
+    --padding-bottom: 2px !important;
 }

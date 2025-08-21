@@ -129,11 +129,11 @@
                             {{ selectedStudent.financial_summary.payment_status
                             | titlecase }}
                         </div>
-                        <p class="stat-label">Payment Status</p>
+                        <!-- <p class="stat-label">Payment Status</p> -->
                     </div>
                 </div>
             </div>
-
+            Missing required data
             <!-- Academic Year Sections -->
             <div
                 *ngFor="let yearData of selectedStudent.academic_years; trackBy: trackByAcademicYear"
