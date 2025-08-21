@@ -24,6 +24,7 @@ Feature: Test single activity of assign type in app
 
     When I set "page-core-course-index core-course-image" styles to "background" "lightblue"
     And I set "page-core-course-index core-course-image" styles to "--core-image-visibility" "hidden"
+    And I replace "/Assignment is overdue by: .*/" within "addon-mod-assign-submission ion-item.overdue" with "Assignment is overdue by: [Overdue date]"
     Then the UI should match the snapshot
 
     And I press "Add submission" in the app
