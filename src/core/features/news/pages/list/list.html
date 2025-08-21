@@ -1,0 +1,53 @@
+<ion-header>
+    <ion-toolbar>
+        <ion-buttons slot="start">
+            <ion-back-button [text]="'core.back' | translate"></ion-back-button>
+        </ion-buttons>
+        <ion-title>
+            <h1>{{ 'core.news.allnews' | translate }}</h1>
+        </ion-title>
+    </ion-toolbar>
+</ion-header>
+
+<ion-content>
+    <ion-refresher slot="fixed" [disabled]="!loaded" (ionRefresh)="refreshNews($event.target)">
+        <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}" />
+    </ion-refresher>
+
+    <core-loading [hideUntil]="loaded">
+        <ion-list *ngIf="news.length > 0">
+            <ion-item *ngFor="let item of news" button (click)="openNewsItem(item)" detail="true" class="news-item">
+                <ion-avatar slot="start" *ngIf="item.userpictureurl">
+                    <img [src]="item.userpictureurl" 
+                         [alt]="item.userfullname"
+                         core-external-content
+                         onError="this.src='assets/img/user-avatar.png'">
+                </ion-avatar>
+                <ion-label>
+                    <h2 class="news-title">{{ item.subject }}</h2>
+                    <div class="news-meta">
+                        <ion-badge [color]="getCourseBadgeColor(item.courseId)" class="course-badge">
+                            {{ item.courseName }}
+                        </ion-badge>
+                        <span class="news-author">{{ item.userfullname }}</span>
+                        <span class="news-date">• {{ formatDate(item.created) }}</span>
+                    </div>
+                    <p class="news-message" [innerHTML]="item.message | coreNoTags"></p>
+                    <div class="news-stats" *ngIf="item.numreplies > 0">
+                        <ion-icon name="chatbubbles-outline"></ion-icon>
+                        <span>{{ item.numreplies }} {{ 'core.comments' | translate }}</span>
+                        <span *ngIf="item.numunread > 0" class="unread-badge">
+                            {{ item.numunread }} {{ 'core.unread' | translate }}
+                        </span>
+                    </div>
+                </ion-label>
+                <ion-icon *ngIf="item.pinned" name="pin" slot="end" color="primary"></ion-icon>
+            </ion-item>
+        </ion-list>
+
+        <core-empty-box *ngIf="loaded && news.length === 0" 
+                        icon="newspaper-outline" 
+                        [message]="'core.news.nonews' | translate">
+        </core-empty-box>
+    </core-loading>
+</ion-content>

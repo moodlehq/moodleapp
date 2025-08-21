@@ -3,43 +3,83 @@
         <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}" />
     </ion-refresher>
 
-    <!-- Aspire School Welcome Banner with Search -->
-    <div class="aspire-welcome-banner" *ngIf="loaded">
-        <div class="aspire-welcome-content">
-            <h1>
-                {{ 'core.courses.welcome_aspire' | translate }}
-                <button class="aspire-search-button" *ngIf="searchEnabled" (click)="openSearch()" [attr.aria-label]="'core.search.globalsearch' | translate">
-                    <ion-icon name="fas-magnifying-glass" aria-hidden="true" />
-                </button>
-            </h1>
-            <p class="aspire-welcome-subtitle">{{ 'core.courses.aspire_subtitle' | translate }}</p>
-        </div>
-    </div>
-
-    <!-- Quick Actions for Students -->
-    <div class="aspire-quick-section" *ngIf="loaded">
-        <h2 class="aspire-section-title">Quick Access</h2>
-        <div class="aspire-quick-actions">
-            <div class="aspire-action-card" [routerLink]="['/main/home/courses']">
-                <ion-icon name="book-outline"></ion-icon>
-                <span>{{ 'core.courses.courses' | translate }}</span>
-            </div>
-            <div class="aspire-action-card" [routerLink]="['/main/calendar']">
-                <ion-icon name="calendar-outline"></ion-icon>
-                <span>Calendar</span>
-            </div>
-            <div class="aspire-action-card" (click)="scrollToNews()">
-                <ion-icon name="newspaper-outline"></ion-icon>
-                <span>News</span>
-            </div>
-            <div class="aspire-action-card" (click)="openGrades()">
-                <ion-icon name="bar-chart-outline"></ion-icon>
-                <span>Grades</span>
-            </div>
-        </div>
-    </div>
-
     <core-loading [hideUntil]="loaded">
+        <!-- Aspire School Welcome Banner with Search -->
+        <div class="aspire-welcome-banner">
+            <div class="aspire-welcome-content">
+                <h1>
+                    {{ 'core.courses.welcome_aspire' | translate }}
+                    <button class="aspire-search-button" *ngIf="searchEnabled" (click)="openSearch()" [attr.aria-label]="'core.search.globalsearch' | translate">
+                        <ion-icon name="fas-magnifying-glass" aria-hidden="true" />
+                    </button>
+                </h1>
+                <p class="aspire-welcome-subtitle">{{ 'core.courses.aspire_subtitle' | translate }}</p>
+            </div>
+        </div>
+
+        <!-- My Children Section for Parents -->
+        <div class="aspire-my-children-section" *ngIf="isParent && mentees.length > 0">
+            <h2 class="aspire-section-title">My Children</h2>
+            <div class="aspire-children-grid">
+                <div class="aspire-child-card" 
+                 *ngFor="let mentee of mentees" 
+                 (click)="selectMenteeAndNavigate(mentee)"
+                 [class.selected]="selectedMenteeId === mentee.id">
+                <ion-avatar>
+                    <img [src]="mentee.profileimageurl || 'assets/img/user-avatar.png'" 
+                         [alt]="mentee.fullname"
+                         core-external-content
+                         onError="this.src='assets/img/user-avatar.png'">
+                </ion-avatar>
+                <div class="aspire-child-info">
+                    <h3>{{ mentee.fullname }}</h3>
+                    <p class="aspire-child-email">{{ mentee.email }}</p>
+                    <ion-badge color="primary" *ngIf="selectedMenteeId === mentee.id">Currently Viewing</ion-badge>
+                </div>
+                <div class="aspire-child-actions">
+                    <button class="aspire-view-grades-btn" (click)="viewMenteeGrades(mentee, $event)">
+                        <ion-icon name="bar-chart-outline"></ion-icon>
+                        <span>Grades</span>
+                    </button>
+                    <ion-icon name="chevron-forward-outline" class="aspire-child-arrow"></ion-icon>
+                </div>
+                </div>
+            </div>
+            <p class="aspire-parent-note" *ngIf="selectedMenteeId">
+                <ion-icon name="information-circle-outline"></ion-icon>
+                You are currently viewing data for {{ getSelectedMenteeName() }}. 
+                <a (click)="clearMenteeSelection()">View your own data</a>
+            </p>
+        </div>
+
+        <!-- Quick Actions for Students -->
+        <div class="aspire-quick-section">
+            <h2 class="aspire-section-title">Quick Access</h2>
+            <div class="aspire-quick-actions">
+                <div class="aspire-action-card" [routerLink]="['/main/home/courses']">
+                    <ion-icon name="book-outline"></ion-icon>
+                    <span>{{ 'core.courses.courses' | translate }}</span>
+                </div>
+                <div class="aspire-action-card" [routerLink]="['/main/calendar']">
+                    <ion-icon name="calendar-outline"></ion-icon>
+                    <span>Calendar</span>
+                </div>
+                <div class="aspire-action-card" [routerLink]="['/main/news']">
+                    <ion-icon name="newspaper-outline"></ion-icon>
+                    <span>News</span>
+                </div>
+                <div class="aspire-action-card" [routerLink]="['/main/financial']" *ngIf="hasChildren">
+                    <ion-icon name="fas-dollar-sign"></ion-icon>
+                    <span>Financial</span>
+                </div>
+                <div class="aspire-action-card" (click)="openGrades()" *ngIf="!hasChildren">
+                    <ion-icon name="bar-chart-outline"></ion-icon>
+                    <span>Grades</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Dashboard Blocks -->
         <ion-list class="list-item-limited-width" *ngIf="hasMainBlocks">
             <ng-container *ngFor="let block of blocks">
                 <core-block *ngIf="block.visible" [block]="block" contextLevel="user" [instanceId]="userId" />

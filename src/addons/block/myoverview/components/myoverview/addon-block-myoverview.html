@@ -24,15 +24,29 @@
 </ion-item-divider>
 <core-loading [hideUntil]="loaded">
 
-    <!-- Category Filter for Aspire School -->
-    <div class="aspire-category-filter" *ngIf="hasCourses && availableCategories.length > 0">
-        <ion-select [(ngModel)]="categoryFilter" (ionChange)="categoryFilterChanged($event.detail.value)"
-            [placeholder]="'Filter by Category'" interface="popover">
-            <ion-select-option value="all">All Categories</ion-select-option>
-            <ion-select-option *ngFor="let category of availableCategories" [value]="category">
-                {{ category }}
-            </ion-select-option>
-        </ion-select>
+    <!-- Filters and Sort Options for Aspire School -->
+    <div class="addon-block-myoverview-filters" *ngIf="hasCourses">
+        <!-- Category Filter -->
+        <div class="aspire-category-filter" *ngIf="availableCategories.length > 0">
+            <ion-select [(ngModel)]="categoryFilter" (ionChange)="categoryFilterChanged($event.detail.value)"
+                [placeholder]="'Filter by Category'" interface="popover">
+                <ion-select-option value="all">All Categories</ion-select-option>
+                <ion-select-option *ngFor="let category of availableCategories" [value]="category">
+                    {{ category }}
+                </ion-select-option>
+            </ion-select>
+        </div>
+        
+        <!-- Sort Options -->
+        <div class="aspire-sort-filter" *ngIf="sort.enabled">
+            <ion-select [(ngModel)]="sort.selected" (ionChange)="sortOptionsChanged($event.detail.value)"
+                [placeholder]="'Sort by'" interface="popover">
+                <ion-select-option value="timemodified">Last Updated</ion-select-option>
+                <ion-select-option value="fullname">Course Name</ion-select-option>
+                <ion-select-option value="lastaccess">Last Accessed</ion-select-option>
+                <ion-select-option value="shortname" *ngIf="sort.shortnameEnabled">Short Name</ion-select-option>
+            </ion-select>
+        </div>
     </div>
 
     <!-- Empty State -->

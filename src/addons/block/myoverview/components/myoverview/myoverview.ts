@@ -96,8 +96,8 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
 
     sort: AddonBlockMyOverviewSortOptions = {
         shortnameEnabled: false,
-        selected: 'fullname',
-        enabled: false,
+        selected: 'timemodified', // Aspire School: Sort by last updated by default
+        enabled: true, // Enable sorting for Aspire School
     };
 
     textFilter = '';
@@ -666,6 +666,9 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
 
                 return compareA.localeCompare(compareB);
             });
+        } else if (this.sort.selected == 'timemodified') {
+            // Sort by last updated (most recent first)
+            this.filteredCourses.sort((a, b) => (b.timemodified || 0) - (a.timemodified || 0));
         }
     }
 

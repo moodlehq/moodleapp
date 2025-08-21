@@ -51,4 +51,42 @@
             @include margin(null, 12px, null, null);
         }
     }
+
+    // Aspire School filter and sort styles
+    .addon-block-myoverview-filters {
+        display: flex;
+        gap: 8px;
+        padding: 8px 16px;
+        flex-wrap: wrap;
+
+        .aspire-category-filter,
+        .aspire-sort-filter {
+            flex: 1;
+            min-width: 150px;
+
+            ion-select {
+                width: 100%;
+                --padding-start: 12px;
+                --padding-end: 12px;
+                border: 1px solid var(--ion-color-light-shade);
+                border-radius: 8px;
+                background: var(--ion-color-light);
+                font-size: 0.875rem;
+            }
+        }
+    }
+
+    // Mentee indicator style
+    .aspire-mentee-indicator {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        font-size: 0.875rem;
+        color: var(--ion-color-primary);
+        margin-top: 4px;
+
+        ion-icon {
+            font-size: 1rem;
+        }
+    }
 }

@@ -25,11 +25,13 @@ import { CoreEmulatorModule } from './emulator/emulator.module';
 import { CoreEnrolModule } from './enrol/enrol.module';
 import { CoreFileUploaderModule } from './fileuploader/fileuploader.module';
 import { CoreFilterModule } from './filter/filter.module';
+import { CoreFinancialModule } from './financial/financial.module';
 import { CoreGradesModule } from './grades/grades.module';
 import { CoreH5PModule } from './h5p/h5p.module';
 import { CoreLoginModule } from './login/login.module';
 import { CoreMainMenuModule } from './mainmenu/mainmenu.module';
 import { CoreNativeModule } from '@features/native/native.module';
+import { CoreNewsModule } from './news/news.module';
 import { CorePushNotificationsModule } from './pushnotifications/pushnotifications.module';
 import { CoreQuestionModule } from './question/question.module';
 import { CoreRatingModule } from './rating/rating.module';
@@ -60,11 +62,13 @@ import { CorePolicyModule } from './policy/policy.module';
         CoreEnrolModule,
         CoreFileUploaderModule,
         CoreFilterModule,
+        CoreFinancialModule,
         CoreGradesModule,
         CoreH5PModule,
         CoreLoginModule,
         CoreMainMenuModule,
         CoreNativeModule,
+        CoreNewsModule,
         CorePushNotificationsModule,
         CoreQuestionModule,
         CoreRatingModule,

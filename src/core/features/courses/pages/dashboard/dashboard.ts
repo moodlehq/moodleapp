@@ -29,6 +29,8 @@ import { Translate } from '@singletons';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreSiteHome } from '@features/sitehome/services/sitehome';
 import { CoreCourseHelper } from '@features/course/services/course-helper';
+import { CoreUserParent } from '@features/user/services/parent';
+import { CoreUserProfile } from '@features/user/services/user';
 
 /**
  * Page that displays the dashboard page.
@@ -36,6 +38,7 @@ import { CoreCourseHelper } from '@features/course/services/course-helper';
 @Component({
     selector: 'page-core-courses-dashboard',
     templateUrl: 'dashboard.html',
+    styleUrls: ['dashboard.scss'],
 })
 export class CoreCoursesDashboardPage implements OnInit, OnDestroy {
 
@@ -49,6 +52,12 @@ export class CoreCoursesDashboardPage implements OnInit, OnDestroy {
     userId?: number;
     blocks: Partial<CoreCourseBlock>[] = [];
     loaded = false;
+    
+    // Parent/mentee properties
+    isParent = false;
+    hasChildren = false;
+    mentees: CoreUserProfile[] = [];
+    selectedMenteeId: number | null = null;
 
     protected updateSiteObserver: CoreEventObserver;
     protected logView: () => void;
@@ -78,12 +87,15 @@ export class CoreCoursesDashboardPage implements OnInit, OnDestroy {
     /**
      * @inheritdoc
      */
-    ngOnInit(): void {
+    async ngOnInit(): Promise<void> {
         this.searchEnabled = !CoreCourses.isSearchCoursesDisabledInSite();
         this.downloadCourseEnabled = !CoreCourses.isDownloadCourseDisabledInSite();
         this.downloadCoursesEnabled = !CoreCourses.isDownloadCoursesDisabledInSite();
 
-        this.loadContent();
+        // Check if user is a parent and load mentees
+        await this.loadParentData();
+        
+        await this.loadContent();
     }
 
     /**
@@ -212,6 +224,120 @@ export class CoreCoursesDashboardPage implements OnInit, OnDestroy {
         CoreNavigator.navigateToSitePath('grades');
     }
 
+    /**
+     * Load parent-related data.
+     */
+    protected async loadParentData(): Promise<void> {
+        try {
+            console.log('Dashboard: Loading parent data...');
+            this.isParent = await CoreUserParent.isParentUser();
+            console.log('Dashboard: Is parent user?', this.isParent);
+            
+            if (this.isParent) {
+                this.mentees = await CoreUserParent.getMentees();
+                console.log('Dashboard: Mentees loaded:', this.mentees);
+                this.selectedMenteeId = await CoreUserParent.getSelectedMentee();
+                console.log('Dashboard: Selected mentee ID:', this.selectedMenteeId);
+            }
+            
+            // Check if user has children (even if not identified as parent)
+            if (!this.mentees || this.mentees.length === 0) {
+                // Try to get mentees even if not identified as parent
+                try {
+                    this.mentees = await CoreUserParent.getMentees();
+                } catch {
+                    // Ignore errors
+                }
+            }
+            
+            this.hasChildren = this.mentees && this.mentees.length > 0;
+            console.log('Dashboard: Has children?', this.hasChildren);
+        } catch (error) {
+            // Silently fail if parent features aren't available
+            console.error('Dashboard: Error loading parent data:', error);
+            this.isParent = false;
+            this.hasChildren = false;
+            this.mentees = [];
+        }
+    }
+
+    /**
+     * Select a mentee and navigate to their dashboard.
+     * 
+     * @param mentee The mentee to select.
+     */
+    async selectMenteeAndNavigate(mentee: CoreUserProfile): Promise<void> {
+        try {
+            await CoreUserParent.setSelectedMentee(mentee.id);
+            this.selectedMenteeId = mentee.id;
+            
+            // Invalidate caches to refresh data
+            await CoreUtils.ignoreErrors(CoreCourses.invalidateUserCourses());
+            await CoreUtils.ignoreErrors(CoreCoursesDashboard.invalidateDashboardBlocks());
+            
+            // Show toast
+            CoreDomUtils.showToast(`Now viewing data for ${mentee.fullname}`);
+            
+            // Reload the dashboard
+            await this.loadContent();
+        } catch (error) {
+            CoreDomUtils.showErrorModal(error);
+        }
+    }
+
+    /**
+     * View mentee grades directly.
+     * 
+     * @param mentee The mentee whose grades to view.
+     * @param event Click event to stop propagation.
+     */
+    async viewMenteeGrades(mentee: CoreUserProfile, event: Event): Promise<void> {
+        event.stopPropagation();
+        
+        // Ensure the mentee is selected first
+        if (this.selectedMenteeId !== mentee.id) {
+            await CoreUserParent.setSelectedMentee(mentee.id);
+            this.selectedMenteeId = mentee.id;
+        }
+        
+        // Navigate to grades
+        CoreNavigator.navigateToSitePath('grades');
+    }
+
+    /**
+     * Clear mentee selection and view own data.
+     */
+    async clearMenteeSelection(): Promise<void> {
+        try {
+            await CoreUserParent.clearSelectedMentee();
+            this.selectedMenteeId = null;
+            
+            // Invalidate caches
+            await CoreUtils.ignoreErrors(CoreCourses.invalidateUserCourses());
+            await CoreUtils.ignoreErrors(CoreCoursesDashboard.invalidateDashboardBlocks());
+            
+            CoreDomUtils.showToast('Now viewing your own data');
+            
+            // Reload the dashboard
+            await this.loadContent();
+        } catch (error) {
+            CoreDomUtils.showErrorModal(error);
+        }
+    }
+
+    /**
+     * Get the name of the currently selected mentee.
+     * 
+     * @returns The mentee's full name or empty string.
+     */
+    getSelectedMenteeName(): string {
+        if (!this.selectedMenteeId) {
+            return '';
+        }
+        
+        const mentee = this.mentees.find(m => m.id === this.selectedMenteeId);
+        return mentee?.fullname || '';
+    }
 
     /**
      * @inheritdoc

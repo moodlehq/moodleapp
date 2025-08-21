@@ -1,0 +1,158 @@
+:host {
+    ion-header {
+        ion-toolbar {
+            --background: linear-gradient(135deg, var(--ion-color-primary) 0%, var(--ion-color-primary-shade) 100%);
+            --color: var(--ion-color-primary-contrast);
+            
+            ion-buttons, ion-back-button {
+                --color: var(--ion-color-primary-contrast);
+            }
+        }
+    }
+
+    ion-content {
+        --background: var(--ion-color-light);
+    }
+
+    ion-list {
+        background: transparent;
+        padding: 8px;
+    }
+
+    .news-item {
+        --padding-top: 0;
+        --padding-bottom: 0;
+        --inner-padding-end: 0;
+        --background: var(--ion-card-background, #fff);
+        margin-bottom: 16px;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        transition: all 0.3s ease;
+
+        &:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+        }
+
+        ion-avatar {
+            width: 48px;
+            height: 48px;
+            margin: 16px;
+            border: 2px solid var(--ion-color-light);
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        ion-label {
+            padding: 16px 16px 16px 0;
+        }
+
+        .news-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin: 0 0 8px 0;
+            color: var(--ion-text-color);
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            line-height: 1.3;
+        }
+
+        .news-meta {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 12px;
+            font-size: 0.875rem;
+            color: var(--ion-color-medium);
+
+            .course-badge {
+                font-size: 0.7rem;
+                padding: 3px 10px;
+                border-radius: 16px;
+                font-weight: 600;
+                text-transform: uppercase;
+                letter-spacing: 0.3px;
+                box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            }
+
+            .news-author {
+                font-weight: 600;
+                color: var(--ion-text-color);
+            }
+
+            .news-date {
+                color: var(--ion-color-medium-shade);
+            }
+        }
+
+        .news-message {
+            font-size: 0.9rem;
+            line-height: 1.6;
+            margin: 0 0 12px 0;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            color: var(--ion-color-dark-shade);
+        }
+
+        .news-stats {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 0.8rem;
+            color: var(--ion-color-medium);
+            padding-top: 12px;
+            border-top: 1px solid var(--ion-color-light);
+
+            ion-icon {
+                font-size: 1.1rem;
+                color: var(--ion-color-primary);
+            }
+
+            .unread-badge {
+                background: var(--ion-color-danger);
+                color: var(--ion-color-danger-contrast);
+                padding: 2px 8px;
+                border-radius: 12px;
+                font-weight: 700;
+                font-size: 0.7rem;
+                margin-left: auto;
+            }
+        }
+
+        ion-icon[name="pin"] {
+            color: var(--ion-color-primary);
+            font-size: 1.2rem;
+            margin-right: 16px;
+        }
+    }
+
+    .addon-block-myoverview-empty {
+        padding: 40px 20px;
+        text-align: center;
+        
+        ion-icon {
+            font-size: 80px;
+            color: var(--ion-color-medium);
+            margin-bottom: 20px;
+        }
+
+        h3 {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin: 0 0 8px 0;
+            color: var(--ion-text-color);
+        }
+
+        p {
+            color: var(--ion-color-medium);
+            margin: 0;
+        }
+    }
+}

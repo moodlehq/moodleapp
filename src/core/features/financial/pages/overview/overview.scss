@@ -1,0 +1,120 @@
+page-core-financial-overview {
+    .financial-summary-cards {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+        padding: 16px;
+
+        .summary-card {
+            margin: 0;
+            
+            ion-card-content {
+                text-align: center;
+                padding: 16px;
+
+                h3 {
+                    font-size: 14px;
+                    color: var(--ion-color-medium);
+                    margin: 0 0 8px 0;
+                    font-weight: 500;
+                }
+
+                .amount {
+                    font-size: 24px;
+                    font-weight: bold;
+                    margin: 0;
+                }
+            }
+
+            &.total-balance {
+                .amount {
+                    color: var(--ion-color-primary);
+                }
+            }
+
+            &.total-due {
+                .amount {
+                    color: var(--ion-color-danger);
+                }
+            }
+        }
+    }
+
+    .student-selector {
+        padding: 0 16px;
+        margin-bottom: 16px;
+
+        ion-segment {
+            --background: var(--ion-color-light);
+        }
+    }
+
+    .student-details {
+        padding: 0 16px 16px;
+
+        .student-info-card {
+            margin-bottom: 16px;
+
+            ion-card-header {
+                padding-bottom: 8px;
+            }
+
+            .info-label {
+                font-size: 12px;
+                color: var(--ion-color-medium);
+                margin: 0 0 4px 0;
+            }
+
+            .info-value {
+                font-size: 18px;
+                font-weight: 600;
+                margin: 0;
+
+                &.text-success {
+                    color: var(--ion-color-success);
+                }
+
+                &.text-danger {
+                    color: var(--ion-color-danger);
+                }
+            }
+        }
+
+        .upcoming-fees-card,
+        .payment-history-card {
+            margin-bottom: 16px;
+
+            ion-list {
+                padding: 0;
+            }
+
+            ion-item {
+                --padding-start: 0;
+                --inner-padding-end: 0;
+
+                ion-label {
+                    h3 {
+                        font-size: 16px;
+                        font-weight: 500;
+                        margin: 0 0 4px 0;
+                    }
+
+                    p {
+                        font-size: 14px;
+                        color: var(--ion-color-medium);
+                        margin: 0;
+                    }
+                }
+
+                ion-note {
+                    font-size: 16px;
+                    font-weight: 600;
+                }
+            }
+        }
+    }
+
+    .text-center {
+        text-align: center;
+    }
+}

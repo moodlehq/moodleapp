@@ -1,0 +1,131 @@
+<!-- Financial Overview Page -->
+<ion-header>
+    <ion-toolbar>
+        <ion-title>
+            <h1>Financial Overview</h1>
+        </ion-title>
+    </ion-toolbar>
+</ion-header>
+
+<ion-content>
+    <ion-refresher slot="fixed" (ionRefresh)="refreshData($event)">
+        <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
+    </ion-refresher>
+
+    <core-loading [hideUntil]="loaded">
+        <!-- Summary Cards -->
+        <div class="financial-summary-cards">
+            <ion-card class="summary-card total-balance">
+                <ion-card-content>
+                    <h3>Total Balance</h3>
+                    <p class="amount">{{ formatCurrency(totalBalance) }}</p>
+                </ion-card-content>
+            </ion-card>
+
+            <ion-card class="summary-card total-due">
+                <ion-card-content>
+                    <h3>Total Due</h3>
+                    <p class="amount">{{ formatCurrency(totalDue) }}</p>
+                </ion-card-content>
+            </ion-card>
+        </div>
+
+        <!-- Student Selector -->
+        <div class="student-selector" *ngIf="studentsFinancialData.length > 1">
+            <ion-segment [(ngModel)]="selectedStudentId" (ionChange)="selectStudent($event.detail.value)">
+                <ion-segment-button *ngFor="let student of studentsFinancialData" [value]="student.student_info.sequence_number">
+                    <ion-label>{{ student.student_info.name }}</ion-label>
+                </ion-segment-button>
+            </ion-segment>
+        </div>
+
+        <!-- Selected Student Details -->
+        <div class="student-details" *ngIf="selectedStudent">
+            <ion-card class="student-info-card">
+                <ion-card-header>
+                    <ion-card-title>{{ selectedStudent.student_info.full_name }}</ion-card-title>
+                    <ion-card-subtitle>{{ selectedStudent.student_info.class }} - {{ selectedStudent.student_info.academic_year }}</ion-card-subtitle>
+                </ion-card-header>
+                <ion-card-content>
+                    <ion-grid>
+                        <ion-row>
+                            <ion-col size="6">
+                                <p class="info-label">Total Fees</p>
+                                <p class="info-value">{{ formatCurrency(selectedStudent.financial_summary.total_fees) }}</p>
+                            </ion-col>
+                            <ion-col size="6">
+                                <p class="info-label">Total Paid</p>
+                                <p class="info-value">{{ formatCurrency(selectedStudent.financial_summary.total_paid) }}</p>
+                            </ion-col>
+                        </ion-row>
+                        <ion-row>
+                            <ion-col size="6">
+                                <p class="info-label">Remaining Balance</p>
+                                <p class="info-value text-danger">{{ formatCurrency(selectedStudent.financial_summary.total_remaining) }}</p>
+                            </ion-col>
+                            <ion-col size="6">
+                                <p class="info-label">Payment Status</p>
+                                <p class="info-value" [class.text-success]="selectedStudent.financial_summary.payment_status === 'paid'"
+                                   [class.text-warning]="selectedStudent.financial_summary.payment_status === 'partial'"
+                                   [class.text-danger]="selectedStudent.financial_summary.payment_status === 'overdue'">
+                                    {{ selectedStudent.financial_summary.payment_status | titlecase }}
+                                </p>
+                            </ion-col>
+                        </ion-row>
+                    </ion-grid>
+                </ion-card-content>
+            </ion-card>
+
+            <!-- Recent Invoices -->
+            <ion-card class="upcoming-fees-card" *ngIf="selectedStudent.invoices && selectedStudent.invoices.recent_invoices && selectedStudent.invoices.recent_invoices.length > 0">
+                <ion-card-header>
+                    <ion-card-title>Recent Invoices</ion-card-title>
+                    <ion-card-subtitle *ngIf="selectedStudent.invoices.overdue_count > 0" class="text-danger">
+                        {{ selectedStudent.invoices.overdue_count }} overdue invoice(s)
+                    </ion-card-subtitle>
+                </ion-card-header>
+                <ion-card-content>
+                    <ion-list>
+                        <ion-item *ngFor="let invoice of selectedStudent.invoices.recent_invoices">
+                            <ion-label>
+                                <h3>{{ invoice.type }} - {{ invoice.number }}</h3>
+                                <p>Due: {{ formatDate(invoice.due_date) }}</p>
+                            </ion-label>
+                            <ion-note slot="end" [color]="getStatusClass(invoice.state)">
+                                {{ formatCurrency(invoice.remaining) }}
+                            </ion-note>
+                        </ion-item>
+                    </ion-list>
+                </ion-card-content>
+            </ion-card>
+
+            <!-- Payment History -->
+            <ion-card class="payment-history-card" *ngIf="selectedStudent.recent_payments && selectedStudent.recent_payments.length > 0">
+                <ion-card-header>
+                    <ion-card-title>Recent Payments</ion-card-title>
+                </ion-card-header>
+                <ion-card-content>
+                    <ion-list>
+                        <ion-item *ngFor="let payment of selectedStudent.recent_payments">
+                            <ion-label>
+                                <h3>{{ formatPaymentType(payment.payment_type) }}</h3>
+                                <p>{{ formatDate(payment.date) }}</p>
+                                <p *ngIf="payment.payment_reference">Ref: {{ payment.payment_reference }}</p>
+                            </ion-label>
+                            <ion-note slot="end" color="success">
+                                {{ formatCurrency(payment.amount) }}
+                            </ion-note>
+                        </ion-item>
+                    </ion-list>
+                </ion-card-content>
+            </ion-card>
+        </div>
+
+        <!-- No Data Message -->
+        <ion-card *ngIf="loaded && studentsFinancialData.length === 0">
+            <ion-card-content>
+                <p class="text-center">No financial data available.</p>
+            </ion-card-content>
+        </ion-card>
+    </core-loading>
+</ion-content>
