@@ -557,14 +557,14 @@ video::-webkit-media-text-track-display {
 
 // Reduce bottom tab bar padding to bring it closer to bottom
 ion-tabs.placement-bottom ion-tab-bar {
-    --ion-safe-area-bottom: 2px !important;
+    --ion-safe-area-bottom: 3px !important;
     margin-bottom: 0px !important;
-    padding-bottom: 2px !important;
+    padding-bottom: 3px !important;
     margin-top: 0px !important;
-    padding-top: 2px !important;
+    padding-top: 1px !important;
 }
 
 // Ensure tab buttons don't have extra bottom spacing
 ion-tabs.placement-bottom ion-tab-button {
-    --padding-bottom: 2px !important;
+    --padding-bottom: 3px !important;
 }

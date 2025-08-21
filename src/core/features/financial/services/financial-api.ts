@@ -14,7 +14,8 @@
 
 import { Injectable } from '@angular/core';
 import { CoreNetwork } from '@services/network';
-import { Http } from '@singletons';
+import { Http, NativeHttp } from '@singletons';
+import { CorePlatform } from '@services/platform';
 import { firstValueFrom } from 'rxjs';
 
 // The API returns data directly, not wrapped in JSON-RPC
@@ -228,18 +229,50 @@ export class CoreFinancialAPIService {
         console.log('[Financial API] Full URL:', url);
 
         try {
-            const response = await firstValueFrom(
-                Http.get(url, {
-                    responseType: 'json',
-                })
-            );
+            let data: T;
+            
+            // Use Native HTTP on iOS to avoid CORS issues with capacitor://localhost
+            if (CorePlatform.isIOS() && CorePlatform.isMobile()) {
+                console.log('[Financial API] Using Native HTTP for iOS');
+                
+                // Set data serializer to json
+                NativeHttp.setDataSerializer('json');
+                
+                // Make the request using Native HTTP
+                const response = await NativeHttp.get(url, {}, {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                });
+                
+                // Parse the response data
+                data = typeof response.data === 'string' 
+                    ? JSON.parse(response.data) 
+                    : response.data;
+                    
+                console.log('[Financial API] Native HTTP Response:', data);
+            } else {
+                // Use Angular HTTP for web and Android
+                console.log('[Financial API] Using Angular HTTP');
+                
+                const response = await firstValueFrom(
+                    Http.get(url, {
+                        responseType: 'json',
+                    })
+                );
 
-            console.log('[Financial API] Response:', response);
-            const data = response as T;
+                console.log('[Financial API] Response:', response);
+                data = response as T;
+            }
 
             return data;
         } catch (error) {
             console.error('[Financial API] Error:', error);
+            
+            // Handle Native HTTP specific error format
+            if (error && error.status === 0 && CorePlatform.isIOS()) {
+                throw new Error('Network request failed. Please check your internet connection.');
+            }
+            
             throw error;
         }
     }
