@@ -36,13 +36,72 @@ export interface StudentFinancialResponse {
     data?: StudentFinancialData;
 }
 
+// Extended interfaces for comprehensive financial data
+export interface FeeLine {
+    academic_year: string;
+    class: string;
+    amount: number;
+    discount: number;
+    net_fees: number;
+    paid: number;
+    remaining: number;
+    status: string;
+}
+
+export interface Subject {
+    name: string;
+    variant: string;
+    session: string;
+    academic_year: string;
+    base_amount: number;
+    discount: number;
+    total: number;
+    paid: number;
+    remaining: number;
+    state: string;
+}
+
+export interface TransportRegistration {
+    academic_year: string;
+    passenger_type: string;
+    route: string;
+    trip_type: string;
+    fees: number;
+    discount: number;
+    paid: number;
+    remaining: number;
+    state: string;
+}
+
+export interface BooksActivities {
+    batch: string;
+    academic_year: string;
+    class: string;
+    amount: number;
+    discount: number;
+    net_amount: number;
+    paid: number;
+    remaining: number;
+}
+
+export interface AcademicYearData {
+    academic_year: string;
+    total_fees: number;
+    total_paid: number;
+    total_remaining: number;
+    fee_lines: FeeLine[];
+    subjects: Subject[];
+    transport_registrations: TransportRegistration[];
+    books_activities: BooksActivities[];
+}
+
 export interface StudentFinancialData {
     student_info: {
         sequence_number: string;
         name: string;
         full_name: string;
-        middle_name: string;
-        last_name: string;
+        middle_name?: string;
+        last_name?: string;
         academic_year: string;
         academic_year_id: number;
         class: string;
@@ -59,7 +118,7 @@ export interface StudentFinancialData {
         total_fees: number;
         total_paid: number;
         total_remaining: number;
-        payment_status: string;
+        payment_status: 'paid' | 'partial' | 'unpaid' | 'overdue';
         invoice_count: number;
         overdue_invoice_count: number;
     };
@@ -92,12 +151,19 @@ export interface StudentFinancialData {
         paid: number;
         remaining: number;
     };
+    fee_lines: FeeLine[];
+    future_fee_lines: FeeLine[];
+    subjects: Subject[];
+    transport_registrations: TransportRegistration[];
+    books_activities: BooksActivities[];
     recent_payments: PaymentRecord[];
     invoices: {
         total_count: number;
         overdue_count: number;
         recent_invoices: Invoice[];
     };
+    // Computed property for grouped data
+    academic_years?: AcademicYearData[];
 }
 
 export interface ParentInfo {
@@ -113,14 +179,14 @@ export interface InstallmentInfo {
     amount: number;
     paid: number;
     due: number;
-    status: string;
+    status: 'paid' | 'partial' | 'unpaid' | 'overdue';
 }
 
 export interface PaymentRecord {
     date: string;
     payment_reference: string;
     payment_type: string;
-    installment: string | null;
+    installment?: string | null;
     amount: number;
     description: string;
 }
@@ -132,9 +198,9 @@ export interface Invoice {
     total: number;
     paid: number;
     remaining: number;
-    state: string;
+    state: 'paid' | 'partial' | 'not_paid';
     type: string;
-    installment_number: number | null;
+    installment_number?: number | null;
 }
 
 /**

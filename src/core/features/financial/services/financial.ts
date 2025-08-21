@@ -14,7 +14,7 @@
 
 import { Injectable } from '@angular/core';
 import { makeSingleton } from '@singletons';
-import { CoreFinancialAPIService, StudentFinancialData } from './financial-api';
+import { CoreFinancialAPIService, StudentFinancialData, AcademicYearData } from './financial-api';
 import { CoreUserParent } from '@features/user/services/parent';
 import { CoreSites } from '@services/sites';
 import { CoreUser } from '@features/user/services/user';
@@ -117,13 +117,16 @@ export class CoreFinancialService {
             const financialData = await this.financialAPI.getParentFinancialData(parentSequence);
             console.log('[Financial Service] API response:', financialData);
             
+            // Process and group data by academic year
+            const processedData = financialData.map(student => this.processStudentFinancialData(student));
+            
             // Update cache
             this.financialDataCache.set(cacheKey, {
-                data: financialData,
+                data: processedData,
                 timestamp: Date.now(),
             });
 
-            return financialData;
+            return processedData;
         } catch (error) {
             console.error('[Financial Service] API error:', error);
             // If API fails, return cached data if available
@@ -188,6 +191,191 @@ export class CoreFinancialService {
             const due = student.financial_summary?.total_remaining || 0;
             return total + due;
         }, 0);
+    }
+
+    /**
+     * Process student financial data to group by academic year.
+     *
+     * @param studentData Raw student financial data.
+     * @returns Processed student data with academic year grouping.
+     */
+    processStudentFinancialData(studentData: StudentFinancialData): StudentFinancialData {
+        const academicYears = this.groupDataByAcademicYear(studentData);
+        
+        return {
+            ...studentData,
+            academic_years: academicYears
+        };
+    }
+
+    /**
+     * Group financial data by academic year.
+     *
+     * @param studentData Student financial data.
+     * @returns Array of academic year data.
+     */
+    private groupDataByAcademicYear(studentData: StudentFinancialData): AcademicYearData[] {
+        const yearMap = new Map<string, AcademicYearData>();
+
+        // Process fee lines
+        if (studentData.fee_lines) {
+            studentData.fee_lines.forEach(feeLine => {
+                if (!yearMap.has(feeLine.academic_year)) {
+                    yearMap.set(feeLine.academic_year, {
+                        academic_year: feeLine.academic_year,
+                        total_fees: 0,
+                        total_paid: 0,
+                        total_remaining: 0,
+                        fee_lines: [],
+                        subjects: [],
+                        transport_registrations: [],
+                        books_activities: []
+                    });
+                }
+                const yearData = yearMap.get(feeLine.academic_year)!;
+                yearData.fee_lines.push(feeLine);
+                yearData.total_fees += feeLine.net_fees;
+                yearData.total_paid += feeLine.paid;
+                yearData.total_remaining += feeLine.remaining;
+            });
+        }
+
+        // Process future fee lines
+        if (studentData.future_fee_lines) {
+            studentData.future_fee_lines.forEach(feeLine => {
+                if (!yearMap.has(feeLine.academic_year)) {
+                    yearMap.set(feeLine.academic_year, {
+                        academic_year: feeLine.academic_year,
+                        total_fees: 0,
+                        total_paid: 0,
+                        total_remaining: 0,
+                        fee_lines: [],
+                        subjects: [],
+                        transport_registrations: [],
+                        books_activities: []
+                    });
+                }
+                const yearData = yearMap.get(feeLine.academic_year)!;
+                yearData.fee_lines.push(feeLine);
+                yearData.total_fees += feeLine.net_fees;
+                yearData.total_paid += feeLine.paid;
+                yearData.total_remaining += feeLine.remaining;
+            });
+        }
+
+        // Process subjects
+        if (studentData.subjects) {
+            studentData.subjects.forEach(subject => {
+                if (!yearMap.has(subject.academic_year)) {
+                    yearMap.set(subject.academic_year, {
+                        academic_year: subject.academic_year,
+                        total_fees: 0,
+                        total_paid: 0,
+                        total_remaining: 0,
+                        fee_lines: [],
+                        subjects: [],
+                        transport_registrations: [],
+                        books_activities: []
+                    });
+                }
+                const yearData = yearMap.get(subject.academic_year)!;
+                yearData.subjects.push(subject);
+                yearData.total_fees += subject.total;
+                yearData.total_paid += subject.paid;
+                yearData.total_remaining += subject.remaining;
+            });
+        }
+
+        // Process transport registrations
+        if (studentData.transport_registrations) {
+            studentData.transport_registrations.forEach(transport => {
+                if (!yearMap.has(transport.academic_year)) {
+                    yearMap.set(transport.academic_year, {
+                        academic_year: transport.academic_year,
+                        total_fees: 0,
+                        total_paid: 0,
+                        total_remaining: 0,
+                        fee_lines: [],
+                        subjects: [],
+                        transport_registrations: [],
+                        books_activities: []
+                    });
+                }
+                const yearData = yearMap.get(transport.academic_year)!;
+                yearData.transport_registrations.push(transport);
+                yearData.total_fees += transport.fees;
+                yearData.total_paid += transport.paid;
+                yearData.total_remaining += transport.remaining;
+            });
+        }
+
+        // Process books and activities
+        if (studentData.books_activities) {
+            studentData.books_activities.forEach(bookActivity => {
+                if (!yearMap.has(bookActivity.academic_year)) {
+                    yearMap.set(bookActivity.academic_year, {
+                        academic_year: bookActivity.academic_year,
+                        total_fees: 0,
+                        total_paid: 0,
+                        total_remaining: 0,
+                        fee_lines: [],
+                        subjects: [],
+                        transport_registrations: [],
+                        books_activities: []
+                    });
+                }
+                const yearData = yearMap.get(bookActivity.academic_year)!;
+                yearData.books_activities.push(bookActivity);
+                yearData.total_fees += bookActivity.net_amount;
+                yearData.total_paid += bookActivity.paid;
+                yearData.total_remaining += bookActivity.remaining;
+            });
+        }
+
+        // Convert map to array and sort by year
+        return Array.from(yearMap.values()).sort((a, b) => {
+            // Sort current year first, then chronologically
+            const currentYear = new Date().getFullYear();
+            const aYear = parseInt(a.academic_year.split('-')[0]);
+            const bYear = parseInt(b.academic_year.split('-')[0]);
+            
+            if (aYear === currentYear && bYear !== currentYear) return -1;
+            if (bYear === currentYear && aYear !== currentYear) return 1;
+            
+            return bYear - aYear; // Newest first
+        });
+    }
+
+    /**
+     * Get payment status class for styling.
+     *
+     * @param status Payment status.
+     * @returns CSS class name.
+     */
+    getPaymentStatusClass(status: string): string {
+        switch (status.toLowerCase()) {
+            case 'paid':
+                return 'success';
+            case 'partial':
+                return 'warning';
+            case 'overdue':
+                return 'danger';
+            case 'unpaid':
+            default:
+                return 'medium';
+        }
+    }
+
+    /**
+     * Calculate payment progress percentage.
+     *
+     * @param paid Amount paid.
+     * @param total Total amount.
+     * @returns Progress percentage (0-1).
+     */
+    calculateProgress(paid: number, total: number): number {
+        if (total === 0) return 1;
+        return Math.min(paid / total, 1);
     }
 }
 

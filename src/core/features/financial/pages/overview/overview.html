@@ -9,123 +9,792 @@
 
 <ion-content>
     <ion-refresher slot="fixed" (ionRefresh)="refreshData($event)">
-        <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
+        <ion-refresher-content
+            pullingText="{{ 'core.pulltorefresh' | translate }}"
+        ></ion-refresher-content>
     </ion-refresher>
 
     <core-loading [hideUntil]="loaded">
-        <!-- Summary Cards -->
-        <div class="financial-summary-cards">
-            <ion-card class="summary-card total-balance">
-                <ion-card-content>
-                    <h3>Total Balance</h3>
-                    <p class="amount">{{ formatCurrency(totalBalance) }}</p>
-                </ion-card-content>
-            </ion-card>
-
-            <ion-card class="summary-card total-due">
-                <ion-card-content>
-                    <h3>Total Due</h3>
-                    <p class="amount">{{ formatCurrency(totalDue) }}</p>
-                </ion-card-content>
-            </ion-card>
+        <!-- Financial Header with Summary -->
+        <div class="financial-header">
+            <div class="financial-header-content">
+                <div class="financial-summary-stats">
+                    <div class="stat-item">
+                        <p class="stat-value">
+                            {{ formatCurrency(totalBalance) }}
+                        </p>
+                        <p class="stat-label">Total Balance</p>
+                    </div>
+                    <div class="stat-item">
+                        <p class="stat-value">{{ formatCurrency(totalDue) }}</p>
+                        <p class="stat-label">Amount Due</p>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <!-- Student Selector -->
-        <div class="student-selector" *ngIf="studentsFinancialData.length > 1">
-            <ion-segment [(ngModel)]="selectedStudentId" (ionChange)="selectStudent($event.detail.value)">
-                <ion-segment-button *ngFor="let student of studentsFinancialData" [value]="student.student_info.sequence_number">
+        <div
+            class="financial-student-selector"
+            *ngIf="studentsFinancialData.length > 1"
+        >
+            <h2 class="selector-title">Select Child</h2>
+            <ion-segment
+                [(ngModel)]="selectedStudentId"
+                (ionChange)="selectStudent($event.detail.value)"
+            >
+                <ion-segment-button
+                    *ngFor="let student of studentsFinancialData"
+                    [value]="student.student_info.sequence_number"
+                >
                     <ion-label>{{ student.student_info.name }}</ion-label>
                 </ion-segment-button>
             </ion-segment>
         </div>
 
         <!-- Selected Student Details -->
-        <div class="student-details" *ngIf="selectedStudent">
-            <ion-card class="student-info-card">
-                <ion-card-header>
-                    <ion-card-title>{{ selectedStudent.student_info.full_name }}</ion-card-title>
-                    <ion-card-subtitle>{{ selectedStudent.student_info.class }} - {{ selectedStudent.student_info.academic_year }}</ion-card-subtitle>
-                </ion-card-header>
-                <ion-card-content>
-                    <ion-grid>
-                        <ion-row>
-                            <ion-col size="6">
-                                <p class="info-label">Total Fees</p>
-                                <p class="info-value">{{ formatCurrency(selectedStudent.financial_summary.total_fees) }}</p>
-                            </ion-col>
-                            <ion-col size="6">
-                                <p class="info-label">Total Paid</p>
-                                <p class="info-value">{{ formatCurrency(selectedStudent.financial_summary.total_paid) }}</p>
-                            </ion-col>
-                        </ion-row>
-                        <ion-row>
-                            <ion-col size="6">
-                                <p class="info-label">Remaining Balance</p>
-                                <p class="info-value text-danger">{{ formatCurrency(selectedStudent.financial_summary.total_remaining) }}</p>
-                            </ion-col>
-                            <ion-col size="6">
-                                <p class="info-label">Payment Status</p>
-                                <p class="info-value" [class.text-success]="selectedStudent.financial_summary.payment_status === 'paid'"
-                                   [class.text-warning]="selectedStudent.financial_summary.payment_status === 'partial'"
-                                   [class.text-danger]="selectedStudent.financial_summary.payment_status === 'overdue'">
-                                    {{ selectedStudent.financial_summary.payment_status | titlecase }}
-                                </p>
-                            </ion-col>
-                        </ion-row>
-                    </ion-grid>
-                </ion-card-content>
-            </ion-card>
+        <div class="financial-student-details" *ngIf="selectedStudent">
+            <!-- Student Overview Card -->
+            <div class="student-overview-card">
+                <div class="student-card-header">
+                    <h2 class="student-name">
+                        {{ selectedStudent.student_info.full_name }}
+                    </h2>
+                    <p class="student-class">
+                        {{ selectedStudent.student_info.class }} - {{
+                        selectedStudent.student_info.academic_year }}
+                    </p>
+                </div>
 
-            <!-- Recent Invoices -->
-            <ion-card class="upcoming-fees-card" *ngIf="selectedStudent.invoices && selectedStudent.invoices.recent_invoices && selectedStudent.invoices.recent_invoices.length > 0">
-                <ion-card-header>
-                    <ion-card-title>Recent Invoices</ion-card-title>
-                    <ion-card-subtitle *ngIf="selectedStudent.invoices.overdue_count > 0" class="text-danger">
-                        {{ selectedStudent.invoices.overdue_count }} overdue invoice(s)
-                    </ion-card-subtitle>
-                </ion-card-header>
-                <ion-card-content>
-                    <ion-list>
-                        <ion-item *ngFor="let invoice of selectedStudent.invoices.recent_invoices">
-                            <ion-label>
-                                <h3>{{ invoice.type }} - {{ invoice.number }}</h3>
-                                <p>Due: {{ formatDate(invoice.due_date) }}</p>
-                            </ion-label>
-                            <ion-note slot="end" [color]="getStatusClass(invoice.state)">
-                                {{ formatCurrency(invoice.remaining) }}
-                            </ion-note>
-                        </ion-item>
-                    </ion-list>
-                </ion-card-content>
-            </ion-card>
+                <div class="student-overview-grid">
+                    <div class="overview-stat">
+                        <p class="stat-value">
+                            {{
+                            formatCurrency(selectedStudent.financial_summary.total_fees)
+                            }}
+                        </p>
+                        <p class="stat-label">Total Fees</p>
+                        <div class="progress-bar">
+                            <div
+                                class="progress-fill success"
+                                [style.width.%]="100"
+                            ></div>
+                        </div>
+                    </div>
 
-            <!-- Payment History -->
-            <ion-card class="payment-history-card" *ngIf="selectedStudent.recent_payments && selectedStudent.recent_payments.length > 0">
-                <ion-card-header>
-                    <ion-card-title>Recent Payments</ion-card-title>
-                </ion-card-header>
-                <ion-card-content>
-                    <ion-list>
-                        <ion-item *ngFor="let payment of selectedStudent.recent_payments">
-                            <ion-label>
-                                <h3>{{ formatPaymentType(payment.payment_type) }}</h3>
-                                <p>{{ formatDate(payment.date) }}</p>
-                                <p *ngIf="payment.payment_reference">Ref: {{ payment.payment_reference }}</p>
-                            </ion-label>
-                            <ion-note slot="end" color="success">
-                                {{ formatCurrency(payment.amount) }}
-                            </ion-note>
-                        </ion-item>
-                    </ion-list>
-                </ion-card-content>
-            </ion-card>
+                    <div class="overview-stat">
+                        <p class="stat-value positive">
+                            {{
+                            formatCurrency(selectedStudent.financial_summary.total_paid)
+                            }}
+                        </p>
+                        <p class="stat-label">Total Paid</p>
+                        <div class="progress-bar">
+                            <div
+                                class="progress-fill success"
+                                [style.width.%]="getProgress(selectedStudent.financial_summary.total_paid, selectedStudent.financial_summary.total_fees)"
+                            ></div>
+                        </div>
+                    </div>
+
+                    <div class="overview-stat">
+                        <p
+                            class="stat-value"
+                            [ngClass]="selectedStudent.financial_summary.total_remaining > 0 ? 'negative' : 'positive'"
+                        >
+                            {{
+                            formatCurrency(selectedStudent.financial_summary.total_remaining)
+                            }}
+                        </p>
+                        <p class="stat-label">Remaining</p>
+                        <div class="progress-bar">
+                            <div
+                                class="progress-fill"
+                                [ngClass]="selectedStudent.financial_summary.total_remaining > 0 ? 'danger' : 'success'"
+                                [style.width.%]="getProgress(selectedStudent.financial_summary.total_remaining, selectedStudent.financial_summary.total_fees)"
+                            ></div>
+                        </div>
+                    </div>
+
+                    <div class="overview-stat">
+                        <div
+                            class="payment-status-badge"
+                            [ngClass]="'status-' + selectedStudent.financial_summary.payment_status"
+                        >
+                            <ion-icon
+                                [name]="selectedStudent.financial_summary.payment_status === 'paid' ? 'checkmark-circle' :
+                                             selectedStudent.financial_summary.payment_status === 'partial' ? 'time' :
+                                             selectedStudent.financial_summary.payment_status === 'overdue' ? 'alert-circle' : 'ellipse'"
+                            ></ion-icon>
+                            {{ selectedStudent.financial_summary.payment_status
+                            | titlecase }}
+                        </div>
+                        <p class="stat-label">Payment Status</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Academic Year Sections -->
+            <div
+                *ngFor="let yearData of selectedStudent.academic_years; trackBy: trackByAcademicYear"
+                class="academic-year-section"
+                [ngClass]="{'current-year': isCurrentAcademicYear(yearData.academic_year), 'future-year': !isCurrentAcademicYear(yearData.academic_year)}"
+            >
+                <!-- Year Header -->
+                <div
+                    class="year-header"
+                    (click)="toggleYearExpansion(selectedStudent.student_info.sequence_number, yearData.academic_year)"
+                >
+                    <div class="year-header-content">
+                        <div class="year-title-group">
+                            <h3 class="year-title">
+                                {{
+                                getAcademicYearDisplayName(yearData.academic_year)
+                                }}
+                            </h3>
+                            <span
+                                class="year-badge"
+                                *ngIf="isCurrentAcademicYear(yearData.academic_year)"
+                                >Current</span
+                            >
+                            <span
+                                class="year-badge"
+                                *ngIf="!isCurrentAcademicYear(yearData.academic_year)"
+                                >Future</span
+                            >
+                        </div>
+
+                        <div class="year-summary">
+                            <p class="year-total">
+                                {{ formatCurrency(yearData.total_fees) }}
+                            </p>
+                            <p class="year-status">
+                                {{ yearData.total_remaining === 0 ? 'Paid' :
+                                formatCurrency(yearData.total_remaining) + '
+                                Due' }}
+                            </p>
+                        </div>
+
+                        <ion-icon
+                            name="chevron-down"
+                            class="expand-icon"
+                            [ngClass]="{'expanded': isYearExpanded(selectedStudent.student_info.sequence_number, yearData.academic_year)}"
+                        ></ion-icon>
+                    </div>
+                </div>
+
+                <!-- Year Content -->
+                <div
+                    class="year-content"
+                    [ngClass]="{'expanded': isYearExpanded(selectedStudent.student_info.sequence_number, yearData.academic_year)}"
+                >
+                    <div class="fee-categories">
+                        <!-- Educational Fees -->
+                        <div
+                            class="fee-category"
+                            *ngIf="getSectionItemCount(yearData, 'educational') > 0"
+                        >
+                            <div
+                                class="category-header"
+                                (click)="toggleStudentSection(selectedStudent.student_info.sequence_number, 'educational_' + yearData.academic_year)"
+                            >
+                                <div class="category-title-group">
+                                    <div class="category-icon educational">
+                                        <ion-icon name="school"></ion-icon>
+                                    </div>
+                                    <div class="category-info">
+                                        <h4 class="category-name">
+                                            Educational Fees
+                                        </h4>
+                                        <p class="category-count">
+                                            {{ getSectionItemCount(yearData,
+                                            'educational') }} item(s)
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <div class="category-summary">
+                                    <p class="category-amount">
+                                        {{
+                                        formatCurrency(getSectionTotal(yearData,
+                                        'educational')) }}
+                                    </p>
+                                    <div class="category-progress">
+                                        <span class="progress-text"
+                                            >{{
+                                            getProgress(getSectionPaid(yearData,
+                                            'educational'),
+                                            getSectionTotal(yearData,
+                                            'educational')).toFixed(0) }}%</span
+                                        >
+                                        <div class="mini-progress">
+                                            <div
+                                                class="mini-progress-fill"
+                                                [style.width.%]="getProgress(getSectionPaid(yearData, 'educational'), getSectionTotal(yearData, 'educational'))"
+                                            ></div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <ion-icon
+                                    name="chevron-down"
+                                    class="expand-icon"
+                                    [ngClass]="{'expanded': isStudentSectionExpanded(selectedStudent.student_info.sequence_number, 'educational_' + yearData.academic_year)}"
+                                ></ion-icon>
+                            </div>
+
+                            <div
+                                class="category-items"
+                                [ngClass]="{'expanded': isStudentSectionExpanded(selectedStudent.student_info.sequence_number, 'educational_' + yearData.academic_year)}"
+                            >
+                                <div
+                                    class="fee-item"
+                                    *ngFor="let feeLine of yearData.fee_lines"
+                                >
+                                    <div class="item-header">
+                                        <h5 class="item-title">
+                                            {{ feeLine.class }} - Educational
+                                            Fees
+                                        </h5>
+                                        <p class="item-amount">
+                                            {{ formatCurrency(feeLine.net_fees)
+                                            }}
+                                        </p>
+                                    </div>
+
+                                    <div class="item-details">
+                                        <div class="detail-item">
+                                            <p class="detail-label">Original</p>
+                                            <p class="detail-value">
+                                                {{
+                                                formatCurrency(feeLine.amount)
+                                                }}
+                                            </p>
+                                        </div>
+                                        <div class="detail-item">
+                                            <p class="detail-label">Discount</p>
+                                            <p class="detail-value">
+                                                {{
+                                                formatCurrency(feeLine.discount)
+                                                }}
+                                            </p>
+                                        </div>
+                                        <div class="detail-item">
+                                            <p class="detail-label">Paid</p>
+                                            <p class="detail-value paid">
+                                                {{ formatCurrency(feeLine.paid)
+                                                }}
+                                            </p>
+                                        </div>
+                                        <div class="detail-item">
+                                            <p class="detail-label">
+                                                Remaining
+                                            </p>
+                                            <p class="detail-value remaining">
+                                                {{
+                                                formatCurrency(feeLine.remaining)
+                                                }}
+                                            </p>
+                                        </div>
+                                    </div>
+
+                                    <div class="item-progress-bar">
+                                        <div
+                                            class="progress-fill"
+                                            [style.width.%]="getProgress(feeLine.paid, feeLine.net_fees)"
+                                        ></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Subjects -->
+                        <div
+                            class="fee-category"
+                            *ngIf="getSectionItemCount(yearData, 'subjects') > 0"
+                        >
+                            <div
+                                class="category-header"
+                                (click)="toggleStudentSection(selectedStudent.student_info.sequence_number, 'subjects_' + yearData.academic_year)"
+                            >
+                                <div class="category-title-group">
+                                    <div class="category-icon subjects">
+                                        <ion-icon name="library"></ion-icon>
+                                    </div>
+                                    <div class="category-info">
+                                        <h4 class="category-name">
+                                            Subject Fees
+                                        </h4>
+                                        <p class="category-count">
+                                            {{ getSectionItemCount(yearData,
+                                            'subjects') }} subject(s)
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <div class="category-summary">
+                                    <p class="category-amount">
+                                        {{
+                                        formatCurrency(getSectionTotal(yearData,
+                                        'subjects')) }}
+                                    </p>
+                                    <div class="category-progress">
+                                        <span class="progress-text"
+                                            >{{
+                                            getProgress(getSectionPaid(yearData,
+                                            'subjects'),
+                                            getSectionTotal(yearData,
+                                            'subjects')).toFixed(0) }}%</span
+                                        >
+                                        <div class="mini-progress">
+                                            <div
+                                                class="mini-progress-fill"
+                                                [style.width.%]="getProgress(getSectionPaid(yearData, 'subjects'), getSectionTotal(yearData, 'subjects'))"
+                                            ></div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <ion-icon
+                                    name="chevron-down"
+                                    class="expand-icon"
+                                    [ngClass]="{'expanded': isStudentSectionExpanded(selectedStudent.student_info.sequence_number, 'subjects_' + yearData.academic_year)}"
+                                ></ion-icon>
+                            </div>
+
+                            <div
+                                class="category-items"
+                                [ngClass]="{'expanded': isStudentSectionExpanded(selectedStudent.student_info.sequence_number, 'subjects_' + yearData.academic_year)}"
+                            >
+                                <div
+                                    class="fee-item"
+                                    *ngFor="let subject of yearData.subjects"
+                                >
+                                    <div class="item-header">
+                                        <h5 class="item-title">
+                                            {{ subject.name }} ({{
+                                            subject.variant }})
+                                        </h5>
+                                        <p class="item-amount">
+                                            {{ formatCurrency(subject.total) }}
+                                        </p>
+                                    </div>
+
+                                    <div class="item-details">
+                                        <div class="detail-item">
+                                            <p class="detail-label">Session</p>
+                                            <p class="detail-value">
+                                                {{ subject.session | titlecase
+                                                }}
+                                            </p>
+                                        </div>
+                                        <div class="detail-item">
+                                            <p class="detail-label">
+                                                Base Amount
+                                            </p>
+                                            <p class="detail-value">
+                                                {{
+                                                formatCurrency(subject.base_amount)
+                                                }}
+                                            </p>
+                                        </div>
+                                        <div class="detail-item">
+                                            <p class="detail-label">Paid</p>
+                                            <p class="detail-value paid">
+                                                {{ formatCurrency(subject.paid)
+                                                }}
+                                            </p>
+                                        </div>
+                                        <div class="detail-item">
+                                            <p class="detail-label">
+                                                Remaining
+                                            </p>
+                                            <p class="detail-value remaining">
+                                                {{
+                                                formatCurrency(subject.remaining)
+                                                }}
+                                            </p>
+                                        </div>
+                                    </div>
+
+                                    <div class="item-progress-bar">
+                                        <div
+                                            class="progress-fill"
+                                            [style.width.%]="getProgress(subject.paid, subject.total)"
+                                        ></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Transport -->
+                        <div
+                            class="fee-category"
+                            *ngIf="getSectionItemCount(yearData, 'transport') > 0"
+                        >
+                            <div
+                                class="category-header"
+                                (click)="toggleStudentSection(selectedStudent.student_info.sequence_number, 'transport_' + yearData.academic_year)"
+                            >
+                                <div class="category-title-group">
+                                    <div class="category-icon transport">
+                                        <ion-icon name="bus"></ion-icon>
+                                    </div>
+                                    <div class="category-info">
+                                        <h4 class="category-name">
+                                            Transport Fees
+                                        </h4>
+                                        <p class="category-count">
+                                            {{ getSectionItemCount(yearData,
+                                            'transport') }} route(s)
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <div class="category-summary">
+                                    <p class="category-amount">
+                                        {{
+                                        formatCurrency(getSectionTotal(yearData,
+                                        'transport')) }}
+                                    </p>
+                                    <div class="category-progress">
+                                        <span class="progress-text"
+                                            >{{
+                                            getProgress(getSectionPaid(yearData,
+                                            'transport'),
+                                            getSectionTotal(yearData,
+                                            'transport')).toFixed(0) }}%</span
+                                        >
+                                        <div class="mini-progress">
+                                            <div
+                                                class="mini-progress-fill"
+                                                [style.width.%]="getProgress(getSectionPaid(yearData, 'transport'), getSectionTotal(yearData, 'transport'))"
+                                            ></div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <ion-icon
+                                    name="chevron-down"
+                                    class="expand-icon"
+                                    [ngClass]="{'expanded': isStudentSectionExpanded(selectedStudent.student_info.sequence_number, 'transport_' + yearData.academic_year)}"
+                                ></ion-icon>
+                            </div>
+
+                            <div
+                                class="category-items"
+                                [ngClass]="{'expanded': isStudentSectionExpanded(selectedStudent.student_info.sequence_number, 'transport_' + yearData.academic_year)}"
+                            >
+                                <div
+                                    class="fee-item"
+                                    *ngFor="let transport of yearData.transport_registrations"
+                                >
+                                    <div class="item-header">
+                                        <h5 class="item-title">
+                                            {{ transport.route }}
+                                        </h5>
+                                        <p class="item-amount">
+                                            {{ formatCurrency(transport.fees) }}
+                                        </p>
+                                    </div>
+
+                                    <div class="item-details">
+                                        <div class="detail-item">
+                                            <p class="detail-label">
+                                                Trip Type
+                                            </p>
+                                            <p class="detail-value">
+                                                {{ transport.trip_type |
+                                                titlecase }}
+                                            </p>
+                                        </div>
+                                        <div class="detail-item">
+                                            <p class="detail-label">Discount</p>
+                                            <p class="detail-value">
+                                                {{
+                                                formatCurrency(transport.discount)
+                                                }}
+                                            </p>
+                                        </div>
+                                        <div class="detail-item">
+                                            <p class="detail-label">Paid</p>
+                                            <p class="detail-value paid">
+                                                {{
+                                                formatCurrency(transport.paid)
+                                                }}
+                                            </p>
+                                        </div>
+                                        <div class="detail-item">
+                                            <p class="detail-label">
+                                                Remaining
+                                            </p>
+                                            <p class="detail-value remaining">
+                                                {{
+                                                formatCurrency(transport.remaining)
+                                                }}
+                                            </p>
+                                        </div>
+                                    </div>
+
+                                    <div class="item-progress-bar">
+                                        <div
+                                            class="progress-fill"
+                                            [style.width.%]="getProgress(transport.paid, transport.fees)"
+                                        ></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Books & Activities -->
+                        <div
+                            class="fee-category"
+                            *ngIf="getSectionItemCount(yearData, 'books') > 0"
+                        >
+                            <div
+                                class="category-header"
+                                (click)="toggleStudentSection(selectedStudent.student_info.sequence_number, 'books_' + yearData.academic_year)"
+                            >
+                                <div class="category-title-group">
+                                    <div class="category-icon books">
+                                        <ion-icon name="book"></ion-icon>
+                                    </div>
+                                    <div class="category-info">
+                                        <h4 class="category-name">
+                                            Books & Activities
+                                        </h4>
+                                        <p class="category-count">
+                                            {{ getSectionItemCount(yearData,
+                                            'books') }} item(s)
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <div class="category-summary">
+                                    <p class="category-amount">
+                                        {{
+                                        formatCurrency(getSectionTotal(yearData,
+                                        'books')) }}
+                                    </p>
+                                    <div class="category-progress">
+                                        <span class="progress-text"
+                                            >{{
+                                            getProgress(getSectionPaid(yearData,
+                                            'books'), getSectionTotal(yearData,
+                                            'books')).toFixed(0) }}%</span
+                                        >
+                                        <div class="mini-progress">
+                                            <div
+                                                class="mini-progress-fill"
+                                                [style.width.%]="getProgress(getSectionPaid(yearData, 'books'), getSectionTotal(yearData, 'books'))"
+                                            ></div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <ion-icon
+                                    name="chevron-down"
+                                    class="expand-icon"
+                                    [ngClass]="{'expanded': isStudentSectionExpanded(selectedStudent.student_info.sequence_number, 'books_' + yearData.academic_year)}"
+                                ></ion-icon>
+                            </div>
+
+                            <div
+                                class="category-items"
+                                [ngClass]="{'expanded': isStudentSectionExpanded(selectedStudent.student_info.sequence_number, 'books_' + yearData.academic_year)}"
+                            >
+                                <div
+                                    class="fee-item"
+                                    *ngFor="let bookActivity of yearData.books_activities"
+                                >
+                                    <div class="item-header">
+                                        <h5 class="item-title">
+                                            {{ bookActivity.batch }}
+                                        </h5>
+                                        <p class="item-amount">
+                                            {{
+                                            formatCurrency(bookActivity.net_amount)
+                                            }}
+                                        </p>
+                                    </div>
+
+                                    <div class="item-details">
+                                        <div class="detail-item">
+                                            <p class="detail-label">Class</p>
+                                            <p class="detail-value">
+                                                {{ bookActivity.class }}
+                                            </p>
+                                        </div>
+                                        <div class="detail-item">
+                                            <p class="detail-label">Original</p>
+                                            <p class="detail-value">
+                                                {{
+                                                formatCurrency(bookActivity.amount)
+                                                }}
+                                            </p>
+                                        </div>
+                                        <div class="detail-item">
+                                            <p class="detail-label">Paid</p>
+                                            <p class="detail-value paid">
+                                                {{
+                                                formatCurrency(bookActivity.paid)
+                                                }}
+                                            </p>
+                                        </div>
+                                        <div class="detail-item">
+                                            <p class="detail-label">
+                                                Remaining
+                                            </p>
+                                            <p class="detail-value remaining">
+                                                {{
+                                                formatCurrency(bookActivity.remaining)
+                                                }}
+                                            </p>
+                                        </div>
+                                    </div>
+
+                                    <div class="item-progress-bar">
+                                        <div
+                                            class="progress-fill"
+                                            [style.width.%]="getProgress(bookActivity.paid, bookActivity.net_amount)"
+                                        ></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Activity Section -->
+            <div class="financial-activity-section">
+                <div class="activity-cards">
+                    <!-- Recent Payments -->
+                    <div
+                        class="activity-card"
+                        *ngIf="selectedStudent.recent_payments && selectedStudent.recent_payments.length > 0"
+                    >
+                        <div class="card-header">
+                            <h3 class="card-title">
+                                <ion-icon name="card"></ion-icon>
+                                Recent Payments
+                            </h3>
+                            <p class="card-subtitle">
+                                Latest {{ selectedStudent.recent_payments.length
+                                }} payment(s)
+                            </p>
+                        </div>
+
+                        <div class="card-content">
+                            <div
+                                class="activity-item"
+                                *ngFor="let payment of selectedStudent.recent_payments | slice:0:5"
+                            >
+                                <div class="activity-header">
+                                    <h4 class="activity-title">
+                                        {{
+                                        formatPaymentType(payment.payment_type)
+                                        }}
+                                    </h4>
+                                    <p class="activity-amount payment">
+                                        +{{ formatCurrency(payment.amount) }}
+                                    </p>
+                                </div>
+
+                                <div class="activity-meta">
+                                    <p class="meta-info">
+                                        {{ formatDate(payment.date) }}
+                                    </p>
+                                    <span class="activity-status paid"
+                                        >Paid</span
+                                    >
+                                </div>
+
+                                <div
+                                    class="activity-meta"
+                                    *ngIf="payment.payment_reference"
+                                >
+                                    <p class="meta-info">
+                                        Ref: {{ payment.payment_reference }}
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Recent Invoices -->
+                    <div
+                        class="activity-card"
+                        *ngIf="selectedStudent.invoices && selectedStudent.invoices.recent_invoices && selectedStudent.invoices.recent_invoices.length > 0"
+                    >
+                        <div class="card-header">
+                            <h3 class="card-title">
+                                <ion-icon name="receipt"></ion-icon>
+                                Recent Invoices
+                            </h3>
+                            <p
+                                class="card-subtitle"
+                                *ngIf="selectedStudent.invoices.overdue_count > 0"
+                                [ngClass]="'overdue'"
+                            >
+                                {{ selectedStudent.invoices.overdue_count }}
+                                overdue invoice(s)
+                            </p>
+                            <p
+                                class="card-subtitle"
+                                *ngIf="selectedStudent.invoices.overdue_count === 0"
+                            >
+                                {{
+                                selectedStudent.invoices.recent_invoices.length
+                                }} recent invoice(s)
+                            </p>
+                        </div>
+
+                        <div class="card-content">
+                            <div
+                                class="activity-item"
+                                *ngFor="let invoice of selectedStudent.invoices.recent_invoices | slice:0:5"
+                            >
+                                <div class="activity-header">
+                                    <h4 class="activity-title">
+                                        {{ invoice.type }} - {{ invoice.number
+                                        }}
+                                    </h4>
+                                    <p class="activity-amount invoice">
+                                        {{ formatCurrency(invoice.remaining) }}
+                                    </p>
+                                </div>
+
+                                <div class="activity-meta">
+                                    <p class="meta-info">
+                                        Due: {{ formatDate(invoice.due_date) }}
+                                    </p>
+                                    <span
+                                        class="activity-status"
+                                        [ngClass]="getStatusClass(invoice.state)"
+                                        >{{ invoice.state | titlecase }}</span
+                                    >
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <!-- No Data Message -->
-        <ion-card *ngIf="loaded && studentsFinancialData.length === 0">
-            <ion-card-content>
-                <p class="text-center">No financial data available.</p>
-            </ion-card-content>
-        </ion-card>
+        <div
+            class="financial-empty-state"
+            *ngIf="loaded && studentsFinancialData.length === 0"
+        >
+            <div class="empty-icon">
+                <ion-icon name="wallet-outline"></ion-icon>
+            </div>
+            <h3 class="empty-title">No Financial Data Available</h3>
+            <p class="empty-message">
+                We couldn't find any financial information for your account.
+                Please contact support if you believe this is an error.
+            </p>
+        </div>
     </core-loading>
 </ion-content>
