@@ -1,8 +1,9 @@
-@addon_block_activity_modules @app @block @block_activity_modules @javascript
+@addon_block_activity_modules @app @block @block_activity_modules @javascript @lms_upto5.0
 Feature: Basic tests of activity modules block
 
   Background:
-    Given the following "users" exist:
+    Given the Moodle site is compatible with this feature
+    And the following "users" exist:
       | username | firstname | lastname | email | idnumber |
       | student1 | Student | 1 | student1@example.com | S1 |
     And the following "courses" exist:

@@ -75,7 +75,7 @@ Feature: Test basic usage of assignment activity in app
     Given I entered the assign activity "assignment1" on course "Course 1" as "student1" in the app
     Then I should find "assignment1" in the app
 
-    When I replace "/Assignment is overdue by: .*/" within "addon-mod-assign-submission core-tabs ion-item:nth-child(2)" with "Assignment is overdue by: [Overdue date]"
+    When I replace "/Assignment is overdue by: .*/" within "addon-mod-assign-submission ion-item.overdue" with "Assignment is overdue by: [Overdue date]"
     Then the UI should match the snapshot
 
     When I press "Add submission" in the app
