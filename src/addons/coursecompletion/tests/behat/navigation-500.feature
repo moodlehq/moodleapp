@@ -1,4 +1,4 @@
-@addon_coursecompletion @app @block @block_completionstatus @block_selfcompletion @javascript @lms_from5.1
+@addon_coursecompletion @app @block @block_completionstatus @block_selfcompletion @javascript @lms_upto5.0
 Feature: Course completion navigation
 
   Background:
@@ -58,7 +58,6 @@ Feature: Course completion navigation
     Then I should find "Course completion status" in the app
     And I should find "Self completion" in the app
     When I press "Close" in the app
-    And I press "Next" within "Course" "ion-tab-bar" in the app
     And I press "Completion" in the app
     Then I should find "Status" in the app
 
@@ -67,7 +66,6 @@ Feature: Course completion navigation
     Then I should not find "Course completion status" in the app
     And I should not find "Self completion" in the app
     When I press "Close" in the app
-    And I press "Next" within "Course" "ion-tab-bar" in the app
     Then I should not find "Completion" in the app
 
     Given the following config values are set as admin:
@@ -78,5 +76,4 @@ Feature: Course completion navigation
     Then I should not find "Course completion status" in the app
     And I should not find "Self completion" in the app
     When I press "Close" in the app
-    And I press "Next" within "Course" "ion-tab-bar" in the app
     Then I should not find "Completion" in the app
