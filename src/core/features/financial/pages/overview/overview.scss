@@ -1,58 +1,145 @@
 @use "theme/globals" as *;
 
 :host {
-    --financial-primary-color: #4A9B8E;
-    --financial-primary-shade: #3d8a7a;
-    --financial-primary-tint: #5ca8a0;
-    --financial-secondary-color: #76C8AA;
-    --financial-success-color: #52B69A;
-    --financial-warning-color: #f0ad4e;
-    --financial-danger-color: #ca3120;
-    --financial-card-background: var(--ion-card-background, #fff);
-    --financial-card-shadow: 0 2px 16px rgba(0, 0, 0, 0.08);
-    --financial-card-hover-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
-    --financial-border-radius: 16px;
-    --financial-border-radius-sm: 8px;
-    --financial-transition: all 0.3s cubic-bezier(0.4, 0.0, 0.2, 1);
+    // ====================================
+    // PASTEL COLOR SYSTEM - COMPLETE REDESIGN
+    // ====================================
+
+    // Primary Pastel Blues & Turquoises
+    --pastel-sky: #B3EBF2;
+    --pastel-sky-light: #C8F0F7;
+    --pastel-sky-dark: #9FE5ED;
+    --pastel-turquoise: #8DDCDC;
+    --pastel-turquoise-light: #A8E6E6;
+    --pastel-turquoise-dark: #72D2D2;
+    --pastel-mint-blue: #98FBCB;
+    --pastel-mint-blue-light: #B0FDD8;
+    --pastel-mint-blue-dark: #80F9BE;
+    --pastel-powder: #B0E0E6;
+    --pastel-powder-light: #C5E9ED;
+    --pastel-powder-dark: #9BD7DF;
+
+    // Pastel Greens
+    --pastel-mint: #ADEBB3;
+    --pastel-mint-light: #C1F0C6;
+    --pastel-mint-dark: #99E6A0;
+    --pastel-sage: #BCE3C5;
+    --pastel-sage-light: #CDEBD4;
+    --pastel-sage-dark: #ABDBB6;
+    --pastel-green: #80EF80;
+    --pastel-green-light: #99F399;
+    --pastel-green-dark: #66EB66;
+
+    // Soft Accent Colors
+    --pastel-lavender: #E6E6FA;
+    --pastel-periwinkle: #C5C5FF;
+    --pastel-peach: #FFDAC1;
+    --pastel-coral: #FFB5A7;
+    --pastel-cream: #FFF5E1;
+
+    // TEXT COLORS - NO BLACK!
+    --text-primary: #1A2332; // Deep navy for main content
+    --text-secondary: #2C3E50; // Charcoal blue for headers
+    --text-tertiary: #4A5568; // Slate gray for descriptions
+    --text-muted: #718096; // Soft gray for less important
+    --text-link: #2C5F66; // Muted teal for links
+    --text-on-pastel: #276749; // Deep green for text on pastel backgrounds
+    --text-on-dark-pastel: #1A4E52; // Deeper teal for darker pastels
+
+    // Background Colors
+    --bg-base: #FAFBFC; // Off-white base
+    --bg-card: #FFFFFF; // Pure white for cards
+    --bg-pastel-overlay: rgba(179, 235, 242, 0.08); // Subtle pastel overlay
+    --bg-interactive: rgba(152, 251, 203, 0.12); // Interactive element bg
+    --bg-hover: rgba(141, 220, 220, 0.15); // Hover state bg
+
+    // Gradients - Soft and Subtle
+    --gradient-sky-mint: linear-gradient(135deg, #B3EBF2 0%, #ADEBB3 100%);
+    --gradient-turquoise-flow: linear-gradient(90deg, #8DDCDC 0%, #B3EBF2 50%, #98FBCB 100%);
+    --gradient-morning: linear-gradient(180deg, #E6F3FF 0%, #F0F9FF 100%);
+    --gradient-card: linear-gradient(135deg, rgba(176, 224, 230, 0.05) 0%, rgba(173, 235, 179, 0.05) 100%);
+    --gradient-header: linear-gradient(135deg, #B3EBF2 0%, #8DDCDC 50%, #98FBCB 100%);
+
+    // Shadows - Soft and Colorful
+    --shadow-sm: 0 1px 2px rgba(44, 62, 80, 0.04), 0 1px 3px rgba(179, 235, 242, 0.08);
+    --shadow-md: 0 4px 6px rgba(44, 62, 80, 0.05), 0 2px 4px rgba(141, 220, 220, 0.1);
+    --shadow-lg: 0 10px 15px rgba(44, 62, 80, 0.06), 0 4px 6px rgba(152, 251, 203, 0.12);
+    --shadow-xl: 0 20px 25px rgba(44, 62, 80, 0.08), 0 10px 10px rgba(179, 235, 242, 0.15);
+    --shadow-glow: 0 0 20px rgba(152, 251, 203, 0.3);
+
+    // Border Radius
+    --radius-sm: 8px;
+    --radius-md: 12px;
+    --radius-lg: 16px;
+    --radius-xl: 20px;
+    --radius-full: 9999px;
+
+    // Transitions
+    --transition-base: all 0.3s cubic-bezier(0.4, 0.0, 0.2, 1);
+    --transition-fast: all 0.15s cubic-bezier(0.4, 0.0, 0.2, 1);
+    --transition-slow: all 0.5s cubic-bezier(0.4, 0.0, 0.2, 1);
+
+    // Borders
+    --border-light: 1px solid rgba(179, 235, 242, 0.2);
+    --border-medium: 1px solid rgba(141, 220, 220, 0.3);
+    --border-focus: 2px solid rgba(152, 251, 203, 0.5);
 }
 
+// Dark Mode Adjustments
 :host-context(:root.dark) {
-    --financial-card-shadow: 0 2px 16px rgba(255, 255, 255, 0.02);
-    --financial-card-hover-shadow: 0 8px 32px rgba(255, 255, 255, 0.04);
+    // Darker pastels for dark mode
+    --pastel-sky: #2A4A52;
+    --pastel-turquoise: #234545;
+    --pastel-mint-blue: #1F4A3A;
+    --bg-base: #0F1419;
+    --bg-card: #1A1F2A;
+    --text-primary: #E6F3FF;
+    --text-secondary: #C8F0F7;
+    --text-tertiary: #A8E6E6;
+    --text-muted: #8DDCDC;
+
+    // Adjusted shadows for dark mode
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3), 0 1px 3px rgba(179, 235, 242, 0.05);
+    --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.4), 0 2px 4px rgba(141, 220, 220, 0.08);
 }
 
-// Financial Summary Header
+// ====================================
+// FINANCIAL HEADER - PASTEL REDESIGN
+// ====================================
 .financial-header {
-    background: linear-gradient(135deg, var(--financial-primary-color) 0%, var(--financial-primary-shade) 100%);
-    padding: 24px 16px 32px;
-    color: var(--ion-color-primary-contrast);
+    background: var(--gradient-header);
+    padding: 20px 28px 10px;
+    margin: -10px -16px 24px;
+    border-radius: 0 0 var(--radius-xl) var(--radius-xl);
+    box-shadow: var(--shadow-lg);
     position: relative;
     overflow: hidden;
-    margin-bottom: 24px;
-    border-radius: 0 0 24px 24px;
+
+    // Soft floating orbs
+    &::before {
+        content: '';
+        position: absolute;
+        top: -30%;
+        right: -10%;
+        width: 300px;
+        height: 300px;
+        background: radial-gradient(circle at center, rgba(152, 251, 203, 0.2) 0%, transparent 60%);
+        border-radius: 50%;
+        filter: blur(40px);
+        animation: floatSoft 12s ease-in-out infinite;
+    }
 
     &::after {
         content: '';
         position: absolute;
-        top: -50%;
-        right: -10%;
-        width: 200px;
-        height: 200px;
-        background: rgba(255, 255, 255, 0.1);
+        bottom: -40%;
+        left: -15%;
+        width: 250px;
+        height: 250px;
+        background: radial-gradient(circle at center, rgba(189, 227, 197, 0.25) 0%, transparent 60%);
         border-radius: 50%;
-        animation: float 6s ease-in-out infinite;
-    }
-
-    &::before {
-        content: '';
-        position: absolute;
-        bottom: -30%;
-        left: -5%;
-        width: 150px;
-        height: 150px;
-        background: rgba(255, 255, 255, 0.05);
-        border-radius: 50%;
-        animation: float 8s ease-in-out infinite reverse;
+        filter: blur(30px);
+        animation: floatSoft 15s ease-in-out infinite reverse;
     }
 
     .financial-header-content {
@@ -60,198 +147,239 @@
         z-index: 2;
 
         h1 {
-            margin: 0 0 16px 0;
-            font-size: 2rem;
+            font-size: 1.75rem;
             font-weight: 700;
+            color: var(--text-on-dark-pastel);
             text-align: center;
-            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            margin: 0 0 20px 0;
+            letter-spacing: -0.5px;
+            text-shadow: 0 2px 4px rgba(26, 35, 50, 0.08);
         }
 
         .financial-summary-stats {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 16px;
-            margin-top: 20px;
+            gap: 20px;
+            max-width: 480px;
+            margin: 0 auto;
 
             .stat-item {
-                text-align: center;
-                background: rgba(255, 255, 255, 0.15);
+                background: rgba(255, 255, 255, 0.25);
+                backdrop-filter: blur(20px) saturate(150%);
+                border-radius: var(--radius-lg);
                 padding: 16px;
-                border-radius: var(--financial-border-radius-sm);
-                backdrop-filter: blur(10px);
-                border: 1px solid rgba(255, 255, 255, 0.2);
+                text-align: center;
+                border: 1px solid rgba(255, 255, 255, 0.3);
+                box-shadow: var(--shadow-md);
+                transition: var(--transition-base);
+                cursor: pointer;
+
+                &:hover {
+                    transform: translateY(-4px);
+                    background: rgba(255, 255, 255, 0.35);
+                    box-shadow: var(--shadow-xl);
+                    border-color: rgba(255, 255, 255, 0.4);
+                }
 
                 .stat-value {
-                    font-size: 1.5rem;
+                    font-size: 1.75rem;
                     font-weight: 700;
+                    color: var(--text-on-dark-pastel);
                     margin: 0 0 4px 0;
+                    letter-spacing: -0.5px;
                 }
 
                 .stat-label {
                     font-size: 0.875rem;
-                    opacity: 0.9;
-                    margin: 0;
+                    font-weight: 600;
+                    color: rgba(26, 78, 82, 0.8);
                     text-transform: uppercase;
-                    letter-spacing: 0.5px;
+                    letter-spacing: 1.2px;
                 }
             }
         }
     }
 }
 
-// Student Selector
+// ====================================
+// STUDENT SELECTOR - PASTEL DESIGN
+// ====================================
 .financial-student-selector {
     padding: 0 16px 24px;
-    position: relative;
 
     .selector-title {
-        font-size: 1.1rem;
+        font-size: 1.125rem;
         font-weight: 600;
-        margin: 0 0 16px 0;
-        color: var(--ion-text-color);
+        color: var(--text-secondary);
         text-align: center;
+        margin: 0 0 16px 0;
+        letter-spacing: -0.25px;
     }
 
     ion-segment {
-        --background: var(--ion-color-light);
-        border-radius: var(--financial-border-radius);
-        padding: 4px;
-        box-shadow: var(--financial-card-shadow);
+        --background: var(--bg-pastel-overlay);
+        border-radius: var(--radius-lg);
+        padding: 8px;
+        box-shadow: var(--shadow-md);
+        border: var(--border-light);
+        backdrop-filter: blur(10px);
 
         ion-segment-button {
-            --color: var(--ion-color-medium);
-            --color-checked: var(--financial-primary-color);
-            --background-checked: var(--ion-color-primary-contrast);
-            --border-radius: calc(var(--financial-border-radius) - 4px);
+            --color: var(--text-tertiary);
+            --color-checked: var(--text-on-pastel);
+            --background-checked: var(--pastel-mint-blue);
+            --border-radius: calc(var(--radius-lg) - 6px);
             font-weight: 600;
-            transition: var(--financial-transition);
+            transition: var(--transition-base);
+            letter-spacing: -0.25px;
 
             &.segment-button-checked {
+                box-shadow: var(--shadow-md);
                 transform: scale(1.02);
-                box-shadow: 0 4px 12px rgba(var(--ion-color-primary-rgb), 0.3);
             }
         }
     }
 }
 
-// Student Details Container
+// ====================================
+// STUDENT DETAILS CARD - SOFT PASTELS
+// ====================================
 .financial-student-details {
     padding: 0 16px;
 
     .student-overview-card {
-        background: var(--financial-card-background);
-        border-radius: var(--financial-border-radius);
-        margin-bottom: 24px;
-        box-shadow: var(--financial-card-shadow);
+        background: var(--bg-card);
+        border-radius: var(--radius-xl);
+        box-shadow: var(--shadow-md);
         overflow: hidden;
-        transition: var(--financial-transition);
-        border: 2px solid transparent;
+        transition: var(--transition-base);
+        border: var(--border-light);
+        margin-bottom: 32px;
 
         &:hover {
-            box-shadow: var(--financial-card-hover-shadow);
-            border-color: var(--financial-primary-tint);
-            transform: translateY(-2px);
+            box-shadow: var(--shadow-xl);
+            transform: translateY(-4px);
+            border-color: rgba(152, 251, 203, 0.3);
         }
 
         .student-card-header {
-            background: linear-gradient(135deg, var(--financial-primary-tint) 0%, var(--financial-primary-color) 100%);
-            padding: 20px;
-            color: var(--ion-color-primary-contrast);
+            background: var(--gradient-turquoise-flow);
+            padding: 28px 24px;
             position: relative;
-            
+
             &::after {
                 content: '';
                 position: absolute;
-                bottom: -1px;
+                bottom: 0;
                 left: 0;
                 right: 0;
                 height: 1px;
-                background: linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.3) 50%, transparent 100%);
+                background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
             }
 
             .student-name {
-                font-size: 1.4rem;
+                font-size: 1.375rem;
                 font-weight: 700;
-                margin: 0 0 8px 0;
-                text-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+                color: var(--text-on-dark-pastel);
+                margin: 0 0 6px 0;
+                letter-spacing: -0.25px;
             }
 
             .student-class {
-                font-size: 1rem;
-                opacity: 0.9;
-                margin: 0;
+                font-size: 1.125rem;
                 font-weight: 500;
+                color: rgba(26, 78, 82, 0.85);
+                margin: 0;
             }
         }
 
         .student-overview-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 0;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
 
             .overview-stat {
-                padding: 20px;
+                padding: 24px;
                 text-align: center;
                 position: relative;
-                transition: var(--financial-transition);
+                transition: var(--transition-fast);
+                background: var(--bg-card);
 
-                &:not(:last-child) {
-                    border-right: 1px solid var(--ion-color-light);
+                &:not(:last-child)::after {
+                    content: '';
+                    position: absolute;
+                    right: 0;
+                    top: 20%;
+                    bottom: 20%;
+                    width: 1px;
+                    background: var(--border-light);
                 }
 
                 &:hover {
-                    background: var(--ion-color-light-tint);
+                    background: var(--bg-pastel-overlay);
                 }
 
                 .stat-value {
-                    font-size: 1.3rem;
+                    font-size: 1.5rem;
                     font-weight: 700;
-                    margin: 0 0 4px 0;
-                    
+                    margin: 0 0 6px 0;
+                    letter-spacing: -0.5px;
+
                     &.positive {
-                        color: var(--financial-success-color);
+                        color: var(--text-on-pastel);
                     }
-                    
+
                     &.negative {
-                        color: var(--financial-danger-color);
+                        color: #D84315;
                     }
-                    
+
                     &.warning {
-                        color: var(--financial-warning-color);
+                        color: #F57C00;
                     }
                 }
 
                 .stat-label {
-                    font-size: 0.75rem;
-                    color: var(--ion-color-medium);
-                    margin: 0;
+                    font-size: 0.8125rem;
+                    color: var(--text-muted);
                     text-transform: uppercase;
-                    letter-spacing: 0.5px;
+                    letter-spacing: 0.75px;
                     font-weight: 600;
                 }
 
                 .progress-bar {
-                    margin-top: 8px;
-                    height: 4px;
-                    background: var(--ion-color-light);
-                    border-radius: 2px;
+                    margin-top: 12px;
+                    height: 6px;
+                    background: var(--bg-pastel-overlay);
+                    border-radius: var(--radius-full);
                     overflow: hidden;
+                    box-shadow: inset 0 1px 2px rgba(44, 62, 80, 0.05);
 
                     .progress-fill {
                         height: 100%;
-                        border-radius: 2px;
+                        border-radius: var(--radius-full);
                         transition: width 0.8s cubic-bezier(0.4, 0.0, 0.2, 1);
-                        
+                        position: relative;
+
+                        &::after {
+                            content: '';
+                            position: absolute;
+                            top: 0;
+                            left: 0;
+                            right: 0;
+                            bottom: 0;
+                            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+                            animation: shimmerSoft 2.5s infinite;
+                        }
+
                         &.success {
-                            background: linear-gradient(90deg, var(--financial-success-color), var(--financial-secondary-color));
+                            background: linear-gradient(90deg, var(--pastel-mint) 0%, var(--pastel-green) 100%);
                         }
-                        
+
                         &.warning {
-                            background: linear-gradient(90deg, var(--financial-warning-color), #ffc107);
+                            background: linear-gradient(90deg, var(--pastel-peach) 0%, var(--pastel-coral) 100%);
                         }
-                        
+
                         &.danger {
-                            background: linear-gradient(90deg, var(--financial-danger-color), #dc3545);
+                            background: linear-gradient(90deg, var(--pastel-coral) 0%, #FFCDD2 100%);
                         }
                     }
                 }
@@ -259,139 +387,176 @@
         }
     }
 
-    // Payment Status Badge
+    // Payment Status Badge - Soft Pastels
     .payment-status-badge {
         display: inline-flex;
         align-items: center;
-        gap: 6px;
-        padding: 8px 16px;
-        border-radius: 20px;
-        font-size: 0.875rem;
+        gap: 8px;
+        padding: 10px 20px;
+        border-radius: var(--radius-full);
+        font-size: 0.8125rem;
         font-weight: 600;
-        text-transform: capitalize;
-        
+        text-transform: uppercase;
+        letter-spacing: 0.75px;
+        transition: var(--transition-base);
+        border: 1px solid transparent;
+
         ion-icon {
-            font-size: 1rem;
+            font-size: 1.125rem;
         }
-        
+
         &.status-paid {
-            background: linear-gradient(135deg, var(--financial-success-color), var(--financial-secondary-color));
-            color: white;
+            background: var(--pastel-mint);
+            color: var(--text-on-pastel);
+            border-color: var(--pastel-mint-dark);
+            box-shadow: 0 2px 8px rgba(173, 235, 179, 0.3);
         }
-        
+
         &.status-partial {
-            background: linear-gradient(135deg, var(--financial-warning-color), #ffc107);
-            color: white;
+            background: var(--pastel-peach);
+            color: #BF6000;
+            border-color: #FFCBA4;
+            box-shadow: 0 2px 8px rgba(255, 218, 193, 0.3);
         }
-        
+
         &.status-overdue,
         &.status-unpaid {
-            background: linear-gradient(135deg, var(--financial-danger-color), #dc3545);
-            color: white;
+            background: var(--pastel-coral);
+            color: #C62828;
+            border-color: #FF9A8B;
+            box-shadow: 0 2px 8px rgba(255, 181, 167, 0.3);
+        }
+
+        &:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
         }
     }
 }
 
-// Academic Year Sections
+// ====================================
+// ACADEMIC YEAR SECTIONS - PASTEL CARDS
+// ====================================
 .academic-year-section {
     margin-bottom: 24px;
-    background: var(--financial-card-background);
-    border-radius: var(--financial-border-radius);
-    box-shadow: var(--financial-card-shadow);
+    background: var(--bg-card);
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-md);
     overflow: hidden;
-    transition: var(--financial-transition);
-    border: 2px solid transparent;
+    transition: var(--transition-base);
+    border: var(--border-light);
+    position: relative;
 
     &.current-year {
-        border-color: var(--financial-primary-color);
-        
+        border-color: rgba(152, 251, 203, 0.4);
+        box-shadow: 0 0 0 3px rgba(152, 251, 203, 0.1), var(--shadow-md);
+
+        &::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--gradient-turquoise-flow);
+        }
+
         .year-header {
-            background: linear-gradient(135deg, var(--financial-primary-color) 0%, var(--financial-primary-shade) 100%);
-            
+            background: var(--gradient-sky-mint);
+
             .year-badge {
-                background: rgba(255, 255, 255, 0.2);
-                color: white;
+                background: rgba(255, 255, 255, 0.3);
+                color: var(--text-on-dark-pastel);
+                backdrop-filter: blur(10px);
+                border-color: rgba(255, 255, 255, 0.4);
             }
         }
     }
 
     &.future-year {
-        opacity: 0.9;
-        
+        opacity: 0.85;
+
         .year-header {
-            background: linear-gradient(135deg, var(--ion-color-medium) 0%, var(--ion-color-dark) 100%);
+            background: linear-gradient(135deg, var(--pastel-powder) 0%, var(--pastel-sky) 100%);
         }
     }
 
     &:hover {
-        box-shadow: var(--financial-card-hover-shadow);
-        transform: translateY(-2px);
+        box-shadow: var(--shadow-xl);
+        transform: translateY(-3px);
+        border-color: rgba(141, 220, 220, 0.4);
     }
 
     .year-header {
-        background: linear-gradient(135deg, var(--ion-color-medium-tint) 0%, var(--ion-color-medium) 100%);
-        padding: 20px;
+        background: linear-gradient(135deg, var(--pastel-sky) 0%, var(--pastel-turquoise) 100%);
+        padding: 20px 16px;
         cursor: pointer;
-        transition: var(--financial-transition);
+        transition: var(--transition-base);
         position: relative;
-        
+
         &:hover {
-            background: linear-gradient(135deg, var(--financial-primary-tint) 0%, var(--financial-primary-color) 100%);
+            background: linear-gradient(135deg, var(--pastel-turquoise) 0%, var(--pastel-mint-blue) 100%);
         }
 
         .year-header-content {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            color: white;
 
             .year-title-group {
                 display: flex;
                 align-items: center;
-                gap: 12px;
+                gap: 16px;
 
                 .year-title {
-                    font-size: 1.3rem;
+                    font-size: 1.125rem;
                     font-weight: 700;
+                    color: var(--text-on-dark-pastel);
                     margin: 0;
-                    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+                    letter-spacing: -0.25px;
+                    white-space: nowrap;
                 }
 
                 .year-badge {
-                    background: rgba(255, 255, 255, 0.15);
-                    color: rgba(255, 255, 255, 0.9);
-                    padding: 4px 12px;
-                    border-radius: 12px;
-                    font-size: 0.75rem;
+                    background: rgba(255, 255, 255, 0.25);
+                    color: var(--text-on-dark-pastel);
+                    padding: 6px 16px;
+                    border-radius: var(--radius-full);
+                    font-size: 0.8125rem;
                     font-weight: 600;
                     text-transform: uppercase;
-                    letter-spacing: 0.5px;
-                    border: 1px solid rgba(255, 255, 255, 0.2);
+                    letter-spacing: 0.75px;
+                    border: 1px solid rgba(255, 255, 255, 0.3);
                     backdrop-filter: blur(10px);
                 }
             }
 
             .year-summary {
                 text-align: right;
-                
+
                 .year-total {
-                    font-size: 1.1rem;
+                    font-size: 1.25rem;
                     font-weight: 700;
+                    color: var(--text-on-dark-pastel);
                     margin: 0 0 4px 0;
+                    letter-spacing: -0.5px;
                 }
 
                 .year-status {
-                    font-size: 0.875rem;
-                    opacity: 0.9;
+                    font-size: 0.9375rem;
+                    color: rgba(26, 78, 82, 0.85);
                     margin: 0;
+                    font-weight: 500;
                 }
             }
 
             .expand-icon {
-                font-size: 1.5rem;
+                font-size: 1.25rem;
+                color: var(--text-on-dark-pastel);
                 transition: transform 0.3s ease;
-                margin-left: 16px;
-                
+                margin-left: 12px;
+                flex-shrink: 0;
+
                 &.expanded {
                     transform: rotate(180deg);
                 }
@@ -403,127 +568,163 @@
         max-height: 0;
         overflow: hidden;
         transition: max-height 0.4s cubic-bezier(0.4, 0.0, 0.2, 1);
-        
+
         &.expanded {
             max-height: none;
         }
 
         .fee-categories {
-            padding: 0;
-
             .fee-category {
-                border-bottom: 1px solid var(--ion-color-light);
-                
+                border-bottom: var(--border-light);
+
                 &:last-child {
                     border-bottom: none;
                 }
 
                 .category-header {
-                    padding: 20px;
+                    padding: 16px;
                     cursor: pointer;
-                    transition: var(--financial-transition);
+                    transition: var(--transition-fast);
                     display: flex;
                     align-items: center;
                     justify-content: space-between;
-                    
+
                     &:hover {
-                        background: var(--ion-color-light-tint);
+                        background: var(--bg-pastel-overlay);
                     }
 
                     .category-title-group {
                         display: flex;
                         align-items: center;
-                        gap: 12px;
+                        gap: 16px;
 
                         .category-icon {
-                            width: 40px;
-                            height: 40px;
-                            border-radius: 50%;
+                            width: 48px;
+                            height: 48px;
+                            min-width: 48px;
+                            min-height: 48px;
+                            border-radius: var(--radius-md);
                             display: flex;
                             align-items: center;
                             justify-content: center;
-                            
+                            position: relative;
+                            transition: var(--transition-base);
+                            flex-shrink: 0;
+
                             &.educational {
-                                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                                background: linear-gradient(135deg, var(--pastel-sky) 0%, var(--pastel-turquoise) 100%);
+                                box-shadow: 0 4px 12px rgba(179, 235, 242, 0.3);
+
+                                ion-icon {
+                                    color: var(--text-on-dark-pastel);
+                                }
                             }
-                            
+
                             &.subjects {
-                                background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+                                background: linear-gradient(135deg, var(--pastel-lavender) 0%, var(--pastel-periwinkle) 100%);
+                                box-shadow: 0 4px 12px rgba(230, 230, 250, 0.3);
+
+                                ion-icon {
+                                    color: #4A4A8D;
+                                }
                             }
-                            
+
                             &.transport {
-                                background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+                                background: linear-gradient(135deg, var(--pastel-mint-blue) 0%, var(--pastel-turquoise) 100%);
+                                box-shadow: 0 4px 12px rgba(152, 251, 203, 0.3);
+
+                                ion-icon {
+                                    color: var(--text-on-dark-pastel);
+                                }
                             }
-                            
+
                             &.books {
-                                background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+                                background: linear-gradient(135deg, var(--pastel-mint) 0%, var(--pastel-green) 100%);
+                                box-shadow: 0 4px 12px rgba(173, 235, 179, 0.3);
+
+                                ion-icon {
+                                    color: var(--text-on-pastel);
+                                }
                             }
-                            
+
+                            &:hover {
+                                transform: scale(1.08);
+                                box-shadow: var(--shadow-lg);
+                            }
+
                             ion-icon {
-                                color: white;
-                                font-size: 1.2rem;
+                                font-size: 1.5rem;
+                                width: 1.5rem;
+                                height: 1.5rem;
+
                             }
                         }
 
                         .category-info {
                             .category-name {
-                                font-size: 1.1rem;
+                                font-size: 1.0625rem;
                                 font-weight: 600;
-                                margin: 0 0 4px 0;
-                                color: var(--ion-text-color);
+                                color: var(--text-secondary);
+                                margin: 0 0 2px 0;
+                                letter-spacing: -0.25px;
                             }
 
                             .category-count {
-                                font-size: 0.875rem;
-                                color: var(--ion-color-medium);
+                                font-size: 0.9375rem;
+                                color: var(--text-muted);
                                 margin: 0;
+                                font-weight: 500;
                             }
                         }
                     }
 
                     .category-summary {
                         text-align: right;
-                        
+
                         .category-amount {
-                            font-size: 1.1rem;
+                            font-size: 1.25rem;
                             font-weight: 700;
-                            margin: 0 0 4px 0;
-                            color: var(--ion-text-color);
+                            color: var(--text-secondary);
+                            margin: 0 0 6px 0;
+                            letter-spacing: -0.5px;
                         }
 
                         .category-progress {
                             display: flex;
                             align-items: center;
-                            gap: 8px;
-                            
+                            gap: 10px;
+                            justify-content: flex-end;
+
                             .progress-text {
-                                font-size: 0.75rem;
-                                color: var(--ion-color-medium);
+                                font-size: 0.8125rem;
+                                color: var(--text-muted);
+                                font-weight: 500;
                             }
 
                             .mini-progress {
-                                width: 60px;
-                                height: 4px;
-                                background: var(--ion-color-light);
-                                border-radius: 2px;
+                                width: 80px;
+                                height: 6px;
+                                background: var(--bg-pastel-overlay);
+                                border-radius: var(--radius-full);
                                 overflow: hidden;
+                                box-shadow: inset 0 1px 2px rgba(44, 62, 80, 0.05);
 
                                 .mini-progress-fill {
                                     height: 100%;
-                                    border-radius: 2px;
+                                    border-radius: var(--radius-full);
                                     transition: width 0.6s ease;
-                                    background: var(--financial-primary-color);
+                                    background: linear-gradient(90deg, var(--pastel-mint-blue) 0%, var(--pastel-turquoise) 100%);
                                 }
                             }
                         }
                     }
 
                     .expand-icon {
-                        font-size: 1.2rem;
-                        color: var(--ion-color-medium);
+                        font-size: 1.5rem;
+                        color: var(--text-tertiary);
                         transition: transform 0.3s ease;
-                        margin-left: 12px;
-                        
+                        margin-left: 16px;
+
                         &.expanded {
                             transform: rotate(180deg);
                         }
@@ -534,91 +735,109 @@
                     max-height: 0;
                     overflow: hidden;
                     transition: max-height 0.3s cubic-bezier(0.4, 0.0, 0.2, 1);
-                    background: var(--ion-color-light-tint);
-                    
+                    background: var(--bg-pastel-overlay);
+
                     &.expanded {
                         max-height: none;
                     }
 
                     .fee-item {
-                        padding: 16px 20px;
-                        border-bottom: 1px solid var(--ion-color-light);
-                        transition: var(--financial-transition);
-                        
+                        padding: 16px;
+                        border-bottom: var(--border-light);
+                        transition: var(--transition-fast);
+
                         &:last-child {
                             border-bottom: none;
                         }
-                        
+
                         &:hover {
-                            background: var(--ion-color-light);
+                            background: rgba(179, 235, 242, 0.08);
                         }
 
                         .item-header {
                             display: flex;
                             align-items: flex-start;
                             justify-content: space-between;
-                            margin-bottom: 8px;
+                            margin-bottom: 12px;
 
                             .item-title {
-                                font-size: 1rem;
+                                font-size: 1.125rem;
                                 font-weight: 600;
+                                color: var(--text-secondary);
                                 margin: 0;
-                                color: var(--ion-text-color);
                                 flex: 1;
+                                letter-spacing: -0.25px;
                             }
 
                             .item-amount {
-                                font-size: 1rem;
+                                font-size: 1.125rem;
                                 font-weight: 700;
+                                color: var(--text-link);
                                 margin: 0;
-                                color: var(--financial-primary-color);
+                                letter-spacing: -0.25px;
                             }
                         }
 
                         .item-details {
                             display: grid;
-                            grid-template-columns: 1fr 1fr 1fr;
-                            gap: 12px;
-                            margin-bottom: 8px;
+                            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+                            gap: 16px;
+                            margin-bottom: 12px;
 
                             .detail-item {
                                 .detail-label {
-                                    font-size: 0.75rem;
-                                    color: var(--ion-color-medium);
-                                    margin: 0 0 2px 0;
+                                    font-size: 0.8125rem;
+                                    color: var(--text-muted);
                                     text-transform: uppercase;
                                     letter-spacing: 0.5px;
+                                    margin: 0 0 4px 0;
+                                    font-weight: 600;
                                 }
 
                                 .detail-value {
-                                    font-size: 0.875rem;
+                                    font-size: 1rem;
                                     font-weight: 600;
+                                    color: var(--text-tertiary);
                                     margin: 0;
-                                    color: var(--ion-text-color);
-                                    
+
                                     &.paid {
-                                        color: var(--financial-success-color);
+                                        color: var(--text-on-pastel);
                                     }
-                                    
+
                                     &.remaining {
-                                        color: var(--financial-danger-color);
+                                        color: #D84315;
                                     }
                                 }
                             }
                         }
 
-                        .item-progress-bar {
-                            width: 100%;
-                            height: 6px;
-                            background: var(--ion-color-light);
-                            border-radius: 3px;
-                            overflow: hidden;
+                        .item-status {
+                            display: inline-flex;
+                            align-items: center;
+                            gap: 6px;
+                            padding: 6px 14px;
+                            border-radius: var(--radius-full);
+                            font-size: 0.75rem;
+                            font-weight: 600;
+                            text-transform: uppercase;
+                            letter-spacing: 0.5px;
 
-                            .progress-fill {
-                                height: 100%;
-                                border-radius: 3px;
-                                background: linear-gradient(90deg, var(--financial-success-color), var(--financial-secondary-color));
-                                transition: width 0.8s cubic-bezier(0.4, 0.0, 0.2, 1);
+                            &.paid {
+                                background: rgba(173, 235, 179, 0.2);
+                                color: var(--text-on-pastel);
+                                border: 1px solid rgba(173, 235, 179, 0.4);
+                            }
+
+                            &.partial {
+                                background: rgba(255, 218, 193, 0.2);
+                                color: #BF6000;
+                                border: 1px solid rgba(255, 218, 193, 0.4);
+                            }
+
+                            &.unpaid {
+                                background: rgba(255, 181, 167, 0.2);
+                                color: #C62828;
+                                border: 1px solid rgba(255, 181, 167, 0.4);
                             }
                         }
                     }
@@ -628,57 +847,67 @@
     }
 }
 
-// Recent Payments & Invoices
+// ====================================
+// RECENT PAYMENTS & INVOICES - PASTEL CARDS
+// ====================================
 .financial-activity-section {
     margin-top: 32px;
-    padding: 0 16px;
+    padding: 0 16px 32px;
 
     .activity-cards {
         display: grid;
-        gap: 24px;
-        
+        gap: 32px;
+
         @include media-breakpoint-up(md) {
             grid-template-columns: 1fr 1fr;
         }
 
         .activity-card {
-            background: var(--financial-card-background);
-            border-radius: var(--financial-border-radius);
-            box-shadow: var(--financial-card-shadow);
+            background: var(--bg-card);
+            border-radius: var(--radius-xl);
+            box-shadow: var(--shadow-md);
             overflow: hidden;
-            transition: var(--financial-transition);
-            
+            transition: var(--transition-base);
+            border: var(--border-light);
+
             &:hover {
-                box-shadow: var(--financial-card-hover-shadow);
-                transform: translateY(-2px);
+                box-shadow: var(--shadow-xl);
+                transform: translateY(-3px);
+                border-color: rgba(152, 251, 203, 0.3);
             }
 
             .card-header {
-                padding: 20px 20px 16px;
-                border-bottom: 1px solid var(--ion-color-light);
-                
+                padding: 24px 24px 20px;
+                border-bottom: var(--border-light);
+                background: var(--gradient-card);
+
                 .card-title {
-                    font-size: 1.2rem;
+                    font-size: 1.375rem;
                     font-weight: 700;
+                    color: var(--text-secondary);
                     margin: 0 0 8px 0;
-                    color: var(--ion-text-color);
                     display: flex;
                     align-items: center;
-                    gap: 12px;
-                    
+                    gap: 14px;
+                    letter-spacing: -0.5px;
+
                     ion-icon {
-                        color: var(--financial-primary-color);
-                        font-size: 1.4rem;
+                        font-size: 1.75rem;
+                        color: var(--text-link);
+                        background: var(--bg-interactive);
+                        padding: 10px;
+                        border-radius: var(--radius-sm);
                     }
                 }
 
                 .card-subtitle {
-                    font-size: 0.875rem;
-                    color: var(--ion-color-medium);
+                    font-size: 0.9375rem;
+                    color: var(--text-muted);
                     margin: 0;
-                    
+                    font-weight: 500;
+
                     &.overdue {
-                        color: var(--financial-danger-color);
+                        color: #D84315;
                         font-weight: 600;
                     }
                 }
@@ -688,42 +917,44 @@
                 padding: 0;
 
                 .activity-item {
-                    padding: 16px 20px;
-                    border-bottom: 1px solid var(--ion-color-light-shade);
-                    transition: var(--financial-transition);
-                    
+                    padding: 20px 24px;
+                    border-bottom: var(--border-light);
+                    transition: var(--transition-fast);
+
                     &:last-child {
                         border-bottom: none;
                     }
-                    
+
                     &:hover {
-                        background: var(--ion-color-light-tint);
+                        background: var(--bg-pastel-overlay);
                     }
 
                     .activity-header {
                         display: flex;
                         align-items: flex-start;
                         justify-content: space-between;
-                        margin-bottom: 8px;
+                        margin-bottom: 10px;
 
                         .activity-title {
-                            font-size: 1rem;
+                            font-size: 1.125rem;
                             font-weight: 600;
+                            color: var(--text-secondary);
                             margin: 0;
-                            color: var(--ion-text-color);
+                            letter-spacing: -0.25px;
                         }
 
                         .activity-amount {
-                            font-size: 1rem;
+                            font-size: 1.125rem;
                             font-weight: 700;
                             margin: 0;
-                            
+                            letter-spacing: -0.25px;
+
                             &.payment {
-                                color: var(--financial-success-color);
+                                color: var(--text-on-pastel);
                             }
-                            
+
                             &.invoice {
-                                color: var(--financial-danger-color);
+                                color: #D84315;
                             }
                         }
                     }
@@ -735,32 +966,38 @@
                         gap: 12px;
 
                         .meta-info {
-                            font-size: 0.875rem;
-                            color: var(--ion-color-medium);
+                            font-size: 0.9375rem;
+                            color: var(--text-muted);
                             margin: 0;
+                            font-weight: 500;
                         }
 
                         .activity-status {
-                            padding: 4px 8px;
-                            border-radius: 12px;
+                            padding: 6px 14px;
+                            border-radius: var(--radius-full);
                             font-size: 0.75rem;
                             font-weight: 600;
                             text-transform: uppercase;
-                            
+                            letter-spacing: 0.5px;
+                            transition: var(--transition-fast);
+
                             &.paid {
-                                background: rgba(82, 182, 154, 0.1);
-                                color: var(--financial-success-color);
+                                background: rgba(173, 235, 179, 0.15);
+                                color: var(--text-on-pastel);
+                                border: 1px solid rgba(173, 235, 179, 0.3);
                             }
-                            
+
                             &.partial {
-                                background: rgba(240, 173, 78, 0.1);
-                                color: var(--financial-warning-color);
+                                background: rgba(255, 218, 193, 0.15);
+                                color: #BF6000;
+                                border: 1px solid rgba(255, 218, 193, 0.3);
                             }
-                            
+
                             &.not_paid,
                             &.overdue {
-                                background: rgba(202, 49, 32, 0.1);
-                                color: var(--financial-danger-color);
+                                background: rgba(255, 181, 167, 0.15);
+                                color: #C62828;
+                                border: 1px solid rgba(255, 181, 167, 0.3);
                             }
                         }
                     }
@@ -770,72 +1007,58 @@
     }
 }
 
-// Empty State
-.financial-empty-state {
-    text-align: center;
-    padding: 60px 20px;
-    
-    .empty-icon {
-        width: 80px;
-        height: 80px;
-        margin: 0 auto 24px;
-        background: linear-gradient(135deg, var(--ion-color-light), var(--ion-color-medium-tint));
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        
-        ion-icon {
-            font-size: 2.5rem;
-            color: var(--ion-color-medium);
-        }
-    }
-    
-    .empty-title {
-        font-size: 1.3rem;
-        font-weight: 600;
-        margin: 0 0 12px 0;
-        color: var(--ion-text-color);
-    }
-    
-    .empty-message {
-        font-size: 1rem;
-        color: var(--ion-color-medium);
-        margin: 0;
-        line-height: 1.5;
-    }
-}
-
-// Loading States
-.loading-skeleton {
-    background: linear-gradient(90deg, var(--ion-color-light) 25%, var(--ion-color-light-shade) 50%, var(--ion-color-light) 75%);
+// ====================================
+// LOADING STATES - SOFT SKELETONS
+// ====================================
+.skeleton-loader {
+    background: linear-gradient(90deg, var(--bg-pastel-overlay) 0%, rgba(179, 235, 242, 0.15) 50%, var(--bg-pastel-overlay) 100%);
     background-size: 200% 100%;
-    animation: loading-shimmer 1.5s infinite;
-    border-radius: var(--financial-border-radius-sm);
-    
+    animation: loading-shimmer 1.5s ease-in-out infinite;
+    border-radius: var(--radius-md);
+
     &.skeleton-text {
-        height: 1em;
-        margin: 4px 0;
+        height: 16px;
+        margin-bottom: 8px;
+        width: 80%;
     }
-    
+
+    &.skeleton-title {
+        height: 24px;
+        margin-bottom: 12px;
+        width: 60%;
+    }
+
     &.skeleton-card {
         height: 120px;
-        margin: 16px;
+        margin-bottom: 16px;
+        border-radius: var(--radius-lg);
     }
-    
+
     &.skeleton-header {
         height: 60px;
         margin: 16px;
+        border-radius: var(--radius-xl);
     }
 }
 
-// Animations
-@keyframes float {
+// ====================================
+// ANIMATIONS - SMOOTH & SUBTLE
+// ====================================
+@keyframes floatSoft {
     0%, 100% {
-        transform: translateY(0px);
+        transform: translateY(0) scale(1);
     }
     50% {
-        transform: translateY(-20px);
+        transform: translateY(-30px) scale(1.05);
+    }
+}
+
+@keyframes shimmerSoft {
+    0% {
+        transform: translateX(-100%);
+    }
+    100% {
+        transform: translateX(100%);
     }
 }
 
@@ -848,83 +1071,79 @@
     }
 }
 
-// Responsive Design
+// ====================================
+// RESPONSIVE DESIGN
+// ====================================
 @include media-breakpoint-up(sm) {
-    .financial-header .financial-summary-stats {
-        grid-template-columns: repeat(2, 1fr);
+    .financial-header {
+        padding: 40px 32px 44px;
+
+        .financial-summary-stats {
+            gap: 24px;
+        }
     }
-    
+
     .student-overview-grid {
         grid-template-columns: repeat(4, 1fr);
     }
 }
 
 @include media-breakpoint-up(md) {
-    .financial-header .financial-summary-stats {
-        grid-template-columns: repeat(2, 1fr);
-        max-width: 600px;
-        margin: 20px auto 0;
+    .financial-header {
+        .financial-summary-stats {
+            max-width: 560px;
+        }
     }
-    
-    .academic-year-section .year-content .fee-categories .fee-category .category-items .fee-item .item-details {
-        grid-template-columns: repeat(4, 1fr);
+
+    .academic-year-section {
+        .year-content {
+            .fee-categories {
+                .fee-category {
+                    .category-items {
+                        .fee-item {
+                            .item-details {
+                                grid-template-columns: repeat(4, 1fr);
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 }
 
 @include media-breakpoint-up(lg) {
-    .financial-student-details {
-        max-width: 1200px;
+    .financial-student-selector {
+        max-width: 800px;
         margin: 0 auto;
-        padding: 0 24px;
+    }
+
+    .financial-activity-section {
+        .activity-cards {
+            gap: 40px;
+        }
     }
 }
 
-// Accessibility
-@media (prefers-reduced-motion: reduce) {
-    * {
-        animation-duration: 0.01ms !important;
-        animation-iteration-count: 1 !important;
-        transition-duration: 0.01ms !important;
-        scroll-behavior: auto !important;
-    }
+// ====================================
+// UTILITY CLASSES
+// ====================================
+.text-pastel-primary {
+    color: var(--text-primary) !important;
 }
 
-// Dark mode adjustments
-:host-context(:root.dark) {
-    --financial-card-background: var(--ion-color-step-50);
-    
-    .financial-header {
-        background: linear-gradient(135deg, var(--financial-primary-shade) 0%, #2d5a52 100%);
-    }
-    
-    .academic-year-section.current-year .year-header {
-        background: linear-gradient(135deg, var(--financial-primary-shade) 0%, #2d5a52 100%);
-    }
-    
-    .loading-skeleton {
-        background: linear-gradient(90deg, var(--ion-color-step-100) 25%, var(--ion-color-step-150) 50%, var(--ion-color-step-100) 75%);
-        background-size: 200% 100%;
-    }
+.text-pastel-secondary {
+    color: var(--text-secondary) !important;
 }
 
-// Print styles
-@media print {
-    .financial-header::after,
-    .financial-header::before {
-        display: none;
-    }
-    
-    .academic-year-section {
-        break-inside: avoid;
-        box-shadow: none;
-        border: 1px solid #ccc;
-    }
-    
-    .year-content.expanded {
-        max-height: none !important;
-    }
-    
-    .category-items.expanded {
-        max-height: none !important;
-    }
+.text-pastel-link {
+    color: var(--text-link) !important;
+}
+
+.bg-pastel-overlay {
+    background: var(--bg-pastel-overlay) !important;
+}
+
+.border-pastel {
+    border: var(--border-light) !important;
 }

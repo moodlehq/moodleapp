@@ -1,9 +1,9 @@
 :host {
     // Aspire Welcome Banner Styles
     .aspire-welcome-banner {
-        background: linear-gradient(135deg, var(--ion-color-primary) 0%, var(--ion-color-primary-shade) 100%);
+        background: linear-gradient(135deg, #8DDCDC 0%, #B3EBF2 50%, #98FBCB 100%);
         padding: 24px 16px;
-        color: var(--ion-color-primary-contrast);
+        color: #1A4E52;
         position: relative;
         overflow: hidden;
         
@@ -50,7 +50,7 @@
 
                 ion-icon {
                     font-size: 1.2rem;
-                    color: var(--ion-color-primary-contrast);
+                    color: #1A4E52;
                 }
             }
 
@@ -64,49 +64,55 @@
 
     // Quick Access Section Styles
     .aspire-quick-section {
-        padding: 24px 16px 16px;
+        padding: 16px 16px 12px;
 
         .aspire-section-title {
-            margin: 0 0 16px 0;
-            font-size: 1.3rem;
-            font-weight: 700;
-            color: var(--ion-text-color);
+            margin: 0 0 12px 0;
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: #4A5568;
         }
 
         .aspire-quick-actions {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-            gap: 12px;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
 
             .aspire-action-card {
-                background: var(--ion-card-background, #fff);
+                background: #FAFBFC;
                 border-radius: 12px;
-                padding: 20px 16px;
+                padding: 12px 8px;
                 text-align: center;
                 cursor: pointer;
                 transition: all 0.3s ease;
-                border: 2px solid var(--ion-color-light-shade);
-                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+                border: 1px solid rgba(179, 235, 242, 0.15);
                 text-decoration: none;
-                color: var(--ion-text-color);
+                color: #4A5568;
 
                 &:hover {
-                    transform: translateY(-4px);
-                    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
-                    border-color: var(--ion-color-primary);
+                    transform: translateY(-2px);
+                    background: rgba(179, 235, 242, 0.08);
+                    border-color: rgba(179, 235, 242, 0.25);
                 }
 
                 ion-icon {
-                    font-size: 2.5rem;
-                    color: var(--ion-color-primary);
-                    margin-bottom: 8px;
+                    font-size: 1.75rem;
+                    color: #4A5568;
+                    margin-bottom: 6px;
                     display: block;
+                    background: rgba(179, 235, 242, 0.12);
+                    padding: 10px;
+                    border-radius: 10px;
+                    width: 44px;
+                    height: 44px;
+                    margin: 0 auto 6px;
                 }
 
                 span {
-                    font-size: 0.9rem;
-                    font-weight: 600;
+                    font-size: 0.8125rem;
+                    font-weight: 500;
                     display: block;
+                    color: #718096;
                 }
             }
         }
@@ -115,9 +121,11 @@
     // My Children Section Styles
     .aspire-my-children-section {
         padding: 20px 16px;
-        background: linear-gradient(135deg, var(--ion-color-primary-tint) 0%, var(--ion-color-primary-shade) 100%);
+        background: linear-gradient(135deg, #ADEBB3 0%, #B3EBF2 100%);
         margin-bottom: 24px;
         position: relative;
+        border-radius: 0 0 20px 20px;
+        box-shadow: 0 4px 12px rgba(179, 235, 242, 0.15);
         
         &::before {
             content: '';
@@ -125,17 +133,17 @@
             top: 0;
             left: 0;
             right: 0;
-            height: 4px;
-            background: var(--ion-color-primary);
+            height: 3px;
+            background: linear-gradient(90deg, #98FBCB 0%, #8DDCDC 50%, #B3EBF2 100%);
         }
 
         h2 {
             margin: 0 0 20px 0;
-            font-size: 1.4rem;
+            font-size: 1.25rem;
             font-weight: 700;
-            color: var(--ion-color-primary-contrast);
+            color: #1A4E52;
             text-transform: uppercase;
-            letter-spacing: 0.5px;
+            letter-spacing: 0.75px;
         }
     }
 
@@ -148,36 +156,41 @@
     .aspire-child-card {
         display: flex;
         align-items: center;
-        background: var(--ion-card-background, #fff);
-        border-radius: 12px;
+        background: #FFFFFF;
+        border-radius: 16px;
         padding: 16px;
         cursor: pointer;
         transition: all 0.3s ease;
-        border: 2px solid var(--ion-color-light-shade);
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        border: 1px solid rgba(179, 235, 242, 0.2);
+        box-shadow: 0 2px 8px rgba(179, 235, 242, 0.1);
         position: relative;
         overflow: hidden;
 
         &:hover {
             transform: translateY(-4px);
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
-            border-color: var(--ion-color-primary);
+            box-shadow: 0 8px 24px rgba(141, 220, 220, 0.2);
+            border-color: rgba(152, 251, 203, 0.4);
+            background: linear-gradient(135deg, rgba(179, 235, 242, 0.05) 0%, rgba(152, 251, 203, 0.05) 100%);
         }
 
         &.selected {
-            border-color: var(--ion-color-primary);
-            background: linear-gradient(135deg, var(--ion-color-primary-tint) 0%, transparent 100%);
+            border-color: rgba(152, 251, 203, 0.5);
+            background: linear-gradient(135deg, rgba(179, 235, 242, 0.1) 0%, rgba(152, 251, 203, 0.1) 100%);
+            box-shadow: 0 0 0 3px rgba(152, 251, 203, 0.15);
             
             &::after {
                 content: '';
                 position: absolute;
-                top: 0;
-                right: 0;
-                width: 0;
-                height: 0;
-                border-style: solid;
-                border-width: 0 40px 40px 0;
-                border-color: transparent var(--ion-color-primary) transparent transparent;
+                top: 8px;
+                right: 8px;
+                width: 24px;
+                height: 24px;
+                background: linear-gradient(135deg, #98FBCB 0%, #8DDCDC 100%);
+                border-radius: 50%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                box-shadow: 0 2px 6px rgba(152, 251, 203, 0.3);
             }
         }
 
@@ -233,20 +246,21 @@
                 align-items: center;
                 gap: 6px;
                 padding: 8px 16px;
-                background: var(--ion-color-primary);
-                color: var(--ion-color-primary-contrast);
-                border: none;
+                background: linear-gradient(135deg, #98FBCB 0%, #8DDCDC 100%);
+                color: #1A4E52;
+                border: 1px solid rgba(141, 220, 220, 0.3);
                 border-radius: 20px;
                 font-size: 0.875rem;
                 font-weight: 600;
                 cursor: pointer;
                 transition: all 0.3s ease;
-                box-shadow: 0 2px 8px rgba(var(--ion-color-primary-rgb), 0.3);
+                box-shadow: 0 2px 8px rgba(152, 251, 203, 0.25);
 
                 &:hover {
-                    background: var(--ion-color-primary-shade);
+                    background: linear-gradient(135deg, #8DDCDC 0%, #72D2D2 100%);
                     transform: translateY(-2px);
-                    box-shadow: 0 4px 12px rgba(var(--ion-color-primary-rgb), 0.4);
+                    box-shadow: 0 4px 12px rgba(141, 220, 220, 0.35);
+                    border-color: rgba(141, 220, 220, 0.5);
                 }
 
                 ion-icon {
@@ -270,30 +284,50 @@
         display: flex;
         align-items: center;
         gap: 12px;
-        margin: 20px 0 0 0;
-        padding: 16px;
-        background: linear-gradient(135deg, var(--ion-color-warning-tint) 0%, var(--ion-color-warning-shade) 20%);
-        border-radius: 8px;
-        font-size: 0.9rem;
-        color: var(--ion-color-dark);
-        border-left: 4px solid var(--ion-color-warning);
+        margin: 20px 16px;
+        padding: 16px 20px;
+        background: linear-gradient(135deg, #B3EBF2 0%, #98FBCB 100%);
+        border-radius: 16px;
+        font-size: 0.9375rem;
+        color: #1A4E52; // Deep teal for text on pastels
+        border: 1px solid rgba(141, 220, 220, 0.3);
+        box-shadow: 0 2px 8px rgba(179, 235, 242, 0.2);
+        position: relative;
+        overflow: hidden;
+
+        &::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 120px;
+            height: 120px;
+            background: radial-gradient(circle at center, rgba(152, 251, 203, 0.3) 0%, transparent 60%);
+            border-radius: 50%;
+        }
 
         ion-icon {
-            font-size: 1.4rem;
-            color: var(--ion-color-warning-shade);
+            font-size: 1.5rem;
+            color: #2C5F66;
             flex-shrink: 0;
+            background: rgba(255, 255, 255, 0.5);
+            padding: 8px;
+            border-radius: 12px;
+            backdrop-filter: blur(10px);
         }
 
         a {
-            color: var(--ion-color-primary);
+            color: #276749;
             text-decoration: none;
             font-weight: 600;
             cursor: pointer;
             border-bottom: 2px solid transparent;
-            transition: border-color 0.3s ease;
+            transition: all 0.3s ease;
+            position: relative;
 
             &:hover {
-                border-bottom-color: var(--ion-color-primary);
+                color: #1A4E52;
+                border-bottom-color: #276749;
             }
         }
     }
