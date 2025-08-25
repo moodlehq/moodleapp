@@ -1,5 +1,5 @@
 <ion-button fill="clear" size="small" (click)="setReminder($event)"
-    [ariaLabel]="'core.reminders.setareminderfor' | translate : { title: title, label: labelClean }">
+    [ariaLabel]="'core.reminders.setareminderfor' | translate : { title: title(), label: labelClean() }">
     @if (timebefore !== undefined) {
         <ion-icon name="fas-bell" slot="icon-only" aria-hidden="true" />
     } @else {

@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, Input, Output, OnInit, EventEmitter, ViewChild, ElementRef } from '@angular/core';
+import { Component, Input, Output, OnInit, EventEmitter, ElementRef, viewChild } from '@angular/core';
 import { FileEntry } from '@awesome-cordova-plugins/file/ngx';
 
 import { CoreIonLoadingElement } from '@classes/ion-loading';
@@ -66,7 +66,7 @@ export class CoreLocalFileComponent implements OnInit {
     @Output() onRename = new EventEmitter<{ file: FileEntry }>(); // Will notify when the file is renamed.
     @Output() onClick = new EventEmitter<void>(); // Will notify when the file is clicked. Only if overrideClick is true.
 
-    @ViewChild('nameForm') formElement?: ElementRef;
+    readonly formElement = viewChild<ElementRef>('nameForm');
 
     fileName?: string;
     fileIcon?: string;
@@ -194,7 +194,7 @@ export class CoreLocalFileComponent implements OnInit {
         if (newName == this.file.name) {
             // Name hasn't changed, stop.
             this.editMode = false;
-            CoreForms.triggerFormCancelledEvent(this.formElement, CoreSites.getCurrentSiteId());
+            CoreForms.triggerFormCancelledEvent(this.formElement(), CoreSites.getCurrentSiteId());
 
             return;
         }
@@ -214,7 +214,7 @@ export class CoreLocalFileComponent implements OnInit {
                 // File doesn't exist, move it.
                 const fileEntry = await CoreFile.moveFile(this.relativePath, newPath);
 
-                CoreForms.triggerFormSubmittedEvent(this.formElement, false, CoreSites.getCurrentSiteId());
+                CoreForms.triggerFormSubmittedEvent(this.formElement(), false, CoreSites.getCurrentSiteId());
 
                 this.editMode = false;
                 this.file = fileEntry;

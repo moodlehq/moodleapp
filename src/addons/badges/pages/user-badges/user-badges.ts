@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { AfterViewInit, Component, OnDestroy, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, OnDestroy, viewChild } from '@angular/core';
 import { AddonBadges, AddonBadgesUserBadge } from '../../services/badges';
 import { CoreSites } from '@services/sites';
 import { CorePromiseUtils } from '@singletons/promise-utils';
@@ -42,7 +42,7 @@ export default class AddonBadgesUserBadgesPage implements AfterViewInit, OnDestr
     currentTime = 0;
     badges: CoreListItemsManager<AddonBadgesUserBadge, AddonBadgesUserBadgesSource>;
 
-    @ViewChild(CoreSplitViewComponent) splitView!: CoreSplitViewComponent;
+    readonly splitView = viewChild.required(CoreSplitViewComponent);
 
     protected logView: () => void;
 
@@ -77,7 +77,7 @@ export default class AddonBadgesUserBadgesPage implements AfterViewInit, OnDestr
     async ngAfterViewInit(): Promise<void> {
         await this.fetchInitialBadges();
 
-        this.badges.start(this.splitView);
+        this.badges.start(this.splitView());
     }
 
     /**

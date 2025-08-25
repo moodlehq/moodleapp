@@ -16,12 +16,11 @@ import {
     Component,
     OnInit,
     OnDestroy,
-    ViewChild,
     ChangeDetectorRef,
-    ViewChildren,
-    QueryList,
     ElementRef,
     inject,
+    viewChild,
+    viewChildren,
 } from '@angular/core';
 import { IonContent } from '@ionic/angular';
 import { Subscription } from 'rxjs';
@@ -88,9 +87,9 @@ import { CoreSharedModule } from '@/core/shared.module';
 })
 export default class AddonModQuizPlayerPage implements OnInit, OnDestroy, CanLeave {
 
-    @ViewChild(IonContent) content?: IonContent;
-    @ViewChildren(CoreQuestionComponent) questionComponents?: QueryList<CoreQuestionComponent>;
-    @ViewChild('quizForm') formElement?: ElementRef;
+    readonly content = viewChild(IonContent);
+    readonly questionComponents = viewChildren(CoreQuestionComponent);
+    readonly formElement = viewChild<ElementRef>('quizForm');
 
     quiz?: AddonModQuizQuizWSData; // The quiz the attempt belongs to.
     attempt?: QuizAttempt; // The attempt being attempted.
@@ -198,7 +197,7 @@ export default class AddonModQuizPlayerPage implements OnInit, OnDestroy, CanLea
 
             await CoreAlerts.confirm(Translate.instant('addon.mod_quiz.confirmleavequizonerror'));
 
-            CoreForms.triggerFormCancelledEvent(this.formElement, CoreSites.getCurrentSiteId());
+            CoreForms.triggerFormCancelledEvent(this.formElement(), CoreSites.getCurrentSiteId());
         }
 
         return true;
@@ -251,11 +250,12 @@ export default class AddonModQuizPlayerPage implements OnInit, OnDestroy, CanLea
             this.reloadNavigation = true; // Data sent to server, navigation should be reloaded.
 
             // Reload the current page.
-            const scrollElement = await this.content?.getScrollElement();
+            const content = this.content();
+            const scrollElement = await content?.getScrollElement();
             const scrollTop = scrollElement?.scrollTop || -1;
 
             this.loaded = false;
-            this.content?.scrollToTop(); // Scroll top so the spinner is seen.
+            content?.scrollToTop(); // Scroll top so the spinner is seen.
 
             try {
                 await this.loadPage(this.attempt.currentpage ?? 0);
@@ -264,7 +264,7 @@ export default class AddonModQuizPlayerPage implements OnInit, OnDestroy, CanLea
                 if (scrollTop != -1) {
                     // Wait for content to be rendered.
                     setTimeout(() => {
-                        this.content?.scrollToPoint(0, scrollTop);
+                        this.content()?.scrollToPoint(0, scrollTop);
                     }, 50);
                 }
             }
@@ -308,7 +308,7 @@ export default class AddonModQuizPlayerPage implements OnInit, OnDestroy, CanLea
             return;
         }
 
-        this.content?.scrollToTop();
+        this.content()?.scrollToTop();
 
         // First try to save the attempt data. We only save it if we're not seeing the summary.
         if (!this.showSummary) {
@@ -524,7 +524,7 @@ export default class AddonModQuizPlayerPage implements OnInit, OnDestroy, CanLea
         });
 
         // Notify the new sequence checks to the components.
-        this.questionComponents?.forEach((component) => {
+        this.questionComponents()?.forEach((component) => {
             component.updateSequenceCheck(newSequenceChecks);
         });
     }
@@ -830,8 +830,9 @@ export default class AddonModQuizPlayerPage implements OnInit, OnDestroy, CanLea
         this.autoSave.cancelAutoSave();
         this.autoSave.hideAutoSaveError();
 
-        if (this.formElement) {
-            CoreForms.triggerFormSubmittedEvent(this.formElement, !this.offline, CoreSites.getCurrentSiteId());
+        const formElement = this.formElement();
+        if (formElement) {
+            CoreForms.triggerFormSubmittedEvent(formElement, !this.offline, CoreSites.getCurrentSiteId());
         }
 
         await CoreQuestionHelper.clearTmpData(this.questions, this.component, this.quiz.coursemodule);

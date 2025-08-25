@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit, OnDestroy, ViewChild, ElementRef, inject } from '@angular/core';
+import { Component, OnInit, OnDestroy, ElementRef, inject, viewChild } from '@angular/core';
 import { FormControl, FormGroup, FormBuilder } from '@angular/forms';
 import { CoreError } from '@classes/errors/error';
 import { CoreCourse } from '@features/course/services/course';
@@ -57,7 +57,7 @@ import { CoreSharedModule } from '@/core/shared.module';
 })
 export default class AddonModWikiEditPage implements OnInit, OnDestroy, CanLeave {
 
-    @ViewChild('editPageForm') formElement?: ElementRef;
+    readonly formElement = viewChild<ElementRef>('editPageForm');
 
     cmId?: number; // Course module ID.
     courseId?: number; // Course the wiki belongs to.
@@ -352,7 +352,7 @@ export default class AddonModWikiEditPage implements OnInit, OnDestroy, CanLeave
             await CoreAlerts.confirmLeaveWithChanges();
         }
 
-        CoreForms.triggerFormCancelledEvent(this.formElement, CoreSites.getCurrentSiteId());
+        CoreForms.triggerFormCancelledEvent(this.formElement(), CoreSites.getCurrentSiteId());
 
         return true;
     }
@@ -389,7 +389,7 @@ export default class AddonModWikiEditPage implements OnInit, OnDestroy, CanLeave
                 // Edit existing page.
                 await AddonModWiki.editPage(this.pageId, text, this.section);
 
-                CoreForms.triggerFormSubmittedEvent(this.formElement, true, CoreSites.getCurrentSiteId());
+                CoreForms.triggerFormSubmittedEvent(this.formElement(), true, CoreSites.getCurrentSiteId());
 
                 // Invalidate page since it changed.
                 await AddonModWiki.invalidatePage(this.pageId);
@@ -430,7 +430,7 @@ export default class AddonModWikiEditPage implements OnInit, OnDestroy, CanLeave
                 cmId: this.cmId,
             });
 
-            CoreForms.triggerFormSubmittedEvent(this.formElement, id > 0, CoreSites.getCurrentSiteId());
+            CoreForms.triggerFormSubmittedEvent(this.formElement(), id > 0, CoreSites.getCurrentSiteId());
 
             if (id <= 0) {
                 // Page stored in offline. Go to see the offline page.

@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, OnInit, input } from '@angular/core';
 import {
     CoreReminders,
     CoreRemindersService,
@@ -36,9 +36,9 @@ import { CoreRemindersUnits, REMINDERS_DISABLED } from '@features/reminders/cons
 })
 export class CoreRemindersSetReminderMenuComponent implements OnInit {
 
-    @Input() initialValue?: number;
-    @Input() eventTime?: number;
-    @Input() noReminderLabel = '';
+    readonly initialValue = input<number>();
+    readonly eventTime = input<number>();
+    readonly noReminderLabel = input('');
 
     currentValue = '0m';
     customLabel = '';
@@ -86,7 +86,7 @@ export class CoreRemindersSetReminderMenuComponent implements OnInit {
             option.enabled = this.isValidTime(option.unit, option.value);
         });
 
-        const initialValue = CoreRemindersService.convertSecondsToValueAndUnit(this.initialValue);
+        const initialValue = CoreRemindersService.convertSecondsToValueAndUnit(this.initialValue());
         if (initialValue.value === REMINDERS_DISABLED) {
             this.currentValue = 'disabled';
 
@@ -140,13 +140,14 @@ export class CoreRemindersSetReminderMenuComponent implements OnInit {
      * @returns Wether is a valid time or not.
      */
     protected isValidTime(unit: number, value: number): boolean {
-        if (!this.eventTime) {
+        const eventTime = this.eventTime();
+        if (!eventTime) {
             return true;
         }
 
         const timebefore = unit * value;
 
-        return (this.eventTime - timebefore) * 1000 > Date.now();
+        return (eventTime - timebefore) * 1000 > Date.now();
     }
 
     /**

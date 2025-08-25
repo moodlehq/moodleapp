@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit, OnDestroy, ViewChild, ElementRef, inject } from '@angular/core';
+import { Component, OnInit, OnDestroy, ElementRef, inject, viewChild } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { CoreError } from '@classes/errors/error';
 import { CoreFileUploaderHelper } from '@features/fileuploader/services/fileuploader-helper';
@@ -66,7 +66,7 @@ import { CoreSharedModule } from '@/core/shared.module';
 })
 export default class AddonModAssignEditPage implements OnInit, OnDestroy, CanLeave {
 
-    @ViewChild('editSubmissionForm') formElement?: ElementRef;
+    readonly formElement = viewChild<ElementRef>('editSubmissionForm');
 
     title: string; // Title to display.
     assign?: AddonModAssignAssign; // Assignment.
@@ -136,7 +136,7 @@ export default class AddonModAssignEditPage implements OnInit, OnDestroy, CanLea
         // Nothing has changed or user confirmed to leave. Clear temporary data from plugins.
         AddonModAssignHelper.clearSubmissionPluginTmpData(this.assign!, this.userSubmission, this.getInputData());
 
-        CoreForms.triggerFormCancelledEvent(this.formElement, CoreSites.getCurrentSiteId());
+        CoreForms.triggerFormCancelledEvent(this.formElement(), CoreSites.getCurrentSiteId());
 
         return true;
     }
@@ -443,7 +443,7 @@ export default class AddonModAssignEditPage implements OnInit, OnDestroy, CanLea
             }
 
             // Submission saved, trigger events.
-            CoreForms.triggerFormSubmittedEvent(this.formElement, sent, CoreSites.getCurrentSiteId());
+            CoreForms.triggerFormSubmittedEvent(this.formElement(), sent, CoreSites.getCurrentSiteId());
 
             CoreEvents.trigger(
                 ADDON_MOD_ASSIGN_SUBMISSION_SAVED_EVENT,

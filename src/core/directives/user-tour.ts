@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Directive, ElementRef, Input, OnDestroy, OnInit, inject } from '@angular/core';
+import { Directive, ElementRef, OnDestroy, OnInit, inject, input } from '@angular/core';
 import { CoreCancellablePromise } from '@classes/cancellable-promise';
 import { CoreUserTours, CoreUserToursFocusedOptions, CoreUserToursUserTour } from '@features/usertours/services/user-tours';
 import { CoreDom } from '@singletons/dom';
@@ -25,7 +25,7 @@ import { CoreDom } from '@singletons/dom';
 })
 export class CoreUserTourDirective implements OnInit, OnDestroy {
 
-    @Input({ required: true }) userTour!: CoreUserTourDirectiveOptions;
+    readonly userTour = input.required<CoreUserTourDirectiveOptions>();
 
     private tour?: CoreUserToursUserTour | null;
     private element: HTMLElement = inject(ElementRef).nativeElement;
@@ -39,7 +39,7 @@ export class CoreUserTourDirective implements OnInit, OnDestroy {
 
         await this.visiblePromise;
 
-        const { getFocusedElement, ...options } = this.userTour;
+        const { getFocusedElement, ...options } = this.userTour();
 
         this.tour = await CoreUserTours.showIfPending({
             ...options,

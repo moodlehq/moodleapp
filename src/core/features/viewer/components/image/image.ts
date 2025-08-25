@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, ElementRef, Input, OnInit, ViewChild, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+import { Component, ElementRef, Input, OnInit, CUSTOM_ELEMENTS_SCHEMA, viewChild, signal, effect } from '@angular/core';
 import { DomSanitizer, ModalController, Translate } from '@singletons';
 import { CoreMath } from '@singletons/math';
 import { Swiper } from 'swiper';
@@ -35,23 +35,8 @@ import { CoreSharedModule } from '@/core/shared.module';
 })
 export class CoreViewerImageComponent implements OnInit {
 
-    protected swiper?: Swiper;
-    @ViewChild('swiperRef') set swiperRef(swiperRef: ElementRef) {
-        /**
-         * This setTimeout waits for Ionic's async initialization to complete.
-         * Otherwise, an outdated swiper reference will be used.
-         */
-        setTimeout(() => {
-            const swiper = CoreSwiper.initSwiperIfAvailable(this.swiper, swiperRef, this.swiperOpts);
-            if (!swiper) {
-                return;
-            }
-
-            this.swiper = swiper;
-
-            this.swiper.zoom.enable();
-        });
-    }
+    protected readonly swiperRef = viewChild<ElementRef>('swiperRef'); // Reference to the swiper element.
+    readonly swiper = signal<Swiper | undefined>(undefined);
 
     @Input() title = ''; // Modal title.
     @Input() image = ''; // Image URL.
@@ -74,6 +59,19 @@ export class CoreViewerImageComponent implements OnInit {
             toggle: true,
         },
     };
+
+    constructor() {
+        effect(() => {
+            const swiper = CoreSwiper.initSwiperIfAvailable(this.swiper(), this.swiperRef(), this.swiperOpts);
+            if (!swiper) {
+                return;
+            }
+
+            this.swiper.set(swiper);
+
+            swiper.zoom.enable();
+        });
+    }
 
     /**
      * @inheritdoc
@@ -101,18 +99,19 @@ export class CoreViewerImageComponent implements OnInit {
      * @param zoomIn True to zoom in, false to zoom out.
      */
     zoom(zoomIn = true): void {
-        if (!this.swiper) {
+        const swiper = this.swiper();
+        if (!swiper) {
             return;
         }
 
-        let zoomRatio = this.swiper.zoom.scale;
+        let zoomRatio = swiper.zoom.scale;
         zoomIn
             ? zoomRatio *= 2
             : zoomRatio /= 2;
 
         zoomRatio = CoreMath.clamp(zoomRatio, CoreViewerImageComponent.MIN_RATIO, CoreViewerImageComponent.MAX_RATIO);
 
-        this.swiper.zoom.in(zoomRatio);
+        swiper.zoom.in(zoomRatio);
     }
 
 }

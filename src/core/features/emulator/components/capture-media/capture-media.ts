@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit, OnDestroy, ViewChild, ElementRef, ChangeDetectorRef, Input, inject } from '@angular/core';
+import { Component, OnInit, OnDestroy, ElementRef, ChangeDetectorRef, Input, inject, viewChild } from '@angular/core';
 import { MediaFile } from '@awesome-cordova-plugins/media-capture/ngx';
 
 import { CoreFile, CoreFileProvider } from '@services/file';
@@ -49,10 +49,10 @@ export class CoreEmulatorCaptureMediaComponent implements OnInit, OnDestroy {
     @Input() quality?: number; // Only for images.
     @Input({ transform: toBoolean }) returnDataUrl = false; // Whether it should return a data img. Only for images.
 
-    @ViewChild('streamVideo') streamVideo?: ElementRef;
-    @ViewChild('previewVideo') previewVideo?: ElementRef;
-    @ViewChild('imgCanvas') imgCanvas?: ElementRef;
-    @ViewChild('previewImage') previewImage?: ElementRef;
+    readonly streamVideo = viewChild<ElementRef>('streamVideo');
+    readonly previewVideo = viewChild<ElementRef>('previewVideo');
+    readonly imgCanvas = viewChild<ElementRef>('imgCanvas');
+    readonly previewImage = viewChild<ElementRef>('previewImage');
 
     title = 'core.captureimage'; // The title of the page.
     isVideo = false; // Whether it should capture video.
@@ -115,7 +115,7 @@ export class CoreEmulatorCaptureMediaComponent implements OnInit, OnDestroy {
             this.localMediaStream = stream;
 
             if (this.isVideo) {
-                this.previewMedia = this.previewVideo?.nativeElement;
+                this.previewMedia = this.previewVideo()?.nativeElement;
 
                 this.mediaRecorder = new MediaRecorder(this.localMediaStream, { mimeType: this.mimetype });
 
@@ -137,7 +137,7 @@ export class CoreEmulatorCaptureMediaComponent implements OnInit, OnDestroy {
                 };
             }
 
-            const streamVideo = this.streamVideo;
+            const streamVideo = this.streamVideo();
             if (!streamVideo) {
                 throw new CoreError('Video element not found.');
             }
@@ -195,25 +195,27 @@ export class CoreEmulatorCaptureMediaComponent implements OnInit, OnDestroy {
             this.mediaRecorder?.start();
             this.changeDetectorRef.detectChanges();
         } else {
-            if (!this.imgCanvas) {
+            const imgCanvas = this.imgCanvas();
+            if (!imgCanvas) {
                 return;
             }
 
             // Get the image from the video and set it to the canvas, using video width/height.
-            const width = this.streamVideo?.nativeElement.videoWidth;
-            const height = this.streamVideo?.nativeElement.videoHeight;
+            const streamVideo = this.streamVideo();
+            const width = streamVideo?.nativeElement.videoWidth;
+            const height = streamVideo?.nativeElement.videoHeight;
             const loadingModal = await CoreLoadings.show();
 
-            this.imgCanvas.nativeElement.width = width;
-            this.imgCanvas.nativeElement.height = height;
-            this.imgCanvas.nativeElement.getContext('2d').drawImage(this.streamVideo?.nativeElement, 0, 0, width, height);
+            imgCanvas.nativeElement.width = width;
+            imgCanvas.nativeElement.height = height;
+            imgCanvas.nativeElement.getContext('2d').drawImage(streamVideo?.nativeElement, 0, 0, width, height);
 
             // Convert the image to blob and show it in an image element.
-            this.imgCanvas.nativeElement.toBlob((blob: Blob) => {
+            imgCanvas.nativeElement.toBlob((blob: Blob) => {
                 loadingModal.dismiss();
 
                 this.mediaBlob = blob;
-                this.previewImage?.nativeElement.setAttribute('src', window.URL.createObjectURL(this.mediaBlob));
+                this.previewImage()?.nativeElement.setAttribute('src', window.URL.createObjectURL(this.mediaBlob));
                 this.hasCaptured = true;
             }, this.mimetype, this.quality);
         }
@@ -239,7 +241,7 @@ export class CoreEmulatorCaptureMediaComponent implements OnInit, OnDestroy {
         }
 
         this.previewMedia?.pause();
-        this.streamVideo?.nativeElement.play();
+        this.streamVideo()?.nativeElement.play();
 
         this.hasCaptured = false;
         this.isCapturing = false;
@@ -290,7 +292,7 @@ export class CoreEmulatorCaptureMediaComponent implements OnInit, OnDestroy {
     async done(): Promise<void> {
         if (this.returnDataUrl) {
             // Return the image as a base64 string.
-            this.dismissWithData((<HTMLCanvasElement> this.imgCanvas?.nativeElement).toDataURL(this.mimetype, this.quality));
+            this.dismissWithData((<HTMLCanvasElement> this.imgCanvas()?.nativeElement).toDataURL(this.mimetype, this.quality));
 
             return;
         }
@@ -362,7 +364,8 @@ export class CoreEmulatorCaptureMediaComponent implements OnInit, OnDestroy {
         this.isCapturing = false;
         this.hasCaptured = true;
 
-        this.streamVideo && this.streamVideo.nativeElement.pause();
+        const streamVideo = this.streamVideo();
+        streamVideo && streamVideo.nativeElement.pause();
         this.mediaRecorder && this.mediaRecorder.stop();
     }
 
@@ -376,7 +379,7 @@ export class CoreEmulatorCaptureMediaComponent implements OnInit, OnDestroy {
                 track.stop();
             });
         }
-        this.streamVideo?.nativeElement.pause();
+        this.streamVideo()?.nativeElement.pause();
         this.previewMedia?.pause();
         delete this.mediaBlob;
     }

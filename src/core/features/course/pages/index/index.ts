@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, ViewChild, OnDestroy, OnInit, inject } from '@angular/core';
+import { Component, OnDestroy, OnInit, inject, viewChild } from '@angular/core';
 import { ActivatedRoute, Params } from '@angular/router';
 
 import { CoreTabsOutletTab, CoreTabsOutletComponent } from '@components/tabs-outlet/tabs-outlet';
@@ -45,7 +45,7 @@ import { CoreSharedModule } from '@/core/shared.module';
 })
 export default class CoreCourseIndexPage implements OnInit, OnDestroy {
 
-    @ViewChild(CoreTabsOutletComponent) tabsComponent?: CoreTabsOutletComponent;
+    readonly tabsComponent = viewChild(CoreTabsOutletComponent);
 
     title = '';
     category = '';
@@ -85,12 +85,12 @@ export default class CoreCourseIndexPage implements OnInit, OnDestroy {
                 }
 
                 // Select course contents.
-                this.tabsComponent?.selectByIndex(0);
+                this.tabsComponent()?.selectByIndex(0);
             } else if (this.tabs) {
                 const index = this.tabs.findIndex((tab) => tab.name === data.name);
 
                 if (index >= 0) {
-                    this.tabsComponent?.selectByIndex(index);
+                    this.tabsComponent()?.selectByIndex(index);
                 }
             }
         });
@@ -216,7 +216,7 @@ export default class CoreCourseIndexPage implements OnInit, OnDestroy {
         if (tabToLoad) {
             await CoreWait.nextTick();
 
-            this.tabsComponent?.selectByIndex(tabToLoad);
+            this.tabsComponent()?.selectByIndex(tabToLoad);
         }
     }
 
@@ -262,14 +262,14 @@ export default class CoreCourseIndexPage implements OnInit, OnDestroy {
      * User entered the page.
      */
     ionViewDidEnter(): void {
-        this.tabsComponent?.ionViewDidEnter();
+        this.tabsComponent()?.ionViewDidEnter();
     }
 
     /**
      * User left the page.
      */
     ionViewDidLeave(): void {
-        this.tabsComponent?.ionViewDidLeave();
+        this.tabsComponent()?.ionViewDidLeave();
     }
 
     /**

@@ -23,8 +23,9 @@ import {
     ChangeDetectorRef,
     Type,
     ElementRef,
-    ViewChild,
     inject,
+    viewChild,
+    effect,
 } from '@angular/core';
 import { CorePromisedValue } from '@classes/promised-value';
 import { CoreQuestionBehaviourDelegate } from '@features/question/services/behaviour-delegate';
@@ -69,14 +70,7 @@ export class CoreQuestionComponent implements OnInit, AsyncDirective {
     @Output() buttonClicked = new EventEmitter<CoreQuestionBehaviourButton>(); // Will emit when a behaviour button is clicked.
     @Output() onAbort= new EventEmitter<void>(); // Will emit an event if the question should be aborted.
 
-    @ViewChild(CoreDynamicComponent)
-        set dynComponent(el: CoreDynamicComponent<CoreQuestionBaseComponent>) {
-            if (!el) {
-                return;
-            }
-
-            this.promisedDynamicComponent.resolve(el);
-        }
+    readonly dynComponent = viewChild(CoreDynamicComponent<CoreQuestionBaseComponent>);
 
     componentClass?: Type<unknown>; // The class of the component to render.
     data: Record<string, unknown> = {}; // Data to pass to the component.
@@ -110,6 +104,16 @@ export class CoreQuestionComponent implements OnInit, AsyncDirective {
     constructor() {
         this.logger = CoreLogger.getInstance('CoreQuestionComponent');
         CoreDirectivesRegistry.register(this.element, this);
+
+        effect(() => {
+            const el = this.dynComponent();
+            if (!el) {
+                return;
+            }
+
+            this.promisedDynamicComponent.resolve(el);
+        });
+
     }
 
     /**

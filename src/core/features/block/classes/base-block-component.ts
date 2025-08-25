@@ -88,7 +88,6 @@ export abstract class CoreBlockBaseComponent implements OnInit, OnChanges, ICore
      * Perform the refresh content function.
      *
      * @param showLoading Whether to show loading.
-     * @returns Resolved when done.
      */
     protected async refreshContent(showLoading?: boolean): Promise<void> {
         if (showLoading) {
@@ -134,8 +133,6 @@ export abstract class CoreBlockBaseComponent implements OnInit, OnChanges, ICore
 
     /**
      * Download the component contents.
-     *
-     * @returns Promise resolved when done.
      */
     protected async fetchContent(): Promise<void> {
         return;
@@ -143,8 +140,6 @@ export abstract class CoreBlockBaseComponent implements OnInit, OnChanges, ICore
 
     /**
      * Reload content without invalidating data.
-     *
-     * @returns Promise resolved when done.
      */
     async reloadContent(): Promise<void> {
         if (!this.loaded) {
@@ -174,5 +169,10 @@ export interface ICoreBlockComponent {
      * Perform the invalidate content function.
      */
     invalidateContent(): Promise<void>;
+
+    /**
+     * Perform the reload content function.
+     */
+    reloadContent(): Promise<void>;
 
 }

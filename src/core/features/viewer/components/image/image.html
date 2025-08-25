@@ -19,7 +19,7 @@
             </ion-button>
         </ion-col>
         <ion-col />
-        @if (swiper) {
+        @if (swiper()) {
             <ion-col size="auto">
                 <ion-button fill="clear" [ariaLabel]="'core.zoomout' | translate" (click)="zoom(false)">
                     <ion-icon name="fas-magnifying-glass-minus" slot="icon-only" aria-hidden="true" />

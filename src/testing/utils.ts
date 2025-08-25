@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, CUSTOM_ELEMENTS_SCHEMA, EventEmitter, ProviderToken, Type, ViewChild } from '@angular/core';
+import { Component, CUSTOM_ELEMENTS_SCHEMA, EventEmitter, ProviderToken, Signal, Type, viewChild } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { Observable, of, Subject } from 'rxjs';
@@ -36,7 +36,7 @@ import { Equal } from '@/core/utils/types';
 
 abstract class WrapperComponent<U> {
 
-    child!: U;
+    readonly child!: Signal<U>;
 
 }
 
@@ -149,7 +149,7 @@ function createWrapperComponent<U>(template: string, componentClass: Type<U>): T
     })
     class HostComponent extends WrapperComponent<U> {
 
-        @ViewChild(componentClass) child!: U;
+        readonly child = viewChild.required<U>(componentClass);
 
     }
 

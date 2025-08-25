@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit, OnDestroy, ViewChild, ElementRef, inject } from '@angular/core';
+import { Component, OnInit, OnDestroy, ElementRef, inject, viewChild } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { CoreCourse } from '@features/course/services/course';
 import { CoreGradesHelper, CoreGradesMenuItem } from '@features/grades/services/grades-helper';
@@ -65,7 +65,7 @@ import { CoreErrorHelper } from '@services/error-helper';
 })
 export default class AddonModWorkshopAssessmentPage implements OnInit, OnDestroy, CanLeave {
 
-    @ViewChild('evaluateFormEl') formElement!: ElementRef;
+    readonly formElement = viewChild.required<ElementRef>('evaluateFormEl');
 
     assessment!: AddonModWorkshopSubmissionAssessmentWithFormData;
     submission!: AddonModWorkshopSubmissionData;
@@ -184,7 +184,7 @@ export default class AddonModWorkshopAssessmentPage implements OnInit, OnDestroy
         // Show confirmation if some data has been modified.
         await CoreAlerts.confirmLeaveWithChanges();
 
-        CoreForms.triggerFormCancelledEvent(this.formElement, this.siteId);
+        CoreForms.triggerFormCancelledEvent(this.formElement(), this.siteId);
 
         return true;
     }
@@ -434,7 +434,7 @@ export default class AddonModWorkshopAssessmentPage implements OnInit, OnDestroy
                 grade,
             );
 
-            CoreForms.triggerFormSubmittedEvent(this.formElement, !!result, this.siteId);
+            CoreForms.triggerFormSubmittedEvent(this.formElement(), !!result, this.siteId);
 
             const data: AddonModWorkshopAssessmentSavedChangedEventData = {
                 workshopId: this.workshopId,

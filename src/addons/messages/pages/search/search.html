@@ -14,7 +14,7 @@
 </ion-header>
 <ion-content>
     <core-split-view>
-        <core-search-box (onSubmit)="search($event)" (onClear)="clearSearch()" [disabled]="disableSearch" autocorrect="off"
+        <core-search-box (searchTextChange)="search($event)" [disabled]="disableSearch" autocorrect="off"
             [spellcheck]="false" [autoFocus]="true" [lengthCheck]="1" searchArea="AddonMessagesSearch" />
 
         <core-loading [hideUntil]="!displaySearching" [message]="'core.searching' | translate">

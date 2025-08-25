@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnDestroy, ElementRef, ViewChild } from '@angular/core';
+import { Component, OnDestroy, ElementRef, viewChild } from '@angular/core';
 
 import { AddonModQuizQuestionBasicData, CoreQuestionBaseComponent } from '@features/question/classes/base-question-component';
 import { CoreQuestionHelper } from '@features/question/services/question-helper';
@@ -34,7 +34,7 @@ import { CoreSharedModule } from '@/core/shared.module';
 })
 export class AddonQtypeDdwtosComponent extends CoreQuestionBaseComponent<AddonModQuizDdwtosQuestionData> implements OnDestroy {
 
-    @ViewChild('questiontext') questionTextEl?: ElementRef;
+    readonly questionTextEl = viewChild<ElementRef>('questiontext');
 
     protected questionInstance?: AddonQtypeDdwtosQuestion;
     protected inputIds: string[] = []; // Ids of the inputs of the question (where the answers will be stored).
@@ -134,8 +134,9 @@ export class AddonQtypeDdwtosComponent extends CoreQuestionBaseComponent<AddonMo
             return;
         }
 
-        if (this.questionTextEl) {
-            await CoreWait.waitForImages(this.questionTextEl.nativeElement);
+        const questionTextEl = this.questionTextEl();
+        if (questionTextEl) {
+            await CoreWait.waitForImages(questionTextEl.nativeElement);
         }
 
         // Create the instance.

@@ -14,7 +14,7 @@
 
 // Based on http://roblouie.com/article/198/using-gestures-in-the-ionic-2-beta/
 
-import { Directive, ElementRef, OnInit, Input, Output, EventEmitter, inject } from '@angular/core';
+import { Directive, ElementRef, OnInit, Output, EventEmitter, inject, input } from '@angular/core';
 import { CoreLogger } from '@singletons/logger';
 
 /**
@@ -41,7 +41,9 @@ import { CoreLogger } from '@singletons/logger';
 })
 export class CoreSupressEventsDirective implements OnInit {
 
-    @Input('core-suppress-events') suppressEvents?: string | string[];
+    readonly suppressEvents = input<string | string[]>(undefined, { alias: 'core-suppress-events' });
+    // Not migrable yet, observed is not supported in Angular 20.
+    // https://github.com/angular/angular/issues/54837
     @Output() onClick = new EventEmitter();
 
     protected element: HTMLElement = inject(ElementRef).nativeElement;
@@ -59,17 +61,18 @@ export class CoreSupressEventsDirective implements OnInit {
 
         let events: string[];
 
-        if (this.suppressEvents == 'all' || this.suppressEvents === undefined || this.suppressEvents === null) {
+        const suppressEvents = this.suppressEvents();
+        if (suppressEvents == 'all' || suppressEvents === undefined || suppressEvents === null) {
             // Suppress all events.
             events = ['click', 'mousedown', 'touchdown', 'touchmove', 'touchstart'];
 
-        } else if (typeof this.suppressEvents == 'string') {
+        } else if (typeof suppressEvents == 'string') {
             // It's a string, just suppress this event.
-            events = [this.suppressEvents];
+            events = [suppressEvents];
 
-        } else if (Array.isArray(this.suppressEvents)) {
+        } else if (Array.isArray(suppressEvents)) {
             // Array supplied.
-            events = this.suppressEvents;
+            events = suppressEvents;
         } else {
             events = [];
         }

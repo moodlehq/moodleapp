@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { AfterViewInit, Component, OnDestroy, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, OnDestroy, viewChild } from '@angular/core';
 
 import { CoreSplitViewComponent } from '@components/split-view/split-view';
 import { CoreListItemsManager } from '@classes/items-management/list-items-manager';
@@ -31,7 +31,7 @@ export default class CoreSettingsIndexPage implements AfterViewInit, OnDestroy {
 
     sections: CoreListItemsManager<CoreSettingsSection>;
 
-    @ViewChild(CoreSplitViewComponent) splitView!: CoreSplitViewComponent;
+    readonly splitView = viewChild.required(CoreSplitViewComponent);
 
     constructor() {
         const source = CoreRoutedItemsManagerSourcesTracker.getOrCreateSource(CoreSettingsSectionsSource, []);
@@ -44,7 +44,7 @@ export default class CoreSettingsIndexPage implements AfterViewInit, OnDestroy {
      */
     async ngAfterViewInit(): Promise<void> {
         await this.sections.load();
-        await this.sections.start(this.splitView);
+        await this.sections.start(this.splitView());
     }
 
     /**

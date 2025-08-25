@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { CoreReminderData, CoreReminders } from '@features/reminders/services/reminders';
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, OnInit, computed, input } from '@angular/core';
 import { CorePopovers } from '@services/overlays/popovers';
 import { Translate } from '@singletons';
 import { CoreTime } from '@singletons/time';
@@ -33,16 +33,16 @@ import { CoreSharedModule } from '@/core/shared.module';
 })
 export class CoreRemindersSetButtonComponent implements OnInit {
 
-    @Input() component?: string;
-    @Input() instanceId?: number;
-    @Input() type?: string;
-    @Input() label = '';
-    @Input() initialTimebefore?: number;
-    @Input() time = -1;
-    @Input() title = '';
-    @Input() url = '';
+    readonly component = input<string>();
+    readonly instanceId = input<number>();
+    readonly type = input<string>();
+    readonly label = input('');
+    readonly initialTimebefore = input<number>();
+    readonly time = input(-1);
+    readonly title = input('');
+    readonly url = input('');
 
-    labelClean = '';
+    readonly labelClean = computed(() => this.label().replace(':', ''));
     timebefore?: number;
     reminderMessage?: string;
 
@@ -50,9 +50,7 @@ export class CoreRemindersSetButtonComponent implements OnInit {
      * @inheritdoc
      */
     ngOnInit(): void {
-        this.labelClean = this.label.replace(':', '');
-
-        this.setTimebefore(this.initialTimebefore);
+        this.setTimebefore(this.initialTimebefore());
     }
 
     /**
@@ -61,7 +59,7 @@ export class CoreRemindersSetButtonComponent implements OnInit {
      * @param ev Click event.
      */
     async setReminder(ev: Event): Promise<void> {
-        if (this.component === undefined || this.instanceId === undefined || this.type === undefined) {
+        if (this.component() === undefined || this.instanceId() === undefined || this.type() === undefined) {
             return;
         }
 
@@ -83,7 +81,7 @@ export class CoreRemindersSetButtonComponent implements OnInit {
             component: CoreRemindersSetReminderMenuComponent,
             componentProps: {
                 initialValue: this.timebefore,
-                eventTime: this.time,
+                eventTime: this.time(),
                 noReminderLabel: 'core.reminders.delete',
             },
             event: ev,
@@ -105,7 +103,7 @@ export class CoreRemindersSetButtonComponent implements OnInit {
         this.timebefore = timebefore;
 
         if (this.timebefore !== undefined) {
-            const reminderTime = this.time - this.timebefore;
+            const reminderTime = this.time() - this.timebefore;
 
             this.reminderMessage = Translate.instant('core.reminders.reminderset', {
                 $a: CoreTime.userDate(reminderTime * 1000),
@@ -122,15 +120,18 @@ export class CoreRemindersSetButtonComponent implements OnInit {
      * @returns Promise resolved when done.
      */
     protected async saveReminder(timebefore: number): Promise<void> {
-        if (this.component === undefined || this.instanceId === undefined || this.type === undefined) {
+        const component = this.component();
+        const instanceId = this.instanceId();
+        const type = this.type();
+        if (component === undefined || instanceId === undefined || type === undefined) {
             return;
         }
 
         // Remove previous the reminders.
         await CoreReminders.removeReminders({
-            instanceId: this.instanceId,
-            component: this.component,
-            type: this.type,
+            instanceId,
+            component,
+            type,
         });
 
         if (timebefore === undefined || timebefore === REMINDERS_DISABLED) {
@@ -147,18 +148,18 @@ export class CoreRemindersSetButtonComponent implements OnInit {
 
         const reminder: CoreReminderData = {
             timebefore,
-            component: this.component,
-            instanceId: this.instanceId,
-            type: this.type,
-            title: `${this.label} ${this.title}`,
-            url: this.url,
-            time: this.time,
+            component,
+            instanceId,
+            type,
+            title: `${this.label()} ${this.title()}`,
+            url: this.url(),
+            time: this.time(),
         };
 
         // Save before.
         await CoreReminders.addReminder(reminder);
 
-        const time = this.time - timebefore;
+        const time = this.time() - timebefore;
         const message = Translate.instant('core.reminders.reminderset', { $a: CoreTime.userDate(time * 1000) });
         CoreToasts.show({ message });
     }

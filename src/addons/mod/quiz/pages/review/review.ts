@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, ElementRef, OnInit, ViewChild, inject } from '@angular/core';
+import { Component, ElementRef, OnInit, inject, viewChild } from '@angular/core';
 import { CoreQuestionQuestionForView } from '@features/question/services/question';
 import { CoreQuestionHelper } from '@features/question/services/question-helper';
 import { IonContent } from '@ionic/angular';
@@ -59,7 +59,7 @@ import { CoreLoadings } from '@services/overlays/loadings';
 })
 export default class AddonModQuizReviewPage implements OnInit {
 
-    @ViewChild(IonContent) content?: IonContent;
+    readonly content = viewChild(IonContent);
 
     protected static readonly QUESTIONS_PER_LOAD_WHEN_SHOW_ALL = 10;
 
@@ -138,7 +138,7 @@ export default class AddonModQuizReviewPage implements OnInit {
         }
 
         this.loaded = false;
-        this.content?.scrollToTop();
+        this.content()?.scrollToTop();
 
         try {
             await this.loadPage(page);

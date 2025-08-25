@@ -14,7 +14,7 @@
 
 import { AddonModGlossaryHelper } from '@addons/mod/glossary/services/glossary-helper';
 import { AddonModGlossaryOffline, AddonModGlossaryOfflineEntry } from '@addons/mod/glossary/services/glossary-offline';
-import { Component, OnDestroy, OnInit, ViewChild, inject } from '@angular/core';
+import { Component, OnDestroy, OnInit, inject, viewChild } from '@angular/core';
 import { ActivatedRoute, ActivatedRouteSnapshot } from '@angular/router';
 import { CoreRoutedItemsManagerSourcesTracker } from '@classes/items-management/routed-items-manager-sources-tracker';
 import { CoreSwipeNavigationItemsManager } from '@classes/items-management/swipe-navigation-items-manager';
@@ -67,7 +67,7 @@ import { CoreRatingAggregateComponent } from '@features/rating/components/aggreg
 })
 export default class AddonModGlossaryEntryPage implements OnInit, OnDestroy {
 
-    @ViewChild(CoreCommentsCommentsComponent) comments?: CoreCommentsCommentsComponent;
+    readonly comments = viewChild(CoreCommentsCommentsComponent);
 
     component = ADDON_MOD_GLOSSARY_COMPONENT_LEGACY;
     componentId?: number;
@@ -251,9 +251,10 @@ export default class AddonModGlossaryEntryPage implements OnInit, OnDestroy {
      * @returns Promise resolved when done.
      */
     async doRefresh(refresher?: HTMLIonRefresherElement): Promise<void> {
-        if (this.onlineEntry && this.glossary?.allowcomments && this.onlineEntry.id > 0 && this.commentsEnabled && this.comments) {
+        const comments = this.comments();
+        if (this.onlineEntry && this.glossary?.allowcomments && this.onlineEntry.id > 0 && this.commentsEnabled && comments) {
             // Refresh comments asynchronously (without blocking the current promise).
-            CorePromiseUtils.ignoreErrors(this.comments.doRefresh());
+            CorePromiseUtils.ignoreErrors(comments.doRefresh());
         }
 
         try {

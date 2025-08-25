@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Component, OnDestroy, OnInit, viewChild } from '@angular/core';
 import { Params } from '@angular/router';
 import { CoreError } from '@classes/errors/error';
 import { CoreSite } from '@classes/sites/site';
@@ -70,7 +70,7 @@ import { CoreCourseModuleNavigationComponent } from '@features/course/components
 })
 export class AddonModAssignIndexComponent extends CoreCourseModuleMainActivityComponent implements OnInit, OnDestroy {
 
-    @ViewChild(AddonModAssignSubmissionComponent) submissionComponent?: AddonModAssignSubmissionComponent;
+    readonly submissionComponent = viewChild(AddonModAssignSubmissionComponent);
 
     component = ADDON_MOD_ASSIGN_COMPONENT_LEGACY;
     pluginName = ADDON_MOD_ASSIGN_MODNAME;
@@ -347,7 +347,7 @@ export class AddonModAssignIndexComponent extends CoreCourseModuleMainActivityCo
      */
     protected hasSyncSucceed(result: AddonModAssignSyncResult): boolean {
         if (result.updated) {
-            this.submissionComponent?.invalidateAndRefresh(false);
+            this.submissionComponent()?.invalidateAndRefresh(false);
         }
 
         return result.updated;
@@ -361,7 +361,7 @@ export class AddonModAssignIndexComponent extends CoreCourseModuleMainActivityCo
 
         promises.push(AddonModAssign.invalidateAssignmentData(this.courseId));
         // Invalidate before component becomes null.
-        promises.push(this.submissionComponent?.invalidateAndRefresh(true) || Promise.resolve());
+        promises.push(this.submissionComponent()?.invalidateAndRefresh(true) || Promise.resolve());
 
         if (this.assign) {
             promises.push(AddonModAssign.invalidateAllSubmissionData(this.assign.id));

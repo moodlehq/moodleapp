@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { AfterViewInit, Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, OnDestroy, OnInit, viewChild } from '@angular/core';
 import { CoreListItemsManager } from '@classes/items-management/list-items-manager';
 import { CoreRoutedItemsManagerSourcesTracker } from '@classes/items-management/routed-items-manager-sources-tracker';
 import { CoreSplitViewComponent } from '@components/split-view/split-view';
@@ -40,7 +40,7 @@ import { CoreSharedModule } from '@/core/shared.module';
 })
 export default class AddonModChatSessionsPage implements OnInit, AfterViewInit, OnDestroy {
 
-    @ViewChild(CoreSplitViewComponent) splitView!: CoreSplitViewComponent;
+    readonly splitView = viewChild.required(CoreSplitViewComponent);
 
     sessions!: CoreListItemsManager<AddonModChatSessionFormatted, AddonModChatSessionsSource>;
     courseId?: number;
@@ -110,7 +110,7 @@ export default class AddonModChatSessionsPage implements OnInit, AfterViewInit, 
     async ngAfterViewInit(): Promise<void> {
         await this.fetchSessions();
 
-        this.sessions.start(this.splitView);
+        this.sessions.start(this.splitView());
     }
 
     /**

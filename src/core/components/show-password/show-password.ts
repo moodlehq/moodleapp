@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, AfterViewInit, Input, ContentChild, ViewEncapsulation } from '@angular/core';
+import { Component, ViewEncapsulation, input, contentChild, effect } from '@angular/core';
 import { IonInput } from '@ionic/angular';
 import { convertTextToHTMLElement } from '@/core/utils/create-html-element';
 
@@ -51,43 +51,42 @@ import { CoreBaseModule } from '@/core/base.module';
     encapsulation: ViewEncapsulation.None,
     imports: [CoreBaseModule],
 })
-export class CoreShowPasswordComponent implements AfterViewInit {
+export class CoreShowPasswordComponent {
 
     /**
      * @deprecated since 4.5. Not used anymore.
      */
-    @Input() initialShown = '';
+    readonly initialShown = input('');
 
     /**
      * @deprecated since 4.4. Not used anymore.
      */
-    @Input() name = '';
+    readonly name = input('');
 
     /**
      * @deprecated since 4.4. Use slotted solution instead.
      */
-    @ContentChild(IonInput) ionInput?: IonInput | HTMLIonInputElement;
+    readonly ionInput = contentChild<IonInput | HTMLIonInputElement>(IonInput);
 
-    /**
-     * @inheritdoc
-     */
-    async ngAfterViewInit(): Promise<void> {
+    constructor() {
         CoreLogger.getInstance('CoreShowPasswordComponent')
             .warn('Deprecated component, use <ion-input-password-toggle /> instead.');
 
-        // eslint-disable-next-line @typescript-eslint/no-deprecated
-        if (!this.ionInput) {
-            return;
-        }
+        effect(async () => {
+            // eslint-disable-next-line @typescript-eslint/no-deprecated
+            const ionInput = this.ionInput();
+            if (!ionInput) {
+                return;
+            }
 
-        // eslint-disable-next-line @typescript-eslint/no-deprecated
-        const input = await CorePromiseUtils.ignoreErrors(this.ionInput.getInputElement());
-        if (!input) {
-            return;
-        }
+            const input = await CorePromiseUtils.ignoreErrors(ionInput.getInputElement());
+            if (!input) {
+                return;
+            }
 
-        const toggle = convertTextToHTMLElement('<ion-input-password-toggle slot="end" />');
-        input.parentElement?.appendChild(toggle.children[0]);
+            const toggle = convertTextToHTMLElement('<ion-input-password-toggle slot="end" />');
+            input.parentElement?.appendChild(toggle.children[0]);
+        });
     }
 
 }

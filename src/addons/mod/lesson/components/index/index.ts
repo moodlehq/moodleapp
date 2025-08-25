@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { DownloadStatus } from '@/core/constants';
-import { Component, Input, ViewChild, ElementRef, OnInit, OnDestroy } from '@angular/core';
+import { Component, Input, viewChild, ElementRef, OnInit, OnDestroy } from '@angular/core';
 
 import { CoreTabsComponent } from '@components/tabs/tabs';
 import { CoreCourseModuleMainActivityComponent } from '@features/course/classes/main-activity-component';
@@ -69,8 +69,8 @@ import { CoreSharedModule } from '@/core/shared.module';
 })
 export class AddonModLessonIndexComponent extends CoreCourseModuleMainActivityComponent implements OnInit, OnDestroy {
 
-    @ViewChild(CoreTabsComponent) tabsComponent?: CoreTabsComponent;
-    @ViewChild('passwordForm') formElement?: ElementRef;
+    readonly tabsComponent = viewChild(CoreTabsComponent);
+    readonly formElement = viewChild<ElementRef>('passwordForm');
 
     @Input() group = 0; // The group to display.
     @Input() action?: string; // The "action" to display first.
@@ -294,7 +294,7 @@ export class AddonModLessonIndexComponent extends CoreCourseModuleMainActivityCo
     ionViewDidEnter(): void {
         super.ionViewDidEnter();
 
-        this.tabsComponent?.ionViewDidEnter();
+        this.tabsComponent()?.ionViewDidEnter();
 
         if (!this.hasPlayed) {
             return;
@@ -315,7 +315,7 @@ export class AddonModLessonIndexComponent extends CoreCourseModuleMainActivityCo
     ionViewDidLeave(): void {
         super.ionViewDidLeave();
 
-        this.tabsComponent?.ionViewDidLeave();
+        this.tabsComponent()?.ionViewDidLeave();
     }
 
     /**
@@ -656,7 +656,7 @@ export class AddonModLessonIndexComponent extends CoreCourseModuleMainActivityCo
         } finally {
             this.showLoading = false;
 
-            CoreForms.triggerFormSubmittedEvent(this.formElement, true, this.siteId);
+            CoreForms.triggerFormSubmittedEvent(this.formElement(), true, this.siteId);
         }
     }
 

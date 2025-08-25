@@ -13,7 +13,8 @@
     </ion-toolbar>
 </ion-header>
 <ion-content>
-    <ion-refresher slot="fixed" [disabled]="!content || !content.ptrEnabled || !content.content || !content.content.dataLoaded"
+    <ion-refresher slot="fixed" [disabled]="!content() || !content()?.ptrEnabled || !content()?.content() ||
+        !content()?.content()?.dataLoaded"
         (ionRefresh)="refreshData($event.target)">
         <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}" />
     </ion-refresher>

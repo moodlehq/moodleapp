@@ -23,7 +23,7 @@ import {
     AddonBlogPublishState,
 } from '@addons/blog/services/blog';
 import { AddonBlogOffline } from '@addons/blog/services/blog-offline';
-import { Component, computed, ElementRef, OnDestroy, OnInit, signal, ViewChild } from '@angular/core';
+import { Component, computed, ElementRef, OnDestroy, OnInit, signal, viewChild } from '@angular/core';
 import { AddonBlogSync } from '@addons/blog/services/blog-sync';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { CoreError } from '@classes/errors/error';
@@ -57,7 +57,7 @@ import { DEFAULT_TEXT_FORMAT } from '@singletons/text';
 })
 export default class AddonBlogEditEntryPage implements CanLeave, OnInit, OnDestroy {
 
-    @ViewChild('editEntryForm') formElement!: ElementRef;
+    readonly formElement = viewChild.required<ElementRef<HTMLFormElement>>('editEntryForm');
 
     publishState = AddonBlogPublishState;
     form = new FormGroup({
@@ -431,7 +431,7 @@ export default class AddonBlogEditEntryPage implements CanLeave, OnInit, OnDestr
             await CoreAlerts.confirmLeaveWithChanges();
         }
 
-        CoreForms.triggerFormCancelledEvent(this.formElement, CoreSites.getCurrentSiteId());
+        CoreForms.triggerFormCancelledEvent(this.formElement(), CoreSites.getCurrentSiteId());
 
         return true;
     }
@@ -482,7 +482,7 @@ export default class AddonBlogEditEntryPage implements CanLeave, OnInit, OnDestr
 
         CoreEvents.trigger(ADDON_BLOG_ENTRY_UPDATED);
         this.forceLeave = true;
-        CoreForms.triggerFormSubmittedEvent(this.formElement, true, CoreSites.getCurrentSiteId());
+        CoreForms.triggerFormSubmittedEvent(this.formElement(), true, CoreSites.getCurrentSiteId());
 
         return CoreNavigator.back();
     }

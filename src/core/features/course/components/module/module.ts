@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, Input, Output, EventEmitter, OnInit, OnDestroy, HostBinding, signal } from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnInit, OnDestroy, signal } from '@angular/core';
 
 import { CoreSites } from '@services/sites';
 import {
@@ -53,6 +53,9 @@ import { CoreCourseModuleHelper } from '@features/course/services/course-module-
         CoreCourseModuleCompletionComponent,
         CoreRemindersDateComponent,
     ],
+    host: {
+        '[class.indented]': 'indented',
+    },
 })
 export class CoreCourseModuleComponent implements OnInit, OnDestroy {
 
@@ -68,7 +71,6 @@ export class CoreCourseModuleComponent implements OnInit, OnDestroy {
     @Input({ transform: toBoolean }) showIndentation = true; // Whether to show indentation
     @Input({ transform: toBoolean }) isLastViewed = false; // Whether it's the last module viewed in a course.
     @Output() completionChanged = new EventEmitter<CoreCourseModuleCompletionData>(); // Notify when module completion changes.
-    @HostBinding('class.indented') indented = false;
 
     modNameTranslated = '';
     hasCompletion = false; // Whether activity has completion to be shown.
@@ -80,6 +82,7 @@ export class CoreCourseModuleComponent implements OnInit, OnDestroy {
     protected prefetchHandler?: CoreCourseModulePrefetchHandler;
 
     protected moduleStatusObserver?: CoreEventObserver;
+    protected indented = false; // Whether the module is indented.
 
     /**
      * @inheritdoc

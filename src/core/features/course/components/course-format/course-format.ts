@@ -18,13 +18,12 @@ import {
     OnChanges,
     OnDestroy,
     SimpleChange,
-    ViewChildren,
-    QueryList,
     Type,
     ElementRef,
     ChangeDetectorRef,
-    ViewChild,
     inject,
+    viewChildren,
+    viewChild,
 } from '@angular/core';
 import { CoreDynamicComponent } from '@components/dynamic-component/dynamic-component';
 import { CoreCourseAnyCourseData } from '@features/courses/services/courses';
@@ -102,10 +101,9 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
     @Input() moduleId?: number; // The module ID to scroll to. Must be inside the initial selected section.
     @Input({ transform: toBoolean }) isGuest?: boolean; // If user is accessing using an ACCESS_GUEST enrolment method.
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    @ViewChildren(CoreDynamicComponent) dynamicComponents?: QueryList<CoreDynamicComponent<any>>;
+    readonly dynamicComponents = viewChildren(CoreDynamicComponent);
 
-    @ViewChild(CoreInfiniteLoadingComponent) infiteLoading?: CoreInfiniteLoadingComponent;
+    readonly infiteLoading = viewChild(CoreInfiniteLoadingComponent);
 
     accordionMultipleValue: string[] = [];
 
@@ -650,7 +648,7 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
      * @returns Promise resolved when done.
      */
     async doRefresh(refresher?: HTMLIonRefresherElement, done?: () => void, afterCompletionChange?: boolean): Promise<void> {
-        const promises = this.dynamicComponents?.map(async (component) => {
+        const promises = this.dynamicComponents()?.map(async (component) => {
             await component.callComponentMethod('doRefresh', refresher, done, afterCompletionChange);
         }) || [];
 
@@ -710,7 +708,7 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
      * User entered the page that contains the component.
      */
     ionViewDidEnter(): void {
-        this.dynamicComponents?.forEach((component) => {
+        this.dynamicComponents()?.forEach((component) => {
             component.callComponentMethod('ionViewDidEnter');
         });
     }
@@ -719,7 +717,7 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
      * User left the page that contains the component.
      */
     ionViewDidLeave(): void {
-        this.dynamicComponents?.forEach((component) => {
+        this.dynamicComponents()?.forEach((component) => {
             component.callComponentMethod('ionViewDidLeave');
         });
     }
@@ -851,7 +849,7 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
         // Save course expanded sections.
         this.saveExpandedSections();
 
-        this.infiteLoading?.fireInfiniteScrollIfNeeded();
+        this.infiteLoading()?.fireInfiniteScrollIfNeeded();
     }
 
     /**

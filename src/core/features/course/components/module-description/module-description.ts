@@ -15,7 +15,7 @@
 import { ContextLevel } from '@/core/constants';
 import { CoreSharedModule } from '@/core/shared.module';
 import { toBoolean } from '@/core/transforms/boolean';
-import { Component, HostBinding, Input } from '@angular/core';
+import { Component, Input } from '@angular/core';
 
 /**
  * Component to display the description of a module.
@@ -42,6 +42,9 @@ import { Component, HostBinding, Input } from '@angular/core';
     imports: [
         CoreSharedModule,
     ],
+    host: {
+        '[class.deprecated]': 'true',
+    },
 })
 export class CoreCourseModuleDescriptionComponent {
 
@@ -53,9 +56,5 @@ export class CoreCourseModuleDescriptionComponent {
     @Input() contextLevel?: ContextLevel; // The context level.
     @Input() contextInstanceId?: number; // The instance ID related to the context.
     @Input() courseId?: number; // Course ID the text belongs to. It can be used to improve performance with filters.
-
-    @HostBinding('class.deprecated') get isDeprecated(): boolean {
-        return true;
-    }
 
 }

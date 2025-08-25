@@ -113,12 +113,18 @@ export class CoreBlockComponent implements OnChanges, OnDestroy {
     }
 
     /**
-     * Invalidate some data.
-     *
-     * @returns Promise resolved when done.
+     * Invalidate block data.
      */
     async invalidate(): Promise<void> {
         await this.dynamicComponent()?.callComponentMethod('invalidateContent');
+        this.loaded = false;
+    }
+
+    /**
+     * Fetch block data.
+     */
+    async reload(): Promise<void> {
+        await this.dynamicComponent()?.callComponentMethod('reloadContent');
     }
 
 }

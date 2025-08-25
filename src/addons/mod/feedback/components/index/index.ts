@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, Input, ViewChild, OnInit, OnDestroy } from '@angular/core';
+import { Component, Input, viewChild, OnInit, OnDestroy } from '@angular/core';
 import { CoreError } from '@classes/errors/error';
 import { CoreTabsComponent } from '@components/tabs/tabs';
 import { CoreCourseModuleMainActivityComponent } from '@features/course/classes/main-activity-component';
@@ -64,7 +64,7 @@ import { CoreChartType } from '@components/chart/chart';
 })
 export class AddonModFeedbackIndexComponent extends CoreCourseModuleMainActivityComponent implements OnInit, OnDestroy {
 
-    @ViewChild(CoreTabsComponent) tabsComponent?: CoreTabsComponent;
+    readonly tabsComponent = viewChild(CoreTabsComponent);
 
     @Input() selectedTab: AddonModFeedbackIndexTabName = AddonModFeedbackIndexTabName.OVERVIEW;
     @Input() group = 0;
@@ -247,7 +247,7 @@ export class AddonModFeedbackIndexComponent extends CoreCourseModuleMainActivity
 
             if (this.tabsReady) {
                 // Make sure the right tab is selected.
-                this.tabsComponent?.selectTab(this.selectedTab ?? AddonModFeedbackIndexTabName.OVERVIEW);
+                this.tabsComponent()?.selectTab(this.selectedTab ?? AddonModFeedbackIndexTabName.OVERVIEW);
             }
         }
     }
@@ -433,7 +433,7 @@ export class AddonModFeedbackIndexComponent extends CoreCourseModuleMainActivity
     ionViewDidEnter(): void {
         super.ionViewDidEnter();
 
-        this.tabsComponent?.ionViewDidEnter();
+        this.tabsComponent()?.ionViewDidEnter();
     }
 
     /**
@@ -442,7 +442,7 @@ export class AddonModFeedbackIndexComponent extends CoreCourseModuleMainActivity
     ionViewDidLeave(): void {
         super.ionViewDidLeave();
 
-        this.tabsComponent?.ionViewDidLeave();
+        this.tabsComponent()?.ionViewDidLeave();
     }
 
     /**

@@ -1,10 +1,10 @@
 <header>
     <ion-item button="false" detail="false" class="ion-text-wrap">
         <ion-thumbnail slot="start">
-            <img [src]="icon" alt="" role="presentation" />
+            <img [src]="icon()" alt="" role="presentation" />
         </ion-thumbnail>
 
-        <ion-label>{{ filename }}</ion-label>
+        <ion-label>{{ filename() }}</ion-label>
 
         <ion-button shape="round" size="default" slot="end" fill="clear" [ariaLabel]="'core.close' | translate"
             (click)="close({ status: 'cancel' })">
@@ -16,7 +16,7 @@
 <hr>
 
 <ion-list>
-    @if (isDownloaded) {
+    @if (isDownloaded()) {
         <ion-item button detail="false" lines="none" (click)="close({ status: 'deleteOffline' })">
             <ion-icon slot="start" name="fam-cloud-x" aria-hidden="true" />
             <ion-label>{{ 'core.removedownloadeddata' | translate }}</ion-label>
@@ -25,6 +25,6 @@
 
     <ion-item button detail="false" (click)="close({ status: 'deleteOnline' })" lines="none">
         <ion-icon slot="start" name="fas-trash" aria-hidden="true" color="danger" />
-        <ion-label> {{ 'core.delete' | translate }} </ion-label>
+        <ion-label>{{ 'core.delete' | translate }}</ion-label>
     </ion-item>
 </ion-list>

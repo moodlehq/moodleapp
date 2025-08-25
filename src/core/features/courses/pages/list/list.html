@@ -23,9 +23,9 @@
     </ion-refresher>
 
     @if (searchEnabled) {
-        <core-search-box (onSubmit)="search($event)" (onClear)="clearSearch()" [placeholder]="'core.courses.search' | translate"
+        <core-search-box (searchTextChange)="search($event)" [placeholder]="'core.courses.search' | translate"
             [searchLabel]="'core.courses.search' | translate" [autoFocus]="searchMode && !searchText" searchArea="CoreCoursesSearch"
-            [lengthCheck]="1" [initialSearch]="searchText" />
+            [lengthCheck]="1" [searchText]="searchText" />
     }
     <ion-item class="ion-text-wrap" lines="none">
         <ion-toggle [(ngModel)]="showOnlyEnrolled" (ionChange)="toggleEnrolled()">
@@ -45,7 +45,9 @@
         }
 
         <ion-list class="list-item-limited-width core-course-list">
-            <core-courses-course-list-item *ngFor="let course of courses" [course]="course" [showDownload]="downloadEnabled" />
+            @for (course of courses; track course.id) {
+                <core-courses-course-list-item [course]="course" [showDownload]="downloadEnabled" />
+            }
         </ion-list>
 
         <core-infinite-loading [enabled]="canLoadMore" (action)="loadMoreCourses($event)" [error]="loadMoreError" />

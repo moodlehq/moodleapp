@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { DownloadStatus } from '@/core/constants';
-import { Component, ElementRef, HostBinding, Input, OnChanges, OnDestroy, OnInit, inject } from '@angular/core';
+import { Component, ElementRef, Input, OnChanges, OnDestroy, OnInit, inject } from '@angular/core';
 import {
     CoreCourseDownloadStatusHelper,
     CoreEventCourseStatusChanged,
@@ -61,6 +61,9 @@ import { CoreEnrolInfoIcon } from '@features/enrol/services/enrol-delegate';
     imports: [
         CoreSharedModule,
     ],
+    host: {
+        '[attr.data-course-id]': 'course.id',
+    },
 })
 export class CoreCoursesCourseListItemComponent implements OnInit, OnDestroy, OnChanges {
 
@@ -94,10 +97,6 @@ export class CoreCoursesCourseListItemComponent implements OnInit, OnDestroy, On
 
     protected element: HTMLElement = inject(ElementRef).nativeElement;
     protected progressObserver: CoreEventObserver;
-
-    @HostBinding('attr.data-course-id') protected get courseId(): number {
-        return this.course.id;
-    }
 
     constructor() {
         const siteId = CoreSites.getCurrentSiteId();

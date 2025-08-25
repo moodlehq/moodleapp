@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, Input, OnInit, ViewChildren, QueryList, OnDestroy, inject } from '@angular/core';
+import { Component, Input, OnInit, OnDestroy, inject, viewChildren } from '@angular/core';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { CoreSites } from '@services/sites';
 import {
@@ -82,8 +82,7 @@ import { CoreUtils } from '@singletons/utils';
 })
 export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy {
 
-    @ViewChildren(AddonModAssignSubmissionPluginComponent) submissionComponents!:
-        QueryList<AddonModAssignSubmissionPluginComponent>;
+    readonly submissionComponents = viewChildren(AddonModAssignSubmissionPluginComponent);
 
     @Input({ required: true }) courseId!: number; // Course ID the submission belongs to.
     @Input({ required: true }) moduleId!: number; // Module ID the submission belongs to.
@@ -421,8 +420,9 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy {
         promises.push(CoreCourse.invalidateModule(this.moduleId));
 
         // Invalidate plugins.
-        if (this.submissionComponents && this.submissionComponents.length) {
-            this.submissionComponents.forEach((component) => {
+        const submissionComponents = this.submissionComponents();
+        if (submissionComponents && submissionComponents.length) {
+            submissionComponents.forEach((component) => {
                 promises.push(component.invalidate());
             });
         }

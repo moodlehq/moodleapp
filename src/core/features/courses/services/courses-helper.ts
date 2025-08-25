@@ -26,6 +26,7 @@ import {
 import { makeSingleton, Translate } from '@singletons';
 import { CoreWSExternalFile } from '@services/ws';
 import { AddonCourseCompletion } from '@addons/coursecompletion/services/coursecompletion';
+import { CoreCourseCompletionHelper } from '@features/course/services/course-completion-helper';
 import { dayjs } from '@/core/utils/dayjs';
 import { of, firstValueFrom } from 'rxjs';
 import { zipIncludingComplete } from '@/core/utils/rxjs';
@@ -360,7 +361,7 @@ export class CoreCoursesHelperProvider {
             return of(course);
         }
 
-        if (!this.isCompletionEnabledInCourse(course)) {
+        if (!CoreCourseCompletionHelper.isCompletionEnabledInCourse(course)) {
             // Completion is disabled for this course, there is no need to fetch the completion status.
             return of(course);
         }
@@ -415,7 +416,7 @@ export class CoreCoursesHelperProvider {
         gradePeriodAfter = 0,
         gradePeriodBefore = 0,
     ): boolean {
-        if (this.isPastCourse(course, gradePeriodAfter) || !course.startdate) {
+        if (!course.startdate || this.isPastCourse(course, gradePeriodAfter)) {
             return false;
         }
 
@@ -436,14 +437,15 @@ export class CoreCoursesHelperProvider {
 
     /**
      * Check whether completion is available in a certain course.
-     * This is a temporary function to be used until we move AddonCourseCompletion to core folder (MOBILE-4537).
+     * This is a temporary function to be used until we move CoreCourseCompletionHelper to core folder (MOBILE-4537).
      *
      * @param course Course.
      * @param site Site. If not defined, use current site.
      * @returns True if available.
+     * @deprecated since 5.1. Use CoreCourseCompletionHelper.isCompletionEnabledInCourse instead.
      */
     isCompletionEnabledInCourse(course: CoreCourseAnyCourseData, site?: CoreSite): boolean {
-        return AddonCourseCompletion.isCompletionEnabledInCourse(course, site);
+        return CoreCourseCompletionHelper.isCompletionEnabledInCourse(course, site);
     }
 
 }

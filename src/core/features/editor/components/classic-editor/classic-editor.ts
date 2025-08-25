@@ -12,7 +12,18 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { AfterViewInit, Component, CUSTOM_ELEMENTS_SCHEMA, ViewChild, ElementRef, OnInit, OnDestroy, inject } from '@angular/core';
+import {
+    AfterViewInit,
+    Component,
+    CUSTOM_ELEMENTS_SCHEMA,
+    ElementRef,
+    OnInit,
+    OnDestroy,
+    inject,
+    viewChild,
+    signal,
+    effect,
+} from '@angular/core';
 import { IonTextarea } from '@ionic/angular';
 import { CoreUtils } from '@singletons/utils';
 import { CoreDirectivesRegistry } from '@singletons/directives-registry';
@@ -49,30 +60,15 @@ export class CoreEditorClassicEditorComponent extends CoreEditorBaseComponent im
     // Based on: https://github.com/judgewest2000/Ionic3RichText/
 
     protected editorElement?: HTMLDivElement; // WYSIWYG editor.
-    @ViewChild('editor') editor?: ElementRef<HTMLDivElement>;
+    readonly editor = viewChild<ElementRef<HTMLDivElement>>('editor');
 
-    @ViewChild('toolbar') toolbar?: ElementRef<HTMLDivElement>;
+    readonly toolbar = viewChild<ElementRef<HTMLDivElement>>('toolbar');
 
     protected textareaElement?: HTMLTextAreaElement;
-    @ViewChild('textarea') textarea?: IonTextarea; // Textarea editor.
+    readonly textarea = viewChild<IonTextarea>('textarea'); // Textarea editor.
 
-    protected toolbarSlides?: Swiper;
-    @ViewChild('swiperRef') set swiperRef(swiperRef: ElementRef) {
-        /**
-         * This setTimeout waits for Ionic's async initialization to complete.
-         * Otherwise, an outdated swiper reference will be used.
-         */
-        setTimeout(async () => {
-            await this.waitLoadingsDone();
-
-            const swiper = CoreSwiper.initSwiperIfAvailable(this.toolbarSlides, swiperRef, this.swiperOpts);
-            if (!swiper) {
-                return;
-            }
-
-            this.toolbarSlides = swiper;
-        });
-    }
+    protected readonly swiperRef = viewChild<ElementRef>('swiperRef'); // Reference to the swiper element.
+    protected readonly toolbarSlides = signal<Swiper | undefined>(undefined);
 
     protected static readonly RESTORE_MESSAGE_CLEAR_TIME = 6000;
     protected static readonly SAVE_MESSAGE_CLEAR_TIME = 2000;
@@ -120,6 +116,19 @@ export class CoreEditorClassicEditorComponent extends CoreEditorBaseComponent im
         watchSlidesProgress: true,
     };
 
+    constructor() {
+        super();
+
+        effect(() => {
+            const swiper = CoreSwiper.initSwiperIfAvailable(this.toolbarSlides(), this.swiperRef(), this.swiperOpts);
+            if (!swiper) {
+                return;
+            }
+
+            this.toolbarSlides.set(swiper);
+        });
+    }
+
     /**
      * @inheritdoc
      */
@@ -136,8 +145,8 @@ export class CoreEditorClassicEditorComponent extends CoreEditorBaseComponent im
         await this.waitLoadingsDone();
 
         // Setup the editor.
-        this.editorElement = this.editor?.nativeElement as HTMLDivElement;
-        this.textareaElement = await this.textarea?.getInputElement();
+        this.editorElement = this.editor()?.nativeElement as HTMLDivElement;
+        this.textareaElement = await this.textarea()?.getInputElement();
 
         // Use paragraph on enter.
         // eslint-disable-next-line @typescript-eslint/no-deprecated
@@ -261,7 +270,8 @@ export class CoreEditorClassicEditorComponent extends CoreEditorBaseComponent im
      * @inheritdoc
      */
     setContent(content: string): void {
-        if (!this.editorElement || !this.textarea) {
+        const textarea = this.textarea();
+        if (!this.editorElement || !textarea) {
             return;
         }
 
@@ -269,7 +279,7 @@ export class CoreEditorClassicEditorComponent extends CoreEditorBaseComponent im
         if (this.rteEnabled) {
             this.editorElement.innerHTML = this.isEmpty ? '<p></p>' : content;
         } else {
-            this.textarea.value = this.isEmpty ? '' : content;
+            textarea.value = this.isEmpty ? '' : content;
         }
 
         // Set cursor to the end of the content.
@@ -374,7 +384,7 @@ export class CoreEditorClassicEditorComponent extends CoreEditorBaseComponent im
         if (this.rteEnabled) {
             this.editorElement?.focus();
         } else {
-            this.textarea?.setFocus();
+            this.textarea()?.setFocus();
         }
 
         this.element.classList.add('ion-touched');
@@ -429,8 +439,9 @@ export class CoreEditorClassicEditorComponent extends CoreEditorBaseComponent im
         this.stopBubble(event);
 
         if (!this.toolbarNextHidden) {
-            const currentIndex = this.toolbarSlides?.activeIndex;
-            this.toolbarSlides?.slideTo((currentIndex || 0) + this.toolbarSlides.slidesPerViewDynamic());
+            const toolbarSlides = this.toolbarSlides();
+            const currentIndex = toolbarSlides?.activeIndex;
+            toolbarSlides?.slideTo((currentIndex || 0) + toolbarSlides.slidesPerViewDynamic());
         }
 
         await this.updateToolbarArrows();
@@ -447,8 +458,10 @@ export class CoreEditorClassicEditorComponent extends CoreEditorBaseComponent im
         this.stopBubble(event);
 
         if (!this.toolbarPrevHidden) {
-            const currentIndex = this.toolbarSlides?.activeIndex;
-            this.toolbarSlides?.slideTo((currentIndex || 0) - this.toolbarSlides.slidesPerViewDynamic());
+            const toolbarSlides = this.toolbarSlides();
+
+            const currentIndex = toolbarSlides?.activeIndex;
+            toolbarSlides?.slideTo((currentIndex || 0) - toolbarSlides.slidesPerViewDynamic());
         }
 
         await this.updateToolbarArrows();
@@ -458,20 +471,23 @@ export class CoreEditorClassicEditorComponent extends CoreEditorBaseComponent im
      * Update the number of toolbar buttons displayed.
      */
     async updateToolbarButtons(): Promise<void> {
-        if (!this.isCurrentView || !this.toolbar || !this.toolbarSlides ||
+        const toolbar = this.toolbar();
+        const toolbarSlides = this.toolbarSlides();
+
+        if (!this.isCurrentView || !toolbar || !toolbarSlides ||
             this.toolbarHidden || this.element.offsetParent === null) {
             // Don't calculate if component isn't in current view, the calculations are wrong.
             return;
         }
 
-        const length = this.toolbarSlides.slides.length;
+        const length = toolbarSlides.slides.length;
 
         // Cancel previous one, if any.
         this.buttonsDomPromise?.cancel();
-        this.buttonsDomPromise = CoreDom.waitToBeInDOM(this.toolbar?.nativeElement);
+        this.buttonsDomPromise = CoreDom.waitToBeInDOM(toolbar?.nativeElement);
         await this.buttonsDomPromise;
 
-        const width = this.toolbar?.nativeElement.getBoundingClientRect().width;
+        const width = toolbar?.nativeElement.getBoundingClientRect().width;
 
         if (length > 0 && width > length * this.toolbarButtonWidth) {
             this.swiperOpts.slidesPerView = length;
@@ -483,7 +499,7 @@ export class CoreEditorClassicEditorComponent extends CoreEditorBaseComponent im
 
         await CoreWait.nextTick();
 
-        this.toolbarSlides.update();
+        toolbarSlides.update();
 
         await this.updateToolbarArrows();
     }
@@ -492,14 +508,15 @@ export class CoreEditorClassicEditorComponent extends CoreEditorBaseComponent im
      * Show or hide next/previous toolbar arrows.
      */
     async updateToolbarArrows(): Promise<void> {
-        if (!this.toolbarSlides) {
+        const toolbarSlides = this.toolbarSlides();
+        if (!toolbarSlides) {
             return;
         }
 
-        const currentIndex = this.toolbarSlides.activeIndex;
-        const length = this.toolbarSlides.slides.length;
+        const currentIndex = toolbarSlides.activeIndex;
+        const length = toolbarSlides.slides.length;
         this.toolbarPrevHidden = currentIndex <= 0;
-        this.toolbarNextHidden = currentIndex + this.toolbarSlides.slidesPerViewDynamic() >= length;
+        this.toolbarNextHidden = currentIndex + toolbarSlides.slidesPerViewDynamic() >= length;
     }
 
     /**

@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, Input, OnInit, OnDestroy, ElementRef, ViewContainerRef, ViewChild, inject } from '@angular/core';
+import { Component, Input, OnInit, OnDestroy, ElementRef, ViewContainerRef, inject, viewChild } from '@angular/core';
 import { CoreLogger } from '@singletons/logger';
 import { CoreContextMenuComponent } from '../context-menu/context-menu';
 import { CoreDirectivesRegistry } from '@singletons/directives-registry';
@@ -48,7 +48,7 @@ const BUTTON_HIDDEN_CLASS = 'core-navbar-button-hidden';
 })
 export class CoreNavBarButtonsComponent implements OnInit, OnDestroy {
 
-    @ViewChild('contextMenuContainer', { read: ViewContainerRef }) container!: ViewContainerRef;
+    readonly container = viewChild.required('contextMenuContainer', { read: ViewContainerRef });
 
     // If the hidden input is true, hide all buttons.
     // eslint-disable-next-line @angular-eslint/no-input-rename
@@ -175,7 +175,7 @@ export class CoreNavBarButtonsComponent implements OnInit, OnDestroy {
      * @returns Created component.
      */
     protected createMainContextMenu(): CoreContextMenuComponent {
-        const componentRef = this.container.createComponent(CoreContextMenuComponent);
+        const componentRef = this.container().createComponent(CoreContextMenuComponent);
 
         this.createdMainContextMenuElement = componentRef.location.nativeElement;
 

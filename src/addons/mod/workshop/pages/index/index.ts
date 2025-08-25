@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, viewChild } from '@angular/core';
 import { CoreCourseModuleMainActivityPage } from '@features/course/classes/main-activity-page';
 import { CoreNavigator } from '@services/navigator';
 import { AddonModWorkshopIndexComponent } from '../../components/index/index';
@@ -32,7 +32,7 @@ import { CoreSharedModule } from '@/core/shared.module';
 export default class AddonModWorkshopIndexPage extends CoreCourseModuleMainActivityPage<AddonModWorkshopIndexComponent>
     implements OnInit {
 
-    @ViewChild(AddonModWorkshopIndexComponent) activityComponent?: AddonModWorkshopIndexComponent;
+    readonly activityComponent = viewChild(AddonModWorkshopIndexComponent);
 
     selectedGroup = 0;
 

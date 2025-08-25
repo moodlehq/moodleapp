@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { CoreReminders } from '@features/reminders/services/reminders';
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, OnInit, input } from '@angular/core';
 import { CoreTime } from '@singletons/time';
 import { Translate } from '@singletons';
 import { CoreSharedModule } from '@/core/shared.module';
@@ -33,14 +33,14 @@ import { CoreRemindersSetButtonComponent } from '../set-button/set-button';
 })
 export class CoreRemindersDateComponent implements OnInit {
 
-    @Input() component?: string;
-    @Input() instanceId?: number;
-    @Input() type?: string;
-    @Input() label = '';
-    @Input() time = 0;
-    @Input() relativeTo = 0;
-    @Input() title = '';
-    @Input() url = '';
+    readonly component = input<string>();
+    readonly instanceId = input<number>();
+    readonly type = input<string>();
+    readonly label = input('');
+    readonly time = input(0);
+    readonly relativeTo = input(0);
+    readonly title = input('');
+    readonly url = input('');
 
     showReminderButton = false;
     timebefore?: number; // Undefined means no reminder has been set.
@@ -50,24 +50,27 @@ export class CoreRemindersDateComponent implements OnInit {
      * @inheritdoc
      */
     async ngOnInit(): Promise<void> {
-        this.readableTime = this.getReadableTime(this.time, this.relativeTo);
+        this.readableTime = this.getReadableTime(this.time(), this.relativeTo());
 
         // If not set, button won't be shown.
-        if (this.component === undefined || this.instanceId === undefined || this.type === undefined) {
+        const component = this.component();
+        const instanceId = this.instanceId();
+        const type = this.type();
+        if (component === undefined || instanceId === undefined || type === undefined) {
             return;
         }
 
         const remindersEnabled = CoreReminders.isEnabled();
-        this.showReminderButton = remindersEnabled && this.time > CoreTime.timestamp();
+        this.showReminderButton = remindersEnabled && this.time() > CoreTime.timestamp();
 
         if (!this.showReminderButton) {
             return;
         }
 
         const reminders = await CoreReminders.getReminders({
-            instanceId: this.instanceId,
-            component: this.component,
-            type: this.type,
+            instanceId: instanceId,
+            component: component,
+            type: type,
         });
 
         this.timebefore = reminders[0]?.timebefore;

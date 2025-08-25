@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { AfterViewInit, Component, ElementRef, HostBinding, OnDestroy, inject } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, OnDestroy, inject } from '@angular/core';
 
 import { CoreQRScan } from '@services/qrscan';
 import { ModalController, Translate } from '@singletons';
@@ -32,12 +32,15 @@ import { CoreWait } from '@singletons/wait';
     imports: [
         CoreSharedModule,
     ],
+    host: {
+        '[class.hydrated]': 'hydrated',
+    },
 })
 export class CoreLoginSiteHelpComponent implements AfterViewInit, OnDestroy {
 
     openQuestion?: number;
     questions: Question[] = [];
-    @HostBinding('class.hydrated') hydrated = false;
+    protected hydrated = false;
 
     private promises: CoreCancellablePromise[] = [];
     protected el: HTMLElement = inject(ElementRef).nativeElement;

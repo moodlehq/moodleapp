@@ -25,6 +25,7 @@ import { asyncObservable } from '@/core/utils/rxjs';
 import { CoreSiteWSPreSets, WSObservable } from '@classes/sites/authenticated-site';
 import { CoreCacheUpdateFrequency } from '@/core/constants';
 import { CoreCoursesMyPageName } from '../constants';
+import { CORE_BLOCKS_DASHBOARD_FALLBACK_MYOVERVIEW_BLOCK, CoreBlocksRegion } from '@features/block/constants';
 
 /**
  * Service that provides some features regarding course overview.
@@ -117,7 +118,9 @@ export class CoreCoursesDashboardProvider {
                     // To be removed in a near future.
                     // Remove myoverview when is forced. See MDL-72092.
                     result.blocks = result.blocks.filter((block) =>
-                        block.instanceid != 0 || block.name != 'myoverview' || block.region != 'forced');
+                        block.instanceid !== 0 ||
+                        block.name !== CORE_BLOCKS_DASHBOARD_FALLBACK_MYOVERVIEW_BLOCK ||
+                        block.region !== CoreBlocksRegion.FORCED);
                 }
 
                 return result.blocks || [];
@@ -157,7 +160,7 @@ export class CoreCoursesDashboardProvider {
             let sideBlocks: CoreCourseBlock[] = [];
 
             blocks.forEach((block) => {
-                if (block.region == 'content' || block.region == 'main') {
+                if (block.region === CoreBlocksRegion.CONTENT || block.region === CoreBlocksRegion.MAIN) {
                     mainBlocks.push(block);
                 } else {
                     sideBlocks.push(block);
@@ -169,7 +172,7 @@ export class CoreCoursesDashboardProvider {
                 sideBlocks = [];
 
                 blocks.forEach((block) => {
-                    if (block.region.match('side')) {
+                    if (block.region.includes(CoreBlocksRegion.SIDE)) {
                         sideBlocks.push(block);
                     } else {
                         mainBlocks.push(block);

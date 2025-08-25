@@ -25,8 +25,7 @@
             </ion-card>
         }
 
-        <core-search-box (onSubmit)="search($event)" (onClear)="clearSearch()" [placeholder]="'core.search' | translate"
-            [searchLabel]="'core.search' | translate" [autoFocus]="true" [searchArea]="searchAreaId" />
+        <core-search-box (searchTextChange)="search($event)" [autoFocus]="true" [searchArea]="searchAreaId" />
 
         @if (resultsSource.isLoaded()) {
             <ion-list>

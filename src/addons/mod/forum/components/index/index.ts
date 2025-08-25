@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit, OnDestroy, ViewChild, AfterViewInit, inject } from '@angular/core';
+import { Component, OnInit, OnDestroy, AfterViewInit, inject, viewChild } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { CoreCourseModuleMainActivityComponent } from '@features/course/classes/main-activity-component';
 import {
@@ -84,7 +84,7 @@ import { CoreCourseModuleInfoComponent } from '@features/course/components/modul
 })
 export class AddonModForumIndexComponent extends CoreCourseModuleMainActivityComponent implements OnInit, AfterViewInit, OnDestroy {
 
-    @ViewChild(CoreSplitViewComponent) splitView!: CoreSplitViewComponent;
+    readonly splitView = viewChild.required(CoreSplitViewComponent);
 
     route = inject(ActivatedRoute);
 
@@ -322,7 +322,7 @@ export class AddonModForumIndexComponent extends CoreCourseModuleMainActivityCom
 
         const discussions = await this.promisedDiscussions;
 
-        discussions.start(this.splitView);
+        discussions.start(this.splitView());
     }
 
     /**

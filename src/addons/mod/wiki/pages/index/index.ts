@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, viewChild } from '@angular/core';
 import { CoreCourseModuleMainActivityPage } from '@features/course/classes/main-activity-page';
 import { CoreNavigator } from '@services/navigator';
 import { AddonModWikiIndexComponent } from '../../components/index/index';
@@ -31,7 +31,7 @@ import { CoreSharedModule } from '@/core/shared.module';
 })
 export default class AddonModWikiIndexPage extends CoreCourseModuleMainActivityPage<AddonModWikiIndexComponent> implements OnInit {
 
-    @ViewChild(AddonModWikiIndexComponent) activityComponent?: AddonModWikiIndexComponent;
+    readonly activityComponent = viewChild(AddonModWikiIndexComponent);
 
     action?: string;
     pageId?: number;
@@ -58,14 +58,14 @@ export default class AddonModWikiIndexPage extends CoreCourseModuleMainActivityP
      * User entered the page.
      */
     ionViewDidEnter(): void {
-        this.activityComponent?.ionViewDidEnter();
+        this.activityComponent()?.ionViewDidEnter();
     }
 
     /**
      * User left the page.
      */
     ionViewDidLeave(): void {
-        this.activityComponent?.ionViewDidLeave();
+        this.activityComponent()?.ionViewDidLeave();
     }
 
 }

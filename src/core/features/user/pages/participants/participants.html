@@ -5,7 +5,7 @@
         </ion-refresher>
 
         <core-search-box [disabled]="searchInProgress" [spellcheck]="false" [lengthCheck]="1" autocorrect="off"
-            searchArea="CoreUserParticipants" (onSubmit)="search($event)" (onClear)="clearSearch()" />
+            searchArea="CoreUserParticipants" (searchTextChange)="search($event)"/>
 
         <core-loading [hideUntil]="participants.loaded" placeholderType="listwithavatar" placeholderHeight="44px" placeholderWidth="44px">
             @if (participants.empty && !searchInProgress && !searchQuery) {

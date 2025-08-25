@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, ViewChild } from '@angular/core';
+import { Component, viewChild } from '@angular/core';
 import { CoreCourseModuleMainActivityPage } from '@features/course/classes/main-activity-page';
 import { AddonModChoiceIndexComponent } from '../../components/index/index';
 import { CoreSharedModule } from '@/core/shared.module';
@@ -30,6 +30,6 @@ import { CoreSharedModule } from '@/core/shared.module';
 })
 export default class AddonModChoiceIndexPage extends CoreCourseModuleMainActivityPage<AddonModChoiceIndexComponent> {
 
-    @ViewChild(AddonModChoiceIndexComponent) activityComponent?: AddonModChoiceIndexComponent;
+    readonly activityComponent = viewChild(AddonModChoiceIndexComponent);
 
 }

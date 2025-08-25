@@ -1,6 +1,6 @@
 <ion-tabs class="hide-header">
-    <ion-tab-bar slot="top" class="core-tabs-bar" [hidden]="hideUntil && (!tabs || numTabsShown <= 1)">
-        @if (!hideUntil) {
+    <ion-tab-bar slot="top" class="core-tabs-bar" [hidden]="hideUntil() && (!tabs || numTabsShown <= 1)">
+        @if (!hideUntil()) {
             <ion-spinner [attr.aria-label]="'core.loading' | translate" />
         } @else {
             <ion-button fill="clear" class="arrow-button" (click)="slidePrev()" [disabled]="!showPrevButton"

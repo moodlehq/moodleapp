@@ -55,6 +55,11 @@
             ion-label {
                 margin: 0;
             }
+
+            * {
+                // Click target will be the whole item.
+                pointer-events: none;
+            }
         }
     }
 }

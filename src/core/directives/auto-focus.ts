@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Directive, Input, ElementRef, AfterViewInit, inject } from '@angular/core';
+import { Directive, ElementRef, AfterViewInit, inject, input } from '@angular/core';
 
 import { CoreDom } from '@singletons/dom';
 import { CoreWait } from '@singletons/wait';
@@ -31,7 +31,7 @@ import { toBoolean } from '../transforms/boolean';
 })
 export class CoreAutoFocusDirective implements AfterViewInit {
 
-    @Input({ alias: 'core-auto-focus', transform: toBoolean }) autoFocus = true;
+    readonly autoFocus = input(true, { alias: 'core-auto-focus', transform: toBoolean });
 
     protected element: HTMLIonInputElement | HTMLIonTextareaElement | HTMLIonSearchbarElement | HTMLElement
         = inject(ElementRef).nativeElement;
@@ -40,7 +40,7 @@ export class CoreAutoFocusDirective implements AfterViewInit {
      * @inheritdoc
      */
     async ngAfterViewInit(): Promise<void> {
-        if (!this.autoFocus) {
+        if (!this.autoFocus()) {
             return;
         }
 

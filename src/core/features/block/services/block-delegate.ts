@@ -24,6 +24,7 @@ import { CoreBlockDefaultHandler } from './handlers/default-block';
 import { CoreNavigationOptions } from '@services/navigator';
 import type { ICoreBlockComponent } from '@features/block/classes/base-block-component';
 import { ContextLevel } from '@/core/constants';
+import { CORE_BLOCKS_DASHBOARD_FALLBACK_MYOVERVIEW_BLOCK } from '../constants';
 
 /**
  * Interface that all blocks must implement.
@@ -203,7 +204,7 @@ export class CoreBlockDelegateService extends CoreDelegate<CoreBlockHandler> {
      */
     protected isFeatureDisabled(handler: CoreBlockHandler, site: CoreSite): boolean {
         // Allow displaying my overview even if all blocks are disabled, to avoid having an empty My Courses.
-        return (this.areBlocksDisabledInSite(site) && handler.blockName !== 'myoverview') ||
+        return (this.areBlocksDisabledInSite(site) && handler.blockName !== CORE_BLOCKS_DASHBOARD_FALLBACK_MYOVERVIEW_BLOCK) ||
             super.isFeatureDisabled(handler, site);
     }
 

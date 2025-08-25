@@ -41,8 +41,9 @@
             } @else {
                 <ion-item class="ion-text-wrap">
                     <ion-label>
-                        <p class="item-heading">{{ 'addon.mod_workshop_assessment_numerrors.dimensioncommentfor' | translate : {'$a': field.dimtitle
-                    } }}</p>
+                        <p class="item-heading">
+                            {{ 'addon.mod_workshop_assessment_numerrors.dimensioncommentfor' | translate : {'$a': field.dimtitle} }}
+                        </p>
                         <p>
                             <core-format-text [text]="selectedValues[n].peercomment" contextLevel="module" [contextInstanceId]="moduleId"
                                 [courseId]="courseId" />

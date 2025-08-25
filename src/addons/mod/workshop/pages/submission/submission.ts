@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit, OnDestroy, ViewChild, ElementRef, inject } from '@angular/core';
+import { Component, OnInit, OnDestroy, ElementRef, inject, viewChild } from '@angular/core';
 import { FormGroup, FormBuilder } from '@angular/forms';
 import { Params } from '@angular/router';
 import { CoreCourse } from '@features/course/services/course';
@@ -79,9 +79,9 @@ import { CoreErrorHelper } from '@services/error-helper';
 })
 export default class AddonModWorkshopSubmissionPage implements OnInit, OnDestroy, CanLeave {
 
-    @ViewChild(AddonModWorkshopAssessmentStrategyComponent) assessmentStrategy?: AddonModWorkshopAssessmentStrategyComponent;
+    readonly assessmentStrategy = viewChild(AddonModWorkshopAssessmentStrategyComponent);
 
-    @ViewChild('feedbackFormEl') formElement?: ElementRef;
+    readonly formElement = viewChild<ElementRef>('feedbackFormEl');
 
     module!: CoreCourseModuleData;
     workshop!: AddonModWorkshopData;
@@ -191,7 +191,8 @@ export default class AddonModWorkshopSubmissionPage implements OnInit, OnDestroy
      * @returns Resolved if we can leave it, rejected if not.
      */
     async canLeave(): Promise<boolean> {
-        const assessmentHasChanged = await this.assessmentStrategy?.hasDataChanged();
+        const assessmentStrategy = this.assessmentStrategy();
+        const assessmentHasChanged = await assessmentStrategy?.hasDataChanged();
         if (this.forceLeave || (!this.hasEvaluationChanged() && !assessmentHasChanged)) {
             return true;
         }
@@ -199,8 +200,8 @@ export default class AddonModWorkshopSubmissionPage implements OnInit, OnDestroy
         // Show confirmation if some data has been modified.
         await CoreAlerts.confirmLeaveWithChanges();
 
-        CoreForms.triggerFormCancelledEvent(this.formElement, this.siteId);
-        CoreForms.triggerFormCancelledEvent(this.assessmentStrategy?.formElement, this.siteId);
+        CoreForms.triggerFormCancelledEvent(this.formElement(), this.siteId);
+        CoreForms.triggerFormCancelledEvent(assessmentStrategy?.formElement(), this.siteId);
 
         return true;
     }
@@ -520,10 +521,11 @@ export default class AddonModWorkshopSubmissionPage implements OnInit, OnDestroy
      * Save the assessment.
      */
     async saveAssessment(): Promise<void> {
-        const assessmentHasChanged = await this.assessmentStrategy?.hasDataChanged();
+        const assessmentStrategy = this.assessmentStrategy();
+        const assessmentHasChanged = await assessmentStrategy?.hasDataChanged();
         if (assessmentHasChanged) {
             try {
-                await this.assessmentStrategy?.saveAssessment();
+                await assessmentStrategy?.saveAssessment();
                 this.forceLeavePage();
             } catch {
                 // Error, stay on the page.
@@ -576,7 +578,7 @@ export default class AddonModWorkshopSubmissionPage implements OnInit, OnDestroy
                 inputData.published,
                 String(inputData.grade),
             );
-            CoreForms.triggerFormSubmittedEvent(this.formElement, !!result, this.siteId);
+            CoreForms.triggerFormSubmittedEvent(this.formElement(), !!result, this.siteId);
 
             await AddonModWorkshop.invalidateSubmissionData(this.workshopId, this.submissionId).finally(() => {
                 const data: AddonModWorkshopSubmissionChangedEventData = {

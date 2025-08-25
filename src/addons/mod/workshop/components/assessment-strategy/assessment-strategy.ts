@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, Input, OnInit, ViewChild, ElementRef, Type, OnDestroy } from '@angular/core';
+import { Component, Input, OnInit, ElementRef, Type, OnDestroy, viewChild } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { CoreError } from '@classes/errors/error';
 import { CoreFileUploader, CoreFileUploaderStoreFilesResult } from '@features/fileuploader/services/fileuploader';
@@ -69,7 +69,7 @@ export class AddonModWorkshopAssessmentStrategyComponent implements OnInit, OnDe
     @Input({ required: true }) strategy!: string;
     @Input({ transform: toBoolean }) edit = false;
 
-    @ViewChild('assessmentForm') formElement!: ElementRef;
+    readonly formElement = viewChild.required<ElementRef>('assessmentForm');
 
     componentClass?: Type<unknown>;
     data: AddonModWorkshopAssessmentStrategyData = {
@@ -385,7 +385,7 @@ export class AddonModWorkshopAssessmentStrategyComponent implements OnInit, OnDe
                 );
             }
 
-            CoreForms.triggerFormSubmittedEvent(this.formElement, !!gradeUpdated, CoreSites.getCurrentSiteId());
+            CoreForms.triggerFormSubmittedEvent(this.formElement(), !!gradeUpdated, CoreSites.getCurrentSiteId());
 
             const promises: Promise<void>[] = [];
 
