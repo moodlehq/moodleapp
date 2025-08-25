@@ -151,16 +151,18 @@
                                 getAcademicYearDisplayName(yearData.academic_year)
                                 }}
                             </h3>
-                            <span
-                                class="year-badge"
-                                *ngIf="isCurrentAcademicYear(yearData.academic_year)"
-                                >Current</span
-                            >
-                            <span
-                                class="year-badge"
-                                *ngIf="!isCurrentAcademicYear(yearData.academic_year)"
-                                >Future</span
-                            >
+                            <div class="year-badge-container">
+                                <span
+                                    class="year-badge"
+                                    *ngIf="isCurrentAcademicYear(yearData.academic_year)"
+                                    >Current</span
+                                >
+                                <span
+                                    class="year-badge"
+                                    *ngIf="!isCurrentAcademicYear(yearData.academic_year)"
+                                    >Future</span
+                                >
+                            </div>
                         </div>
 
                         <div class="year-summary">

@@ -505,8 +505,9 @@
 
             .year-title-group {
                 display: flex;
-                align-items: center;
-                gap: 16px;
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 6px;
 
                 .year-title {
                     font-size: 1.125rem;
@@ -517,15 +518,20 @@
                     white-space: nowrap;
                 }
 
+                .year-badge-container {
+                    display: flex;
+                    align-items: center;
+                }
+
                 .year-badge {
                     background: rgba(255, 255, 255, 0.25);
                     color: var(--text-on-dark-pastel);
-                    padding: 6px 16px;
+                    padding: 4px 12px;
                     border-radius: var(--radius-full);
-                    font-size: 0.8125rem;
+                    font-size: 0.75rem;
                     font-weight: 600;
                     text-transform: uppercase;
-                    letter-spacing: 0.75px;
+                    letter-spacing: 0.5px;
                     border: 1px solid rgba(255, 255, 255, 0.3);
                     backdrop-filter: blur(10px);
                 }

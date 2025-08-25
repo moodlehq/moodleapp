@@ -19,13 +19,29 @@ import { CoreRoutedItemsManagerSourcesTracker } from '@classes/items-management/
 import { CoreSplitViewComponent } from '@components/split-view/split-view';
 import { CoreGradesCoursesSource } from '@features/grades/classes/grades-courses-source';
 import { CoreGrades } from '@features/grades/services/grades';
+import { CoreGradesGradeOverviewWithCourseData } from '@features/grades/services/grades-helper';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreUtils } from '@services/utils/utils';
 import { Translate } from '@singletons';
 import { CoreUserParent } from '@features/user/services/parent';
-import { CoreCourses } from '@features/courses/services/courses';
+import { CoreCourses, CoreCategoryData } from '@features/courses/services/courses';
+
+/**
+ * Category node for hierarchical display
+ */
+interface CategoryNode {
+    id: number;
+    name: string;
+    parent: number;
+    depth: number;
+    path: string;
+    coursecount?: number;
+    courses: CoreGradesGradeOverviewWithCourseData[];
+    children: CategoryNode[];
+    expanded?: boolean;
+}
 
 /**
  * Page that displays courses grades (main menu option).
@@ -43,21 +59,39 @@ export class CoreGradesCoursesPage implements OnDestroy, AfterViewInit {
     selectedMenteeId?: number;
     menteeCourses: { [menteeId: number]: any[] } = {};
     parentDataLoaded = false;
+    
+    // Category grouping
+    coursesGroupedByCategory: { [categoryId: number]: { name: string; courses: CoreGradesGradeOverviewWithCourseData[] } } = {};
+    categoryIds: number[] = [];
+    
+    // Hierarchical category structure
+    categoryTree: CategoryNode[] = [];
+    expandedCategories: { [categoryId: number]: boolean } = {};
+    categoriesData: { [id: number]: any } = {};
 
     @ViewChild(CoreSplitViewComponent) splitView!: CoreSplitViewComponent;
 
     constructor() {
+        console.log('[Grades] Constructor called');
         const source = CoreRoutedItemsManagerSourcesTracker.getOrCreateSource(CoreGradesCoursesSource, []);
 
         this.courses = new CoreGradesCoursesManager(source, CoreGradesCoursesPage);
+        console.log('[Grades] Courses manager created:', this.courses);
     }
 
     /**
      * @inheritdoc
      */
     async ngAfterViewInit(): Promise<void> {
+        console.log('[Grades] ngAfterViewInit called');
+        
         // Check if user is a parent
         this.isParentView = await CoreUserParent.isParentUser();
+        console.log('[Grades] isParentView:', this.isParentView);
+        
+        // TEMPORARY: Force student view to test category grouping
+        console.log('[Grades] TEMPORARY: Forcing student view for testing category grouping');
+        this.isParentView = false;
         
         if (this.isParentView) {
             // Get mentees for parent view
@@ -71,7 +105,24 @@ export class CoreGradesCoursesPage implements OnDestroy, AfterViewInit {
 
         // Only start the courses manager if not in parent view
         if (!this.isParentView) {
+            console.log('[Grades] Starting courses manager for student view');
             this.courses.start(this.splitView);
+            
+            // Listen to the source for when items are loaded
+            this.courses.getSource().addListener({
+                onItemsUpdated: (items) => {
+                    console.log('[Grades] onItemsUpdated triggered with', items?.length || 0, 'items, calling groupCoursesByCategory');
+                    this.groupCoursesByCategory();
+                }
+            });
+            
+            // Initial grouping if items are already loaded
+            if (this.courses.loaded) {
+                console.log('[Grades] Courses already loaded, calling groupCoursesByCategory');
+                this.groupCoursesByCategory();
+            } else {
+                console.log('[Grades] Courses not yet loaded, will group when loaded');
+            }
         }
     }
 
@@ -112,15 +163,21 @@ export class CoreGradesCoursesPage implements OnDestroy, AfterViewInit {
      * Obtain the initial list of courses.
      */
     private async fetchInitialCourses(): Promise<void> {
+        console.log('[Grades] fetchInitialCourses called');
         try {
             if (this.isParentView && this.mentees.length > 0) {
+                console.log('[Grades] Fetching courses for parent view');
                 // For parent view, fetch courses for each mentee
                 await this.fetchAllMenteeCourses();
                 this.parentDataLoaded = true;
             } else {
+                console.log('[Grades] Loading courses for student view');
                 await this.courses.load();
+                console.log('[Grades] Courses loaded, loaded status:', this.courses.loaded);
+                console.log('[Grades] Number of items:', this.courses.items?.length || 0);
             }
         } catch (error) {
+            console.error('[Grades] Error in fetchInitialCourses:', error);
             CoreDomUtils.showErrorModalDefault(error, 'Error loading courses');
         }
     }
@@ -213,6 +270,200 @@ export class CoreGradesCoursesPage implements OnDestroy, AfterViewInit {
         
         // Navigate to the course grades
         this.courses.select(course);
+    }
+    
+    /**
+     * Group courses by category hierarchically.
+     */
+    protected async groupCoursesByCategory(): Promise<void> {
+        console.log('[Grades] Starting hierarchical category grouping');
+        console.log('[Grades] Number of courses to group:', this.courses.items?.length || 0);
+        
+        this.coursesGroupedByCategory = {};
+        this.categoryIds = [];
+        this.categoryTree = [];
+        
+        if (!this.courses.items || this.courses.items.length === 0) {
+            console.log('[Grades] No courses to group, exiting');
+            return;
+        }
+        
+        try {
+            // First, get full course information with category data
+            const courseIds = this.courses.items.map((item: CoreGradesGradeOverviewWithCourseData) => item.courseid);
+            console.log('[Grades] Fetching course data for IDs:', courseIds);
+            
+            const coursesData = await CoreCourses.getCoursesByField('ids', courseIds.join(','));
+            console.log('[Grades] Retrieved course data for', coursesData.length, 'courses');
+            
+            // Create a map for quick lookup
+            const courseMap: { [id: number]: any } = {};
+            const categoryIdsSet = new Set<number>();
+            
+            coursesData.forEach(course => {
+                courseMap[course.id] = course;
+                if (course.categoryid) {
+                    categoryIdsSet.add(course.categoryid);
+                }
+            });
+            
+            console.log('[Grades] Found', categoryIdsSet.size, 'unique categories');
+            
+            // Fetch all categories data
+            console.log('[Grades] Fetching all categories from server');
+            const categories = await CoreCourses.getCategories(0, true);
+            console.log('[Grades] Retrieved', categories.length, 'categories from server');
+            
+            const categoriesMap: { [id: number]: CoreCategoryData } = {};
+            
+            categories.forEach(cat => {
+                categoriesMap[cat.id] = cat;
+                this.categoriesData[cat.id] = cat;
+            });
+            
+            // Build the category tree
+            const categoryNodes: { [id: number]: CategoryNode } = {};
+            console.log('[Grades] Building category tree structure');
+            
+            // First pass: create all nodes
+            let nodesCreated = 0;
+            categories.forEach(cat => {
+                if (categoryIdsSet.has(cat.id) || cat.coursecount > 0) {
+                    categoryNodes[cat.id] = {
+                        id: cat.id,
+                        name: cat.name,
+                        parent: cat.parent,
+                        depth: cat.depth,
+                        path: cat.path,
+                        coursecount: cat.coursecount,
+                        courses: [],
+                        children: [],
+                        expanded: false
+                    };
+                    nodesCreated++;
+                }
+            });
+            console.log('[Grades] Created', nodesCreated, 'category nodes');
+            
+            // Add uncategorized node if needed
+            categoryNodes[0] = {
+                id: 0,
+                name: 'Uncategorized',
+                parent: 0,
+                depth: 0,
+                path: '/0',
+                courses: [],
+                children: [],
+                expanded: false
+            };
+            
+            // Assign courses to their categories
+            console.log('[Grades] Assigning courses to categories');
+            let coursesAssigned = 0;
+            this.courses.items.forEach((gradeItem: CoreGradesGradeOverviewWithCourseData) => {
+                const courseInfo = courseMap[gradeItem.courseid];
+                const categoryId = courseInfo?.categoryid || 0;
+                
+                if (categoryNodes[categoryId]) {
+                    categoryNodes[categoryId].courses.push(gradeItem);
+                    coursesAssigned++;
+                    console.log('[Grades] Assigned course', gradeItem.courseid, 'to category', categoryId);
+                } else {
+                    // Put in uncategorized
+                    categoryNodes[0].courses.push(gradeItem);
+                    coursesAssigned++;
+                    console.log('[Grades] Assigned course', gradeItem.courseid, 'to uncategorized');
+                }
+            });
+            console.log('[Grades] Assigned', coursesAssigned, 'courses to categories');
+            
+            // Second pass: build hierarchy
+            console.log('[Grades] Building category hierarchy');
+            let topLevelCategories = 0;
+            let childCategories = 0;
+            Object.values(categoryNodes).forEach(node => {
+                if (node.parent === 0 || !categoryNodes[node.parent]) {
+                    // Top level category
+                    this.categoryTree.push(node);
+                    topLevelCategories++;
+                } else {
+                    // Child category
+                    categoryNodes[node.parent].children.push(node);
+                    childCategories++;
+                }
+            });
+            console.log('[Grades] Found', topLevelCategories, 'top-level categories and', childCategories, 'child categories');
+            
+            // Sort categories by name at each level
+            const sortCategories = (nodes: CategoryNode[]) => {
+                nodes.sort((a, b) => a.name.toLowerCase().localeCompare(b.name.toLowerCase()));
+                nodes.forEach(node => {
+                    if (node.children.length > 0) {
+                        sortCategories(node.children);
+                    }
+                });
+            };
+            
+            sortCategories(this.categoryTree);
+            
+            // Auto-expand categories with courses
+            this.autoExpandCategories(this.categoryTree);
+            
+            console.log('[Grades] Built category tree with', this.categoryTree.length, 'top-level categories');
+            console.log('[Grades] Category tree structure:', JSON.stringify(this.categoryTree.map(cat => ({
+                id: cat.id,
+                name: cat.name,
+                courseCount: cat.courses.length,
+                childCount: cat.children.length
+            })), null, 2));
+        } catch (error) {
+            console.error('[Grades] Error building category hierarchy:', error);
+            // Fallback: flat list
+            this.categoryTree = [{
+                id: 0,
+                name: 'All Courses',
+                parent: 0,
+                depth: 0,
+                path: '/0',
+                courses: this.courses.items as CoreGradesGradeOverviewWithCourseData[],
+                children: [],
+                expanded: true
+            }];
+            console.log('[Grades] Using fallback flat list with all courses');
+        }
+    }
+    
+    /**
+     * Auto-expand categories that contain courses
+     */
+    protected autoExpandCategories(nodes: CategoryNode[]): void {
+        nodes.forEach(node => {
+            if (node.courses.length > 0 || node.children.some(child => child.courses.length > 0)) {
+                node.expanded = true;
+                this.expandedCategories[node.id] = true;
+            }
+            if (node.children.length > 0) {
+                this.autoExpandCategories(node.children);
+            }
+        });
+    }
+    
+    /**
+     * Toggle category expansion
+     */
+    toggleCategory(categoryId: number): void {
+        this.expandedCategories[categoryId] = !this.expandedCategories[categoryId];
+        const updateNode = (nodes: CategoryNode[]) => {
+            nodes.forEach(node => {
+                if (node.id === categoryId) {
+                    node.expanded = this.expandedCategories[categoryId];
+                }
+                if (node.children.length > 0) {
+                    updateNode(node.children);
+                }
+            });
+        };
+        updateNode(this.categoryTree);
     }
 
 }

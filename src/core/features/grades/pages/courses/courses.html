@@ -46,24 +46,61 @@
                 </ion-item-group>
             </div>
 
-            <!-- Student View: Normal Course List -->
-            <ion-list *ngIf="!courses.empty && !isParentView">
-                <ion-item *ngFor="let course of courses.items" [attr.aria-label]="course.courseFullName"
-                    [attr.aria-current]="courses.getItemAriaCurrent(course)" class="ion-text-wrap" button [detail]="true"
-                    (click)="courses.select(course)">
+            <!-- Student View: Hierarchical Category Tree -->
+            <div *ngIf="!courses.empty && !isParentView" class="category-tree">
+                <ng-container *ngFor="let category of categoryTree">
+                    <ng-container *ngTemplateOutlet="categoryNode; context: { node: category, depth: 0 }"></ng-container>
+                </ng-container>
+            </div>
+            
+            <!-- Category Node Template -->
+            <ng-template #categoryNode let-node="node" let-depth="depth">
+                <!-- Category Header -->
+                <ion-item-divider [class.category-depth-1]="depth === 1" 
+                                  [class.category-depth-2]="depth === 2"
+                                  [class.category-depth-3]="depth >= 3"
+                                  button
+                                  (click)="toggleCategory(node.id)"
+                                  *ngIf="node.courses.length > 0 || node.children.length > 0">
+                    <ion-icon [name]="node.expanded ? 'chevron-down' : 'chevron-forward'" 
+                              slot="start" 
+                              class="category-toggle-icon"></ion-icon>
                     <ion-label>
-                        <p class="item-heading">
-                            <core-format-text [text]="course.courseFullName" [contextInstanceId]="course.courseid" contextLevel="course" />
-                        </p>
+                        <h2>{{ node.name }}</h2>
+                        <p *ngIf="node.courses.length > 0">{{ node.courses.length }} course(s)</p>
                     </ion-label>
-                    <ion-badge slot="end" color="light">
-                        <span class="sr-only" *ngIf="course.grade && course.grade !== '-'">
-                            {{ 'core.grades.grade' | translate }}
-                        </span>
-                        {{course.grade}}
-                    </ion-badge>
-                </ion-item>
-            </ion-list>
+                </ion-item-divider>
+                
+                <!-- Category Courses -->
+                <div [hidden]="!node.expanded" class="category-content">
+                    <ion-item *ngFor="let course of node.courses" 
+                        [attr.aria-label]="course.courseFullName"
+                        [attr.aria-current]="courses.getItemAriaCurrent(course)" 
+                        class="ion-text-wrap course-item" 
+                        [class.course-depth-1]="depth === 0"
+                        [class.course-depth-2]="depth === 1"
+                        [class.course-depth-3]="depth >= 2"
+                        button [detail]="true"
+                        (click)="courses.select(course)">
+                        <ion-label>
+                            <p class="item-heading">
+                                <core-format-text [text]="course.courseFullName" [contextInstanceId]="course.courseid" contextLevel="course" />
+                            </p>
+                        </ion-label>
+                        <ion-badge slot="end" color="light">
+                            <span class="sr-only" *ngIf="course.grade && course.grade !== '-'">
+                                {{ 'core.grades.grade' | translate }}
+                            </span>
+                            {{course.grade}}
+                        </ion-badge>
+                    </ion-item>
+                    
+                    <!-- Child Categories -->
+                    <ng-container *ngFor="let child of node.children">
+                        <ng-container *ngTemplateOutlet="categoryNode; context: { node: child, depth: depth + 1 }"></ng-container>
+                    </ng-container>
+                </div>
+            </ng-template>
         </core-loading>
     </core-split-view>
 </ion-content>

@@ -294,7 +294,7 @@ ion-list {
 }
 
 // ====================================
-// PARENT VIEW - MENTEE GROUPS
+// PARENT VIEW - MENTEE GROUPS & CATEGORY GROUPS
 // ====================================
 ion-item-group {
     margin-bottom: 24px;
@@ -326,6 +326,7 @@ ion-item-group {
                 font-weight: 700;
                 margin: 0 0 4px 0;
                 letter-spacing: -0.5px;
+                text-shadow: 0 1px 3px rgba(26, 35, 50, 0.08);
             }
             
             p {
@@ -334,6 +335,18 @@ ion-item-group {
                 margin: 0;
                 font-weight: 500;
             }
+        }
+        
+        // Category icon animation
+        &::before {
+            content: '📚';
+            position: absolute;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 2rem;
+            opacity: 0.2;
+            animation: floatSoft 8s ease-in-out infinite;
         }
     }
     
@@ -346,6 +359,81 @@ ion-item-group {
     // Last item in group
     ion-item:last-child {
         margin-bottom: 0;
+    }
+}
+
+// ====================================
+// HIERARCHICAL CATEGORY TREE
+// ====================================
+.category-tree {
+    padding: 16px;
+    
+    ion-item-divider {
+        --background: transparent;
+        --color: var(--text-primary);
+        --padding-top: 12px;
+        --padding-bottom: 12px;
+        --padding-start: 16px;
+        margin-bottom: 4px;
+        border-radius: var(--radius-md);
+        transition: var(--transition-fast);
+        cursor: pointer;
+        
+        &:hover {
+            background: var(--bg-hover);
+        }
+        
+        &.category-depth-1 {
+            --padding-start: 40px;
+        }
+        
+        &.category-depth-2 {
+            --padding-start: 64px;
+        }
+        
+        &.category-depth-3 {
+            --padding-start: 88px;
+        }
+        
+        .category-toggle-icon {
+            font-size: 1.25rem;
+            color: var(--text-muted);
+            transition: var(--transition-fast);
+            margin-right: 8px;
+        }
+        
+        ion-label {
+            h2 {
+                font-size: 1.125rem;
+                font-weight: 600;
+                margin: 0 0 2px 0;
+                color: var(--text-secondary);
+            }
+            
+            p {
+                font-size: 0.875rem;
+                color: var(--text-muted);
+                margin: 0;
+            }
+        }
+    }
+    
+    .category-content {
+        transition: var(--transition-base);
+        
+        .course-item {
+            &.course-depth-1 {
+                --padding-start: 56px;
+            }
+            
+            &.course-depth-2 {
+                --padding-start: 80px;
+            }
+            
+            &.course-depth-3 {
+                --padding-start: 104px;
+            }
+        }
     }
 }
 
