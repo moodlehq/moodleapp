@@ -35,6 +35,15 @@ Feature: Activities overview for forum activity
       | s1   | Test discussion 1 | Reply 1 to discussion 1 | Discussion contents 1.1 |
       | s3   | Test discussion 1 | Reply 2 to discussion 1 | Discussion contents 1.2 |
 
+  Scenario: The forum overview report should generate log events
+    Given I entered the course "Course 1" as "s1" in the app
+    When I press "Activities" in the app
+    And I press "Forums" in the app
+    Then the following events should have been logged for "s1" in the app:
+      | name                                                | course   |
+      | \core\event\course_overview_viewed                  | Course 1 |
+      | \mod_forum\event\course_module_instance_list_viewed | Course 1 |
+
   Scenario: Teachers can see relevant columns in the forum overview
     Given I entered the course "Course 1" as "t1" in the app
     When I press "Activities" in the app

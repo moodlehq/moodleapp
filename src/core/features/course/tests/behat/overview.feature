@@ -259,8 +259,14 @@ Feature: Activities overview common functionality
   Scenario: The course overview page should log a page event and a resource list event
     Given I entered the course "Course 1" as "student" in the app
     When I press "Activities" in the app
-    And I press "Resources" in the app
     Then the following events should have been logged for "student" in the app:
       | name                               | course   |
       | \core\event\course_overview_viewed | Course 1 |
-  # TODO MOBILE-4869: Check expanding Resources registers a log. Each activity should also check its log.
+    And the following events should not have been logged for "student" in the app:
+      | name                                     | course   |
+      | \core\event\course_resources_list_viewed | Course 1 |
+
+    When I press "Resources" in the app
+    Then the following events should have been logged for "student" in the app:
+      | name                                     | course   |
+      | \core\event\course_resources_list_viewed | Course 1 |
