@@ -56,6 +56,10 @@ const mainMenuChildrenRoutes: Routes = [
         path: `${COURSE_PAGE_NAME}/:courseId/${PARTICIPANTS_PAGE_NAME}/:userId/${GRADES_PAGE_NAME}`,
         loadChildren: () => import('./grades-course-lazy.module').then(m => m.CoreGradesCourseLazyModule),
     },
+    {
+        path: 'grades-debug/:courseId',
+        loadChildren: () => import('./grades-debug-lazy.module').then(m => m.CoreGradesDebugLazyModule),
+    },
     ...conditionalRoutes([
         {
             path: `${COURSE_PAGE_NAME}/${COURSE_INDEX_PATH}/${GRADES_PARTICIPANTS_PAGE_NAME}/:userId`,
@@ -73,6 +77,10 @@ const courseIndexRoutes: Routes = [
     {
         path: GRADES_PARTICIPANTS_PAGE_NAME,
         loadChildren: () => import('./grades-course-participants-lazy.module').then(m => m.CoreGradesCourseParticipantsLazyModule),
+    },
+    {
+        path: 'debug/:courseId',
+        loadChildren: () => import('./grades-debug-lazy.module').then(m => m.CoreGradesDebugLazyModule),
     },
 ];
 

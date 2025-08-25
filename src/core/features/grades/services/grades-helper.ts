@@ -74,6 +74,12 @@ export class CoreGradesHelperProvider {
     ): Promise<CoreGradesFormattedTableRow> {
         const row: CoreGradesFormattedTableRow = {};
 
+        // Add validation
+        if (!tableRow) {
+            this.logger.warn('formatGradeRowForTable: Received null/undefined tableRow');
+            return row;
+        }
+
         if (!useLegacyLayout && 'leader' in tableRow) {
             const row = {
                 itemtype: 'leader',
@@ -88,7 +94,8 @@ export class CoreGradesHelperProvider {
         for (let name in tableRow) {
             const column: CoreGradesTableColumn = tableRow[name];
 
-            if (column.content === undefined || column.content === null) {
+            // Check if column exists
+            if (!column || column.content === undefined || column.content === null) {
                 continue;
             }
 
@@ -97,11 +104,49 @@ export class CoreGradesHelperProvider {
             if (name === 'itemname') {
                 const itemNameColumn = <CoreGradesTableItemNameColumn> column;
 
-                row.id = parseInt(itemNameColumn.id.split('_')[1], 10);
-                row.colspan = itemNameColumn.colspan;
+                // Handle id that might be a number or string
+                if (itemNameColumn.id !== undefined && itemNameColumn.id !== null) {
+                    if (typeof itemNameColumn.id === 'string' && itemNameColumn.id.includes('_')) {
+                        row.id = parseInt(itemNameColumn.id.split('_')[1], 10);
+                    } else if (typeof itemNameColumn.id === 'number') {
+                        row.id = itemNameColumn.id;
+                    } else {
+                        row.id = parseInt(String(itemNameColumn.id), 10);
+                    }
+                } else {
+                    this.logger.warn('formatGradeRowForTable: itemNameColumn.id is undefined');
+                    row.id = 0;
+                }
+                
+                row.colspan = itemNameColumn.colspan || 1;
                 row.rowspan = tableRow.leader?.rowspan || 1;
 
                 await this.setRowIconAndType(row, content);
+                
+                // Check if this is a category row based on content and class
+                const lowerContent = content.toLowerCase();
+                const isTotal = lowerContent.includes('total');
+                const isCourseTotal = lowerContent.includes('course total');
+                const isCategoryTotal = lowerContent.includes('category total');
+                
+                // Determine itemtype based on content and class
+                if (isCourseTotal) {
+                    row.itemtype = 'courseitem';  // Course total
+                } else if (isCategoryTotal || (isTotal && itemNameColumn.class && itemNameColumn.class.includes('bagg'))) {
+                    row.itemtype = 'categoryitem';  // Category total
+                } else if (itemNameColumn.class && itemNameColumn.class.includes('category')) {
+                    row.itemtype = 'category';  // Category header
+                } else if (!row.itemtype && content && !isTotal) {
+                    // If it has a name and it's not a total, it's likely a grade item
+                    row.itemtype = 'mod';
+                }
+                
+                // Ensure itemtype is set - default to 'item' if not set by setRowIconAndType
+                if (!row.itemtype) {
+                    row.itemtype = 'item';
+                    this.logger.warn('[formatGradeRowForTable] Setting default itemtype for row:', row.id, 'content:', content);
+                }
+                
                 this.setRowStyleClasses(row, itemNameColumn.class);
                 row.rowclass += itemNameColumn.class.indexOf('hidden') >= 0 ? ' hidden' : '';
                 row.rowclass += itemNameColumn.class.indexOf('dimmed_text') >= 0 ? ' dimmed_text' : '';
@@ -152,6 +197,11 @@ export class CoreGradesHelperProvider {
             row[name] = content.trim();
         }
 
+        // Log if itemtype is not set
+        if (!row.itemtype) {
+            this.logger.warn('[formatGradeRowForTable] Row missing itemtype:', row);
+        }
+
         return row;
     }
 
@@ -179,6 +229,13 @@ export class CoreGradesHelperProvider {
      * @returns Formatted HTML table.
      */
     async formatGradesTable(table: CoreGradesTable): Promise<CoreGradesFormattedTable> {
+        this.logger.debug('[formatGradesTable] Input table:', {
+            courseid: table.courseid,
+            userid: table.userid,
+            maxdepth: table.maxdepth,
+            tableDataLength: table.tabledata?.length || 0
+        });
+        
         const maxDepth = table.maxdepth;
         const formatted: CoreGradesFormattedTable = {
             columns: [],
@@ -199,6 +256,10 @@ export class CoreGradesHelperProvider {
             contributiontocoursetotal: false,
         };
         formatted.rows = await this.formatGradesTableRows(table.tabledata);
+        this.logger.debug('[formatGradesTable] Formatted rows count:', formatted.rows.length);
+        if (formatted.rows.length > 0) {
+            this.logger.debug('[formatGradesTable] First formatted row:', formatted.rows[0]);
+        }
 
         // Get a row with some info.
         let normalRow = formatted.rows.find(
@@ -226,6 +287,12 @@ export class CoreGradesHelperProvider {
                 });
             }
         }
+
+        this.logger.debug('[formatGradesTable] Final formatted table:', {
+            columnsCount: formatted.columns.length,
+            columns: formatted.columns.map(c => c.name),
+            rowsCount: formatted.rows.length
+        });
 
         return formatted;
     }
@@ -264,21 +331,33 @@ export class CoreGradesHelperProvider {
      * @returns Promise always resolved. Resolve param is the formatted grades.
      */
     async getGradesCourseData(grades: CoreGradesGradeOverview[]): Promise<CoreGradesGradeOverviewWithCourseData[]> {
+        this.logger.debug(`Getting course data for ${grades.length} grades`);
+        this.logger.debug('Grade course IDs:', grades.map(g => g.courseid));
+        
         // Obtain courses from cache to prevent network requests.
         let coursesWereMissing = false;
 
         try {
             const courses = await CoreCourses.getUserCourses(undefined, undefined, CoreSitesReadingStrategy.ONLY_CACHE);
             const coursesMap = CoreUtils.arrayToObject(courses, 'id');
+            
+            this.logger.debug(`Found ${courses.length} courses in cache`);
+            this.logger.debug('Cached course IDs:', Object.keys(coursesMap));
 
             coursesWereMissing = this.addCourseData(grades, coursesMap);
         } catch {
             coursesWereMissing = true;
+            this.logger.debug('Cache miss, will fetch from network');
         }
 
         // If any course wasn't found, make a network request.
         if (coursesWereMissing) {
-            const courses = await CoreCourses.getCoursesByField('ids', grades.map((grade) => grade.courseid).join(','));
+            this.logger.debug('Fetching missing courses from network');
+            const courseIds = grades.map((grade) => grade.courseid).join(',');
+            const courses = await CoreCourses.getCoursesByField('ids', courseIds);
+            
+            this.logger.debug(`Fetched ${courses.length} courses from network`);
+            
             const coursesMap =
                 CoreUtils.arrayToObject(courses as Record<string, unknown>[], 'id') as
                     Record<string, CoreEnrolledCourseData> |
@@ -287,8 +366,15 @@ export class CoreGradesHelperProvider {
             this.addCourseData(grades, coursesMap);
         }
 
-        return (grades as Record<string, unknown>[])
+        const result = (grades as Record<string, unknown>[])
             .filter(grade => 'courseFullName' in grade) as CoreGradesGradeOverviewWithCourseData[];
+            
+        this.logger.debug(`Returning ${result.length} grades with course data`);
+        if (result.length < grades.length) {
+            this.logger.warn(`${grades.length - result.length} grades missing course data`);
+        }
+
+        return result;
     }
 
     /**
@@ -534,6 +620,10 @@ export class CoreGradesHelperProvider {
 
         if (classes.match(/(^|\s)(category|bagg(b|t))($|\s)/)) {
             row.rowclass += ' core-bold';
+            // If the class contains 'category' or aggregation indicators, it's likely a category
+            if (!row.itemtype || row.itemtype === 'item') {
+                row.itemtype = 'category';
+            }
         }
     }
 

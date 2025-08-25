@@ -10,13 +10,44 @@
 </ion-header>
 <ion-content>
     <core-split-view>
-        <ion-refresher slot="fixed" [disabled]="!courses.loaded" (ionRefresh)="refreshCourses($event.target)">
+        <ion-refresher slot="fixed" [disabled]="!courses.loaded && !parentDataLoaded" (ionRefresh)="refreshCourses($event.target)">
             <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}" />
         </ion-refresher>
-        <core-loading [hideUntil]="courses.loaded">
-            <core-empty-box *ngIf="courses.empty" icon="fas-chart-bar" [message]="'core.grades.nogradesreturned' | translate" />
+        <core-loading [hideUntil]="courses.loaded || (isParentView && parentDataLoaded)">
+            <core-empty-box *ngIf="courses.empty && !isParentView" icon="fas-chart-bar" [message]="'core.grades.nogradesreturned' | translate" />
+            <core-empty-box *ngIf="isParentView && (!mentees || mentees.length === 0)" icon="fas-users" [message]="'No mentees found' | translate" />
 
-            <ion-list *ngIf="!courses.empty">
+            <!-- Parent View: Group by Student -->
+            <div *ngIf="isParentView && mentees && mentees.length > 0">
+                <ion-item-group *ngFor="let mentee of mentees">
+                    <ion-item-divider>
+                        <ion-label>
+                            <h2>{{ mentee.fullname }}</h2>
+                            <p>{{ mentee.email }}</p>
+                        </ion-label>
+                    </ion-item-divider>
+                    
+                    <ion-item *ngFor="let course of getCoursesForMentee(mentee.id)" 
+                        [attr.aria-label]="course.courseFullName" 
+                        class="ion-text-wrap" button [detail]="true"
+                        (click)="selectCourseForMentee(course, mentee.id)">
+                        <ion-label>
+                            <p class="item-heading">
+                                <core-format-text [text]="course.courseFullName" [contextInstanceId]="course.courseid" contextLevel="course" />
+                            </p>
+                        </ion-label>
+                        <ion-badge slot="end" color="light">
+                            <span class="sr-only" *ngIf="course.grade && course.grade !== '-'">
+                                {{ 'core.grades.grade' | translate }}
+                            </span>
+                            {{course.grade}}
+                        </ion-badge>
+                    </ion-item>
+                </ion-item-group>
+            </div>
+
+            <!-- Student View: Normal Course List -->
+            <ion-list *ngIf="!courses.empty && !isParentView">
                 <ion-item *ngFor="let course of courses.items" [attr.aria-label]="course.courseFullName"
                     [attr.aria-current]="courses.getItemAriaCurrent(course)" class="ion-text-wrap" button [detail]="true"
                     (click)="courses.select(course)">

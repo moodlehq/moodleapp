@@ -193,7 +193,7 @@ export class CoreGradesProvider {
 
         userId = userId || site.getUserId();
 
-        this.logger.debug(`Get grades for course '${courseId}' and user '${userId}'`);
+        this.logger.debug(`Get grades table for course '${courseId}' and user '${userId}'`);
 
         // Check if viewing as mentee
         let wsName = 'gradereport_user_get_grades_table';
@@ -224,7 +224,14 @@ export class CoreGradesProvider {
 
         if (wsName === 'local_aspireparent_get_mentee_grades') {
             // Custom WS returns different format, need to transform it
+            this.logger.debug(`Using custom WS ${wsName} with params:`, params);
             const response = await site.read<any>(wsName, params, preSets);
+            
+            this.logger.debug(`Custom WS response:`, {
+                hasUsergrades: !!response?.usergrades,
+                usergradesLength: response?.usergrades?.length,
+                firstUsergrade: response?.usergrades?.[0]
+            });
             
             if (!response?.usergrades?.[0]) {
                 throw new CoreError('Couldn\'t get course grades table');
@@ -232,6 +239,8 @@ export class CoreGradesProvider {
             
             // Transform to expected format
             const usergrade = response.usergrades[0];
+            this.logger.debug(`Grade items count: ${usergrade.gradeitems?.length || 0}`);
+            
             const tableData: CoreGradesTable = {
                 courseid: usergrade.courseid,
                 userid: usergrade.userid,
@@ -242,7 +251,8 @@ export class CoreGradesProvider {
                         class: item.itemtype === 'category' ? 'category' : 'item',
                         content: item.itemname,
                         celltype: 'item',
-                        id: item.id,
+                        id: String(item.id),
+                        colspan: 1,
                     },
                     grade: {
                         class: '',
@@ -267,14 +277,23 @@ export class CoreGradesProvider {
                 })),
             };
             
+            this.logger.debug('Transformed table data has', tableData.tabledata.length, 'rows');
             return tableData;
         } else {
+            this.logger.debug(`Using standard WS ${wsName} with params:`, params);
             const table = await site.read<CoreGradesGetUserGradesTableWSResponse>(wsName, params, preSets);
+
+            this.logger.debug(`Standard WS response:`, {
+                hasTables: !!table?.tables,
+                tablesLength: table?.tables?.length,
+                firstTable: table?.tables?.[0]
+            });
 
             if (!table?.tables?.[0]) {
                 throw new CoreError('Couldn\'t get course grades table');
             }
 
+            this.logger.debug('Standard table data has', table.tables[0].tabledata?.length || 0, 'rows');
             return table.tables[0];
         }
     }
@@ -290,6 +309,75 @@ export class CoreGradesProvider {
 
         this.logger.debug('Get course grades');
 
+        // Check if viewing as mentee
+        const selectedMenteeId = await CoreUserParent.getSelectedMentee(site.getId());
+        
+        if (selectedMenteeId && selectedMenteeId !== site.getUserId()) {
+            // Parent viewing mentee's grades
+            this.logger.debug(`Parent viewing mentee's course grades, mentee ID: ${selectedMenteeId}`);
+            
+            const hasCustomWS = await site.wsAvailable('local_aspireparent_get_mentee_course_grades');
+            if (hasCustomWS) {
+                this.logger.debug('Using custom WS for parent viewing mentee course grades');
+                const params = { menteeid: selectedMenteeId };
+                const preSets: CoreSiteWSPreSets = {
+                    cacheKey: this.getCoursesGradesCacheKey() + ':mentee:' + selectedMenteeId,
+                };
+                
+                try {
+                    const data = await site.read<CoreGradesGetOverviewCourseGradesWSResponse>(
+                        'local_aspireparent_get_mentee_course_grades',
+                        params,
+                        preSets,
+                    );
+                    
+                    this.logger.debug(`Got ${data?.grades?.length || 0} course grades for mentee`);
+                    
+                    if (!data?.grades) {
+                        throw new Error('Couldn\'t get mentee course grades');
+                    }
+                    
+                    return data.grades;
+                } catch (error) {
+                    this.logger.error('Error getting mentee course grades:', error);
+                    throw error;
+                }
+            }
+        }
+
+        // Check if we have the custom endpoint that returns all courses
+        const hasAllCoursesWS = await site.wsAvailable('local_aspireparent_get_all_course_grades');
+        
+        if (hasAllCoursesWS) {
+            // Use custom endpoint that includes courses with showgrades=false
+            this.logger.debug('Using custom WS to get all course grades');
+            const params = { userid: 0 }; // 0 means current user
+            const preSets: CoreSiteWSPreSets = {
+                cacheKey: this.getCoursesGradesCacheKey() + ':all',
+            };
+            
+            try {
+                const data = await site.read<CoreGradesGetOverviewCourseGradesWSResponse>(
+                    'local_aspireparent_get_all_course_grades',
+                    params,
+                    preSets,
+                );
+                
+                this.logger.debug(`Got ${data?.grades?.length || 0} course grades (including hidden)`, 
+                    data?.grades?.map(g => ({ courseid: g.courseid, showgrades: (g as any).showgrades })));
+                
+                if (!data?.grades) {
+                    throw new Error('Couldn\'t get all course grades');
+                }
+                
+                return data.grades;
+            } catch (error) {
+                this.logger.error('Error using custom all courses WS, falling back to standard', error);
+                // Fall through to standard method
+            }
+        }
+
+        // Normal flow for students or when custom WS not available
         const params: CoreGradesGetOverviewCourseGradesWSParams = {};
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getCoursesGradesCacheKey(),
@@ -300,6 +388,9 @@ export class CoreGradesProvider {
             params,
             preSets,
         );
+
+        this.logger.debug(`Got ${data?.grades?.length || 0} course grades (standard)`,
+            data?.grades?.map(g => ({ courseid: g.courseid })));
 
         if (!data?.grades) {
             throw new Error('Couldn\'t get course grades');

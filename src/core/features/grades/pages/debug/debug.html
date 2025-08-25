@@ -1,0 +1,159 @@
+<ion-header>
+    <ion-toolbar>
+        <ion-buttons slot="start">
+            <ion-back-button [text]="'core.back' | translate" />
+        </ion-buttons>
+        <ion-title>
+            <h1>Grades Debug</h1>
+        </ion-title>
+    </ion-toolbar>
+</ion-header>
+
+<ion-content>
+    <core-loading [hideUntil]="!loading">
+        <div class="ion-padding">
+            <ion-card *ngIf="error" color="danger">
+                <ion-card-content>
+                    <p>{{ error }}</p>
+                </ion-card-content>
+            </ion-card>
+            
+            <ion-card>
+                <ion-card-header>
+                    <ion-card-title>Debug Info</ion-card-title>
+                </ion-card-header>
+                <ion-card-content>
+                    <p><strong>Course ID:</strong> {{ courseId }}</p>
+                    <p><strong>User ID:</strong> {{ userId }}</p>
+                    <p><strong>Current URL:</strong> {{ '/grades-debug/' + courseId }}</p>
+                </ion-card-content>
+            </ion-card>
+            
+            <ion-card>
+                <ion-card-header>
+                    <ion-card-title>Course Total</ion-card-title>
+                </ion-card-header>
+                <ion-card-content>
+                    <div *ngIf="courseTotal; else noCourseTotal">
+                        <p><strong>Found:</strong> YES</p>
+                        <p><strong>Grade Item:</strong> {{ courseTotal.gradeitem }}</p>
+                        <p><strong>Grade:</strong> {{ courseTotal.grade }}</p>
+                        <p><strong>Range:</strong> {{ courseTotal.range }}</p>
+                        <p><strong>Percentage:</strong> {{ courseTotal.percentage }}</p>
+                        <ion-item>
+                            <ion-label>Full Data</ion-label>
+                            <ion-toggle [(ngModel)]="showCourseTotalJson"></ion-toggle>
+                        </ion-item>
+                        <pre *ngIf="showCourseTotalJson">{{ getJson(courseTotal) }}</pre>
+                    </div>
+                    <ng-template #noCourseTotal>
+                        <p><strong>Found:</strong> NO</p>
+                        <p>No course total row found in the data.</p>
+                    </ng-template>
+                </ion-card-content>
+            </ion-card>
+            
+            <ion-card>
+                <ion-card-header>
+                    <ion-card-title>Categories ({{ categories.length }})</ion-card-title>
+                </ion-card-header>
+                <ion-card-content>
+                    <div *ngFor="let cat of categories; let i = index" class="category-item">
+                        <h4>#{{ i + 1 }} - Row {{ cat.index }}</h4>
+                        <p><strong>Grade Item:</strong> {{ cat.gradeitem }}</p>
+                        <p><strong>Item Type:</strong> {{ cat.itemtype }}</p>
+                        <p><strong>Is Course Total:</strong> {{ cat.isCourseTotal ? 'YES' : 'NO' }}</p>
+                        <p><strong>Grade:</strong> {{ cat.grade || '-' }}</p>
+                        <p><strong>Range:</strong> {{ cat.range || '-' }}</p>
+                        <ion-item>
+                            <ion-label>Show JSON</ion-label>
+                            <ion-toggle [(ngModel)]="cat.showJson"></ion-toggle>
+                        </ion-item>
+                        <pre *ngIf="cat.showJson">{{ getJson(cat) }}</pre>
+                        <hr>
+                    </div>
+                </ion-card-content>
+            </ion-card>
+            
+            <ion-card>
+                <ion-card-header>
+                    <ion-card-title>Grade Items ({{ gradeItems.length }})</ion-card-title>
+                </ion-card-header>
+                <ion-card-content>
+                    <div *ngFor="let item of gradeItems; let i = index" class="grade-item">
+                        <h4>#{{ i + 1 }} - Row {{ item.index }}</h4>
+                        <p><strong>Grade Item:</strong> {{ item.gradeitem }}</p>
+                        <p><strong>Item Type:</strong> {{ item.itemtype }}</p>
+                        <p><strong>Grade:</strong> {{ item.grade || '-' }}</p>
+                        <p><strong>Percentage:</strong> {{ item.percentage || '-' }}</p>
+                        <ion-item>
+                            <ion-label>Show JSON</ion-label>
+                            <ion-toggle [(ngModel)]="item.showJson"></ion-toggle>
+                        </ion-item>
+                        <pre *ngIf="item.showJson">{{ getJson(item) }}</pre>
+                        <hr>
+                    </div>
+                </ion-card-content>
+            </ion-card>
+            
+            <ion-card>
+                <ion-card-header>
+                    <ion-card-title>Formatted Table Structure</ion-card-title>
+                </ion-card-header>
+                <ion-card-content>
+                    <p><strong>Columns:</strong> {{ formattedTable?.columns?.length || 0 }}</p>
+                    <p><strong>Rows:</strong> {{ formattedTable?.rows?.length || 0 }}</p>
+                    <ion-item>
+                        <ion-label>Show Columns</ion-label>
+                        <ion-toggle [(ngModel)]="showColumns"></ion-toggle>
+                    </ion-item>
+                    <pre *ngIf="showColumns">{{ getJson(formattedTable?.columns) }}</pre>
+                    <ion-item>
+                        <ion-label>Show First 5 Rows</ion-label>
+                        <ion-toggle [(ngModel)]="showRows"></ion-toggle>
+                    </ion-item>
+                    <pre *ngIf="showRows">{{ getJson(formattedTable?.rows?.slice(0, 5)) }}</pre>
+                </ion-card-content>
+            </ion-card>
+            
+            <ion-card>
+                <ion-card-header>
+                    <ion-card-title>Raw Table Data</ion-card-title>
+                </ion-card-header>
+                <ion-card-content>
+                    <p><strong>Course ID:</strong> {{ rawTableData?.courseid }}</p>
+                    <p><strong>User ID:</strong> {{ rawTableData?.userid }}</p>
+                    <p><strong>User Full Name:</strong> {{ rawTableData?.userfullname }}</p>
+                    <p><strong>Max Depth:</strong> {{ rawTableData?.maxdepth }}</p>
+                    <p><strong>Table Data Rows:</strong> {{ rawTableData?.tabledata?.length || 0 }}</p>
+                    <ion-item>
+                        <ion-label>Show First Raw Row</ion-label>
+                        <ion-toggle [(ngModel)]="showFirstRaw"></ion-toggle>
+                    </ion-item>
+                    <div *ngIf="showFirstRaw && rawTableData?.tabledata?.[0]">
+                        <h4>First Raw Row Structure:</h4>
+                        <div *ngFor="let key of getKeys(rawTableData.tabledata[0])" class="raw-item">
+                            <p><strong>{{ key }}:</strong></p>
+                            <pre *ngIf="isObject(rawTableData.tabledata[0][key])">{{ getJson(rawTableData.tabledata[0][key]) }}</pre>
+                            <p *ngIf="!isObject(rawTableData.tabledata[0][key])">{{ rawTableData.tabledata[0][key] }}</p>
+                        </div>
+                    </div>
+                </ion-card-content>
+            </ion-card>
+            
+            <ion-card>
+                <ion-card-header>
+                    <ion-card-title>Grade Items API</ion-card-title>
+                </ion-card-header>
+                <ion-card-content>
+                    <p><strong>Items Count:</strong> {{ rawGradeItems.length }}</p>
+                    <ion-item>
+                        <ion-label>Show Grade Items</ion-label>
+                        <ion-toggle [(ngModel)]="showGradeItems"></ion-toggle>
+                    </ion-item>
+                    <pre *ngIf="showGradeItems">{{ getJson(rawGradeItems.slice(0, 3)) }}</pre>
+                </ion-card-content>
+            </ion-card>
+        </div>
+    </core-loading>
+</ion-content>

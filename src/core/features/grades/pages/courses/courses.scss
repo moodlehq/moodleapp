@@ -1,0 +1,432 @@
+@use "theme/globals" as *;
+
+// ====================================
+// INHERIT PASTEL COLOR SYSTEM FROM COURSE PAGE
+// ====================================
+:host {
+    // Primary Pastel Blues & Turquoises
+    --pastel-sky: #B3EBF2;
+    --pastel-sky-light: #C8F0F7;
+    --pastel-sky-dark: #9FE5ED;
+    --pastel-turquoise: #8DDCDC;
+    --pastel-turquoise-light: #A8E6E6;
+    --pastel-turquoise-dark: #72D2D2;
+    --pastel-mint-blue: #98FBCB;
+    --pastel-mint-blue-light: #B0FDD8;
+    --pastel-mint-blue-dark: #80F9BE;
+
+    // Pastel Greens
+    --pastel-mint: #ADEBB3;
+    --pastel-mint-light: #C1F0C6;
+    --pastel-mint-dark: #99E6A0;
+    --pastel-sage: #BCE3C5;
+    --pastel-green: #80EF80;
+
+    // Soft Accent Colors
+    --pastel-lavender: #E6E6FA;
+    --pastel-periwinkle: #C5C5FF;
+    --pastel-peach: #FFDAC1;
+    --pastel-coral: #FFB5A7;
+    --pastel-yellow: #FFFD96;
+
+    // TEXT COLORS - NO BLACK!
+    --text-primary: #1A2332;
+    --text-secondary: #2C3E50;
+    --text-tertiary: #4A5568;
+    --text-muted: #718096;
+    --text-link: #2C5F66;
+    --text-on-pastel: #276749;
+    --text-on-dark-pastel: #1A4E52;
+
+    // Background Colors
+    --bg-base: #FAFBFC;
+    --bg-card: #FFFFFF;
+    --bg-pastel-overlay: rgba(179, 235, 242, 0.08);
+    --bg-interactive: rgba(152, 251, 203, 0.12);
+    --bg-hover: rgba(141, 220, 220, 0.15);
+
+    // Gradients
+    --gradient-header: linear-gradient(135deg, #B3EBF2 0%, #8DDCDC 50%, #98FBCB 100%);
+    --gradient-card: linear-gradient(135deg, rgba(176, 224, 230, 0.05) 0%, rgba(173, 235, 179, 0.05) 100%);
+    --gradient-grade-high: linear-gradient(135deg, #ADEBB3 0%, #80EF80 100%);
+    --gradient-grade-mid: linear-gradient(135deg, #B3EBF2 0%, #8DDCDC 100%);
+    --gradient-grade-low: linear-gradient(135deg, #FFDAC1 0%, #FFB5A7 100%);
+
+    // Shadows
+    --shadow-sm: 0 1px 2px rgba(44, 62, 80, 0.04), 0 1px 3px rgba(179, 235, 242, 0.08);
+    --shadow-md: 0 4px 6px rgba(44, 62, 80, 0.05), 0 2px 4px rgba(141, 220, 220, 0.1);
+    --shadow-lg: 0 10px 15px rgba(44, 62, 80, 0.06), 0 4px 6px rgba(152, 251, 203, 0.12);
+    --shadow-xl: 0 20px 25px rgba(44, 62, 80, 0.08), 0 10px 10px rgba(179, 235, 242, 0.15);
+
+    // Border Radius
+    --radius-sm: 8px;
+    --radius-md: 12px;
+    --radius-lg: 16px;
+    --radius-xl: 20px;
+    --radius-full: 9999px;
+
+    // Transitions
+    --transition-base: all 0.3s cubic-bezier(0.4, 0.0, 0.2, 1);
+    --transition-fast: all 0.15s cubic-bezier(0.4, 0.0, 0.2, 1);
+
+    // Borders
+    --border-light: 1px solid rgba(179, 235, 242, 0.2);
+    --border-medium: 1px solid rgba(141, 220, 220, 0.3);
+}
+
+// Dark Mode
+:host-context(:root.dark) {
+    --pastel-sky: #2A4A52;
+    --pastel-turquoise: #234545;
+    --pastel-mint-blue: #1F4A3A;
+    --bg-base: #0F1419;
+    --bg-card: #1A1F2A;
+    --text-primary: #E6F3FF;
+    --text-secondary: #C8F0F7;
+    --text-tertiary: #A8E6E6;
+    --text-muted: #8DDCDC;
+}
+
+// ====================================
+// HEADER - PASTEL GRADIENT
+// ====================================
+ion-header {
+    ion-toolbar {
+        --background: var(--gradient-header);
+        --color: var(--text-on-dark-pastel);
+        padding: 8px 0;
+        position: relative;
+        overflow: hidden;
+        
+        // Floating orb animation
+        &::before {
+            content: '';
+            position: absolute;
+            top: -40%;
+            right: -10%;
+            width: 150px;
+            height: 150px;
+            background: radial-gradient(circle at center, rgba(152, 251, 203, 0.2) 0%, transparent 60%);
+            border-radius: 50%;
+            filter: blur(25px);
+            animation: floatSoft 10s ease-in-out infinite;
+        }
+        
+        ion-title {
+            position: relative;
+            z-index: 2;
+            
+            h1 {
+                font-size: 1.5rem;
+                font-weight: 700;
+                color: var(--text-on-dark-pastel);
+                margin: 0;
+                letter-spacing: -0.5px;
+                text-shadow: 0 2px 4px rgba(26, 35, 50, 0.08);
+            }
+        }
+        
+        ion-buttons {
+            position: relative;
+            z-index: 2;
+            
+            ion-back-button {
+                --color: var(--text-on-dark-pastel);
+            }
+        }
+    }
+}
+
+// ====================================
+// CONTENT AREA
+// ====================================
+ion-content {
+    --background: var(--bg-base);
+}
+
+// ====================================
+// COURSE LIST - PASTEL CARDS
+// ====================================
+ion-list {
+    background: transparent;
+    padding: 16px;
+    
+    ion-item {
+        --background: var(--bg-card);
+        --border-color: transparent;
+        --padding-start: 24px;
+        --padding-end: 20px;
+        --inner-padding-end: 0;
+        --min-height: 80px;
+        margin-bottom: 16px;
+        border-radius: var(--radius-xl);
+        box-shadow: var(--shadow-md);
+        overflow: hidden;
+        transition: var(--transition-base);
+        border: var(--border-light);
+        position: relative;
+        
+        &::part(native) {
+            background: var(--bg-card);
+            border-radius: var(--radius-xl);
+            position: relative;
+            overflow: hidden;
+            
+            // Gradient overlay on hover
+            &::before {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: var(--gradient-card);
+                opacity: 0;
+                transition: opacity 0.3s ease;
+            }
+        }
+        
+        &:hover {
+            transform: translateY(-3px) translateX(2px);
+            box-shadow: var(--shadow-xl);
+            border-color: rgba(152, 251, 203, 0.3);
+            
+            &::part(native)::before {
+                opacity: 1;
+            }
+            
+            ion-badge {
+                transform: scale(1.05);
+            }
+        }
+        
+        &:active {
+            transform: translateY(-1px);
+        }
+        
+        &[aria-current="page"] {
+            border-color: var(--pastel-mint-blue);
+            box-shadow: 0 0 0 3px rgba(152, 251, 203, 0.15), var(--shadow-md);
+            
+            &::after {
+                content: '';
+                position: absolute;
+                left: 0;
+                top: 0;
+                bottom: 0;
+                width: 4px;
+                background: var(--gradient-grade-high);
+            }
+        }
+        
+        ion-label {
+            position: relative;
+            z-index: 2;
+            
+            .item-heading {
+                font-size: 1.0625rem;
+                font-weight: 600;
+                color: var(--text-secondary);
+                line-height: 1.4;
+                margin: 0;
+                letter-spacing: -0.25px;
+                
+                core-format-text {
+                    display: block;
+                }
+            }
+        }
+        
+        // Grade badge styling
+        ion-badge {
+            --background: transparent;
+            --color: var(--text-primary);
+            font-size: 1.125rem;
+            font-weight: 700;
+            padding: 8px 16px;
+            border-radius: var(--radius-full);
+            min-width: 60px;
+            text-align: center;
+            transition: var(--transition-base);
+            letter-spacing: -0.5px;
+            position: relative;
+            z-index: 2;
+            
+            // Grade-based backgrounds
+            &:has-text("A") {
+                background: var(--gradient-grade-high);
+                color: var(--text-on-pastel);
+                box-shadow: 0 2px 8px rgba(173, 235, 179, 0.3);
+            }
+            
+            &:has-text("B") {
+                background: var(--gradient-grade-mid);
+                color: var(--text-on-dark-pastel);
+                box-shadow: 0 2px 8px rgba(179, 235, 242, 0.3);
+            }
+            
+            &:has-text("C") {
+                background: linear-gradient(135deg, var(--pastel-yellow) 0%, var(--pastel-peach) 100%);
+                color: #8B6F00;
+                box-shadow: 0 2px 8px rgba(255, 253, 150, 0.3);
+            }
+            
+            &:has-text("D"), &:has-text("F") {
+                background: var(--gradient-grade-low);
+                color: #BF6000;
+                box-shadow: 0 2px 8px rgba(255, 181, 167, 0.3);
+            }
+            
+            // Default for numeric grades
+            &[color="light"] {
+                background: linear-gradient(135deg, var(--pastel-powder) 0%, var(--pastel-sky) 100%);
+                color: var(--text-on-dark-pastel);
+                box-shadow: 0 2px 8px rgba(176, 224, 230, 0.3);
+            }
+        }
+        
+        // Detail arrow
+        ion-icon[slot="end"] {
+            color: var(--text-muted);
+            font-size: 1.25rem;
+        }
+    }
+}
+
+// ====================================
+// PARENT VIEW - MENTEE GROUPS
+// ====================================
+ion-item-group {
+    margin-bottom: 24px;
+    
+    ion-item-divider {
+        --background: var(--gradient-header);
+        --color: var(--text-on-dark-pastel);
+        --padding-top: 16px;
+        --padding-bottom: 16px;
+        --padding-start: 20px;
+        border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+        margin-bottom: 8px;
+        position: relative;
+        overflow: hidden;
+        
+        &::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 20px;
+            right: 20px;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+        }
+        
+        ion-label {
+            h2 {
+                font-size: 1.25rem;
+                font-weight: 700;
+                margin: 0 0 4px 0;
+                letter-spacing: -0.5px;
+            }
+            
+            p {
+                font-size: 0.9375rem;
+                opacity: 0.85;
+                margin: 0;
+                font-weight: 500;
+            }
+        }
+    }
+    
+    // First item in group
+    ion-item:first-of-type {
+        border-top-left-radius: 0;
+        border-top-right-radius: 0;
+    }
+    
+    // Last item in group
+    ion-item:last-child {
+        margin-bottom: 0;
+    }
+}
+
+// ====================================
+// EMPTY STATES
+// ====================================
+core-empty-box {
+    --empty-box-icon-color: var(--pastel-turquoise);
+    --empty-box-text-color: var(--text-tertiary);
+    --empty-box-background: var(--bg-card);
+    margin: 32px 16px;
+    
+    &::part(container) {
+        background: var(--gradient-card);
+        border-radius: var(--radius-xl);
+        box-shadow: var(--shadow-md);
+        border: var(--border-light);
+        padding: 48px 24px;
+    }
+}
+
+// ====================================
+// LOADING STATE
+// ====================================
+core-loading {
+    .core-loading-container {
+        background: rgba(250, 251, 252, 0.95);
+        backdrop-filter: blur(10px);
+        
+        ion-spinner {
+            --color: var(--pastel-turquoise);
+        }
+        
+        .core-loading-message {
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+    }
+}
+
+// ====================================
+// ANIMATIONS
+// ====================================
+@keyframes floatSoft {
+    0%, 100% {
+        transform: translateY(0) scale(1);
+    }
+    50% {
+        transform: translateY(-15px) scale(1.03);
+    }
+}
+
+// ====================================
+// RESPONSIVE DESIGN
+// ====================================
+@include media-breakpoint-up(md) {
+    ion-list {
+        padding: 24px;
+        max-width: 800px;
+        margin: 0 auto;
+        
+        ion-item {
+            --min-height: 88px;
+            margin-bottom: 20px;
+            
+            ion-label .item-heading {
+                font-size: 1.125rem;
+            }
+            
+            ion-badge {
+                font-size: 1.25rem;
+                padding: 10px 20px;
+                min-width: 70px;
+            }
+        }
+    }
+}
+
+@include media-breakpoint-up(lg) {
+    ion-list {
+        padding: 32px;
+        max-width: 960px;
+    }
+}

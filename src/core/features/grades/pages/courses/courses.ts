@@ -24,6 +24,8 @@ import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreUtils } from '@services/utils/utils';
 import { Translate } from '@singletons';
+import { CoreUserParent } from '@features/user/services/parent';
+import { CoreCourses } from '@features/courses/services/courses';
 
 /**
  * Page that displays courses grades (main menu option).
@@ -31,10 +33,16 @@ import { Translate } from '@singletons';
 @Component({
     selector: 'page-core-grades-courses',
     templateUrl: 'courses.html',
+    styleUrls: ['courses.scss'],
 })
 export class CoreGradesCoursesPage implements OnDestroy, AfterViewInit {
 
     courses: CoreGradesCoursesManager;
+    isParentView = false;
+    mentees: any[] = [];
+    selectedMenteeId?: number;
+    menteeCourses: { [menteeId: number]: any[] } = {};
+    parentDataLoaded = false;
 
     @ViewChild(CoreSplitViewComponent) splitView!: CoreSplitViewComponent;
 
@@ -48,16 +56,32 @@ export class CoreGradesCoursesPage implements OnDestroy, AfterViewInit {
      * @inheritdoc
      */
     async ngAfterViewInit(): Promise<void> {
+        // Check if user is a parent
+        this.isParentView = await CoreUserParent.isParentUser();
+        
+        if (this.isParentView) {
+            // Get mentees for parent view
+            this.mentees = await CoreUserParent.getMentees();
+            this.selectedMenteeId = await CoreUserParent.getSelectedMentee() || undefined;
+            
+            console.log('[Grades] Parent view detected with', this.mentees.length, 'mentees');
+        }
+
         await this.fetchInitialCourses();
 
-        this.courses.start(this.splitView);
+        // Only start the courses manager if not in parent view
+        if (!this.isParentView) {
+            this.courses.start(this.splitView);
+        }
     }
 
     /**
      * @inheritdoc
      */
     ngOnDestroy(): void {
-        this.courses.destroy();
+        if (!this.isParentView) {
+            this.courses.destroy();
+        }
     }
 
     /**
@@ -66,8 +90,20 @@ export class CoreGradesCoursesPage implements OnDestroy, AfterViewInit {
      * @param refresher Refresher.
      */
     async refreshCourses(refresher: HTMLIonRefresherElement): Promise<void> {
-        await CoreUtils.ignoreErrors(CoreGrades.invalidateCoursesGradesData());
-        await CoreUtils.ignoreErrors(this.courses.reload());
+        if (this.isParentView) {
+            // Invalidate cache for all mentees
+            const site = CoreSites.getCurrentSite();
+            if (site) {
+                for (const mentee of this.mentees) {
+                    const cacheKey = 'mmGrades:coursesgrades:mentee:' + mentee.id;
+                    await CoreUtils.ignoreErrors(site.invalidateWsCacheForKey(cacheKey));
+                }
+            }
+            await this.fetchAllMenteeCourses();
+        } else {
+            await CoreUtils.ignoreErrors(CoreGrades.invalidateCoursesGradesData());
+            await CoreUtils.ignoreErrors(this.courses.reload());
+        }
 
         refresher?.complete();
     }
@@ -77,10 +113,106 @@ export class CoreGradesCoursesPage implements OnDestroy, AfterViewInit {
      */
     private async fetchInitialCourses(): Promise<void> {
         try {
-            await this.courses.load();
+            if (this.isParentView && this.mentees.length > 0) {
+                // For parent view, fetch courses for each mentee
+                await this.fetchAllMenteeCourses();
+                this.parentDataLoaded = true;
+            } else {
+                await this.courses.load();
+            }
         } catch (error) {
             CoreDomUtils.showErrorModalDefault(error, 'Error loading courses');
         }
+    }
+
+    /**
+     * Fetch courses with grades for all mentees.
+     */
+    private async fetchAllMenteeCourses(): Promise<void> {
+        const site = CoreSites.getCurrentSite();
+        if (!site) {
+            return;
+        }
+
+        // Clear existing data
+        this.menteeCourses = {};
+
+        // Fetch courses for each mentee
+        const promises = this.mentees.map(async (mentee) => {
+            try {
+                // Check if the custom WS is available
+                const hasCustomWS = await site.wsAvailable('local_aspireparent_get_mentee_course_grades');
+                
+                if (hasCustomWS) {
+                    console.log('[Grades] Fetching course grades for mentee:', mentee.id);
+                    const response = await site.read<{ grades: any[] }>('local_aspireparent_get_mentee_course_grades', {
+                        menteeid: mentee.id
+                    });
+                    
+                    if (response.grades) {
+                        // Get course details for each grade
+                        const courseIds = response.grades.map(g => g.courseid);
+                        const courses = await CoreCourses.getCoursesByField('ids', courseIds.join(','), site.getId());
+                        
+                        // Merge grade data with course data
+                        const coursesWithGrades = response.grades.map(grade => {
+                            const course = courses.find(c => c.id === grade.courseid);
+                            return {
+                                ...course,
+                                courseid: grade.courseid,
+                                courseFullName: course?.fullname || 'Unknown Course',
+                                grade: grade.grade,
+                                rawgrade: grade.rawgrade,
+                                rank: grade.rank
+                            };
+                        });
+                        
+                        this.menteeCourses[mentee.id] = coursesWithGrades;
+                        console.log(`[Grades] Found ${coursesWithGrades.length} courses for mentee ${mentee.id}`);
+                    }
+                } else {
+                    console.warn('[Grades] Custom WS not available, using fallback');
+                    // Fallback: get mentee courses and then grades
+                    const courses = await CoreCourses.getUserCourses(false, site.getId());
+                    this.menteeCourses[mentee.id] = courses.map(course => ({
+                        ...course,
+                        courseid: course.id,
+                        courseFullName: course.fullname,
+                        grade: '-',
+                        rawgrade: ''
+                    }));
+                }
+            } catch (error) {
+                console.error('[Grades] Error fetching courses for mentee', mentee.id, error);
+                this.menteeCourses[mentee.id] = [];
+            }
+        });
+
+        await Promise.all(promises);
+    }
+
+    /**
+     * Get courses for a specific mentee.
+     *
+     * @param menteeId The mentee user ID.
+     * @returns List of courses with grades for the mentee.
+     */
+    getCoursesForMentee(menteeId: number): any[] {
+        return this.menteeCourses[menteeId] || [];
+    }
+
+    /**
+     * Select a course for a specific mentee.
+     *
+     * @param course The course to select.
+     * @param menteeId The mentee user ID.
+     */
+    async selectCourseForMentee(course: any, menteeId: number): Promise<void> {
+        // Set the selected mentee before navigating
+        await CoreUserParent.setSelectedMentee(menteeId);
+        
+        // Navigate to the course grades
+        this.courses.select(course);
     }
 
 }

@@ -1,122 +1,1555 @@
 @use "theme/globals" as *;
 
+// ====================================
+// PASTEL COLOR SYSTEM - GRADES REDESIGN
+// ====================================
 :host {
-    --icon-color: var(--gray-500);
-    --core-table-border-color: var(--stroke);
+    // Primary Pastel Blues & Turquoises (matching financial page)
+    --pastel-sky: #B3EBF2;
+    --pastel-sky-light: #C8F0F7;
+    --pastel-sky-dark: #9FE5ED;
+    --pastel-turquoise: #8DDCDC;
+    --pastel-turquoise-light: #A8E6E6;
+    --pastel-turquoise-dark: #72D2D2;
+    --pastel-mint-blue: #98FBCB;
+    --pastel-mint-blue-light: #B0FDD8;
+    --pastel-mint-blue-dark: #80F9BE;
+    --pastel-powder: #B0E0E6;
+    --pastel-powder-light: #C5E9ED;
+    --pastel-powder-dark: #9BD7DF;
+
+    // Pastel Greens for success states
+    --pastel-mint: #ADEBB3;
+    --pastel-mint-light: #C1F0C6;
+    --pastel-mint-dark: #99E6A0;
+    --pastel-sage: #BCE3C5;
+    --pastel-sage-light: #CDEBD4;
+    --pastel-sage-dark: #ABDBB6;
+    --pastel-green: #80EF80;
+    --pastel-green-light: #99F399;
+    --pastel-green-dark: #66EB66;
+
+    // Soft Accent Colors
+    --pastel-lavender: #E6E6FA;
+    --pastel-periwinkle: #C5C5FF;
+    --pastel-peach: #FFDAC1;
+    --pastel-coral: #FFB5A7;
+    --pastel-cream: #FFF5E1;
+    --pastel-yellow: #FFFD96;
+    --pastel-pink: #FFE1E6;
+
+    // TEXT COLORS - NO BLACK!
+    --text-primary: #1A2332; // Deep navy for main content
+    --text-secondary: #2C3E50; // Charcoal blue for headers
+    --text-tertiary: #4A5568; // Slate gray for descriptions
+    --text-muted: #718096; // Soft gray for less important
+    --text-link: #2C5F66; // Muted teal for links
+    --text-on-pastel: #276749; // Deep green for text on pastel backgrounds
+    --text-on-dark-pastel: #1A4E52; // Deeper teal for darker pastels
+
+    // Background Colors
+    --bg-base: #FAFBFC; // Off-white base
+    --bg-card: #FFFFFF; // Pure white for cards
+    --bg-pastel-overlay: rgba(179, 235, 242, 0.08); // Subtle pastel overlay
+    --bg-interactive: rgba(152, 251, 203, 0.12); // Interactive element bg
+    --bg-hover: rgba(141, 220, 220, 0.15); // Hover state bg
+
+    // Gradients - Soft and Subtle
+    --gradient-sky-mint: linear-gradient(135deg, #B3EBF2 0%, #ADEBB3 100%);
+    --gradient-turquoise-flow: linear-gradient(90deg, #8DDCDC 0%, #B3EBF2 50%, #98FBCB 100%);
+    --gradient-morning: linear-gradient(180deg, #E6F3FF 0%, #F0F9FF 100%);
+    --gradient-card: linear-gradient(135deg, rgba(176, 224, 230, 0.05) 0%, rgba(173, 235, 179, 0.05) 100%);
+    --gradient-header: linear-gradient(135deg, #B3EBF2 0%, #8DDCDC 50%, #98FBCB 100%);
+    --gradient-success: linear-gradient(135deg, #ADEBB3 0%, #80EF80 100%);
+    --gradient-warning: linear-gradient(135deg, #FFDAC1 0%, #FFB5A7 100%);
+
+    // Shadows - Soft and Colorful
+    --shadow-sm: 0 1px 2px rgba(44, 62, 80, 0.04), 0 1px 3px rgba(179, 235, 242, 0.08);
+    --shadow-md: 0 4px 6px rgba(44, 62, 80, 0.05), 0 2px 4px rgba(141, 220, 220, 0.1);
+    --shadow-lg: 0 10px 15px rgba(44, 62, 80, 0.06), 0 4px 6px rgba(152, 251, 203, 0.12);
+    --shadow-xl: 0 20px 25px rgba(44, 62, 80, 0.08), 0 10px 10px rgba(179, 235, 242, 0.15);
+    --shadow-glow: 0 0 20px rgba(152, 251, 203, 0.3);
+    --shadow-hover: 0 8px 16px rgba(44, 62, 80, 0.08), 0 4px 8px rgba(141, 220, 220, 0.15);
+
+    // Border Radius
+    --radius-sm: 8px;
+    --radius-md: 12px;
+    --radius-lg: 16px;
+    --radius-xl: 20px;
+    --radius-full: 9999px;
+
+    // Transitions
+    --transition-base: all 0.3s cubic-bezier(0.4, 0.0, 0.2, 1);
+    --transition-fast: all 0.15s cubic-bezier(0.4, 0.0, 0.2, 1);
+    --transition-slow: all 0.5s cubic-bezier(0.4, 0.0, 0.2, 1);
+
+    // Borders
+    --border-light: 1px solid rgba(179, 235, 242, 0.2);
+    --border-medium: 1px solid rgba(141, 220, 220, 0.3);
+    --border-focus: 2px solid rgba(152, 251, 203, 0.5);
+
+    // Grade specific colors
+    --grade-a-color: var(--pastel-mint);
+    --grade-b-color: var(--pastel-sky);
+    --grade-c-color: var(--pastel-yellow);
+    --grade-d-color: var(--pastel-peach);
+    --grade-f-color: var(--pastel-coral);
 }
 
+// Dark Mode Adjustments
 :host-context(:root.dark) {
-    --icon-color: var(--gray-200);
+    // Darker pastels for dark mode
+    --pastel-sky: #2A4A52;
+    --pastel-turquoise: #234545;
+    --pastel-mint-blue: #1F4A3A;
+    --bg-base: #0F1419;
+    --bg-card: #1A1F2A;
+    --text-primary: #E6F3FF;
+    --text-secondary: #C8F0F7;
+    --text-tertiary: #A8E6E6;
+    --text-muted: #8DDCDC;
+
+    // Adjusted shadows for dark mode
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3), 0 1px 3px rgba(179, 235, 242, 0.05);
+    --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.4), 0 2px 4px rgba(141, 220, 220, 0.08);
 }
 
+// ====================================
+// ION-CONTENT & BASE SETUP
+// ====================================
+ion-content {
+    --background: var(--bg-base);
+    
+    &::part(scroll) {
+        overflow-y: auto !important;
+    }
+}
+
+// ====================================
+// GRADES HEADER - PASTEL DESIGN
+// ====================================
+ion-header {
+    ion-toolbar {
+        --background: var(--gradient-header);
+        --color: var(--text-on-dark-pastel);
+        padding: 8px 0;
+        position: relative;
+        overflow: hidden;
+        
+        // Soft floating orb effect
+        &::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 200px;
+            height: 200px;
+            background: radial-gradient(circle at center, rgba(152, 251, 203, 0.15) 0%, transparent 60%);
+            border-radius: 50%;
+            filter: blur(30px);
+            animation: floatSoft 12s ease-in-out infinite;
+        }
+        
+        &::after {
+            content: '';
+            position: absolute;
+            bottom: -60%;
+            left: -15%;
+            width: 180px;
+            height: 180px;
+            background: radial-gradient(circle at center, rgba(189, 227, 197, 0.2) 0%, transparent 60%);
+            border-radius: 50%;
+            filter: blur(25px);
+            animation: floatSoft 15s ease-in-out infinite reverse;
+        }
+        
+        ion-title {
+            position: relative;
+            z-index: 2;
+            
+            h1 {
+                font-size: 1.5rem;
+                font-weight: 700;
+                color: var(--text-on-dark-pastel);
+                margin: 0;
+                letter-spacing: -0.5px;
+                text-shadow: 0 2px 4px rgba(26, 35, 50, 0.08);
+            }
+            
+            .aspire-mentee-indicator {
+                font-size: 0.875rem;
+                color: rgba(26, 78, 82, 0.85);
+                margin: 4px 0 0 0;
+                display: flex;
+                align-items: center;
+                gap: 6px;
+                font-weight: 500;
+                
+                ion-icon {
+                    font-size: 1rem;
+                }
+            }
+        }
+        
+        ion-buttons {
+            position: relative;
+            z-index: 2;
+            
+            ion-back-button {
+                --color: var(--text-on-dark-pastel);
+            }
+        }
+    }
+}
+
+// ====================================
+// GRADES CONTAINER & TABLE REDESIGN
+// ====================================
+.core-grades-container {
+    padding: 24px 16px;
+    min-height: 400px;
+    width: 100%;
+    overflow: visible;
+}
+
+// Grades table with pastel card design
 table.core-table.core-grades-table {
     width: 100%;
-    margin: 0px;
-
-    thead #gradeitem {
-        @include padding(null, null, null, 24px);
+    margin: 0;
+    background: var(--bg-card);
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-lg);
+    overflow: hidden;
+    border-collapse: separate;
+    border-spacing: 0;
+    border: var(--border-light);
+    transition: var(--transition-base);
+    
+    &:hover {
+        box-shadow: var(--shadow-xl);
+        transform: translateY(-2px);
     }
 
-    tbody tr.core-bold th {
-      font-weight: inherit;
+    // Table header with gradient
+    thead {
+        background: var(--gradient-turquoise-flow);
+        
+        tr {
+            th {
+                padding: 20px 16px;
+                font-size: 0.875rem;
+                font-weight: 700;
+                text-transform: uppercase;
+                letter-spacing: 1.2px;
+                color: var(--text-on-dark-pastel);
+                border-bottom: 2px solid rgba(255, 255, 255, 0.15);
+                position: relative;
+                
+                &:first-child {
+                    padding-left: 24px;
+                }
+                
+                &:last-child {
+                    padding-right: 24px;
+                }
+                
+                // Shimmer effect on header
+                &::after {
+                    content: '';
+                    position: absolute;
+                    top: 0;
+                    left: 0;
+                    right: 0;
+                    bottom: 0;
+                    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+                    animation: shimmerSoft 3s infinite;
+                }
+            }
+            
+            #gradeitem {
+                padding-left: 24px;
+                text-align: left;
+            }
+        }
     }
 
-    tbody #gradeitem {
-        @include padding(null, null, null, 4px);
+    // Table body styling
+    tbody {
+        tr {
+            visibility: visible !important;
+            opacity: 1 !important;
+            display: table-row !important;
+            transition: var(--transition-fast);
+            border-bottom: var(--border-light);
+            position: relative;
+            
+            &:hover {
+                background: var(--bg-pastel-overlay);
+                
+                td, th {
+                    color: var(--text-primary);
+                }
+            }
+            
+            &.core-bold {
+                background: var(--gradient-card);
+                
+                th {
+                    font-weight: 600;
+                    color: var(--text-secondary);
+                }
+            }
+            
+            &.dimmed_text {
+                opacity: 0.7;
+            }
+            
+            &:last-child {
+                border-bottom: none;
+            }
+        }
     }
 
+    // Grade item cells with icons
     th, td {
-        @include padding(8px, 8px, 8px, 0px);
-        vertical-align: top;
+        padding: 16px 12px;
+        vertical-align: middle;
+        color: var(--text-tertiary);
+        font-size: 0.9375rem;
+        
+        &:first-child {
+            padding-left: 24px;
+        }
+        
+        &:last-child {
+            padding-right: 24px;
+        }
     }
 
     .core-grades-table-gradeitem {
-        @include padding(null, null, null, 4px);
-
+        padding-left: 4px;
+        
         &.column-itemname {
-            @include padding(null, null, null, 0);
+            padding-left: 0;
         }
-
-        img {
-            width: 16px;
-            height: 16px;
+        
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        font-weight: 600;
+        color: var(--text-secondary);
+        
+        // Module icons with pastel backgrounds
+        img, core-mod-icon {
+            width: 32px;
+            height: 32px;
+            min-width: 32px;
+            min-height: 32px;
+            border-radius: var(--radius-sm);
+            object-fit: contain;
+            padding: 6px;
+            background: var(--bg-interactive);
+            transition: var(--transition-base);
         }
-
-        core-mod-icon {
-            --module-icon-padding: 0px;
-            --module-legacy-icon-padding: 0px;
-            --module-icon-size: 16px;
-            --module-legacy-icon-size: 16px;
-        }
-
+        
         ion-icon {
-            color: var(--icon-color);
-        }
-
-        span {
-            @include margin(null, null, null, 4px);
-        }
-
-        .expandable-status-icon {
-            font-size: var(--text-size);
-            @include margin-horizontal(0, 2px);
-            @include core-transition(transform, 200ms);
-
-            &.expandable-status-icon-expanded {
-                transform: var(--rotate-expandable);
+            font-size: 1.25rem;
+            color: var(--text-link);
+            width: 32px;
+            height: 32px;
+            min-width: 32px;
+            min-height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--bg-interactive);
+            border-radius: var(--radius-sm);
+            transition: var(--transition-base);
+            
+            &.expandable-status-icon {
+                font-size: 0.875rem;
+                background: transparent;
+                color: var(--text-muted);
+                width: auto;
+                height: auto;
+                min-width: auto;
+                min-height: auto;
+                transition: transform 0.3s ease;
+                
+                &.expandable-status-icon-expanded {
+                    transform: rotate(90deg);
+                }
             }
         }
-
-    }
-
-    .core-grades-table-feedback {
-        @include padding(null, null, null, 4px);
-
-        .no-overflow {
-            overflow: auto;
+        
+        span {
+            flex: 1;
+            letter-spacing: -0.25px;
         }
-
+        
+        &:hover {
+            img, core-mod-icon, ion-icon:not(.expandable-status-icon) {
+                transform: scale(1.1);
+                background: var(--bg-hover);
+                box-shadow: var(--shadow-md);
+            }
+        }
     }
 
+    // Grade cells with special styling
     .core-grades-table-grade {
+        font-weight: 700;
+        font-size: 1.0625rem;
+        letter-spacing: -0.5px;
+        
         ion-icon {
-            @include padding(null, 4px, null, null);
+            padding-right: 8px;
+            font-size: 1.125rem;
+            
+            &[name*="check"] {
+                color: var(--pastel-mint-dark);
+            }
+            
+            &[name*="xmark"], &[name*="times"] {
+                color: var(--pastel-coral);
+            }
+        }
+        
+        // Grade success/fail colors
+        &.text-success {
+            color: var(--text-on-pastel);
+            
+            span {
+                background: linear-gradient(135deg, var(--pastel-mint) 0%, var(--pastel-mint-light) 100%);
+                padding: 4px 12px;
+                border-radius: var(--radius-full);
+                display: inline-block;
+                box-shadow: 0 2px 6px rgba(173, 235, 179, 0.3);
+            }
+        }
+        
+        &.text-danger {
+            color: #C62828;
+            
+            span {
+                background: linear-gradient(135deg, var(--pastel-coral) 0%, var(--pastel-peach) 100%);
+                padding: 4px 12px;
+                border-radius: var(--radius-full);
+                display: inline-block;
+                box-shadow: 0 2px 6px rgba(255, 181, 167, 0.3);
+            }
         }
     }
-
+    
+    // Percentage and range columns
+    .core-grades-table-percentage,
+    .core-grades-table-range {
+        font-weight: 500;
+        color: var(--text-tertiary);
+        font-size: 0.9375rem;
+    }
+    
+    // Weight column
+    .core-grades-table-weight {
+        font-weight: 600;
+        color: var(--text-muted);
+        font-size: 0.875rem;
+    }
+    
+    // Feedback column
+    .core-grades-table-feedback {
+        .no-overflow {
+            overflow: visible;
+            max-width: 300px;
+        }
+        
+        core-format-text {
+            font-size: 0.875rem;
+            color: var(--text-tertiary);
+            line-height: 1.5;
+        }
+    }
+    
+    // Leader cells
     .core-grades-table-leader {
-        width: 0;
+        width: 4px;
+        background: var(--gradient-turquoise-flow);
+        padding: 0;
+        border-radius: 2px;
+    }
+    
+    // Category rows
+    .core-grades-table-category {
+        width: 20px;
+        background: var(--bg-pastel-overlay);
+        border-right: 2px solid var(--pastel-sky-light);
     }
 
+    // Clickable grade rows
     .core-grades-grade-clickable {
         cursor: pointer;
+        
         &:hover {
-            td, th, th[aria-current="page"] {
-                background-color: var(--cell-hover);
+            background: var(--bg-hover);
+            
+            td, th {
+                background-color: transparent;
             }
         }
-
+        
         th, td {
-            height: var(--a11y-sizing-minTargetSize);
+            height: 56px;
             vertical-align: middle;
         }
     }
 
-    ion-list, ion-item::part(native) {
-        background-color: transparent;
-    }
-
+    // Summary mode adjustments
     &.summary .ion-hide-md-down {
         display: none;
         opacity: 0;
     }
-
 }
 
-@include media-breakpoint-down(md) {
-
-    .core-grades-table td {
-        font-size: 0.85em;
+// ====================================
+// EXPANDED ROW DETAILS - PASTEL CARDS
+// ====================================
+tbody tr {
+    td[colspan] {
+        padding: 0;
+        background: var(--bg-pastel-overlay);
+        
+        ion-list {
+            background: transparent;
+            padding: 16px;
+            
+            ion-item {
+                --background: var(--bg-card);
+                --border-radius: var(--radius-lg);
+                --padding-start: 20px;
+                --padding-end: 20px;
+                --inner-padding-end: 0;
+                margin-bottom: 12px;
+                box-shadow: var(--shadow-sm);
+                transition: var(--transition-fast);
+                overflow: hidden;
+                
+                &::part(native) {
+                    background: var(--bg-card);
+                    border-radius: var(--radius-lg);
+                    border: var(--border-light);
+                }
+                
+                &:hover {
+                    transform: translateX(4px);
+                    box-shadow: var(--shadow-md);
+                    
+                    &::part(native) {
+                        border-color: var(--pastel-mint-blue);
+                    }
+                }
+                
+                &:last-child {
+                    margin-bottom: 0;
+                }
+                
+                ion-label {
+                    padding: 12px 0;
+                    
+                    .item-heading {
+                        font-size: 0.8125rem;
+                        font-weight: 700;
+                        text-transform: uppercase;
+                        letter-spacing: 1px;
+                        color: var(--text-muted);
+                        margin-bottom: 6px;
+                    }
+                    
+                    p {
+                        font-size: 1.0625rem;
+                        font-weight: 600;
+                        color: var(--text-secondary);
+                        margin: 0;
+                        letter-spacing: -0.25px;
+                        
+                        // Special styling for grade values
+                        &:has(.text-success) {
+                            color: var(--text-on-pastel);
+                        }
+                        
+                        &:has(.text-danger) {
+                            color: #C62828;
+                        }
+                    }
+                }
+            }
+        }
     }
+}
 
+// ====================================
+// EMPTY STATE - PASTEL DESIGN
+// ====================================
+core-empty-box {
+    --empty-box-icon-color: var(--pastel-turquoise);
+    --empty-box-text-color: var(--text-tertiary);
+    --empty-box-background: var(--bg-card);
+    padding: 60px 20px;
+    
+    &::part(container) {
+        background: var(--gradient-card);
+        border-radius: var(--radius-xl);
+        box-shadow: var(--shadow-md);
+        border: var(--border-light);
+    }
+}
+
+// ====================================
+// LOADING STATES - SOFT ANIMATION
+// ====================================
+core-loading {
+    .core-loading-container {
+        background: rgba(250, 251, 252, 0.95);
+        backdrop-filter: blur(10px);
+        
+        ion-spinner {
+            --color: var(--pastel-turquoise);
+        }
+        
+        .core-loading-message {
+            color: var(--text-secondary);
+            font-weight: 500;
+            letter-spacing: -0.25px;
+        }
+    }
+}
+
+// ====================================
+// ANIMATIONS
+// ====================================
+@keyframes floatSoft {
+    0%, 100% {
+        transform: translateY(0) scale(1);
+    }
+    50% {
+        transform: translateY(-20px) scale(1.05);
+    }
+}
+
+@keyframes shimmerSoft {
+    0% {
+        transform: translateX(-100%);
+    }
+    100% {
+        transform: translateX(100%);
+    }
+}
+
+// ====================================
+// RESPONSIVE DESIGN
+// ====================================
+@include media-breakpoint-down(md) {
+    .core-grades-container {
+        padding: 16px 8px;
+    }
+    
+    table.core-table.core-grades-table {
+        font-size: 0.875rem;
+        
+        thead tr th {
+            padding: 16px 8px;
+            font-size: 0.75rem;
+        }
+        
+        tbody {
+            th, td {
+                padding: 12px 8px;
+                font-size: 0.875rem;
+                
+                &:first-child {
+                    padding-left: 16px;
+                }
+                
+                &:last-child {
+                    padding-right: 16px;
+                }
+            }
+        }
+        
+        .core-grades-table-gradeitem {
+            img, core-mod-icon, ion-icon:not(.expandable-status-icon) {
+                width: 28px;
+                height: 28px;
+                min-width: 28px;
+                min-height: 28px;
+            }
+        }
+    }
+}
+
+@include media-breakpoint-up(md) {
+    .core-grades-container {
+        padding: 32px 24px;
+    }
+    
+    table.core-table.core-grades-table {
+        thead tr th {
+            padding: 24px 20px;
+        }
+        
+        tbody {
+            th, td {
+                padding: 20px 16px;
+            }
+        }
+    }
+}
+
+@include media-breakpoint-up(lg) {
+    .core-grades-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 40px 32px;
+    }
+}
+
+// ====================================
+// GRADES DASHBOARD - OVERVIEW CARDS
+// ====================================
+.grades-dashboard {
+    padding: 0 16px 24px;
+    
+    .grade-summary-cards {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 16px;
+        margin-bottom: 24px;
+        
+        @include media-breakpoint-up(md) {
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+        }
+        
+        .summary-card {
+            background: var(--bg-card);
+            border-radius: var(--radius-xl);
+            padding: 24px;
+            box-shadow: var(--shadow-md);
+            border: var(--border-light);
+            position: relative;
+            overflow: hidden;
+            transition: var(--transition-base);
+            
+            &:hover {
+                transform: translateY(-3px);
+                box-shadow: var(--shadow-xl);
+                border-color: rgba(152, 251, 203, 0.3);
+            }
+            
+            .card-icon {
+                width: 56px;
+                height: 56px;
+                border-radius: var(--radius-lg);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                margin-bottom: 16px;
+                position: relative;
+                
+                ion-icon {
+                    font-size: 1.75rem;
+                    color: var(--text-on-dark-pastel);
+                }
+            }
+            
+            .card-content {
+                position: relative;
+                z-index: 2;
+                
+                h3 {
+                    font-size: 0.875rem;
+                    font-weight: 600;
+                    text-transform: uppercase;
+                    letter-spacing: 0.75px;
+                    color: var(--text-muted);
+                    margin: 0 0 12px 0;
+                }
+                
+                .grade-display {
+                    display: flex;
+                    align-items: baseline;
+                    gap: 4px;
+                    margin-bottom: 8px;
+                    
+                    .grade-value {
+                        font-size: 2.25rem;
+                        font-weight: 700;
+                        color: var(--text-secondary);
+                        letter-spacing: -1px;
+                    }
+                    
+                    .grade-max {
+                        font-size: 1.25rem;
+                        font-weight: 500;
+                        color: var(--text-tertiary);
+                    }
+                }
+                
+                .grade-percentage {
+                    font-size: 1.125rem;
+                    font-weight: 600;
+                    color: var(--text-on-pastel);
+                }
+                
+                .stat-value {
+                    font-size: 2.5rem;
+                    font-weight: 700;
+                    color: var(--text-secondary);
+                    letter-spacing: -1px;
+                    line-height: 1;
+                }
+                
+                .stat-label {
+                    font-size: 0.9375rem;
+                    color: var(--text-tertiary);
+                    font-weight: 500;
+                }
+                
+                .rank-display {
+                    display: flex;
+                    align-items: baseline;
+                    gap: 8px;
+                    
+                    .rank-value {
+                        font-size: 2.25rem;
+                        font-weight: 700;
+                        color: var(--text-secondary);
+                        letter-spacing: -0.5px;
+                    }
+                    
+                    .rank-total {
+                        font-size: 1rem;
+                        color: var(--text-tertiary);
+                        font-weight: 500;
+                    }
+                }
+            }
+            
+            &.overall-grade {
+                background: var(--gradient-card);
+                
+                .card-icon {
+                    background: var(--gradient-turquoise-flow);
+                }
+                
+                .progress-ring {
+                    position: absolute;
+                    right: 20px;
+                    top: 50%;
+                    transform: translateY(-50%);
+                    width: 100px;
+                    height: 100px;
+                    
+                    svg {
+                        width: 100%;
+                        height: 100%;
+                        transform: rotate(-90deg);
+                    }
+                    
+                    circle {
+                        transition: stroke-dashoffset 0.8s cubic-bezier(0.4, 0.0, 0.2, 1);
+                    }
+                }
+            }
+            
+            &.items-completed {
+                .card-icon {
+                    background: var(--gradient-sky-mint);
+                }
+            }
+            
+            &.class-rank {
+                .card-icon {
+                    background: var(--gradient-grade-high);
+                }
+            }
+        }
+    }
+    
+    // Grade Distribution Card
+    .grade-distribution-card {
+        background: var(--bg-card);
+        border-radius: var(--radius-xl);
+        padding: 24px;
+        box-shadow: var(--shadow-md);
+        border: var(--border-light);
+        margin-bottom: 24px;
+        
+        h3 {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            margin: 0 0 20px 0;
+            
+            ion-icon {
+                font-size: 1.5rem;
+                color: var(--text-link);
+            }
+        }
+        
+        .chart-container {
+            margin-bottom: 20px;
+        }
+        
+        .distribution-legend {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 12px;
+            
+            .legend-item {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                
+                .legend-color {
+                    width: 16px;
+                    height: 16px;
+                    border-radius: var(--radius-sm);
+                    flex-shrink: 0;
+                }
+                
+                .legend-label {
+                    font-size: 0.875rem;
+                    color: var(--text-tertiary);
+                    flex: 1;
+                }
+                
+                .legend-value {
+                    font-size: 0.875rem;
+                    font-weight: 600;
+                    color: var(--text-secondary);
+                }
+            }
+        }
+    }
+    
+    // Performance Trends Card
+    .performance-trends-card {
+        background: var(--bg-card);
+        border-radius: var(--radius-xl);
+        padding: 24px;
+        box-shadow: var(--shadow-md);
+        border: var(--border-light);
+        margin-bottom: 24px;
+        
+        h3 {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            margin: 0 0 20px 0;
+            
+            ion-icon {
+                font-size: 1.5rem;
+                color: var(--text-link);
+            }
+        }
+        
+        .trend-indicators {
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+            
+            .trend-item {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                padding: 8px 16px;
+                border-radius: var(--radius-full);
+                font-size: 0.875rem;
+                font-weight: 600;
+                
+                ion-icon {
+                    font-size: 1.25rem;
+                }
+                
+                &.improving {
+                    background: rgba(173, 235, 179, 0.15);
+                    color: var(--text-on-pastel);
+                    
+                    ion-icon {
+                        color: var(--pastel-mint-dark);
+                    }
+                }
+                
+                &.declining {
+                    background: rgba(255, 181, 167, 0.15);
+                    color: #C62828;
+                    
+                    ion-icon {
+                        color: var(--pastel-coral);
+                    }
+                }
+                
+                &.stable {
+                    background: rgba(179, 235, 242, 0.15);
+                    color: var(--text-link);
+                    
+                    ion-icon {
+                        color: var(--pastel-turquoise);
+                    }
+                }
+            }
+        }
+    }
+}
+
+// ====================================
+// VIEW TOGGLE
+// ====================================
+.view-toggle {
+    padding: 0 16px 20px;
+    
+    ion-segment {
+        --background: var(--bg-pastel-overlay);
+        border-radius: var(--radius-lg);
+        padding: 6px;
+        box-shadow: var(--shadow-md);
+        border: var(--border-light);
+        
+        ion-segment-button {
+            --color: var(--text-tertiary);
+            --color-checked: var(--text-on-pastel);
+            --background-checked: var(--pastel-mint-blue);
+            --border-radius: calc(var(--radius-lg) - 4px);
+            font-weight: 600;
+            transition: var(--transition-base);
+            min-height: 44px;
+            
+            ion-label {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                
+                ion-icon {
+                    font-size: 1.125rem;
+                }
+            }
+            
+            &.segment-button-checked {
+                box-shadow: var(--shadow-sm);
+            }
+        }
+    }
+}
+
+// ====================================
+// GROUPED VIEW
+// ====================================
+.grades-grouped-view {
+    padding: 0 16px;
+    
+    .category-group {
+        background: var(--bg-card);
+        border-radius: var(--radius-xl);
+        box-shadow: var(--shadow-md);
+        border: var(--border-light);
+        margin-bottom: 20px;
+        overflow: hidden;
+        transition: var(--transition-base);
+        
+        &:hover {
+            box-shadow: var(--shadow-lg);
+        }
+        
+        .category-header {
+            padding: 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: var(--gradient-card);
+            transition: var(--transition-fast);
+            
+            &:hover {
+                background: var(--bg-hover);
+            }
+            
+            .category-info {
+                display: flex;
+                align-items: center;
+                gap: 16px;
+                flex: 1;
+                
+                .category-icon {
+                    width: 56px;
+                    height: 56px;
+                    border-radius: var(--radius-lg);
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    background: var(--gradient-turquoise-flow);
+                    box-shadow: 0 4px 12px rgba(141, 220, 220, 0.3);
+                    
+                    ion-icon {
+                        font-size: 1.5rem;
+                        color: var(--text-on-dark-pastel);
+                    }
+                    
+                    &.icon-assignments {
+                        background: var(--gradient-sky-mint);
+                    }
+                    
+                    &.icon-quizzes {
+                        background: linear-gradient(135deg, var(--pastel-lavender) 0%, var(--pastel-periwinkle) 100%);
+                    }
+                }
+                
+                .category-details {
+                    h3 {
+                        font-size: 1.125rem;
+                        font-weight: 600;
+                        color: var(--text-secondary);
+                        margin: 0 0 4px 0;
+                    }
+                    
+                    p {
+                        font-size: 0.875rem;
+                        color: var(--text-muted);
+                        margin: 0;
+                    }
+                }
+            }
+            
+            .category-stats {
+                display: flex;
+                align-items: center;
+                gap: 20px;
+                
+                .category-grade {
+                    text-align: right;
+                    
+                    .grade {
+                        font-size: 1.5rem;
+                        font-weight: 700;
+                        color: var(--text-secondary);
+                    }
+                    
+                    .max {
+                        font-size: 1rem;
+                        color: var(--text-tertiary);
+                    }
+                }
+                
+                .category-percentage {
+                    font-size: 1.25rem;
+                    font-weight: 700;
+                    padding: 8px 16px;
+                    border-radius: var(--radius-full);
+                    
+                    &.grade-a {
+                        background: var(--grade-a-color);
+                        color: var(--text-on-pastel);
+                    }
+                    
+                    &.grade-b {
+                        background: var(--grade-b-color);
+                        color: var(--text-on-dark-pastel);
+                    }
+                    
+                    &.grade-c {
+                        background: var(--grade-c-color);
+                        color: #8B6F00;
+                    }
+                    
+                    &.grade-d {
+                        background: var(--grade-d-color);
+                        color: #BF6000;
+                    }
+                    
+                    &.grade-f {
+                        background: var(--grade-f-color);
+                        color: #C62828;
+                    }
+                }
+                
+                .expand-icon {
+                    font-size: 1.5rem;
+                    color: var(--text-tertiary);
+                    transition: transform 0.3s ease;
+                    
+                    &.expanded {
+                        transform: rotate(180deg);
+                    }
+                }
+            }
+        }
+        
+        .category-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s cubic-bezier(0.4, 0.0, 0.2, 1);
+            
+            &.expanded {
+                max-height: 2000px;
+            }
+            
+            .grade-items {
+                padding: 0 20px 20px;
+                
+                .grade-item {
+                    display: flex;
+                    align-items: center;
+                    gap: 16px;
+                    padding: 16px;
+                    background: var(--bg-pastel-overlay);
+                    border-radius: var(--radius-lg);
+                    margin-bottom: 12px;
+                    transition: var(--transition-fast);
+                    
+                    &:hover {
+                        background: var(--bg-hover);
+                        transform: translateX(4px);
+                    }
+                    
+                    &:last-child {
+                        margin-bottom: 0;
+                    }
+                    
+                    .item-icon {
+                        width: 40px;
+                        height: 40px;
+                        border-radius: var(--radius-md);
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        background: var(--bg-interactive);
+                        flex-shrink: 0;
+                        
+                        img {
+                            width: 24px;
+                            height: 24px;
+                            object-fit: contain;
+                        }
+                        
+                        ion-icon {
+                            font-size: 1.25rem;
+                            color: var(--text-link);
+                        }
+                    }
+                    
+                    .item-info {
+                        flex: 1;
+                        
+                        h4 {
+                            font-size: 1rem;
+                            font-weight: 600;
+                            color: var(--text-secondary);
+                            margin: 0 0 4px 0;
+                        }
+                        
+                        .item-date {
+                            font-size: 0.875rem;
+                            color: var(--text-muted);
+                            display: flex;
+                            align-items: center;
+                            gap: 4px;
+                            margin: 0;
+                            
+                            ion-icon {
+                                font-size: 0.875rem;
+                            }
+                        }
+                    }
+                    
+                    .item-grade {
+                        text-align: right;
+                        
+                        .grade-badge {
+                            display: inline-flex;
+                            align-items: center;
+                            gap: 6px;
+                            padding: 6px 14px;
+                            border-radius: var(--radius-full);
+                            font-size: 1rem;
+                            font-weight: 700;
+                            margin-bottom: 4px;
+                            
+                            &.grade-a {
+                                background: linear-gradient(135deg, var(--pastel-mint) 0%, var(--pastel-mint-light) 100%);
+                                color: var(--text-on-pastel);
+                                box-shadow: 0 2px 6px rgba(173, 235, 179, 0.3);
+                            }
+                            
+                            &.grade-b {
+                                background: linear-gradient(135deg, var(--pastel-sky) 0%, var(--pastel-sky-light) 100%);
+                                color: var(--text-on-dark-pastel);
+                                box-shadow: 0 2px 6px rgba(179, 235, 242, 0.3);
+                            }
+                            
+                            &.grade-c {
+                                background: linear-gradient(135deg, var(--pastel-yellow) 0%, var(--pastel-peach) 100%);
+                                color: #8B6F00;
+                                box-shadow: 0 2px 6px rgba(255, 253, 150, 0.3);
+                            }
+                            
+                            &.grade-d, &.grade-f {
+                                background: linear-gradient(135deg, var(--pastel-coral) 0%, var(--pastel-peach) 100%);
+                                color: #C62828;
+                                box-shadow: 0 2px 6px rgba(255, 181, 167, 0.3);
+                            }
+                        }
+                        
+                        .grade-details {
+                            display: flex;
+                            gap: 12px;
+                            font-size: 0.8125rem;
+                            color: var(--text-muted);
+                            
+                            .percentage {
+                                font-weight: 600;
+                            }
+                        }
+                    }
+                }
+            }
+            
+            .category-progress {
+                padding: 20px;
+                background: var(--bg-pastel-overlay);
+                border-top: var(--border-light);
+                
+                .progress-info {
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                    margin-bottom: 12px;
+                    font-size: 0.875rem;
+                    color: var(--text-tertiary);
+                }
+                
+                .progress-bar {
+                    height: 8px;
+                    background: rgba(179, 235, 242, 0.2);
+                    border-radius: var(--radius-full);
+                    overflow: hidden;
+                    
+                    .progress-fill {
+                        height: 100%;
+                        background: var(--gradient-turquoise-flow);
+                        border-radius: var(--radius-full);
+                        transition: width 0.8s cubic-bezier(0.4, 0.0, 0.2, 1);
+                        position: relative;
+                        
+                        &::after {
+                            content: '';
+                            position: absolute;
+                            top: 0;
+                            left: 0;
+                            right: 0;
+                            bottom: 0;
+                            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+                            animation: shimmerSoft 2.5s infinite;
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+// ====================================
+// TIMELINE VIEW
+// ====================================
+.grades-timeline-view {
+    padding: 0 16px;
+    
+    .timeline-container {
+        position: relative;
+        
+        &::before {
+            content: '';
+            position: absolute;
+            left: 31px;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: var(--border-light);
+        }
+        
+        .timeline-month {
+            margin-bottom: 32px;
+            
+            .month-header {
+                font-size: 1.125rem;
+                font-weight: 700;
+                color: var(--text-secondary);
+                margin: 0 0 16px 0;
+                padding-left: 56px;
+                position: relative;
+                
+                &::before {
+                    content: '';
+                    position: absolute;
+                    left: 24px;
+                    top: 50%;
+                    transform: translateY(-50%);
+                    width: 16px;
+                    height: 16px;
+                    background: var(--gradient-turquoise-flow);
+                    border-radius: 50%;
+                    box-shadow: 0 0 0 4px rgba(141, 220, 220, 0.2);
+                }
+            }
+            
+            .timeline-items {
+                .timeline-item {
+                    display: flex;
+                    align-items: flex-start;
+                    gap: 16px;
+                    margin-bottom: 20px;
+                    position: relative;
+                    
+                    .timeline-date {
+                        width: 48px;
+                        text-align: center;
+                        flex-shrink: 0;
+                        
+                        .day {
+                            font-size: 1.5rem;
+                            font-weight: 700;
+                            color: var(--text-secondary);
+                            display: block;
+                            line-height: 1;
+                        }
+                        
+                        .weekday {
+                            font-size: 0.75rem;
+                            color: var(--text-muted);
+                            text-transform: uppercase;
+                        }
+                    }
+                    
+                    .timeline-content {
+                        flex: 1;
+                        background: var(--bg-card);
+                        border-radius: var(--radius-lg);
+                        padding: 16px 20px;
+                        box-shadow: var(--shadow-sm);
+                        border: var(--border-light);
+                        transition: var(--transition-fast);
+                        
+                        &:hover {
+                            box-shadow: var(--shadow-md);
+                            transform: translateX(4px);
+                        }
+                        
+                        .item-header {
+                            display: flex;
+                            align-items: center;
+                            gap: 8px;
+                            margin-bottom: 8px;
+                            
+                            ion-icon {
+                                font-size: 1.125rem;
+                                color: var(--text-link);
+                            }
+                            
+                            h4 {
+                                font-size: 1rem;
+                                font-weight: 600;
+                                color: var(--text-secondary);
+                                margin: 0;
+                            }
+                        }
+                        
+                        .item-grade {
+                            display: flex;
+                            align-items: center;
+                            gap: 12px;
+                            
+                            .grade-value {
+                                font-size: 1.125rem;
+                                font-weight: 700;
+                                color: var(--text-primary);
+                            }
+                            
+                            .grade-percentage {
+                                font-size: 0.875rem;
+                                font-weight: 600;
+                                padding: 4px 10px;
+                                background: var(--bg-pastel-overlay);
+                                border-radius: var(--radius-full);
+                                color: var(--text-on-pastel);
+                            }
+                        }
+                    }
+                    
+                    .timeline-connector {
+                        position: absolute;
+                        left: 24px;
+                        top: 12px;
+                        width: 16px;
+                        height: 16px;
+                        background: var(--bg-card);
+                        border: 2px solid var(--pastel-turquoise);
+                        border-radius: 50%;
+                        z-index: 1;
+                        
+                        &::after {
+                            content: '';
+                            position: absolute;
+                            left: 50%;
+                            top: 50%;
+                            transform: translate(-50%, -50%);
+                            width: 6px;
+                            height: 6px;
+                            background: var(--pastel-turquoise);
+                            border-radius: 50%;
+                        }
+                    }
+                    
+                    &.type-manual .timeline-connector {
+                        border-color: var(--pastel-mint);
+                        
+                        &::after {
+                            background: var(--pastel-mint);
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+// ====================================
+// UTILITY CLASSES
+// ====================================
+.text-grade-a {
+    color: var(--text-on-pastel);
+    background: var(--grade-a-color);
+}
+
+.text-grade-b {
+    color: var(--text-on-dark-pastel);
+    background: var(--grade-b-color);
+}
+
+.text-grade-c {
+    color: #8B6F00;
+    background: var(--grade-c-color);
+}
+
+.text-grade-d {
+    color: #BF6000;
+    background: var(--grade-d-color);
+}
+
+.text-grade-f {
+    color: #C62828;
+    background: var(--grade-f-color);
 }
