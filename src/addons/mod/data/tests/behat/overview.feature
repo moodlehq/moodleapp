@@ -68,69 +68,76 @@ Feature: Activities overview for database activity
       | data1    | teacher1 | Teacher entry         | Approved         | 1        |
       | data2    | teacher1 | Entry no comments     | Approved         | 1        |
 
-  # TODO: Uncomment when MDL-86185 is fixed.
-  # Scenario: Students can see relevant columns in the database activity overview
-  #   # Add a comment to test the values.
-  #   Given I am on the "Database activity" "data activity" page logged in as student1
-  #   And I select "Single view" from the "jump" singleselect
-  #   And I click on "Comments (0)" "link"
-  #   And I set the following fields to these values:
-  #     | Comment        | Commenting the entry |
-  #   And I click on "Save comment" "link"
-  #   And I entered the course "Course 1" as "student1" in the app
+  Scenario: The data overview report should generate log events
+    Given I entered the course "Course 1" as "student1" in the app
+    When I press "Activities" in the app
+    And I press "Databases" in the app
+    Then the following events should have been logged for "student1" in the app:
+      | name                                               | course   |
+      | \core\event\course_overview_viewed                 | Course 1 |
+      | \mod_data\event\course_module_instance_list_viewed | Course 1 |
 
-  #   When I press "Activities" in the app
-  #   And I press "Databases" in the app
-  #   And I press "Database activity" "ion-item" in the app
-  #   Then I should find "1 January 2040" within "Due date" "ion-item" in the app
-  #   And I should find "2" within "Total entries" "ion-item" in the app
-  #   And I should find "2" within "My entries" "ion-item" in the app
-  #   And I should find "1" within "Comments" "ion-item" in the app
+  Scenario: Students can see relevant columns in the database activity overview
+    # Add a comment to test the values.
+    Given I am on the "Database activity" "data activity" page logged in as student1
+    And I select "Single view" from the "jump" singleselect
+    And I click on "Comments (0)" "link"
+    And I set the following fields to these values:
+      | Comment        | Commenting the entry |
+    And I click on "Save comment" "link"
+    And I entered the course "Course 1" as "student1" in the app
 
-  #   When I press "Without comments" "ion-item" in the app
-  #   Then I should find "1 January 2040" within "Due date" "ion-item" in the app
-  #   And I should find "1" within "Total entries" "ion-item" in the app
-  #   And I should find "0" within "My entries" "ion-item" in the app
-  #   And I should find "0" within "Comments" "ion-item" in the app
+    When I press "Activities" in the app
+    And I press "Databases" in the app
+    And I press "Database activity" "ion-item" in the app
+    Then I should find "1 January 2040" within "Due date" "ion-item" in the app
+    And I should find "2" within "Total entries" "ion-item" in the app
+    And I should find "2" within "My entries" "ion-item" in the app
+    And I should find "1" within "Comments" "ion-item" in the app
 
-  #   When I press "Empty database" "ion-item" in the app
-  #   Then I should find "-" within "Due date" "ion-item" in the app
-  #   And I should find "0" within "Total entries" "ion-item" in the app
-  #   And I should find "0" within "My entries" "ion-item" in the app
-  #   And I should find "-" within "Comments" "ion-item" in the app
+    When I press "Without comments" "ion-item" in the app
+    Then I should find "1 January 2040" within "Due date" "ion-item" in the app
+    And I should find "1" within "Total entries" "ion-item" in the app
+    And I should find "0" within "My entries" "ion-item" in the app
+    And I should find "0" within "Comments" "ion-item" in the app
 
-  # TODO: Uncomment when MDL-86185 is fixed.
-  # Scenario: Teachers can see relevant columns in the database activity overview
-  #   # Add a comment to test the values.
-  #   Given I am on the "Database activity" "data activity" page logged in as teacher1
-  #   And I select "Single view" from the "jump" singleselect
-  #   And I click on "Comments (0)" "link"
-  #   And I set the following fields to these values:
-  #     | Comment        | Commenting the entry |
-  #   And I click on "Save comment" "link"
-  #   And I entered the course "Course 1" as "teacher1" in the app
+    When I press "Empty database" "ion-item" in the app
+    Then I should find "-" within "Due date" "ion-item" in the app
+    And I should find "0" within "Total entries" "ion-item" in the app
+    And I should find "0" within "My entries" "ion-item" in the app
+    And I should find "-" within "Comments" "ion-item" in the app
 
-  #   When I press "Activities" in the app
-  #   And I press "Databases" in the app
-  #   And I press "Database activity" "ion-item" in the app
-  #   Then I should find "1 January 2040" within "Due date" "ion-item" in the app
-  #   And I should find "3" within "Entries" "ion-item" in the app
-  #   And I should find "1" within "Comments" "ion-item" in the app
-  #   And I should find "Approve" within "Actions" "ion-item" in the app
-  #   And I should find "1" within "Approve" "ion-button" in the app
+  Scenario: Teachers can see relevant columns in the database activity overview
+    # Add a comment to test the values.
+    Given I am on the "Database activity" "data activity" page logged in as teacher1
+    And I select "Single view" from the "jump" singleselect
+    And I click on "Comments (0)" "link"
+    And I set the following fields to these values:
+      | Comment        | Commenting the entry |
+    And I click on "Save comment" "link"
+    And I entered the course "Course 1" as "teacher1" in the app
 
-  #   When I press "Approve" within "Actions" "ion-item" in the app
-  #   Then the header should be "Database activity" in the app
+    When I press "Activities" in the app
+    And I press "Databases" in the app
+    And I press "Database activity" "ion-item" in the app
+    Then I should find "1 January 2040" within "Due date" "ion-item" in the app
+    And I should find "3" within "Entries" "ion-item" in the app
+    And I should find "1" within "Comments" "ion-item" in the app
+    And I should find "Approve" within "Actions" "ion-item" in the app
+    And I should find "1" within "Approve" "ion-button" in the app
 
-  #   When I go back in the app
-  #   And I press "Without comments" "ion-item" in the app
-  #   Then I should find "1 January 2040" within "Due date" "ion-item" in the app
-  #   And I should find "1" within "Entries" "ion-item" in the app
-  #   And I should find "0" within "Comments" "ion-item" in the app
-  #   And I should find "View" within "Actions" "ion-item" in the app
+    When I press "Approve" within "Actions" "ion-item" in the app
+    Then the header should be "Database activity" in the app
 
-  #   When I press "Empty database" "ion-item" in the app
-  #   Then I should find "-" within "Due date" "ion-item" in the app
-  #   And I should find "0" within "Entries" "ion-item" in the app
-  #   And I should find "-" within "Comments" "ion-item" in the app
-  #   And I should find "View" within "Actions" "ion-item" in the app
+    When I go back in the app
+    And I press "Without comments" "ion-item" in the app
+    Then I should find "1 January 2040" within "Due date" "ion-item" in the app
+    And I should find "1" within "Entries" "ion-item" in the app
+    And I should find "0" within "Comments" "ion-item" in the app
+    And I should find "View" within "Actions" "ion-item" in the app
+
+    When I press "Empty database" "ion-item" in the app
+    Then I should find "-" within "Due date" "ion-item" in the app
+    And I should find "0" within "Entries" "ion-item" in the app
+    And I should find "-" within "Comments" "ion-item" in the app
+    And I should find "View" within "Actions" "ion-item" in the app

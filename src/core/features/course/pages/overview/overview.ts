@@ -231,6 +231,8 @@ export default class CoreCourseOverviewPage implements OnInit {
 
             modType.overview.set(formattedOverview);
             modType.loaded.set(true);
+
+            CorePromiseUtils.ignoreErrors(CoreCourse.logViewModuleInstanceList(this.courseId, modType.modName));
         } catch (error) {
             CoreAlerts.showError(error, { default: 'Error getting activities.' });
         }

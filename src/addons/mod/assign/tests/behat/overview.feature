@@ -42,6 +42,15 @@ Feature: Activities overview for assign activity
       | gradeitem      | user     | grade |
       | Pending grades | student1 | 50    |
 
+  Scenario: The assign overview report should generate log events
+    Given I entered the course "Course 1" as "student1" in the app
+    When I press "Activities" in the app
+    And I press "Assignments" in the app
+    Then the following events should have been logged for "student1" in the app:
+      | name                                                 | course   |
+      | \core\event\course_overview_viewed                   | Course 1 |
+      | \mod_assign\event\course_module_instance_list_viewed | Course 1 |
+
   Scenario: Teachers can see relevant columns in the assign overview
     Given I entered the course "Course 1" as "teacher1" in the app
     When I press "Activities" in the app
