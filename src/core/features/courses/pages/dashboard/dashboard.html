@@ -21,12 +21,12 @@
         <div class="aspire-my-children-section" *ngIf="isParent && mentees.length > 0">
             <h2 class="aspire-section-title">My Children</h2>
             <div class="aspire-children-grid">
-                <div class="aspire-child-card" 
-                 *ngFor="let mentee of mentees" 
+                <div class="aspire-child-card"
+                 *ngFor="let mentee of mentees"
                  (click)="selectMenteeAndNavigate(mentee)"
                  [class.selected]="selectedMenteeId === mentee.id">
                 <ion-avatar>
-                    <img [src]="mentee.profileimageurl || 'assets/img/user-avatar.png'" 
+                    <img [src]="mentee.profileimageurl || 'assets/img/user-avatar.png'"
                          [alt]="mentee.fullname"
                          core-external-content
                          onError="this.src='assets/img/user-avatar.png'">
@@ -34,7 +34,7 @@
                 <div class="aspire-child-info">
                     <h3>{{ mentee.fullname }}</h3>
                     <p class="aspire-child-email">{{ mentee.email }}</p>
-                    <ion-badge color="primary" *ngIf="selectedMenteeId === mentee.id">Currently Viewing</ion-badge>
+                    <ion-badge color="primary" *ngIf="selectedMenteeId === mentee.id">Viewing</ion-badge>
                 </div>
                 <div class="aspire-child-actions">
                     <button class="aspire-view-grades-btn" (click)="viewMenteeGrades(mentee, $event)">
@@ -47,7 +47,7 @@
             </div>
             <p class="aspire-parent-note" *ngIf="selectedMenteeId">
                 <ion-icon name="information-circle-outline"></ion-icon>
-                You are currently viewing data for {{ getSelectedMenteeName() }}. 
+                You are viewing data for {{ getSelectedMenteeName() }}.
                 <a (click)="clearMenteeSelection()">View your own data</a>
             </p>
         </div>

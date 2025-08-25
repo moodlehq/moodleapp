@@ -1418,6 +1418,8 @@ core-loading {
                         width: 48px;
                         text-align: center;
                         flex-shrink: 0;
+                        position: relative;
+                        z-index: 2; // Ensure date text is above connector
                         
                         .day {
                             font-size: 1.5rem;
@@ -1425,6 +1427,9 @@ core-loading {
                             color: var(--text-secondary);
                             display: block;
                             line-height: 1;
+                            background: var(--bg-base); // Add background to prevent visual overlap
+                            padding: 2px 4px;
+                            border-radius: var(--radius-sm);
                         }
                         
                         .weekday {

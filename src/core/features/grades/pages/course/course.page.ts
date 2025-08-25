@@ -303,7 +303,10 @@ export class CoreGradesCoursePage implements AfterViewInit, OnDestroy {
             ?? formattedTable.rows[0]?.gradeitem
             ?? Translate.instant('core.grades.grades');
         this.columns = formattedTable.columns;
-        this.rows = formattedTable.rows;
+        
+        // Filter and reorder rows to fix empty category totals
+        this.rows = this.filterAndReorderRows(formattedTable.rows);
+        
         this.rowsOnView = this.getRowsOnHeight();
         this.totalColumnsSpan = formattedTable.columns.reduce((total, column) => total + column.colspan, 0);
         
@@ -324,6 +327,89 @@ export class CoreGradesCoursePage implements AfterViewInit, OnDestroy {
         } else {
             console.log('[Grades] WARNING: No rows to process!');
         }
+    }
+
+    /**
+     * Filter and reorder rows to remove empty category totals and improve layout.
+     *
+     * @param rows Original rows from the formatted table.
+     * @returns Filtered and reordered rows.
+     */
+    protected filterAndReorderRows(rows: CoreGradesFormattedTableRow[]): CoreGradesFormattedTableRow[] {
+        const filteredRows: CoreGradesFormattedTableRow[] = [];
+        const categoryTotals: CoreGradesFormattedTableRow[] = [];
+        let courseTotal: CoreGradesFormattedTableRow | null = null;
+        
+        // First pass: categorize rows
+        rows.forEach(row => {
+            const gradeItemName = row.gradeitem?.toLowerCase() || '';
+            const hasGrade = row.grade && row.grade !== '-' && row.grade !== '';
+            
+            if (row.itemtype === 'courseitem' || gradeItemName.includes('course total')) {
+                // This is the course total
+                courseTotal = row;
+            } else if (row.itemtype === 'categoryitem' || (row.itemtype === 'category' && gradeItemName.includes('total'))) {
+                // This is a category total - only keep if it has a grade
+                if (hasGrade) {
+                    categoryTotals.push(row);
+                }
+            } else if (row.itemtype === 'category' && !gradeItemName.includes('total')) {
+                // This is a category header without grade - skip it
+                console.log('[Grades] Skipping empty category header:', row.gradeitem);
+            } else {
+                // Regular grade item
+                filteredRows.push(row);
+            }
+        });
+        
+        // Second pass: build final ordered list
+        const finalRows: CoreGradesFormattedTableRow[] = [];
+        
+        // Add all regular grade items first
+        finalRows.push(...filteredRows);
+        
+        // Add category totals that have grades
+        if (categoryTotals.length > 0) {
+            // Add a separator
+            finalRows.push({
+                itemtype: 'leader',
+                gradeitem: '',
+                grade: '',
+                rowclass: 'leader',
+                id: -1,
+                colspan: 1,
+                rowspan: 1
+            } as CoreGradesFormattedTableRow);
+            
+            // Add category totals
+            finalRows.push(...categoryTotals);
+        }
+        
+        // Add course total at the end if it exists
+        if (courseTotal) {
+            // Add a separator
+            finalRows.push({
+                itemtype: 'leader',
+                gradeitem: '',
+                grade: '',
+                rowclass: 'leader',
+                id: -2,
+                colspan: 1,
+                rowspan: 1
+            } as CoreGradesFormattedTableRow);
+            
+            finalRows.push(courseTotal);
+        }
+        
+        console.log('[Grades] Filtered rows:', {
+            original: rows.length,
+            filtered: finalRows.length,
+            regularItems: filteredRows.length,
+            categoryTotals: categoryTotals.length,
+            courseTotal: courseTotal ? 1 : 0
+        });
+        
+        return finalRows;
     }
 
     /**

@@ -18,7 +18,7 @@
     </ion-refresher>
     <core-loading [hideUntil]="loaded">
         <core-empty-box *ngIf="!rows.length" icon="fas-chart-bar" [message]="'core.grades.nogradesreturned' | translate" />
-        
+
         <div *ngIf="rows.length" class="core-grades-container grades-pastel-view">
             <!-- GRADE OVERVIEW DASHBOARD -->
             <div class="grades-dashboard">
@@ -52,7 +52,7 @@
                             </svg>
                         </div>
                     </div>
-                    
+
                     <div class="summary-card items-completed">
                         <div class="card-icon">
                             <ion-icon name="checkmark-circle-outline"></ion-icon>
@@ -63,7 +63,7 @@
                             <div class="stat-label">of {{ getTotalGradedItems() }} items</div>
                         </div>
                     </div>
-                    
+
                     <div class="summary-card class-rank" *ngIf="getClassRank()">
                         <div class="card-icon">
                             <ion-icon name="medal-outline"></ion-icon>
@@ -126,7 +126,7 @@
                     <ion-segment-button value="grouped">
                         <ion-label>
                             <ion-icon name="layers-outline"></ion-icon>
-                            Grouped View
+                            Grouped
                         </ion-label>
                     </ion-segment-button>
                     <ion-segment-button value="timeline">
@@ -168,7 +168,7 @@
                             <ion-icon name="chevron-down" class="expand-icon" [class.expanded]="category.expanded"></ion-icon>
                         </div>
                     </div>
-                    
+
                     <div class="category-content" [class.expanded]="category.expanded">
                         <div class="grade-items">
                             <div class="grade-item" *ngFor="let item of category.items">
@@ -195,7 +195,7 @@
                                 </div>
                             </div>
                         </div>
-                        
+
                         <!-- Category Progress Bar -->
                         <div class="category-progress">
                             <div class="progress-info">
