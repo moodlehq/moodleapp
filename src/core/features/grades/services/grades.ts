@@ -364,131 +364,25 @@ export class CoreGradesProvider {
 
         console.log('[Grades Service] Falling back to standard grades endpoint');
         
-        // Check if we have the custom endpoint that returns all courses
-        const hasAllCoursesWS = await site.wsAvailable('local_aspireparent_get_all_course_grades');
-        
-        if (hasAllCoursesWS) {
-            // Use custom endpoint that includes courses with showgrades=false
-            this.logger.debug('Using custom WS to get all course grades');
-            const params = { userid: 0 }; // 0 means current user
-            const preSets: CoreSiteWSPreSets = {
-                cacheKey: this.getCoursesGradesCacheKey() + ':all',
-            };
-            
-            try {
-                const data = await site.read<CoreGradesGetOverviewCourseGradesWSResponse>(
-                    'local_aspireparent_get_all_course_grades',
-                    params,
-                    preSets,
-                );
-                
-                this.logger.debug(`Got ${data?.grades?.length || 0} course grades (including hidden)`, 
-                    data?.grades?.map(g => ({ courseid: g.courseid, showgrades: (g as any).showgrades })));
-                
-                if (!data?.grades) {
-                    throw new Error('Couldn\'t get all course grades');
-                }
-                
-                return data.grades;
-            } catch (error) {
-                this.logger.error('Error using custom all courses WS, falling back to standard', error);
-                // Fall through to standard method
-            }
-        }
+        // REMOVED BROKEN OVERVIEW ROUTE AS REQUESTED
+        // We'll just get courses directly instead of using overview
 
-        // Try using user grade report API instead of overview
+        // Just get courses and return them with empty grades
         try {
-            return await this.getCoursesGradesFromUserReport(site);
-        } catch (error) {
-            this.logger.error('Error using user report API, falling back to overview', error);
+            const courses = await CoreCourses.getUserCourses(true, site.getId());
             
-            // Fallback to overview API
-            const params: CoreGradesGetOverviewCourseGradesWSParams = {};
-            const preSets: CoreSiteWSPreSets = {
-                cacheKey: this.getCoursesGradesCacheKey(),
-            };
-
-            const data = await site.read<CoreGradesGetOverviewCourseGradesWSResponse>(
-                'gradereport_overview_get_course_grades',
-                params,
-                preSets,
-            );
-
-            this.logger.debug(`Got ${data?.grades?.length || 0} course grades (standard)`,
-                data?.grades?.map(g => ({ courseid: g.courseid })));
-
-            if (!data?.grades) {
-                throw new Error('Couldn\'t get course grades');
-            }
-
-            return data.grades;
+            return courses.map(course => ({
+                courseid: course.id,
+                grade: '-',
+                rawgrade: '',
+                rank: undefined
+            }));
+        } catch (error) {
+            this.logger.error('Error getting courses', error);
+            return [];
         }
     }
 
-    /**
-     * Get course grades using the user grade report API.
-     * This fetches more detailed grade information similar to course/user.php?mode=grade
-     * 
-     * @param site Site instance.
-     * @param userId User ID to get grades for. If not set, current user.
-     * @returns Promise resolved with course grades.
-     */
-    private async getCoursesGradesFromUserReport(site: CoreSite, userId?: number): Promise<CoreGradesGradeOverview[]> {
-        userId = userId || site.getUserId();
-        
-        this.logger.debug('Getting course grades from user report');
-        
-        // First get the list of courses
-        const courses = await CoreCourses.getUserCourses(true, site.getId());
-        
-        const courseGrades: CoreGradesGradeOverview[] = [];
-        
-        // For each course, get the grade items and calculate total
-        for (const course of courses) {
-            try {
-                const params: CoreGradesGetUserGradeItemsWSParams = {
-                    courseid: course.id,
-                    userid: userId,
-                };
-                
-                const response = await site.read<CoreGradesGetUserGradeItemsWSResponse>(
-                    'gradereport_user_get_grade_items',
-                    params,
-                );
-                
-                if (response?.usergrades?.[0]) {
-                    const userGrade = response.usergrades[0];
-                    const courseTotal = userGrade.gradeitems.find(item => item.itemtype === 'course');
-                    
-                    if (courseTotal) {
-                        courseGrades.push({
-                            courseid: course.id,
-                            grade: courseTotal.gradeformatted || '-',
-                            rawgrade: String(courseTotal.graderaw || ''),
-                            rank: courseTotal.rank,
-                        });
-                    } else {
-                        // No course total found, add course with no grade
-                        courseGrades.push({
-                            courseid: course.id,
-                            grade: '-',
-                            rawgrade: '',
-                        });
-                    }
-                }
-            } catch (error) {
-                this.logger.error(`Error getting grades for course ${course.id}:`, error);
-                // Add course with no grade on error
-                courseGrades.push({
-                    courseid: course.id,
-                    grade: '-',
-                    rawgrade: '',
-                });
-            }
-        }
-        
-        return courseGrades;
-    }
 
     /**
      * Invalidates courses grade table and items WS calls for all users.

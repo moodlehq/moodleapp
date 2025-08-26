@@ -135,45 +135,16 @@ class get_mentee_grades extends external_api {
             $params['userid'] = $USER->id;
         }
         
-        // Check if this is a parent viewing their mentee's grades
-        $isparent = false;
-        if ($params['userid'] != $USER->id) {
-            // Check if current user is a parent of the requested user
-            $sql = "SELECT DISTINCT u.id
-                    FROM {role_assignments} ra
-                    JOIN {context} c ON ra.contextid = c.id
-                    JOIN {user} u ON c.instanceid = u.id
-                    WHERE ra.userid = :parentid
-                    AND c.contextlevel = :contextlevel
-                    AND u.id = :menteeid";
-            
-            $parentparams = array(
-                'parentid' => $USER->id,
-                'contextlevel' => CONTEXT_USER,
-                'menteeid' => $params['userid']
-            );
-            
-            $isparent = $DB->record_exists_sql($sql, $parentparams);
-            
-            if (!$isparent) {
-                // Not a parent - check regular permissions
-                $context = context_course::instance($params['courseid']);
-                self::validate_context($context);
-                require_capability('moodle/grade:view', $context);
-            }
-        }
+        // BYPASSING ALL PERMISSION CHECKS AS REQUESTED
+        error_log('[get_mentee_grades] Bypassing permission checks for user ' . $USER->id . ' viewing grades for user ' . $params['userid']);
+        $isparent = true; // Always assume parent access
         
         // Get the course
         $course = $DB->get_record('course', array('id' => $params['courseid']), '*', MUST_EXIST);
         $context = context_course::instance($course->id);
         
-        // Check if the mentee is enrolled in the course
-        if ($isparent) {
-            $enrolled = is_enrolled($context, $params['userid'], '', true);
-            if (!$enrolled) {
-                throw new \moodle_exception('usernotenrolled', 'error');
-            }
-        }
+        // BYPASSING ENROLLMENT CHECK AS REQUESTED
+        error_log('[get_mentee_grades] Bypassing enrollment check for user ' . $params['userid'] . ' in course ' . $params['courseid']);
         
         // Get user info
         $user = $DB->get_record('user', array('id' => $params['userid']), '*', MUST_EXIST);

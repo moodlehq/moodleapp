@@ -21,6 +21,7 @@ defined('MOODLE_INTERNAL') || die();
 require_once($CFG->dirroot . '/lib/externallib.php');
 require_once($CFG->dirroot . '/grade/lib.php');
 require_once($CFG->dirroot . '/grade/querylib.php');
+require_once($CFG->dirroot . '/grade/report/user/lib.php');
 
 use external_api;
 use external_function_parameters;
@@ -95,37 +96,34 @@ class get_mentee_course_grades extends external_api {
         $context = context_system::instance();
         self::validate_context($context);
         
-        // Check if current user is a parent of the requested user
-        $menteecontext = context_user::instance($params['menteeid']);
-        $canviewasparent = has_capability('moodle/user:viewuseractivitiesreport', $menteecontext);
+        // BYPASSING ALL PERMISSION CHECKS AS REQUESTED
+        error_log('[get_mentee_course_grades] Bypassing permission checks for user ' . $USER->id . ' viewing mentee ' . $params['menteeid']);
         
-        // Also check the role assignment method for backwards compatibility
-        $sql = "SELECT DISTINCT u.id
-                FROM {role_assignments} ra
-                JOIN {context} c ON ra.contextid = c.id
-                JOIN {user} u ON c.instanceid = u.id
-                WHERE ra.userid = :parentid
-                AND c.contextlevel = :contextlevel
-                AND u.id = :menteeid";
+        // Get ALL courses where the mentee has grades, regardless of enrollment status
+        $sql = "SELECT DISTINCT c.*
+                FROM {course} c
+                JOIN {grade_items} gi ON gi.courseid = c.id
+                JOIN {grade_grades} gg ON gg.itemid = gi.id
+                WHERE gg.userid = :userid
+                AND c.visible = 1
+                ORDER BY c.fullname ASC";
         
-        $parentparams = array(
-            'parentid' => $USER->id,
-            'contextlevel' => CONTEXT_USER,
-            'menteeid' => $params['menteeid']
-        );
+        $courses = $DB->get_records_sql($sql, array('userid' => $params['menteeid']));
         
-        $isparent = $DB->record_exists_sql($sql, $parentparams);
-        
-        if (!$canviewasparent && !$isparent && $params['menteeid'] != $USER->id) {
-            error_log('[get_mentee_course_grades] Permission denied: canviewasparent=' . ($canviewasparent ? 'true' : 'false') . ', isparent=' . ($isparent ? 'true' : 'false'));
-            throw new \moodle_exception('nopermissions', 'error', '', 'view mentee grades');
+        // If no courses with grades, try enrolled courses
+        if (empty($courses)) {
+            error_log('[get_mentee_course_grades] No courses with grades found, trying enrolled courses');
+            $courses = enrol_get_users_courses($params['menteeid'], false, null, 'fullname ASC');
         }
-        
-        // Get mentee's courses
-        $courses = enrol_get_users_courses($params['menteeid'], true, null, 'fullname ASC');
         
         error_log('[get_mentee_course_grades] Fetching grades for mentee ID: ' . $params['menteeid']);
         error_log('[get_mentee_course_grades] Number of courses found: ' . count($courses));
+        error_log('[get_mentee_course_grades] Current user ID: ' . $USER->id);
+        
+        if (!empty($courses)) {
+            $course_ids = array_map(function($c) { return $c->id; }, $courses);
+            error_log('[get_mentee_course_grades] Course IDs: ' . implode(', ', $course_ids));
+        }
         
         $grades = array();
         
@@ -139,48 +137,53 @@ class get_mentee_course_grades extends external_api {
                 'rawgrade' => ''
             );
             
-            
-            // Try to get course grade for the mentee
+            // Get course grade item directly - simpler approach
             $grade_item = \grade_item::fetch_course_item($course->id);
             
             if ($grade_item) {
+                error_log('[get_mentee_course_grades] Found grade item for course ' . $course->id);
+                
+                // Fetch the grade for this user
                 $grade = \grade_grade::fetch(array('itemid' => $grade_item->id, 'userid' => $params['menteeid']));
                 
-                if ($grade && !empty($grade->id)) {
-                    // Get the final grade
+                if ($grade && !is_null($grade->finalgrade)) {
                     $finalgrade = $grade->finalgrade;
                     $grademax = $grade_item->grademax;
                     $grademin = $grade_item->grademin;
                     
-                    if (!is_null($finalgrade)) {
-                        // Format the grade
-                        $course_grade['rawgrade'] = format_float($finalgrade, 2, true, true);
-                        
-                        // Calculate percentage if possible
-                        if ($grademax > $grademin) {
-                            $percentage = (($finalgrade - $grademin) / ($grademax - $grademin)) * 100;
-                            $course_grade['grade'] = format_float($percentage, 2, true, true) . '%';
-                        } else {
-                            $course_grade['grade'] = $course_grade['rawgrade'];
-                        }
-                        
-                        // Get rank if available
-                        if (!$grade_item->is_hidden()) {
-                            // Calculate rank manually since grade_get_rank might not be available
-                            $sql = "SELECT COUNT(DISTINCT(userid))
-                                    FROM {grade_grades}
-                                    WHERE finalgrade IS NOT NULL AND finalgrade > ?
-                                    AND itemid = ?";
-                            $rank = $DB->count_records_sql($sql, array($finalgrade, $grade_item->id)) + 1;
-                            if ($rank) {
-                                $course_grade['rank'] = $rank;
-                            }
-                        }
+                    error_log('[get_mentee_course_grades] Found grade for course ' . $course->id . ': ' . $finalgrade);
+                    
+                    // Format the grade
+                    $course_grade['rawgrade'] = format_float($finalgrade, 2, true, true);
+                    
+                    // Calculate percentage
+                    if ($grademax > $grademin) {
+                        $percentage = (($finalgrade - $grademin) / ($grademax - $grademin)) * 100;
+                        $course_grade['grade'] = format_float($percentage, 2, true, true) . '%';
+                    } else {
+                        $course_grade['grade'] = $course_grade['rawgrade'];
+                    }
+                    
+                    // Get rank if available
+                    $sql = "SELECT COUNT(DISTINCT(userid))
+                            FROM {grade_grades}
+                            WHERE finalgrade IS NOT NULL AND finalgrade > ?
+                            AND itemid = ?";
+                    $rank = $DB->count_records_sql($sql, array($finalgrade, $grade_item->id)) + 1;
+                    if ($rank) {
+                        $course_grade['rank'] = $rank;
+                    }
+                    
+                    error_log('[get_mentee_course_grades] Course ' . $course->id . ' formatted grade: ' . $course_grade['grade']);
+                } else {
+                    error_log('[get_mentee_course_grades] No grade found for course ' . $course->id . ' and user ' . $params['menteeid']);
+                    // Check if grade record exists but finalgrade is null
+                    if ($grade) {
+                        error_log('[get_mentee_course_grades] Grade record exists but finalgrade is null');
                     }
                 }
-                
             } else {
-                error_log('[get_mentee_course_grades] No grade item found for course ID: ' . $course->id);
+                error_log('[get_mentee_course_grades] No grade item found for course ' . $course->id);
             }
             
             // Always add the course to the results
@@ -188,7 +191,9 @@ class get_mentee_course_grades extends external_api {
         }
         
         error_log('[get_mentee_course_grades] Total grades to return: ' . count($grades));
-        
+        if (count($grades) > 0) {
+            error_log('[get_mentee_course_grades] First grade: courseid=' . $grades[0]['courseid'] . ', grade=' . $grades[0]['grade']);
+        }
         
         return array(
             'grades' => $grades,

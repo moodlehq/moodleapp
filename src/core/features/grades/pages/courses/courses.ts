@@ -230,13 +230,13 @@ export class CoreGradesCoursesPage implements OnDestroy, AfterViewInit {
                     console.log('[Grades] Using local_aspireparent_get_mentee_course_grades');
                     
                     const response = await site.read<{ grades: any[] }>('local_aspireparent_get_mentee_course_grades', {
-                        menteeid: mentee.id
+                        menteeid: Number(mentee.id)
                     });
                     
                     console.log('[Grades] Response from WS:', response);
                     console.log('[Grades] Number of grades received:', response.grades?.length || 0);
                     
-                    if (response.grades && response.grades.length > 0) {
+                    if (response && response.grades && response.grades.length > 0) {
                         // Get course details for each grade
                         const courseIds = response.grades.map(g => g.courseid);
                         console.log('[Grades] Fetching course details for IDs:', courseIds);
@@ -264,18 +264,35 @@ export class CoreGradesCoursesPage implements OnDestroy, AfterViewInit {
                         console.log('[Grades] First course with grade:', coursesWithGrades[0]);
                     } else {
                         console.log('[Grades] No grades returned for mentee:', mentee.id);
-                        // Try to at least get the courses without grades
+                        console.log('[Grades] Full response:', response);
+                        console.log('[Grades] Falling back to getting individual courses');
+                        
+                        // Fallback: Get mentee's courses and fetch grades individually
                         try {
+                            // Get all courses for the mentee - we need to use a custom WS if available
+                            let courses: any[] = [];
                             const hasCustomCoursesWS = await site.wsAvailable('local_aspireparent_get_mentee_courses');
                             
                             if (hasCustomCoursesWS) {
-                                console.log('[Grades] Fetching courses without grades for mentee');
-                                const coursesResponse = await site.read<{ courses: any[] }>('local_aspireparent_get_mentee_courses', {
-                                    menteeid: mentee.id
+                                console.log('[Grades] Using custom WS to get mentee courses');
+                                const response = await site.read<any>('local_aspireparent_get_mentee_courses', {
+                                    userid: Number(mentee.id),
+                                    returnusercount: false,
+                                    moodlewssettingfileurl: true,
+                                    moodlewssettingfilter: true
                                 });
-                                
-                                if (coursesResponse.courses && coursesResponse.courses.length > 0) {
-                                    this.menteeCourses[mentee.id] = coursesResponse.courses.map(course => ({
+                                courses = response || [];
+                            } else {
+                                // Fallback to regular courses
+                                courses = await CoreCourses.getUserCourses(false, site.getId()) as any[];
+                            }
+                            console.log('[Grades] Found', courses.length, 'courses for user');
+                            
+                            if (courses.length > 0) {
+                                // For each course, try to get the grade
+                                const coursesWithGrades: any[] = [];
+                                for (const course of courses) {
+                                    const courseWithGrade = {
                                         ...course,
                                         id: course.id,
                                         courseid: course.id,
@@ -283,16 +300,73 @@ export class CoreGradesCoursesPage implements OnDestroy, AfterViewInit {
                                         fullname: course.fullname,
                                         grade: '-',
                                         rawgrade: ''
-                                    }));
-                                    console.log(`[Grades] Found ${coursesResponse.courses.length} courses for mentee (without grades)`);
-                                } else {
-                                    this.menteeCourses[mentee.id] = [];
+                                    };
+                                    
+                                    // Try to get grade for this course
+                                    try {
+                                        const hasGradesWS = await site.wsAvailable('local_aspireparent_get_mentee_grades');
+                                        if (hasGradesWS) {
+                                            const gradeResponse = await site.read<any>('local_aspireparent_get_mentee_grades', {
+                                                courseid: course.id,
+                                                userid: mentee.id
+                                            });
+                                            
+                                            console.log('[Grades] Grade response for course', course.id, ':', gradeResponse);
+                                            
+                                            if (gradeResponse?.usergrades?.[0]?.gradeitems) {
+                                                const gradeItems = gradeResponse.usergrades[0].gradeitems;
+                                                console.log('[Grades] Found', gradeItems.length, 'grade items for course', course.id);
+                                                
+                                                // Find course total grade
+                                                const courseTotal = gradeItems.find((item: any) => item.itemtype === 'course');
+                                                
+                                                if (courseTotal) {
+                                                    console.log('[Grades] Course total found:', courseTotal);
+                                                    
+                                                    if (courseTotal.gradeformatted) {
+                                                        courseWithGrade.grade = courseTotal.gradeformatted;
+                                                        courseWithGrade.rawgrade = String(courseTotal.graderaw || '');
+                                                    } else if (courseTotal.percentageformatted) {
+                                                        courseWithGrade.grade = courseTotal.percentageformatted;
+                                                        courseWithGrade.rawgrade = String(courseTotal.graderaw || '');
+                                                    } else if (courseTotal.graderaw !== null && courseTotal.graderaw !== undefined) {
+                                                        // Format the grade ourselves
+                                                        const gradeValue = parseFloat(courseTotal.graderaw);
+                                                        if (!isNaN(gradeValue)) {
+                                                            if (courseTotal.grademax && courseTotal.grademin !== undefined) {
+                                                                const percentage = ((gradeValue - courseTotal.grademin) / (courseTotal.grademax - courseTotal.grademin)) * 100;
+                                                                courseWithGrade.grade = percentage.toFixed(2) + '%';
+                                                            } else {
+                                                                courseWithGrade.grade = gradeValue.toFixed(2);
+                                                            }
+                                                            courseWithGrade.rawgrade = String(gradeValue);
+                                                        }
+                                                    }
+                                                } else {
+                                                    console.log('[Grades] No course total found, checking for any graded items');
+                                                    // Maybe there's no course total but individual items have grades
+                                                    const gradedItem = gradeItems.find((item: any) => 
+                                                        item.graderaw !== null && item.graderaw !== undefined);
+                                                    if (gradedItem) {
+                                                        console.log('[Grades] Found graded item:', gradedItem);
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    } catch (gradeError) {
+                                        console.log('[Grades] Could not get grade for course', course.id, gradeError);
+                                    }
+                                    
+                                    coursesWithGrades.push(courseWithGrade);
                                 }
+                                
+                                this.menteeCourses[mentee.id] = coursesWithGrades;
+                                console.log(`[Grades] Fallback: Found ${coursesWithGrades.length} courses for mentee ${mentee.id}`);
                             } else {
                                 this.menteeCourses[mentee.id] = [];
                             }
-                        } catch (coursesError) {
-                            console.error('[Grades] Error fetching courses without grades:', coursesError);
+                        } catch (fallbackError) {
+                            console.error('[Grades] Fallback failed:', fallbackError);
                             this.menteeCourses[mentee.id] = [];
                         }
                     }
@@ -305,12 +379,15 @@ export class CoreGradesCoursesPage implements OnDestroy, AfterViewInit {
                         
                         if (hasCustomCoursesWS) {
                             console.log('[Grades] Using custom WS to get mentee courses');
-                            const response = await site.read<{ courses: any[] }>('local_aspireparent_get_mentee_courses', {
-                                menteeid: mentee.id
+                            const response = await site.read<any>('local_aspireparent_get_mentee_courses', {
+                                userid: Number(mentee.id),
+                                returnusercount: false,
+                                moodlewssettingfileurl: true,
+                                moodlewssettingfilter: true
                             });
                             
-                            if (response.courses) {
-                                this.menteeCourses[mentee.id] = response.courses.map(course => ({
+                            if (response && Array.isArray(response)) {
+                                this.menteeCourses[mentee.id] = response.map(course => ({
                                     ...course,
                                     id: course.id,
                                     courseid: course.id,
@@ -319,7 +396,7 @@ export class CoreGradesCoursesPage implements OnDestroy, AfterViewInit {
                                     grade: '-',
                                     rawgrade: ''
                                 }));
-                                console.log(`[Grades] Found ${response.courses.length} courses for mentee ${mentee.id} (no grades)`);
+                                console.log(`[Grades] Found ${response.length} courses for mentee ${mentee.id} (no grades)`);
                             }
                         } else {
                             // Ultimate fallback
@@ -354,11 +431,29 @@ export class CoreGradesCoursesPage implements OnDestroy, AfterViewInit {
      */
     getCoursesForMentee(menteeId: number): any[] {
         const courses = this.menteeCourses[menteeId] || [];
+        if (!this.parentDataLoaded) {
+            console.log(`[Grades] getCoursesForMentee(${menteeId}) called but data not loaded yet`);
+            return [];
+        }
         console.log(`[Grades] getCoursesForMentee(${menteeId}) returning ${courses.length} courses`);
         if (courses.length > 0) {
             console.log('[Grades] First course for mentee:', courses[0]);
         }
         return courses;
+    }
+
+    /**
+     * Check if any mentee has courses.
+     *
+     * @returns True if any mentee has courses.
+     */
+    hasAnyCourses(): boolean {
+        for (const menteeId of Object.keys(this.menteeCourses)) {
+            if (this.menteeCourses[+menteeId] && this.menteeCourses[+menteeId].length > 0) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
