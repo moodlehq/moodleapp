@@ -670,14 +670,17 @@ export class CoreFormatTextDirective implements OnChanges, OnDestroy, AsyncDirec
                 return;
             }
 
+            // Remove the original attributes and also app-url to avoid possible conflicts.
+            element.removeAttribute('data-app-alt-url');
+            element.removeAttribute('data-app-alt-msg');
+            element.removeAttribute('data-app-url');
+
             let newContent = message ? `<p>${message}</p>` : '';
             if (url) {
                 // Create a link using the appUrl format to reuse all the logic of appUrl data attributes.
                 let dataAttributes = `data-app-url="${url}"`;
                 for (const attr in element.dataset) {
-                    if (!['appUrl', 'appAltUrl', 'appAltMsg'].includes(attr)) {
-                        dataAttributes += ` data-${CoreText.camelCaseToKebabCase(attr)}="${element.dataset[attr]}"`;
-                    }
+                    dataAttributes += ` data-${CoreText.camelCaseToKebabCase(attr)}="${element.dataset[attr]}"`;
                 }
 
                 newContent += `<p><a href="${url}" ${dataAttributes}>${url}</a></p>`;
