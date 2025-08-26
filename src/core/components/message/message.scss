@@ -1,13 +1,16 @@
 @use "theme/globals" as *;
 
 :host {
-    --message-background: var(--core-messages-message-bg);
-    --message-activated-background: var(--core-messages-message-activated-bg);
+    --message-background: white;
+    --message-activated-background: #f5f5f5;
     --message-alignment: flex-start;
+    --message-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
+    --message-hover-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 
     display: flex;
     justify-content: var(--message-alignment);
-
+    margin-bottom: 4px;
+    animation: messageSlideIn 0.3s ease;
 
     .message-box {
         --background: var(--message-background);
@@ -18,63 +21,83 @@
         position: relative;
 
         border: 0;
-        border-radius: var(--mdl-shape-borderRadius-sm);
-        margin: 8px;
-        width: 90%;
-        max-width: var(--list-item-max-width);
+        border-radius: 18px;
+        margin: 4px 8px;
+        width: 85%;
+        max-width: 420px;
         min-height: 36px;
 
         font-size: var(--text-size);
         color: var(--ion-text-color);
 
         background: var(--message-background);
-        @include core-transition(width);
+        box-shadow: var(--message-shadow);
+        @include core-transition(all);
 
         // This is needed to display bubble tails.
         overflow: visible;
 
         &:hover {
-            -webkit-filter: drop-shadow(2px 2px 2px rgb(0 0 0 / 30%));
-            filter: drop-shadow(2px 2px 2px rgb(0 0 0 / 30%));
+            transform: translateY(-1px);
+            box-shadow: var(--message-hover-shadow);
         }
 
         &[tappable]:active {
             --message-background: var(--message-activated-background);
+            transform: scale(0.98);
         }
 
         .main {
-            padding: 8px;
+            padding: 12px 16px;
             flex-grow: 1;
             overflow: hidden;
 
             .message-user {
                 display: flex;
                 flex-direction: row;
-                justify-content: space-between;
+                justify-content: flex-start;
                 align-items: center;
-                margin-bottom: .5rem;
+                margin-bottom: 8px;
                 margin-top: 0;
                 color: var(--ion-text-color);
 
                 core-user-avatar {
                     display: block;
-                    --core-avatar-size: var(--core-messages-avatar-size);
+                    --core-avatar-size: 28px;
                     margin: 0;
+                    border-radius: 50%;
+                    overflow: hidden;
+                    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
                 }
 
                 div {
                     flex-grow: 1;
-                    padding-left: .5rem;
-                    padding-right: .5rem;
+                    padding-left: 10px;
+                    padding-right: 10px;
                     @include ellipsis();
-                    font: var(--mdl-typography-subtitle-font-md);
+                    font-size: 0.85rem;
+                    font-weight: 600;
+                    color: #666;
                 }
             }
 
             .message-text {
+                line-height: 1.5;
+                word-wrap: break-word;
+                
                 ::ng-deep > p:only-child {
                     display: inline;
                     margin: 0;
+                }
+                
+                ::ng-deep a {
+                    color: #2196f3;
+                    text-decoration: none;
+                    font-weight: 500;
+                    
+                    &:hover {
+                        text-decoration: underline;
+                    }
                 }
             }
         }
@@ -82,26 +105,35 @@
         .extra {
             flex-shrink: 0;
             display: flex;
-            flex-direction: row;
-            padding-left: 8px;
-            padding-right: 8px;
+            flex-direction: column;
+            align-items: flex-end;
+            justify-content: flex-end;
+            padding: 8px 12px;
 
             .message-time {
-                padding-top: 8px;
-                color: var(--core-messages-message-note-text);
-                font-size: var(--core-messages-message-note-font-size);
+                color: #999;
+                font-size: 0.75rem;
+                font-weight: 500;
+                margin-bottom: 4px;
+                opacity: 0.8;
+                transition: opacity 0.2s ease;
             }
 
             .delete-button {
-                min-height: 36px;
+                min-height: 32px;
                 line-height: initial;
                 margin: 0px;
-                align-self: flex-end;
-
+                opacity: 0;
+                transition: opacity 0.2s ease;
+                
                 ::ng-deep ion-icon {
-                    font-size: 1.2em;
+                    font-size: 1.1em;
                 }
             }
+        }
+        
+        &:hover .extra .delete-button {
+            opacity: 1;
         }
 
         .tail {
@@ -111,26 +143,99 @@
             border: 0.5rem solid transparent;
             position: absolute;
             touch-action: none;
-            bottom: 0;
+            bottom: 8px;
             border-bottom-color: var(--message-background);
-            @include position(null, null, null, -8px);
+            @include position(null, null, null, -7px);
+            filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.05));
         }
     }
 
-    &.no-user .message-box {
-        margin-top: 0px;
+    // Styling for messages without user data (consecutive messages)
+    .message-box.no-user-data {
+        margin-top: 2px;
+        
+        .main {
+            padding-top: 10px;
+            padding-bottom: 10px;
+        }
+    }
+    
+    // Messages without tail (more messages coming from same user)
+    .message-box.no-tail {
+        &:not(.is-mine) {
+            border-bottom-left-radius: 8px;
+        }
+        
+        .tail {
+            display: none;
+        }
+    }
+    
+    // Special styling for first message in a group
+    .message-box.has-user-data {
+        margin-top: 16px;
+        
+        &:not(.is-mine) {
+            border-top-left-radius: 8px;
+        }
     }
 
     &.is-mine {
         // Defined when a message is the user's.
-        --message-background: var(--core-messages-message-mine-bg);
-        --message-activated-background: var(--core-messages-message-mine-activated-bg);
+        --message-background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        --message-activated-background: linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%);
         --message-alignment: flex-end;
+        --message-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+        --message-hover-shadow: 0 4px 16px rgba(102, 126, 234, 0.4);
 
         .message-box {
-            .tail {
-                @include position(null, -8px, null, unset);
+            color: white;
+            
+            .main {
+                .message-user div {
+                    color: rgba(255, 255, 255, 0.85);
+                }
+                
+                .message-text {
+                    color: white;
+                    
+                    ::ng-deep a {
+                        color: #b3d4ff;
+                        font-weight: 600;
+                    }
+                }
             }
+            
+            .extra .message-time {
+                color: rgba(255, 255, 255, 0.7);
+            }
+            
+            .tail {
+                @include position(null, -7px, null, unset);
+                border-bottom-color: #764ba2;
+            }
+        }
+        
+        .message-box.no-tail {
+            border-bottom-right-radius: 8px;
+        }
+        
+        .message-box.has-user-data {
+            &:not(.no-tail) {
+                border-top-right-radius: 8px;
+            }
+        }
+    }
+    
+    // Message animations
+    @keyframes messageSlideIn {
+        from {
+            opacity: 0;
+            transform: translateY(10px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
         }
     }
 }

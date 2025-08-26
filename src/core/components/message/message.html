@@ -1,7 +1,12 @@
-<div *ngIf="message" class="message-box" (longPress)="copyMessage()">
+<div *ngIf="message" class="message-box" (longPress)="copyMessage()" 
+     [class.has-user-data]="message.showUserData"
+     [class.no-user-data]="!message.showUserData"
+     [class.has-tail]="message.showTail"
+     [class.no-tail]="!message.showTail"
+     [@messageAnimation]="'in'">
     <div class="main">
         <!-- User data. -->
-        <div class="message-user" *ngIf="message.showUserData">
+        <div class="message-user" *ngIf="message.showUserData" [@fadeIn]="'in'">
             <core-user-avatar slot="start" [user]="user" [courseId]="courseId" [linkProfile]="false" aria-hidden="true" />
             <div>{{ userFullname }}</div>
         </div>

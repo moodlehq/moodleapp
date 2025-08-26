@@ -530,11 +530,39 @@ export class CoreGradesCoursePage implements AfterViewInit, OnDestroy {
             }
             
             // This is a grade item - add it to our default category
+            // Format the grade value
+            let formattedGrade = row.grade || '-';
+            if (formattedGrade !== '-') {
+                const gradeNum = parseFloat(formattedGrade);
+                if (!isNaN(gradeNum)) {
+                    formattedGrade = this.formatGradeValue(gradeNum);
+                }
+            }
+            
+            // Extract percentage without % sign
+            let percentageValue = row.percentage;
+            if (percentageValue && typeof percentageValue === 'string') {
+                // Remove % sign if present and format to 2 decimal places
+                const percentNum = this.extractPercentage(percentageValue);
+                percentageValue = this.formatGradeValue(percentNum);
+            }
+            
+            // Format weight value
+            let weightValue = row.weight;
+            if (weightValue && typeof weightValue === 'string') {
+                // Extract numeric weight and format
+                const weightNum = this.extractPercentage(weightValue);
+                if (!isNaN(weightNum)) {
+                    weightValue = this.formatGradeValue(weightNum);
+                }
+            }
+            
             const item = {
                 name: CoreText.cleanTags(row.gradeitem || ''),
-                grade: row.grade || '-',
-                percentage: row.percentage,
-                weight: row.weight,
+                grade: formattedGrade,
+                percentage: percentageValue,
+                weight: weightValue,
+                range: row.range,
                 icon: row.icon,
                 image: row.image,
                 iconAlt: row.iconAlt,
@@ -549,12 +577,52 @@ export class CoreGradesCoursePage implements AfterViewInit, OnDestroy {
             }
         });
         
-        // Calculate completion percentages
+        // Calculate completion percentages and totals
         Object.values(categories).forEach(category => {
             category.completionPercentage = category.totalItems > 0 
                 ? Math.round((category.completedItems / category.totalItems) * 100) 
                 : 0;
             category.itemCount = category.items.length;
+            
+            // Calculate category totals
+            let categoryGradeSum = 0;
+            let categoryMaxGradeSum = 0;
+            let hasGrades = false;
+            
+            category.items.forEach((item: any) => {
+                if (item.grade && item.grade !== '-') {
+                    const gradeNum = parseFloat(item.grade);
+                    if (!isNaN(gradeNum)) {
+                        categoryGradeSum += gradeNum;
+                        hasGrades = true;
+                    }
+                }
+                
+                // Try to extract max grade from range if available
+                if (item.range) {
+                    const maxGrade = this.extractMaxGrade(item.range);
+                    const maxGradeNum = parseFloat(maxGrade);
+                    if (!isNaN(maxGradeNum)) {
+                        categoryMaxGradeSum += maxGradeNum;
+                    }
+                } else {
+                    // Default to 100 if no range
+                    categoryMaxGradeSum += 100;
+                }
+            });
+            
+            // Format the totals
+            if (hasGrades) {
+                category.grade = this.formatGradeValue(categoryGradeSum);
+                category.maxGrade = this.formatGradeValue(categoryMaxGradeSum);
+                category.percentage = categoryMaxGradeSum > 0 
+                    ? Math.round((categoryGradeSum / categoryMaxGradeSum) * 100)
+                    : 0;
+            } else {
+                category.grade = '-';
+                category.maxGrade = this.formatGradeValue(categoryMaxGradeSum);
+                category.percentage = 0;
+            }
         });
         
         this.groupedCategories = Object.values(categories);
@@ -570,10 +638,24 @@ export class CoreGradesCoursePage implements AfterViewInit, OnDestroy {
             if ((row.itemtype === 'mod' || row.itemtype === 'manual') && row.grade && row.grade !== '-') {
                 const gradeDate = this.extractGradeDate(row);
                 if (gradeDate) {
+                    // Format grade value
+                    let formattedGrade = row.grade;
+                    const gradeNum = parseFloat(formattedGrade);
+                    if (!isNaN(gradeNum)) {
+                        formattedGrade = this.formatGradeValue(gradeNum);
+                    }
+                    
+                    // Extract percentage without % sign
+                    let percentageValue = row.percentage;
+                    if (percentageValue && typeof percentageValue === 'string') {
+                        const percentNum = this.extractPercentage(percentageValue);
+                        percentageValue = this.formatGradeValue(percentNum);
+                    }
+                    
                     timelineItems.push({
                         name: CoreText.cleanTags(row.gradeitem || ''),
-                        grade: row.grade,
-                        percentage: row.percentage,
+                        grade: formattedGrade,
+                        percentage: percentageValue,
                         icon: row.icon,
                         itemtype: row.itemtype,
                         gradedDate: gradeDate,
@@ -655,10 +737,17 @@ export class CoreGradesCoursePage implements AfterViewInit, OnDestroy {
         if (totalRow && (totalRow.grade === '-' || !totalRow.grade)) {
             const gradedSum = this.calculateGradedItemsSum();
             console.log('[Grades] Calculated sum from graded items:', gradedSum);
-            return gradedSum.toFixed(2);
+            return this.formatGradeValue(gradedSum);
         }
         
-        return totalRow?.grade || '0';
+        // Format the existing grade value
+        const gradeValue = totalRow?.grade || '0';
+        const gradeNum = parseFloat(gradeValue);
+        if (!isNaN(gradeNum)) {
+            return this.formatGradeValue(gradeNum);
+        }
+        
+        return gradeValue;
     }
     
     getCourseMaxGrade(): string {
@@ -668,6 +757,14 @@ export class CoreGradesCoursePage implements AfterViewInit, OnDestroy {
         });
         const maxGrade = this.extractMaxGrade(totalRow?.range || '0-100');
         console.log('[Grades] Course max grade:', maxGrade, 'from range:', totalRow?.range);
+        
+        // Format max grade to remove unnecessary decimals
+        const maxGradeNum = parseFloat(maxGrade);
+        if (!isNaN(maxGradeNum)) {
+            // If it's a whole number, show without decimals
+            // Otherwise, show up to 2 decimal places
+            return maxGradeNum % 1 === 0 ? maxGradeNum.toString() : maxGradeNum.toFixed(2);
+        }
         return maxGrade;
     }
     
@@ -837,6 +934,20 @@ export class CoreGradesCoursePage implements AfterViewInit, OnDestroy {
         // Would need to be in the actual data
         // For now, generate random dates for demo
         return Date.now() - Math.floor(Math.random() * 90) * 24 * 60 * 60 * 1000;
+    }
+    
+    /**
+     * Format grade value to remove unnecessary decimals
+     * @param value The numeric grade value
+     * @returns Formatted string with up to 2 decimal places
+     */
+    protected formatGradeValue(value: number): string {
+        // If it's a whole number, show without decimals
+        if (value % 1 === 0) {
+            return value.toString();
+        }
+        // Otherwise, show up to 2 decimal places, removing trailing zeros
+        return parseFloat(value.toFixed(2)).toString();
     }
     
     protected findCategoryForItem(item: any): string {

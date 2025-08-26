@@ -26,6 +26,7 @@ import {
     AddonMessagesConversationMessageFormatted,
     AddonMessagesSendMessageResults,
     AddonMessagesUpdateConversationAction,
+    AddonMessagesSendMessagesToConversationMessage,
 } from '../../services/messages';
 import { AddonMessagesOffline, AddonMessagesOfflineMessagesDBRecordFormatted } from '../../services/messages-offline';
 import { AddonMessagesSync, AddonMessagesSyncProvider } from '../../services/messages-sync';
@@ -48,6 +49,7 @@ import { CoreText } from '@singletons/text';
 import { CoreWait } from '@singletons/wait';
 import { CoreModals } from '@services/modals';
 import { CoreLoadings } from '@services/loadings';
+import { CoreUserParent } from '@features/user/services/parent';
 
 /**
  * Page that displays a message discussion page.
@@ -346,7 +348,7 @@ export class AddonMessagesDiscussionPage implements OnInit, OnDestroy, AfterView
             this.loaded = true;
             this.setPolling(); // Make sure we're polling messages.
             this.setContactRequestInfo();
-            this.setFooterType();
+            await this.setFooterType();
             loader && loader.dismiss();
         }
     }
@@ -1131,7 +1133,42 @@ export class AddonMessagesDiscussionPage implements OnInit, OnDestroy, AfterView
 
             try {
                 let data: AddonMessagesSendMessageResults;
-                if (this.conversationId) {
+                
+                // Check if this is a parent sending to a teacher
+                const isParent = await CoreUserParent.isParentUser();
+                const site = CoreSites.getCurrentSite();
+                
+                if (isParent && this.userId && site && site.wsAvailable('local_aspireparent_send_message_to_teacher') && 
+                    this.otherMember && !this.otherMember.canmessage) {
+                    // Parent sending to teacher - use custom web service
+                    const mentees = await CoreUserParent.getMentees();
+                    if (mentees.length > 0) {
+                        // For now, use the first mentee - in the future we might want to let parent choose
+                        const result: any = await site.write('local_aspireparent_send_message_to_teacher', {
+                            teacherid: this.userId,
+                            menteeid: mentees[0].id,
+                            message: text,
+                        });
+                        
+                        data = {
+                            sent: result.sent,
+                            message: result.sent ? {
+                                id: result.messageid,
+                                conversationid: result.conversationid,
+                                useridfrom: this.currentUserId,
+                                text: text,
+                                timecreated: Date.now() / 1000,
+                            } as AddonMessagesSendMessagesToConversationMessage : undefined!,
+                        };
+                        
+                        // Update conversation ID if we got one
+                        if (result.conversationid && !this.conversationId) {
+                            this.conversationId = result.conversationid;
+                        }
+                    } else {
+                        throw new CoreError('No mentees found');
+                    }
+                } else if (this.conversationId) {
                     data = await AddonMessages.sendMessageToConversation(this.conversation!, text);
                 } else {
                     data = await AddonMessages.sendMessage(this.userId!, text);
@@ -1363,7 +1400,7 @@ export class AddonMessagesDiscussionPage implements OnInit, OnDestroy, AfterView
     /**
      * Calculate what to display in the footer.
      */
-    protected setFooterType(): void {
+    protected async setFooterType(): Promise<void> {
         if (!this.otherMember) {
             // Group conversation or group messaging not available.
             this.footerType = 'message';
@@ -1378,7 +1415,15 @@ export class AddonMessagesDiscussionPage implements OnInit, OnDestroy, AfterView
         } else if (this.otherMember.requirescontact) {
             this.footerType = 'requiresContact';
         } else {
-            this.footerType = 'unable';
+            // Check if this is a parent trying to message a teacher
+            const isParent = await CoreUserParent.isParentUser();
+            if (isParent) {
+                // Check if the other member is a teacher by checking the URL or conversation context
+                // For now, we'll allow messaging if user is a parent
+                this.footerType = 'message';
+            } else {
+                this.footerType = 'unable';
+            }
         }
     }
 

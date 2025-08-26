@@ -41,7 +41,10 @@ $services = array(
             'local_aspireparent_get_mentee_forums',
             'local_aspireparent_get_mentee_course_teachers',
             'local_aspireparent_get_mentee_course_grades',
-            'local_aspireparent_get_all_course_grades'
+            'local_aspireparent_get_all_course_grades',
+            'local_aspireparent_get_site_forums',
+            'local_aspireparent_get_mentee_news',
+            'local_aspireparent_send_message_to_teacher'
         ),
         'restrictedusers' => 0,
         'enabled' => 1,
@@ -183,6 +186,33 @@ $functions = array(
         'methodname' => 'execute',
         'description' => 'Get all course grades including courses with showgrades disabled',
         'type' => 'read',
+        'ajax' => true,
+        'capabilities' => '',
+        'services' => array('local_aspireparent_service', MOODLE_OFFICIAL_MOBILE_SERVICE)
+    ),
+    'local_aspireparent_get_site_forums' => array(
+        'classname' => 'local_aspireparent\external\get_site_forums',
+        'methodname' => 'execute',
+        'description' => 'Get site-wide announcement forums',
+        'type' => 'read',
+        'ajax' => true,
+        'capabilities' => '',
+        'services' => array('local_aspireparent_service', MOODLE_OFFICIAL_MOBILE_SERVICE)
+    ),
+    'local_aspireparent_get_mentee_news' => array(
+        'classname' => 'local_aspireparent\external\get_mentee_news',
+        'methodname' => 'execute',
+        'description' => 'Get news items for a mentee user',
+        'type' => 'read',
+        'ajax' => true,
+        'capabilities' => '',
+        'services' => array('local_aspireparent_service', MOODLE_OFFICIAL_MOBILE_SERVICE)
+    ),
+    'local_aspireparent_send_message_to_teacher' => array(
+        'classname' => 'local_aspireparent\external\send_message_to_teacher',
+        'methodname' => 'execute',
+        'description' => 'Send a message from parent to teacher',
+        'type' => 'write',
         'ajax' => true,
         'capabilities' => '',
         'services' => array('local_aspireparent_service', MOODLE_OFFICIAL_MOBILE_SERVICE)

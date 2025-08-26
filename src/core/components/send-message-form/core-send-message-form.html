@@ -1,12 +1,28 @@
-<form #messageForm>
-    <textarea class="core-send-message-input" [attr.aria-label]="placeholder" [core-auto-focus]="showKeyboard" [placeholder]="placeholder"
-        rows="1" [core-auto-rows]="message" [(ngModel)]="message" name="message" (onResize)="textareaResized()"
-        (keyup.enter)="enterKeyUp($event)" (keyup.control.enter)="enterKeyUp($event, 'control')"
-        (keyup.meta.enter)="enterKeyUp($event, 'meta')" (keydown.enter)="enterKeyDown($event)"
-        (keydown.control.enter)="enterKeyDown($event, 'control')" (keydown.meta.enter)="enterKeyDown($event, 'meta')">
-    </textarea>
-    <ion-button fill="clear" size="large" type="submit" [disabled]="!message || sendDisabled" [ariaLabel]="'core.send' | translate"
-        [core-suppress-events] (onClick)="submitForm($event)">
-        <ion-icon name="fas-paper-plane" slot="icon-only" aria-hidden="true" flip-rtl />
-    </ion-button>
+<form #messageForm class="send-message-form" [class.has-content]="message.length > 0">
+    <div class="form-wrapper">
+        <textarea class="core-send-message-input" 
+            [attr.aria-label]="placeholder" 
+            [core-auto-focus]="showKeyboard" 
+            [placeholder]="placeholder"
+            rows="1" 
+            [core-auto-rows]="message" 
+            [(ngModel)]="message" 
+            name="message" 
+            (onResize)="textareaResized()"
+            (keyup.enter)="enterKeyUp($event)" 
+            (keyup.control.enter)="enterKeyUp($event, 'control')"
+            (keyup.meta.enter)="enterKeyUp($event, 'meta')" 
+            (keydown.enter)="enterKeyDown($event)"
+            (keydown.control.enter)="enterKeyDown($event, 'control')" 
+            (keydown.meta.enter)="enterKeyDown($event, 'meta')">
+        </textarea>
+        
+        <button type="submit" 
+            class="send-button"
+            [disabled]="!message.trim() || sendDisabled" 
+            [attr.aria-label]="'core.send' | translate"
+            (click)="submitForm($event)">
+            <ion-icon name="fas-paper-plane" aria-hidden="true" flip-rtl />
+        </button>
+    </div>
 </form>

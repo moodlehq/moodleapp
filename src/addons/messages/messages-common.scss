@@ -61,4 +61,25 @@
         margin-left: 16px;
         margin-right: 16px;
     }
+    
+    // Teacher conversations hierarchy styles
+    .child-header {
+        background-color: var(--ion-color-light);
+        font-weight: 500;
+    }
+
+    .child-courses {
+        .course-header {
+            background-color: var(--ion-color-light-tint);
+            margin-left: 16px;
+        }
+        
+        .teachers-list {
+            margin-left: 32px;
+            
+            ion-item {
+                --padding-start: 8px;
+            }
+        }
+    }
 }

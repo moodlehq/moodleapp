@@ -28,3 +28,6 @@ $string['pluginname'] = 'Aspire Parent Services';
 $string['privacy:metadata'] = 'The Aspire Parent Services plugin does not store any personal data.';
 $string['local_aspireparent:viewmentees'] = 'View own mentees';
 $string['nopermissions'] = 'You do not have permission to {$a}';
+$string['notparentofmentee'] = 'You are not a parent of this student';
+$string['teacherdoesnotteachmentee'] = 'This teacher does not teach your child';
+$string['messagefromparentcontext'] = '[This message is from {$a->parent} regarding their child {$a->child} in: {$a->courses}]';

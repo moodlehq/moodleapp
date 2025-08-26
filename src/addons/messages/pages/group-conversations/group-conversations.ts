@@ -479,7 +479,47 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
                 console.log('[AddonMessagesGroupConversations] Found mentees:', mentees.length);
 
                 for (const mentee of mentees) {
-                    const childCourses = await CoreCourses.getUserCourses(true, this.siteId, mentee.id);
+                    // Get courses using the custom web service if available
+                    let childCourses: CoreEnrolledCourseData[] = [];
+                    const site = CoreSites.getCurrentSite();
+                    
+                    if (site && site.wsAvailable('local_aspireparent_get_mentee_courses')) {
+                        console.log('[AddonMessagesGroupConversations] Using custom WS for mentee courses');
+                        console.log('[AddonMessagesGroupConversations] Calling with params:', { userid: mentee.id });
+                        try {
+                            const response = await site.read<CoreEnrolledCourseData[]>('local_aspireparent_get_mentee_courses', {
+                                userid: mentee.id,
+                            });
+                            // The response is directly an array of courses, not wrapped in a courses property
+                            childCourses = response || [];
+                            console.log('[AddonMessagesGroupConversations] Custom WS returned', childCourses.length, 'courses');
+                            console.log('[AddonMessagesGroupConversations] First course:', childCourses[0]);
+                        } catch (error) {
+                            console.error('[AddonMessagesGroupConversations] Error getting mentee courses:', error);
+                            // Try fallback
+                            childCourses = await CoreCourses.getUserCourses(true, this.siteId, mentee.id);
+                        }
+                    } else {
+                        console.log('[AddonMessagesGroupConversations] Custom WS not available, using fallback');
+                        // Fallback to regular method - but this won't work for parents
+                        // Let's also check if there's another custom service we can use
+                        if (site && site.wsAvailable('core_enrol_get_users_courses')) {
+                            try {
+                                // Try to call the web service directly as it might bypass some checks
+                                const response = await site.read<CoreEnrolledCourseData[]>('core_enrol_get_users_courses', {
+                                    userid: mentee.id,
+                                });
+                                childCourses = response || [];
+                                console.log('[AddonMessagesGroupConversations] Direct WS call returned', childCourses.length, 'courses');
+                            } catch (error) {
+                                console.error('[AddonMessagesGroupConversations] Error with direct WS call:', error);
+                                childCourses = [];
+                            }
+                        } else {
+                            childCourses = await CoreCourses.getUserCourses(true, this.siteId, mentee.id);
+                        }
+                    }
+                    
                     console.log('[AddonMessagesGroupConversations] Courses for mentee', mentee.id, ':', childCourses.length);
                     const childTeachers: ChildTeacherConversations = {
                         childId: mentee.id,
@@ -563,16 +603,23 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
     protected async getTeachersInCourse(courseId: number): Promise<AddonMessagesConversationFormatted[]> {
         try {
             // Check if user is viewing as parent
-            const selectedMenteeId = await CoreUserParent.getSelectedMentee();
+            const selectedMenteeId = await CoreUserParent.getSelectedMentee(this.siteId);
             let participants: CoreUserParticipant[] = [];
             
             if (selectedMenteeId && selectedMenteeId !== this.currentUserId) {
                 // Parent viewing - use custom web service
                 console.log('[AddonMessagesGroupConversations] Parent viewing detected, using custom web service');
+                console.log('[AddonMessagesGroupConversations] Getting teachers for course', courseId, 'mentee', selectedMenteeId);
                 
                 try {
-                    const site = await CoreSites.getSite(this.siteId);
-                    const hasCustomWS = await site.wsAvailable('local_aspireparent_get_mentee_course_teachers');
+                    const site = CoreSites.getCurrentSite();
+                    if (!site) {
+                        console.error('[AddonMessagesGroupConversations] No current site');
+                        return [];
+                    }
+                    
+                    const hasCustomWS = site.wsAvailable('local_aspireparent_get_mentee_course_teachers');
+                    console.log('[AddonMessagesGroupConversations] Custom WS available:', hasCustomWS);
                     
                     if (hasCustomWS) {
                         const result = await site.read<{teachers: Array<{
@@ -587,6 +634,8 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
                             courseid: courseId,
                             menteeid: selectedMenteeId,
                         });
+                        
+                        console.log('[AddonMessagesGroupConversations] Found', result.teachers.length, 'teachers');
                         
                         // Convert teachers to participant format
                         participants = result.teachers.map((teacher) => ({
@@ -622,11 +671,15 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
                         continue;
                     }
                     
-                    // Check for teacher/instructor roles using common shortnames
-                    const teacherRoleNames = ['teacher', 'editingteacher', 'instructor', 'tutor', 'trainer', 'facilitator'];
-                    const isTeacher = participant.roles.some(role => 
-                        teacherRoleNames.includes(role.shortname.toLowerCase())
-                    );
+                    // Check for teacher/instructor roles
+                    // Primary check: if role shortname contains 'teacher'
+                    const isTeacher = participant.roles.some(role => {
+                        if (!role.shortname) return false;
+                        const shortnameLower = role.shortname.toLowerCase();
+                        
+                        // Check if shortname contains 'teacher' (this will match 'teacher', 'editingteacher', 'noneeditingteacher', etc.)
+                        return shortnameLower.includes('teacher');
+                    });
                     
                     if (!isTeacher) {
                         continue;
@@ -641,16 +694,19 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
                     id: existingConv?.id || 0, // Use existing conversation ID if available
                     type: AddonMessagesProvider.MESSAGE_CONVERSATION_TYPE_INDIVIDUAL,
                     membercount: 2,
-                    ismuted: false,
-                    isfavourite: false,
-                    isread: true,
-                    members: [],
-                    messages: [],
-                    candeletemessagesforallusers: false,
+                    ismuted: existingConv?.ismuted || false,
+                    isfavourite: existingConv?.isfavourite || false,
+                    isread: existingConv?.isread !== false,
+                    members: existingConv?.members || [],
+                    messages: existingConv?.messages || [],
+                    candeletemessagesforallusers: existingConv?.candeletemessagesforallusers || false,
                     userid: participant.id,
                     name: participant.fullname || '',
                     imageurl: participant.profileimageurl || '',
                     unreadcount: existingConv?.unreadcount || 0,
+                    lastmessage: existingConv?.lastmessage,
+                    lastmessagedate: existingConv?.lastmessagedate,
+                    sentfromcurrentuser: existingConv?.sentfromcurrentuser,
                 };
                 
                 // Set otherUser for avatar display if we have the info
@@ -880,8 +936,9 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
             params.message = messageId;
         }
 
+        // If we don't have a conversation ID but have a user ID, we need to navigate to user conversation
         const path = CoreNavigator.getRelativePathToParent('/messages/group-conversations') + 'discussion/' +
-            (conversationId ? conversationId : `user/${userId}`);
+            (conversationId && conversationId > 0 ? conversationId : `user/${userId}`);
         
         console.log('[AddonMessagesGroupConversations] Navigating to:', path);
 
@@ -1123,6 +1180,24 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
      */
     gotoSearch(): void {
         CoreNavigator.navigateToSitePath('search');
+    }
+    
+    /**
+     * Toggle child expanded state for parent view.
+     * 
+     * @param child The child teacher conversations to toggle.
+     */
+    toggleChildExpanded(child: ChildTeacherConversations): void {
+        child.expanded = !child.expanded;
+    }
+    
+    /**
+     * Toggle course expanded state.
+     * 
+     * @param course The course to toggle.
+     */
+    toggleCourseExpanded(course: TeacherConversationGroup): void {
+        course.expanded = !course.expanded;
     }
 
     /**

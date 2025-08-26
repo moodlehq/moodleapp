@@ -147,40 +147,69 @@ class get_mentee_courses extends external_api {
             throw new \moodle_exception('nopermissions', 'error', '', 'view this users courses');
         }
         
-        // Get user's courses
-        $courses = enrol_get_users_courses($userid, true, null, 'fullname ASC');
-        
-        // Debug logging
-        error_log('local_aspireparent_get_mentee_courses: Found ' . count($courses) . ' courses for user ' . $userid);
-        
-        // Additional debug: Check direct enrollments
+        // For parent viewing mentee, get courses directly from enrollments
         if ($userid != $USER->id && $ismentee) {
-            error_log('local_aspireparent_get_mentee_courses: Checking mentee direct enrollments...');
-            $sql = "SELECT c.id, c.fullname, c.shortname, e.enrol, ue.status as uestatus, e.status as estatus
+            error_log('local_aspireparent_get_mentee_courses: Parent viewing mentee courses - using direct enrollment query');
+            
+            // Get all courses the mentee is enrolled in
+            $sql = "SELECT DISTINCT c.*
                     FROM {course} c
                     JOIN {enrol} e ON e.courseid = c.id
                     JOIN {user_enrolments} ue ON ue.enrolid = e.id
                     WHERE ue.userid = :userid
+                    AND e.status = 0
+                    AND ue.status = 0
                     ORDER BY c.fullname";
             
-            $enrollments = $DB->get_records_sql($sql, ['userid' => $userid]);
-            error_log('local_aspireparent_get_mentee_courses: Direct enrollment query found ' . count($enrollments) . ' enrollments');
+            $courses = $DB->get_records_sql($sql, ['userid' => $userid]);
+            error_log('local_aspireparent_get_mentee_courses: Direct query found ' . count($courses) . ' courses for mentee');
             
-            foreach ($enrollments as $enrollment) {
-                error_log('local_aspireparent_get_mentee_courses: Mentee enrolled in course ' . $enrollment->id . 
-                         ' (' . $enrollment->fullname . ') via ' . $enrollment->enrol . 
-                         ' method, user_enrol status: ' . $enrollment->uestatus . 
-                         ', enrol status: ' . $enrollment->estatus);
+            // If no courses found, check all enrollments without status filters
+            if (count($courses) == 0) {
+                error_log('local_aspireparent_get_mentee_courses: No active enrollments found, checking all enrollments...');
+                $allEnrollmentsSql = "SELECT c.id, c.fullname, e.enrol, e.status as enrol_status, ue.status as user_status
+                        FROM {course} c
+                        JOIN {enrol} e ON e.courseid = c.id
+                        JOIN {user_enrolments} ue ON ue.enrolid = e.id
+                        WHERE ue.userid = :userid";
+                
+                $allEnrollments = $DB->get_records_sql($allEnrollmentsSql, ['userid' => $userid]);
+                error_log('local_aspireparent_get_mentee_courses: Total enrollments (including inactive): ' . count($allEnrollments));
+                
+                foreach ($allEnrollments as $enrollment) {
+                    error_log('local_aspireparent_get_mentee_courses: Enrollment - Course ' . $enrollment->id . 
+                             ' (' . $enrollment->fullname . ') via ' . $enrollment->enrol . 
+                             ', enrol_status: ' . $enrollment->enrol_status . 
+                             ', user_status: ' . $enrollment->user_status);
+                }
+                
+                // Try without status checks
+                $sql = "SELECT DISTINCT c.*
+                        FROM {course} c
+                        JOIN {enrol} e ON e.courseid = c.id
+                        JOIN {user_enrolments} ue ON ue.enrolid = e.id
+                        WHERE ue.userid = :userid
+                        ORDER BY c.fullname";
+                
+                $courses = $DB->get_records_sql($sql, ['userid' => $userid]);
+                error_log('local_aspireparent_get_mentee_courses: Without status filters, found ' . count($courses) . ' courses');
             }
+            
+            // Log details about each course
+            foreach ($courses as $course) {
+                error_log('local_aspireparent_get_mentee_courses: Course ' . $course->id . ' - ' . $course->fullname);
+            }
+        } else {
+            // Get user's courses normally
+            $courses = enrol_get_users_courses($userid, true, null, 'fullname ASC');
+            error_log('local_aspireparent_get_mentee_courses: Found ' . count($courses) . ' courses for user ' . $userid);
         }
         
         $result = array();
         foreach ($courses as $course) {
             $coursecontext = context_course::instance($course->id);
             
-            // For parents viewing mentee courses, we need to check differently
-            // The parent may not have direct access to the course, but should see it
-            // if they are the parent of an enrolled student
+            // For parents viewing mentee courses, always allow access
             if ($userid != $USER->id && $ismentee) {
                 // Parent viewing mentee's course - allow without access check
                 error_log('local_aspireparent_get_mentee_courses: Parent viewing mentee course ' . $course->id . ' (' . $course->fullname . ') - ALLOWING');

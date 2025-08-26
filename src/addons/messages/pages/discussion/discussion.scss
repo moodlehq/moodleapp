@@ -1,16 +1,68 @@
 @use "theme/globals" as *;
 
 :host {
+    // Modern color palette
+    --messages-bg-gradient-start: #f0f4ff;
+    --messages-bg-gradient-end: #fef0ff;
+    --messages-date-bg: rgba(255, 255, 255, 0.8);
+    --messages-date-text: #666;
+    --messages-unread-bg: #e3f2fd;
+    --messages-unread-border: #2196f3;
+    --messages-shadow: rgba(0, 0, 0, 0.08);
+    --messages-hover-shadow: rgba(0, 0, 0, 0.12);
+
+    ion-content {
+        --background: linear-gradient(135deg, var(--messages-bg-gradient-start) 0%, var(--messages-bg-gradient-end) 100%);
+    }
+
+    .addon-messages-discussion-container {
+        padding: 16px;
+        min-height: 100%;
+    }
+
+    .addon-messages-date {
+        position: sticky;
+        top: 0;
+        z-index: 2;
+        margin: 24px auto 16px;
+        padding: 8px 24px;
+        background: var(--messages-date-bg);
+        backdrop-filter: blur(10px);
+        border-radius: 20px;
+        color: var(--messages-date-text);
+        font-size: 0.85rem;
+        font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        box-shadow: 0 2px 8px var(--messages-shadow);
+        max-width: fit-content;
+        transition: all 0.3s ease;
+        
+        &:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px var(--messages-hover-shadow);
+        }
+    }
 
     .addon-messages-unreadfrom {
-        color: var(--primary);
-        background-color: transparent;
-        margin-top: 6px;
-        margin-left: auto;
-        margin-right: auto;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 16px auto;
+        padding: 8px 20px;
+        background: var(--messages-unread-bg);
+        border: 2px solid var(--messages-unread-border);
+        border-radius: 25px;
+        color: var(--messages-unread-border);
+        font-weight: 600;
+        font-size: 0.9rem;
+        gap: 8px;
+        animation: slideInDown 0.3s ease;
+        
         ion-icon {
-            color: var(--primary);
-            background-color: transparent;
+            color: var(--messages-unread-border);
+            font-size: 1.1rem;
+            animation: bounce 1s infinite;
         }
     }
 
@@ -18,46 +70,205 @@
         padding-bottom: 0;
     }
 
-    ion-fab .core-discussion-messages-badge {
-        position: absolute;
-        color: var(--addon-messages-discussion-badge-text);
-        background-color: var(--addon-messages-discussion-badge);
-        display: block;
-        @include position(0px, 0px, null, null);
-    }
-
-    ion-header ion-toolbar ion-title {
-        padding: 0px;
-
-        h1 {
+    ion-fab {
+        animation: fadeIn 0.3s ease;
+        
+        ion-fab-button {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            transition: all 0.3s ease;
+            
+            &:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+            }
+        }
+        
+        .core-discussion-messages-badge {
+            position: absolute;
+            color: white;
+            background: linear-gradient(135deg, #ff6b6b 0%, #ff5252 100%);
             display: flex;
             align-items: center;
+            justify-content: center;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            font-size: 0.75rem;
+            font-weight: 700;
+            @include position(-4px, -4px, null, null);
+            box-shadow: 0 2px 8px rgba(255, 82, 82, 0.4);
+            animation: pulse 2s infinite;
+        }
+    }
+
+    ion-header {
+        ion-toolbar {
+            --background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --color: white;
+            
+            ion-buttons {
+                ion-button, ion-back-button {
+                    --color: white;
+                }
+            }
+        }
+        
+        ion-title {
             padding: 0px;
 
-            .core-bar-button-image {
-                --userpicture-padding: 4px;
-                @include margin-horizontal(null, 6px);
-            }
+            h1 {
+                display: flex;
+                align-items: center;
+                padding: 0px;
+                color: white;
 
-            // Group avatar.
-            img.core-bar-button-image {
-                padding: var(--userpicture-padding);
-                width: var(--core-header-toolbar-button-image-size);
-                height: var(--core-header-toolbar-button-image-size);
-                max-width: var(--core-header-toolbar-button-image-size);
-                max-height: var(--core-header-toolbar-button-image-size);
-                border-radius: var(--core-avatar-radius);
-                display: block;
-            }
+                .core-bar-button-image {
+                    --userpicture-padding: 4px;
+                    @include margin-horizontal(null, 6px);
+                    border: 2px solid rgba(255, 255, 255, 0.3);
+                    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+                }
 
-            core-format-text {
-                @include ellipsis();
-                flex-shrink: 1;
-                display: block;
-            }
+                // Group avatar.
+                img.core-bar-button-image {
+                    padding: var(--userpicture-padding);
+                    width: var(--core-header-toolbar-button-image-size);
+                    height: var(--core-header-toolbar-button-image-size);
+                    max-width: var(--core-header-toolbar-button-image-size);
+                    max-height: var(--core-header-toolbar-button-image-size);
+                    border-radius: var(--core-avatar-radius);
+                    display: block;
+                }
 
-            ion-icon {
-                @include margin-horizontal(6px, null);
+                core-format-text {
+                    @include ellipsis();
+                    flex-shrink: 1;
+                    display: block;
+                    font-weight: 600;
+                    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+                }
+
+                ion-icon {
+                    @include margin-horizontal(6px, null);
+                    color: rgba(255, 255, 255, 0.9);
+                    font-size: 1.1rem;
+                }
+            }
+        }
+    }
+    
+    // Message animations
+    @keyframes slideInDown {
+        from {
+            opacity: 0;
+            transform: translateY(-20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+        }
+        to {
+            opacity: 1;
+        }
+    }
+    
+    @keyframes bounce {
+        0%, 100% {
+            transform: translateY(0);
+        }
+        50% {
+            transform: translateY(-5px);
+        }
+    }
+    
+    @keyframes pulse {
+        0% {
+            transform: scale(1);
+        }
+        50% {
+            transform: scale(1.1);
+        }
+        100% {
+            transform: scale(1);
+        }
+    }
+    // Footer styling
+    ion-footer {
+        position: sticky;
+        bottom: 0;
+        z-index: 10;
+        
+        ion-toolbar {
+            --background: transparent;
+            --padding-start: 0;
+            --padding-end: 0;
+            --padding-top: 0;
+            --padding-bottom: 0;
+            --min-height: auto;
+            padding: 0;
+            
+            &[color="light"] {
+                --background: rgba(248, 249, 250, 0.98);
+                border-top: 1px solid rgba(0, 0, 0, 0.08);
+                
+                p {
+                    color: #666;
+                    font-size: 0.9rem;
+                    padding: 16px;
+                    margin: 0;
+                    text-align: center;
+                }
+                
+                ion-button {
+                    --border-radius: 25px;
+                    font-weight: 600;
+                    text-transform: none;
+                    letter-spacing: 0.3px;
+                    margin: 0 16px 16px;
+                    
+                    &:not([fill="outline"]) {
+                        --background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                        --background-activated: linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%);
+                        box-shadow: 0 3px 10px rgba(102, 126, 234, 0.3);
+                    }
+                    
+                    &[fill="outline"] {
+                        --border-width: 2px;
+                        --border-color: #667eea;
+                        --color: #667eea;
+                    }
+                }
+            }
+        }
+        
+        // The send message form will handle its own styling
+        core-send-message-form {
+            display: block;
+            width: 100%;
+        }
+    }
+    
+    // Empty state styling
+    core-empty-box {
+        --empty-box-icon-size: 80px;
+        --empty-box-color: #999;
+        --empty-box-margin: 48px auto;
+        
+        ::ng-deep {
+            .core-empty-box-icon {
+                opacity: 0.5;
+            }
+            
+            .core-empty-box-text {
+                font-size: 1.1rem;
+                color: #666;
+                font-weight: 500;
             }
         }
     }

@@ -76,37 +76,39 @@
                                     
                                     <!-- For parents: Show children with courses with teachers -->
                                     <ng-container *ngIf="isParent && childTeacherConversations.length > 0">
-                                        <ion-accordion-group>
-                                            <ion-accordion *ngFor="let child of childTeacherConversations" [value]="'child-' + child.childId">
-                                                <ion-item slot="header" class="ion-text-wrap">
-                                                    <core-user-avatar [user]="child.childAvatar" [linkProfile]="false" slot="start" />
-                                                    <ion-label>
-                                                        <h3>{{ child.childName }}</h3>
-                                                        <p>{{ child.courses.length }} {{ 'core.courses.courses' | translate }}</p>
-                                                    </ion-label>
-                                                </ion-item>
-                                                <div slot="content">
-                                                    <ion-accordion-group>
-                                                        <ion-accordion *ngFor="let course of child.courses" [value]="'child-course-' + child.childId + '-' + course.courseId">
-                                                            <ion-item slot="header" class="ion-text-wrap">
-                                                                <ion-avatar *ngIf="course.courseImage" slot="start">
-                                                                    <img [src]="course.courseImage" [alt]="course.courseName">
-                                                                </ion-avatar>
-                                                                <ion-icon *ngIf="!course.courseImage" name="fas-graduation-cap" slot="start" aria-hidden="true" />
-                                                                <ion-label>
-                                                                    <h4>{{ course.courseName }}</h4>
-                                                                    <p>{{ course.teachers.length }} {{ 'addon.messages.teachers' | translate }}</p>
-                                                                </ion-label>
-                                                            </ion-item>
-                                                            <div slot="content">
-                                                                <ng-container *ngTemplateOutlet="conversationsTemplate;
-                                                                        context: {conversations: course.teachers, isTeacher: true}" />
-                                                            </div>
-                                                        </ion-accordion>
-                                                    </ion-accordion-group>
+                                        <div *ngFor="let child of childTeacherConversations">
+                                            <!-- Child header -->
+                                            <ion-item class="ion-text-wrap child-header" button (click)="toggleChildExpanded(child); $event.stopPropagation()">
+                                                <core-user-avatar [user]="child.childAvatar" [linkProfile]="false" slot="start" />
+                                                <ion-label>
+                                                    <h3>{{ child.childName }}</h3>
+                                                    <p>{{ child.courses.length }} {{ 'core.courses.courses' | translate }}</p>
+                                                </ion-label>
+                                                <ion-icon [name]="child.expanded ? 'fas-chevron-up' : 'fas-chevron-down'" slot="end" aria-hidden="true" />
+                                            </ion-item>
+                                            <!-- Child courses -->
+                                            <div *ngIf="child.expanded" class="child-courses" (click)="$event.stopPropagation()">
+                                                <div *ngFor="let course of child.courses">
+                                                    <!-- Course header -->
+                                                    <ion-item class="ion-text-wrap course-header ion-padding-start" button (click)="toggleCourseExpanded(course); $event.stopPropagation()">
+                                                        <ion-avatar *ngIf="course.courseImage" slot="start">
+                                                            <img [src]="course.courseImage" [alt]="course.courseName">
+                                                        </ion-avatar>
+                                                        <ion-icon *ngIf="!course.courseImage" name="fas-graduation-cap" slot="start" aria-hidden="true" />
+                                                        <ion-label>
+                                                            <h4>{{ course.courseName }}</h4>
+                                                            <p>{{ course.teachers.length }} {{ 'addon.messages.teachers' | translate }}</p>
+                                                        </ion-label>
+                                                        <ion-icon [name]="course.expanded ? 'fas-chevron-up' : 'fas-chevron-down'" slot="end" aria-hidden="true" />
+                                                    </ion-item>
+                                                    <!-- Teachers list -->
+                                                    <div *ngIf="course.expanded" class="teachers-list ion-padding-start">
+                                                        <ng-container *ngTemplateOutlet="conversationsTemplate;
+                                                                context: {conversations: course.teachers, isTeacher: true}" />
+                                                    </div>
                                                 </div>
-                                            </ion-accordion>
-                                        </ion-accordion-group>
+                                            </div>
+                                        </div>
                                     </ng-container>
                                     
                                     <!-- Empty state -->
@@ -146,7 +148,7 @@
 </ion-content>
 
 <!-- Template to render a list of conversations. -->
-<ng-template #conversationsTemplate let-conversations="conversations">
+<ng-template #conversationsTemplate let-conversations="conversations" let-isTeacher="isTeacher">
     <ion-item class="ion-text-wrap addon-message-discussion" *ngFor="let conversation of conversations" button [detail]="false"
         [attr.aria-current]="((conversation.id && conversation.id === selectedConversationId) ||
             (conversation.userid && conversation.userid === selectedUserId)) ? 'page': 'false'"
@@ -160,7 +162,7 @@
         </ion-avatar>
 
         <!-- Avatar for individual conversations. -->
-        <core-user-avatar *ngIf="conversation.type !== typeGroup" core-user-avatar [user]="conversation.otherUser" [linkProfile]="false"
+        <core-user-avatar *ngIf="conversation.type !== typeGroup" core-user-avatar [user]="conversation.otherUser || conversation" [linkProfile]="false"
             [checkOnline]="conversation.showonlinestatus" slot="start" />
 
         <ion-label>

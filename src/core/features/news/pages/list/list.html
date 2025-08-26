@@ -15,39 +15,186 @@
     </ion-refresher>
 
     <core-loading [hideUntil]="loaded">
-        <ion-list *ngIf="news.length > 0">
-            <ion-item *ngFor="let item of news" button (click)="openNewsItem(item)" detail="true" class="news-item">
-                <ion-avatar slot="start" *ngIf="item.userpictureurl">
-                    <img [src]="item.userpictureurl" 
-                         [alt]="item.userfullname"
-                         core-external-content
-                         onError="this.src='assets/img/user-avatar.png'">
-                </ion-avatar>
-                <ion-label>
-                    <h2 class="news-title">{{ item.subject }}</h2>
-                    <div class="news-meta">
-                        <ion-badge [color]="getCourseBadgeColor(item.courseId)" class="course-badge">
-                            {{ item.courseName }}
-                        </ion-badge>
-                        <span class="news-author">{{ item.userfullname }}</span>
-                        <span class="news-date">• {{ formatDate(item.created) }}</span>
-                    </div>
-                    <p class="news-message" [innerHTML]="item.message | coreNoTags"></p>
-                    <div class="news-stats" *ngIf="item.numreplies > 0">
-                        <ion-icon name="chatbubbles-outline"></ion-icon>
-                        <span>{{ item.numreplies }} {{ 'core.comments' | translate }}</span>
-                        <span *ngIf="item.numunread > 0" class="unread-badge">
-                            {{ item.numunread }} {{ 'core.unread' | translate }}
-                        </span>
-                    </div>
-                </ion-label>
-                <ion-icon *ngIf="item.pinned" name="pin" slot="end" color="primary"></ion-icon>
-            </ion-item>
-        </ion-list>
-
         <core-empty-box *ngIf="loaded && news.length === 0" 
-                        icon="newspaper-outline" 
+                        icon="fas-bullhorn" 
                         [message]="'core.news.nonews' | translate">
         </core-empty-box>
+
+        <div *ngIf="news.length > 0" class="news-container pastel-news-view">
+            <!-- VIEW TOGGLE -->
+            <div class="view-toggle">
+                <ion-segment [(ngModel)]="viewMode" (ionChange)="onViewModeChange()">
+                    <ion-segment-button value="grouped">
+                        <ion-label>
+                            <ion-icon name="layers-outline"></ion-icon>
+                            Grouped
+                        </ion-label>
+                    </ion-segment-button>
+                    <ion-segment-button value="timeline">
+                        <ion-label>
+                            <ion-icon name="calendar-outline"></ion-icon>
+                            Timeline
+                        </ion-label>
+                    </ion-segment-button>
+                    <ion-segment-button value="all">
+                        <ion-label>
+                            <ion-icon name="list-outline"></ion-icon>
+                            All News
+                        </ion-label>
+                    </ion-segment-button>
+                </ion-segment>
+            </div>
+
+            <!-- GROUPED VIEW -->
+            <div class="news-grouped-view" *ngIf="viewMode === 'grouped'">
+                <ng-container *ngFor="let category of categoryTree">
+                    <ng-container *ngTemplateOutlet="categoryNode; context: { node: category, depth: 0 }"></ng-container>
+                </ng-container>
+            </div>
+            
+            <!-- Category Node Template -->
+            <ng-template #categoryNode let-node="node" let-depth="depth">
+                <!-- Category Header -->
+                <div class="category-header" 
+                     [class.category-depth-1]="depth === 1" 
+                     [class.category-depth-2]="depth === 2"
+                     [class.category-depth-3]="depth >= 3"
+                     (click)="toggleCategory(node.id)"
+                     *ngIf="node.newsItems.length > 0 || node.children.length > 0">
+                    <div class="category-info">
+                        <div class="category-icon">
+                            <ion-icon name="folder-outline"></ion-icon>
+                        </div>
+                        <div class="category-details">
+                            <h3>{{ node.name }}</h3>
+                            <p>{{ countTotalNewsItems(node) }} announcements</p>
+                        </div>
+                    </div>
+                    <ion-icon name="chevron-down" class="expand-icon" [class.expanded]="node.expanded"></ion-icon>
+                </div>
+                
+                <!-- Category Content -->
+                <div [hidden]="!node.expanded" class="category-content">
+                    <!-- News Items -->
+                    <div class="news-items">
+                        <div class="news-item" *ngFor="let item of node.newsItems" (click)="openNewsItem(item)">
+                            <div class="news-header">
+                                <div class="news-avatar" *ngIf="item.userpictureurl">
+                                    <img [src]="item.userpictureurl" 
+                                         [alt]="item.userfullname"
+                                         core-external-content
+                                         onError="this.src='assets/img/user-avatar.png'">
+                                </div>
+                                <div class="news-meta">
+                                    <h4>{{ item.subject }}</h4>
+                                    <div class="meta-info">
+                                        <span class="course-name">{{ item.courseFullname }}</span>
+                                        <span class="separator">•</span>
+                                        <span class="author">{{ item.userfullname }}</span>
+                                        <span class="separator">•</span>
+                                        <span class="date">{{ formatDate(item.created) }}</span>
+                                    </div>
+                                </div>
+                                <ion-icon *ngIf="item.pinned" name="pin" class="pin-icon"></ion-icon>
+                            </div>
+                            <div class="news-content">
+                                <div class="message" [innerHTML]="item.message | coreNoTags"></div>
+                                <div class="news-footer" *ngIf="item.numreplies > 0 || item.numunread > 0">
+                                    <div class="replies" *ngIf="item.numreplies > 0">
+                                        <ion-icon name="chatbubbles-outline"></ion-icon>
+                                        <span>{{ item.numreplies }}</span>
+                                    </div>
+                                    <div class="unread" *ngIf="item.numunread > 0">
+                                        <span class="unread-badge">{{ item.numunread }} new</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Child Categories -->
+                    <ng-container *ngFor="let child of node.children">
+                        <ng-container *ngTemplateOutlet="categoryNode; context: { node: child, depth: depth + 1 }"></ng-container>
+                    </ng-container>
+                </div>
+            </ng-template>
+
+            <!-- TIMELINE VIEW -->
+            <div class="news-timeline-view" *ngIf="viewMode === 'timeline'">
+                <div class="timeline-container">
+                    <div class="timeline-month" *ngFor="let month of getTimelineMonths()">
+                        <h3 class="month-header">{{ month.name }}</h3>
+                        <div class="timeline-items">
+                            <div class="timeline-item" *ngFor="let item of month.items" (click)="openNewsItem(item)">
+                                <div class="timeline-date">
+                                    <span class="day">{{ item.created * 1000 | date:'d' }}</span>
+                                    <span class="weekday">{{ item.created * 1000 | date:'EEE' }}</span>
+                                </div>
+                                <div class="timeline-content">
+                                    <div class="content-header">
+                                        <h4>{{ item.subject }}</h4>
+                                        <span class="course-badge">{{ item.courseName }}</span>
+                                    </div>
+                                    <p class="content-preview" [innerHTML]="item.message | coreNoTags"></p>
+                                    <div class="content-footer">
+                                        <span class="author">{{ item.userfullname }}</span>
+                                        <div class="stats" *ngIf="item.numreplies > 0">
+                                            <ion-icon name="chatbubbles-outline"></ion-icon>
+                                            <span>{{ item.numreplies }}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="timeline-connector"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ALL NEWS VIEW -->
+            <div class="news-all-view" *ngIf="viewMode === 'all'">
+                <div class="news-grid">
+                    <div class="news-card" *ngFor="let item of news" (click)="openNewsItem(item)">
+                        <div class="card-header">
+                            <div class="header-left">
+                                <img *ngIf="item.userpictureurl" 
+                                     [src]="item.userpictureurl" 
+                                     [alt]="item.userfullname"
+                                     class="user-avatar"
+                                     core-external-content
+                                     onError="this.src='assets/img/user-avatar.png'">
+                                <div class="header-info">
+                                    <h3>{{ item.subject }}</h3>
+                                    <div class="meta">
+                                        <span class="course">{{ item.courseFullname }}</span>
+                                        <span class="date">{{ formatDate(item.created) }}</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <ion-icon *ngIf="item.pinned" name="pin" class="pin-icon"></ion-icon>
+                        </div>
+                        <div class="card-content">
+                            <p [innerHTML]="item.message | coreNoTags"></p>
+                        </div>
+                        <div class="card-footer">
+                            <div class="author">
+                                <ion-icon name="person-outline"></ion-icon>
+                                <span>{{ item.userfullname }}</span>
+                            </div>
+                            <div class="stats">
+                                <div class="stat-item" *ngIf="item.numreplies > 0">
+                                    <ion-icon name="chatbubbles-outline"></ion-icon>
+                                    <span>{{ item.numreplies }}</span>
+                                </div>
+                                <div class="stat-item unread" *ngIf="item.numunread > 0">
+                                    <ion-icon name="mail-unread-outline"></ion-icon>
+                                    <span>{{ item.numunread }}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </core-loading>
 </ion-content>

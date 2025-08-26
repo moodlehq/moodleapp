@@ -811,9 +811,13 @@ export class AddonModForumProvider {
         const { CoreUserParent } = await import('@features/user/services/parent');
         const selectedMenteeId = await CoreUserParent.getSelectedMentee(site.getId());
         
-        if (selectedMenteeId && selectedMenteeId !== site.getUserId()) {
+        // Check if this might be a news forum - allow certain forum IDs and check options
+        const isLikelyNewsForum = options.cmId && options.cmId > 0; // If cmId is provided, it's likely from news service
+        
+        if (selectedMenteeId && selectedMenteeId !== site.getUserId() && !isLikelyNewsForum) {
             // Parent viewing - return empty discussions to avoid permission errors
-            console.log('[AddonModForum] Parent viewing detected, returning empty discussions');
+            // But allow forums that are likely news/announcements
+            console.log('[AddonModForum] Parent viewing detected, returning empty discussions for forum', forumId);
             return {
                 discussions: [],
                 canLoadMore: false,

@@ -77,16 +77,11 @@ class get_mentee_course_teachers extends external_api {
         $coursecontext = context_course::instance($params['courseid']);
 
         // Get all users with teacher roles in the course.
-        $teacherRoles = ['teacher', 'editingteacher', 'instructor', 'tutor', 'trainer', 'facilitator'];
+        // Find all roles where shortname contains 'teacher'
+        $sql = "SELECT id FROM {role} WHERE LOWER(shortname) LIKE '%teacher%'";
+        $teacherRoles = $DB->get_records_sql($sql);
         
-        // Get role IDs for teacher roles.
-        $roleIds = [];
-        foreach ($teacherRoles as $shortname) {
-            $role = $DB->get_record('role', ['shortname' => $shortname]);
-            if ($role) {
-                $roleIds[] = $role->id;
-            }
-        }
+        $roleIds = array_keys($teacherRoles);
         
         // Also check for roles with teacher archetype.
         $teacherArchetypeRoles = $DB->get_records('role', ['archetype' => 'teacher']);

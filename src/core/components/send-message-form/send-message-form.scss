@@ -1,45 +1,102 @@
 @use "theme/globals" as *;
 
 :host {
-    display: contents;
+    display: block;
+    width: 100%;
+}
 
-    --textarea-background: var(--core-input-background);
-    --textarea-color: var(--core-input-text);
-    --textarea-border-width: var(--core-input-border-width);
-    --textarea-border-color: var(--core-input-stroke);
-    --textarea-radius: var(--mdl-shape-borderRadius-xl);
-
-    form {
+.send-message-form {
+    width: 100%;
+    
+    .form-wrapper {
         display: flex;
-        align-items: center;
-        width: 100%;
-        background: var(--ion-item-background);
+        align-items: flex-end;
+        gap: 12px;
+        padding: 12px;
+        background: rgba(255, 255, 255, 0.98);
+        border-top: 1px solid rgba(0, 0, 0, 0.05);
+        box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.03);
     }
+}
 
+.core-send-message-input {
+    flex: 1;
+    min-height: 42px;
+    max-height: 120px;
+    padding: 10px 16px;
+    border: 2px solid #e8e8e8;
+    border-radius: 24px;
+    background: #f8f9fa;
+    font-size: 15px;
+    line-height: 1.5;
+    color: #333;
+    outline: none;
+    resize: none;
+    transition: all 0.2s ease;
+    
+    &::placeholder {
+        color: #999;
+    }
+    
+    &:focus {
+        background: white;
+        border-color: #667eea;
+        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+}
+
+.send-button {
+    width: 42px;
+    height: 42px;
+    border: none;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+    
+    ion-icon {
+        font-size: 18px;
+        transform: translateX(-1px);
+    }
+    
+    &:not(:disabled):hover {
+        transform: scale(1.05);
+        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+    }
+    
+    &:not(:disabled):active {
+        transform: scale(0.95);
+    }
+    
+    &:disabled {
+        opacity: 0.4;
+        cursor: not-allowed;
+    }
+}
+
+// When form has content
+.send-message-form.has-content {
     .core-send-message-input {
-        appearance: none;
-        display: block;
-        width: 100%;
-        font-family: inherit;
-
-        background: var(--textarea-background);
-        color: var(--textarea-color);
-        border: var(--textarea-border-width) solid var(--textarea-border-color);
-        border-radius: var(--textarea-radius);
-
-        min-height: var(--a11y-sizing-minTargetSize);
-        line-height: 20px;
-        padding: 10px;
-        @include margin(4px, 0px, 4px, 8px);
-        resize: vertical;
+        background: white;
+        border-color: rgba(102, 126, 234, 0.5);
     }
-
-    ion-button {
-        --padding-start: 16px;
-        --padding-end: 16px;
+    
+    .send-button {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        animation: subtle-glow 2s ease-in-out infinite;
     }
+}
 
-    .core-send-message-input::placeholder {
-        color: var(--ion-placeholder-color);
+@keyframes subtle-glow {
+    0%, 100% {
+        box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+    }
+    50% {
+        box-shadow: 0 2px 12px rgba(102, 126, 234, 0.5);
     }
 }
