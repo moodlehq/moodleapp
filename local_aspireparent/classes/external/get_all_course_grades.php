@@ -148,7 +148,7 @@ class get_all_course_grades extends external_api {
             $grade_item = \grade_item::fetch_course_item($course->id);
             
             if ($grade_item) {
-                $grade = new \grade_grade(array('itemid' => $grade_item->id, 'userid' => $userid));
+                $grade = \grade_grade::fetch(array('itemid' => $grade_item->id, 'userid' => $userid));
                 
                 $course_grade = array(
                     'courseid' => $course->id,
@@ -157,7 +157,7 @@ class get_all_course_grades extends external_api {
                     'showgrades' => $course->showgrades ? true : false
                 );
                 
-                if (!empty($grade->id)) {
+                if ($grade && !empty($grade->id)) {
                     // Get the final grade
                     $finalgrade = $grade->finalgrade;
                     $grademax = $grade_item->grademax;

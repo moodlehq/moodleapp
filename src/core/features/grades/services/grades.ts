@@ -15,6 +15,7 @@
 import { Injectable } from '@angular/core';
 import { CoreCourses } from '@features/courses/services/courses';
 import { CoreSites } from '@services/sites';
+import { CoreSite } from '@classes/sites/site';
 import { makeSingleton } from '@singletons';
 import { CoreLogger } from '@singletons/logger';
 import { CoreWSExternalWarning } from '@services/ws';
@@ -308,23 +309,32 @@ export class CoreGradesProvider {
         const site = await CoreSites.getSite(siteId);
 
         this.logger.debug('Get course grades');
+        console.log('[Grades Service] getCoursesGrades called');
+        console.log('[Grades Service] Site user ID:', site.getUserId());
 
         // Check if viewing as mentee
         const selectedMenteeId = await CoreUserParent.getSelectedMentee(site.getId());
+        console.log('[Grades Service] Selected mentee ID:', selectedMenteeId);
         
         if (selectedMenteeId && selectedMenteeId !== site.getUserId()) {
             // Parent viewing mentee's grades
             this.logger.debug(`Parent viewing mentee's course grades, mentee ID: ${selectedMenteeId}`);
             
+            // Use the working web service
             const hasCustomWS = await site.wsAvailable('local_aspireparent_get_mentee_course_grades');
+            console.log('[Grades Service] Custom WS available:', hasCustomWS);
+            
             if (hasCustomWS) {
                 this.logger.debug('Using custom WS for parent viewing mentee course grades');
                 const params = { menteeid: selectedMenteeId };
+                console.log('[Grades Service] WS params:', params);
+                
                 const preSets: CoreSiteWSPreSets = {
                     cacheKey: this.getCoursesGradesCacheKey() + ':mentee:' + selectedMenteeId,
                 };
                 
                 try {
+                    console.log('[Grades Service] Calling local_aspireparent_get_mentee_course_grades');
                     const data = await site.read<CoreGradesGetOverviewCourseGradesWSResponse>(
                         'local_aspireparent_get_mentee_course_grades',
                         params,
@@ -332,19 +342,28 @@ export class CoreGradesProvider {
                     );
                     
                     this.logger.debug(`Got ${data?.grades?.length || 0} course grades for mentee`);
+                    console.log('[Grades Service] Mentee grades response:', data);
+                    console.log('[Grades Service] Number of grades:', data?.grades?.length || 0);
+                    if (data?.grades && data.grades.length > 0) {
+                        console.log('[Grades Service] First grade:', data.grades[0]);
+                    }
                     
                     if (!data?.grades) {
+                        console.error('[Grades Service] No grades property in response');
                         throw new Error('Couldn\'t get mentee course grades');
                     }
                     
                     return data.grades;
                 } catch (error) {
                     this.logger.error('Error getting mentee course grades:', error);
+                    console.error('[Grades Service] Error details:', error);
                     throw error;
                 }
             }
         }
 
+        console.log('[Grades Service] Falling back to standard grades endpoint');
+        
         // Check if we have the custom endpoint that returns all courses
         const hasAllCoursesWS = await site.wsAvailable('local_aspireparent_get_all_course_grades');
         
@@ -377,26 +396,98 @@ export class CoreGradesProvider {
             }
         }
 
-        // Normal flow for students or when custom WS not available
-        const params: CoreGradesGetOverviewCourseGradesWSParams = {};
-        const preSets: CoreSiteWSPreSets = {
-            cacheKey: this.getCoursesGradesCacheKey(),
-        };
+        // Try using user grade report API instead of overview
+        try {
+            return await this.getCoursesGradesFromUserReport(site);
+        } catch (error) {
+            this.logger.error('Error using user report API, falling back to overview', error);
+            
+            // Fallback to overview API
+            const params: CoreGradesGetOverviewCourseGradesWSParams = {};
+            const preSets: CoreSiteWSPreSets = {
+                cacheKey: this.getCoursesGradesCacheKey(),
+            };
 
-        const data = await site.read<CoreGradesGetOverviewCourseGradesWSResponse>(
-            'gradereport_overview_get_course_grades',
-            params,
-            preSets,
-        );
+            const data = await site.read<CoreGradesGetOverviewCourseGradesWSResponse>(
+                'gradereport_overview_get_course_grades',
+                params,
+                preSets,
+            );
 
-        this.logger.debug(`Got ${data?.grades?.length || 0} course grades (standard)`,
-            data?.grades?.map(g => ({ courseid: g.courseid })));
+            this.logger.debug(`Got ${data?.grades?.length || 0} course grades (standard)`,
+                data?.grades?.map(g => ({ courseid: g.courseid })));
 
-        if (!data?.grades) {
-            throw new Error('Couldn\'t get course grades');
+            if (!data?.grades) {
+                throw new Error('Couldn\'t get course grades');
+            }
+
+            return data.grades;
         }
+    }
 
-        return data.grades;
+    /**
+     * Get course grades using the user grade report API.
+     * This fetches more detailed grade information similar to course/user.php?mode=grade
+     * 
+     * @param site Site instance.
+     * @param userId User ID to get grades for. If not set, current user.
+     * @returns Promise resolved with course grades.
+     */
+    private async getCoursesGradesFromUserReport(site: CoreSite, userId?: number): Promise<CoreGradesGradeOverview[]> {
+        userId = userId || site.getUserId();
+        
+        this.logger.debug('Getting course grades from user report');
+        
+        // First get the list of courses
+        const courses = await CoreCourses.getUserCourses(true, site.getId());
+        
+        const courseGrades: CoreGradesGradeOverview[] = [];
+        
+        // For each course, get the grade items and calculate total
+        for (const course of courses) {
+            try {
+                const params: CoreGradesGetUserGradeItemsWSParams = {
+                    courseid: course.id,
+                    userid: userId,
+                };
+                
+                const response = await site.read<CoreGradesGetUserGradeItemsWSResponse>(
+                    'gradereport_user_get_grade_items',
+                    params,
+                );
+                
+                if (response?.usergrades?.[0]) {
+                    const userGrade = response.usergrades[0];
+                    const courseTotal = userGrade.gradeitems.find(item => item.itemtype === 'course');
+                    
+                    if (courseTotal) {
+                        courseGrades.push({
+                            courseid: course.id,
+                            grade: courseTotal.gradeformatted || '-',
+                            rawgrade: String(courseTotal.graderaw || ''),
+                            rank: courseTotal.rank,
+                        });
+                    } else {
+                        // No course total found, add course with no grade
+                        courseGrades.push({
+                            courseid: course.id,
+                            grade: '-',
+                            rawgrade: '',
+                        });
+                    }
+                }
+            } catch (error) {
+                this.logger.error(`Error getting grades for course ${course.id}:`, error);
+                // Add course with no grade on error
+                courseGrades.push({
+                    courseid: course.id,
+                    grade: '-',
+                    rawgrade: '',
+                });
+            }
+        }
+        
+        return courseGrades;
     }
 
     /**

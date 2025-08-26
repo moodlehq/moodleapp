@@ -25,7 +25,7 @@
 defined("MOODLE_INTERNAL") || die();
 
 $plugin->component = "local_aspireparent";
-$plugin->version = 2024011522; // YYYYMMDDXX format - Added parent-teacher messaging support
+$plugin->version = 2024011530; // YYYYMMDDXX format - Cleaned up and using working grade fetching
 $plugin->release = "1.0.0";
 $plugin->requires = 2022041900; // Moodle 4.0 or later
 $plugin->maturity = MATURITY_STABLE;

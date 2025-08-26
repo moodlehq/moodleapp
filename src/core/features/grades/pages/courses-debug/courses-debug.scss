@@ -1,0 +1,23 @@
+:host {
+    .mentee-item {
+        margin-bottom: 1rem;
+        padding: 0.5rem;
+        border-left: 3px solid var(--ion-color-primary);
+        
+        h4 {
+            margin-top: 0;
+        }
+    }
+    
+    .error-item {
+        margin: 0.5rem 0;
+    }
+    
+    pre {
+        background-color: var(--ion-color-light);
+        padding: 1rem;
+        border-radius: 4px;
+        overflow-x: auto;
+        font-size: 0.875rem;
+    }
+}

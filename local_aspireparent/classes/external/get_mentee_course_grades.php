@@ -96,6 +96,10 @@ class get_mentee_course_grades extends external_api {
         self::validate_context($context);
         
         // Check if current user is a parent of the requested user
+        $menteecontext = context_user::instance($params['menteeid']);
+        $canviewasparent = has_capability('moodle/user:viewuseractivitiesreport', $menteecontext);
+        
+        // Also check the role assignment method for backwards compatibility
         $sql = "SELECT DISTINCT u.id
                 FROM {role_assignments} ra
                 JOIN {context} c ON ra.contextid = c.id
@@ -112,29 +116,37 @@ class get_mentee_course_grades extends external_api {
         
         $isparent = $DB->record_exists_sql($sql, $parentparams);
         
-        if (!$isparent && $params['menteeid'] != $USER->id) {
+        if (!$canviewasparent && !$isparent && $params['menteeid'] != $USER->id) {
+            error_log('[get_mentee_course_grades] Permission denied: canviewasparent=' . ($canviewasparent ? 'true' : 'false') . ', isparent=' . ($isparent ? 'true' : 'false'));
             throw new \moodle_exception('nopermissions', 'error', '', 'view mentee grades');
         }
         
         // Get mentee's courses
         $courses = enrol_get_users_courses($params['menteeid'], true, null, 'fullname ASC');
         
+        error_log('[get_mentee_course_grades] Fetching grades for mentee ID: ' . $params['menteeid']);
+        error_log('[get_mentee_course_grades] Number of courses found: ' . count($courses));
+        
         $grades = array();
         
         foreach ($courses as $course) {
-            // Get course grade for the mentee
+            error_log('[get_mentee_course_grades] Processing course ID: ' . $course->id . ' - ' . $course->fullname);
+            
+            // Always add the course, even if no grade item exists
+            $course_grade = array(
+                'courseid' => $course->id,
+                'grade' => '-',
+                'rawgrade' => ''
+            );
+            
+            
+            // Try to get course grade for the mentee
             $grade_item = \grade_item::fetch_course_item($course->id);
             
             if ($grade_item) {
-                $grade = new \grade_grade(array('itemid' => $grade_item->id, 'userid' => $params['menteeid']));
+                $grade = \grade_grade::fetch(array('itemid' => $grade_item->id, 'userid' => $params['menteeid']));
                 
-                $course_grade = array(
-                    'courseid' => $course->id,
-                    'grade' => '-',
-                    'rawgrade' => ''
-                );
-                
-                if (!empty($grade->id)) {
+                if ($grade && !empty($grade->id)) {
                     // Get the final grade
                     $finalgrade = $grade->finalgrade;
                     $grademax = $grade_item->grademax;
@@ -167,9 +179,16 @@ class get_mentee_course_grades extends external_api {
                     }
                 }
                 
-                $grades[] = $course_grade;
+            } else {
+                error_log('[get_mentee_course_grades] No grade item found for course ID: ' . $course->id);
             }
+            
+            // Always add the course to the results
+            $grades[] = $course_grade;
         }
+        
+        error_log('[get_mentee_course_grades] Total grades to return: ' . count($grades));
+        
         
         return array(
             'grades' => $grades,

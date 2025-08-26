@@ -44,7 +44,8 @@ $services = array(
             'local_aspireparent_get_all_course_grades',
             'local_aspireparent_get_site_forums',
             'local_aspireparent_get_mentee_news',
-            'local_aspireparent_send_message_to_teacher'
+            'local_aspireparent_send_message_to_teacher',
+            'local_aspireparent_get_mentee_user_report_grades'
         ),
         'restrictedusers' => 0,
         'enabled' => 1,
@@ -213,6 +214,15 @@ $functions = array(
         'methodname' => 'execute',
         'description' => 'Send a message from parent to teacher',
         'type' => 'write',
+        'ajax' => true,
+        'capabilities' => '',
+        'services' => array('local_aspireparent_service', MOODLE_OFFICIAL_MOBILE_SERVICE)
+    ),
+    'local_aspireparent_get_mentee_user_report_grades' => array(
+        'classname' => 'local_aspireparent\external\get_mentee_user_report_grades',
+        'methodname' => 'execute',
+        'description' => 'Get course grades for a mentee using user report API',
+        'type' => 'read',
         'ajax' => true,
         'capabilities' => '',
         'services' => array('local_aspireparent_service', MOODLE_OFFICIAL_MOBILE_SERVICE)

@@ -6,6 +6,11 @@
         <ion-title>
             <h1>{{ 'core.grades.grades' | translate }}</h1>
         </ion-title>
+        <ion-buttons slot="end">
+            <ion-button fill="clear" [routerLink]="['/main/home/grades-courses-debug']">
+                <ion-icon name="bug-outline" slot="icon-only"></ion-icon>
+            </ion-button>
+        </ion-buttons>
     </ion-toolbar>
 </ion-header>
 <ion-content>

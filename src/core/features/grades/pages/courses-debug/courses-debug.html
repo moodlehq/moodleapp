@@ -1,0 +1,137 @@
+<ion-header>
+    <ion-toolbar>
+        <ion-buttons slot="start">
+            <ion-back-button [text]="'core.back' | translate" />
+        </ion-buttons>
+        <ion-title>
+            <h1>Courses Grades Debug</h1>
+        </ion-title>
+        <ion-buttons slot="end">
+            <ion-button (click)="refresh()">
+                <ion-icon name="refresh" slot="icon-only"></ion-icon>
+            </ion-button>
+        </ion-buttons>
+    </ion-toolbar>
+</ion-header>
+
+<ion-content>
+    <core-loading [hideUntil]="!loading">
+        <div class="ion-padding">
+            <!-- User Info -->
+            <ion-card>
+                <ion-card-header>
+                    <ion-card-title>User Information</ion-card-title>
+                </ion-card-header>
+                <ion-card-content>
+                    <p><strong>Current User ID:</strong> {{ currentUserId }}</p>
+                    <p><strong>Is Parent:</strong> {{ isParent ? 'YES' : 'NO' }}</p>
+                    <p><strong>Selected Mentee ID:</strong> {{ selectedMenteeId || 'None' }}</p>
+                    <p><strong>Number of Mentees:</strong> {{ mentees.length }}</p>
+                </ion-card-content>
+            </ion-card>
+            
+            <!-- Web Services -->
+            <ion-card>
+                <ion-card-header>
+                    <ion-card-title>Web Services Available</ion-card-title>
+                </ion-card-header>
+                <ion-card-content>
+                    <p><strong>get_mentee_course_grades:</strong> 
+                        <ion-badge [color]="wsAvailable.menteeGrades ? 'success' : 'danger'">
+                            {{ wsAvailable.menteeGrades ? 'YES' : 'NO' }}
+                        </ion-badge>
+                    </p>
+                    <p><strong>get_all_course_grades:</strong> 
+                        <ion-badge [color]="wsAvailable.allGrades ? 'success' : 'danger'">
+                            {{ wsAvailable.allGrades ? 'YES' : 'NO' }}
+                        </ion-badge>
+                    </p>
+                    <p><strong>get_mentee_courses:</strong> 
+                        <ion-badge [color]="wsAvailable.menteeCourses ? 'success' : 'danger'">
+                            {{ wsAvailable.menteeCourses ? 'YES' : 'NO' }}
+                        </ion-badge>
+                    </p>
+                </ion-card-content>
+            </ion-card>
+            
+            <!-- Grades Data -->
+            <ion-card>
+                <ion-card-header>
+                    <ion-card-title>Grades Data</ion-card-title>
+                </ion-card-header>
+                <ion-card-content>
+                    <p><strong>Raw Grades Count:</strong> {{ rawGrades.length }}</p>
+                    <p><strong>Processed Grades Count:</strong> {{ processedGrades.length }}</p>
+                    <p><strong>Direct Mentee Grades Count:</strong> {{ rawCoursesGrades.length }}</p>
+                    
+                    <ion-item>
+                        <ion-label>Show Raw Grades</ion-label>
+                        <ion-toggle [(ngModel)]="showRawGrades"></ion-toggle>
+                    </ion-item>
+                    <pre *ngIf="showRawGrades">{{ getJson(rawGrades) }}</pre>
+                    
+                    <ion-item>
+                        <ion-label>Show Processed Grades</ion-label>
+                        <ion-toggle [(ngModel)]="showProcessedGrades"></ion-toggle>
+                    </ion-item>
+                    <pre *ngIf="showProcessedGrades">{{ getJson(processedGrades) }}</pre>
+                </ion-card-content>
+            </ion-card>
+            
+            <!-- Mentee Data -->
+            <ion-card *ngIf="isParent">
+                <ion-card-header>
+                    <ion-card-title>Mentee Data</ion-card-title>
+                </ion-card-header>
+                <ion-card-content>
+                    <ion-item>
+                        <ion-label>Show Mentee Details</ion-label>
+                        <ion-toggle [(ngModel)]="showMenteeData"></ion-toggle>
+                    </ion-item>
+                    <div *ngIf="showMenteeData">
+                        <div *ngFor="let mentee of mentees" class="mentee-item">
+                            <h4>{{ mentee.fullname }}</h4>
+                            <p><strong>ID:</strong> {{ mentee.id }}</p>
+                            <p><strong>Email:</strong> {{ mentee.email }}</p>
+                            <ion-button size="small" (click)="testMenteeWebService(mentee.id)">
+                                Test WS for this mentee
+                            </ion-button>
+                        </div>
+                    </div>
+                    
+                    <h4>Direct Mentee Grades Response:</h4>
+                    <pre>{{ getJson(rawCoursesGrades) }}</pre>
+                </ion-card-content>
+            </ion-card>
+            
+            <!-- Debug Info -->
+            <ion-card>
+                <ion-card-header>
+                    <ion-card-title>Debug Information</ion-card-title>
+                </ion-card-header>
+                <ion-card-content>
+                    <p><strong>Errors:</strong> {{ debugInfo.errors.length }}</p>
+                    <div *ngFor="let error of debugInfo.errors" class="error-item">
+                        <ion-text color="danger">{{ error }}</ion-text>
+                    </div>
+                    
+                    <ion-item>
+                        <ion-label>Show Debug Details</ion-label>
+                        <ion-toggle [(ngModel)]="showDebugInfo"></ion-toggle>
+                    </ion-item>
+                    <div *ngIf="showDebugInfo">
+                        <h4>Web Services Called:</h4>
+                        <ul>
+                            <li *ngFor="let ws of debugInfo.webServicesCalled">{{ ws }}</li>
+                        </ul>
+                        
+                        <h4>Cache Keys:</h4>
+                        <ul>
+                            <li *ngFor="let key of debugInfo.cacheKeys">{{ key }}</li>
+                        </ul>
+                    </div>
+                </ion-card-content>
+            </ion-card>
+        </div>
+    </core-loading>
+</ion-content>

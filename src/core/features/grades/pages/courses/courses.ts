@@ -59,6 +59,7 @@ export class CoreGradesCoursesPage implements OnDestroy, AfterViewInit {
     selectedMenteeId?: number;
     menteeCourses: { [menteeId: number]: any[] } = {};
     parentDataLoaded = false;
+    menteeCoursesForStudentView?: any[];
     
     // Category grouping
     coursesGroupedByCategory: { [categoryId: number]: { name: string; courses: CoreGradesGradeOverviewWithCourseData[] } } = {};
@@ -89,15 +90,15 @@ export class CoreGradesCoursesPage implements OnDestroy, AfterViewInit {
         this.isParentView = await CoreUserParent.isParentUser();
         console.log('[Grades] isParentView:', this.isParentView);
         
-        // TEMPORARY: Force student view to test category grouping
-        console.log('[Grades] TEMPORARY: Forcing student view for testing category grouping');
-        this.isParentView = false;
-        
-        if (this.isParentView) {
-            // Get mentees for parent view
+        // Always get mentees if user is a parent (even in forced student view)
+        const isActuallyParent = await CoreUserParent.isParentUser();
+        if (isActuallyParent) {
             this.mentees = await CoreUserParent.getMentees();
             this.selectedMenteeId = await CoreUserParent.getSelectedMentee() || undefined;
-            
+            console.log('[Grades] Parent user detected with', this.mentees.length, 'mentees');
+        }
+        
+        if (this.isParentView) {
             console.log('[Grades] Parent view detected with', this.mentees.length, 'mentees');
         }
 
@@ -106,6 +107,16 @@ export class CoreGradesCoursesPage implements OnDestroy, AfterViewInit {
         // Only start the courses manager if not in parent view
         if (!this.isParentView) {
             console.log('[Grades] Starting courses manager for student view');
+            
+            // Check if this is a parent forced into student view
+            const isActuallyParent = await CoreUserParent.isParentUser();
+            if (isActuallyParent && this.mentees.length > 0) {
+                console.log('[Grades] Parent in student view detected, fetching mentee courses');
+                // Fetch mentee courses even in student view
+                await this.fetchAllMenteeCourses();
+                this.parentDataLoaded = true;
+            }
+            
             this.courses.start(this.splitView);
             
             // Listen to the source for when items are loaded
@@ -122,6 +133,19 @@ export class CoreGradesCoursesPage implements OnDestroy, AfterViewInit {
                 this.groupCoursesByCategory();
             } else {
                 console.log('[Grades] Courses not yet loaded, will group when loaded');
+            }
+            
+            // If parent in student view and we have mentee courses, manually trigger grouping
+            if (isActuallyParent && this.selectedMenteeId && this.menteeCourses[this.selectedMenteeId]) {
+                console.log('[Grades] Parent in student view with mentee courses');
+                const menteeCourses = this.menteeCourses[this.selectedMenteeId];
+                console.log('[Grades] Found', menteeCourses.length, 'mentee courses to display');
+                
+                // Store mentee courses for grouping
+                this.menteeCoursesForStudentView = menteeCourses;
+                
+                // Trigger grouping with mentee courses
+                this.groupCoursesByCategory();
             }
         }
     }
@@ -186,6 +210,7 @@ export class CoreGradesCoursesPage implements OnDestroy, AfterViewInit {
      * Fetch courses with grades for all mentees.
      */
     private async fetchAllMenteeCourses(): Promise<void> {
+        console.log('[Grades] fetchAllMenteeCourses called');
         const site = CoreSites.getCurrentSite();
         if (!site) {
             return;
@@ -197,47 +222,120 @@ export class CoreGradesCoursesPage implements OnDestroy, AfterViewInit {
         // Fetch courses for each mentee
         const promises = this.mentees.map(async (mentee) => {
             try {
-                // Check if the custom WS is available
+                // Use the working mentee course grades WS
                 const hasCustomWS = await site.wsAvailable('local_aspireparent_get_mentee_course_grades');
                 
                 if (hasCustomWS) {
                     console.log('[Grades] Fetching course grades for mentee:', mentee.id);
+                    console.log('[Grades] Using local_aspireparent_get_mentee_course_grades');
+                    
                     const response = await site.read<{ grades: any[] }>('local_aspireparent_get_mentee_course_grades', {
                         menteeid: mentee.id
                     });
                     
-                    if (response.grades) {
+                    console.log('[Grades] Response from WS:', response);
+                    console.log('[Grades] Number of grades received:', response.grades?.length || 0);
+                    
+                    if (response.grades && response.grades.length > 0) {
                         // Get course details for each grade
                         const courseIds = response.grades.map(g => g.courseid);
+                        console.log('[Grades] Fetching course details for IDs:', courseIds);
+                        
                         const courses = await CoreCourses.getCoursesByField('ids', courseIds.join(','), site.getId());
+                        console.log('[Grades] Retrieved course details:', courses.length);
                         
                         // Merge grade data with course data
                         const coursesWithGrades = response.grades.map(grade => {
                             const course = courses.find(c => c.id === grade.courseid);
                             return {
                                 ...course,
+                                id: grade.courseid,
                                 courseid: grade.courseid,
                                 courseFullName: course?.fullname || 'Unknown Course',
-                                grade: grade.grade,
-                                rawgrade: grade.rawgrade,
+                                fullname: course?.fullname || 'Unknown Course',
+                                grade: grade.grade || '-',
+                                rawgrade: grade.rawgrade || '',
                                 rank: grade.rank
                             };
                         });
                         
                         this.menteeCourses[mentee.id] = coursesWithGrades;
-                        console.log(`[Grades] Found ${coursesWithGrades.length} courses for mentee ${mentee.id}`);
+                        console.log(`[Grades] Found ${coursesWithGrades.length} courses with grades for mentee ${mentee.id}`);
+                        console.log('[Grades] First course with grade:', coursesWithGrades[0]);
+                    } else {
+                        console.log('[Grades] No grades returned for mentee:', mentee.id);
+                        // Try to at least get the courses without grades
+                        try {
+                            const hasCustomCoursesWS = await site.wsAvailable('local_aspireparent_get_mentee_courses');
+                            
+                            if (hasCustomCoursesWS) {
+                                console.log('[Grades] Fetching courses without grades for mentee');
+                                const coursesResponse = await site.read<{ courses: any[] }>('local_aspireparent_get_mentee_courses', {
+                                    menteeid: mentee.id
+                                });
+                                
+                                if (coursesResponse.courses && coursesResponse.courses.length > 0) {
+                                    this.menteeCourses[mentee.id] = coursesResponse.courses.map(course => ({
+                                        ...course,
+                                        id: course.id,
+                                        courseid: course.id,
+                                        courseFullName: course.fullname,
+                                        fullname: course.fullname,
+                                        grade: '-',
+                                        rawgrade: ''
+                                    }));
+                                    console.log(`[Grades] Found ${coursesResponse.courses.length} courses for mentee (without grades)`);
+                                } else {
+                                    this.menteeCourses[mentee.id] = [];
+                                }
+                            } else {
+                                this.menteeCourses[mentee.id] = [];
+                            }
+                        } catch (coursesError) {
+                            console.error('[Grades] Error fetching courses without grades:', coursesError);
+                            this.menteeCourses[mentee.id] = [];
+                        }
                     }
                 } else {
                     console.warn('[Grades] Custom WS not available, using fallback');
-                    // Fallback: get mentee courses and then grades
-                    const courses = await CoreCourses.getUserCourses(false, site.getId());
-                    this.menteeCourses[mentee.id] = courses.map(course => ({
-                        ...course,
-                        courseid: course.id,
-                        courseFullName: course.fullname,
-                        grade: '-',
-                        rawgrade: ''
-                    }));
+                    // Fallback: get all mentee courses
+                    try {
+                        // Try to get courses for the specific mentee
+                        const hasCustomCoursesWS = await site.wsAvailable('local_aspireparent_get_mentee_courses');
+                        
+                        if (hasCustomCoursesWS) {
+                            console.log('[Grades] Using custom WS to get mentee courses');
+                            const response = await site.read<{ courses: any[] }>('local_aspireparent_get_mentee_courses', {
+                                menteeid: mentee.id
+                            });
+                            
+                            if (response.courses) {
+                                this.menteeCourses[mentee.id] = response.courses.map(course => ({
+                                    ...course,
+                                    id: course.id,
+                                    courseid: course.id,
+                                    courseFullName: course.fullname,
+                                    fullname: course.fullname,
+                                    grade: '-',
+                                    rawgrade: ''
+                                }));
+                                console.log(`[Grades] Found ${response.courses.length} courses for mentee ${mentee.id} (no grades)`);
+                            }
+                        } else {
+                            // Ultimate fallback
+                            const courses = await CoreCourses.getUserCourses(false, site.getId());
+                            this.menteeCourses[mentee.id] = courses.map(course => ({
+                                ...course,
+                                courseid: course.id,
+                                courseFullName: course.fullname,
+                                grade: '-',
+                                rawgrade: ''
+                            }));
+                        }
+                    } catch (fallbackError) {
+                        console.error('[Grades] Fallback error:', fallbackError);
+                        this.menteeCourses[mentee.id] = [];
+                    }
                 }
             } catch (error) {
                 console.error('[Grades] Error fetching courses for mentee', mentee.id, error);
@@ -255,7 +353,12 @@ export class CoreGradesCoursesPage implements OnDestroy, AfterViewInit {
      * @returns List of courses with grades for the mentee.
      */
     getCoursesForMentee(menteeId: number): any[] {
-        return this.menteeCourses[menteeId] || [];
+        const courses = this.menteeCourses[menteeId] || [];
+        console.log(`[Grades] getCoursesForMentee(${menteeId}) returning ${courses.length} courses`);
+        if (courses.length > 0) {
+            console.log('[Grades] First course for mentee:', courses[0]);
+        }
+        return courses;
     }
 
     /**
@@ -277,20 +380,24 @@ export class CoreGradesCoursesPage implements OnDestroy, AfterViewInit {
      */
     protected async groupCoursesByCategory(): Promise<void> {
         console.log('[Grades] Starting hierarchical category grouping');
-        console.log('[Grades] Number of courses to group:', this.courses.items?.length || 0);
+        
+        // Use mentee courses if available (for parent in student view)
+        const coursesToGroup = this.menteeCoursesForStudentView || this.courses.items || [];
+        console.log('[Grades] Number of courses to group:', coursesToGroup.length);
+        console.log('[Grades] Using mentee courses:', !!this.menteeCoursesForStudentView);
         
         this.coursesGroupedByCategory = {};
         this.categoryIds = [];
         this.categoryTree = [];
         
-        if (!this.courses.items || this.courses.items.length === 0) {
+        if (coursesToGroup.length === 0) {
             console.log('[Grades] No courses to group, exiting');
             return;
         }
         
         try {
             // First, get full course information with category data
-            const courseIds = this.courses.items.map((item: CoreGradesGradeOverviewWithCourseData) => item.courseid);
+            const courseIds = coursesToGroup.map((item: CoreGradesGradeOverviewWithCourseData) => item.courseid);
             console.log('[Grades] Fetching course data for IDs:', courseIds);
             
             const coursesData = await CoreCourses.getCoursesByField('ids', courseIds.join(','));
@@ -360,7 +467,7 @@ export class CoreGradesCoursesPage implements OnDestroy, AfterViewInit {
             // Assign courses to their categories
             console.log('[Grades] Assigning courses to categories');
             let coursesAssigned = 0;
-            this.courses.items.forEach((gradeItem: CoreGradesGradeOverviewWithCourseData) => {
+            coursesToGroup.forEach((gradeItem: CoreGradesGradeOverviewWithCourseData) => {
                 const courseInfo = courseMap[gradeItem.courseid];
                 const categoryId = courseInfo?.categoryid || 0;
                 
@@ -425,7 +532,7 @@ export class CoreGradesCoursesPage implements OnDestroy, AfterViewInit {
                 parent: 0,
                 depth: 0,
                 path: '/0',
-                courses: this.courses.items as CoreGradesGradeOverviewWithCourseData[],
+                courses: coursesToGroup as CoreGradesGradeOverviewWithCourseData[],
                 children: [],
                 expanded: true
             }];

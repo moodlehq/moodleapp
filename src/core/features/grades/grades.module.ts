@@ -60,6 +60,10 @@ const mainMenuChildrenRoutes: Routes = [
         path: 'grades-debug/:courseId',
         loadChildren: () => import('./grades-debug-lazy.module').then(m => m.CoreGradesDebugLazyModule),
     },
+    {
+        path: 'grades-courses-debug',
+        loadChildren: () => import('./pages/courses-debug/courses-debug.module').then(m => m.CoreGradesCoursesDebugPageModule),
+    },
     ...conditionalRoutes([
         {
             path: `${COURSE_PAGE_NAME}/${COURSE_INDEX_PATH}/${GRADES_PARTICIPANTS_PAGE_NAME}/:userId`,
