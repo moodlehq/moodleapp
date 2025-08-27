@@ -1,4 +1,4 @@
-@addon_mod_assign @app @mod @mod_assign @javascript @lms_from5.1
+@addon_mod_assign @app @mod @mod_assign @javascript @lms_from5.1 @ci_jenkins_skip
 Feature: Activities overview for assign activity
 
   Background:
