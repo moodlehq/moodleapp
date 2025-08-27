@@ -47,7 +47,7 @@ Feature: Activities overview for lesson activity
 
     When I press "4" within "Total attempts" "ion-item" in the app
     Then I should find "This lesson allows students to attempt it more than once" in the app
-    And I should find "2" within "Average attempts per student:" "li" in the app
+    And I should find "Average attempts per student: 2" in the app
 
     When I close the popup in the app
     And I press "View" in the app
