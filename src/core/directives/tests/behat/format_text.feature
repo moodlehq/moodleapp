@@ -12,6 +12,8 @@ Feature: Test functionality added by the format-text directive
       | user     | course | role    |
       | student1 | C1     | student |
 
+  # The wwwroot replacement was introduced in Moodle 4.3.
+  @lms_from4.3
   Scenario: Displays alternative content in the app
     Given the following "activities" exist:
       | activity   | course | name          | intro                                                                                                                                                                 |
