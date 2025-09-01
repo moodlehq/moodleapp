@@ -25,8 +25,8 @@
 defined("MOODLE_INTERNAL") || die();
 
 $plugin->component = "local_aspireparent";
-$plugin->version = 2024122602; // YYYYMMDDXX format - Get all courses with grades
-$plugin->release = "1.1.2";
+$plugin->version = 2024122603; // YYYYMMDDXX format - Added get_mentee_course web service
+$plugin->release = "1.1.3";
 $plugin->requires = 2022041900; // Moodle 4.0 or later
 $plugin->maturity = MATURITY_STABLE;
 $plugin->cron = 0;

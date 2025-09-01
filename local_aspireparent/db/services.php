@@ -30,6 +30,7 @@ $services = array(
             'local_aspireparent_get_mentees',
             'local_aspireparent_get_parent_info',
             'local_aspireparent_get_mentee_courses',
+            'local_aspireparent_get_mentee_course',
             'local_aspireparent_get_mentee_course_contents',
             'local_aspireparent_get_mentee_module',
             'local_aspireparent_get_mentee_grades',
@@ -78,6 +79,15 @@ $functions = array(
         'classname' => 'local_aspireparent\external\get_mentee_courses',
         'methodname' => 'execute',
         'description' => 'Get courses for a mentee user',
+        'type' => 'read',
+        'ajax' => true,
+        'capabilities' => '',
+        'services' => array('local_aspireparent_service', MOODLE_OFFICIAL_MOBILE_SERVICE)
+    ),
+    'local_aspireparent_get_mentee_course' => array(
+        'classname' => 'local_aspireparent\external\get_mentee_course',
+        'methodname' => 'execute',
+        'description' => 'Get individual course details for a mentee user',
         'type' => 'read',
         'ajax' => true,
         'capabilities' => '',

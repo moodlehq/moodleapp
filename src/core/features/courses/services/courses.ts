@@ -476,6 +476,38 @@ export class CoreCoursesProvider {
 
             const site = await CoreSites.getSite(siteId);
 
+            // Check if viewing as mentee and requesting a single course by ID
+            const selectedMenteeId = await CoreUserParent.getSelectedMentee(site.getId());
+            const isViewingMentee = selectedMenteeId !== null && selectedMenteeId !== site.getUserId();
+            const isRequestingCourseById = field === 'id' && value;
+
+            if (isViewingMentee && isRequestingCourseById) {
+                console.log('[Courses] Parent viewing mentee course by ID:', value);
+                
+                // Use custom web service for parent viewing mentee course
+                const wsData = {
+                    courseid: Number(value),
+                    userid: selectedMenteeId,
+                };
+                
+                const wsPreSets: CoreSiteWSPreSets = {
+                    cacheKey: `local_aspireparent_get_mentee_course:${value}:${selectedMenteeId}`,
+                    updateFrequency: CoreSite.FREQUENCY_RARELY,
+                    ...CoreSites.getReadingStrategyPreSets(options.readingStrategy),
+                };
+
+                const observable = site.readObservable<CoreCourseSearchedData>(
+                    'local_aspireparent_get_mentee_course',
+                    wsData,
+                    wsPreSets,
+                );
+
+                return observable.pipe(map(course => {
+                    console.log('[Courses] Mentee course received:', course);
+                    return [course]; // Return as array to match expected return type
+                }));
+            }
+
             // Fix params. Tries to use cached data, no need to use observer.
             const fieldParams = await this.fixCoursesByFieldParams(field, value, siteId);
 
