@@ -27,6 +27,7 @@
     "confirmpartialdownloadsize": "You are about to download <strong>at least</strong> {{size}}.{{availableSpace}} Are you sure you want to continue?",
     "couldnotloadsectioncontent": "Could not load the section content. Please try again later.",
     "couldnotloadsections": "Could not load the sections. Please try again later.",
+    "course:viewoverview": "View activities overview",
     "courseindex": "Course index",
     "coursesummary": "Course summary",
     "done": "Done",
