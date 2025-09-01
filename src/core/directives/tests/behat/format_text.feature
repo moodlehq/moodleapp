@@ -16,9 +16,10 @@ Feature: Test functionality added by the format-text directive
   @lms_from4.3
   Scenario: Displays alternative content in the app
     Given the following "activities" exist:
-      | activity   | course | name          | intro                                                                                                                                                                 |
-      | label      | C1     | Label title   | <div data-app-alt-url="#wwwroot#/my/courses.php">Content for browser</div>                                                                                            |
-      | label      | C1     | Label 2 title | <div data-app-alt-url="#wwwroot#/?redirect=0" data-app-alt-msg="Open this link" data-open-in="inapp" data-app-url-confirm="Custom confirm.">Content for browser</div> |
+      | activity   | course | name          | intro                                                                                                                                                               |
+      | label      | C1     | Label title   | <div data-app-alt-url="#wwwroot#/my/courses.php">Content for browser</div>                                                                                          |
+      | label      | C1     | Label 2 title | <div data-app-alt-url="#wwwroot#/?redirect=0" data-app-alt-msg="Open this link" data-open-in="app" data-app-url-confirm="Custom confirm.">Content for browser</div> |
+      | label      | C1     | Label 3 title | <div data-app-alt-url="#wwwroot#/user/view.php" data-open-in="app">Content for browser</div>                                                                        |
     Given I entered the course "Course 1" as "student1" in the app
     Then I should find "Open this link" in the app
     And I should find "$WWWROOT/my/courses.php" in the app
@@ -36,4 +37,9 @@ Feature: Test functionality added by the format-text directive
     Then I should find "Custom confirm" in the app
 
     When I press "OK" in the app
+    Then the app should have opened a browser tab with url "$WWWROOTPATTERN"
+
+    # In Behat there's no difference between system browser and embedded browser, just check that the browser confirmation isn't shown.
+    When I close the browser tab opened by the app
+    And I press "$WWWROOT/user/view.php" in the app
     Then the app should have opened a browser tab with url "$WWWROOTPATTERN"
