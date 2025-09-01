@@ -79,4 +79,5 @@ export const enum CoreCourseOverviewContentType {
     HUMAN_DATE = 'core_calendar\\output\\humandate',
     ACTION_LINK = 'core\\output\\action_link',
     OVERVIEW_DIALOG = 'core_courseformat\\output\\local\\overview\\overviewdialog',
+    OVERVIEW_ACTION = 'core_courseformat\\output\\local\\overview\\overviewaction',
 };

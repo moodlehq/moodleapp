@@ -153,7 +153,10 @@ export class CoreCourseOverviewService {
             courseid: courseId,
         };
 
-        const response = await site.write<CoreStatusWithWarningsWSResponse>('core_courseformat_view_overview_information', params);
+        const response = await site.write<CoreStatusWithWarningsWSResponse>(
+            'core_courseformat_log_view_overview_information',
+            params,
+        );
 
         if (!response.status) {
             // Return the warning. If no warnings (shouldn't happen), create a fake one.

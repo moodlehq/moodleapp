@@ -136,12 +136,15 @@ export class CoreModuleHandlerBase implements Partial<CoreCourseModuleHandler> {
             };
         }
 
-        if (item.contenttype === CoreCourseOverviewContentType.ACTION_LINK) {
-            const { CoreCourseOverviewItemActionLinkComponent } =
-                await import('@features/course/components/overview-item-action-link/overview-item-action-link');
+        if (
+            item.contenttype === CoreCourseOverviewContentType.ACTION_LINK ||
+            item.contenttype === CoreCourseOverviewContentType.OVERVIEW_ACTION
+        ) {
+            const { CoreCourseOverviewItemActionComponent } =
+                await import('@features/course/components/overview-item-action/overview-item-action');
 
             return {
-                component: CoreCourseOverviewItemActionLinkComponent,
+                component: CoreCourseOverviewItemActionComponent,
             };
         }
 

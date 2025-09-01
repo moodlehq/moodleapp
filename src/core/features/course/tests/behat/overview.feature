@@ -256,5 +256,11 @@ Feature: Activities overview common functionality
     And I should find "An overview of all activities in the course" in the app
     And I should be able to press "Resources" in the app
 
-  # TODO: Scenario: Viewing overview registers a log in Moodle LMS (MDL-85937).
-  # Also, expanding a mod type should register a log (MDL-86215). This log maybe should be in each activity behat.
+  Scenario: The course overview page should log a page event and a resource list event
+    Given I entered the course "Course 1" as "student" in the app
+    When I press "Activities" in the app
+    And I press "Resources" in the app
+    Then the following events should have been logged for "student" in the app:
+      | name                               | course   |
+      | \core\event\course_overview_viewed | Course 1 |
+  # TODO MOBILE-4869: Check expanding Resources registers a log. Each activity should also check its log.
