@@ -75,6 +75,7 @@ export class CoreGradesCoursePage implements AfterViewInit, OnDestroy {
     gradeDistributionLabels: string[] = [];
     groupedCategories: any[] = [];
     timelineData: any[] = [];
+    hideHeader = false;
 
     protected useLegacyLayout?: boolean; // Whether to use the layout before 4.1.
     protected logView: () => void;
@@ -128,6 +129,11 @@ export class CoreGradesCoursePage implements AfterViewInit, OnDestroy {
     async ngAfterViewInit(): Promise<void> {
         console.log('[Grades] ngAfterViewInit started');
         this.withinSplitView = !!this.element.nativeElement.parentElement?.closest('core-split-view');
+
+        // Check if we're coming from the course page (URL contains /courses/course/)
+        const currentUrl = window.location.href;
+        this.hideHeader = currentUrl.includes('/courses/course/');
+        console.log('[Grades] Hide header:', this.hideHeader, 'URL:', currentUrl);
 
         // Check if viewing as parent/mentee
         await this.checkParentContext();
