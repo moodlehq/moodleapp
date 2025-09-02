@@ -18,6 +18,7 @@ import { CoreSite } from '@classes/sites/site';
 import { CoreUser, CoreUserProfile } from './user';
 import { makeSingleton } from '@singletons';
 import { CoreError } from '@classes/errors/error';
+import { CoreEvents } from '@singletons/events';
 
 /**
  * Service to handle parent/mentee relationships.
@@ -191,6 +192,82 @@ export class CoreUserParentService {
         console.log('[Parent Service] Storage key:', key);
         console.log('[Parent Service] Site ID:', site.getId());
         
+        // Get a token for the mentee
+        try {
+            console.log('[Parent Service] Getting token for mentee...');
+            const tokenResponse = await site.write<{
+                token: string;
+                menteeid: number;
+                menteename: string;
+                privatetoken?: string;
+            }>('local_aspireparent_get_mentee_token', {
+                menteeid: menteeId,
+                service: 'moodle_mobile_app'
+            });
+            
+            console.log('[Parent Service] Token response:', {
+                menteeid: tokenResponse.menteeid,
+                menteename: tokenResponse.menteename,
+                tokenLength: tokenResponse.token?.length
+            });
+            
+            if (tokenResponse.token) {
+                // Store the original parent's token and user info
+                const parentToken = site.getToken();
+                const parentInfo = site.getInfo();
+                
+                await site.setLocalSiteConfig(this.getOriginalUserKey(site.getId()), String(parentInfo?.userid || site.getUserId()));
+                await site.setLocalSiteConfig(this.getOriginalTokenKey(site.getId()), parentToken);
+                
+                console.log('[Parent Service] Stored parent info:', {
+                    userid: parentInfo?.userid,
+                    tokenLength: parentToken?.length
+                });
+                
+                // We need to update the token in the site object
+                // Since there's no public method to change the token, we'll use a workaround
+                console.log('[Parent Service] Token before update:', site.getToken()?.substring(0, 10) + '...');
+                
+                // Update the site object's token directly
+                (site as any).token = tokenResponse.token;
+                
+                console.log('[Parent Service] Token after update:', site.getToken()?.substring(0, 10) + '...');
+                console.log('[Parent Service] Updated site object with mentee token');
+                
+                // Get the mentee's site info using the new token
+                let menteeInfo;
+                try {
+                    console.log('[Parent Service] Fetching site info with mentee token...');
+                    menteeInfo = await site.fetchSiteInfo();
+                    console.log('[Parent Service] Mentee site info:', {
+                        userid: menteeInfo.userid,
+                        username: menteeInfo.username,
+                        fullname: menteeInfo.fullname,
+                        userpictureurl: menteeInfo.userpictureurl
+                    });
+                    
+                    // Update the site's info with the mentee's data
+                    site.setInfo(menteeInfo);
+                    
+                    console.log('[Parent Service] Updated site info with mentee data');
+                    console.log('[Parent Service] Site getUserId() now returns:', site.getUserId());
+                } catch (infoError) {
+                    console.error('[Parent Service] Error fetching mentee site info:', infoError);
+                    // Continue anyway - we have the token
+                }
+                
+                // Trigger events to refresh the UI
+                if (menteeInfo) {
+                    CoreEvents.trigger(CoreEvents.SITE_UPDATED, menteeInfo, site.getId());
+                }
+                
+                console.log('[Parent Service] Site is now using mentee token for all requests');
+            }
+        } catch (error) {
+            console.error('[Parent Service] Failed to get mentee token:', error);
+            // Fall back to using custom web services with parent token
+        }
+        
         await site.setLocalSiteConfig(key, String(menteeId));
         
         // Verify it was saved
@@ -212,6 +289,55 @@ export class CoreUserParentService {
         console.log('[Parent Service] Clearing selected mentee...');
         console.log('[Parent Service] Storage key:', key);
         
+        // Restore original token if we have one stored
+        try {
+            const originalToken = await site.getLocalSiteConfig<string>(this.getOriginalTokenKey(site.getId()));
+            const originalUserId = await site.getLocalSiteConfig<string>(this.getOriginalUserKey(site.getId()));
+            
+            if (originalToken && originalUserId) {
+                console.log('[Parent Service] Restoring parent token...');
+                
+                // Update the site object's token directly
+                (site as any).token = originalToken;
+                
+                console.log('[Parent Service] Restored parent token in site object');
+                
+                // Get the parent's site info using the original token
+                let parentInfo;
+                try {
+                    console.log('[Parent Service] Fetching site info with parent token...');
+                    parentInfo = await site.fetchSiteInfo();
+                    console.log('[Parent Service] Parent site info:', {
+                        userid: parentInfo.userid,
+                        username: parentInfo.username,
+                        fullname: parentInfo.fullname
+                    });
+                    
+                    // Update the site's info with the parent's data
+                    site.setInfo(parentInfo);
+                    
+                    console.log('[Parent Service] Restored parent site info');
+                } catch (infoError) {
+                    console.error('[Parent Service] Error fetching parent site info:', infoError);
+                    // Continue anyway - we have the token
+                }
+                
+                // Clear the stored tokens and user ID
+                await site.setLocalSiteConfig(this.getOriginalTokenKey(site.getId()), '');
+                await site.setLocalSiteConfig(this.getOriginalUserKey(site.getId()), '');
+                
+                // Trigger events to refresh the UI
+                if (parentInfo) {
+                    CoreEvents.trigger(CoreEvents.SITE_UPDATED, parentInfo, site.getId());
+                }
+                
+                console.log('[Parent Service] Restored parent token and cleared stored data');
+            }
+        } catch (error) {
+            console.error('[Parent Service] Failed to restore original token:', error);
+            // Continue with clearing the mentee selection even if restore fails
+        }
+        
         // Set to empty string to clear the value (there's no delete method for local site config)
         await site.setLocalSiteConfig(key, '');
         
@@ -231,6 +357,26 @@ export class CoreUserParentService {
      */
     protected getSelectedMenteeKey(siteId: string): string {
         return CoreUserParentService.CACHE_KEY + 'selectedMentee:' + siteId;
+    }
+
+    /**
+     * Get the key for storing original user ID.
+     *
+     * @param siteId Site ID.
+     * @returns Storage key.
+     */
+    protected getOriginalUserKey(siteId: string): string {
+        return CoreUserParentService.CACHE_KEY + 'originalUser:' + siteId;
+    }
+
+    /**
+     * Get the key for storing original token.
+     *
+     * @param siteId Site ID.
+     * @returns Storage key.
+     */
+    protected getOriginalTokenKey(siteId: string): string {
+        return CoreUserParentService.CACHE_KEY + 'originalToken:' + siteId;
     }
 
     /**

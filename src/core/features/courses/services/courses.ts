@@ -880,6 +880,22 @@ export class CoreCoursesProvider {
     }
 
     /**
+     * Check if the user is currently logged in as a mentee.
+     *
+     * @param site The site object.
+     * @returns Promise resolved with true if logged in as mentee.
+     */
+    protected async isLoggedInAsMentee(site: CoreSite): Promise<boolean> {
+        try {
+            // Check if there's an original token stored (indicates we're using mentee token)
+            const originalToken = await site.getLocalSiteConfig<string>(`CoreUserParent:originalToken:${site.getId()}`);
+            return !!originalToken && originalToken !== '';
+        } catch {
+            return false;
+        }
+    }
+
+    /**
      * Get a course the user is enrolled in. This function relies on getUserCourses.
      * preferCache=true will try to speed up the response, but the data returned might not be updated.
      *
@@ -935,36 +951,46 @@ export class CoreCoursesProvider {
         return asyncObservable(async () => {
             const site = await CoreSites.getSite(options.siteId);
 
-            // Check if viewing as a mentee
+            // Get the user ID to fetch courses for
             let userId = site.getUserId();
             console.log('[Courses] getUserCoursesObservable - Starting course fetch');
             console.log('[Courses] Current site user ID:', site.getUserId());
             console.log('[Courses] Site ID:', site.getId());
+            console.log('[Courses] Site info:', {
+                userid: site.getInfo()?.userid,
+                username: site.getInfo()?.username,
+                fullname: site.getInfo()?.fullname
+            });
             
-            const selectedMenteeId = await CoreUserParent.getSelectedMentee(site.getId());
-            console.log('[Courses] Selected mentee ID from storage:', selectedMenteeId);
-            console.log('[Courses] Type of selectedMenteeId:', typeof selectedMenteeId);
+            // Check if we're using a mentee token
+            const isUsingMenteeToken = await this.isLoggedInAsMentee(site);
+            console.log('[Courses] Using mentee token:', isUsingMenteeToken);
             
-            if (selectedMenteeId && selectedMenteeId !== null) {
-                console.log('[Courses] Mentee selected, checking permissions...');
-                // Check if user can view mentee data
-                const canView = await CoreUserParent.canViewUserData(selectedMenteeId, site.getId());
-                console.log('[Courses] Can view mentee data:', canView);
+            if (!isUsingMenteeToken) {
+                // If not using mentee token, check if we need to use custom web service
+                const selectedMenteeId = await CoreUserParent.getSelectedMentee(site.getId());
+                console.log('[Courses] Selected mentee ID from storage:', selectedMenteeId);
                 
-                if (canView) {
-                    userId = selectedMenteeId;
-                    console.log('[Courses] Permission granted - Switched to mentee user ID:', userId);
-                } else {
-                    console.log('[Courses] Permission denied - Using original user ID:', userId);
+                if (selectedMenteeId && selectedMenteeId !== null) {
+                    console.log('[Courses] Mentee selected, checking permissions...');
+                    // Check if user can view mentee data
+                    const canView = await CoreUserParent.canViewUserData(selectedMenteeId, site.getId());
+                    console.log('[Courses] Can view mentee data:', canView);
+                    
+                    if (canView) {
+                        userId = selectedMenteeId;
+                        console.log('[Courses] Permission granted - Will fetch mentee courses with ID:', userId);
+                    } else {
+                        console.log('[Courses] Permission denied - Using original user ID:', userId);
+                    }
                 }
             } else {
-                console.log('[Courses] No mentee selected - Using current user ID:', userId);
-                // Ensure we're really using the current user's ID
+                console.log('[Courses] Using mentee token - fetching courses for current session user');
+                // When using mentee token, the site's user ID is already the mentee's ID
                 userId = site.getUserId();
             }
             
             console.log('[Courses] Final user ID for course fetch:', userId);
-            console.log('[Courses] Is viewing mentee courses:', userId !== site.getUserId());
             
             const wsParams: CoreEnrolGetUsersCoursesWSParams = {
                 userid: userId,
@@ -989,31 +1015,28 @@ export class CoreCoursesProvider {
             console.log('[Courses] Web service params:', JSON.stringify(wsParams));
             console.log('[Courses] Cache key:', cacheKey);
             
-            // Use custom web service for mentee courses if available
+            console.log('[Courses] Web service selection - Is using mentee token:', isUsingMenteeToken);
+            console.log('[Courses] Web service selection - WS params user ID:', wsParams.userid);
+            console.log('[Courses] Web service selection - Site user ID:', site.getUserId());
+            
+            // Determine which web service to use
             let wsName = 'core_enrol_get_users_courses';
-            if (userId !== site.getUserId()) {
-                console.log('[Courses] Fetching mentee courses - checking for custom web service...');
-                // Check if custom web service exists
+            if (!isUsingMenteeToken && userId !== site.getUserId()) {
+                // Parent viewing mentee's courses with parent token - use custom web service if available
+                console.log('[Courses] Parent viewing mentee courses - checking for custom web service...');
                 try {
                     const hasCustomWS = await site.wsAvailable('local_aspireparent_get_mentee_courses');
                     if (hasCustomWS) {
                         wsName = 'local_aspireparent_get_mentee_courses';
                         console.log('[Courses] Using custom web service for mentee courses');
-                        
-                        // Debug: Also try the standard web service to compare
-                        console.log('[Courses] DEBUG: Testing standard web service for comparison...');
-                        try {
-                            const standardResult = await site.read('core_enrol_get_users_courses', wsParams);
-                            console.log('[Courses] DEBUG: Standard WS returned', Array.isArray(standardResult) ? standardResult.length : 0, 'courses');
-                        } catch (standardError) {
-                            console.log('[Courses] DEBUG: Standard WS error:', standardError.message);
-                        }
                     } else {
                         console.log('[Courses] Custom web service not available, using default');
                     }
                 } catch {
                     console.log('[Courses] Error checking for custom web service, using default');
                 }
+            } else {
+                console.log('[Courses] Using standard web service (mentee token or own courses)');
             }
             
             console.log('[Courses] Calling web service:', wsName);

@@ -122,7 +122,21 @@ class get_mentee_courses extends external_api {
         $context = context_system::instance();
         self::validate_context($context);
         
-        // Check if current user is a parent of the requested user
+        // Debug logging
+        error_log('local_aspireparent_get_mentee_courses: Request for user ' . $userid . ' by user ' . $USER->id);
+        error_log('local_aspireparent_get_mentee_courses: Is logged in as: ' . (\core\session\manager::is_loggedinas() ? 'YES' : 'NO'));
+        if (\core\session\manager::is_loggedinas()) {
+            error_log('local_aspireparent_get_mentee_courses: Real user ID: ' . $USER->realuserid);
+        }
+        
+        // If logged in as another user, check permissions using the real user
+        $checkuserid = $USER->id;
+        if (\core\session\manager::is_loggedinas() && isset($USER->realuserid)) {
+            $checkuserid = $USER->realuserid;
+            error_log('local_aspireparent_get_mentee_courses: Using real user ID ' . $checkuserid . ' for permission check');
+        }
+        
+        // Check if current user (or real user if logged in as) is a parent of the requested user
         $sql = "SELECT DISTINCT u.id
                 FROM {role_assignments} ra
                 JOIN {context} c ON ra.contextid = c.id
@@ -132,7 +146,7 @@ class get_mentee_courses extends external_api {
                 AND u.id = :menteeid";
         
         $params = array(
-            'parentid' => $USER->id,
+            'parentid' => $checkuserid,
             'contextlevel' => CONTEXT_USER,
             'menteeid' => $userid
         );
@@ -140,15 +154,30 @@ class get_mentee_courses extends external_api {
         $ismentee = $DB->record_exists_sql($sql, $params);
         
         // Debug logging
-        error_log('local_aspireparent_get_mentee_courses: Checking access for parent ' . $USER->id . ' to view mentee ' . $userid . ' courses');
+        error_log('local_aspireparent_get_mentee_courses: Checking access for user ' . $checkuserid . ' to view mentee ' . $userid . ' courses');
         error_log('local_aspireparent_get_mentee_courses: Is mentee relationship: ' . ($ismentee ? 'YES' : 'NO'));
         
-        if ($userid != $USER->id && !$ismentee && !has_capability('moodle/user:viewdetails', $context)) {
+        // Allow access if:
+        // 1. Viewing own courses
+        // 2. Parent viewing mentee's courses
+        // 3. Logged in as the user being viewed
+        // 4. Has capability to view user details
+        if ($userid != $USER->id && 
+            !$ismentee && 
+            !(\core\session\manager::is_loggedinas() && $USER->id == $userid) &&
+            !has_capability('moodle/user:viewdetails', $context)) {
             throw new \moodle_exception('nopermissions', 'error', '', 'view this users courses');
         }
         
+        // Check if we're logged in as the user we're trying to view
+        if (\core\session\manager::is_loggedinas() && $USER->id == $userid) {
+            // We're logged in as this user, just use the standard function
+            error_log('local_aspireparent_get_mentee_courses: Logged in as user ' . $userid . ', using standard function');
+            $courses = enrol_get_users_courses($userid, true, null, 'fullname ASC');
+            error_log('local_aspireparent_get_mentee_courses: Standard function returned ' . count($courses) . ' courses');
+        }
         // For parent viewing mentee, get courses directly from enrollments
-        if ($userid != $USER->id && $ismentee) {
+        else if ($userid != $USER->id && $ismentee) {
             error_log('local_aspireparent_get_mentee_courses: Parent viewing mentee courses - using direct enrollment query');
             
             // Get all courses the mentee is enrolled in
