@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { ChangeDetectionStrategy, Component, OnInit, HostListener } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, HostListener, OnDestroy } from '@angular/core';
 import { CoreSites } from '@services/sites';
 import { ICoreBlockComponent } from '@features/block/classes/base-block-component';
 import { AddonBlockTimeline } from '../../services/timeline';
@@ -30,6 +30,8 @@ import { CoreLogger } from '@singletons/logger';
 import { CoreSharedModule } from '@/core/shared.module';
 import { CoreSearchComponentsModule } from '@features/search/components/components.module';
 import { AddonBlockTimelineEventsComponent } from '../events/events';
+import { CoreUserParent } from '@features/user/services/parent';
+import { CoreEventObserver, CoreEvents } from '@singletons/events';
 
 /**
  * Component to render a timeline block.
@@ -46,7 +48,7 @@ import { AddonBlockTimelineEventsComponent } from '../events/events';
         AddonBlockTimelineEventsComponent,
     ],
 })
-export class AddonBlockTimelineComponent implements OnInit, ICoreBlockComponent {
+export class AddonBlockTimelineComponent implements OnInit, OnDestroy, ICoreBlockComponent {
 
     sort = new FormControl(AddonBlockTimelineSort.ByCourses); // Aspire School: Default to courses
     sort$!: Observable<AddonBlockTimelineSort>;
@@ -62,10 +64,13 @@ export class AddonBlockTimelineComponent implements OnInit, ICoreBlockComponent 
     search$: Subject<string | null>;
     sections$!: Observable<AddonBlockTimelineSection[]>;
     loaded = false;
+    viewingAsMentee = false;
+    selectedMenteeName = '';
 
     protected logger: CoreLogger;
     protected courseIdsToInvalidate: number[] = [];
     protected fetchContentDefaultError = 'Error getting timeline data.';
+    protected viewChangeObserver?: CoreEventObserver;
 
     constructor() {
         this.logger = CoreLogger.getInstance('AddonBlockTimelineComponent');
@@ -98,6 +103,10 @@ export class AddonBlockTimelineComponent implements OnInit, ICoreBlockComponent 
      */
     async ngOnInit(): Promise<void> {
         const currentSite = CoreSites.getRequiredCurrentSite();
+        
+        // Check if viewing as mentee
+        await this.checkMenteeContext();
+        
         const [sort, filter, statusFilter, dateFilter, search] = await Promise.all([
             // Aspire School: Default to sort by courses
             currentSite.getLocalSiteConfig('AddonBlockTimelineSort', AddonBlockTimelineSort.ByCourses),
@@ -112,6 +121,20 @@ export class AddonBlockTimelineComponent implements OnInit, ICoreBlockComponent 
         this.statusFilter.setValue(statusFilter);
         this.dateFilter.setValue(dateFilter);
         this.search$.next(search);
+        
+        // Listen for site updates which includes mentee view changes
+        this.viewChangeObserver = CoreEvents.on(CoreEvents.SITE_UPDATED, async () => {
+            const previousViewingAsMentee = this.viewingAsMentee;
+            await this.checkMenteeContext();
+            
+            // Only refresh if the mentee view status changed
+            if (previousViewingAsMentee !== this.viewingAsMentee) {
+                await this.invalidateContent();
+                // Trigger a refresh of sections by updating the search (forces recalculation)
+                const currentSearch = (this.search$ as BehaviorSubject<string | null>).getValue();
+                this.search$.next(currentSearch === null ? '' : currentSearch);
+            }
+        });
     }
 
     /**
@@ -450,6 +473,43 @@ export class AddonBlockTimelineComponent implements OnInit, ICoreBlockComponent 
         } catch {
             return { before: 0, after: 0 };
         }
+    }
+
+    /**
+     * Check if viewing as mentee and update context.
+     */
+    protected async checkMenteeContext(): Promise<void> {
+        try {
+            const site = CoreSites.getCurrentSite();
+            if (!site) {
+                return;
+            }
+
+            // Check if we're using a mentee token (parent viewing as child)
+            const originalToken = await site.getLocalSiteConfig<string>(`CoreUserParent:originalToken:${site.getId()}`);
+            this.viewingAsMentee = !!originalToken && originalToken !== '';
+
+            if (this.viewingAsMentee) {
+                // Get selected mentee info
+                const selectedMenteeId = await CoreUserParent.getSelectedMentee();
+                if (selectedMenteeId) {
+                    const mentees = await CoreUserParent.getMentees();
+                    const selectedMentee = mentees.find(m => m.id === selectedMenteeId);
+                    this.selectedMenteeName = selectedMentee?.fullname || '';
+                }
+            }
+        } catch (error) {
+            // Ignore errors
+            this.viewingAsMentee = false;
+            this.selectedMenteeName = '';
+        }
+    }
+
+    /**
+     * @inheritdoc
+     */
+    ngOnDestroy(): void {
+        this.viewChangeObserver?.off();
     }
 
 }

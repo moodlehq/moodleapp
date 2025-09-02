@@ -3030,6 +3030,29 @@ ion-fab[vertical="bottom"][horizontal="end"] {
                 letter-spacing: -0.3px;
             }
             
+            .aspire-mentee-indicator {
+                display: flex;
+                align-items: center;
+                gap: 6px;
+                font-size: 14px;
+                color: #6c757d;
+                background: #e8f5ff;
+                padding: 4px 12px;
+                border-radius: 16px;
+                margin-left: auto;
+                margin-right: 12px;
+                
+                ion-icon {
+                    font-size: 16px;
+                    color: #4c96d1;
+                }
+                
+                span {
+                    font-weight: 500;
+                    color: #495057;
+                }
+            }
+            
             .aspire-compact-filters {
                 position: relative;
                 

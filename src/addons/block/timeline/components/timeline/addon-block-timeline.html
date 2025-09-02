@@ -4,6 +4,12 @@
         <div class="aspire-timeline-title-row">
             <h2 class="aspire-section-title">{{ 'addon.block_timeline.pluginname' | translate }}</h2>
             
+            <!-- Mentee Indicator -->
+            <div class="aspire-mentee-indicator" *ngIf="viewingAsMentee">
+                <ion-icon name="people-outline"></ion-icon>
+                <span>{{ selectedMenteeName }}</span>
+            </div>
+            
             <!-- Compact Filter Dropdown -->
             <div class="aspire-compact-filters">
                 <button class="aspire-filter-trigger" (click)="toggleFilterDropdown()">

@@ -228,7 +228,7 @@
                                     </div>
                                     <div class="item-grade">
                                         <span class="grade-value">{{ item.grade }}</span>
-                                        <span class="grade-percentage" *ngIf="item.percentage">{{ item.percentage }}%</span>
+                                        <span class="grade-percentage" *ngIf="item.percentage && item.percentage !== '-'">{{ item.percentage }}</span>
                                     </div>
                                 </div>
                                 <div class="timeline-connector"></div>
@@ -238,135 +238,102 @@
                 </div>
             </div>
 
-            <!-- TABLE VIEW (Original) -->
+            <!-- TABLE VIEW - Mobile Optimized Card Layout -->
             <div class="grades-table-view" *ngIf="viewMode === 'table'">
-                <table class="core-table core-grades-table" [class.summary]="showSummary">
-                    <thead>
-                        <tr>
-                            <th *ngFor="let column of columns" id="{{column.name}}" class="ion-text-start"
-                                [class.ion-hide-md-down]="column.hiddenPhone" [attr.colspan]="column.colspan">
-                                {{ 'core.grades.' + column.name | translate }}
-                            </th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <ng-container *ngFor="let row of rows | slice:0:rowsOnView">
-                            <tr *ngIf="row.itemtype === 'leader'">
-                                <td [attr.rowspan]="row.rowspan" class="core-grades-table-leader"></td>
-                            </tr>
-                            <tr [attr.role]="row.expandable && showSummary ? 'button row' : 'row'"
-                                [attr.tabindex]="row.expandable && showSummary && 0" [attr.aria-expanded]="row.expanded"
-                                [attr.aria-label]="rowAriaLabel(row)" [attr.aria-controls]="row.detailsid"
-                                (ariaButtonClick)="row.expandable && showSummary && toggleRow(row)" [class]="row.rowclass"
-                                [class.core-grades-grade-clickable]="row.expandable && showSummary" [id]="'grade-'+row.id"
-                                *ngIf="row.itemtype !== 'leader'">
-                                <ng-container *ngIf="row.itemtype">
-                                    <td *ngIf="row.itemtype === 'category'" class="core-grades-table-category" [attr.rowspan]="row.rowspan">
-                                    </td>
-                                    <th class="core-grades-table-gradeitem ion-text-start" [attr.colspan]="row.colspan">
-                                        <ion-icon *ngIf="row.expandable && showSummary" aria-hidden="true" slot="start" name="fas-chevron-right"
-                                            class="expandable-status-icon" [class.expandable-status-icon-expanded]="row.expanded" />
-                                        <ion-icon *ngIf="row.icon" name="{{row.icon}}" slot="start" [attr.aria-label]="row.iconAlt" />
-                                        <img *ngIf="row.image && !row.itemmodule" [src]="row.image" slot="start" class="core-module-icon"
-                                            [alt]="row.iconAlt" core-external-content />
-                                        <core-mod-icon *ngIf="row.image && row.itemmodule" [modicon]="row.image" slot="start"
-                                            [modname]="row.itemmodule" [colorize]="false" />
-                                        <span [innerHTML]="row.gradeitem"></span>
-                                    </th>
-                                    <ng-container *ngIf="row.itemtype !== 'category'">
-                                        <ng-container *ngFor="let column of columns">
-                                            <td *ngIf="column.name !== 'gradeitem' && column.name !== 'feedback' && column.name !== 'grade' &&
-                                            row[column.name] !== undefined" [class]="'ion-text-start core-grades-table-' + column.name"
-                                                [class.ion-hide-md-down]="column.hiddenPhone" [innerHTML]="row[column.name]">
-                                            </td>
-                                            <td *ngIf="column.name === 'feedback' && row.feedback !== undefined"
-                                                class="ion-text-start core-grades-table-feedback" [class.ion-hide-md-down]="column.hiddenPhone">
-                                                <core-format-text collapsible-item [text]="row.feedback" contextLevel="course"
-                                                    [contextInstanceId]="courseId" />
-                                            </td>
-                                            <td *ngIf="column.name === 'grade'" [class.ion-hide-md-down]="column.hiddenPhone"
-                                                class="ion-text-start core-grades-table-grade {{row.gradeClass}}">
-                                                <ion-icon *ngIf="row.gradeIcon" [name]="row.gradeIcon" [attr.aria-label]="row.gradeIconAlt" />
-                                                <span class="grade-value" [innerHTML]="row[column.name]"></span>
-                                            </td>
-                                        </ng-container>
-                                    </ng-container>
-                                </ng-container>
-                            </tr>
-                            <tr *ngIf="row.expandable && row.expanded" [id]="row.detailsid" [class]="row.rowclass">
-                                <td [attr.colspan]="totalColumnsSpan">
-                                    <ion-list>
-                                        <ion-item class="ion-text-wrap" *ngIf="row.weight">
-                                            <ion-label>
-                                                <p class="item-heading">{{ 'core.grades.weight' | translate}}</p>
-                                                <p [innerHTML]="row.weight"></p>
-                                            </ion-label>
-                                        </ion-item>
-
-                                        <ion-item class="ion-text-wrap" *ngIf="row.grade">
-                                            <ion-label>
-                                                <p class="item-heading">{{ 'core.grades.grade' | translate}}</p>
-                                                <p [innerHTML]="row.grade"></p>
-                                            </ion-label>
-                                        </ion-item>
-
-                                        <ion-item class="ion-text-wrap" *ngIf="row.range">
-                                            <ion-label>
-                                                <p class="item-heading">{{ 'core.grades.range' | translate}}</p>
-                                                <p [innerHTML]="row.range"></p>
-                                            </ion-label>
-                                        </ion-item>
-
-                                        <ion-item class="ion-text-wrap" *ngIf="row.percentage">
-                                            <ion-label>
-                                                <p class="item-heading">{{ 'core.grades.percentage' | translate}}</p>
-                                                <p [innerHTML]="row.percentage"></p>
-                                            </ion-label>
-                                        </ion-item>
-
-                                        <ion-item class="ion-text-wrap" *ngIf="row.lettergrade">
-                                            <ion-label>
-                                                <p class="item-heading">{{ 'core.grades.lettergrade' | translate}}</p>
-                                                <p [innerHTML]="row.lettergrade"></p>
-                                            </ion-label>
-                                        </ion-item>
-
-                                        <ion-item class="ion-text-wrap" *ngIf="row.rank">
-                                            <ion-label>
-                                                <p class="item-heading">{{ 'core.grades.rank' | translate}}</p>
-                                                <p [innerHTML]="row.rank"></p>
-                                            </ion-label>
-                                        </ion-item>
-
-                                        <ion-item class="ion-text-wrap" *ngIf="row.average">
-                                            <ion-label>
-                                                <p class="item-heading">{{ 'core.grades.average' | translate}}</p>
-                                                <p [innerHTML]="row.average"></p>
-                                            </ion-label>
-                                        </ion-item>
-
-                                        <ion-item class="ion-text-wrap" *ngIf="row.feedback">
-                                            <ion-label>
-                                                <p class="item-heading">{{ 'core.grades.feedback' | translate}}</p>
-                                                <p>
-                                                    <core-format-text collapsible-item [text]="row.feedback" contextLevel="course"
-                                                        [contextInstanceId]="courseId" />
-                                                </p>
-                                            </ion-label>
-                                        </ion-item>
-
-                                        <ion-item class="ion-text-wrap" *ngIf="row.contributiontocoursetotal">
-                                            <ion-label>
-                                                <p class="item-heading">{{ 'core.grades.contributiontocoursetotal' | translate}}</p>
-                                                <p [innerHTML]="row.contributiontocoursetotal"></p>
-                                            </ion-label>
-                                        </ion-item>
-                                    </ion-list>
-                                </td>
-                            </tr>
+                <div class="grades-card-list">
+                    <ng-container *ngFor="let row of rows | slice:0:rowsOnView">
+                        <!-- Skip leader rows -->
+                        <ng-container *ngIf="row.itemtype !== 'leader'">
+                            <!-- Grade Item Card -->
+                            <div class="grade-card" 
+                                [class.category-card]="row.itemtype === 'category' || row.itemtype === 'categoryitem' || row.itemtype === 'courseitem'"
+                                [class.expandable]="row.expandable && showSummary"
+                                [class.expanded]="row.expanded"
+                                (click)="row.expandable && showSummary && toggleRow(row)">
+                                
+                                <!-- Card Header -->
+                                <div class="card-header">
+                                    <div class="item-info">
+                                        <!-- Icon/Image -->
+                                        <div class="item-icon" *ngIf="row.icon || row.image">
+                                            <ion-icon *ngIf="row.icon" [name]="row.icon" [attr.aria-label]="row.iconAlt"></ion-icon>
+                                            <img *ngIf="row.image && !row.itemmodule" [src]="row.image" [alt]="row.iconAlt" core-external-content />
+                                            <core-mod-icon *ngIf="row.image && row.itemmodule" [modicon]="row.image" 
+                                                [modname]="row.itemmodule" [colorize]="false" />
+                                        </div>
+                                        
+                                        <!-- Grade Item Name -->
+                                        <div class="item-name">
+                                            <h3 [innerHTML]="row.gradeitem"></h3>
+                                        </div>
+                                        
+                                        <!-- Expand Icon -->
+                                        <ion-icon *ngIf="row.expandable && showSummary" 
+                                            name="chevron-down" 
+                                            class="expand-icon"
+                                            [class.expanded]="row.expanded">
+                                        </ion-icon>
+                                    </div>
+                                </div>
+                                
+                                <!-- Card Content - Primary Info -->
+                                <div class="card-content">
+                                    <!-- Grade Display -->
+                                    <div class="grade-section" *ngIf="row.grade">
+                                        <div class="grade-main">
+                                            <ion-icon *ngIf="row.gradeIcon" [name]="row.gradeIcon" [attr.aria-label]="row.gradeIconAlt"></ion-icon>
+                                            <span class="grade-value {{row.gradeClass}}" [innerHTML]="row.grade"></span>
+                                        </div>
+                                        <div class="grade-secondary">
+                                            <span class="range" *ngIf="row.range">{{ row.range }}</span>
+                                            <span class="percentage" *ngIf="row.percentage">{{ row.percentage }}</span>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Weight if visible -->
+                                    <div class="weight-info" *ngIf="row.weight && !row.expandable">
+                                        <span class="label">Weight:</span>
+                                        <span class="value" [innerHTML]="row.weight"></span>
+                                    </div>
+                                </div>
+                                
+                                <!-- Expandable Details -->
+                                <div class="card-details" *ngIf="row.expandable && row.expanded">
+                                    <div class="detail-item" *ngIf="row.weight">
+                                        <span class="detail-label">{{ 'core.grades.weight' | translate }}:</span>
+                                        <span class="detail-value" [innerHTML]="row.weight"></span>
+                                    </div>
+                                    
+                                    <div class="detail-item" *ngIf="row.lettergrade">
+                                        <span class="detail-label">{{ 'core.grades.lettergrade' | translate }}:</span>
+                                        <span class="detail-value" [innerHTML]="row.lettergrade"></span>
+                                    </div>
+                                    
+                                    <div class="detail-item" *ngIf="row.rank">
+                                        <span class="detail-label">{{ 'core.grades.rank' | translate }}:</span>
+                                        <span class="detail-value" [innerHTML]="row.rank"></span>
+                                    </div>
+                                    
+                                    <div class="detail-item" *ngIf="row.average">
+                                        <span class="detail-label">{{ 'core.grades.average' | translate }}:</span>
+                                        <span class="detail-value" [innerHTML]="row.average"></span>
+                                    </div>
+                                    
+                                    <div class="detail-item" *ngIf="row.contributiontocoursetotal">
+                                        <span class="detail-label">{{ 'core.grades.contributiontocoursetotal' | translate }}:</span>
+                                        <span class="detail-value" [innerHTML]="row.contributiontocoursetotal"></span>
+                                    </div>
+                                    
+                                    <div class="detail-feedback" *ngIf="row.feedback">
+                                        <p class="detail-label">{{ 'core.grades.feedback' | translate }}:</p>
+                                        <core-format-text collapsible-item [text]="row.feedback" contextLevel="course"
+                                            [contextInstanceId]="courseId" />
+                                    </div>
+                                </div>
+                            </div>
                         </ng-container>
-                    </tbody>
-                </table>
+                    </ng-container>
+                </div>
                 <core-infinite-loading [enabled]="rowsOnView < rows.length" (action)="loadMore($event)" />
             </div>
         </div>

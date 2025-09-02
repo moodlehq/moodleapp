@@ -472,6 +472,14 @@ export class CoreGradesCoursePage implements AfterViewInit, OnDestroy {
             range: r.range
         })));
         
+        // Initialize arrays if not already done
+        if (!this.groupedCategories) {
+            this.groupedCategories = [];
+        }
+        if (!this.timelineData) {
+            this.timelineData = [];
+        }
+        
         // Group grades by category
         this.groupGradesByCategory();
         
@@ -634,38 +642,61 @@ export class CoreGradesCoursePage implements AfterViewInit, OnDestroy {
     protected createTimelineData(): void {
         const timelineItems: any[] = [];
         
-        this.rows.forEach(row => {
-            if ((row.itemtype === 'mod' || row.itemtype === 'manual') && row.grade && row.grade !== '-') {
-                const gradeDate = this.extractGradeDate(row);
-                if (gradeDate) {
-                    // Format grade value
-                    let formattedGrade = row.grade;
+        console.log('[Grades] Creating timeline data from rows:', this.rows.length);
+        console.log('[Grades] Sample rows:', this.rows.slice(0, 5).map(r => ({
+            itemtype: r.itemtype,
+            gradeitem: r.gradeitem?.substring(0, 30),
+            grade: r.grade
+        })));
+        
+        this.rows.forEach((row, index) => {
+            // Skip totals and categories
+            const gradeItemName = row.gradeitem?.toLowerCase() || '';
+            if (gradeItemName.includes('total') || row.itemtype === 'category' || row.itemtype === 'categoryitem' || row.itemtype === 'courseitem') {
+                console.log(`[Grades] Skipping timeline item: ${row.gradeitem} (type: ${row.itemtype})`);
+                return;
+            }
+            
+            // Include all items (both graded and ungraded)
+            if (row.itemtype === 'mod' || row.itemtype === 'manual' || (row.gradeitem && !gradeItemName.includes('total'))) {
+                // For now, create a date based on row position (newest first)
+                // In real implementation, this would come from the grade data
+                const daysAgo = index * 3; // Space items 3 days apart
+                const gradeDate = Date.now() - (daysAgo * 24 * 60 * 60 * 1000);
+                
+                console.log(`[Grades] Adding timeline item: ${row.gradeitem}, grade: ${row.grade}, date: ${new Date(gradeDate).toLocaleDateString()}`);
+                
+                // Format grade value
+                let formattedGrade = row.grade || '-';
+                if (formattedGrade !== '-') {
                     const gradeNum = parseFloat(formattedGrade);
                     if (!isNaN(gradeNum)) {
                         formattedGrade = this.formatGradeValue(gradeNum);
                     }
-                    
-                    // Extract percentage without % sign
-                    let percentageValue = row.percentage;
-                    if (percentageValue && typeof percentageValue === 'string') {
-                        const percentNum = this.extractPercentage(percentageValue);
-                        percentageValue = this.formatGradeValue(percentNum);
-                    }
-                    
-                    timelineItems.push({
-                        name: CoreText.cleanTags(row.gradeitem || ''),
-                        grade: formattedGrade,
-                        percentage: percentageValue,
-                        icon: row.icon,
-                        itemtype: row.itemtype,
-                        gradedDate: gradeDate,
-                    });
                 }
+                
+                // Extract percentage without % sign
+                let percentageValue = row.percentage;
+                if (percentageValue && typeof percentageValue === 'string') {
+                    const percentNum = this.extractPercentage(percentageValue);
+                    percentageValue = percentNum > 0 ? this.formatGradeValue(percentNum) + '%' : '-';
+                }
+                
+                timelineItems.push({
+                    name: CoreText.cleanTags(row.gradeitem || ''),
+                    grade: formattedGrade || '-',
+                    percentage: percentageValue || '-',
+                    icon: row.icon || 'document-outline',
+                    itemtype: row.itemtype,
+                    gradedDate: gradeDate,
+                });
             }
         });
         
         // Sort by date descending
         timelineItems.sort((a, b) => b.gradedDate - a.gradedDate);
+        
+        console.log('[Grades] Timeline items created:', timelineItems.length);
         
         // Group by month
         const months: { [key: string]: any } = {};
@@ -681,6 +712,23 @@ export class CoreGradesCoursePage implements AfterViewInit, OnDestroy {
         });
         
         this.timelineData = Object.values(months);
+        console.log('[Grades] Timeline months:', this.timelineData);
+        
+        // If no items, create a placeholder
+        if (this.timelineData.length === 0) {
+            console.log('[Grades] No timeline data available - creating placeholder');
+            this.timelineData = [{
+                name: 'No Graded Items',
+                items: [{
+                    name: 'No assignments have been graded yet',
+                    grade: '-',
+                    percentage: '-',
+                    icon: 'information-circle-outline',
+                    itemtype: 'placeholder',
+                    gradedDate: Date.now()
+                }]
+            }];
+        }
     }
     
     /**
@@ -931,9 +979,24 @@ export class CoreGradesCoursePage implements AfterViewInit, OnDestroy {
     }
     
     protected extractGradeDate(row: any): number | null {
-        // Would need to be in the actual data
-        // For now, generate random dates for demo
-        return Date.now() - Math.floor(Math.random() * 90) * 24 * 60 * 60 * 1000;
+        // Try to extract date from various sources
+        // Check if there's a timemodified field
+        if (row.timemodified) {
+            return row.timemodified * 1000; // Convert from seconds to milliseconds
+        }
+        
+        // Check if there's a dategraded field
+        if (row.dategraded) {
+            return row.dategraded * 1000;
+        }
+        
+        // Check if there's a timecreated field
+        if (row.timecreated) {
+            return row.timecreated * 1000;
+        }
+        
+        // If no date available, return null
+        return null;
     }
     
     /**

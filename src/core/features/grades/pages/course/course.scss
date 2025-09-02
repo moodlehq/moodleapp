@@ -210,380 +210,288 @@ ion-header {
     min-height: 400px;
     width: 100%;
     overflow: visible;
+    
+    &.grades-table-view {
+        padding: 16px 8px; // Less padding for table view
+    }
 }
 
-// Grades table with pastel card design
-table.core-table.core-grades-table {
-    width: 100%;
-    margin: 0;
-    background: var(--bg-card);
-    border-radius: var(--radius-xl);
-    box-shadow: var(--shadow-lg);
-    overflow: hidden;
-    border-collapse: separate;
-    border-spacing: 0;
-    border: var(--border-light);
-    transition: var(--transition-base);
+// ====================================
+// TABLE VIEW - MOBILE CARD LAYOUT
+// ====================================
+.grades-table-view {
+    padding: 0 12px;
     
-    &:hover {
-        box-shadow: var(--shadow-xl);
-        transform: translateY(-2px);
-    }
-
-    // Table header with gradient
-    thead {
-        background: var(--gradient-turquoise-flow);
-        
-        tr {
-            th {
-                padding: 20px 16px;
-                font-size: 0.875rem;
-                font-weight: 700;
-                text-transform: uppercase;
-                letter-spacing: 1.2px;
-                color: var(--text-on-dark-pastel);
-                border-bottom: 2px solid rgba(255, 255, 255, 0.15);
-                position: relative;
-                
-                &:first-child {
-                    padding-left: 24px;
-                }
-                
-                &:last-child {
-                    padding-right: 24px;
-                }
-                
-                // Shimmer effect on header
-                &::after {
-                    content: '';
-                    position: absolute;
-                    top: 0;
-                    left: 0;
-                    right: 0;
-                    bottom: 0;
-                    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
-                    animation: shimmerSoft 3s infinite;
-                }
-            }
-            
-            #gradeitem {
-                padding-left: 24px;
-                text-align: left;
-            }
-        }
-    }
-
-    // Table body styling
-    tbody {
-        tr {
-            visibility: visible !important;
-            opacity: 1 !important;
-            display: table-row !important;
-            transition: var(--transition-fast);
-            border-bottom: var(--border-light);
-            position: relative;
-            
-            &:hover {
-                background: var(--bg-pastel-overlay);
-                
-                td, th {
-                    color: var(--text-primary);
-                }
-            }
-            
-            &.core-bold {
-                background: var(--gradient-card);
-                
-                th {
-                    font-weight: 600;
-                    color: var(--text-secondary);
-                }
-            }
-            
-            &.dimmed_text {
-                opacity: 0.7;
-            }
-            
-            &:last-child {
-                border-bottom: none;
-            }
-        }
-    }
-
-    // Grade item cells with icons
-    th, td {
-        padding: 16px 12px;
-        vertical-align: middle;
-        color: var(--text-tertiary);
-        font-size: 0.9375rem;
-        
-        &:first-child {
-            padding-left: 24px;
-        }
-        
-        &:last-child {
-            padding-right: 24px;
-        }
-    }
-
-    .core-grades-table-gradeitem {
-        padding-left: 4px;
-        
-        &.column-itemname {
-            padding-left: 0;
-        }
-        
+    .grades-card-list {
         display: flex;
-        align-items: center;
+        flex-direction: column;
         gap: 12px;
-        font-weight: 600;
-        color: var(--text-secondary);
         
-        // Module icons with pastel backgrounds
-        img, core-mod-icon {
-            width: 32px;
-            height: 32px;
-            min-width: 32px;
-            min-height: 32px;
-            border-radius: var(--radius-sm);
-            object-fit: contain;
-            padding: 6px;
-            background: var(--bg-interactive);
-            transition: var(--transition-base);
-        }
-        
-        ion-icon {
-            font-size: 1.25rem;
-            color: var(--text-link);
-            width: 32px;
-            height: 32px;
-            min-width: 32px;
-            min-height: 32px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: var(--bg-interactive);
-            border-radius: var(--radius-sm);
-            transition: var(--transition-base);
+        .grade-card {
+            background: var(--bg-card);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-sm);
+            border: var(--border-light);
+            overflow: hidden;
+            transition: var(--transition-fast);
             
-            &.expandable-status-icon {
-                font-size: 0.875rem;
-                background: transparent;
-                color: var(--text-muted);
-                width: auto;
-                height: auto;
-                min-width: auto;
-                min-height: auto;
-                transition: transform 0.3s ease;
+            &.expandable {
+                cursor: pointer;
+            }
+            
+            &:active {
+                transform: scale(0.98);
+            }
+            
+            // Category/Total cards have different styling
+            &.category-card {
+                background: var(--gradient-card);
+                border-color: var(--pastel-sky-light);
                 
-                &.expandable-status-icon-expanded {
-                    transform: rotate(90deg);
+                .card-header {
+                    background: var(--gradient-turquoise-flow);
+                    
+                    .item-name h3 {
+                        color: var(--text-on-dark-pastel);
+                        font-weight: 700;
+                    }
+                }
+                
+                .grade-value {
+                    font-size: 1.25rem;
+                    font-weight: 700;
+                }
+            }
+            
+            // Card Header
+            .card-header {
+                padding: 12px 16px;
+                background: var(--bg-pastel-overlay);
+                border-bottom: var(--border-light);
+                
+                .item-info {
+                    display: flex;
+                    align-items: center;
+                    gap: 12px;
+                    
+                    .item-icon {
+                        width: 36px;
+                        height: 36px;
+                        min-width: 36px;
+                        background: var(--bg-interactive);
+                        border-radius: var(--radius-sm);
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        
+                        ion-icon {
+                            font-size: 1.25rem;
+                            color: var(--text-link);
+                        }
+                        
+                        img, core-mod-icon {
+                            width: 24px;
+                            height: 24px;
+                            object-fit: contain;
+                        }
+                    }
+                    
+                    .item-name {
+                        flex: 1;
+                        min-width: 0; // Enable text truncation
+                        
+                        h3 {
+                            margin: 0;
+                            font-size: 0.9375rem;
+                            font-weight: 600;
+                            color: var(--text-secondary);
+                            overflow: hidden;
+                            text-overflow: ellipsis;
+                            display: -webkit-box;
+                            -webkit-line-clamp: 2;
+                            -webkit-box-orient: vertical;
+                            line-height: 1.3;
+                        }
+                    }
+                    
+                    .expand-icon {
+                        font-size: 1.25rem;
+                        color: var(--text-muted);
+                        transition: transform 0.3s ease;
+                        
+                        &.expanded {
+                            transform: rotate(180deg);
+                        }
+                    }
+                }
+            }
+            
+            // Card Content
+            .card-content {
+                padding: 12px 16px;
+                
+                .grade-section {
+                    display: flex;
+                    align-items: center;
+                    justify-content: space-between;
+                    gap: 12px;
+                    
+                    .grade-main {
+                        display: flex;
+                        align-items: center;
+                        gap: 8px;
+                        
+                        ion-icon {
+                            font-size: 1.125rem;
+                            
+                            &[name*="check"] {
+                                color: var(--pastel-mint-dark);
+                            }
+                            
+                            &[name*="xmark"], &[name*="times"] {
+                                color: var(--pastel-coral);
+                            }
+                        }
+                        
+                        .grade-value {
+                            font-size: 1.125rem;
+                            font-weight: 700;
+                            color: var(--text-primary);
+                            letter-spacing: -0.5px;
+                            
+                            &.text-success {
+                                color: var(--text-on-pastel);
+                                background: var(--pastel-mint);
+                                padding: 2px 10px;
+                                border-radius: var(--radius-full);
+                            }
+                            
+                            &.text-danger {
+                                color: #C62828;
+                                background: var(--pastel-coral);
+                                padding: 2px 10px;
+                                border-radius: var(--radius-full);
+                            }
+                        }
+                    }
+                    
+                    .grade-secondary {
+                        display: flex;
+                        flex-direction: column;
+                        align-items: flex-end;
+                        gap: 2px;
+                        text-align: right;
+                        
+                        .range {
+                            font-size: 0.8125rem;
+                            color: var(--text-muted);
+                        }
+                        
+                        .percentage {
+                            font-size: 0.875rem;
+                            font-weight: 600;
+                            color: var(--text-tertiary);
+                        }
+                    }
+                }
+                
+                .weight-info {
+                    margin-top: 8px;
+                    padding-top: 8px;
+                    border-top: var(--border-light);
+                    display: flex;
+                    align-items: center;
+                    gap: 8px;
+                    
+                    .label {
+                        font-size: 0.8125rem;
+                        color: var(--text-muted);
+                        font-weight: 600;
+                        text-transform: uppercase;
+                        letter-spacing: 0.5px;
+                    }
+                    
+                    .value {
+                        font-size: 0.875rem;
+                        color: var(--text-tertiary);
+                        font-weight: 500;
+                    }
+                }
+            }
+            
+            // Expandable Details
+            .card-details {
+                padding: 16px;
+                background: var(--bg-pastel-overlay);
+                border-top: var(--border-light);
+                animation: slideDown 0.3s ease;
+                
+                .detail-item {
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                    padding: 6px 0;
+                    
+                    &:not(:last-child) {
+                        border-bottom: var(--border-light);
+                    }
+                    
+                    .detail-label {
+                        font-size: 0.8125rem;
+                        color: var(--text-muted);
+                        font-weight: 500;
+                    }
+                    
+                    .detail-value {
+                        font-size: 0.875rem;
+                        color: var(--text-secondary);
+                        font-weight: 600;
+                        text-align: right;
+                        max-width: 50%; // Prevent overflow
+                        word-break: break-word;
+                    }
+                }
+                
+                .detail-feedback {
+                    margin-top: 12px;
+                    padding-top: 12px;
+                    border-top: var(--border-light);
+                    
+                    .detail-label {
+                        font-size: 0.8125rem;
+                        color: var(--text-muted);
+                        font-weight: 600;
+                        text-transform: uppercase;
+                        letter-spacing: 0.5px;
+                        margin-bottom: 8px;
+                    }
+                    
+                    core-format-text {
+                        font-size: 0.875rem;
+                        color: var(--text-tertiary);
+                        line-height: 1.5;
+                    }
                 }
             }
         }
-        
-        span {
-            flex: 1;
-            letter-spacing: -0.25px;
-        }
-        
-        &:hover {
-            img, core-mod-icon, ion-icon:not(.expandable-status-icon) {
-                transform: scale(1.1);
-                background: var(--bg-hover);
-                box-shadow: var(--shadow-md);
-            }
-        }
     }
+}
 
-    // Grade cells with special styling
-    .core-grades-table-grade {
-        font-weight: 700;
-        font-size: 1.0625rem;
-        letter-spacing: -0.5px;
-        
-        ion-icon {
-            padding-right: 8px;
-            font-size: 1.125rem;
-            
-            &[name*="check"] {
-                color: var(--pastel-mint-dark);
-            }
-            
-            &[name*="xmark"], &[name*="times"] {
-                color: var(--pastel-coral);
-            }
-        }
-        
-        // Grade success/fail colors
-        &.text-success {
-            color: var(--text-on-pastel);
-            
-            span {
-                background: linear-gradient(135deg, var(--pastel-mint) 0%, var(--pastel-mint-light) 100%);
-                padding: 4px 12px;
-                border-radius: var(--radius-full);
-                display: inline-block;
-                box-shadow: 0 2px 6px rgba(173, 235, 179, 0.3);
-            }
-        }
-        
-        &.text-danger {
-            color: #C62828;
-            
-            span {
-                background: linear-gradient(135deg, var(--pastel-coral) 0%, var(--pastel-peach) 100%);
-                padding: 4px 12px;
-                border-radius: var(--radius-full);
-                display: inline-block;
-                box-shadow: 0 2px 6px rgba(255, 181, 167, 0.3);
-            }
-        }
-    }
-    
-    // Percentage and range columns
-    .core-grades-table-percentage,
-    .core-grades-table-range {
-        font-weight: 500;
-        color: var(--text-tertiary);
-        font-size: 0.9375rem;
-    }
-    
-    // Weight column
-    .core-grades-table-weight {
-        font-weight: 600;
-        color: var(--text-muted);
-        font-size: 0.875rem;
-    }
-    
-    // Feedback column
-    .core-grades-table-feedback {
-        .no-overflow {
-            overflow: visible;
-            max-width: 300px;
-        }
-        
-        core-format-text {
-            font-size: 0.875rem;
-            color: var(--text-tertiary);
-            line-height: 1.5;
-        }
-    }
-    
-    // Leader cells
-    .core-grades-table-leader {
-        width: 4px;
-        background: var(--gradient-turquoise-flow);
-        padding: 0;
-        border-radius: 2px;
-    }
-    
-    // Category rows
-    .core-grades-table-category {
-        width: 20px;
-        background: var(--bg-pastel-overlay);
-        border-right: 2px solid var(--pastel-sky-light);
-    }
-
-    // Clickable grade rows
-    .core-grades-grade-clickable {
-        cursor: pointer;
-        
-        &:hover {
-            background: var(--bg-hover);
-            
-            td, th {
-                background-color: transparent;
-            }
-        }
-        
-        th, td {
-            height: 56px;
-            vertical-align: middle;
-        }
-    }
-
-    // Summary mode adjustments
-    &.summary .ion-hide-md-down {
-        display: none;
+@keyframes slideDown {
+    from {
+        max-height: 0;
         opacity: 0;
     }
+    to {
+        max-height: 500px;
+        opacity: 1;
+    }
 }
 
-// ====================================
-// EXPANDED ROW DETAILS - PASTEL CARDS
-// ====================================
-tbody tr {
-    td[colspan] {
-        padding: 0;
-        background: var(--bg-pastel-overlay);
-        
-        ion-list {
-            background: transparent;
-            padding: 16px;
-            
-            ion-item {
-                --background: var(--bg-card);
-                --border-radius: var(--radius-lg);
-                --padding-start: 20px;
-                --padding-end: 20px;
-                --inner-padding-end: 0;
-                margin-bottom: 12px;
-                box-shadow: var(--shadow-sm);
-                transition: var(--transition-fast);
-                overflow: hidden;
-                
-                &::part(native) {
-                    background: var(--bg-card);
-                    border-radius: var(--radius-lg);
-                    border: var(--border-light);
-                }
-                
-                &:hover {
-                    transform: translateX(4px);
-                    box-shadow: var(--shadow-md);
-                    
-                    &::part(native) {
-                        border-color: var(--pastel-mint-blue);
-                    }
-                }
-                
-                &:last-child {
-                    margin-bottom: 0;
-                }
-                
-                ion-label {
-                    padding: 12px 0;
-                    
-                    .item-heading {
-                        font-size: 0.8125rem;
-                        font-weight: 700;
-                        text-transform: uppercase;
-                        letter-spacing: 1px;
-                        color: var(--text-muted);
-                        margin-bottom: 6px;
-                    }
-                    
-                    p {
-                        font-size: 1.0625rem;
-                        font-weight: 600;
-                        color: var(--text-secondary);
-                        margin: 0;
-                        letter-spacing: -0.25px;
-                        
-                        // Special styling for grade values
-                        &:has(.text-success) {
-                            color: var(--text-on-pastel);
-                        }
-                        
-                        &:has(.text-danger) {
-                            color: #C62828;
-                        }
-                    }
-                }
-            }
-        }
-    }
+// OLD TABLE STYLES - REMOVED (Using card layout for mobile app)
+// Table elements are hidden to prevent any legacy rendering
+table.core-table.core-grades-table {
+    display: none !important;
 }
 
 // ====================================
@@ -652,35 +560,154 @@ core-loading {
         padding: 16px 8px;
     }
     
-    table.core-table.core-grades-table {
-        font-size: 0.875rem;
+    // Table view uses cards on mobile, no special mobile styles needed
+    .grades-table-view {
+        padding: 0 8px;
         
-        thead tr th {
-            padding: 16px 8px;
-            font-size: 0.75rem;
-        }
-        
-        tbody {
-            th, td {
-                padding: 12px 8px;
-                font-size: 0.875rem;
-                
-                &:first-child {
-                    padding-left: 16px;
+        .grades-card-list {
+            gap: 10px;
+            
+            .grade-card {
+                .card-header {
+                    padding: 10px 12px;
+                    
+                    .item-info {
+                        gap: 10px;
+                        
+                        .item-icon {
+                            width: 32px;
+                            height: 32px;
+                            min-width: 32px;
+                        }
+                        
+                        .item-name h3 {
+                            font-size: 0.875rem;
+                        }
+                    }
                 }
                 
-                &:last-child {
-                    padding-right: 16px;
+                .card-content {
+                    padding: 10px 12px;
+                    
+                    .grade-section {
+                        .grade-main .grade-value {
+                            font-size: 1rem;
+                        }
+                        
+                        .grade-secondary {
+                            .range {
+                                font-size: 0.75rem;
+                            }
+                            .percentage {
+                                font-size: 0.8125rem;
+                            }
+                        }
+                    }
                 }
             }
         }
+    }
+}
+
+// Extra small devices (portrait phones, less than 360px)
+@media (max-width: 359px) {
+    .grades-table-view {
+        padding: 0 6px;
         
-        .core-grades-table-gradeitem {
-            img, core-mod-icon, ion-icon:not(.expandable-status-icon) {
-                width: 28px;
-                height: 28px;
-                min-width: 28px;
-                min-height: 28px;
+        .grades-card-list {
+            gap: 8px;
+            
+            .grade-card {
+                .card-header {
+                    padding: 8px 10px;
+                    
+                    .item-info {
+                        gap: 8px;
+                        
+                        .item-icon {
+                            width: 28px;
+                            height: 28px;
+                            min-width: 28px;
+                            
+                            ion-icon {
+                                font-size: 1rem;
+                            }
+                            
+                            img, core-mod-icon {
+                                width: 20px;
+                                height: 20px;
+                            }
+                        }
+                        
+                        .item-name h3 {
+                            font-size: 0.8125rem;
+                            -webkit-line-clamp: 1; // Only show 1 line on very small screens
+                        }
+                        
+                        .expand-icon {
+                            font-size: 1rem;
+                        }
+                    }
+                }
+                
+                .card-content {
+                    padding: 8px 10px;
+                    
+                    .grade-section {
+                        gap: 8px;
+                        
+                        .grade-main {
+                            gap: 6px;
+                            
+                            .grade-value {
+                                font-size: 0.9375rem;
+                            }
+                            
+                            ion-icon {
+                                font-size: 1rem;
+                            }
+                        }
+                        
+                        .grade-secondary {
+                            .range {
+                                font-size: 0.6875rem;
+                            }
+                            .percentage {
+                                font-size: 0.75rem;
+                            }
+                        }
+                    }
+                    
+                    .weight-info {
+                        margin-top: 6px;
+                        padding-top: 6px;
+                        gap: 6px;
+                        
+                        .label {
+                            font-size: 0.75rem;
+                        }
+                        
+                        .value {
+                            font-size: 0.8125rem;
+                        }
+                    }
+                }
+                
+                .card-details {
+                    padding: 12px 10px;
+                    
+                    .detail-item {
+                        padding: 4px 0;
+                        
+                        .detail-label {
+                            font-size: 0.75rem;
+                        }
+                        
+                        .detail-value {
+                            font-size: 0.8125rem;
+                        }
+                    }
+                }
             }
         }
     }
@@ -716,7 +743,7 @@ core-loading {
 // GRADES DASHBOARD - OVERVIEW CARDS
 // ====================================
 .grades-dashboard {
-    padding: 0 16px 24px;
+    padding: 0 16px 20px; // Less bottom padding
     
     .grade-summary-cards {
         display: grid;
@@ -1012,7 +1039,7 @@ core-loading {
 // VIEW TOGGLE
 // ====================================
 .view-toggle {
-    padding: 0 16px 20px;
+    padding: 0 16px 16px; // Less bottom padding
     
     ion-segment {
         --background: var(--bg-pastel-overlay);
@@ -1367,9 +1394,11 @@ core-loading {
 // ====================================
 .grades-timeline-view {
     padding: 0 16px;
+    min-height: 200px; // Ensure visibility
     
     .timeline-container {
         position: relative;
+        min-height: 100px; // Minimum height
         
         &::before {
             content: '';
