@@ -36,13 +36,20 @@ export class CoreFinancialMainMenuHandlerService implements CoreMainMenuHandler 
      * @returns Whether the handler is enabled.
      */
     async isEnabled(): Promise<boolean> {
-        // Show financial tab for users with children (mentees)
         const site = CoreSites.getCurrentSite();
         if (!site) {
             return false;
         }
 
         try {
+            // Check if we're currently using a mentee token (parent viewing as child)
+            const originalToken = await site.getLocalSiteConfig<string>(`CoreUserParent:originalToken:${site.getId()}`);
+            if (originalToken && originalToken !== '') {
+                // We're a parent viewing as child, show the financial tab
+                return true;
+            }
+
+            // Otherwise, check if user has children (mentees)
             const mentees = await CoreUserParent.getMentees(site.getId());
             // Show if user has any mentees/children
             return mentees && mentees.length > 0;

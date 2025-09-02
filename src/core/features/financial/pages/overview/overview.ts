@@ -17,6 +17,8 @@ import { CoreFinancial } from '../../services/financial';
 import { StudentFinancialData, AcademicYearData } from '../../services/financial-api';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreTimeUtils } from '@services/utils/time';
+import { CoreUserParent } from '@features/user/services/parent';
+import { CoreSites } from '@services/sites';
 
 /**
  * Page that displays financial overview for all children.
@@ -41,7 +43,35 @@ export class CoreFinancialOverviewPage implements OnInit {
      * @inheritdoc
      */
     async ngOnInit(): Promise<void> {
+        // Always revert to parent view when accessing financial section
+        await this.ensureParentView();
         await this.loadFinancialData();
+    }
+
+    /**
+     * Ensure the user is in parent view (not viewing as a child).
+     */
+    private async ensureParentView(): Promise<void> {
+        const site = CoreSites.getCurrentSite();
+        if (!site) {
+            return;
+        }
+
+        try {
+            // Check if we're currently using a mentee token
+            const originalToken = await site.getLocalSiteConfig<string>(`CoreUserParent:originalToken:${site.getId()}`);
+            
+            if (originalToken && originalToken !== '') {
+                console.log('[Financial] Currently viewing as child, reverting to parent view');
+                
+                // Clear the selected mentee to revert to parent view
+                await CoreUserParent.clearSelectedMentee(site.getId());
+                
+                console.log('[Financial] Reverted to parent view');
+            }
+        } catch (error) {
+            console.error('[Financial] Error checking/reverting parent view:', error);
+        }
     }
 
     /**

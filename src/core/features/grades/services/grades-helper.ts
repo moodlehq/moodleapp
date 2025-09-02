@@ -178,6 +178,9 @@ export class CoreGradesHelperProvider {
                     row.gradeIcon = 'fas-xmark';
                     row.gradeIconAlt = Translate.instant('core.grades.fail');
                     content = CoreText.cleanTags(content);
+                } else {
+                    // Clean any other HTML tags from grade content
+                    content = CoreText.cleanTags(content, { trim: true });
                 }
             } else {
                 content = CoreText.replaceNewLines(content, '<br>');

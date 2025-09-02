@@ -1023,20 +1023,30 @@ export class CoreCourseProvider {
         options: CoreCourseGetSectionsOptions = {},
     ): WSObservable<CoreCourseGetContentsWSSection[]> {
         return asyncObservable(async () => {
-            // Check if viewing as mentee
+            // Check if viewing as mentee with token or custom WS
             const { CoreUserParent } = await import('@features/user/services/parent');
             const selectedMenteeId = await CoreUserParent.getSelectedMentee(site.getId());
+            const isUsingMenteeToken = await this.isUsingMenteeToken(site);
+            
             let wsName = 'core_course_get_contents';
             let userId = 0; // Default for current user
             
-            if (selectedMenteeId && selectedMenteeId !== site.getUserId()) {
-                // Parent viewing mentee's course
+            this.logger.debug(`[Course Contents] Getting contents for course ${courseId}`, {
+                selectedMenteeId,
+                isUsingMenteeToken,
+                currentUserId: site.getUserId()
+            });
+            
+            if (!isUsingMenteeToken && selectedMenteeId && selectedMenteeId !== site.getUserId()) {
+                // Parent viewing mentee's course with parent token - use custom WS if available
                 const hasCustomWS = await site.wsAvailable('local_aspireparent_get_mentee_course_contents');
                 if (hasCustomWS) {
                     wsName = 'local_aspireparent_get_mentee_course_contents';
                     userId = selectedMenteeId;
                     this.logger.debug(`Using custom WS for parent viewing mentee course ${courseId}`);
                 }
+            } else if (isUsingMenteeToken) {
+                this.logger.debug(`Using mentee token to get course contents for course ${courseId}`);
             }
             
             const preSets: CoreSiteWSPreSets = {
@@ -1074,6 +1084,22 @@ export class CoreCourseProvider {
 
             return site.readObservable<CoreCourseGetContentsWSSection[]>(wsName, params, preSets);
         });
+    }
+
+    /**
+     * Check if the user is currently using a mentee token.
+     *
+     * @param site The site object.
+     * @returns Promise resolved with true if using mentee token.
+     */
+    protected async isUsingMenteeToken(site: CoreSite): Promise<boolean> {
+        try {
+            // Check if there's an original token stored (indicates we're using mentee token)
+            const originalToken = await site.getLocalSiteConfig<string>(`CoreUserParent:originalToken:${site.getId()}`);
+            return !!originalToken && originalToken !== '';
+        } catch {
+            return false;
+        }
     }
 
     /**

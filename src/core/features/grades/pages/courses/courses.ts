@@ -86,20 +86,35 @@ export class CoreGradesCoursesPage implements OnDestroy, AfterViewInit {
     async ngAfterViewInit(): Promise<void> {
         console.log('[Grades] ngAfterViewInit called');
         
-        // Check if user is a parent
-        this.isParentView = await CoreUserParent.isParentUser();
-        console.log('[Grades] isParentView:', this.isParentView);
-        
-        // Always get mentees if user is a parent (even in forced student view)
-        const isActuallyParent = await CoreUserParent.isParentUser();
-        if (isActuallyParent) {
-            this.mentees = await CoreUserParent.getMentees();
-            this.selectedMenteeId = await CoreUserParent.getSelectedMentee() || undefined;
-            console.log('[Grades] Parent user detected with', this.mentees.length, 'mentees');
+        // Check if we're using a mentee token (parent viewing as child)
+        const site = CoreSites.getCurrentSite();
+        let isUsingMenteeToken = false;
+        if (site) {
+            try {
+                const originalToken = await site.getLocalSiteConfig<string>(`CoreUserParent:originalToken:${site.getId()}`);
+                isUsingMenteeToken = !!originalToken && originalToken !== '';
+                console.log('[Grades] isUsingMenteeToken:', isUsingMenteeToken);
+            } catch {
+                console.log('[Grades] Error checking mentee token');
+            }
         }
         
-        if (this.isParentView) {
-            console.log('[Grades] Parent view detected with', this.mentees.length, 'mentees');
+        // If using mentee token, we're in "student view" but as a parent viewing their child
+        if (isUsingMenteeToken) {
+            // We're a parent viewing as their child, show student view
+            this.isParentView = false;
+            console.log('[Grades] Parent viewing as child - showing student view');
+        } else {
+            // Check if user is a parent
+            this.isParentView = await CoreUserParent.isParentUser();
+            console.log('[Grades] isParentView:', this.isParentView);
+            
+            // Get mentees if user is a parent
+            if (this.isParentView) {
+                this.mentees = await CoreUserParent.getMentees();
+                this.selectedMenteeId = await CoreUserParent.getSelectedMentee() || undefined;
+                console.log('[Grades] Parent user detected with', this.mentees.length, 'mentees');
+            }
         }
 
         await this.fetchInitialCourses();

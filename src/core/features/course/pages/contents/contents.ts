@@ -96,6 +96,25 @@ export class CoreCourseContentsPage implements OnInit, OnDestroy, CoreRefreshCon
 
             return;
         }
+        
+        // Log parent/mentee viewing context
+        try {
+            const site = CoreSites.getCurrentSite();
+            if (site) {
+                const { CoreUserParent } = await import('@features/user/services/parent');
+                const selectedMenteeId = await CoreUserParent.getSelectedMentee(site.getId());
+                
+                console.log('[Course Contents] Loading course:', {
+                    courseId: this.course.id,
+                    courseName: this.course.fullname,
+                    currentUserId: site.getUserId(),
+                    selectedMenteeId: selectedMenteeId,
+                    isViewingAsMentee: selectedMenteeId !== null
+                });
+            }
+        } catch (error) {
+            // Ignore errors in logging
+        }
 
         this.sectionId = CoreNavigator.getRouteNumberParam('sectionId');
         this.sectionNumber = CoreNavigator.getRouteNumberParam('sectionNumber');
