@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnDestroy, ViewChild, ElementRef, OnInit, inject } from '@angular/core';
+import { Component, OnDestroy, ElementRef, OnInit, inject, viewChild } from '@angular/core';
 import { FileEntry } from '@awesome-cordova-plugins/file/ngx';
 import { FormControl } from '@angular/forms';
 import { CoreEvents, CoreEventObserver } from '@singletons/events';
@@ -81,8 +81,8 @@ type NewDiscussionData = {
 })
 export default class AddonModForumNewDiscussionPage implements OnInit, OnDestroy, CanLeave {
 
-    @ViewChild('newDiscFormEl') formElement!: ElementRef;
-    @ViewChild(CoreEditorRichTextEditorComponent) messageEditor!: CoreEditorRichTextEditorComponent;
+    readonly formElement = viewChild.required<ElementRef>('newDiscFormEl');
+    readonly messageEditor = viewChild.required(CoreEditorRichTextEditorComponent);
 
     component = ADDON_MOD_FORUM_COMPONENT_LEGACY;
     messageControl = new FormControl<string | null>(null);
@@ -518,7 +518,7 @@ export default class AddonModForumNewDiscussionPage implements OnInit, OnDestroy
             this.newDiscussion.message = null;
             this.newDiscussion.files = [];
             this.newDiscussion.postToAllGroups = false;
-            this.messageEditor.clearText();
+            this.messageEditor().clearText();
             this.originalData = CoreUtils.clone(this.newDiscussion);
         } else {
             CoreNavigator.back();
@@ -596,7 +596,7 @@ export default class AddonModForumNewDiscussionPage implements OnInit, OnDestroy
             }
 
             CoreForms.triggerFormSubmittedEvent(
-                this.formElement,
+                this.formElement(),
                 !!discussionIds,
                 CoreSites.getCurrentSiteId(),
             );
@@ -627,7 +627,7 @@ export default class AddonModForumNewDiscussionPage implements OnInit, OnDestroy
 
             await Promise.all(promises);
 
-            CoreForms.triggerFormCancelledEvent(this.formElement, CoreSites.getCurrentSiteId());
+            CoreForms.triggerFormCancelledEvent(this.formElement(), CoreSites.getCurrentSiteId());
 
             this.returnToDiscussions();
         } catch {
@@ -673,8 +673,9 @@ export default class AddonModForumNewDiscussionPage implements OnInit, OnDestroy
         // Delete the local files from the tmp folder.
         CoreFileUploader.clearTmpFiles(this.newDiscussion.files);
 
-        if (this.formElement) {
-            CoreForms.triggerFormCancelledEvent(this.formElement, CoreSites.getCurrentSiteId());
+        const formElement = this.formElement();
+        if (formElement) {
+            CoreForms.triggerFormCancelledEvent(formElement, CoreSites.getCurrentSiteId());
         }
 
         return true;

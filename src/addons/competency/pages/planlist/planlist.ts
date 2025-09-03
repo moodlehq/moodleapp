@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { AfterViewInit, Component, OnDestroy, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, OnDestroy, viewChild } from '@angular/core';
 import { CoreSplitViewComponent } from '@components/split-view/split-view';
 import { CoreNavigator } from '@services/navigator';
 import { AddonCompetencyPlanFormatted, AddonCompetencyPlansSource } from '@addons/competency/classes/competency-plans-source';
@@ -37,7 +37,7 @@ import { CoreSharedModule } from '@/core/shared.module';
 })
 export default class AddonCompetencyPlanListPage implements AfterViewInit, OnDestroy {
 
-    @ViewChild(CoreSplitViewComponent) splitView!: CoreSplitViewComponent;
+    readonly splitView = viewChild.required(CoreSplitViewComponent);
 
     plans: CoreListItemsManager<AddonCompetencyPlanFormatted, AddonCompetencyPlansSource>;
 
@@ -66,7 +66,7 @@ export default class AddonCompetencyPlanListPage implements AfterViewInit, OnDes
     async ngAfterViewInit(): Promise<void> {
         await this.fetchLearningPlans();
 
-        this.plans.start(this.splitView);
+        this.plans.start(this.splitView());
     }
 
     /**

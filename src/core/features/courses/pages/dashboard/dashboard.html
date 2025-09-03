@@ -13,11 +13,11 @@
     <core-loading [hideUntil]="loaded" placeholderType="column" placeholderHeight="96px">
         @if (hasMainBlocks) {
             <ion-list class="list-item-limited-width">
-                <ng-container *ngFor="let block of blocks">
+                @for (block of blocks(); track block.instanceid) {
                     @if (block.visible) {
                         <core-block [block]="block" contextLevel="user" [instanceId]="userId" />
                     }
-                </ng-container>
+                }
             </ion-list>
         }
 

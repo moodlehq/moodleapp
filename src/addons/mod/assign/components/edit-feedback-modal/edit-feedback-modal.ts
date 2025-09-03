@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, ElementRef, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, Input, OnDestroy, OnInit, viewChild } from '@angular/core';
 import { ModalController, Translate } from '@singletons';
 import {
     AddonModAssign,
@@ -70,7 +70,7 @@ export class AddonModAssignEditFeedbackModalComponent implements OnDestroy, OnIn
     @Input() feedback?: AddonModAssignSubmissionFeedback; // Feedback of the last attempt.
     @Input() userSubmission?: AddonModAssignSubmissionFormatted; // The submission object.
 
-    @ViewChild('editFeedbackForm') formElement?: ElementRef;
+    readonly formElement = viewChild<ElementRef<HTMLFormElement>>('editFeedbackForm');
 
     grade: AddonModAssignSubmissionGrade = {
         method: '',
@@ -580,9 +580,9 @@ export class AddonModAssignEditFeedbackModalComponent implements OnDestroy, OnIn
      */
     protected dismissModal(savedData: boolean, online?: boolean): void {
         if (savedData) {
-            CoreForms.triggerFormSubmittedEvent(this.formElement, online, CoreSites.getCurrentSiteId());
+            CoreForms.triggerFormSubmittedEvent(this.formElement(), online, CoreSites.getCurrentSiteId());
         } else {
-            CoreForms.triggerFormCancelledEvent(this.formElement, CoreSites.getCurrentSiteId());
+            CoreForms.triggerFormCancelledEvent(this.formElement(), CoreSites.getCurrentSiteId());
         }
 
         ModalController.dismiss(savedData);

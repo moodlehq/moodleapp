@@ -261,6 +261,12 @@ export default class CoreCoursesListPage implements OnInit, OnDestroy {
      * @param text The text to search.
      */
     async search(text: string): Promise<void> {
+        if (text.trim() === '') {
+            this.clearSearch();
+
+            return;
+        }
+
         this.searchMode = true;
         this.searchText = text;
         this.courses = [];
@@ -278,7 +284,7 @@ export default class CoreCoursesListPage implements OnInit, OnDestroy {
     /**
      * Clear search box.
      */
-    clearSearch(): void {
+    protected clearSearch(): void {
         this.searchText = '';
         this.courses = [];
         this.searchPage = 0;

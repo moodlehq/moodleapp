@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import type { IAddonModAssignFeedbackPluginComponent } from '@addons/mod/assign/classes/base-feedback-plugin-component';
-import { Component, Input, OnInit, ViewChild, Type } from '@angular/core';
+import { Component, Input, OnInit, Type, viewChild } from '@angular/core';
 import { CoreDynamicComponent } from '@components/dynamic-component/dynamic-component';
 import { CoreWSFile } from '@services/ws';
 import {
@@ -40,7 +40,7 @@ import { CoreSharedModule } from '@/core/shared.module';
 })
 export class AddonModAssignFeedbackPluginComponent implements OnInit {
 
-    @ViewChild(CoreDynamicComponent) dynamicComponent!: CoreDynamicComponent<IAddonModAssignFeedbackPluginComponent>;
+    readonly dynamicComponent = viewChild.required(CoreDynamicComponent<IAddonModAssignFeedbackPluginComponent>);
 
     @Input({ required: true }) assign!: AddonModAssignAssign; // The assignment.
     @Input({ required: true }) submission!: AddonModAssignSubmission; // The submission.
@@ -107,7 +107,7 @@ export class AddonModAssignFeedbackPluginComponent implements OnInit {
      * @returns Promise resolved when done.
      */
     async invalidate(): Promise<void> {
-        await this.dynamicComponent.callComponentMethod('invalidate');
+        await this.dynamicComponent().callComponentMethod('invalidate');
     }
 
 }

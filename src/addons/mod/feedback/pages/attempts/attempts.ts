@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { AfterViewInit, Component, OnDestroy, ViewChild, inject } from '@angular/core';
+import { AfterViewInit, Component, OnDestroy, inject, viewChild } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { CoreRoutedItemsManagerSourcesTracker } from '@classes/items-management/routed-items-manager-sources-tracker';
 import { CoreListItemsManager } from '@classes/items-management/list-items-manager';
@@ -41,7 +41,7 @@ import { CoreSharedModule } from '@/core/shared.module';
 })
 export default class AddonModFeedbackAttemptsPage implements AfterViewInit, OnDestroy {
 
-    @ViewChild(CoreSplitViewComponent) splitView!: CoreSplitViewComponent;
+    readonly splitView = viewChild.required(CoreSplitViewComponent);
 
     promisedAttempts: CorePromisedValue<AddonModFeedbackAttemptsManager>;
     fetchFailed = false;
@@ -143,7 +143,7 @@ export default class AddonModFeedbackAttemptsPage implements AfterViewInit, OnDe
             CoreAlerts.showError(error, { default: Translate.instant('core.course.errorgetmodule') });
         }
 
-        await attempts.start(this.splitView);
+        await attempts.start(this.splitView());
     }
 
     /**

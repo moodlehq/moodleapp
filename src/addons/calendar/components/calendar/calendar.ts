@@ -16,15 +16,10 @@ import {
     Component,
     OnDestroy,
     OnInit,
-    Input,
-    DoCheck,
-    Output,
-    EventEmitter,
-    KeyValueDiffers,
-    KeyValueDiffer,
-    ViewChild,
-    HostBinding,
-    inject,
+    viewChild,
+    input,
+    output,
+    effect,
 } from '@angular/core';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { CoreSites } from '@services/sites';
@@ -67,35 +62,34 @@ import { CoreUserPreferences } from '@features/user/services/user-preferences';
     imports: [
         CoreSharedModule,
     ],
+    host: {
+        '[attr.hidden]': 'hidden() ? "hidden" : null',
+    },
 })
-export class AddonCalendarCalendarComponent implements OnInit, DoCheck, OnDestroy {
+export class AddonCalendarCalendarComponent implements OnInit, OnDestroy {
 
-    @ViewChild(CoreSwipeSlidesComponent) swipeSlidesComponent?: CoreSwipeSlidesComponent<PreloadedMonth>;
+    readonly swipeSlidesComponent = viewChild(CoreSwipeSlidesComponent<PreloadedMonth>);
 
-    @Input() initialYear?: number; // Initial year to load.
-    @Input() initialMonth?: number; // Initial month to load.
-    @Input() filter?: AddonCalendarFilter; // Filter to apply.
-    @Input({ transform: toBoolean }) hidden = false; // Whether the component is hidden.
-    @Input({ transform: toBoolean }) canNavigate = true; // Whether to include arrows to change the month
-    @Input({ transform: toBoolean }) displayNavButtons = true; // Whether to display nav buttons created by this component.
-    @Output() onEventClicked = new EventEmitter<number>();
-    @Output() onDayClicked = new EventEmitter<{day: number; month: number; year: number}>();
+    readonly initialYear = input<number>(); // Initial year to load.
+    readonly initialMonth = input<number>(); // Initial month to load.
+    readonly filter = input<AddonCalendarFilter>(); // Filter to apply.
+    readonly hidden = input(false, { transform: toBoolean }); // Whether the component is hidden.
+    readonly canNavigate = input(true, { transform: toBoolean }); // Whether to include arrows to change the month
+    readonly displayNavButtons = input(true, { transform: toBoolean }); // Whether to display nav buttons created by this component.
+    readonly onEventClicked = output<number>();
+    readonly onDayClicked = output<{day: number; month: number; year: number}>();
 
     periodName?: string;
     manager?: CoreSwipeSlidesDynamicItemsManager<PreloadedMonth, AddonCalendarMonthSlidesItemsManagerSource>;
     loaded = false;
 
     protected currentSiteId: string;
-    protected hiddenDiffer?: boolean; // To detect changes in the hidden input.
-    protected filterDiffer: KeyValueDiffer<unknown, unknown>; // To detect changes in the filters input.
     // Observers and listeners.
     protected undeleteEventObserver: CoreEventObserver;
     protected managerUnsubscribe?: () => void;
     protected logView: () => void;
 
     constructor() {
-        const differs = inject(KeyValueDiffers);
-
         this.currentSiteId = CoreSites.getCurrentSiteId();
 
         // Listen for events "undeleted" (offline).
@@ -118,9 +112,6 @@ export class AddonCalendarCalendarComponent implements OnInit, DoCheck, OnDestro
             this.currentSiteId,
         );
 
-        this.hiddenDiffer = this.hidden;
-        this.filterDiffer = differs.find(this.filter ?? {}).create();
-
         this.logView = CoreTime.once(() => {
             const month = this.manager?.getSelectedItem();
             if (!month) {
@@ -128,7 +119,7 @@ export class AddonCalendarCalendarComponent implements OnInit, DoCheck, OnDestro
             }
 
             const params = {
-                course: this.filter?.courseId,
+                course: this.filter()?.courseId,
                 time: CoreTime.timestamp(),
             };
 
@@ -143,19 +134,32 @@ export class AddonCalendarCalendarComponent implements OnInit, DoCheck, OnDestro
                 url: CoreUrl.addParamsToUrl('/calendar/view.php?view=month', params),
             });
         });
-    }
 
-    @HostBinding('attr.hidden') get hiddenAttribute(): string | null {
-        return this.hidden ? 'hidden' : null;
+        effect(() => {
+            if (!this.hidden()) {
+                this.swipeSlidesComponent()?.updateSlidesComponent();
+            }
+        });
+
+        effect(() => {
+            const filter = this.filter();
+            const items = this.manager?.getSource().getItems();
+            items?.forEach((month) => {
+                if (month.loaded && month.weeks) {
+                    this.manager?.getSource().filterEvents(month.weeks, filter);
+                }
+            });
+        });
     }
 
     /**
      * @inheritdoc
      */
     ngOnInit(): void {
+        const initialMonth = this.initialMonth();
         const source = new AddonCalendarMonthSlidesItemsManagerSource(this, dayjs({
-            year: this.initialYear,
-            month: this.initialMonth ? this.initialMonth - 1 : undefined,
+            year: this.initialYear(),
+            month: initialMonth ? initialMonth - 1 : undefined,
         }).startOf('month'));
         this.manager = new CoreSwipeSlidesDynamicItemsManager(source);
         this.managerUnsubscribe = this.manager.addListener({
@@ -165,33 +169,6 @@ export class AddonCalendarCalendarComponent implements OnInit, DoCheck, OnDestro
         });
 
         this.fetchData();
-    }
-
-    /**
-     * @inheritdoc
-     */
-    ngDoCheck(): void {
-        const items = this.manager?.getSource().getItems();
-
-        if (items?.length) {
-            // Check if there's any change in the filter object.
-            const changes = this.filterDiffer.diff(this.filter ?? {});
-            if (changes) {
-                items.forEach((month) => {
-                    if (month.loaded && month.weeks) {
-                        this.manager?.getSource().filterEvents(month.weeks, this.filter);
-                    }
-                });
-            }
-        }
-
-        if (this.hiddenDiffer !== this.hidden) {
-            this.hiddenDiffer = this.hidden;
-
-            if (!this.hidden) {
-                this.swipeSlidesComponent?.updateSlidesComponent();
-            }
-        }
     }
 
     get timeFormat(): string {
@@ -252,14 +229,14 @@ export class AddonCalendarCalendarComponent implements OnInit, DoCheck, OnDestro
      * Load next month.
      */
     loadNext(): void {
-        this.swipeSlidesComponent?.slideNext();
+        this.swipeSlidesComponent()?.slideNext();
     }
 
     /**
      * Load previous month.
      */
     loadPrevious(): void {
-        this.swipeSlidesComponent?.slidePrev();
+        this.swipeSlidesComponent()?.slidePrev();
     }
 
     /**
@@ -347,7 +324,8 @@ export class AddonCalendarCalendarComponent implements OnInit, DoCheck, OnDestro
      */
     async viewMonth(month: number, year: number): Promise<void> {
         const manager = this.manager;
-        if (!manager || !this.swipeSlidesComponent) {
+        const swipeSlidesComponent = this.swipeSlidesComponent();
+        if (!manager || !swipeSlidesComponent) {
             return;
         }
 
@@ -363,7 +341,7 @@ export class AddonCalendarCalendarComponent implements OnInit, DoCheck, OnDestro
             // Make sure the day is loaded.
             await manager.getSource().loadItem(item);
 
-            this.swipeSlidesComponent.slideToItem(item);
+            swipeSlidesComponent.slideToItem(item);
         } catch (error) {
             CoreAlerts.showError(error, { default: Translate.instant('addon.calendar.errorloadevents') });
         } finally {
@@ -607,7 +585,7 @@ class AddonCalendarMonthSlidesItemsManagerSource extends CoreSwipeSlidesDynamicI
             // Merge the online events with offline data.
             this.mergeEvents(month, weeks);
             // Filter events by course.
-            this.filterEvents(weeks, this.calendarComponent.filter);
+            this.filterEvents(weeks, this.calendarComponent.filter());
         }
 
         return preloadedMonth;

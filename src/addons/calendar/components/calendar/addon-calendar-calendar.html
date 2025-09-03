@@ -1,7 +1,7 @@
 <!-- Add buttons to the nav bar. -->
 <core-navbar-buttons slot="end" prepend>
     <core-context-menu>
-        @if (canNavigate && !selectedMonthIsCurrent() && displayNavButtons) {
+        @if (canNavigate() && !selectedMonthIsCurrent() && displayNavButtons()) {
             <core-context-menu-item [priority]="900" [content]="'addon.calendar.currentmonth' | translate" iconAction="fas-calendar-day"
                 (action)="goToCurrentMonth()" />
         }
@@ -44,7 +44,7 @@
         <!-- Period name and arrows to navigate. -->
         <ion-grid class="ion-no-padding addon-calendar-navigation">
             <ion-row class="ion-align-items-center">
-                @if (canNavigate) {
+                @if (canNavigate()) {
                     <ion-col class="ion-text-start">
                         <ion-button fill="clear" (click)="loadPrevious()" [ariaLabel]="'addon.calendar.monthprev' | translate">
                             <ion-icon name="fas-chevron-left" slot="icon-only" aria-hidden="true" />
@@ -59,7 +59,7 @@
                         }
                     </h2>
                 </ion-col>
-                @if (canNavigate) {
+                @if (canNavigate()) {
                     <ion-col class="ion-text-end">
                         <ion-button fill="clear" (click)="loadNext()" [ariaLabel]="'addon.calendar.monthnext' | translate">
                             <ion-icon name="fas-chevron-right" slot="icon-only" aria-hidden="true" />

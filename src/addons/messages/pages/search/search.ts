@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnDestroy, ViewChild } from '@angular/core';
+import { Component, OnDestroy, viewChild } from '@angular/core';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { CoreSites } from '@services/sites';
 import {
@@ -47,7 +47,7 @@ import { CoreSharedModule } from '@/core/shared.module';
 })
 export default class AddonMessagesSearchPage implements OnDestroy {
 
-    @ViewChild(CoreSplitViewComponent) splitView!: CoreSplitViewComponent;
+    readonly splitView = viewChild.required(CoreSplitViewComponent);
 
     disableSearch = false;
     displaySearching = false;
@@ -115,7 +115,7 @@ export default class AddonMessagesSearchPage implements OnDestroy {
     /**
      * Clear search.
      */
-    clearSearch(): void {
+    protected clearSearch(): void {
         this.query = '';
         this.displayResults = false;
 
@@ -135,6 +135,12 @@ export default class AddonMessagesSearchPage implements OnDestroy {
      * @returns Resolved when done.
      */
     async search(query: string, loadMore?: 'contacts' | 'noncontacts' | 'messages', infiniteComplete?: () => void): Promise<void> {
+        if (query.trim() === '') {
+            this.clearSearch();
+
+            return;
+        }
+
         CoreKeyboard.close();
 
         this.query = query;
@@ -274,8 +280,9 @@ export default class AddonMessagesSearchPage implements OnDestroy {
             const path = CoreNavigator.getRelativePathToParent('/messages/search') + 'discussion/' +
                 (conversationId ? conversationId : `user/${userId}`);
 
+            const splitView = this.splitView();
             CoreNavigator.navigate(path, {
-                reset: CoreScreen.isTablet && !!this.splitView && !this.splitView.isNested,
+                reset: CoreScreen.isTablet && !!splitView && !splitView.isNested,
             });
         }
     }

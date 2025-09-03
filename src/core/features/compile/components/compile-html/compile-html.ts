@@ -21,7 +21,6 @@ import {
     OnChanges,
     OnDestroy,
     ViewContainerRef,
-    ViewChild,
     ComponentRef,
     SimpleChange,
     ChangeDetectorRef,
@@ -39,6 +38,7 @@ import {
     EffectCleanupRegisterFn,
     CreateEffectOptions,
     inject,
+    viewChild,
 } from '@angular/core';
 import { CorePromisedValue } from '@classes/promised-value';
 
@@ -88,7 +88,7 @@ export class CoreCompileHtmlComponent implements OnChanges, OnDestroy, DoCheck {
     componentInstance?: any; // eslint-disable-line @typescript-eslint/no-explicit-any
 
     // Get the container where to put the content.
-    @ViewChild('dynamicComponent', { read: ViewContainerRef }) container?: ViewContainerRef;
+    readonly container = viewChild('dynamicComponent', { read: ViewContainerRef });
 
     protected componentRef?: ComponentRef<unknown>;
     protected element: HTMLElement = inject(ElementRef).nativeElement;
@@ -146,13 +146,14 @@ export class CoreCompileHtmlComponent implements OnChanges, OnDestroy, DoCheck {
             this.componentRef?.destroy();
 
             // Create the component.
-            if (this.container) {
+            const container = this.container();
+            if (container) {
                 await this.loadCSSCode();
 
                 this.componentRef = await CoreCompile.createAndCompileComponent(
                     this.text,
                     componentClass,
-                    this.container,
+                    container,
                     this.extraImports,
                     this.componentStyles,
                 );
