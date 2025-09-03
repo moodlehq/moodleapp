@@ -259,8 +259,8 @@ export default class CoreCourseOverviewPage implements OnInit {
                 // Search by name along with key because in some cases the key can be empty (see MDL-86146).
                 const item = activity.items.find(item => item.key === header.key || item.name === header.name);
                 if (!item) {
-                    // Item not found, it shouldn't happen. Render an empty item.
-                    return this.getEmptyOverviewItem(header.key, header.name);
+                    // Item not found, render an empty item. It can happen that some activities don't return certain columns.
+                    return this.getEmptyOverviewItem(header.key, header.name, header.classes);
                 }
 
                 // Get the data to render the item.
@@ -270,7 +270,7 @@ export default class CoreCourseOverviewPage implements OnInit {
                     // The app doesn't know how to render the item, mark the mod type as not supported and render an empty item.
                     columnsToRemove.push(header.key);
 
-                    return this.getEmptyOverviewItem(header.key, header.name);
+                    return this.getEmptyOverviewItem(header.key, header.name, header.classes);
                 }
 
                 return {
@@ -319,9 +319,10 @@ export default class CoreCourseOverviewPage implements OnInit {
      *
      * @param key Key of the item.
      * @param name Name of the item.
+     * @param headerClasses Classes of the header.
      * @returns Empty overview item.
      */
-    protected getEmptyOverviewItem(key: string, name: string): OverviewItemToRender {
+    protected getEmptyOverviewItem(key: string, name: string, headerClasses: string[]): OverviewItemToRender {
         return {
             key,
             name,
@@ -330,6 +331,7 @@ export default class CoreCourseOverviewPage implements OnInit {
             extrajson: '{}',
             parsedData: { value: null, datatype: 'NULL' },
             content: null,
+            classes: headerClasses,
         };
     }
 
