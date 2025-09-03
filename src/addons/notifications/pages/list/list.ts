@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { AfterViewInit, Component, OnDestroy, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, OnDestroy, viewChild } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { CoreUtils } from '@singletons/utils';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
@@ -52,7 +52,7 @@ import { ADDONS_NOTIFICATIONS_READ_CHANGED_EVENT, ADDONS_NOTIFICATIONS_READ_CRON
 })
 export default class AddonNotificationsListPage implements AfterViewInit, OnDestroy {
 
-    @ViewChild(CoreSplitViewComponent) splitView!: CoreSplitViewComponent;
+    readonly splitView = viewChild.required(CoreSplitViewComponent);
     notifications!: CoreListItemsManager<AddonNotificationsNotificationMessageFormatted, AddonNotificationsNotificationsSource>;
     fetchMoreNotificationsFailed = false;
     canMarkAllNotificationsAsRead = false;
@@ -96,7 +96,7 @@ export default class AddonNotificationsListPage implements AfterViewInit, OnDest
     async ngAfterViewInit(): Promise<void> {
         await this.fetchInitialNotifications();
 
-        this.notifications.start(this.splitView);
+        this.notifications.start(this.splitView());
 
         this.cronObserver = CoreEvents.on(ADDONS_NOTIFICATIONS_READ_CRON_EVENT, () => {
             if (!this.isCurrentView) {

@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, viewChild } from '@angular/core';
 import { Subscription } from 'rxjs';
 
 import { CoreSites } from '@services/sites';
@@ -39,7 +39,7 @@ import { MAIN_MENU_HOME_PAGE_NAME } from '@features/mainmenu/constants';
 })
 export default class CoreMainMenuHomePage implements OnInit {
 
-    @ViewChild(CoreTabsOutletComponent) tabsComponent?: CoreTabsOutletComponent;
+    readonly tabsComponent = viewChild(CoreTabsOutletComponent);
 
     siteName = '';
     tabs: CoreTabsOutletTab[] = [];
@@ -105,14 +105,14 @@ export default class CoreMainMenuHomePage implements OnInit {
      * User entered the page.
      */
     ionViewDidEnter(): void {
-        this.tabsComponent?.ionViewDidEnter();
+        this.tabsComponent()?.ionViewDidEnter();
     }
 
     /**
      * User left the page.
      */
     ionViewDidLeave(): void {
-        this.tabsComponent?.ionViewDidLeave();
+        this.tabsComponent()?.ionViewDidLeave();
     }
 
 }

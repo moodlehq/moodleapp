@@ -1,5 +1,5 @@
 <ion-content>
-    <ion-refresher slot="fixed" [disabled]="!ptrEnabled || !content || !content.dataLoaded" (ionRefresh)="refreshData($event.target)">
+    <ion-refresher slot="fixed" [disabled]="!ptrEnabled || !content() || !content()?.dataLoaded" (ionRefresh)="refreshData($event.target)">
         <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}" />
     </ion-refresher>
     @if (component && method) {

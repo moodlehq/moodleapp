@@ -17,7 +17,7 @@ import { AddonNotesAddModalReturn } from '@addons/notes/components/add/add-modal
 import { AddonNotes, AddonNotesNoteFormatted, AddonNotesPublishState } from '@addons/notes/services/notes';
 import { AddonNotesOffline } from '@addons/notes/services/notes-offline';
 import { AddonNotesSync } from '@addons/notes/services/notes-sync';
-import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Component, OnDestroy, OnInit, viewChild } from '@angular/core';
 import { CoreAnimations } from '@components/animations';
 import { CoreUser, CoreUserProfile } from '@features/user/services/user';
 import { IonContent } from '@ionic/angular';
@@ -49,7 +49,7 @@ import { CoreSharedModule } from '@/core/shared.module';
 })
 export default class AddonNotesListPage implements OnInit, OnDestroy {
 
-    @ViewChild(IonContent) content?: IonContent;
+    readonly content = viewChild(IonContent);
 
     courseId!: number;
     userId?: number;
@@ -92,7 +92,7 @@ export default class AddonNotesListPage implements OnInit, OnDestroy {
                 this.refreshIcon = CoreConstants.ICON_LOADING;
                 this.syncIcon = CoreConstants.ICON_LOADING;
 
-                this.content?.scrollToTop();
+                this.content()?.scrollToTop();
                 this.fetchNotes(false);
             }
         }, CoreSites.getCurrentSiteId());

@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, signal } from '@angular/core';
 import { CoreNavigator } from '@services/navigator';
 import { CoreCourseModuleData } from '../services/course-helper';
 import { CoreCourseModuleMainResourceComponent } from './main-resource-component';
@@ -26,7 +26,11 @@ import { CoreAlerts } from '@services/overlays/alerts';
 })
 export class CoreCourseModuleMainActivityPage<ActivityType extends CoreCourseModuleMainResourceComponent> implements OnInit {
 
-    activityComponent?: ActivityType;
+    /**
+     * Activity component.
+     * This should be overridden with a viewChild in the child classes.
+     */
+    readonly activityComponent = signal<ActivityType | undefined>(undefined).asReadonly();
 
     title!: string;
     module!: CoreCourseModuleData;
@@ -62,28 +66,28 @@ export class CoreCourseModuleMainActivityPage<ActivityType extends CoreCourseMod
      * User entered the page.
      */
     ionViewDidEnter(): void {
-        this.activityComponent?.ionViewDidEnter();
+        this.activityComponent()?.ionViewDidEnter();
     }
 
     /**
      * User left the page.
      */
     ionViewDidLeave(): void {
-        this.activityComponent?.ionViewDidLeave();
+        this.activityComponent()?.ionViewDidLeave();
     }
 
     /**
      * User will enter the page.
      */
     ionViewWillEnter(): void {
-        this.activityComponent?.ionViewWillEnter();
+        this.activityComponent()?.ionViewWillEnter();
     }
 
     /**
      * User will leave the page.
      */
     ionViewWillLeave(): void {
-        this.activityComponent?.ionViewWillLeave();
+        this.activityComponent()?.ionViewWillLeave();
     }
 
 }

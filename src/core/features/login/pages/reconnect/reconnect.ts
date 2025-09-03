@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit, OnDestroy, ViewChild, ElementRef, inject } from '@angular/core';
+import { Component, OnInit, OnDestroy, ElementRef, inject, viewChild, effect } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 
 import { CoreNetwork } from '@services/network';
@@ -57,18 +57,8 @@ import { CoreLoginIdentityProviderComponent } from '../../components/identity-pr
 })
 export default class CoreLoginReconnectPage implements OnInit, OnDestroy {
 
-    @ViewChild('reconnectForm') formElement?: ElementRef;
-    @ViewChild(CoreLoginMethodsComponent) set loginMethods(loginMethods: CoreLoginMethodsComponent) {
-        if (loginMethods && !this.currentLogin) {
-            loginMethods.getCurrentLogin().then(login => {
-                this.currentLogin = login;
-
-                return;
-            }).catch(() => {
-                // Ignore errors.
-            });
-        }
-    }
+    readonly formElement = viewChild<ElementRef>('reconnectForm');
+    readonly loginMethods = viewChild(CoreLoginMethodsComponent);
 
     credForm: FormGroup;
     site!: CoreSite;
@@ -107,6 +97,19 @@ export default class CoreLoginReconnectPage implements OnInit, OnDestroy {
         // Listen to LOGIN event to determine if login was successful, since the login can be done using QR, biometric, etc.
         this.loginObserver = CoreEvents.on(CoreEvents.LOGIN, () => {
             this.loginSuccessful = true;
+        });
+
+        const effectRef = effect(async () => {
+            const loginMethods = this.loginMethods();
+            if (!loginMethods) {
+                return;
+            }
+
+            this.currentLogin = await CorePromiseUtils.ignoreErrors(loginMethods.getCurrentLogin());
+
+            if (this.currentLogin) {
+                effectRef.destroy();
+            }
         });
     }
 
@@ -282,7 +285,7 @@ export default class CoreLoginReconnectPage implements OnInit, OnDestroy {
 
             await CoreSites.updateSiteToken(url, this.username, data.token, data.privateToken);
 
-            CoreForms.triggerFormSubmittedEvent(this.formElement, true);
+            CoreForms.triggerFormSubmittedEvent(this.formElement(), true);
 
             // Unset oAuthID if it's set.
             await CoreSites.removeSiteOauthId(this.siteId);

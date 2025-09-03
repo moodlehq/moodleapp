@@ -47,7 +47,7 @@ export class AddonBlockTimelineProvider {
         afterEventId?: number,
         searchValue = '',
         siteId?: string,
-    ): Promise<{ events: AddonCalendarEvent[]; canLoadMore?: number }> {
+    ): Promise<AddonBlockTimelineActionEvents> {
         const site = await CoreSites.getSite(siteId);
 
         const time = this.getDayStart(-14); // Check two weeks ago.
@@ -101,7 +101,7 @@ export class AddonBlockTimelineProvider {
         courseIds: number[],
         searchValue = '',
         siteId?: string,
-    ): Promise<{[courseId: string]: { events: AddonCalendarEvent[]; canLoadMore?: number } }> {
+    ): Promise<{[courseId: string]: AddonBlockTimelineActionEvents }> {
         if (courseIds.length === 0) {
             return {};
         }
@@ -130,7 +130,7 @@ export class AddonBlockTimelineProvider {
             preSets,
         );
 
-        const courseEvents: {[courseId: string]: { events: AddonCalendarEvent[]; canLoadMore?: number } } = {};
+        const courseEvents: {[courseId: string]: AddonBlockTimelineActionEvents } = {};
 
         events.groupedbycourse.forEach((course) => {
             courseEvents[course.courseid] = this.treatCourseEvents(course, time);
@@ -160,7 +160,7 @@ export class AddonBlockTimelineProvider {
         afterEventId?: number,
         searchValue = '',
         siteId?: string,
-    ): Promise<{ events: AddonCalendarEvent[]; canLoadMore?: number }> {
+    ): Promise<AddonBlockTimelineActionEvents> {
         const site = await CoreSites.getSite(siteId);
 
         const timesortfrom = this.getDayStart(-14); // Check two weeks ago.
@@ -193,14 +193,15 @@ export class AddonBlockTimelineProvider {
             preSets,
         );
 
-        const canLoadMore = result.events.length >= limitnum ? result.lastid : undefined;
+        const lastEventId = result.events.length >= limitnum ? result.lastid : undefined;
 
         // Filter events by time in case it uses cache.
         const events = result.events.filter((element) => element.timesort >= timesortfrom);
 
         return {
             events,
-            canLoadMore,
+            lastEventId,
+            canLoadMore: lastEventId !== undefined,
         };
     }
 
@@ -254,21 +255,20 @@ export class AddonBlockTimelineProvider {
      *
      * @param course Object containing response course events info.
      * @param timeFrom Current time to filter events from.
-     * @returns Object with course events and last loaded event id if more can be loaded.
+     * @returns Object with course events and whether more events can be loaded.
      */
-    protected treatCourseEvents(
-        course: AddonBlockTimelineEvents,
-        timeFrom: number,
-    ): { events: AddonCalendarEvent[]; canLoadMore?: number } {
+    protected treatCourseEvents(course: AddonBlockTimelineEvents, timeFrom: number): AddonBlockTimelineActionEvents {
 
-        const canLoadMore: number | undefined =
+        const lastEventId: number | undefined =
             course.events.length >= AddonBlockTimelineProvider.EVENTS_LIMIT_PER_COURSE ? course.lastid : undefined;
+        const canLoadMore = lastEventId !== undefined;
 
         // Filter events by time in case it uses cache.
         course.events = course.events.filter((element) => element.timesort >= timeFrom);
 
         return {
             events: course.events,
+            lastEventId,
             canLoadMore,
         };
     }
@@ -359,4 +359,10 @@ export type AddonBlockTimelineEvents = {
     events: AddonCalendarEvent[]; // Events.
     firstid: number; // Firstid.
     lastid: number; // Lastid.
+};
+
+export type AddonBlockTimelineActionEvents = {
+    events: AddonCalendarEvent[];
+    lastEventId: number | undefined;
+    canLoadMore: boolean;
 };

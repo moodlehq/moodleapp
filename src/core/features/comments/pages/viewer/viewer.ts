@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnDestroy, OnInit, ViewChild, AfterViewInit, effect, inject } from '@angular/core';
+import { Component, OnDestroy, OnInit, AfterViewInit, effect, inject, viewChild } from '@angular/core';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { ActivatedRoute } from '@angular/router';
 import { CoreSites } from '@services/sites';
@@ -65,7 +65,7 @@ import { CoreKeyboard } from '@singletons/keyboard';
 })
 export default class CoreCommentsViewerPage implements OnInit, OnDestroy, AfterViewInit {
 
-    @ViewChild(IonContent) content?: IonContent;
+    readonly content = viewChild(IonContent);
 
     comments: CoreCommentsDataToDisplay[] = [];
     commentsLoaded = false;
@@ -169,7 +169,7 @@ export default class CoreCommentsViewerPage implements OnInit, OnDestroy, AfterV
      * @inheritdoc
      */
     async ngAfterViewInit(): Promise<void> {
-        this.scrollElement = await this.content?.getScrollElement();
+        this.scrollElement = await this.content()?.getScrollElement();
     }
 
     /**
@@ -661,8 +661,9 @@ export default class CoreCommentsViewerPage implements OnInit, OnDestroy, AfterV
         // Leave time for the view to be rendered.
         await CoreWait.nextTicks(5);
 
-        if (!this.viewDestroyed && this.content) {
-            this.content.scrollToBottom(0);
+        const content = this.content();
+        if (!this.viewDestroyed && content) {
+            content.scrollToBottom(0);
         }
     }
 

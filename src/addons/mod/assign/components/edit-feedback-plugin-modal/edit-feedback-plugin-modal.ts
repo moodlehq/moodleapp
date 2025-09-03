@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, Input, ViewChild, ElementRef } from '@angular/core';
+import { Component, Input, ElementRef, viewChild } from '@angular/core';
 import { CoreSites } from '@services/sites';
 import { CoreFormFields, CoreForms } from '@singletons/form';
 import { CorePromiseUtils } from '@singletons/promise-utils';
@@ -43,7 +43,7 @@ export class AddonModAssignEditPluginFeedbackModalComponent {
     @Input({ required: true }) plugin!: AddonModAssignPlugin; // The plugin object.
     @Input({ required: true }) userId!: number; // The user ID of the submission.
 
-    @ViewChild('editFeedbackForm') formElement?: ElementRef;
+    readonly formElement = viewChild<ElementRef<HTMLFormElement>>('editFeedbackForm');
 
     /**
      * Close modal checking if there are changes first.
@@ -54,7 +54,7 @@ export class AddonModAssignEditPluginFeedbackModalComponent {
             await CoreAlerts.confirmLeaveWithChanges();
         }
 
-        CoreForms.triggerFormCancelledEvent(this.formElement, CoreSites.getCurrentSiteId());
+        CoreForms.triggerFormCancelledEvent(this.formElement(), CoreSites.getCurrentSiteId());
 
         ModalController.dismiss();
     }
@@ -68,7 +68,7 @@ export class AddonModAssignEditPluginFeedbackModalComponent {
         e.preventDefault();
         e.stopPropagation();
 
-        CoreForms.triggerFormSubmittedEvent(this.formElement, false, CoreSites.getCurrentSiteId());
+        CoreForms.triggerFormSubmittedEvent(this.formElement(), false, CoreSites.getCurrentSiteId());
 
         // Close the modal, sending the input data.
         ModalController.dismiss(this.getInputData());

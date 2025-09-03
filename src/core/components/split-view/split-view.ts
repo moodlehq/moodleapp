@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { AfterViewInit, Component, ElementRef, Input, OnDestroy, ViewChild, inject } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, Input, OnDestroy, inject, viewChild } from '@angular/core';
 import { ActivatedRouteSnapshot } from '@angular/router';
 import { IonContent, IonRouterOutlet } from '@ionic/angular';
 import { CoreScreen } from '@services/screen';
@@ -42,8 +42,8 @@ const disabledScrollClass = 'disable-scroll-y';
 })
 export class CoreSplitViewComponent implements AfterViewInit, OnDestroy {
 
-    @ViewChild(IonContent) menuContent!: IonContent;
-    @ViewChild(IonRouterOutlet) contentOutlet!: IonRouterOutlet;
+    readonly menuContent = viewChild.required(IonContent);
+    readonly contentOutlet = viewChild.required(IonRouterOutlet);
     @Input() placeholderText = 'core.emptysplit';
     @Input() mode?: CoreSplitViewMode;
     isNested = false;
@@ -62,7 +62,7 @@ export class CoreSplitViewComponent implements AfterViewInit, OnDestroy {
     }
 
     get outletActivated(): boolean {
-        return this.contentOutlet.isActivated;
+        return this.contentOutlet().isActivated;
     }
 
     get outletRouteObservable(): Observable<ActivatedRouteSnapshot | null> {
@@ -82,8 +82,8 @@ export class CoreSplitViewComponent implements AfterViewInit, OnDestroy {
         this.disableScrollOnParent();
 
         this.subscriptions = [
-            this.contentOutlet.activateEvents.subscribe(() => this.updateOutletRoute()),
-            this.contentOutlet.deactivateEvents.subscribe(() => this.updateOutletRoute()),
+            this.contentOutlet().activateEvents.subscribe(() => this.updateOutletRoute()),
+            this.contentOutlet().deactivateEvents.subscribe(() => this.updateOutletRoute()),
             CoreScreen.layoutObservable.subscribe(() => this.updateClasses()),
         ];
 
@@ -103,7 +103,8 @@ export class CoreSplitViewComponent implements AfterViewInit, OnDestroy {
      * Update outlet status.
      */
     private updateOutletRoute(): void {
-        const outletRoute = this.contentOutlet.isActivated ? this.contentOutlet.activatedRoute.snapshot : null;
+        const contentOutlet = this.contentOutlet();
+        const outletRoute = contentOutlet.isActivated ? contentOutlet.activatedRoute.snapshot : null;
 
         this.updateClasses();
 
@@ -116,7 +117,7 @@ export class CoreSplitViewComponent implements AfterViewInit, OnDestroy {
     private updateClasses(): void {
         const classes: string[] = [this.getCurrentMode()];
 
-        if (this.contentOutlet.isActivated) {
+        if (this.contentOutlet().isActivated) {
             classes.push('outlet-activated');
         }
 
@@ -143,7 +144,7 @@ export class CoreSplitViewComponent implements AfterViewInit, OnDestroy {
         }
 
         if (CoreScreen.isMobile) {
-            return this.contentOutlet.isActivated
+            return this.contentOutlet().isActivated
                 ? CoreSplitViewMode.CONTENT_ONLY
                 : CoreSplitViewMode.MENU_ONLY;
         }

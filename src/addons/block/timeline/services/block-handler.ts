@@ -19,6 +19,7 @@ import { CoreCourses } from '@features/courses/services/courses';
 import { CoreBlockBaseHandler } from '@features/block/classes/base-block-handler';
 import { makeSingleton } from '@singletons';
 import { CoreCoursesDashboard } from '@features/courses/services/dashboard';
+import { ADDON_BLOCK_TIMELINE_BLOCK_NAME } from '../constants';
 
 /**
  * Block handler.
@@ -27,7 +28,7 @@ import { CoreCoursesDashboard } from '@features/courses/services/dashboard';
 export class AddonBlockTimelineHandlerService extends CoreBlockBaseHandler {
 
     name = 'AddonBlockTimeline';
-    blockName = 'timeline';
+    blockName = ADDON_BLOCK_TIMELINE_BLOCK_NAME;
 
     /**
      * @inheritdoc

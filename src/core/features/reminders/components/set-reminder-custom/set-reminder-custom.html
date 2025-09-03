@@ -16,9 +16,11 @@
             <span class="accesshide" id="reminderUnits_label">{{ 'core.reminders.units' | translate }}</span>
             <ion-select aria-labelledby="reminderUnits_label" name="customunits" [(ngModel)]="customUnits" interface="action-sheet"
                 slot="end" [cancelText]="'core.cancel' | translate" [interfaceOptions]="{header: 'core.reminders.units' | translate}">
-                <ion-select-option *ngFor=" let option of customUnitsOptions" [value]="option.value">
-                    {{ option.label | translate }}
-                </ion-select-option>
+                @for (option of customUnitsOptions; track option.value) {
+                    <ion-select-option [value]="option.value">
+                        {{ option.label | translate }}
+                    </ion-select-option>
+                }
             </ion-select>
         </div>
     </ion-item>

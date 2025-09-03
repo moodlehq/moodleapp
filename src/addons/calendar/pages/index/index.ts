@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit, OnDestroy, ViewChild, inject } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject, viewChild } from '@angular/core';
 import { CoreNetwork } from '@services/network';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { CoreSites } from '@services/sites';
@@ -59,8 +59,8 @@ import { CoreMainMenuUserButtonComponent } from '@features/mainmenu/components/u
 })
 export default class AddonCalendarIndexPage implements OnInit, OnDestroy {
 
-    @ViewChild(AddonCalendarCalendarComponent) calendarComponent?: AddonCalendarCalendarComponent;
-    @ViewChild(AddonCalendarUpcomingEventsComponent) upcomingEventsComponent?: AddonCalendarUpcomingEventsComponent;
+    readonly calendarComponent = viewChild(AddonCalendarCalendarComponent);
+    readonly upcomingEventsComponent = viewChild(AddonCalendarUpcomingEventsComponent);
 
     protected currentSiteId: string;
     protected initialized = false;
@@ -159,7 +159,7 @@ export default class AddonCalendarIndexPage implements OnInit, OnDestroy {
         this.filterChangedObserver = CoreEvents.on(
             ADDON_CALENDAR_FILTER_CHANGED_EVENT,
             async (filterData) => {
-                this.filter = filterData;
+                this.filter = { ...filterData };
 
                 // Course viewed has changed, check if the user can create events for this course calendar.
                 this.canCreate = await AddonCalendarHelper.canEditEvents(this.filter.courseId);
@@ -190,8 +190,9 @@ export default class AddonCalendarIndexPage implements OnInit, OnDestroy {
 
             this.fetchData(true, false);
 
-            if (this.year !== undefined && this.month !== undefined && this.calendarComponent) {
-                this.calendarComponent.viewMonth(this.month, this.year);
+            const calendarComponent = this.calendarComponent();
+            if (this.year !== undefined && this.month !== undefined && calendarComponent) {
+                calendarComponent.viewMonth(this.month, this.year);
             }
         });
 
@@ -322,9 +323,9 @@ export default class AddonCalendarIndexPage implements OnInit, OnDestroy {
      */
     protected async refreshComponentData(afterChange = false): Promise<void> {
         if (this.showCalendar) {
-            await this.calendarComponent?.refreshData(afterChange);
+            await this.calendarComponent()?.refreshData(afterChange);
         } else {
-            await this.upcomingEventsComponent?.refreshData();
+            await this.upcomingEventsComponent()?.refreshData();
         }
     }
 

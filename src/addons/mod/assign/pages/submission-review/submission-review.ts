@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnDestroy, OnInit, ViewChild, inject } from '@angular/core';
+import { Component, OnDestroy, OnInit, inject, viewChild } from '@angular/core';
 import { ActivatedRoute, ActivatedRouteSnapshot } from '@angular/router';
 import { CoreRoutedItemsManagerSourcesTracker } from '@classes/items-management/routed-items-manager-sources-tracker';
 import { CoreSwipeNavigationItemsManager } from '@classes/items-management/swipe-navigation-items-manager';
@@ -41,7 +41,7 @@ import { ADDON_MOD_ASSIGN_MODNAME, AddonModAssignListFilterName } from '../../co
 })
 export default class AddonModAssignSubmissionReviewPage implements OnInit, OnDestroy {
 
-    @ViewChild(AddonModAssignSubmissionComponent) submissionComponent?: AddonModAssignSubmissionComponent;
+    readonly submissionComponent = viewChild(AddonModAssignSubmissionComponent);
 
     title = ''; // Title to display.
     submissions?: AddonModAssignSubmissionSwipeItemsManager;
@@ -174,7 +174,7 @@ export default class AddonModAssignSubmissionReviewPage implements OnInit, OnDes
         try {
             await Promise.all(promises);
         } finally {
-            this.submissionComponent && this.submissionComponent.invalidateAndRefresh(true);
+            this.submissionComponent()?.invalidateAndRefresh(true);
 
             await this.fetchSubmission();
         }

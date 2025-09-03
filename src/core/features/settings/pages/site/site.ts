@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { AfterViewInit, Component, OnDestroy, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, OnDestroy, viewChild } from '@angular/core';
 
 import { CoreSettingsHandlerToDisplay } from '../../services/settings-delegate';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
@@ -44,7 +44,7 @@ import { CoreSharedModule } from '@/core/shared.module';
 })
 export default class CoreSitePreferencesPage implements AfterViewInit, OnDestroy {
 
-    @ViewChild(CoreSplitViewComponent) splitView!: CoreSplitViewComponent;
+    readonly splitView = viewChild.required(CoreSplitViewComponent);
 
     handlers: CoreListItemsManager<CoreSettingsHandlerToDisplay, CoreSettingsHandlersSource>;
 
@@ -99,11 +99,11 @@ export default class CoreSitePreferencesPage implements AfterViewInit, OnDestroy
                 ('page' in handler) && handler.page === pageToOpen) : undefined;
 
             if (handler) {
-                this.handlers.watchSplitViewOutlet(this.splitView);
+                this.handlers.watchSplitViewOutlet(this.splitView());
 
                 await this.handlers.select(handler);
             } else {
-                await this.handlers.start(this.splitView);
+                await this.handlers.start(this.splitView());
             }
         }
     }

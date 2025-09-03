@@ -13,7 +13,7 @@
     </ion-toolbar>
 </ion-header>
 <ion-content>
-    <ion-refresher slot="fixed" [disabled]="activityComponent?.showLoading" (ionRefresh)="activityComponent?.doRefresh($event.target)">
+    <ion-refresher slot="fixed" [disabled]="activityComponent()?.showLoading" (ionRefresh)="activityComponent()?.doRefresh($event.target)">
         <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}" />
     </ion-refresher>
 

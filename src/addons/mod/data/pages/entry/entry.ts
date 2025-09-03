@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnDestroy, ViewChild, ChangeDetectorRef, OnInit, Type, inject } from '@angular/core';
+import { Component, OnDestroy, ChangeDetectorRef, OnInit, Type, inject, viewChild } from '@angular/core';
 import { CoreCommentsCommentsComponent } from '@features/comments/components/comments/comments';
 import { CoreComments } from '@features/comments/services/comments';
 import { CoreCourseModuleHelper } from '@features/course/services/course-module-helper';
@@ -67,8 +67,8 @@ import { CoreRatingAggregateComponent } from '@features/rating/components/aggreg
 })
 export default class AddonModDataEntryPage implements OnInit, OnDestroy {
 
-    @ViewChild(IonContent) content?: IonContent;
-    @ViewChild(CoreCommentsCommentsComponent) comments?: CoreCommentsCommentsComponent;
+    readonly content = viewChild(IonContent);
+    readonly comments = viewChild(CoreCommentsCommentsComponent);
 
     protected entryId?: number;
     protected syncObserver: CoreEventObserver; // It will observe the sync auto event.
@@ -250,7 +250,7 @@ export default class AddonModDataEntryPage implements OnInit, OnDestroy {
 
             CoreAlerts.showError(error, { default: Translate.instant('core.course.errorgetmodule') });
         } finally {
-            this.content?.scrollToTop();
+            this.content()?.scrollToTop();
             this.entryLoaded = true;
         }
     }
@@ -287,9 +287,10 @@ export default class AddonModDataEntryPage implements OnInit, OnDestroy {
             promises.push(AddonModData.invalidateEntriesData(this.database.id));
             promises.push(AddonModData.invalidateFieldsData(this.database.id));
 
-            if (this.database.comments && this.entry && this.entry.id > 0 && this.commentsEnabled && this.comments) {
+            const comments = this.comments();
+            if (this.database.comments && this.entry && this.entry.id > 0 && this.commentsEnabled && comments) {
                 // Refresh comments. Don't add it to promises because we don't want the comments fetch to block the entry fetch.
-                this.comments.doRefresh().catch(() => {
+                comments.doRefresh().catch(() => {
                     // Ignore errors.
                 });
             }

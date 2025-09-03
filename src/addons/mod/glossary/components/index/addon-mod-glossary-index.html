@@ -31,8 +31,8 @@
     </ion-refresher>
 
     @if (isSearch) {
-        <core-search-box (onSubmit)="search($event)" [placeholder]="'addon.mod_glossary.searchquery' | translate" [autoFocus]="true"
-            [lengthCheck]="2" (onClear)="toggleSearch()" searchArea="AddonModGlossary-{{module.id}}" />
+        <core-search-box (searchTextChange)="search($event)" [placeholder]="'addon.mod_glossary.searchquery' | translate" [autoFocus]="true"
+            [lengthCheck]="2" searchArea="AddonModGlossary-{{module.id}}" />
     }
 
     <core-loading [hideUntil]="!showLoading" [message]="loadingMessage">

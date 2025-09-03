@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { AfterViewInit, Component, ElementRef, OnDestroy, OnInit, ViewChild, inject } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, OnDestroy, OnInit, inject, viewChild } from '@angular/core';
 import { IonContent } from '@ionic/angular';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { CoreSites } from '@services/sites';
@@ -70,8 +70,8 @@ import { CoreSharedModule } from '@/core/shared.module';
 })
 export default class AddonMessagesDiscussionPage implements OnInit, OnDestroy, AfterViewInit {
 
-    @ViewChild(IonContent) content?: IonContent;
-    @ViewChild(CoreInfiniteLoadingComponent) infinite?: CoreInfiniteLoadingComponent;
+    readonly content = viewChild(IonContent);
+    readonly infinite = viewChild(CoreInfiniteLoadingComponent);
 
     protected fetching = false;
     protected polling?: number;
@@ -176,7 +176,7 @@ export default class AddonMessagesDiscussionPage implements OnInit, OnDestroy, A
      * View has been initialized.
      */
     async ngAfterViewInit(): Promise<void> {
-        this.scrollElement = await this.content?.getScrollElement();
+        this.scrollElement = await this.content()?.getScrollElement();
     }
 
     /**
@@ -829,7 +829,7 @@ export default class AddonMessagesDiscussionPage implements OnInit, OnDestroy, A
             return;
         }
 
-        let infiniteHeight = this.infinite?.hostElement.getBoundingClientRect().height || 0;
+        let infiniteHeight = this.infinite()?.hostElement.getBoundingClientRect().height || 0;
         const scrollHeight = (this.scrollElement?.scrollHeight || 0);
 
         // If there is an ongoing fetch, wait for it to finish.
@@ -844,8 +844,8 @@ export default class AddonMessagesDiscussionPage implements OnInit, OnDestroy, A
                 // Try to keep the scroll position.
                 const scrollBottom = scrollHeight - (this.scrollElement?.scrollTop || 0);
 
-                const height = this.infinite?.hostElement.getBoundingClientRect().height || 0;
-                if (this.canLoadMore && infiniteHeight && this.infinite) {
+                const height = this.infinite()?.hostElement.getBoundingClientRect().height || 0;
+                if (this.canLoadMore && infiniteHeight && this.infinite()) {
                     // The height of the infinite is different while spinner is shown. Add that difference.
                     infiniteHeight = infiniteHeight - height;
                 } else if (!this.canLoadMore) {
@@ -885,7 +885,7 @@ export default class AddonMessagesDiscussionPage implements OnInit, OnDestroy, A
                 const newScrollHeight = (this.scrollElement?.scrollHeight || 0);
                 const scrollTo = newScrollHeight - oldScrollBottom + infiniteHeight;
 
-                this.content!.scrollToPoint(0, scrollTo, 0);
+                this.content()!.scrollToPoint(0, scrollTo, 0);
             }, 30);
         }, 30);
     }
@@ -906,8 +906,9 @@ export default class AddonMessagesDiscussionPage implements OnInit, OnDestroy, A
             // Leave time for the view to be rendered.
             await CoreWait.nextTicks(5);
 
-            if (!this.viewDestroyed && this.content) {
-                this.content.scrollToBottom(0);
+            const content = this.content();
+            if (!this.viewDestroyed && content) {
+                content.scrollToBottom(0);
             }
 
             if (force) {

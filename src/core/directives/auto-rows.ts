@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Directive, ElementRef, Output, EventEmitter, AfterViewInit, Input, OnChanges, inject } from '@angular/core';
+import { Directive, ElementRef, inject, input, effect, output } from '@angular/core';
 
 /**
  * Directive to adapt a textarea rows depending on the input text. It's based on Moodle's data-auto-rows.
@@ -24,45 +24,28 @@ import { Directive, ElementRef, Output, EventEmitter, AfterViewInit, Input, OnCh
 @Directive({
     selector: 'textarea[core-auto-rows], ion-textarea[core-auto-rows]',
 })
-export class CoreAutoRowsDirective implements AfterViewInit, OnChanges {
+export class CoreAutoRowsDirective {
+
+    readonly value = input<string>(undefined, { alias: 'core-auto-rows' });
+    readonly onResize = output<void>();// Emit when resizing the textarea.
 
     protected height = 0;
     protected element: HTMLElement = inject(ElementRef).nativeElement;
 
-    @Input('core-auto-rows') value?: string;
-    @Output() onResize: EventEmitter<void>; // Emit when resizing the textarea.
-
     constructor() {
-        this.onResize = new EventEmitter();
-    }
+        effect(() => {
+            this.value();
 
-    /**
-     * Resize after initialized.
-     */
-    ngAfterViewInit(): void {
-        // Wait for rendering of child views.
-        setTimeout(() => {
+            // Resize the textarea when the value changes.
             this.resize();
-        }, 300);
-    }
-
-    /**
-     * Resize when content changes.
-     */
-    ngOnChanges(): void {
-        this.resize();
-
-        if (this.value === '') {
-            // Maybe the form was resetted. In that case it takes a bit to update the height.
-            setTimeout(() => this.resize(), 300);
-        }
+        });
     }
 
     /**
      * Resize the textarea.
      */
     protected resize(): void {
-        if (this.element.tagName == 'ION-TEXTAREA') {
+        if (this.element.tagName === 'ION-TEXTAREA') {
             // Search the actual textarea.
             const textarea = this.element.querySelector('textarea');
             if (!textarea) {
@@ -77,7 +60,7 @@ export class CoreAutoRowsDirective implements AfterViewInit, OnChanges {
         this.element.style.height = `${this.element.scrollHeight}px`;
 
         // Emit event when resizing.
-        if (this.height != this.element.scrollHeight) {
+        if (this.height !== this.element.scrollHeight) {
             this.height = this.element.scrollHeight;
             this.onResize.emit();
         }

@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit, OnDestroy, ViewChild, effect } from '@angular/core';
+import { Component, OnInit, OnDestroy, effect, viewChild } from '@angular/core';
 import { IonTabs } from '@ionic/angular';
 import { BackButtonEvent } from '@ionic/core';
 import { Subscription } from 'rxjs';
@@ -104,7 +104,7 @@ export default class CoreMainMenuPage implements OnInit, OnDestroy {
     protected firstSelectedTab?: string;
     protected logger: CoreLogger;
 
-    @ViewChild('mainTabs') mainTabs?: IonTabs;
+    readonly mainTabs = viewChild.required<IonTabs>('mainTabs');
 
     tabAction: CoreMainMenuRoleTab;
 
@@ -117,7 +117,7 @@ export default class CoreMainMenuPage implements OnInit, OnDestroy {
         this.navSubscription = Router.events
             .pipe(filter(event => event instanceof NavigationEnd))
             .subscribe(() => {
-                this.isMainScreen = !this.mainTabs?.outlet.canGoBack();
+                this.isMainScreen = !this.mainTabs().outlet?.canGoBack();
                 this.updateVisibility();
             });
 
@@ -146,7 +146,7 @@ export default class CoreMainMenuPage implements OnInit, OnDestroy {
 
         this.initAfterLoginNavigations();
 
-        this.isMainScreen = !this.mainTabs?.outlet.canGoBack();
+        this.isMainScreen = !this.mainTabs().outlet?.canGoBack();
         this.updateVisibility();
 
         this.subscription = CoreMainMenuDelegate.getHandlersObservable().subscribe((handlers) => {
@@ -357,7 +357,7 @@ export default class CoreMainMenuPage implements OnInit, OnDestroy {
                 // Remove curent and previous tabs from history.
                 this.selectHistory = this.selectHistory.filter((tab) => this.selectedTab != tab && previousTab != tab);
 
-                this.mainTabs?.select(previousTab);
+                this.mainTabs()?.select(previousTab);
 
                 return;
             }
@@ -365,7 +365,7 @@ export default class CoreMainMenuPage implements OnInit, OnDestroy {
             if (this.firstSelectedTab && this.selectedTab != this.firstSelectedTab) {
                 // All history is gone but we are not in the first selected tab.
                 this.selectHistory = [];
-                this.mainTabs?.select(this.firstSelectedTab);
+                this.mainTabs()?.select(this.firstSelectedTab);
 
                 return;
             }
@@ -431,7 +431,7 @@ class CoreMainMenuRoleTab extends CoreAriaRoleTab<CoreMainMenuPage> {
      * @inheritdoc
      */
     selectTab(tabId: string): void {
-        this.componentInstance.mainTabs?.select(tabId);
+        this.componentInstance.mainTabs()?.select(tabId);
     }
 
 }
