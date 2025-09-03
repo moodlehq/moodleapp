@@ -12,11 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, signal } from '@angular/core';
 import { CoreSites } from '@services/sites';
 import { CoreCourse, sectionContentIsModule } from '@features/course/services/course';
 import { CoreCourseHelper, CoreCourseSection } from '@features/course/services/course-helper';
-import { CoreSiteHome, FrontPageItemNames } from '@features/sitehome/services/sitehome';
+import { CoreSiteHome } from '@features/sitehome/services/sitehome';
 import { CoreCourseModulePrefetchDelegate } from '@features/course/services/module-prefetch-delegate';
 import { CoreBlockBaseComponent } from '@features/block/classes/base-block-component';
 import { CoreSharedModule } from '@/core/shared.module';
@@ -35,38 +35,29 @@ import { CoreCourseModuleComponent } from '@features/course/components/module/mo
 })
 export class AddonBlockSiteMainMenuComponent extends CoreBlockBaseComponent implements OnInit {
 
-    component = 'AddonBlockSiteMainMenu';
-    mainMenuBlock?: CoreCourseSection;
-    siteHomeId = 1;
-    isModule = sectionContentIsModule;
+    readonly mainMenuBlock = signal<CoreCourseSection | undefined>(undefined);
+    readonly siteHomeId = signal(CoreSites.getCurrentSiteHomeId());
+    readonly isModule = sectionContentIsModule;
 
     protected fetchContentDefaultError = 'Error getting main menu data.';
 
     /**
      * @inheritdoc
      */
-    async ngOnInit(): Promise<void> {
-        this.siteHomeId = CoreSites.getCurrentSiteHomeId();
-
-        super.ngOnInit();
-    }
-
-    /**
-     * Perform the invalidate content function.
-     *
-     * @returns Resolved when done.
-     */
     async invalidateContent(): Promise<void> {
+        const siteHomeId = this.siteHomeId();
+        const mainMenuBlock = this.mainMenuBlock();
+
         const promises: Promise<void>[] = [];
 
-        promises.push(CoreCourse.invalidateSections(this.siteHomeId));
-        promises.push(CoreSiteHome.invalidateNewsForum(this.siteHomeId));
+        promises.push(CoreCourse.invalidateSections(siteHomeId));
+        promises.push(CoreSiteHome.invalidateNewsForum(siteHomeId));
 
-        if (this.mainMenuBlock?.contents.length) {
+        if (mainMenuBlock?.contents.length) {
             // Invalidate modules prefetch data.
             promises.push(CoreCourseModulePrefetchDelegate.invalidateModules(
-                CoreCourse.getSectionsModules([this.mainMenuBlock]),
-                this.siteHomeId,
+                CoreCourse.getSectionsModules([mainMenuBlock]),
+                siteHomeId,
             ));
         }
 
@@ -74,54 +65,26 @@ export class AddonBlockSiteMainMenuComponent extends CoreBlockBaseComponent impl
     }
 
     /**
-     * Fetch the data to render the block.
-     *
-     * @returns Promise resolved when done.
+     * @inheritdoc
      */
     protected async fetchContent(): Promise<void> {
-        const sections = await CoreCourse.getSections(this.siteHomeId, false, true);
+        const siteHomeId = this.siteHomeId();
+        const sections = await CoreCourse.getSections(siteHomeId, false, true);
 
-        const mainMenuBlock = sections.find((section) => section.section == 0);
+        const mainMenuBlock = sections.find((section) => section.section === 0);
         if (!mainMenuBlock) {
             return;
         }
 
-        const currentSite = CoreSites.getCurrentSite();
-        const config = currentSite ? currentSite.getStoredConfig() || {} : {};
-        if (!config.frontpageloggedin) {
-            return;
-        }
-        // Check if Site Home displays announcements. If so, remove it from the main menu block.
-        const items = config.frontpageloggedin.split(',');
-        const hasNewsItem = items.find((item) => parseInt(item, 10) == FrontPageItemNames['NEWS_ITEMS']);
-
         const result = await CoreCourseHelper.addHandlerDataForModules(
             [mainMenuBlock],
-            this.siteHomeId,
+            siteHomeId,
             undefined,
             undefined,
             true,
         );
 
-        this.mainMenuBlock = result.sections[0];
-
-        if (!hasNewsItem || !this.mainMenuBlock.hasContent) {
-            return;
-        }
-
-        // Remove forum activity (news one only) from the main menu block to prevent duplicates.
-        try {
-            const forum = await CoreSiteHome.getNewsForum(this.siteHomeId);
-            // Search the module that belongs to site news.
-            const forumIndex = this.mainMenuBlock.contents.findIndex((mod) =>
-                sectionContentIsModule(mod) && mod.modname == 'forum' && mod.instance == forum.id);
-
-            if (forumIndex >= 0) {
-                this.mainMenuBlock.contents.splice(forumIndex, 1);
-            }
-        } catch {
-            // Ignore errors.
-        }
+        this.mainMenuBlock.set(result.sections[0]);
     }
 
 }
