@@ -111,7 +111,7 @@ export class CoreBootstrap {
 
                 const { CoreBSTooltipComponent } = await import('@components/bs-tooltip/bs-tooltip');
 
-                const popover = await CorePopovers.openWithoutResult({
+                await CorePopovers.openWithoutResult({
                     component: CoreBSTooltipComponent,
                     cssClass,
                     componentProps: {
@@ -124,30 +124,6 @@ export class CoreBootstrap {
                     // eslint-disable-next-line @typescript-eslint/no-explicit-any
                     side: placement as any,
                 });
-
-                // Adjust size of the popover in case it's out of the screen. This could be solved in Ionic in a future.
-                // Those changes will be applied after rendering the popover so they will be moved after the popover is shown.
-                const popoverContent = popover.shadowRoot?.querySelector('.popover-content');
-                if (!popoverContent) {
-                    return;
-                }
-
-                if (placement === 'top') {
-                    const style = getComputedStyle(popoverContent);
-                    const overflowHeight = (parseInt(style.bottom, 10) + parseInt(style.height, 10)) - popover.clientHeight;
-                    if (overflowHeight > 0) {
-                        popover.style.setProperty('--ma-height', `${parseInt(style.height, 10) - overflowHeight}px`);
-                    }
-                    if (parseInt(style.top, 10) < 0) {
-                        popover.style.setProperty('--offset-y', `${parseInt(style.top, 10) * -1}px`);
-                    }
-                } else {
-                    const style = getComputedStyle(popoverContent);
-                    const overflowHeight = (parseInt(style.top, 10) + parseInt(style.height, 10)) - popover.clientHeight;
-                    if (overflowHeight > 0) {
-                        popover.style.setProperty('--max-height', `${parseInt(style.height, 10) - overflowHeight}px`);
-                    }
-                }
             });
         });
     }
