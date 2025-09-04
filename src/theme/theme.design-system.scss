@@ -232,6 +232,9 @@
     --rotate-expandable: rotate(90deg);
 
     --core-mainpage-headerlogo-maxheight: calc(var(--core-header-toolbar-height) - 16px);
+
+    // ***** LINKS ***** //
+    --core-link-decoration: underline;
 }
 /** @deprecated since 4.4 **/
 :root {
