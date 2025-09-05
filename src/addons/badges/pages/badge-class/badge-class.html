@@ -1,11 +1,12 @@
+@let badgeToShow = badge();
 <ion-header>
     <ion-toolbar>
         <ion-buttons slot="start">
             <ion-back-button [text]="'core.back' | translate" />
         </ion-buttons>
         <ion-title>
-            @if (badge) {
-                <h1>{{ badge.name }}</h1>
+            @if (badgeToShow) {
+                <h1>{{ badgeToShow.name }}</h1>
             } @else {
                 <h1>{{ 'addon.badges.badgedetails' | translate }}</h1>
             }
@@ -13,68 +14,68 @@
     </ion-toolbar>
 </ion-header>
 <ion-content class="limited-width">
-    <ion-refresher slot="fixed" [disabled]="!badgeLoaded" (ionRefresh)="refreshBadgeClass($event.target)">
+    <ion-refresher slot="fixed" [disabled]="!loaded()" (ionRefresh)="refreshBadgeClass($event.target)">
         <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}" />
     </ion-refresher>
-    <core-loading [hideUntil]="badgeLoaded" placeholderType="imageandboxes">
-        @if (badge) {
+    <core-loading [hideUntil]="loaded()" placeholderType="imageandboxes">
+        @if (badgeToShow) {
             <ion-item-group>
                 <ion-item class="ion-text-wrap ion-text-center">
                     <ion-label>
-                        @if (badge.image) {
-                            <img class="large-avatar" [url]="badge.image" core-external-content [alt]="badge.name" />
+                        @if (badgeToShow.image) {
+                            <img class="large-avatar" [url]="badgeToShow.image" core-external-content [alt]="badgeToShow.name" />
                         }
                     </ion-label>
                 </ion-item>
-                @if (badge.name) {
+                @if (badgeToShow.name) {
                     <ion-item class="ion-text-wrap">
                         <ion-label>
                             <p class="item-heading">{{ 'core.name' | translate}}</p>
-                            <p>{{ badge.name }}</p>
+                            <p>{{ badgeToShow.name }}</p>
                         </ion-label>
                     </ion-item>
                 }
-                @if (badge.issuer) {
+                @if (badgeToShow.issuer) {
                     <ion-item class="ion-text-wrap">
                         <ion-label>
                             <p class="item-heading">{{ 'addon.badges.issuername' | translate}}</p>
                             <p>
-                                <core-format-text [text]="badge.issuer" contextLevel="system" [contextInstanceId]="0"
+                                <core-format-text [text]="badgeToShow.issuer" contextLevel="system" [contextInstanceId]="0"
                                     [wsNotFiltered]="true" />
                             </p>
                         </ion-label>
                     </ion-item>
                 }
-                @if (badge.coursefullname) {
+                @if (badgeToShow.coursefullname) {
                     <ion-item class="ion-text-wrap">
                         <ion-label>
                             <p class="item-heading">{{ 'core.course' | translate}}</p>
                             <p>
-                                <core-format-text [text]="badge.coursefullname" contextLevel="course"
-                                    [contextInstanceId]="badge.courseid" />
+                                <core-format-text [text]="badgeToShow.coursefullname" contextLevel="course"
+                                    [contextInstanceId]="badgeToShow.courseid" />
                             </p>
                         </ion-label>
                     </ion-item>
                 }
-                @if (badge.description) {
+                @if (badgeToShow.description) {
                     <ion-item class="ion-text-wrap">
                         <ion-label>
                             <p class="item-heading">{{ 'core.description' | translate}}</p>
-                            <p>{{ badge.description }}</p>
+                            <p>{{ badgeToShow.description }}</p>
                         </ion-label>
                     </ion-item>
                 }
             </ion-item-group>
 
             <!-- Competencies alignment -->
-            @if (badge.alignment?.length) {
+            @if (badgeToShow.alignment?.length) {
                 <ion-item-group>
                     <ion-item-divider>
                         <ion-label>
                             <h2>{{ 'addon.badges.alignment' | translate}}</h2>
                         </ion-label>
                     </ion-item-divider>
-                    <ion-item class="ion-text-wrap" *ngFor="let alignment of badge.alignment" [href]="alignment.targetUrl" core-link
+                    <ion-item class="ion-text-wrap" *ngFor="let alignment of badgeToShow.alignment" [href]="alignment.targetUrl" core-link
                         [autoLogin]="false">
                         <ion-label>
                             <p class="item-heading">{{ alignment.targetName }}</p>
