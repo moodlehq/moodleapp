@@ -451,7 +451,7 @@ $body-emphasis-color:       $black !default;
 // Style anchor elements.
 
 $link-color:                              $blue !default;
-$link-decoration:                         underline !default;
+$link-decoration:                         var(--core-link-decoration, underline) !default;
 $link-shade-percentage:                   20% !default;
 $link-hover-color:                        shift-color($link-color, $link-shade-percentage) !default;
 $link-hover-decoration:                   null !default;

@@ -35,13 +35,8 @@
 
 a {
     color: var(--core-link-color);
+    text-decoration: var(--core-link-decoration, underline);
     cursor: pointer;
-
-    // Anchors with core-link didn't have href in the DOM so they didn't have underline. But now they have href to fix an a11y
-    // issue, so this rule will remove the underline in that case to keep the same UI.
-    &[core-link] {
-        text-decoration: none;
-    }
 }
 
 :root[dir=rtl] {
