@@ -51,8 +51,7 @@ import {
 } from '../../constants';
 import { CoreH5PMissingDependenciesError } from '@features/h5p/classes/errors/missing-dependencies-error';
 import { CoreToasts, ToastDuration } from '@services/overlays/toasts';
-import { Subscription } from 'rxjs';
-import { NgZone, Translate } from '@singletons';
+import { Translate } from '@singletons';
 import { CoreError } from '@classes/errors/error';
 import { CoreErrorHelper } from '@services/error-helper';
 import { CoreAlerts } from '@services/overlays/alerts';
@@ -105,7 +104,7 @@ export class AddonModH5PActivityIndexComponent extends CoreCourseModuleMainActiv
     hasMissingDependencies = false;
     saveFreq?: number;
     contentState?: string;
-    isOnline: boolean;
+    readonly isOnline = CoreNetwork.onlineSignal();
     triedToPlay = false;
 
     protected fetchContentDefaultError = 'addon.mod_h5pactivity.errorgetactivity';
@@ -114,7 +113,6 @@ export class AddonModH5PActivityIndexComponent extends CoreCourseModuleMainActiv
     protected observer?: CoreEventObserver;
     protected messageListenerFunction: (event: MessageEvent) => Promise<void>;
     protected checkCompletionAfterLog = false; // It's called later, when the user plays the package.
-    protected onlineObserver: Subscription;
     protected offlineErrorAlert: HTMLIonAlertElement | null = null;
 
     constructor() {
@@ -126,47 +124,6 @@ export class AddonModH5PActivityIndexComponent extends CoreCourseModuleMainActiv
         // Listen for messages from the iframe.
         this.messageListenerFunction = (event) => this.onIframeMessage(event);
         window.addEventListener('message', this.messageListenerFunction);
-
-        this.isOnline = CoreNetwork.isOnline();
-        this.onlineObserver = CoreNetwork.onChange().subscribe(() => {
-            // Execute the callback in the Angular zone, so change detection doesn't stop working.
-            NgZone.run(() => {
-                this.networkChanged();
-            });
-        });
-    }
-
-    /**
-     * React to a network status change.
-     */
-    protected async networkChanged(): Promise<void> {
-        const wasOnline = this.isOnline;
-        this.isOnline = CoreNetwork.isOnline();
-
-        if (this.isOnline && this.offlineErrorAlert) {
-            // Back online, dismiss the offline error alert.
-            this.offlineErrorAlert.dismiss();
-            this.offlineErrorAlert = null;
-        }
-
-        if (this.playing && !this.fileUrl && !this.isOnline && wasOnline && this.trackComponent) {
-            // User lost connection while playing an online package with tracking. Show an error.
-            this.offlineErrorAlert = await CoreAlerts.showError(
-                new CoreError(Translate.instant('core.course.changesofflinemaybelost'), {
-                    title: Translate.instant('core.youreoffline'),
-                }),
-            );
-
-            return;
-        }
-
-        if (this.isOnline && this.triedToPlay) {
-            // User couldn't play the package because he was offline, but he reconnected. Try again.
-            this.triedToPlay = false;
-            this.play();
-
-            return;
-        }
     }
 
     /**
@@ -517,7 +474,7 @@ export class AddonModH5PActivityIndexComponent extends CoreCourseModuleMainActiv
             return;
         }
 
-        if (!this.fileUrl && !this.isOnline) {
+        if (!this.fileUrl && !this.isOnline()) {
             this.triedToPlay = true;
 
             CoreAlerts.showError(new CoreError(Translate.instant('core.connectandtryagain'), {
@@ -821,7 +778,6 @@ export class AddonModH5PActivityIndexComponent extends CoreCourseModuleMainActiv
         super.ngOnDestroy();
 
         this.observer?.off();
-        this.onlineObserver.unsubscribe();
 
         // Wait a bit to make sure all messages have been received.
         setTimeout(() => {

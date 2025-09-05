@@ -26,7 +26,7 @@
             <core-context-menu>
                 <core-context-menu-item [hidden]="!(commentsLoaded && !hasOffline)" [priority]="100" [content]="'core.refresh' | translate"
                     (action)="refreshComments(false)" [iconAction]="refreshIcon" [closeOnClick]="true" />
-                <core-context-menu-item [hidden]="!(commentsLoaded && hasOffline && isOnline)" [priority]="100"
+                <core-context-menu-item [hidden]="!(commentsLoaded && hasOffline && isOnline())" [priority]="100"
                     [content]="'core.settings.synchronizenow' | translate" (action)="refreshComments(true)" [iconAction]="syncIcon"
                     [closeOnClick]="false" />
             </core-context-menu>

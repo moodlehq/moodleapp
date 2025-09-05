@@ -20,9 +20,8 @@ import { CoreNetwork } from '@services/network';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSites } from '@services/sites';
 import { CorePromiseUtils } from '@singletons/promise-utils';
-import { NgZone, Translate } from '@singletons';
+import { Translate } from '@singletons';
 import { CoreEvents } from '@singletons/events';
-import { Subscription } from 'rxjs';
 import { AddonModChatUsersModalResult } from '../../components/users-modal/users-modal';
 import { AddonModChat, AddonModChatUser } from '../../services/chat';
 import { AddonModChatFormattedMessage, AddonModChatHelper } from '../../services/chat-helper';
@@ -58,7 +57,7 @@ export default class AddonModChatChatPage implements OnInit, OnDestroy, CanLeave
     messages: AddonModChatFormattedMessage[] = [];
     newMessage?: string;
     polling?: number;
-    isOnline: boolean;
+    readonly isOnline = CoreNetwork.onlineSignal();
     currentUserId: number;
     sending = false;
     courseId!: number;
@@ -68,7 +67,6 @@ export default class AddonModChatChatPage implements OnInit, OnDestroy, CanLeave
     protected sessionId?: string;
     protected lastTime = 0;
     protected oldContentHeight = 0;
-    protected onlineSubscription: Subscription;
     protected viewDestroyed = false;
     protected pollingRunning = false;
     protected users: AddonModChatUser[] = [];
@@ -76,13 +74,6 @@ export default class AddonModChatChatPage implements OnInit, OnDestroy, CanLeave
 
     constructor() {
         this.currentUserId = CoreSites.getCurrentSiteUserId();
-        this.isOnline = CoreNetwork.isOnline();
-        this.onlineSubscription = CoreNetwork.onChange().subscribe(() => {
-            // Execute the callback in the Angular zone, so change detection doesn't stop working.
-            NgZone.run(() => {
-                this.isOnline = CoreNetwork.isOnline();
-            });
-        });
 
         this.logView = CoreTime.once(() => {
             CoreAnalytics.logEvent({
@@ -393,7 +384,6 @@ export default class AddonModChatChatPage implements OnInit, OnDestroy, CanLeave
      * @inheritdoc
      */
     ngOnDestroy(): void {
-        this.onlineSubscription && this.onlineSubscription.unsubscribe();
         this.stopPolling();
         this.viewDestroyed = true;
     }

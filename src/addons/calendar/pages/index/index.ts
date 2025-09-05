@@ -21,8 +21,7 @@ import { AddonCalendar } from '../../services/calendar';
 import { AddonCalendarOffline } from '../../services/calendar-offline';
 import { AddonCalendarSync } from '../../services/calendar-sync';
 import { AddonCalendarFilter, AddonCalendarHelper } from '../../services/calendar-helper';
-import { NgZone, Translate } from '@singletons';
-import { Subscription } from 'rxjs';
+import { Translate } from '@singletons';
 import { CoreEnrolledCourseData } from '@features/courses/services/courses';
 import { ActivatedRoute, Params } from '@angular/router';
 import { AddonCalendarCalendarComponent } from '../../components/calendar/calendar';
@@ -73,7 +72,6 @@ export default class AddonCalendarIndexPage implements OnInit, OnDestroy {
     protected undeleteEventObserver?: CoreEventObserver;
     protected syncObserver?: CoreEventObserver;
     protected manualSyncObserver?: CoreEventObserver;
-    protected onlineObserver?: Subscription;
     protected filterChangedObserver?: CoreEventObserver;
     protected route = inject(ActivatedRoute);
 
@@ -83,7 +81,7 @@ export default class AddonCalendarIndexPage implements OnInit, OnDestroy {
     courses: CoreEnrolledCourseData[] = [];
     loaded = false;
     hasOffline = false;
-    isOnline = false;
+    readonly isOnline = CoreNetwork.onlineSignal();
     syncIcon = CoreConstants.ICON_LOADING;
     showCalendar = true;
     loadUpcoming = false;
@@ -165,14 +163,6 @@ export default class AddonCalendarIndexPage implements OnInit, OnDestroy {
                 this.canCreate = await AddonCalendarHelper.canEditEvents(this.filter.courseId);
             },
         );
-
-        // Refresh online status when changes.
-        this.onlineObserver = CoreNetwork.onChange().subscribe(() => {
-            // Execute the callback in the Angular zone, so change detection doesn't stop working.
-            NgZone.run(() => {
-                this.isOnline = CoreNetwork.isOnline();
-            });
-        });
     }
 
     /**
@@ -209,7 +199,6 @@ export default class AddonCalendarIndexPage implements OnInit, OnDestroy {
     async fetchData(sync?: boolean, showErrors?: boolean): Promise<void> {
 
         this.syncIcon = CoreConstants.ICON_LOADING;
-        this.isOnline = CoreNetwork.isOnline();
 
         let refreshComponent = false;
 
@@ -418,7 +407,6 @@ export default class AddonCalendarIndexPage implements OnInit, OnDestroy {
         this.syncObserver?.off();
         this.manualSyncObserver?.off();
         this.filterChangedObserver?.off();
-        this.onlineObserver?.unsubscribe();
     }
 
 }
