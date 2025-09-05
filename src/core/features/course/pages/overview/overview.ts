@@ -244,13 +244,15 @@ export default class CoreCourseOverviewPage implements OnInit {
      * @returns Formatted overview.
      */
     protected async formatOverview(modName: string, overview: CoreCourseOverviewInformation): Promise<OverviewInformation> {
-        const columnsToRemove: string[] = [];
+        const keysToRemove = new Set<string>();
+        let isSupportedInApp = true;
 
         const headers = overview.headers.map((header) => ({
             ...header,
             classes:[
                 'ion-text-' + (header.align ?? 'start').trim(), // Convert alignment value to Ionic CSS class.
             ],
+            hasContent: false,
         }));
 
         const activities = await Promise.all(overview.activities.map(async (activity) => {
@@ -259,7 +261,7 @@ export default class CoreCourseOverviewPage implements OnInit {
                 // Search by name along with key because in some cases the key can be empty (see MDL-86146).
                 const item = activity.items.find(item => item.key === header.key || item.name === header.name);
                 if (!item) {
-                    // Item not found, render an empty item. It can happen that some activities don't return certain columns.
+                    // Item not found, render an empty item. It can happen that some activities don't return certain items.
                     return this.getEmptyOverviewItem(header.key, header.name, header.classes);
                 }
 
@@ -268,9 +270,14 @@ export default class CoreCourseOverviewPage implements OnInit {
 
                 if (content === undefined) {
                     // The app doesn't know how to render the item, mark the mod type as not supported and render an empty item.
-                    columnsToRemove.push(header.key);
+                    keysToRemove.add(header.key);
+                    isSupportedInApp = false;
 
                     return this.getEmptyOverviewItem(header.key, header.name, header.classes);
+                }
+
+                if ('component' in content || content.content !== null) {
+                    header.hasContent = true;
                 }
 
                 return {
@@ -298,18 +305,26 @@ export default class CoreCourseOverviewPage implements OnInit {
             };
         }));
 
-        if (columnsToRemove.length) {
+        // If the WebService returns a header it means that at least 1 activity has content for that item. However, the app could
+        // return null content for a certain item in all activities to hide that item. Hide the items without content.
+        headers.forEach((header) => {
+            if (!header.hasContent) {
+                keysToRemove.add(header.key);
+            }
+        });
+
+        if (keysToRemove.size) {
             // Remove the unsupported columns for each activity.
             activities.forEach((activity) => {
-                activity.itemsToRender = activity.itemsToRender.filter((item) => !columnsToRemove.includes(item.key ?? ''));
+                activity.itemsToRender = activity.itemsToRender.filter((item) => !keysToRemove.has(item.key ?? ''));
                 activity.hasItemsBesidesName = activity.itemsToRender.some(item => item !== activity.nameItemToRender);
             });
         }
 
         return {
             ...overview,
-            isSupportedInApp: !columnsToRemove.length,
-            headers: headers.filter(header => !columnsToRemove.includes(header.key)),
+            isSupportedInApp,
+            headers: headers.filter(header => !keysToRemove.has(header.key)),
             activities,
         };
     }
@@ -385,6 +400,7 @@ type OverviewInformation = Omit<CoreCourseOverviewInformation, 'activities' | 'h
  */
 type OverviewHeader = CoreCourseGetOverviewInformationWSHeader & {
     classes: string[];
+    hasContent: boolean;
 };
 
 /**
