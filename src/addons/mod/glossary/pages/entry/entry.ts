@@ -276,9 +276,10 @@ export default class AddonModGlossaryEntryPage implements OnInit, OnDestroy {
      */
     protected async loadOnlineEntry(entryId: number): Promise<void> {
         try {
+            const isOnline = CoreNetwork.isOnline();
             const result = await AddonModGlossary.getEntry(entryId);
-            const canDeleteEntries = CoreNetwork.isOnline() && await AddonModGlossary.canDeleteEntries();
-            const canUpdateEntries = CoreNetwork.isOnline() && await AddonModGlossary.canUpdateEntries();
+            const canDeleteEntries = isOnline && await AddonModGlossary.canDeleteEntries();
+            const canUpdateEntries = isOnline && await AddonModGlossary.canUpdateEntries();
 
             this.onlineEntry = result.entry;
             this.ratingInfo = result.ratinginfo;

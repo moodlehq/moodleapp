@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { effect, Injectable, Signal, signal } from '@angular/core';
+import { computed, effect, Injectable, Signal, signal } from '@angular/core';
 import { CorePlatform } from '@services/platform';
 import { Network } from '@awesome-cordova-plugins/network/ngx';
 import { makeSingleton } from '@singletons';
@@ -324,6 +324,24 @@ export class CoreNetworkService extends Network {
      */
     isCellular(): boolean {
         return this.connectionType === CoreNetworkConnectionType.CELL;
+    }
+
+    /**
+     * Returns a signal to watch if the device uses a cellular connection.
+     *
+     * @returns Signal.
+     */
+    isCellularSignal(): Signal<boolean> {
+        return computed<boolean>(() => this.connectionTypeSignal()() === CoreNetworkConnectionType.CELL);
+    }
+
+    /**
+     * Returns a signal to watch if the device uses a wifi connection.
+     *
+     * @returns Signal.
+     */
+    isWifiSignal(): Signal<boolean> {
+        return computed<boolean>(() => this.connectionTypeSignal()() === CoreNetworkConnectionType.WIFI);
     }
 
 }
