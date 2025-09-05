@@ -28,7 +28,7 @@ import {
 import { IonContent } from '@ionic/angular';
 import { ContextLevel, CoreConstants } from '@/core/constants';
 import { CoreNavigator } from '@services/navigator';
-import { NgZone, Translate } from '@singletons';
+import { Translate } from '@singletons';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreUser } from '@features/user/services/user';
 import { CoreText } from '@singletons/text';
@@ -38,7 +38,6 @@ import { CoreCommentsDBRecord } from '@features/comments/services/database/comme
 import { CoreTime } from '@singletons/time';
 import { CoreNetwork } from '@services/network';
 import { dayjs } from '@/core/utils/dayjs';
-import { Subscription } from 'rxjs';
 import { CoreAnimations } from '@components/animations';
 import { CoreToasts, ToastDuration } from '@services/overlays/toasts';
 import { CoreLoadings } from '@services/overlays/loadings';
@@ -89,11 +88,10 @@ export default class CoreCommentsViewerPage implements OnInit, OnDestroy, AfterV
     currentUserId: number;
     sending = false;
     newComment = '';
-    isOnline: boolean;
+    readonly isOnline = CoreNetwork.onlineSignal();
 
     protected addDeleteCommentsAvailable = false;
     protected syncObserver?: CoreEventObserver;
-    protected onlineObserver: Subscription;
     protected viewDestroyed = false;
     protected scrollBottom = true;
     protected scrollElement?: HTMLElement;
@@ -119,14 +117,6 @@ export default class CoreCommentsViewerPage implements OnInit, OnDestroy, AfterV
                 this.fetchComments(false);
             }
         }, CoreSites.getCurrentSiteId());
-
-        this.isOnline = CoreNetwork.isOnline();
-        this.onlineObserver = CoreNetwork.onChange().subscribe(() => {
-            // Execute the callback in the Angular zone, so change detection doesn't stop working.
-            NgZone.run(() => {
-                this.isOnline = CoreNetwork.isOnline();
-            });
-        });
 
         effect(() => {
             const shown = CoreKeyboard.keyboardShownSignal();
@@ -701,7 +691,6 @@ export default class CoreCommentsViewerPage implements OnInit, OnDestroy, AfterV
      */
     ngOnDestroy(): void {
         this.syncObserver?.off();
-        this.onlineObserver.unsubscribe();
         this.viewDestroyed = true;
     }
 

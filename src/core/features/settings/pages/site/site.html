@@ -41,19 +41,19 @@
                     </ion-label>
                     <core-button-with-spinner [loading]="isSynchronizing()" slot="end">
                         <ion-button fill="clear" (click)="synchronize()" [ariaLabel]="'core.settings.synchronizenow' | translate"
-                            [disabled]="!isOnline || (dataSaver && limitedConnection)">
+                            [disabled]="!isOnline() || (dataSaver && limitedConnection())">
                             <ion-icon name="fas-rotate" slot="icon-only" aria-hidden="true" />
                         </ion-button>
                     </core-button-with-spinner>
                 </ion-item>
-                @if (!isOnline || (dataSaver && limitedConnection)) {
+                @if (!isOnline() || (dataSaver && limitedConnection())) {
                     <ion-item class="core-warning-item ion-text-wrap">
                         <ion-icon name="fas-triangle-exclamation" slot="start" aria-hidden="true" />
                         <ion-label>
-                            @if (isOnline && dataSaver && limitedConnection) {
+                            @if (isOnline() && dataSaver && limitedConnection()) {
                                 {{ 'core.settings.connectwifitosync' | translate }}
                             }
-                            @if (!isOnline) {
+                            @if (!isOnline()) {
                                 {{ 'core.settings.connecttosync' | translate }}
                             }
                         </ion-label>

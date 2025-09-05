@@ -26,7 +26,7 @@ import { CoreText } from '@singletons/text';
 import { CoreSites } from '@services/sites';
 import { CoreCourseModuleHelper } from '@features/course/services/course-module-helper';
 import { CoreTime } from '@singletons/time';
-import { DomSanitizer, NgZone, Translate } from '@singletons';
+import { DomSanitizer, Translate } from '@singletons';
 import { Subscription } from 'rxjs';
 import { CoreNavigator } from '@services/navigator';
 import { CorePromiseUtils } from '@singletons/promise-utils';
@@ -76,7 +76,6 @@ export default class AddonCalendarEventPage implements OnInit, OnDestroy {
     protected editEventObserver: CoreEventObserver;
     protected syncObserver: CoreEventObserver;
     protected manualSyncObserver: CoreEventObserver;
-    protected onlineObserver: Subscription;
     protected defaultTimeChangedObserver: CoreEventObserver;
     protected currentSiteId: string;
     protected updateCurrentTime?: number;
@@ -97,7 +96,7 @@ export default class AddonCalendarEventPage implements OnInit, OnDestroy {
     reminders: AddonCalendarEventReminder[] = [];
     canEdit = false;
     hasOffline = false;
-    isOnline = false;
+    readonly isOnline = CoreNetwork.onlineSignal();
     syncIcon = CoreConstants.ICON_LOADING; // Sync icon.
     canScheduleExactAlarms = true;
     scheduleExactWarningHidden = false;
@@ -140,14 +139,6 @@ export default class AddonCalendarEventPage implements OnInit, OnDestroy {
             (data) => this.checkSyncResult(true, data),
             this.currentSiteId,
         );
-
-        // Refresh online status when changes.
-        this.onlineObserver = CoreNetwork.onChange().subscribe(() => {
-            // Execute the callback in the Angular zone, so change detection doesn't stop working.
-            NgZone.run(() => {
-                this.isOnline = CoreNetwork.isOnline();
-            });
-        });
 
         // Reload reminders if default notification time changes.
         this.defaultTimeChangedObserver = CoreEvents.on(REMINDERS_DEFAULT_NOTIFICATION_TIME_CHANGED, () => {
@@ -215,7 +206,6 @@ export default class AddonCalendarEventPage implements OnInit, OnDestroy {
      * @returns Promise resolved when done.
      */
     async fetchEvent(sync = false, showErrors = false): Promise<void> {
-        this.isOnline = CoreNetwork.isOnline();
 
         if (sync) {
             const deleted = await this.syncEvents(showErrors);
@@ -685,7 +675,6 @@ export default class AddonCalendarEventPage implements OnInit, OnDestroy {
         this.editEventObserver.off();
         this.syncObserver.off();
         this.manualSyncObserver.off();
-        this.onlineObserver.unsubscribe();
         this.newEventObserver.off();
         this.events?.destroy();
         this.appResumeSubscription.unsubscribe();

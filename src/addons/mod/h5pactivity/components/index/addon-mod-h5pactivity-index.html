@@ -31,7 +31,7 @@
         [courseId]="courseId" [hasDataToSync]="hasOffline" (completionChanged)="onCompletionChange()" />
 
     <!-- User tried to play in offline a package that must be played in online. -->
-    @if (triedToPlay && !isOnline && (!siteCanDownload || hasMissingDependencies)) {
+    @if (triedToPlay && !isOnline() && (!siteCanDownload || hasMissingDependencies)) {
         <ion-card class="core-warning-card">
             <ion-item>
                 <ion-icon name="fas-triangle-exclamation" slot="start" aria-hidden="true" />
