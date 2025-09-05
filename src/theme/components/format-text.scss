@@ -369,6 +369,11 @@ core-rich-text-editor .core-rte-editor {
         flex-shrink: 0;
     }
 
+    a {
+        color: var(--core-link-color);
+        text-decoration: var(--core-link-decoration, underline);
+    }
+
 }
 
 // h1 is too big and ugly, reduce size when loading.
