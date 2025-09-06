@@ -12,11 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Injectable } from '@angular/core';
-import { CoreNetwork } from '@services/network';
-import { Http, NativeHttp } from '@singletons';
-import { CorePlatform } from '@services/platform';
-import { firstValueFrom } from 'rxjs';
+import { Injectable } from "@angular/core";
+import { CoreNetwork } from "@services/network";
+import { Http, NativeHttp } from "@singletons";
+import { CorePlatform } from "@services/platform";
+import { firstValueFrom } from "rxjs";
 
 // The API returns data directly, not wrapped in JSON-RPC
 export interface ParentFinancialResponse {
@@ -119,7 +119,7 @@ export interface StudentFinancialData {
         total_fees: number;
         total_paid: number;
         total_remaining: number;
-        payment_status: 'paid' | 'partial' | 'unpaid' | 'overdue';
+        payment_status: "paid" | "partial" | "unpaid" | "overdue";
         invoice_count: number;
         overdue_invoice_count: number;
     };
@@ -180,7 +180,7 @@ export interface InstallmentInfo {
     amount: number;
     paid: number;
     due: number;
-    status: 'paid' | 'partial' | 'unpaid' | 'overdue';
+    status: "paid" | "partial" | "unpaid" | "overdue";
 }
 
 export interface PaymentRecord {
@@ -199,7 +199,7 @@ export interface Invoice {
     total: number;
     paid: number;
     remaining: number;
-    state: 'paid' | 'partial' | 'not_paid';
+    state: "paid" | "partial" | "not_paid";
     type: string;
     installment_number?: number | null;
 }
@@ -207,10 +207,9 @@ export interface Invoice {
 /**
  * Service to handle Odoo financial API requests.
  */
-@Injectable({ providedIn: 'root' })
+@Injectable({ providedIn: "root" })
 export class CoreFinancialAPIService {
-
-    protected readonly API_URL = 'https://schoolodoo.kotegawa.org';
+    protected readonly API_URL = "https://aspire-school.odoo.com";
 
     /**
      * Make an API call to the Odoo API.
@@ -219,60 +218,67 @@ export class CoreFinancialAPIService {
      * @returns Promise with the response.
      */
     protected async callAPI<T = any>(endpoint: string): Promise<T> {
-        console.log('[Financial API] Making API call to:', endpoint);
-        
+        console.log("[Financial API] Making API call to:", endpoint);
+
         if (!CoreNetwork.isOnline()) {
-            throw new Error('Network is offline');
+            throw new Error("Network is offline");
         }
 
         const url = `${this.API_URL}${endpoint}`;
-        console.log('[Financial API] Full URL:', url);
+        console.log("[Financial API] Full URL:", url);
 
         try {
             let data: T;
-            
+
             // Use Native HTTP on iOS to avoid CORS issues with capacitor://localhost
             if (CorePlatform.isIOS() && CorePlatform.isMobile()) {
-                console.log('[Financial API] Using Native HTTP for iOS');
-                
+                console.log("[Financial API] Using Native HTTP for iOS");
+
                 // Set data serializer to json
-                NativeHttp.setDataSerializer('json');
-                
+                NativeHttp.setDataSerializer("json");
+
                 // Make the request using Native HTTP
-                const response = await NativeHttp.get(url, {}, {
-                    'Content-Type': 'application/json',
-                    'Accept': 'application/json'
-                });
-                
-                // Parse the response data
-                data = typeof response.data === 'string' 
-                    ? JSON.parse(response.data) 
-                    : response.data;
-                    
-                console.log('[Financial API] Native HTTP Response:', data);
-            } else {
-                // Use Angular HTTP for web and Android
-                console.log('[Financial API] Using Angular HTTP');
-                
-                const response = await firstValueFrom(
-                    Http.get(url, {
-                        responseType: 'json',
-                    })
+                const response = await NativeHttp.get(
+                    url,
+                    {},
+                    {
+                        "Content-Type": "application/json",
+                        Accept: "application/json",
+                    },
                 );
 
-                console.log('[Financial API] Response:', response);
+                // Parse the response data
+                data =
+                    typeof response.data === "string"
+                        ? JSON.parse(response.data)
+                        : response.data;
+
+                console.log("[Financial API] Native HTTP Response:", data);
+            } else {
+                // Use Angular HTTP for web and Android
+                console.log("[Financial API] Using Angular HTTP");
+
+                const response = await firstValueFrom(
+                    Http.get(url, {
+                        responseType: "json",
+                    }),
+                );
+
+                console.log("[Financial API] Response:", response);
                 data = response as T;
             }
 
             return data;
         } catch (error) {
-            console.error('[Financial API] Error:', error);
-            
+            console.error("[Financial API] Error:", error);
+
             // Handle Native HTTP specific error format
             if (error && error.status === 0 && CorePlatform.isIOS()) {
-                throw new Error('Network request failed. Please check your internet connection.');
+                throw new Error(
+                    "Network request failed. Please check your internet connection.",
+                );
             }
-            
+
             throw error;
         }
     }
@@ -287,7 +293,7 @@ export class CoreFinancialAPIService {
      */
     async authenticate(login: string, password: string): Promise<any> {
         // Not implemented as the API uses public auth
-        throw new Error('Authentication not required for this API');
+        throw new Error("Authentication not required for this API");
     }
 
     /**
@@ -296,25 +302,30 @@ export class CoreFinancialAPIService {
      * @param parentSequence The parent's sequence number.
      * @returns Promise with financial data for all children.
      */
-    async getParentFinancialData(parentSequence: string): Promise<StudentFinancialData[]> {
-        console.log('[Financial API] Getting parent financial data for sequence:', parentSequence);
-        
+    async getParentFinancialData(
+        parentSequence: string,
+    ): Promise<StudentFinancialData[]> {
+        console.log(
+            "[Financial API] Getting parent financial data for sequence:",
+            parentSequence,
+        );
+
         // Remove any angle brackets from the sequence if they exist
-        const cleanSequence = parentSequence.replace(/[<>]/g, '');
+        const cleanSequence = parentSequence.replace(/[<>]/g, "");
         const endpoint = `/api/parent/financial/${cleanSequence}`;
-        
-        console.log('[Financial API] Clean endpoint:', endpoint);
-        
+
+        console.log("[Financial API] Clean endpoint:", endpoint);
+
         const result = await this.callAPI<ParentFinancialResponse>(endpoint);
 
-        console.log('[Financial API] Parent financial data result:', result);
-        
+        console.log("[Financial API] Parent financial data result:", result);
+
         if (result.success && result.students) {
             return result.students;
         } else if (result.error) {
             throw new Error(result.error);
         }
-        
+
         return [];
     }
 
@@ -324,21 +335,25 @@ export class CoreFinancialAPIService {
      * @param studentSequence The student's sequence number.
      * @returns Promise with the student's financial data.
      */
-    async getStudentFinancialData(studentSequence: string): Promise<StudentFinancialData> {
-        console.log('[Financial API] Getting student financial data for sequence:', studentSequence);
-        
-        const cleanSequence = studentSequence.replace(/[<>]/g, '');
+    async getStudentFinancialData(
+        studentSequence: string,
+    ): Promise<StudentFinancialData> {
+        console.log(
+            "[Financial API] Getting student financial data for sequence:",
+            studentSequence,
+        );
+
+        const cleanSequence = studentSequence.replace(/[<>]/g, "");
         const endpoint = `/api/student/financial/${cleanSequence}`;
-        
+
         const result = await this.callAPI<StudentFinancialResponse>(endpoint);
-        
+
         if (result.success && result.data) {
             return result.data;
         } else if (result.error) {
             throw new Error(result.error);
         }
-        
-        throw new Error('No data returned');
-    }
 
+        throw new Error("No data returned");
+    }
 }

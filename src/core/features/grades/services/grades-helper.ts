@@ -196,6 +196,14 @@ export class CoreGradesHelperProvider {
             if (content == '&nbsp;') {
                 content = '';
             }
+            
+            // Decode HTML entities for range column to fix double-encoding issue
+            if (name === 'range' && content) {
+                // Decode HTML entities like &ndash; to their actual characters
+                const tempDiv = document.createElement('div');
+                tempDiv.innerHTML = content;
+                content = tempDiv.textContent || tempDiv.innerText || '';
+            }
 
             row[name] = content.trim();
         }

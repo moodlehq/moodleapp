@@ -130,9 +130,10 @@ export class CoreGradesCoursePage implements AfterViewInit, OnDestroy {
         console.log('[Grades] ngAfterViewInit started');
         this.withinSplitView = !!this.element.nativeElement.parentElement?.closest('core-split-view');
 
-        // Check if we're coming from the course page (URL contains /courses/course/)
+        // Check if we're coming from the course page (URL contains /course/ followed by number and /grades)
         const currentUrl = window.location.href;
-        this.hideHeader = currentUrl.includes('/courses/course/');
+        // Hide header when accessed from course page with URL pattern like /main/home/course/4/grades
+        this.hideHeader = /\/course\/\d+\/grades/.test(currentUrl);
         console.log('[Grades] Hide header:', this.hideHeader, 'URL:', currentUrl);
 
         // Check if viewing as parent/mentee
