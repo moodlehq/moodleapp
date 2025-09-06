@@ -191,7 +191,7 @@ export class AddonModResourceIndexComponent extends CoreCourseModuleMainResource
             const filename = file.filename || '';
             const extension = CoreMimetypeUtils.getFileExtension(filename)?.toLowerCase() || '';
             
-            // For PDFs, show inline
+            // For PDFs, use Google Docs viewer similar to Office docs
             if (mimetype === 'application/pdf' || extension === 'pdf') {
                 let fileUrl: string;
                 if (file.isexternalfile || (file.fileurl && !file.fileurl.includes('/webservice/'))) {
@@ -208,8 +208,12 @@ export class AddonModResourceIndexComponent extends CoreCourseModuleMainResource
                         fileUrl = await CoreFileHelper.getFileUrl(file);
                     }
                 }
+                
+                // Use Google Docs viewer for PDFs (similar to Office viewer for docs)
+                const encodedUrl = encodeURIComponent(fileUrl);
+                const viewerUrl = `https://docs.google.com/viewer?url=${encodedUrl}&embedded=true`;
                 this.mode = 'iframe';
-                this.src = fileUrl;
+                this.src = viewerUrl;
                 this.displayDescription = false;
                 this.warning = '';
                 return;

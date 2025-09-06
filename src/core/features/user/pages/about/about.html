@@ -8,139 +8,176 @@
         </ion-title>
     </ion-toolbar>
 </ion-header>
-<ion-content class="limited-width">
+<ion-content class="limited-width aspire-profile-page">
     <ion-refresher slot="fixed" [disabled]="!userLoaded" (ionRefresh)="refreshUser($event.target)">
         <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}" />
     </ion-refresher>
     <core-loading [hideUntil]="userLoaded">
-        <ion-list *ngIf="user">
-            <ion-item class="ion-text-center core-user-profile-maininfo ion-text-wrap" [lines]="user.description ? 'none' : 'full'">
-                <ion-label>
+        <div class="aspire-profile-container" *ngIf="user">
+            <!-- Hero Section -->
+            <div class="profile-hero">
+                <div class="hero-background"></div>
+                <div class="hero-content">
                     <core-user-avatar [user]="user" [userId]="user.id" [linkProfile]="false" [checkOnline]="!canChangeProfilePicture">
                         <ion-button class="edit-avatar" *ngIf="canChangeProfilePicture" (click)="changeProfilePicture()"
                             [ariaLabel]="'core.user.newpicture' | translate" fill="clear">
                             <ion-icon slot="icon-only" name="fas-pen" aria-hidden="true" />
                         </ion-button>
                     </core-user-avatar>
-                    <h2>{{ user.fullname }}</h2>
-                </ion-label>
-            </ion-item>
-
-            <ion-item class="ion-text-wrap" *ngIf="user.description" lines="full">
-                <ion-label>
-                    <p>
-                        <core-format-text [text]="user.description" contextLevel="user" [contextInstanceId]="user.id"
-                            [courseId]="courseId" />
-                    </p>
-                </ion-label>
-            </ion-item>
-
-            <ion-item-group *ngIf="hasContact">
-                <ion-item-divider>
-                    <ion-label>
-                        <h3>{{ 'core.user.contact' | translate}}</h3>
-                    </ion-label>
-                </ion-item-divider>
-                <ion-item class="ion-text-wrap" *ngIf="user.email">
-                    <ion-label>
-                        <p class="item-heading">{{ 'core.user.email' | translate }}</p>
-                        <p><a class="core-anchor" href="mailto:{{user.email}}" core-link [autoLogin]="false" [showBrowserWarning]="false">
-                                {{ user.email }}
-                            </a></p>
-                    </ion-label>
-                </ion-item>
-                <ion-item class="ion-text-wrap" *ngIf="user.country">
-                    <ion-label>
-                        <p class="item-heading">{{ 'core.user.country' | translate}}</p>
-                        <p>{{ user.country }}</p>
-                    </ion-label>
-                </ion-item>
-                <ion-item class="ion-text-wrap" *ngIf="user.city">
-                    <ion-label>
-                        <p class="item-heading">{{ 'core.user.city' | translate}}</p>
-                        <p>{{ user.city }}</p>
-                    </ion-label>
-                </ion-item>
-                <ion-item class="ion-text-wrap" *ngIf="displayTimezone && user.timezone">
-                    <ion-label>
-                        <p class="item-heading">{{ 'core.timezone' | translate}}</p>
-                        <p>{{ user.timezone }}</p>
-                    </ion-label>
-                </ion-item>
-                <ion-item class="ion-text-wrap" *ngIf="user.phone1">
-                    <ion-label>
-                        <p class="item-heading">{{ 'core.user.phone1' | translate}}</p>
-                        <p><a class="core-anchor" href="tel:{{user.phone1}}" core-link [autoLogin]="false" [showBrowserWarning]="false">
-                                {{ user.phone1 }}
-                            </a></p>
-                    </ion-label>
-                </ion-item>
-                <ion-item class="ion-text-wrap" *ngIf="user.phone2">
-                    <ion-label>
-                        <p class="item-heading">{{ 'core.user.phone2' | translate}}</p>
-                        <p><a class="core-anchor" href="tel:{{user.phone2}}" core-link [autoLogin]="false" [showBrowserWarning]="false">
-                                {{ user.phone2 }}
-                            </a></p>
-                    </ion-label>
-                </ion-item>
-
-
-                <ng-container *ngIf="canShowDepartment">
-                    <ion-item class="ion-text-wrap" *ngIf="user.institution">
-                        <ion-label>
-                            <p class="item-heading">{{ 'core.user.institution' | translate }}</p>
-                            <p>{{ user.institution }}</p>
-                        </ion-label>
-                    </ion-item>
-                    <ion-item class="ion-text-wrap" *ngIf="user.department">
-                        <ion-label>
-                            <p class="item-heading">{{ 'core.user.department' | translate }}</p>
-                            <p>{{ user.department }}</p>
-                        </ion-label>
-                    </ion-item>
-                    <ion-item class="ion-text-wrap" *ngIf="user.idnumber">
-                        <ion-label>
-                            <p class="item-heading">{{ 'core.user.idnumber' | translate }}</p>
-                            <p>{{ user.idnumber }}</p>
-                        </ion-label>
-                    </ion-item>
-                    <!-- Temporary: Show Sequence field if available -->
-                    <ion-item class="ion-text-wrap" *ngIf="getSequenceValue()">
-                        <ion-label>
-                            <p class="item-heading">Sequence</p>
-                            <p>{{ getSequenceValue() }}</p>
-                        </ion-label>
-                    </ion-item>
-                </ng-container>
-            </ion-item-group>
-            <ion-item-group *ngIf="hasDetails">
-                <ion-item-divider>
-                    <ion-label>
-                        <h3>{{ 'core.userdetails' | translate}}</h3>
-                    </ion-label>
-                </ion-item-divider>
-                <ion-item class="ion-text-wrap" *ngIf="user.url">
-                    <ion-label>
-                        <p class="item-heading">{{ 'core.user.webpage' | translate}}</p>
-                        <p><a class="core-anchor" href="{{user.url}}" core-link>
-                                {{ user.url }}
-                            </a></p>
-                    </ion-label>
-                </ion-item>
-                <ion-item class="ion-text-wrap core-user-profile-interests" *ngIf="interests">
-                    <ion-label>
-                        <p class="item-heading">{{ 'core.user.interests' | translate}}</p>
-                        <ion-badge *ngFor="let interest of interests" role="link" (click)="openInterest(interest)">
-                            {{ interest }}
+                    <h2 class="user-name">{{ user.fullname }}</h2>
+                    <p class="user-role-badge">
+                        <ion-badge [color]="userRole === 'parent' ? 'primary' : userRole === 'student' ? 'success' : 'medium'">
+                            {{ userRole === 'parent' ? 'Parent/Guardian' : userRole === 'student' ? 'Student' : 'User' }}
                         </ion-badge>
-                    </ion-label>
-                </ion-item>
-                <core-user-profile-field *ngFor="let field of user.customfields" [field]="field" contextLevel="course"
-                    [contextInstanceId]="courseId" [courseId]="courseId" />
-            </ion-item-group>
-        </ion-list>
+                    </p>
+                    <div class="hero-stats" *ngIf="isStudentUser || userId !== site.getUserId()">
+                        <div class="stat-item" *ngIf="gradeLevel">
+                            <ion-icon name="school-outline"></ion-icon>
+                            <span>{{ gradeLevel }}</span>
+                        </div>
+                        <div class="stat-item" *ngIf="sequenceId">
+                            <ion-icon name="barcode-outline"></ion-icon>
+                            <span>{{ sequenceId }}</span>
+                        </div>
+                        <div class="stat-item" *ngIf="academicYear">
+                            <ion-icon name="calendar-outline"></ion-icon>
+                            <span>{{ academicYear }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
-        <core-empty-box *ngIf="!user || (!hasContact && !hasDetails && !user.description)" icon="fas-user"
-            [message]=" 'core.user.detailsnotavailable' | translate" />
+            <!-- Parent Section - Show Mentees -->
+            <div class="profile-section" *ngIf="isParentUser && mentees.length > 0">
+                <h3 class="section-title">
+                    <ion-icon name="people-outline"></ion-icon>
+                    Children/Mentees
+                </h3>
+                <div class="mentees-grid">
+                    <div class="mentee-card non-clickable" *ngFor="let mentee of mentees">
+                        <core-user-avatar [user]="mentee" [userId]="mentee.id" [linkProfile]="false" />
+                        <div class="mentee-info">
+                            <h4>{{ mentee.fullname }}</h4>
+                            <p class="mentee-email">{{ mentee.email }}</p>
+                            <ion-badge color="success" *ngIf="selectedMenteeId === mentee.id">Currently Selected</ion-badge>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Student Academic Section -->
+            <div class="profile-section" *ngIf="(isStudentUser || userId !== site.getUserId()) && enrolledCourses.length > 0">
+                <h3 class="section-title">
+                    <ion-icon name="book-outline"></ion-icon>
+                    Enrolled Courses
+                </h3>
+                <div class="courses-list">
+                    <div class="course-item" *ngFor="let course of enrolledCourses" (click)="viewCourse(course.id)">
+                        <div class="course-icon">
+                            <ion-icon name="folder-outline"></ion-icon>
+                        </div>
+                        <div class="course-info">
+                            <h4>{{ course.displayname || course.fullname }}</h4>
+                            <p>{{ course.shortname }}</p>
+                        </div>
+                        <ion-icon name="chevron-forward-outline" class="course-arrow"></ion-icon>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Grades Section (for students) -->
+            <div class="profile-section" *ngIf="recentGrades.length > 0">
+                <h3 class="section-title">
+                    <ion-icon name="trending-up-outline"></ion-icon>
+                    Recent Grades
+                </h3>
+                <div class="grades-list">
+                    <div class="grade-item" *ngFor="let grade of recentGrades">
+                        <div class="grade-name">{{ grade.name }}</div>
+                        <div class="grade-value">
+                            <span class="grade-score">{{ grade.grade }}</span>
+                            <span class="grade-percentage" *ngIf="grade.percentage !== '-'">{{ grade.percentage }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Info Cards -->
+            <div class="info-cards">
+                <!-- Contact Information Card -->
+                <div class="info-card" *ngIf="hasContact">
+                    <div class="card-header">
+                        <ion-icon name="call-outline"></ion-icon>
+                        <h3>Contact Information</h3>
+                    </div>
+                    <div class="card-content">
+                        <div class="info-item" *ngIf="user.email">
+                            <span class="info-label">Email</span>
+                            <a class="info-value" href="mailto:{{user.email}}" core-link [autoLogin]="false" [showBrowserWarning]="false">
+                                {{ user.email }}
+                            </a>
+                        </div>
+                        <div class="info-item" *ngIf="user.phone1">
+                            <span class="info-label">Phone</span>
+                            <a class="info-value" href="tel:{{user.phone1}}" core-link [autoLogin]="false" [showBrowserWarning]="false">
+                                {{ user.phone1 }}
+                            </a>
+                        </div>
+                        <div class="info-item" *ngIf="user.phone2">
+                            <span class="info-label">Alt Phone</span>
+                            <a class="info-value" href="tel:{{user.phone2}}" core-link [autoLogin]="false" [showBrowserWarning]="false">
+                                {{ user.phone2 }}
+                            </a>
+                        </div>
+                        <div class="info-item" *ngIf="user.city || user.country">
+                            <span class="info-label">Location</span>
+                            <span class="info-value">
+                                {{ user.city }}<span *ngIf="user.city && user.country">, </span>{{ user.country }}
+                            </span>
+                        </div>
+                        <div class="info-item" *ngIf="user.address">
+                            <span class="info-label">Address</span>
+                            <span class="info-value">{{ user.address }}</span>
+                        </div>
+                        <div class="info-item" *ngIf="sequenceId">
+                            <span class="info-label">Sequence</span>
+                            <span class="info-value">{{ sequenceId }}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Academic Information Card -->
+                <div class="info-card" *ngIf="canShowDepartment && (user.institution || user.department || user.idnumber)">
+                    <div class="card-header">
+                        <ion-icon name="school-outline"></ion-icon>
+                        <h3>Academic Information</h3>
+                    </div>
+                    <div class="card-content">
+                        <div class="info-item" *ngIf="user.institution">
+                            <span class="info-label">Institution</span>
+                            <span class="info-value">{{ user.institution }}</span>
+                        </div>
+                        <div class="info-item" *ngIf="user.department">
+                            <span class="info-label">Department</span>
+                            <span class="info-value">{{ user.department }}</span>
+                        </div>
+                        <div class="info-item" *ngIf="user.idnumber">
+                            <span class="info-label">ID Number</span>
+                            <span class="info-value">{{ user.idnumber }}</span>
+                        </div>
+                        <div class="info-item" *ngIf="displayTimezone && user.timezone">
+                            <span class="info-label">Timezone</span>
+                            <span class="info-value">{{ user.timezone }}</span>
+                        </div>
+                    </div>
+                </div>
+
+
+            </div>
+        </div>
+
+        <core-empty-box *ngIf="!user || (!hasContact && !hasDetails && !user.description)" 
+            icon="fas-user"
+            [message]="'core.user.detailsnotavailable' | translate" />
     </core-loading>
 </ion-content>

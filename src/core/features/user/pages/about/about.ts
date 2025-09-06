@@ -34,6 +34,9 @@ import { CoreMimetypeUtils } from '@services/utils/mimetype';
 import { Translate } from '@singletons';
 import { CoreUrl } from '@singletons/url';
 import { CoreLoadings } from '@services/loadings';
+import { CoreUserParent } from '@features/user/services/parent';
+import { CoreCourses } from '@features/courses/services/courses';
+import { CoreGrades } from '@features/grades/services/grades';
 
 /**
  * Page that displays info about a user.
@@ -55,6 +58,29 @@ export class CoreUserAboutPage implements OnInit, OnDestroy {
     interests?: string[];
     displayTimezone = false;
     canShowDepartment = false;
+    
+    // Role-based properties
+    isParentUser = false;
+    isStudentUser = false;
+    isMentorUser = false;
+    userRole = 'student'; // default
+    
+    // Parent-specific data
+    mentees: any[] = [];
+    selectedMenteeId?: number;
+    
+    // Student-specific data
+    enrolledCourses: any[] = [];
+    recentGrades: any[] = [];
+    upcomingAssignments: any[] = [];
+    overallGrade = '-';
+    attendanceRate = '-';
+    
+    // Academic info
+    gradeLevel?: string;
+    academicYear?: string;
+    homeroom?: string;
+    sequenceId?: string;
 
     protected userId!: number;
     protected site!: CoreSite;
@@ -94,9 +120,20 @@ export class CoreUserAboutPage implements OnInit, OnDestroy {
             this.site.canUploadFiles() &&
             !CoreUser.isUpdatePictureDisabledInSite(this.site);
 
+        // Check user roles
+        await this.checkUserRoles();
+
         this.fetchUser().finally(() => {
             this.userLoaded = true;
         });
+        
+        // Load role-specific data
+        if (this.isParentUser) {
+            await this.loadParentData();
+        }
+        if (this.isStudentUser || this.userId !== this.site.getUserId()) {
+            await this.loadStudentData();
+        }
     }
 
     /**
@@ -326,6 +363,157 @@ export class CoreUserAboutPage implements OnInit, OnDestroy {
         // return "TEST-SEQ-001";
         
         return null;
+    }
+    
+    /**
+     * Check user roles and permissions.
+     */
+    protected async checkUserRoles(): Promise<void> {
+        try {
+            // Check if current user is a parent
+            this.isParentUser = await CoreUserParent.isParentUser();
+            
+            // Determine user role
+            if (this.isParentUser) {
+                this.userRole = 'parent';
+            } else {
+                // Check if viewing own profile or another user's
+                if (this.userId === this.site.getUserId()) {
+                    // Viewing own profile - likely a student
+                    this.userRole = 'student';
+                    this.isStudentUser = true;
+                } else {
+                    // Viewing another user's profile
+                    // Could be a student viewing another student, or teacher viewing student
+                    this.userRole = 'viewer';
+                }
+            }
+        } catch (error) {
+            console.error('Error checking user roles:', error);
+            // Default to student if check fails
+            this.userRole = 'student';
+            this.isStudentUser = true;
+        }
+    }
+    
+    /**
+     * Load parent-specific data.
+     */
+    protected async loadParentData(): Promise<void> {
+        try {
+            // Get list of mentees
+            this.mentees = await CoreUserParent.getMentees();
+            
+            // Get selected mentee if any
+            const selectedId = await CoreUserParent.getSelectedMentee();
+            this.selectedMenteeId = selectedId !== null ? selectedId : undefined;
+        } catch (error) {
+            console.error('Error loading parent data:', error);
+        }
+    }
+    
+    /**
+     * Load student-specific data.
+     */
+    protected async loadStudentData(): Promise<void> {
+        try {
+            // For now, only load courses if viewing own profile
+            // In the future, we could use the parent service to get mentee courses
+            if (this.userId === this.site.getUserId()) {
+                // Load enrolled courses for current user
+                const courses = await CoreCourses.getUserCourses(true);
+                this.enrolledCourses = courses.slice(0, 5); // Show top 5 courses
+                
+                // Try to load recent grades if available
+                if (courses.length > 0) {
+                    try {
+                        // Get grades for the first course as a sample
+                        const gradesTable = await CoreGrades.getCourseGradesTable(courses[0].id, this.userId);
+                        if (gradesTable && gradesTable.tabledata) {
+                            // Extract a few recent grades
+                            this.recentGrades = gradesTable.tabledata
+                                .filter((item: any) => item.grade && item.grade.content && item.grade.content !== '-')
+                                .slice(0, 3)
+                                .map((item: any) => ({
+                                    name: item.itemname?.content || 'Assignment',
+                                    grade: item.grade?.content || '-',
+                                    percentage: item.percentage?.content || '-'
+                                }));
+                        }
+                    } catch (gradeError) {
+                        console.error('Error loading grades:', gradeError);
+                    }
+                }
+            } else if (this.isParentUser) {
+                // Parent viewing mentee's profile - try to get courses through parent service
+                try {
+                    // This would require implementing a method to get mentee courses
+                    // For now, we'll skip loading courses for other users
+                    console.log('Viewing other user profile - course loading not implemented yet');
+                } catch (error) {
+                    console.error('Error loading mentee courses:', error);
+                }
+            }
+            
+            // Extract academic info from custom fields
+            this.extractAcademicInfo();
+        } catch (error) {
+            console.error('Error loading student data:', error);
+        }
+    }
+    
+    /**
+     * Extract academic information from user profile.
+     */
+    protected extractAcademicInfo(): void {
+        if (!this.user) return;
+        
+        // Extract grade level from custom fields or department
+        if (this.user.department) {
+            // Try to extract grade from department (e.g., "Grade 10", "Year 11")
+            const gradeMatch = this.user.department.match(/(Grade|Year|Form)\s*(\d+|\w+)/i);
+            if (gradeMatch) {
+                this.gradeLevel = gradeMatch[0];
+            }
+        }
+        
+        // Get sequence ID
+        this.sequenceId = this.getSequenceValue() || undefined;
+        
+        // Set academic year (current year)
+        const currentYear = new Date().getFullYear();
+        const currentMonth = new Date().getMonth();
+        // Academic year typically starts in September
+        if (currentMonth >= 8) {
+            this.academicYear = `${currentYear}/${currentYear + 1}`;
+        } else {
+            this.academicYear = `${currentYear - 1}/${currentYear}`;
+        }
+        
+        // Extract homeroom from institution or custom fields
+        if (this.user.institution) {
+            this.homeroom = this.user.institution;
+        }
+    }
+    
+    /**
+     * Navigate to view a mentee's profile.
+     * 
+     * @param menteeId The mentee user ID.
+     */
+    async viewMenteeProfile(menteeId: number): Promise<void> {
+        await CoreNavigator.navigate('/main/messages/user/about', {
+            params: { userId: menteeId }
+        });
+    }
+    
+    /**
+     * Navigate to course page.
+     * 
+     * @param courseId The course ID.
+     */
+    async viewCourse(courseId: number): Promise<void> {
+        await CoreNavigator.navigateToSitePath(`/course/${courseId}`);
     }
 
     /**

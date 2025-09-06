@@ -1,60 +1,415 @@
 :host {
-    .core-user-profile-maininfo {
-        padding-top: 16px;
-        ion-label {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            margin-top: 0px;
-
-            h2 {
-                margin-top: 10px;
-            }
-        }
+    // Aspire Profile Page Styles
+    .aspire-profile-page {
+        --background: #f8f9fa;
     }
-    core-user-avatar {
-        --core-avatar-size: var(--core-large-avatar-size);
-        --contact-status-size: 24px;
-        --margin-end-on-item: 0px;
-        --margin-vertical-on-item: 0px;
 
-        .contact-status {
-            right: calc(50% - 12px - var(--core-avatar-size) / 2) !important;
+    .aspire-profile-container {
+        padding-bottom: 20px;
+    }
+
+    // Hero Section
+    .profile-hero {
+        position: relative;
+        background: white;
+        margin-bottom: 20px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        
+        .hero-background {
+            height: 120px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 0 0 30px 30px;
         }
-
-        .edit-avatar {
-            position: absolute;
-            right: calc(50% - 24px - var(--core-avatar-size) / 2);
-            bottom: -12px;
-
-            :host-context([dir="rtl"]) & {
-                left: 0;
-                right: unset;
-            }
-            &::part(native) {
+        
+        .hero-content {
+            position: relative;
+            padding: 0 20px 30px;
+            text-align: center;
+            margin-top: -60px;
+            
+            core-user-avatar {
+                --core-avatar-size: 120px;
+                --contact-status-size: 24px;
+                display: inline-block;
+                border: 4px solid white;
                 border-radius: 50%;
-                background: var(--ion-item-background);
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+                background: white;
+                
+                .edit-avatar {
+                    position: absolute;
+                    right: -5px;
+                    bottom: 5px;
+                    width: 36px;
+                    height: 36px;
+                    background: var(--ion-color-primary);
+                    color: white;
+                    border-radius: 50%;
+                    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+                    
+                    &::part(native) {
+                        border-radius: 50%;
+                        padding: 0;
+                    }
+                }
+            }
+            
+            .user-name {
+                margin: 15px 0 8px;
+                font-size: 24px;
+                font-weight: 600;
+                color: #5a6c7d;
+            }
+            
+            .user-role-badge {
+                margin: 8px 0 20px;
+                
+                ion-badge {
+                    padding: 6px 16px;
+                    font-size: 12px;
+                    font-weight: 500;
+                    text-transform: uppercase;
+                    letter-spacing: 0.5px;
+                }
+            }
+            
+            .hero-stats {
+                display: flex;
+                justify-content: center;
+                gap: 25px;
+                flex-wrap: wrap;
+                
+                .stat-item {
+                    display: flex;
+                    align-items: center;
+                    gap: 6px;
+                    color: #6c757d;
+                    font-size: 14px;
+                    
+                    ion-icon {
+                        font-size: 18px;
+                        color: var(--ion-color-primary);
+                    }
+                }
             }
         }
     }
 
-    h2 {
-        font: var(--mdl-typography-heading2-font);
-    }
-    h3 {
-        font: var(--mdl-typography-heading4-font);
-    }
-    .core-user-profile-interests {
-        ion-badge {
-            cursor: pointer;
-            margin-left: 4px;
-            margin-right: 4px;
+    // Profile Sections
+    .profile-section {
+        background: white;
+        margin: 0 16px 16px;
+        padding: 20px;
+        border-radius: 12px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        
+        .section-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 0 0 16px;
+            font-size: 18px;
+            font-weight: 600;
+            color: #5a6c7d;
+            
+            ion-icon {
+                font-size: 24px;
+                color: var(--ion-color-primary);
+            }
         }
     }
 
+    // Mentees Grid (for parents)
+    .mentees-grid {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        
+        .mentee-card {
+            display: flex;
+            align-items: center;
+            padding: 12px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            
+            &.non-clickable {
+                cursor: default;
+            }
+            
+            core-user-avatar {
+                --core-avatar-size: 50px;
+                margin-right: 12px;
+            }
+            
+            .mentee-info {
+                flex: 1;
+                
+                h4 {
+                    margin: 0 0 4px;
+                    font-size: 16px;
+                    font-weight: 600;
+                    color: #5a6c7d;
+                }
+                
+                .mentee-email {
+                    margin: 0;
+                    font-size: 13px;
+                    color: #6c757d;
+                }
+                
+                ion-badge {
+                    margin-top: 6px;
+                    font-size: 11px;
+                }
+            }
+            
+        }
+    }
+
+    // Courses List
+    .courses-list {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        
+        .course-item {
+            display: flex;
+            align-items: center;
+            padding: 12px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            
+            &:active {
+                transform: scale(0.98);
+                background: #e9ecef;
+            }
+            
+            .course-icon {
+                width: 40px;
+                height: 40px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                background: var(--ion-color-primary-tint);
+                border-radius: 8px;
+                margin-right: 12px;
+                
+                ion-icon {
+                    font-size: 22px;
+                    color: var(--ion-color-primary);
+                }
+            }
+            
+            .course-info {
+                flex: 1;
+                
+                h4 {
+                    margin: 0 0 2px;
+                    font-size: 15px;
+                    font-weight: 600;
+                    color: #5a6c7d;
+                }
+                
+                p {
+                    margin: 0;
+                    font-size: 13px;
+                    color: #6c757d;
+                }
+            }
+            
+            .course-arrow {
+                font-size: 20px;
+                color: #adb5bd;
+            }
+        }
+    }
+
+    // Grades List
+    .grades-list {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        
+        .grade-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            
+            .grade-name {
+                flex: 1;
+                font-size: 14px;
+                color: #495057;
+            }
+            
+            .grade-value {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                
+                .grade-score {
+                    font-size: 16px;
+                    font-weight: 600;
+                    color: #5a6c7d;
+                }
+                
+                .grade-percentage {
+                    font-size: 13px;
+                    color: #28a745;
+                    background: rgba(40, 167, 69, 0.1);
+                    padding: 2px 8px;
+                    border-radius: 12px;
+                }
+            }
+        }
+    }
+
+    // Info Cards Grid
+    .info-cards {
+        padding: 0 16px;
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+        
+        .info-card {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            
+            .card-header {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                padding: 16px 20px;
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                color: white;
+                
+                ion-icon {
+                    font-size: 24px;
+                }
+                
+                h3 {
+                    margin: 0;
+                    font-size: 16px;
+                    font-weight: 600;
+                }
+            }
+            
+            .card-content {
+                padding: 20px;
+                
+                .info-item {
+                    display: flex;
+                    margin-bottom: 16px;
+                    
+                    &:last-child {
+                        margin-bottom: 0;
+                    }
+                    
+                    &.full-width {
+                        flex-direction: column;
+                        
+                        .info-label {
+                            margin-bottom: 8px;
+                        }
+                    }
+                    
+                    .info-label {
+                        font-size: 13px;
+                        color: #6c757d;
+                        font-weight: 500;
+                        text-transform: uppercase;
+                        letter-spacing: 0.5px;
+                        min-width: 100px;
+                        margin-right: 16px;
+                    }
+                    
+                    .info-value {
+                        flex: 1;
+                        font-size: 14px;
+                        color: #5a6c7d;
+                        word-break: break-word;
+                        
+                        a {
+                            color: var(--ion-color-primary);
+                            text-decoration: none;
+                        }
+                    }
+                    
+                    .interests-list {
+                        display: flex;
+                        flex-wrap: wrap;
+                        gap: 8px;
+                        
+                        .interest-badge {
+                            padding: 6px 12px;
+                            background: var(--ion-color-primary-tint);
+                            color: var(--ion-color-primary);
+                            border-radius: 20px;
+                            font-size: 13px;
+                            cursor: pointer;
+                            transition: all 0.3s ease;
+                            
+                            &:active {
+                                transform: scale(0.95);
+                                background: var(--ion-color-primary);
+                                color: white;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    // Keep existing styles for backward compatibility
+    .core-user-profile-maininfo {
+        display: none; // Hide old layout
+    }
+    
+    .core-user-profile-interests {
+        display: none; // Hide old layout
+    }
+
+    // Responsive adjustments
+    @media (min-width: 768px) {
+        .aspire-profile-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .info-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+        }
+        
+        .mentees-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        }
+    }
 }
 
-:host-context([dir="rtl"]) core-user-avatar .edit-avatar {
-    left: -24px;
-    right: unset;
+// RTL Support
+:host-context([dir="rtl"]) {
+    .mentee-card core-user-avatar,
+    .course-item .course-icon {
+        margin-right: 0;
+        margin-left: 12px;
+    }
+    
+    .hero-content core-user-avatar .edit-avatar {
+        right: auto;
+        left: -5px;
+    }
+    
+    .info-item .info-label {
+        margin-right: 0;
+        margin-left: 16px;
+    }
 }
