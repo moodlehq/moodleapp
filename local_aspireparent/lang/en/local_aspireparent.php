@@ -37,3 +37,4 @@ $string['userdeleted'] = 'User is deleted or suspended';
 $string['loginasfailed'] = 'Failed to login as user: {$a}';
 $string['notloggedinas'] = 'You are not currently logged in as another user';
 $string['tokennotgenerated'] = 'Could not generate authentication token: {$a}';
+$string['tokenformentee'] = 'Parent access token for {$a}';

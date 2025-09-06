@@ -765,7 +765,16 @@ export class CoreSite extends CoreAuthenticatedSite {
      * @returns Promise resolved when done.
      */
     async setLocalSiteConfig(name: string, value: number | string): Promise<void> {
-        await this.configTable.insert({ name, value });
+        try {
+            // Check if the record exists
+            const existing = await this.configTable.getOneByPrimaryKey({ name });
+            
+            // Update existing record
+            await this.configTable.update({ value }, { name });
+        } catch (error) {
+            // Record doesn't exist, insert new one
+            await this.configTable.insert({ name, value });
+        }
     }
 
     /*

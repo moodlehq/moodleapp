@@ -117,48 +117,59 @@ class get_mentee_token extends \external_api {
             // Log the attempt
             error_log('local_aspireparent_get_mentee_token: Generating token for mentee ' . $menteeid . ' by parent ' . $USER->id);
             
-            // Create web service manager
-            $webservicemanager = new \webservice();
+            // Create a new token manually (similar to how core does it)
+            $token = new \stdClass();
+            $token->token = md5(uniqid(rand(), 1));
+            $token->tokentype = EXTERNAL_TOKEN_PERMANENT;
+            $token->userid = $menteeid;
+            $token->externalserviceid = $servicerecord->id;
+            $token->contextid = \context_system::instance()->id;
+            $token->creatorid = $USER->id; // Parent is the creator
+            $token->timecreated = time();
             
-            // Generate the token
-            $tokenobject = $webservicemanager->generate_user_ws_token($servicerecord->shortname, $menteeid);
-            
-            // The method returns an object, we need the token string
-            if (is_object($tokenobject) && isset($tokenobject->token)) {
-                $tokenstring = $tokenobject->token;
-                $tokenid = $tokenobject->id;
-            } else if (is_string($tokenobject)) {
-                // Sometimes it returns just the token string
-                $tokenstring = $tokenobject;
-                // Try to find the token record
-                $tokenrecord = $DB->get_record('external_tokens', array('token' => $tokenstring));
-                $tokenid = $tokenrecord ? $tokenrecord->id : 0;
+            // Tokens are valid for 12 weeks by default
+            if (!empty($CFG->tokenduration)) {
+                $token->validuntil = $token->timecreated + $CFG->tokenduration;
             } else {
-                throw new \moodle_exception('tokennotgenerated', 'local_aspireparent');
+                $token->validuntil = $token->timecreated + (12 * WEEKSECS);
             }
             
-            error_log('local_aspireparent_get_mentee_token: Token generated successfully for mentee ' . $menteeid);
-            
-            // Log this action if we have a token ID
-            if ($tokenid) {
-                $event = \core\event\webservice_token_created::create(array(
-                    'objectid' => $tokenid,
-                    'relateduserid' => $menteeid,
-                    'context' => \context_system::instance(),
-                    'other' => array(
-                        'auto' => false,
-                        'parentid' => $USER->id,
-                        'service' => $service
-                    )
-                ));
-                $event->trigger();
+            $token->iprestriction = null;
+            $token->sid = null;
+            $token->lastaccess = null;
+            $token->name = get_string('tokenformentee', 'local_aspireparent', fullname($mentee));
+            if (empty($token->name)) {
+                // Fallback if string doesn't exist
+                $token->name = 'Token for ' . fullname($mentee);
             }
+            
+            // Generate the private token
+            $token->privatetoken = random_string(64);
+            
+            // Insert the token
+            $tokenid = $DB->insert_record('external_tokens', $token);
+            $token->id = $tokenid;
+            
+            error_log('local_aspireparent_get_mentee_token: Token generated successfully for mentee ' . $menteeid . ', token ID: ' . $tokenid);
+            
+            // Log this action
+            $event = \core\event\webservice_token_created::create(array(
+                'objectid' => $tokenid,
+                'relateduserid' => $menteeid,
+                'context' => \context_system::instance(),
+                'other' => array(
+                    'auto' => false,
+                    'parentid' => $USER->id,
+                    'service' => $service
+                )
+            ));
+            $event->trigger();
             
             return array(
-                'token' => $tokenstring,
+                'token' => $token->token,
                 'menteeid' => $menteeid,
                 'menteename' => fullname($mentee),
-                'privatetoken' => null
+                'privatetoken' => $token->privatetoken
             );
         } catch (\Exception $e) {
             error_log('local_aspireparent_get_mentee_token: Error generating token: ' . $e->getMessage());

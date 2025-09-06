@@ -87,10 +87,7 @@ class get_mentee_course extends external_api {
                 'categoryid' => new external_value(PARAM_INT, 'Course category id'),
                 'categoryname' => new external_value(PARAM_TEXT, 'Course category name'),
                 'sortorder' => new external_value(PARAM_INT, 'Sort order', VALUE_OPTIONAL),
-                'overviewfiles' => new external_multiple_structure(
-                    \core_external\external_files::get_properties_for_exporter(),
-                    'Course overview files', VALUE_OPTIONAL
-                ),
+                'overviewfiles' => new \core_external\external_files('Course overview files', VALUE_OPTIONAL),
                 'contacts' => new external_multiple_structure(
                     new external_single_structure(
                         array(

@@ -25,8 +25,8 @@
 defined("MOODLE_INTERNAL") || die();
 
 $plugin->component = "local_aspireparent";
-$plugin->version = 2024122703; // YYYYMMDDXX format - Added mentee token generation
-$plugin->release = "1.4.0";
+$plugin->version = 2025010602; // YYYYMMDDXX format - Fixed token generation and external_files structure
+$plugin->release = "1.4.2";
 $plugin->requires = 2022041900; // Moodle 4.0 or later
 $plugin->maturity = MATURITY_STABLE;
 $plugin->cron = 0;
