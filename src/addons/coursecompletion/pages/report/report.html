@@ -9,34 +9,35 @@
     </ion-toolbar>
 </ion-header>
 <ion-content>
-    <ion-refresher slot="fixed" [disabled]="!completionLoaded" (ionRefresh)="refreshCompletion($event.target)">
+    <ion-refresher slot="fixed" [disabled]="!loaded()" (ionRefresh)="refreshCompletion($event.target)">
         <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}" />
     </ion-refresher>
-    <core-loading [hideUntil]="completionLoaded">
-        @if (user) {
+    <core-loading [hideUntil]="loaded()">
+        @let userDisplay = user();
+        @if (userDisplay) {
             <ion-item class="ion-text-wrap">
-                <core-user-avatar [user]="user" [courseId]="courseId" slot="start" [linkProfile]="false" />
+                <core-user-avatar [user]="userDisplay" [courseId]="courseId()" slot="start" [linkProfile]="false" />
                 <ion-label>
-                    <p class="item-heading">{{user.fullname}}</p>
+                    <p class="item-heading">{{userDisplay.fullname}}</p>
                 </ion-label>
             </ion-item>
         }
 
-        @if (completion && tracked) {
+        @let completionDisplay = completion();
+        @if (completionDisplay && tracked()) {
             <ion-card>
                 <ion-item class="ion-text-wrap">
                     <ion-label>
                         <p class="item-heading">{{ 'addon.coursecompletion.status' | translate }}</p>
-                        <p>{{ statusText! | translate }}</p>
+                        <p>{{ statusText() | translate }}</p>
                     </ion-label>
                 </ion-item>
                 <ion-item class="ion-text-wrap">
                     <ion-label>
                         <p class="item-heading">{{ 'addon.coursecompletion.required' | translate }}</p>
-                        @if (completion.aggregation === 1) {
+                        @if (completionDisplay.aggregation === aggregationType.ALL) {
                             <p>{{ 'addon.coursecompletion.criteriarequiredall' | translate }}</p>
-                        }
-                        @if (completion.aggregation === 2) {
+                        } @else if (completionDisplay.aggregation === aggregationType.ANY) {
                             <p>{{ 'addon.coursecompletion.criteriarequiredany' | translate }}</p>
                         }
                     </ion-label>
@@ -48,21 +49,25 @@
                         <h2>{{ 'addon.coursecompletion.requiredcriteria' | translate }}</h2>
                     </ion-label>
                 </ion-item-divider>
-                <ion-item class="ion-hide-md-up ion-text-wrap" *ngFor="let criteria of completion.completions">
-                    <ion-label>
-                        <p class="item-heading">
-                            <core-format-text clean="true" [text]="criteria.details.criteria" [filter]="false" />
-                        </p>
-                        <p>
-                            <core-format-text clean="true" [text]="criteria.details.requirement" [filter]="false" />
-                        </p>
-                    </ion-label>
-                    @if (criteria.complete) {
-                        <strong slot="end">{{ 'core.yes' | translate }}</strong>
-                    } @else {
-                        <strong slot="end">{{ 'core.no' | translate }}</strong>
-                    }
-                </ion-item>
+                @for (criteria of completionDisplay.completions; track criteria) {
+                    <ion-item class="ion-hide-md-up ion-text-wrap">
+                        <ion-label>
+                            <p class="item-heading">
+                                <core-format-text clean="true" [text]="criteria.details.criteria" [filter]="false" />
+                            </p>
+                            <p>
+                                <core-format-text clean="true" [text]="criteria.details.requirement" [filter]="false" />
+                            </p>
+                        </ion-label>
+                            <strong slot="end">
+                                @if (criteria.complete) {
+                                    {{ 'core.yes' | translate }}
+                                } @else {
+                                    {{ 'core.no' | translate }}
+                                }
+                            </strong>
+                    </ion-item>
+                }
                 <ion-item class="ion-hide-md-down ion-text-wrap">
                     <ion-label>
                         <ion-row>
@@ -73,7 +78,8 @@
                             <ion-col><strong>{{ 'addon.coursecompletion.complete' | translate }}</strong></ion-col>
                             <ion-col><strong>{{ 'addon.coursecompletion.completiondate' | translate }}</strong></ion-col>
                         </ion-row>
-                        <ion-row *ngFor="let criteria of completion.completions">
+                        @for (criteria of completionDisplay.completions; track criteria) {
+                        <ion-row>
                             <ion-col>
                                 <core-format-text clean="true" [text]="criteria.details.type" [filter]="false" />
                             </ion-col>
@@ -86,24 +92,25 @@
                             <ion-col>
                                 <core-format-text [text]="criteria.details.status" [filter]="false" />
                             </ion-col>
-                            @if (criteria.complete) {
-                                <ion-col>{{ 'core.yes' | translate }}</ion-col>
-                            } @else {
-                                <ion-col>{{ 'core.no' | translate }}</ion-col>
-                            }
-                            @if (criteria.timecompleted) {
-                                <ion-col>
+                            <ion-col>
+                                @if (criteria.complete) {
+                                    {{ 'core.yes' | translate }}
+                                } @else {
+                                    {{ 'core.no' | translate }}
+                                }
+                            </ion-col>
+                            <ion-col>
+                                @if (criteria.timecompleted) {
                                     {{ criteria.timecompleted * 1000 | coreFormatDate :'strftimedatetimeshort' }}
-                                </ion-col>
-                            } @else {
-                                <ion-col />
-                            }
+                                }
+                            </ion-col>
                         </ion-row>
+                    }
                     </ion-label>
                 </ion-item>
             </ion-card>
         }
-        @if (showSelfComplete && tracked) {
+        @if (showSelfComplete() && tracked()) {
             <ion-card>
                 <ion-item-divider>
                     <ion-label>
@@ -118,7 +125,7 @@
                     </ion-label>
                 </ion-item>
             </ion-card>
-        } @else if (!tracked) {
+        } @else if (!tracked()) {
             <ion-card class="core-warning-card">
                 <ion-item>
                     <ion-icon name="fas-triangle-exclamation" slot="start" aria-hidden="true" />
