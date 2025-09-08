@@ -16,7 +16,7 @@ import {
     AddonCourseCompletion,
     AddonCourseCompletionCourseCompletionStatus,
 } from '@addons/coursecompletion/services/coursecompletion';
-import { Component, OnInit } from '@angular/core';
+import { Component, computed, OnInit, signal } from '@angular/core';
 import { CoreUser, CoreUserProfile } from '@features/user/services/user';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 import { CoreLoadings } from '@services/overlays/loadings';
@@ -26,6 +26,7 @@ import { Translate } from '@singletons';
 import { CoreTime } from '@singletons/time';
 import { CoreAlerts } from '@services/overlays/alerts';
 import { CoreSharedModule } from '@/core/shared.module';
+import { AddonCourseCompletionAggregation } from '@addons/coursecompletion/constants';
 
 /**
  * Page that displays the course completion report.
@@ -39,18 +40,48 @@ import { CoreSharedModule } from '@/core/shared.module';
 })
 export default class AddonCourseCompletionReportPage implements OnInit {
 
-    protected userId!: number;
-    protected logView: () => void;
+    protected readonly aggregationType = AddonCourseCompletionAggregation;
+    protected readonly userId = signal(0);
+    protected logView!: () => void;
 
-    courseId!: number;
-    completionLoaded = false;
-    completion?: AddonCourseCompletionCourseCompletionStatus;
-    showSelfComplete = false;
-    tracked = true; // Whether completion is tracked.
-    statusText?: string;
-    user?: CoreUserProfile;
+    readonly courseId!: number;
+    readonly loaded = signal(false);
+    readonly completion = signal<AddonCourseCompletionCourseCompletionStatus | undefined>(undefined);
+
+    readonly showSelfComplete = computed(() => {
+        const completion = this.completion();
+        const userId = this.userId();
+
+        if (!completion) {
+            return false;
+        }
+
+        return AddonCourseCompletion.canMarkSelfCompleted(userId, completion);
+    });
+
+    readonly tracked = signal(true); // Whether completion is tracked.
+    readonly statusText = computed(() => {
+        const completion = this.completion();
+        if (!completion) {
+            return '';
+        }
+
+        return AddonCourseCompletion.getCompletedStatusText(completion);
+    });
+
+    readonly user = signal<CoreUserProfile | undefined>(undefined);
 
     constructor() {
+        try {
+            this.courseId = CoreNavigator.getRequiredRouteNumberParam('courseId');
+            this.userId.set(CoreNavigator.getRouteNumberParam('userId') || CoreSites.getCurrentSiteUserId());
+        } catch (error) {
+            CoreAlerts.showError(error);
+            CoreNavigator.back();
+
+            return;
+        }
+
         this.logView = CoreTime.once(() => {
             CoreAnalytics.logEvent({
                 type: CoreAnalyticsEventType.VIEW_ITEM,
@@ -58,7 +89,7 @@ export default class AddonCourseCompletionReportPage implements OnInit {
                 name: Translate.instant('addon.coursecompletion.coursecompletion'),
                 data: {
                     course: this.courseId,
-                    user: this.userId,
+                    user: this.userId(),
                 },
                 url: `/blocks/completionstatus/details.php?course=${this.courseId}&user=${this.userId}`,
             });
@@ -69,18 +100,8 @@ export default class AddonCourseCompletionReportPage implements OnInit {
      * @inheritdoc
      */
     ngOnInit(): void {
-        try {
-            this.courseId = CoreNavigator.getRequiredRouteNumberParam('courseId');
-            this.userId = CoreNavigator.getRouteNumberParam('userId') || CoreSites.getCurrentSiteUserId();
-        } catch (error) {
-            CoreAlerts.showError(error);
-            CoreNavigator.back();
-
-            return;
-        }
-
         this.fetchCompletion().finally(() => {
-            this.completionLoaded = true;
+            this.loaded.set(true);
         });
     }
 
@@ -89,19 +110,16 @@ export default class AddonCourseCompletionReportPage implements OnInit {
      */
     protected async fetchCompletion(): Promise<void> {
         try {
-            this.user = await CoreUser.getProfile(this.userId, this.courseId, true);
+            this.user.set(await CoreUser.getProfile(this.userId(), this.courseId, true));
 
-            this.completion = await AddonCourseCompletion.getCompletion(this.courseId, this.userId);
+            this.completion.set(await AddonCourseCompletion.getCompletion(this.courseId, this.userId()));
 
-            this.statusText = AddonCourseCompletion.getCompletedStatusText(this.completion);
-            this.showSelfComplete = AddonCourseCompletion.canMarkSelfCompleted(this.userId, this.completion);
-
-            this.tracked = true;
+            this.tracked.set(true);
             this.logView();
         } catch (error) {
-            if (error && error.errorcode == 'notenroled') {
+            if (error?.errorcode === 'notenroled') {
                 // Not enrolled error, probably a teacher.
-                this.tracked = false;
+                this.tracked.set(false);
             } else {
                 CoreAlerts.showError(error, { default: Translate.instant('addon.coursecompletion.couldnotloadreport') });
             }
@@ -114,7 +132,7 @@ export default class AddonCourseCompletionReportPage implements OnInit {
      * @param refresher Refresher instance.
      */
     async refreshCompletion(refresher?: HTMLIonRefresherElement): Promise<void> {
-        await AddonCourseCompletion.invalidateCourseCompletion(this.courseId, this.userId).finally(() => {
+        await AddonCourseCompletion.invalidateCourseCompletion(this.courseId, this.userId()).finally(() => {
             this.fetchCompletion().finally(() => {
                 refresher?.complete();
             });
