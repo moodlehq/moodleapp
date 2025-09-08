@@ -27,6 +27,7 @@ import { CoreSiteWSPreSets, WSObservable } from '@classes/sites/authenticated-si
 import { firstValueFrom } from 'rxjs';
 import { CoreCacheUpdateFrequency } from '@/core/constants';
 import { CoreCourseCompletion } from '@features/course/services/course-completion';
+import { AddonCourseCompletionAggregation, AddonCourseCompletionCriteriaType } from '../constants';
 
 /**
  * Service to handle course completion.
@@ -70,7 +71,7 @@ export class AddonCourseCompletionProvider {
      * @returns True if user can mark course as self completed, false otherwise.
      */
     canMarkSelfCompleted(userId: number, completion: AddonCourseCompletionCourseCompletionStatus): boolean {
-        if (CoreSites.getCurrentSiteUserId() != userId) {
+        if (CoreSites.getCurrentSiteUserId() !== userId) {
             return false;
         }
 
@@ -78,7 +79,7 @@ export class AddonCourseCompletionProvider {
         let alreadyMarked = false;
 
         completion.completions.forEach((criteria) => {
-            if (criteria.type === 1) {
+            if (criteria.type === AddonCourseCompletionCriteriaType.SELF) {
                 // Self completion criteria found.
                 selfCompletionActive = true;
                 alreadyMarked = criteria.complete;
@@ -313,9 +314,9 @@ export const AddonCourseCompletion = makeSingleton(AddonCourseCompletionProvider
  */
 export type AddonCourseCompletionCourseCompletionStatus = {
     completed: boolean; // True if the course is complete, false otherwise.
-    aggregation: number; // Aggregation method 1 means all, 2 means any.
+    aggregation: AddonCourseCompletionAggregation; // Aggregation method 1 means all, 2 means any.
     completions: {
-        type: number; // Completion criteria type.
+        type: AddonCourseCompletionCriteriaType; // Completion criteria type.
         title: string; // Completion criteria Title.
         status: string; // Completion status (Yes/No) a % or number.
         complete: boolean; // Completion status (true/false).
