@@ -49,6 +49,10 @@
             line-height: 1.6rem;
             flex-grow: 1;
 
+            &::part(container) {
+                touch-action: pan-x pinch-zoom;
+            }
+
             swiper-slide {
                 border-bottom: 4px solid transparent;
                 min-width: 100px;
