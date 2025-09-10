@@ -188,7 +188,7 @@ export class TestingBehatBlockingService {
      */
     async delay(): Promise<void> {
         const key = this.block('forced-delay');
-        this.unblock(key);
+        await this.unblock(key);
     }
 
     /**
@@ -200,7 +200,7 @@ export class TestingBehatBlockingService {
     async wait(milliseconds: number): Promise<void> {
         const key = this.block();
         await CoreWait.wait(milliseconds);
-        this.unblock(key);
+        await this.unblock(key);
     }
 
     /**
@@ -230,6 +230,10 @@ export class TestingBehatBlockingService {
         });
 
         observer.observe(document, { attributes: true, childList: true, subtree: true });
+
+        document.addEventListener('visibilitychange', async () => {
+            this.checkUIBlocked();
+        });
     }
 
     /**
@@ -263,7 +267,7 @@ export class TestingBehatBlockingService {
             document.querySelectorAll<HTMLElement>('div.core-loading-container, ion-loading'),
         );
 
-        const isBlocked = blockingElements.some(element => {
+        const isBlocked = !document.hidden && blockingElements.some(element => {
             // @TODO Fix ion-loading present check with CoreDom.isElementVisible.
             // ion-loading never has offsetParent since position is fixed.
             // Using isElementVisible solve the problem but will block behats (like BBB).
