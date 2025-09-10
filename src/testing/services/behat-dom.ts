@@ -24,7 +24,7 @@ import { TestingBehatElementLocator, TestingBehatFindOptions } from './behat-run
 @Injectable({ providedIn: 'root' })
 export class TestingBehatDomUtilsService {
 
-    protected static readonly MULTI_ELEM_ALLOWED = ['P', 'SPAN', 'ION-LABEL'];
+    protected static readonly MULTI_ELEM_ALLOWED = ['P', 'SPAN', 'ION-LABEL', 'LI', 'ION-BUTTON'];
 
     /**
      * Check if an element is clickable.

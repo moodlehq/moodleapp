@@ -16,7 +16,7 @@ import { Injectable } from '@angular/core';
 
 import { CoreContentLinksHandlerBase } from '@features/contentlinks/classes/base-handler';
 import { CoreContentLinksAction } from '@features/contentlinks/services/contentlinks-delegate';
-import { CoreCourse } from '@features/course/services/course';
+import { CoreCourse, CoreCourseModuleBasicInfo } from '@features/course/services/course';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSites, CoreSitesReadingStrategy } from '@services/sites';
 import { CorePromiseUtils } from '@singletons/promise-utils';
@@ -38,7 +38,7 @@ export class AddonModH5PActivityReportLinkHandlerService extends CoreContentLink
 
     name = 'AddonModH5PActivityReportLinkHandler';
     featureName = ADDON_MOD_H5PACTIVITY_FEATURE_NAME;
-    pattern = /\/mod\/h5pactivity\/report\.php.*([&?]a=\d+)/;
+    pattern = /\/mod\/h5pactivity\/report\.php.*([&?](id|a)=\d+)/;
 
     /**
      * @inheritdoc
@@ -53,20 +53,14 @@ export class AddonModH5PActivityReportLinkHandlerService extends CoreContentLink
                 const modal = await CoreLoadings.show();
 
                 try {
-                    const instanceId = Number(params.a);
-
-                    const module = await CoreCourse.getModuleBasicInfoByInstance(
-                        instanceId,
-                        ADDON_MOD_H5PACTIVITY_MODNAME,
-                        { siteId, readingStrategy: CoreSitesReadingStrategy.PREFER_CACHE },
-                    );
+                    const module = await this.getModuleBasicInfo(Number(params.id),  Number(params.a), siteId);
 
                     if (params.attemptid !== undefined) {
                         this.openAttemptResults(module.id, Number(params.attemptid), module.course, siteId);
                     } else {
                         const userId = params.userid ? Number(params.userid) : undefined;
 
-                        await this.openUserAttempts(module.id, module.course, instanceId, siteId, userId);
+                        await this.openUserAttempts(module.id, module.course, module.instance, siteId, userId);
                     }
                 } catch (error) {
                     CoreAlerts.showError(error, { default: 'Error processing link.' });
@@ -75,6 +69,31 @@ export class AddonModH5PActivityReportLinkHandlerService extends CoreContentLink
                 }
             },
         }];
+    }
+
+    /**
+     * Get the module basic info for the activity.
+     *
+     * @param cmId Course module ID, NaN if not valid.
+     * @param instanceId Activity instance ID, NaN if not valid.
+     * @param siteId Site ID.
+     * @returns Module basic info.
+     */
+    protected getModuleBasicInfo(cmId: number, instanceId: number, siteId: string): Promise<CoreCourseModuleBasicInfo> {
+        if (!isNaN(cmId)) {
+            return CoreCourse.getModuleBasicInfo(
+                cmId,
+                { siteId, readingStrategy: CoreSitesReadingStrategy.PREFER_CACHE },
+            );
+        } else if (!isNaN(instanceId)) {
+            return CoreCourse.getModuleBasicInfoByInstance(
+                instanceId,
+                ADDON_MOD_H5PACTIVITY_MODNAME,
+                { siteId, readingStrategy: CoreSitesReadingStrategy.PREFER_CACHE },
+            );
+        }
+
+        throw new Error('Invalid module ID or instance ID.');
     }
 
     /**
