@@ -1622,6 +1622,7 @@
   "core.course.confirmpartialdownloadsize": "local_moodlemobileapp",
   "core.course.couldnotloadsectioncontent": "local_moodlemobileapp",
   "core.course.couldnotloadsections": "local_moodlemobileapp",
+  "core.course.course:viewoverview": "role",
   "core.course.courseindex": "courseformat",
   "core.course.coursesummary": "moodle",
   "core.course.done": "completion",

@@ -17,13 +17,18 @@ import { AddonModForum, AddonModForumTracking } from '../forum';
 import { makeSingleton, Translate } from '@singletons';
 import { CoreEvents } from '@singletons/events';
 import { CoreSites, CoreSitesReadingStrategy } from '@services/sites';
-import { CoreCourseModuleHandler, CoreCourseModuleHandlerData } from '@features/course/services/module-delegate';
+import {
+    CoreCourseModuleHandler,
+    CoreCourseModuleHandlerData,
+    CoreCourseOverviewItemContent,
+} from '@features/course/services/module-delegate';
 import { CoreModuleHandlerBase } from '@features/course/classes/module-base-handler';
 import { CoreCourseModuleData } from '@features/course/services/course-helper';
 import { CoreText } from '@singletons/text';
 import { CoreUser } from '@features/user/services/user';
 import { ADDON_MOD_FORUM_MARK_READ_EVENT, ADDON_MOD_FORUM_MODNAME, ADDON_MOD_FORUM_PAGE_NAME } from '../../constants';
 import { ModFeature, ModPurpose } from '@addons/mod/constants';
+import { CoreCourseOverviewActivity, CoreCourseOverviewItem } from '@features/course/services/course-overview';
 
 /**
  * Handler to support forum modules.
@@ -155,6 +160,24 @@ export class AddonModForumModuleHandlerService extends CoreModuleHandlerBase imp
             // Ignore errors.
             data.extraBadge = '';
         }
+    }
+
+    /**
+     * @inheritdoc
+     */
+    async getOverviewItemContent(
+        item: CoreCourseOverviewItem,
+        activity: CoreCourseOverviewActivity,
+        courseId: number,
+    ): Promise<CoreCourseOverviewItemContent | undefined> {
+        // Hide the columns that are not supported for now.
+        if (item.key === 'submitted' || item.key === 'subscribed' || item.key === 'emaildigest') {
+            return {
+                content: null,
+            };
+        }
+
+        return super.getOverviewItemContent(item, activity, courseId);
     }
 
 }

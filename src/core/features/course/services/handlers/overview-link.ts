@@ -15,12 +15,13 @@
 import { Injectable } from '@angular/core';
 import { CoreContentLinksAction } from '@features/contentlinks/services/contentlinks-delegate';
 import { CoreContentLinksHandlerBase } from '@features/contentlinks/classes/base-handler';
-import { makeSingleton } from '@singletons';
+import { makeSingleton, Translate } from '@singletons';
 import { CoreSites } from '@services/sites';
 import { CoreCourseOverview } from '../course-overview';
 import { CoreCourses } from '@features/courses/services/courses';
 import { CoreCourseHelper } from '../course-helper';
 import { CORE_COURSE_OVERVIEW_OPTION_NAME } from '@features/course/constants';
+import { CoreAlerts } from '@services/overlays/alerts';
 
 /**
  * Handler to treat links to activities overview.
@@ -44,6 +45,17 @@ export class CoreCourseOverviewLinkHandlerService extends CoreContentLinksHandle
 
         return [{
             action: async (siteId): Promise<void> => {
+                // Check if it's enabled.
+                const options = await CoreCourses.getCoursesAdminAndNavOptions([courseId]);
+
+                if (!options.navOptions[courseId].overview) {
+                    CoreAlerts.showError(Translate.instant('core.nopermissions', {
+                        $a: Translate.instant('core.course.course:viewoverview'),
+                    }));
+
+                    return;
+                }
+
                 await CoreCourseHelper.getAndOpenCourse(courseId, { selectedTab: CORE_COURSE_OVERVIEW_OPTION_NAME }, siteId);
             },
         }];
@@ -60,13 +72,7 @@ export class CoreCourseOverviewLinkHandlerService extends CoreContentLinksHandle
 
         const site = await CoreSites.getSite(siteId);
 
-        if (!CoreCourseOverview.canGetInformation(site)) {
-            return false;
-        }
-
-        const options = await CoreCourses.getCoursesAdminAndNavOptions([courseId]);
-
-        return options.navOptions[courseId].overview;
+        return CoreCourseOverview.canGetInformation(site);
     }
 
 }
