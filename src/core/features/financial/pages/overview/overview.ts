@@ -284,6 +284,70 @@ export class CoreFinancialOverviewPage implements OnInit {
     }
 
     /**
+     * Get the academic year tag (Past, Current, or Future).
+     *
+     * @param academicYear Academic year string (e.g., "2024-2025").
+     * @returns 'past', 'current', or 'future'.
+     */
+    getAcademicYearTag(academicYear: string): 'past' | 'current' | 'future' {
+        const currentDate = new Date();
+        const currentYear = currentDate.getFullYear();
+        const currentMonth = currentDate.getMonth(); // 0-based (0 = January, 11 = December)
+        
+        // Parse academic year (e.g., "2024-2025")
+        const years = academicYear.split('-');
+        if (years.length !== 2) {
+            return 'future'; // Default to future if format is unexpected
+        }
+        
+        const startYear = parseInt(years[0]);
+        const endYear = parseInt(years[1]);
+        
+        // Academic year typically runs from September of start year to August of end year
+        // If we're in September-December, we're in the academic year that started in the current calendar year
+        // If we're in January-August, we're in the academic year that will end in the current calendar year
+        if (currentMonth >= 8) { // September (8) through December (11)
+            // We're in the first part of the academic year
+            if (startYear === currentYear) {
+                return 'current';
+            } else if (startYear < currentYear) {
+                return 'past';
+            } else {
+                return 'future';
+            }
+        } else { // January (0) through August (7)
+            // We're in the second part of the academic year
+            if (endYear === currentYear) {
+                return 'current';
+            } else if (endYear < currentYear) {
+                return 'past';
+            } else {
+                return 'future';
+            }
+        }
+    }
+
+    /**
+     * Check if an academic year is past.
+     *
+     * @param academicYear Academic year string.
+     * @returns Whether it's a past year.
+     */
+    isPastAcademicYear(academicYear: string): boolean {
+        return this.getAcademicYearTag(academicYear) === 'past';
+    }
+
+    /**
+     * Check if an academic year is future.
+     *
+     * @param academicYear Academic year string.
+     * @returns Whether it's a future year.
+     */
+    isFutureAcademicYear(academicYear: string): boolean {
+        return this.getAcademicYearTag(academicYear) === 'future';
+    }
+
+    /**
      * Get the count of items in a section.
      *
      * @param yearData Academic year data.

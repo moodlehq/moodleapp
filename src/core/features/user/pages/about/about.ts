@@ -128,10 +128,10 @@ export class CoreUserAboutPage implements OnInit, OnDestroy {
         });
         
         // Load role-specific data
-        if (this.isParentUser) {
+        if (this.userRole === 'parent') {
             await this.loadParentData();
         }
-        if (this.isStudentUser || this.userId !== this.site.getUserId()) {
+        if (this.userRole === 'student') {
             await this.loadStudentData();
         }
     }
@@ -370,22 +370,45 @@ export class CoreUserAboutPage implements OnInit, OnDestroy {
      */
     protected async checkUserRoles(): Promise<void> {
         try {
-            // Check if current user is a parent
-            this.isParentUser = await CoreUserParent.isParentUser();
+            // We need to check the role of the user whose profile we're viewing
+            // First, check if we're viewing our own profile
+            const viewingOwnProfile = this.userId === this.site.getUserId();
             
-            // Determine user role
-            if (this.isParentUser) {
-                this.userRole = 'parent';
-            } else {
-                // Check if viewing own profile or another user's
-                if (this.userId === this.site.getUserId()) {
-                    // Viewing own profile - likely a student
+            if (viewingOwnProfile) {
+                // Check if current user is a parent
+                this.isParentUser = await CoreUserParent.isParentUser();
+                
+                if (this.isParentUser) {
+                    this.userRole = 'parent';
+                } else {
                     this.userRole = 'student';
                     this.isStudentUser = true;
-                } else {
-                    // Viewing another user's profile
-                    // Could be a student viewing another student, or teacher viewing student
-                    this.userRole = 'viewer';
+                }
+            } else {
+                // Viewing another user's profile - need to check their role
+                // Try to determine if the viewed user is a parent by checking if they have mentees
+                try {
+                    // Temporarily set the context to check for the viewed user
+                    const site = this.site;
+                    
+                    // Check if the viewed user is a parent by calling the API with their ID
+                    const response = await site.read<{isparent: boolean; roles?: any[]; menteecount?: number}>('local_aspireparent_get_parent_info', {
+                        userid: this.userId
+                    });
+                    
+                    // If the call succeeds and returns parent info, they're a parent
+                    if (response && response.isparent) {
+                        this.userRole = 'parent';
+                        // Don't set isParentUser to true as that's for the current logged-in user
+                    } else {
+                        this.userRole = 'student';
+                        this.isStudentUser = true;
+                    }
+                } catch (error) {
+                    // If the API call fails, try another approach or default to student
+                    console.log('Could not determine if user is parent, defaulting to student role');
+                    this.userRole = 'student';
+                    this.isStudentUser = true;
                 }
             }
         } catch (error) {
@@ -401,12 +424,21 @@ export class CoreUserAboutPage implements OnInit, OnDestroy {
      */
     protected async loadParentData(): Promise<void> {
         try {
-            // Get list of mentees
-            this.mentees = await CoreUserParent.getMentees();
-            
-            // Get selected mentee if any
-            const selectedId = await CoreUserParent.getSelectedMentee();
-            this.selectedMenteeId = selectedId !== null ? selectedId : undefined;
+            // Only load mentees if viewing own profile (current logged-in parent)
+            if (this.userId === this.site.getUserId()) {
+                // Get list of mentees for current user
+                this.mentees = await CoreUserParent.getMentees();
+                
+                // Get selected mentee if any
+                const selectedId = await CoreUserParent.getSelectedMentee();
+                this.selectedMenteeId = selectedId !== null ? selectedId : undefined;
+            } else {
+                // Viewing another parent's profile
+                // We could potentially load their mentees if the API supports it
+                // For now, just leave mentees empty
+                this.mentees = [];
+                this.selectedMenteeId = undefined;
+            }
         } catch (error) {
             console.error('Error loading parent data:', error);
         }

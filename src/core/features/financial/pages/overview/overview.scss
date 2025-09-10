@@ -473,6 +473,20 @@
         }
     }
 
+    &.past-year {
+        opacity: 0.7;
+        
+        .year-header {
+            background: linear-gradient(135deg, #e0e0e0 0%, #c0c0c0 100%);
+            
+            .year-badge {
+                background: rgba(128, 128, 128, 0.3);
+                color: #555;
+                border-color: rgba(128, 128, 128, 0.4);
+            }
+        }
+    }
+
     &.future-year {
         opacity: 0.85;
 

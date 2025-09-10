@@ -137,7 +137,7 @@
             <div
                 *ngFor="let yearData of selectedStudent.academic_years; trackBy: trackByAcademicYear"
                 class="academic-year-section"
-                [ngClass]="{'current-year': isCurrentAcademicYear(yearData.academic_year), 'future-year': !isCurrentAcademicYear(yearData.academic_year)}"
+                [ngClass]="{'past-year': isPastAcademicYear(yearData.academic_year), 'current-year': isCurrentAcademicYear(yearData.academic_year), 'future-year': isFutureAcademicYear(yearData.academic_year)}"
             >
                 <!-- Year Header -->
                 <div
@@ -154,12 +154,17 @@
                             <div class="year-badge-container">
                                 <span
                                     class="year-badge"
+                                    *ngIf="isPastAcademicYear(yearData.academic_year)"
+                                    >Past</span
+                                >
+                                <span
+                                    class="year-badge"
                                     *ngIf="isCurrentAcademicYear(yearData.academic_year)"
                                     >Current</span
                                 >
                                 <span
                                     class="year-badge"
-                                    *ngIf="!isCurrentAcademicYear(yearData.academic_year)"
+                                    *ngIf="isFutureAcademicYear(yearData.academic_year)"
                                     >Future</span
                                 >
                             </div>
