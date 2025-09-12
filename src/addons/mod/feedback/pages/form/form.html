@@ -118,11 +118,11 @@
 
                             @case ('captcha') {
                                 @if (!preview) {
-                                    @if (!offline) {
+                                    @if (!offline()) {
                                         <core-recaptcha [publicKey]="item.captcha.recaptchapublickey" [model]="item"
                                             modelValueName="value" />
                                     }
-                                    @if (!item.captcha || offline) {
+                                    @if (!item.captcha || offline()) {
                                         <div class="core-warning-card">
                                             <ion-item>
                                                 <ion-icon name="fas-triangle-exclamation" slot="start" aria-hidden="true" />

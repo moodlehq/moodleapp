@@ -20,7 +20,7 @@ import { CoreCourse } from '@features/course/services/course';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSync } from '@services/sync';
 import { CoreObject } from '@singletons/object';
-import { NgZone, Translate } from '@singletons';
+import { Translate } from '@singletons';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { AddonModScormPrefetchHandler } from '../../services/handlers/prefetch';
 import {
@@ -50,7 +50,6 @@ import {
 import { CoreWait } from '@singletons/wait';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreNetwork } from '@services/network';
-import { Subscription } from 'rxjs';
 import { CoreAlerts } from '@services/overlays/alerts';
 import { CoreCourseModuleNavigationComponent } from '@features/course/components/module-navigation/module-navigation';
 import { CoreCourseModuleInfoComponent } from '@features/course/components/module-info/module-info';
@@ -104,7 +103,7 @@ export class AddonModScormIndexComponent extends CoreCourseModuleMainActivityCom
     onlineAttempts: AttemptGrade[] = []; // Grades for online attempts.
     offlineAttempts: AttemptGrade[] = []; // Grades for offline attempts.
     gradesExpanded = false;
-    isOnline: boolean;
+    readonly isOnline = CoreNetwork.onlineSignal();
 
     protected fetchContentDefaultError = 'addon.mod_scorm.errorgetscorm'; // Default error to show when loading contents.
     protected syncEventName = ADDON_MOD_SCORM_DATA_AUTO_SYNCED;
@@ -115,19 +114,6 @@ export class AddonModScormIndexComponent extends CoreCourseModuleMainActivityCom
     protected dataSentObserver?: CoreEventObserver; // To detect data sent to server.
     protected dataSent = false; // Whether some data was sent to server while playing the SCORM.
     protected useOnlinePlayer = false; // Whether the SCORM needs to be played using an online player.
-    protected onlineObserver: Subscription;
-
-    constructor() {
-        super();
-
-        this.isOnline = CoreNetwork.isOnline();
-        this.onlineObserver = CoreNetwork.onChange().subscribe(() => {
-            // Execute the callback in the Angular zone, so change detection doesn't stop working.
-            NgZone.run(() => {
-                this.isOnline = CoreNetwork.isOnline();
-            });
-        });
-    }
 
     /**
      * @inheritdoc
@@ -516,7 +502,7 @@ export class AddonModScormIndexComponent extends CoreCourseModuleMainActivityCom
 
         if (this.useOnlinePlayer) {
             // No need to download the package, just open it.
-            if (this.isOnline) {
+            if (this.isOnline()) {
                 this.openScorm(scoId, preview);
             }
 
@@ -664,13 +650,6 @@ export class AddonModScormIndexComponent extends CoreCourseModuleMainActivityCom
         }
 
         return result;
-    }
-
-    /**
-     * @inheritdoc
-     */
-    ngOnDestroy(): void {
-        this.onlineObserver.unsubscribe();
     }
 
 }

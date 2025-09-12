@@ -23,7 +23,7 @@
                 }
                 <core-context-menu-item [priority]="600" [content]="'core.settings.settings' | translate" (action)="openSettings()"
                     iconAction="fas-gears" />
-                <core-context-menu-item [hidden]="!loaded || !hasOffline || !isOnline" [priority]="400"
+                <core-context-menu-item [hidden]="!loaded || !hasOffline || !isOnline()" [priority]="400"
                     [content]="'core.settings.synchronizenow' | translate" (action)="doRefresh(undefined, $event, true)"
                     [iconAction]="syncIcon" [closeOnClick]="false" />
             </core-context-menu>

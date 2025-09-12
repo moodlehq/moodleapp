@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Injectable } from '@angular/core';
+import { Injectable, signal } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { distinctUntilChanged, map } from 'rxjs/operators';
 
@@ -66,6 +66,7 @@ export class CoreScreenService {
 
     protected breakpointsSubject: BehaviorSubject<Record<Breakpoint, boolean>>;
     private _layoutObservable: Observable<CoreScreenLayout>;
+    readonly orientationSignal = signal<CoreScreenOrientation>(CoreScreenOrientation.PORTRAIT);
 
     constructor() {
         this.breakpointsSubject = new BehaviorSubject(BREAKPOINT_NAMES.reduce((breakpoints, breakpoint) => ({
@@ -104,9 +105,7 @@ export class CoreScreenService {
     }
 
     get orientation(): CoreScreenOrientation {
-        return screen.orientation.type.startsWith(CoreScreenOrientation.LANDSCAPE)
-            ? CoreScreenOrientation.LANDSCAPE
-            : CoreScreenOrientation.PORTRAIT;
+        return this.orientationSignal();
     }
 
     get isPortrait(): boolean {
@@ -124,7 +123,13 @@ export class CoreScreenService {
         await CorePlatform.ready();
 
         screen.orientation.addEventListener('change', () => {
-            CoreEvents.trigger(CoreEvents.ORIENTATION_CHANGE, { orientation: this.orientation });
+            this.orientationSignal.set(
+                screen.orientation.type.startsWith(CoreScreenOrientation.LANDSCAPE)
+                    ? CoreScreenOrientation.LANDSCAPE
+                    : CoreScreenOrientation.PORTRAIT,
+            );
+
+            CoreEvents.trigger(CoreEvents.ORIENTATION_CHANGE, { orientation: this.orientationSignal() });
         });
     }
 

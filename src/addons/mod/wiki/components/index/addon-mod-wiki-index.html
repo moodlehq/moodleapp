@@ -20,7 +20,7 @@
 
     <core-context-menu>
         @if (canEdit) {
-            @if (isOnline || pageIsOffline) {
+            @if (isOnline() || pageIsOffline) {
                 <core-context-menu-item [priority]="590" [content]="'core.edit' | translate" iconAction="fas-pen"
                     (action)="goToEditPage()" />
             }

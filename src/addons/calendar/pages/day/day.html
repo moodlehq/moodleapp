@@ -15,7 +15,7 @@
                     <core-context-menu-item [priority]="900" [content]="'addon.calendar.today' | translate" iconAction="fas-calendar-day"
                         (action)="goToCurrentDay()" />
                 }
-                <core-context-menu-item [hidden]="!loaded || !selectedDayHasOffline() || !isOnline" [priority]="400"
+                <core-context-menu-item [hidden]="!loaded || !selectedDayHasOffline() || !isOnline()" [priority]="400"
                     [content]="'core.settings.synchronizenow' | translate" (action)="doRefresh(undefined, $event)" [iconAction]="syncIcon"
                     [closeOnClick]="false" />
             </core-context-menu>
