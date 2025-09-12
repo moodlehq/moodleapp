@@ -63,6 +63,7 @@ export interface CoreEventsData {
     [CoreEvents.COMPONENT_FILE_ACTION]: CoreFilepoolComponentFileEventData;
     [CoreEvents.FILE_SHARED]: CoreEventFileSharedData;
     [CoreEvents.APP_LAUNCHED_URL]: CoreEventAppLaunchedData;
+    // eslint-disable-next-line @typescript-eslint/no-deprecated
     [CoreEvents.ORIENTATION_CHANGE]: CoreEventOrientationData;
     [CoreEvents.COURSE_MODULE_VIEWED]: CoreEventCourseModuleViewed;
     [CoreEvents.COMPLETE_REQUIRED_PROFILE_DATA_FINISHED]: CoreEventCompleteRequiredProfileDataFinished;
@@ -111,6 +112,9 @@ export class CoreEvents {
      * @deprecated since 5.0.0. Use CoreKeyboard.getKeyboardShownSignal signal.
      */
     static readonly KEYBOARD_CHANGE = 'keyboard_change';
+    /**
+     * @deprecated since 5.1.0. Use CoreScreen.orientationSignal signal.
+     */
     static readonly ORIENTATION_CHANGE = 'orientation_change';
     static readonly SEND_ON_ENTER_CHANGED = 'send_on_enter_changed';
     static readonly SELECT_COURSE_TAB = 'select_course_tab';
@@ -471,6 +475,8 @@ export type CoreEventAppLaunchedData = {
 
 /**
  * Data passed to ORIENTATION_CHANGE event.
+ *
+ * @deprecated since 5.1.0. Use CoreScreen.orientationSignal signal.
  */
 export type CoreEventOrientationData = {
     orientation: CoreScreenOrientation;

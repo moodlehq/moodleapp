@@ -14,9 +14,17 @@
 
 import { CoreIframeComponent } from '@components/iframe/iframe';
 
-import { renderTemplate } from '@/testing/utils';
+import { mockSingleton, renderTemplate } from '@/testing/utils';
+import { CoreScreen, CoreScreenOrientation } from '@services/screen';
+import { signal } from '@angular/core';
 
 describe('CoreIframeComponent', () => {
+
+    beforeEach(() => {
+        mockSingleton(CoreScreen, {
+            orientationSignal: signal(CoreScreenOrientation.PORTRAIT).asReadonly(),
+        });
+    });
 
     it('should render', async () => {
         // Arrange.
