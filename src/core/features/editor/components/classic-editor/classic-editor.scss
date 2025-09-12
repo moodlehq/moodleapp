@@ -120,6 +120,10 @@
             width: 240px;
             flex-grow: 1;
             flex-shrink: 1;
+
+            &::part(container) {
+                touch-action: pan-x pinch-zoom;
+            }
         }
 
         button {
