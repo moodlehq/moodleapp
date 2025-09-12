@@ -65,6 +65,9 @@ import { CoreSharedModule } from '@/core/shared.module';
         CoreSharedModule,
         CoreCourseFormatComponent,
     ],
+    host: {
+        '[attr.data-course-id]': 'course()?.id ?? null',
+    },
 })
 export default class CoreCourseContentsPage implements OnInit, OnDestroy, CoreRefreshContext {
 

@@ -38,6 +38,9 @@ import { CoreCourseModuleCompletionStatus, CORE_COURSE_ALL_SECTIONS_ID } from '@
     imports: [
         CoreSharedModule,
     ],
+    host: {
+        '[attr.data-course-id]': 'course()?.id ?? null',
+    },
 })
 export class CoreCourseCourseIndexComponent implements OnInit {
 

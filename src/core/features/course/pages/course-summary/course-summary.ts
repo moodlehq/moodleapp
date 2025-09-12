@@ -55,6 +55,9 @@ import { CoreSharedModule } from '@/core/shared.module';
         CoreSharedModule,
         CoreRemindersDateComponent,
     ],
+    host: {
+        '[attr.data-course-id]': 'course()?.id ?? null',
+    },
 })
 export default class CoreCourseSummaryPage implements OnInit, OnDestroy {
 
