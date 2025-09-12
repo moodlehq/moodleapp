@@ -53,8 +53,10 @@ export default class CoreCourseIndexPage implements OnInit, OnDestroy {
     tabs: CourseTab[] = [];
     loaded = false;
     progress?: number;
+    fullScreenEnabled = false;
 
     protected currentPagePath = '';
+    protected fullScreenObserver: CoreEventObserver;
     protected selectTabObserver: CoreEventObserver;
     protected progressObserver: CoreEventObserver;
     protected sections: CoreCourseWSSection[] = []; // List of course sections.
@@ -104,6 +106,9 @@ export default class CoreCourseIndexPage implements OnInit, OnDestroy {
             this.updateProgress();
         }, siteId);
 
+        this.fullScreenObserver = CoreEvents.on(CoreEvents.FULL_SCREEN_CHANGED, (event: { enabled: boolean }) => {
+            this.fullScreenEnabled = event.enabled;
+        });
     }
 
     /**
@@ -250,6 +255,7 @@ export default class CoreCourseIndexPage implements OnInit, OnDestroy {
         CoreNavigator.decreaseRouteDepth(path.replace(/(\/deep)+/, ''));
         this.selectTabObserver?.off();
         this.progressObserver?.off();
+        this.fullScreenObserver?.off();
     }
 
     /**
