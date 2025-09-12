@@ -42,6 +42,9 @@ import { CoreSharedModule } from '@/core/shared.module';
     imports: [
         CoreSharedModule,
     ],
+    host: {
+        '[attr.data-course-id]': 'course()?.id ?? null',
+    },
 })
 export default class CoreCourseIndexPage implements OnInit, OnDestroy {
 
