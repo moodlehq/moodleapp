@@ -122,6 +122,9 @@ export class CoreEvents {
     static readonly COURSE_MODULE_VIEWED = 'course_module_viewed';
     static readonly COMPLETE_REQUIRED_PROFILE_DATA_FINISHED = 'complete_required_profile_data_finished';
     static readonly MAIN_HOME_LOADED = 'main_home_loaded';
+    /**
+     * @deprecated since 5.1.0. Not used anymore.
+     */
     static readonly FULL_SCREEN_CHANGED = 'full_screen_changed';
 
     protected static logger = CoreLogger.getInstance('CoreEvents');
