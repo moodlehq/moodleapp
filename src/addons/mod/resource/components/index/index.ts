@@ -192,7 +192,6 @@ export class AddonModResourceIndexComponent extends CoreCourseModuleMainResource
      * Opens a file.
      *
      * @param iOSOpenFileAction Action to do in iOS.
-     * @returns Promise resolved when done.
      */
     async open(iOSOpenFileAction?: OpenFileAction): Promise<void> {
         let downloadable = await CoreCourseModulePrefetchDelegate.isModuleDownloadable(this.module, this.courseId);
@@ -212,12 +211,14 @@ export class AddonModResourceIndexComponent extends CoreCourseModuleMainResource
                     await alert.onWillDismiss();
                 }
 
-                return AddonModResourceHelper.openModuleFile(this.module, this.courseId, { iOSOpenFileAction });
+                await AddonModResourceHelper.openModuleFile(this.module, this.courseId, { iOSOpenFileAction });
+
+                return;
             }
         }
 
         // The resource cannot be downloaded, open the activity in browser.
-        await CoreSites.getCurrentSite()?.openInBrowserWithAutoLogin(this.module.url || '');
+        await CoreSites.getRequiredCurrentSite().openInBrowserWithAutoLogin(this.module.url ?? '');
     }
 
 }
