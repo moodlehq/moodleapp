@@ -183,7 +183,6 @@ export class AddonModResourceHelperProvider {
      * @param module Module where to get the contents.
      * @param courseId Course Id, used for completion purposes.
      * @param options Options to open the file.
-     * @returns Resolved when done.
      */
     async openModuleFile(module: CoreCourseModuleData, courseId: number, options: CoreOpenerOpenFileOptions = {}): Promise<void> {
         const modal = await CoreLoadings.show();
