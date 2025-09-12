@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { CoreSharedModule } from '@/core/shared.module';
-import { Component, ElementRef, Input, OnInit, inject } from '@angular/core';
+import { Component, ElementRef, HostBinding, Input, OnInit, inject } from '@angular/core';
 import {
     CoreCourse,
     sectionContentIsModule,
@@ -52,6 +52,10 @@ export class CoreCourseCourseIndexComponent implements OnInit {
     isModule = sectionContentIsModule;
 
     protected element: HTMLElement = inject(ElementRef).nativeElement;
+
+    @HostBinding('attr.data-course-id') protected get courseId(): number | null {
+        return this.course?.id ?? null;
+    }
 
     /**
      * @inheritdoc

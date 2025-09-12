@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnDestroy, OnInit, Input } from '@angular/core';
+import { Component, OnDestroy, OnInit, Input, HostBinding } from '@angular/core';
 import { ActionSheetButton } from '@ionic/angular';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { CoreSites } from '@services/sites';
@@ -86,6 +86,10 @@ export default class CoreCourseSummaryPage implements OnInit, OnDestroy {
     protected appResumeSubscription: Subscription;
     protected waitingForBrowserEnrol = false;
     protected logView: () => void;
+
+    @HostBinding('attr.data-course-id') protected get currentCourseId(): number | null {
+        return this.course?.id ?? null;
+    }
 
     constructor() {
         // Refresh the view when the app is resumed.
