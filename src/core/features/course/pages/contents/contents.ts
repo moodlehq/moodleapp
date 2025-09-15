@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit, OnDestroy, forwardRef, ChangeDetectorRef, inject, viewChild } from '@angular/core';
+import { Component, OnInit, OnDestroy, forwardRef, ChangeDetectorRef, inject, viewChild, HostBinding } from '@angular/core';
 import { IonContent } from '@ionic/angular';
 
 import { CoreUtils } from '@singletons/utils';
@@ -92,6 +92,10 @@ export default class CoreCourseContentsPage implements OnInit, OnDestroy, CoreRe
     protected modulesHaveCompletion = false;
     protected debouncedUpdateCachedCompletion?: () => void; // Update the cached completion after a certain time.
     protected changeDetectorRef = inject(ChangeDetectorRef);
+
+    @HostBinding('attr.data-course-id') protected get courseId(): number | null {
+        return this.course?.id ?? null;
+    }
 
     /**
      * @inheritdoc
