@@ -42,6 +42,7 @@ export class CoreBootstrap {
         this.handleAccordionsAndCollapse(rootElement);
         this.handleModals(rootElement, formatTextOptions);
         this.handleTabs(rootElement);
+        this.handleCarousels(rootElement);
         this.enableDismissTrigger(rootElement, 'alert', 'close'); // Alert uses close method.
         this.enableDismissTrigger(rootElement, 'modal'); // Modal uses hide method
         this.enableDismissTrigger(rootElement, 'offcanvas'); // Offcanvas uses hide method
@@ -417,6 +418,187 @@ export class CoreBootstrap {
 
                 target[method]();
             });
+        });
+    }
+
+    /**
+     * Handle Bootstrap carousel elements in a certain element.
+     * Supports both Bootstrap 4 and 5.
+     * https://getbootstrap.com/docs/5.3/components/carousel/
+     *
+     * @param rootElement Element where to search for elements to treat.
+     */
+    protected static handleCarousels(rootElement: HTMLElement): void {
+        const elements = Array.from(rootElement.querySelectorAll<HTMLElement>(
+            '.carousel',
+        ));
+
+        if (!elements.length) {
+            return;
+        }
+
+        elements.forEach((element) => {
+            const intervalAttr = element.getAttribute('data-interval') || element.getAttribute('data-bs-interval');
+            const interval = intervalAttr ? parseInt(intervalAttr, 10) : 5000;
+            let isPaused = false;
+
+            // Helper to update aria-current for carousel indicators.
+            const updateIndicator = () => {
+                const items = Array.from(element.querySelectorAll<HTMLElement>('.carousel-item'));
+                const indicators = Array.from(element.querySelectorAll<HTMLElement>('[data-slide-to], [data-bs-slide-to]'));
+                const activeIndex = items.findIndex(item => item.classList.contains('active'));
+                indicators.forEach((indicator, idx) => {
+                    if (idx === activeIndex) {
+                        indicator.classList.add('active');
+                        indicator.setAttribute('aria-current', 'true');
+                    } else {
+                        indicator.classList.remove('active');
+                        indicator.removeAttribute('aria-current');
+                    }
+                });
+            };
+
+            // Helper to perform slide/crossfade transition.
+            const goToSlide = (newIndex: number, direction: 'next' | 'prev') => {
+                const items = Array.from(element.querySelectorAll<HTMLElement>('.carousel-item'));
+                const activeIndex = items.findIndex(item => item.classList.contains('active'));
+                if (newIndex === activeIndex || newIndex < 0 || newIndex >= items.length) {
+                    return;
+                }
+                const activeItem = items[activeIndex];
+                const nextItem = items[newIndex];
+
+                // Remove transition classes from all items.
+                items.forEach(item => {
+                    item.classList.remove('carousel-item-next', 'carousel-item-prev', 'carousel-item-start', 'carousel-item-end');
+                });
+
+                // Animation.
+                nextItem.classList.add(direction === 'next' ? 'carousel-item-next' : 'carousel-item-prev');
+                // Force reflow for transition.
+                void nextItem.offsetWidth;
+
+                activeItem.classList.add(direction === 'next' ? 'carousel-item-start' : 'carousel-item-end');
+                nextItem.classList.add(direction === 'next' ? 'carousel-item-start' : 'carousel-item-end');
+
+                setTimeout(() => {
+                    nextItem.classList.remove(
+                        'carousel-item-next',
+                        'carousel-item-prev',
+                        'carousel-item-start',
+                        'carousel-item-end',
+                    );
+                    nextItem.classList.add('active');
+                    activeItem.classList.remove('active', 'carousel-item-start', 'carousel-item-end');
+                    updateIndicator();
+                }, 600);
+            };
+
+            // Initialize the carousel.
+            const nextButton = element.querySelector<HTMLElement>('[data-slide="next"], [data-bs-slide="next"]');
+            if (nextButton) {
+                nextButton.addEventListener('click', (ev: Event) => {
+                    ev.preventDefault();
+                    ev.stopPropagation();
+
+                    const items = Array.from(element.querySelectorAll<HTMLElement>('.carousel-item'));
+                    const activeIndex = items.findIndex(item => item.classList.contains('active'));
+                    const nextIndex = (activeIndex + 1) % items.length;
+                    goToSlide(nextIndex, 'next');
+                });
+            }
+
+            const prevButton = element.querySelector<HTMLElement>('[data-slide="prev"], [data-bs-slide="prev"]');
+            if (prevButton) {
+                prevButton.addEventListener('click', (ev: Event) => {
+                    ev.preventDefault();
+                    ev.stopPropagation();
+
+                    const items = Array.from(element.querySelectorAll<HTMLElement>('.carousel-item'));
+                    const activeIndex = items.findIndex(item => item.classList.contains('active'));
+                    const prevIndex = (activeIndex - 1 + items.length) % items.length;
+                    goToSlide(prevIndex, 'prev');
+                });
+            }
+
+            // Support data-slide-to and data-bs-slide-to for direct navigation.
+            const slideToButtons = Array.from(
+                element.querySelectorAll<HTMLElement>('[data-slide-to], [data-bs-slide-to]'),
+            );
+            slideToButtons.forEach((button) => {
+                button.addEventListener('click', (ev: Event) => {
+                    ev.preventDefault();
+                    ev.stopPropagation();
+
+                    // Get the index from data-slide-to or data-bs-slide-to.
+                    const indexStr = button.getAttribute('data-slide-to') ?? button.getAttribute('data-bs-slide-to');
+                    if (indexStr === null) {
+                        return;
+                    }
+                    const index = parseInt(indexStr, 10);
+                    if (isNaN(index)) {
+                        return;
+                    }
+
+                    const items = Array.from(element.querySelectorAll<HTMLElement>('.carousel-item'));
+                    const activeIndex = items.findIndex(item => item.classList.contains('active'));
+                    goToSlide(index, index > activeIndex ? 'next' : 'prev');
+                });
+            });
+
+            // Pause on mouse enter.
+            element.addEventListener('mouseenter', () => {
+                isPaused = true;
+            });
+
+            // Resume on mouse leave.
+            element.addEventListener('mouseleave', () => {
+                isPaused = false;
+            });
+
+            // Start the interval to autoplay slides only if data-bs-ride="carousel" is set.
+            const ride = element.getAttribute('data-bs-ride') || element.getAttribute('data-ride');
+
+            // If ride is "carousel", start autoplay immediately.
+            // If ride is "true", start autoplay only after first user interaction.
+            if (interval > 0 && (ride === 'carousel' || ride === 'true')) {
+                if (interval > 0 && ride === 'true') {
+                    isPaused = true; // Start paused.
+                    let autoplayStarted = false;
+                    const startAutoplay = () => {
+                        if (!autoplayStarted) {
+                            isPaused = false;
+                            autoplayStarted = true;
+                        }
+                    };
+
+                    // Listen for first interaction: click, touch, or keyboard.
+                    element.addEventListener('click', startAutoplay, { once: true });
+                    element.addEventListener('touchstart', startAutoplay, { once: true });
+                    element.addEventListener('keydown', startAutoplay, { once: true });
+                }
+
+                const intervalId = window.setInterval(() => {
+                    if (!CoreDom.isElementInDom(element)) {
+                        // The carousel has been removed from the DOM. Stop the interval.
+                        window.clearInterval(intervalId);
+
+                        return;
+                    }
+
+                    if (isPaused) {
+                        return;
+                    }
+
+                    const items = Array.from(element.querySelectorAll<HTMLElement>('.carousel-item'));
+                    const activeIndex = items.findIndex(item => item.classList.contains('active'));
+                    const nextIndex = (activeIndex + 1) % items.length;
+                    goToSlide(nextIndex, 'next');
+                }, interval);
+            }
+
+            // Initial aria-current setup.
+            updateIndicator();
         });
     }
 
