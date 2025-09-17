@@ -212,8 +212,7 @@
   @include carousel-dark();
 }
 
-:root,
-[data-bs-theme="light"] {
+.carousel {
   --#{$prefix}carousel-indicator-active-bg: #{$carousel-indicator-active-bg};
   --#{$prefix}carousel-caption-color: #{$carousel-caption-color};
   --#{$prefix}carousel-control-icon-filter: #{$carousel-control-icon-filter};
