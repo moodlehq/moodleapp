@@ -1,4 +1,4 @@
-@addon_mod_forum @app @mod @mod_forum @javascript
+@addon_mod_forum @app @mod @mod_forum @javascript @lms_from5.1
 Feature: Activities overview for forum activity
 
   Background:
