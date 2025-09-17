@@ -16,6 +16,7 @@ import { Component, computed, input } from '@angular/core';
 import { CoreSharedModule } from '@/core/shared.module';
 import { CoreCourseOverviewActivity, CoreCourseOverviewItem } from '@features/course/services/course-overview';
 import { LMSBadgeStyle } from '@/core/constants';
+import { CoreCoursePixIconExporterData } from '../overview-item-pix-icon/overview-item-pix-icon';
 
 /**
  * Component to display an action link or an overview action in an overview item.
@@ -74,7 +75,7 @@ export class CoreCourseOverviewItemActionComponent {
 type ActionLinkItemData = {
     content: string; // The rendered content of the action link. This can include advanced HTML like a badge.
     linkurl: string; // The URL of the action link.
-    icondata?: PixIconData | null; // The icon data for the action link, if any.
+    icondata?: CoreCoursePixIconExporterData | null; // The icon data for the action link, if any.
     classes?: string | null; // A space-separated list of CSS classes to apply to the action link.
     contenttype?: string | null; // The type of the link content.
     contentjson?: string | null; // The data for the link content, if it is an exportable object.
@@ -83,15 +84,6 @@ type ActionLinkItemData = {
 type OverviewActionItemData = ActionLinkItemData & {
     onlytext: string; // The text of the action item without the badge's HTML.
     badge?: OverviewActionBadge | null;
-};
-
-type PixIconData = {
-    pix?: string | null; // The pix icon. E.g. i/checkedcircle.
-    component?: string | null; // The component the icon belongs to.
-    extras: {
-        name: string;
-        value: string;
-    }[];
 };
 
 type OverviewActionBadge = {

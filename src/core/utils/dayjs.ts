@@ -43,8 +43,6 @@ const dayJSWrapper = ((
             undefined :
             typeof format === 'string' ? format : ('format' in format ? format.format : format[0]);
 
-        // console.error('CREATE DJS.TZ. FORMAT STRING', formatString, 'djs.tz', djs.tz);
-
         return formatString ? djs.tz(date, formatString, 'Australia/Perth') : djs.tz(date, 'Australia/Perth');
     }
 
