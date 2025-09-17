@@ -56,12 +56,12 @@ export class CoreFaIconDirective implements AfterViewInit, OnChanges {
         if (this.name.match(/^fa[brs]?-/)) {
             // It's a font-awesome icon, check if it's using a deprecated name.
             const iconName = this.name.substring(this.name.indexOf('-') + 1);
-            const { fileName, newLibrary } = await CoreIcons.getFontAwesomeIconFileName(iconName);
+            const { fixedName, newLibrary } = CoreIcons.fixFontAwesomeIconName(iconName);
 
             if (newLibrary) {
-                this.updateName(CoreIcons.prefixIconName('font-awesome', newLibrary, fileName));
-            } else if (fileName !== iconName) {
-                this.updateName(this.name.replace(iconName, fileName));
+                this.updateName(CoreIcons.prefixIconName('font-awesome', newLibrary, fixedName));
+            } else if (fixedName !== iconName) {
+                this.updateName(this.name.replace(iconName, fixedName));
             }
         }
     }
