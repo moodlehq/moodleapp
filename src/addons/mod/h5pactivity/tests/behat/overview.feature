@@ -2,7 +2,8 @@
 Feature: Activities overview for H5P activity
 
   Background:
-    Given the following "users" exist:
+    Given the Moodle site is compatible with this feature
+    And the following "users" exist:
       | username | firstname | lastname | email                |
       | student1 | Student   | 1        | student1@example.com |
       | student2 | Student   | 2        | student2@example.com |
