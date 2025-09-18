@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { AfterViewInit, Component, OnDestroy, viewChild } from '@angular/core';
+import { AfterViewInit, Component, OnDestroy, signal, viewChild, WritableSignal } from '@angular/core';
 import { AddonBadges, AddonBadgesUserBadge } from '../../services/badges';
 import { CoreSites } from '@services/sites';
 import { CorePromiseUtils } from '@singletons/promise-utils';
@@ -39,33 +39,35 @@ import { CoreSharedModule } from '@/core/shared.module';
 })
 export default class AddonBadgesUserBadgesPage implements AfterViewInit, OnDestroy {
 
-    currentTime = 0;
-    badges: CoreListItemsManager<AddonBadgesUserBadge, AddonBadgesUserBadgesSource>;
+    readonly currentTime = signal(0);
+    readonly badges: WritableSignal<CoreListItemsManager<AddonBadgesUserBadge, AddonBadgesUserBadgesSource>>;
 
     readonly splitView = viewChild.required(CoreSplitViewComponent);
 
     protected logView: () => void;
+    protected courseId: number;
+    protected userId: number;
 
     constructor() {
-        let courseId = CoreNavigator.getRouteNumberParam('courseId') ?? 0; // Use 0 for site badges.
-        const userId = CoreNavigator.getRouteNumberParam('userId') ?? CoreSites.getCurrentSiteUserId();
+        this.courseId = CoreNavigator.getRouteNumberParam('courseId') ?? 0; // Use 0 for site badges.
+        this.userId = CoreNavigator.getRouteNumberParam('userId') ?? CoreSites.getCurrentSiteUserId();
 
-        if (courseId === CoreSites.getCurrentSiteHomeId()) {
+        if (this.courseId === CoreSites.getCurrentSiteHomeId()) {
             // Use courseId 0 for site home, otherwise the site doesn't return site badges.
-            courseId = 0;
+            this.courseId = 0;
         }
 
-        this.badges = new CoreListItemsManager(
-            CoreRoutedItemsManagerSourcesTracker.getOrCreateSource(AddonBadgesUserBadgesSource, [courseId, userId]),
+        this.badges = signal(new CoreListItemsManager(
+            CoreRoutedItemsManagerSourcesTracker.getOrCreateSource(AddonBadgesUserBadgesSource, [this.courseId, this.   userId]),
             AddonBadgesUserBadgesPage,
-        );
+        ));
 
         this.logView = CoreTime.once(() => {
             CoreAnalytics.logEvent({
                 type: CoreAnalyticsEventType.VIEW_ITEM_LIST,
                 ws: 'core_badges_view_user_badges',
                 name: Translate.instant('addon.badges.badges'),
-                data: { courseId: this.badges.getSource().courseId, category: 'badges' },
+                data: { courseId: this.courseId, category: 'badges' },
                 url: '/badges/mybadges.php',
             });
         });
@@ -77,14 +79,14 @@ export default class AddonBadgesUserBadgesPage implements AfterViewInit, OnDestr
     async ngAfterViewInit(): Promise<void> {
         await this.fetchInitialBadges();
 
-        this.badges.start(this.splitView());
+        this.badges().start(this.splitView());
     }
 
     /**
      * @inheritdoc
      */
     ngOnDestroy(): void {
-        this.badges.destroy();
+        this.badges().destroy();
     }
 
     /**
@@ -94,12 +96,9 @@ export default class AddonBadgesUserBadgesPage implements AfterViewInit, OnDestr
      */
     async refreshBadges(refresher?: HTMLIonRefresherElement): Promise<void> {
         await CorePromiseUtils.ignoreErrors(
-            AddonBadges.invalidateUserBadges(
-                this.badges.getSource().courseId,
-                this.badges.getSource().userId,
-            ),
+            AddonBadges.invalidateUserBadges(this.courseId, this.userId),
         );
-        await CorePromiseUtils.ignoreErrors(this.badges.reload());
+        await CorePromiseUtils.ignoreErrors(this.badges().reload());
 
         refresher?.complete();
     }
@@ -108,16 +107,16 @@ export default class AddonBadgesUserBadgesPage implements AfterViewInit, OnDestr
      * Obtain the initial list of badges.
      */
     private async fetchInitialBadges(): Promise<void> {
-        this.currentTime = CoreTime.timestamp();
+        this.currentTime.set(CoreTime.timestamp());
 
         try {
-            await this.badges.reload();
+            await this.badges().reload();
 
             this.logView();
         } catch (message) {
             CoreAlerts.showError(message, { default: 'Error loading badges' });
 
-            this.badges.reset();
+            this.badges().reset();
         }
     }
 

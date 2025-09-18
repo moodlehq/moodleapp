@@ -257,7 +257,7 @@
         }
     </core-loading>
 </ion-content>
-@if (loaded && isOnline && displayOptions.displayRefresh) {
+@if (loaded && isOnline() && displayOptions.displayRefresh) {
     <ion-footer>
         @if (!hasOffline) {
             <ion-button class="ion-margin" (click)="refresh()" expand="block" fill="outline">
