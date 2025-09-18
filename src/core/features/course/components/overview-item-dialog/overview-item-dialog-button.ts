@@ -23,6 +23,7 @@ import { CorePopovers } from '@services/overlays/popovers';
 @Component({
     selector: 'core-course-overview-item-dialog-button',
     templateUrl: 'overview-item-dialog-button.html',
+    styleUrl: 'overview-item-dialog-button.scss',
     standalone: true,
     imports: [
         CoreSharedModule,
