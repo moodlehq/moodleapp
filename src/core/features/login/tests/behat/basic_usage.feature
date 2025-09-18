@@ -18,7 +18,9 @@ Feature: Test basic usage of login in app
       | teacher1 | C1     | editingteacher |
 
   Scenario: Skip on boarding
-    When I launch the app runtime
+    Given the app has the following config:
+     | enableonboarding | true |
+    When I launch the app
     Then I should find "Welcome to the Moodle App!" in the app
 
     When I press "Skip" in the app
@@ -26,7 +28,9 @@ Feature: Test basic usage of login in app
     And I should find "Connect to Moodle" in the app
 
   Scenario: Complete on boarding
-    When I launch the app runtime
+    Given the app has the following config:
+     | enableonboarding | true |
+    When I launch the app
     Then I should find "Welcome to the Moodle App!" in the app
 
     When I press "I'm an educator" in the app

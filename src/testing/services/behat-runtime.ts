@@ -15,7 +15,6 @@
 import { TestingBehatDomUtils, TestingBehatDomUtilsService } from './behat-dom';
 import { TestingBehatBlocking } from './behat-blocking';
 import { CoreCustomURLSchemes, CoreCustomURLSchemesProvider } from '@services/urlschemes';
-import { ONBOARDING_DONE } from '@features/login/constants';
 import { CoreConfig } from '@services/config';
 import { EnvironmentConfig } from '@/types/config';
 import { LocalNotifications, makeSingleton, NgZone, ToastController } from '@singletons';
@@ -87,10 +86,6 @@ export class TestingBehatRuntimeService {
 
         this.initialized = true;
         TestingBehatBlocking.init();
-
-        if (options.skipOnBoarding) {
-            CoreConfig.set(ONBOARDING_DONE, 1);
-        }
 
         if (options.configOverrides) {
             // Set the cookie so it's maintained between reloads.
@@ -942,6 +937,5 @@ export type TestingBehatElementLocator = {
 };
 
 export type TestingBehatInitOptions = {
-    skipOnBoarding?: boolean;
     configOverrides?: Partial<EnvironmentConfig>;
 };
