@@ -189,10 +189,9 @@ class behat_app_helper extends behat_base {
     /**
      * Goes to the app page and then sets up some initial JavaScript so we can use it.
      *
-     * @param string $url App URL
      * @throws DriverException If the app fails to load properly
      */
-    protected function prepare_browser(array $options = []) {
+    protected function prepare_browser() {
         if ($this->evaluate_script('window.behat') && $this->runtime_js('hasInitialized()')) {
             // Already initialized.
             return;
@@ -238,7 +237,6 @@ class behat_app_helper extends behat_base {
         try {
             // Init Behat JavaScript runtime.
             $initoptions = json_encode([
-                'skipOnBoarding' => $options['skiponboarding'] ?? true,
                 'configOverrides' => $this->appconfig,
             ]);
 
