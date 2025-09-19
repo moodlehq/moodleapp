@@ -390,6 +390,9 @@ label {
 button {
   // stylelint-disable-next-line property-disallowed-list
   border-radius: 0;
+
+  min-height: auto;
+  min-width: auto;
 }
 
 // Explicitly remove focus outline in Chromium when it shouldn't be
