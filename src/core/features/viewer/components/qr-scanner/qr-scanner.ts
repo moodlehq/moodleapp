@@ -115,6 +115,9 @@ export class CoreViewerQRScannerComponent implements OnInit, OnDestroy {
      */
     async toggleCamera(): Promise<void> {
         this.camera.set(await CoreQRScan.toggleCamera());
+
+        // When cammera is switched, the light could be disabled.
+        this.torchEnabled.set(CoreQRScan.isLightEnabled());
     }
 
 }
