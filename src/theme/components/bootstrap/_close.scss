@@ -54,8 +54,7 @@
   @include btn-close-white();
 }
 
-:root,
-[data-bs-theme="light"] {
+.btn-close {
   --#{$prefix}btn-close-filter: #{$btn-close-filter};
 }
 
