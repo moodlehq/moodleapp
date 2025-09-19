@@ -157,6 +157,15 @@ export class CoreModuleHandlerBase implements Partial<CoreCourseModuleHandler> {
             };
         }
 
+        if (item.contenttype === CoreCourseOverviewContentType.PIX_ICON) {
+            const { CoreCourseOverviewItemPixIconComponent } =
+                await import('@features/course/components/overview-item-pix-icon/overview-item-pix-icon');
+
+            return {
+                component: CoreCourseOverviewItemPixIconComponent,
+            };
+        }
+
         if (item.contenttype === CoreCourseOverviewContentType.BASIC) {
             // Display basic items as they are. Basic items don't use renderables, they can still contain HTML but it should
             // be displayed properly in the app because it should be standard HTML, no custom classes or similar.
