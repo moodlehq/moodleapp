@@ -80,4 +80,5 @@ export const enum CoreCourseOverviewContentType {
     ACTION_LINK = 'core\\output\\action_link',
     OVERVIEW_DIALOG = 'core_courseformat\\output\\local\\overview\\overviewdialog',
     OVERVIEW_ACTION = 'core_courseformat\\output\\local\\overview\\overviewaction',
+    PIX_ICON = 'core\\output\\pix_icon',
 };

@@ -41,13 +41,13 @@ export class CoreIcons {
     }
 
     /**
-     * Check icon alias and returns the new icon name.
+     * Check icon alias and returns the new icon name in case it's no longer valid.
      *
      * @param icon Icon name.
      * @param isAppIcon Whether the icon is in the app's code, false if it's in some user generated content.
      * @returns New icon name and new library if changed.
      */
-    static async getFontAwesomeIconFileName(icon: string, isAppIcon = true): Promise<{fileName: string; newLibrary?: string}> {
+    static fixFontAwesomeIconName(icon: string, isAppIcon = true): { fixedName: string; newLibrary?: string } {
         const newLibrary = icon.endsWith('-o') ? 'regular' : undefined;
 
         if (CoreIcons.ALIASES[icon]) {
@@ -55,46 +55,24 @@ export class CoreIcons {
                 CoreIcons.logger.error(`Icon ${icon} is an alias of ${CoreIcons.ALIASES[icon]}, please use the new name.`);
             }
 
-            return { newLibrary, fileName: CoreIcons.ALIASES[icon] };
+            return { newLibrary, fixedName: CoreIcons.ALIASES[icon] };
         }
 
-        return { newLibrary, fileName: icon };
+        return { newLibrary, fixedName: icon };
     }
 
     /**
-     * Validate that an icon exists in the list of custom icons for the app, or show warning otherwise
-     * (only in development and testing environments).
+     * Given a string of CSS classes to display a font-awesome icon, return the icon name and library to be used in the app.
+     * E.g. 'fa fa-circle-check' will return 'fas-circle-check'.
      *
-     * @param font Font Family.
-     * @param library Library to use.
-     * @param icon Icon Name.
+     * @param classes CSS classes, e.g. 'fa fa-circle-check'.
+     * @returns New icon name and new library if changed.
      */
-    static validateIcon(font: string, library: string, icon: string): void {
-        if (!CoreConstants.BUILD.isDevelopment && !CoreConstants.BUILD.isTesting) {
-            return;
-        }
-
-        if (
-            CoreIcons.CUSTOM_ICONS[icon] === undefined &&
-            CoreIcons.CUSTOM_ICONS[CoreIcons.prefixIconName(font, library, icon)] === undefined
-        ) {
-            CoreIcons.logger.error(`Icon ${icon} not found`);
-        }
-    }
-
-    /**
-     * Replaces an <i> icon that uses CSS by a ion-icon with SVG.
-     * It supports from 4.7 to 6.4 Font awesome versions.
-     * But it can fail on 4.7 and 5.x because of the lack of assets.
-     *
-     * @param icon Current icon element.
-     * @returns New icon, already included in the DOM.
-     */
-    static async replaceCSSIcon(icon: Element): Promise<HTMLIonIconElement | undefined> {
+    static getFontAwesomeIconDataFromClasses(classes: string): { icon: string; library: string } | undefined {
         let library = 'solid';
         let iconName = '';
 
-        Array.from(icon.classList).forEach(async (className) => {
+        classes.split(' ').forEach((className) => {
             // Library name of 5.x
             switch (className) {
                 case 'fas':
@@ -153,6 +131,49 @@ export class CoreIcons {
             return;
         }
 
+        const { fixedName, newLibrary } = CoreIcons.fixFontAwesomeIconName(iconName, false);
+
+        return {
+            icon: fixedName,
+            library: newLibrary || library,
+        };
+    }
+
+    /**
+     * Validate that an icon exists in the list of custom icons for the app, or show warning otherwise
+     * (only in development and testing environments).
+     *
+     * @param font Font Family.
+     * @param library Library to use.
+     * @param icon Icon Name.
+     */
+    static validateIcon(font: string, library: string, icon: string): void {
+        if (!CoreConstants.BUILD.isDevelopment && !CoreConstants.BUILD.isTesting) {
+            return;
+        }
+
+        if (
+            CoreIcons.CUSTOM_ICONS[icon] === undefined &&
+            CoreIcons.CUSTOM_ICONS[CoreIcons.prefixIconName(font, library, icon)] === undefined
+        ) {
+            CoreIcons.logger.error(`Icon ${icon} not found`);
+        }
+    }
+
+    /**
+     * Replaces an <i> icon that uses CSS by a ion-icon with SVG.
+     * It supports from 4.7 to 6.4 Font awesome versions.
+     * But it can fail on 4.7 and 5.x because of the lack of assets.
+     *
+     * @param icon Current icon element.
+     * @returns New icon, already included in the DOM.
+     */
+    static replaceCSSIcon(icon: Element): HTMLIonIconElement | undefined {
+        const iconData = CoreIcons.getFontAwesomeIconDataFromClasses(icon.className);
+        if (!iconData) {
+            return;
+        }
+
         const newIcon = document.createElement('ion-icon');
 
         Array.from(icon.attributes).forEach(attr => {
@@ -165,17 +186,11 @@ export class CoreIcons {
             newIcon.setAttribute('aria-hidden', 'true');
         }
 
-        const { fileName, newLibrary } = await CoreIcons.getFontAwesomeIconFileName(iconName, false);
-        if (newLibrary) {
-            library = newLibrary;
-        }
-        iconName = fileName;
-
-        const src = CoreIcons.getIconSrc('font-awesome', library, iconName);
+        const src = CoreIcons.getIconSrc('font-awesome', iconData.library, iconData.icon);
 
         newIcon.setAttribute('src', src);
 
-        CoreIcons.validateIcon('font-awesome', library, iconName);
+        CoreIcons.validateIcon('font-awesome', iconData.library, iconData.icon);
 
         icon.parentElement?.insertBefore(newIcon, icon);
         icon.remove();
