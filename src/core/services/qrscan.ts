@@ -267,7 +267,15 @@ export class CoreQRScanService {
             : await QRScanner.useFrontCamera();
 
         return this.status.currentCamera;
+    }
 
+    /**
+     * Check if the light is enabled.
+     *
+     * @returns Whether the light is enabled or not.
+     */
+    isLightEnabled(): boolean {
+        return !!this.status?.lightEnabled;
     }
 
     /**
