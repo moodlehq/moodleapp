@@ -75,7 +75,7 @@ Feature: Activities overview for H5P activity
 
     When I press "5" within "Total attempts" "ion-item" in the app
     Then I should find "Grading method: Average grade" in the app
-    And I should find "Average attempts per student: 3" in the app
+    And I should find "Average attempts per student: 2.5" in the app
 
     When I close the popup in the app
     And I press "View" within "Actions" "ion-item" in the app
