@@ -42,6 +42,9 @@ Feature: Activities overview for quiz activity
     And user "student2" has attempted "Quiz 1" with responses:
       | slot | response |
       | 1    | True     |
+    And user "student2" has attempted "Quiz 1" with responses:
+      | slot | response |
+      | 1    | False     |
     And user "student2" has attempted "Quiz 2" with responses:
       | slot | response |
       | 1    | True     |
@@ -52,12 +55,12 @@ Feature: Activities overview for quiz activity
     And I press "Quizzes" in the app
     And I press "Quiz 1" "ion-item" in the app
     Then I should find "2 of 3" within "Students who attempted" "ion-item" in the app
-    And I should find "2" within "Total attempts" "ion-item" in the app
+    And I should find "3" within "Total attempts" "ion-item" in the app
     And I should find "Tomorrow" within "Due date" "ion-item" in the app
 
-    When I press "2" within "Total attempts" "ion-item" in the app
+    When I press "3" within "Total attempts" "ion-item" in the app
     Then I should find "Allowed attempts per student: Unlimited attempts" in the app
-    And I should find "Average attempts per student: 1" in the app
+    And I should find "Average attempts per student: 1.5" in the app
 
     When I close the popup in the app
     And I press "View" within "Actions" "ion-item" in the app
@@ -72,7 +75,7 @@ Feature: Activities overview for quiz activity
 
     When I press "1" within "Total attempts" "ion-item" in the app
     Then I should find "Allowed attempts per student: Unlimited attempts" in the app
-    And I should find "Average attempts per student: 0" in the app
+    And I should find "Average attempts per student: 1" in the app
 
   Scenario: Students can see the quiz relevant information in the quiz overview
     Given I entered the course "Course 1" as "student1" in the app
