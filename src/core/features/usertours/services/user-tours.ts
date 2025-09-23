@@ -232,7 +232,8 @@ export class CoreUserToursService {
         const index = this.getTourIndex(tour);
         const previousForegroundTour = this.getForegroundTour();
 
-        if (previousForegroundTour?.id === tour.id) {
+        const id = tour.id();
+        if (previousForegroundTour?.id() === id) {
             // Already activated.
             return;
         }
@@ -246,7 +247,7 @@ export class CoreUserToursService {
             });
         }
 
-        if (this.getForegroundTour()?.id !== tour.id) {
+        if (this.getForegroundTour()?.id() !== id) {
             // Another tour is in use.
             return;
         }
@@ -296,7 +297,7 @@ export class CoreUserToursService {
 
         this.tours[index].visible = false;
 
-        if (foregroundTour?.id !== tour.id) {
+        if (foregroundTour?.id() !== tour.id()) {
             // Another tour is in use.
             return;
         }
