@@ -14,13 +14,9 @@
 
 import { Component, Input, OnInit, inject } from '@angular/core';
 import { CoreSiteInfo } from '@classes/sites/unauthenticated-site';
-import { CoreUserTourDirectiveOptions } from '@directives/user-tour';
-import { CoreUserToursAlignment, CoreUserToursSide } from '@features/usertours/services/user-tours';
 import { IonRouterOutlet } from '@ionic/angular';
-import { CoreScreen } from '@services/screen';
 import { CoreSites } from '@services/sites';
 import { CoreModals } from '@services/overlays/modals';
-import { CoreMainMenuUserMenuTourComponent } from '../user-menu-tour/user-menu-tour';
 import CoreMainMenuPage from '@features/mainmenu/pages/menu/menu';
 import { toBoolean } from '@/core/transforms/boolean';
 import { CoreSharedModule } from '@/core/shared.module';
@@ -44,12 +40,6 @@ export class CoreMainMenuUserButtonComponent implements OnInit {
 
     siteInfo?: CoreSiteInfo;
     isMainScreen = false;
-    userTour: CoreUserTourDirectiveOptions = {
-        id: 'user-menu',
-        component: CoreMainMenuUserMenuTourComponent,
-        alignment: CoreUserToursAlignment.Start,
-        side: CoreScreen.isMobile ? CoreUserToursSide.Start : CoreUserToursSide.End,
-    };
 
     protected routerOutlet = inject(IonRouterOutlet);
     protected menuPage = inject(CoreMainMenuPage, { optional: true });
