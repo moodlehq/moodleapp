@@ -15,7 +15,7 @@
 import { CoreConstants } from '@/core/constants';
 import { AfterViewInit, Directive, ElementRef, OnDestroy, inject, input } from '@angular/core';
 import { CoreSwipeNavigationItemsManager } from '@classes/items-management/swipe-navigation-items-manager';
-import { CoreSwipeNavigationTourComponent } from '@components/swipe-navigation-tour/swipe-navigation-tour';
+import { CoreSwipeNavigationTourComponent } from '@features/usertours/components/swipe-navigation-tour/swipe-navigation-tour';
 import { CoreUserTours } from '@features/usertours/services/user-tours';
 import { Gesture, GestureDetail } from '@ionic/angular';
 import { CorePlatform } from '@services/platform';
