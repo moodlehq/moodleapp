@@ -31,7 +31,7 @@ import { CoreUpdateNonReactiveAttributesDirective } from '@directives/update-non
         CoreUpdateNonReactiveAttributesDirective,
     ],
 })
-export class CoreSwipeNavigationTourComponent {
+export default class CoreSwipeNavigationTourComponent {
 
     /**
      * Dismiss User Tour.
