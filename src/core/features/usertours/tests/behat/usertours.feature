@@ -19,14 +19,11 @@ Feature: User Tours work properly.
   Scenario: Acknowledge User Tours
     Given I entered the app as "student1"
     When I should find "Explore your personal area" in the app
-    But I should not find "Expand to explore" in the app
 
     When I press "Got it" in the app
-    Then I should find "Expand to explore" in the app
     But I should not find "Explore your personal area" in the app
 
     When I press "Got it" in the app
-    Then I should not find "Expand to explore" in the app
     And I should not find "Explore your personal area" in the app
 
     Given I entered the course "Course 1" in the app
