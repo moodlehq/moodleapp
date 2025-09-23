@@ -2,6 +2,7 @@ ion-loading.ios,
 ion-loading.md {
     --spinner-color: var(--core-loading-spinner);
     --border-radius: var(--modal-radius);
+    touch-action: pinch-zoom;
 
     .loading-wrapper {
         border-radius: var(--border-radius) !important;
