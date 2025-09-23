@@ -17,6 +17,7 @@ import { CorePromisedValue } from '@classes/promised-value';
 import { CoreWait } from '@singletons/wait';
 import { makeSingleton, NgZone } from '@singletons';
 import { TestingBehatElementLocator, TestingBehatFindOptions } from './behat-runtime';
+import { TestingBehatBlocking } from './behat-blocking';
 
 /**
  * Behat Dom Utils helper functions.
@@ -781,7 +782,7 @@ export class TestingBehatDomUtilsService {
             // Functions to get/set value depending on field type.
             const setValue = async (text: string) => {
                 if (element.tagName === 'ION-SELECT') {
-                    this.setIonSelectInputValue(element, value);
+                    await this.setIonSelectInputValue(element, value);
                 } else if ('value' in element) {
                     element.value = text;
                 } else {
@@ -868,11 +869,13 @@ export class TestingBehatDomUtilsService {
             const submitButton = optionsContainer.querySelector<HTMLElement>('.alert-button-group button:last-child');
 
             if (!submitButton) {
-                throw new Error('Couldn\'t find ion-select submit button.');
+                throw new Error('Couldn\'t find ion-alert (ion-select) submit button.');
             }
 
             await TestingBehatDomUtils.pressElement(submitButton);
         }
+
+        await TestingBehatBlocking.waitForPending();
     }
 
 }
