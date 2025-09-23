@@ -914,6 +914,16 @@ export type CoreSitePluginsUserHandlerData = CoreSitePluginsHandlerCommonData & 
     type?: CoreUserProfileHandlerType;
     priority?: number;
     ptrenabled?: boolean;
+    displayinusermenu?: CoreSitePluginsDisplayInUserMenu;
+};
+
+/**
+ * Options to configure whether to show a user profile handler in the user menu.
+ */
+export const enum CoreSitePluginsDisplayInUserMenu {
+    NO = 'no', // Don't display in user menu, but it can be displayed in other places.
+    YES = 'yes', // Display in user menu, but it can also be displayed in other places.
+    ONLY = 'only', // Display only in user menu, not in other places.
 };
 
 /**
