@@ -84,6 +84,11 @@ ion-alert {
     .alert-head:empty {
         padding-bottom: 0;
     }
+
+    // We need [class] to increase the specificity. See: https://ionicframework.com/docs/api/alert#customization
+    &[class] {
+        touch-action: pinch-zoom;
+    }
 }
 
 ion-alert.core-alert-network-error .alert-head,

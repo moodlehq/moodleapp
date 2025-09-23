@@ -35,6 +35,11 @@ ion-action-sheet {
             box-shadow: var(--drop-shadow-top, none);
         }
     }
+
+    // We need [class] to increase the specificity. See: https://ionicframework.com/docs/api/action-sheet#theming
+    &[class] {
+        touch-action: pinch-zoom;
+    }
 }
 
 // File uploader.
