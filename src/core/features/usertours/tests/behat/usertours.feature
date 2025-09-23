@@ -18,10 +18,6 @@ Feature: User Tours work properly.
 
   Scenario: Acknowledge User Tours
     Given I entered the course "Course 1" as "student1" in the app
-    Then I should find "Find your way around" in the app
-
-    When I press "Got it" in the app
-    Then I should not find "Find your way around" in the app
 
     When I press "Participants" in the app
     And I press "Student First" in the app

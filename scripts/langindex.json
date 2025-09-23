@@ -1656,8 +1656,6 @@
   "core.course.studentsmust": "completion",
   "core.course.thisweek": "format_weeks/currentsection",
   "core.course.todo": "completion",
-  "core.course.tour_navigation_course_index_student_content": "tool_usertours",
-  "core.course.tour_navigation_course_index_student_title": "tool_usertours",
   "core.course.useactivityonbrowser": "local_moodlemobileapp",
   "core.course.viewcourse": "block_timeline",
   "core.course.warningmanualcompletionmodified": "local_moodlemobileapp",
