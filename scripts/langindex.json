@@ -2246,8 +2246,6 @@
   "core.mainmenu.home": "moodle",
   "core.mainmenu.logout": "moodle",
   "core.mainmenu.switchaccount": "local_moodlemobileapp",
-  "core.mainmenu.usermenutourdescription": "local_moodlemobileapp",
-  "core.mainmenu.usermenutourtitle": "local_moodlemobileapp",
   "core.maxfilesize": "moodle",
   "core.maxsizeandattachments": "moodle",
   "core.min": "moodle",
