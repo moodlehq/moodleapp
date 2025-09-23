@@ -14,11 +14,8 @@
 
 import { Component, ElementRef, OnDestroy, OnInit, inject, input } from '@angular/core';
 import { CoreCancellablePromise } from '@classes/cancellable-promise';
-import { CoreUserTourDirectiveOptions } from '@directives/user-tour';
-import { CoreUserToursAlignment, CoreUserToursSide } from '@features/usertours/services/user-tours';
 import { CoreModals } from '@services/overlays/modals';
 import { CoreDom } from '@singletons/dom';
-import { CoreBlockSideBlocksTourComponent } from '../side-blocks-tour/side-blocks-tour';
 import { ContextLevel } from '@/core/constants';
 import { CoreSharedModule } from '@/core/shared.module';
 
@@ -38,20 +35,6 @@ export class CoreBlockSideBlocksButtonComponent implements OnInit, OnDestroy {
     readonly contextLevel = input.required<ContextLevel>();
     readonly instanceId = input.required<number>();
     readonly myDashboardPage = input<string>();
-
-    userTour: CoreUserTourDirectiveOptions = {
-        id: 'side-blocks-button',
-        component: CoreBlockSideBlocksTourComponent,
-        side: CoreUserToursSide.Start,
-        alignment: CoreUserToursAlignment.Center,
-        after: 'user-menu',
-        afterTimeout: 1000,
-        getFocusedElement: nativeButton => {
-            const innerButton = Array.from(nativeButton.shadowRoot?.children ?? []).find(child => child.tagName === 'BUTTON');
-
-            return innerButton as HTMLElement ?? nativeButton;
-        },
-    };
 
     protected element: HTMLElement = inject(ElementRef).nativeElement;
     protected slotPromise?: CoreCancellablePromise<void>;
