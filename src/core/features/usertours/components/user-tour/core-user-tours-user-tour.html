@@ -1,10 +1,10 @@
-@if (focusStyles) {
-    <div class="user-tour-focus" [style]="focusStyles"></div>
+@if (focusStyles()) {
+    <div class="user-tour-focus" [style]="focusStyles()"></div>
 } @else {
     <div class="user-tour-overlay"></div>
 }
-<div class="user-tour-wrapper" [style]="popoverWrapperStyles" #wrapper>
-    @if (popover) {
-        <span class="user-tour-wrapper-arrow" [style]="popoverWrapperArrowStyles"></span>
+<div class="user-tour-wrapper" [style]="popoverWrapperStyles()" #wrapper>
+    @if (popover()) {
+        <span class="user-tour-wrapper-arrow" [style]="popoverWrapperArrowStyles()"></span>
     }
 </div>

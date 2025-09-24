@@ -12,22 +12,26 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { CoreSharedModule } from '@/core/shared.module';
 import { Component } from '@angular/core';
 import { CoreUserTours } from '@features/usertours/services/user-tours';
+import { CoreBaseModule } from '@/core/base.module';
+import { CoreFaIconDirective } from '@directives/fa-icon';
+import { CoreUpdateNonReactiveAttributesDirective } from '@directives/update-non-reactive-attributes';
 
 /**
- * Component showing the User Tour for the Side Blocks feature.
+ * Component showing the User Tour for the Swipe Navigation feature.
  */
 @Component({
-    selector: 'core-block-side-blocks-tour',
-    templateUrl: 'side-blocks-tour.html',
-    styleUrl: 'side-blocks-tour.scss',
+    selector: 'core-swipe-navigation-tour',
+    templateUrl: 'core-swipe-navigation-tour.html',
+    styleUrl: 'swipe-navigation-tour.scss',
     imports: [
-        CoreSharedModule,
+        CoreBaseModule,
+        CoreFaIconDirective,
+        CoreUpdateNonReactiveAttributesDirective,
     ],
 })
-export class CoreBlockSideBlocksTourComponent {
+export default class CoreSwipeNavigationTourComponent {
 
     /**
      * Dismiss User Tour.

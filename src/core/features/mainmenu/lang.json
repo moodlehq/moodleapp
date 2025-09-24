@@ -1,7 +1,5 @@
 {
     "home": "Home",
     "logout": "Log out",
-    "switchaccount": "Switch account",
-    "usermenutourdescription": "The place to check your grades, change your preferences or switch accounts.",
-    "usermenutourtitle": "Explore your personal area"
+    "switchaccount": "Switch account"
 }
