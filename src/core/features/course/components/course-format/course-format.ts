@@ -45,10 +45,7 @@ import { CoreBlockHelper } from '@features/block/services/block-helper';
 import { CoreNavigator } from '@services/navigator';
 import { CoreCourseModuleDelegate } from '@features/course/services/module-delegate';
 import { CoreCourseViewedModulesDBRecord } from '@features/course/services/database/course';
-import { CoreUserToursAlignment, CoreUserToursSide } from '@features/usertours/services/user-tours';
-import { CoreCourseCourseIndexTourComponent } from '../course-index-tour/course-index-tour';
 import { CoreDom } from '@singletons/dom';
-import { CoreUserTourDirectiveOptions } from '@directives/user-tour';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 import { ContextLevel } from '@/core/constants';
 import { CoreModals } from '@services/overlays/modals';
@@ -115,17 +112,6 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
     canLoadMore = false;
     lastShownSectionIndex = 0;
     data: Record<string, unknown> = {}; // Data to pass to the components.
-    courseIndexTour: CoreUserTourDirectiveOptions = {
-        id: 'course-index',
-        component: CoreCourseCourseIndexTourComponent,
-        side: CoreUserToursSide.Top,
-        alignment: CoreUserToursAlignment.End,
-        getFocusedElement: nativeButton => {
-            const innerButton = Array.from(nativeButton.shadowRoot?.children ?? []).find(child => child.tagName === 'BUTTON');
-
-            return innerButton as HTMLElement ?? nativeButton;
-        },
-    };
 
     displayCourseIndex = false;
     displayBlocks = false;
