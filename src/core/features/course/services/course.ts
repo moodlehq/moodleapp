@@ -1183,6 +1183,33 @@ export class CoreCourseProvider {
     }
 
     /**
+     * Report a course and section as being viewed.
+     *
+     * @param courseId Course ID.
+     * @param modName The module name, or "resource" if viewing resources list
+     * @param siteId Site ID. If not defined, current site.
+     * @returns Promise resolved when the WS call is successful.
+     */
+    async logViewModuleInstanceList(courseId: number, modName: string, siteId?: string): Promise<void> {
+        const site = await CoreSites.getSite(siteId);
+
+        const params: CoreCourseViewModuleInstanceListWSParams = {
+            courseid: courseId,
+            modname: modName,
+        };
+        const response = await site.write<CoreStatusWithWarningsWSResponse>('core_course_view_module_instance_list', params);
+
+        if (!response.status) {
+            const warning = response.warnings?.[0] || {
+                warningcode: 'errorlog',
+                message: 'Error logging data.',
+            };
+
+            throw new CoreWSError(warning);
+        }
+    }
+
+    /**
      * Offline version for manually marking a module as completed.
      *
      * @param cmId The module ID.
@@ -1837,6 +1864,14 @@ export type CoreCourseModuleBasicInfo = CoreCourseModuleGradeInfo & {
 type CoreCourseViewCourseWSParams = {
     courseid: number; // Id of the course.
     sectionnumber?: number; // Section number.
+};
+
+/**
+ * Params of core_course_view_module_instance_list WS.
+ */
+type CoreCourseViewModuleInstanceListWSParams = {
+    courseid: number; // Course ID.
+    modname: string; // The module name, or "resource" if viewing resources list.
 };
 
 /**

@@ -52,6 +52,15 @@ Feature: Activities overview for H5P activity
     And I am on the "H5P activity" "h5pactivity activity" page logged in as admin
     And I log out
 
+  Scenario: The H5P activity overview report should generate log events
+    Given I entered the course "Course 1" as "student1" in the app
+    When I press "Activities" in the app
+    And I press "H5P" in the app
+    Then the following events should have been logged for "student1" in the app:
+      | name                                                      | course   |
+      | \core\event\course_overview_viewed                        | Course 1 |
+      | \mod_h5pactivity\event\course_module_instance_list_viewed | Course 1 |
+
   Scenario: Students can see relevant columns in the H5P activity overview
     Given I entered the course "Course 1" as "student1" in the app
     When I press "Activities" in the app

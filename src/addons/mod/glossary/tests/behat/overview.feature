@@ -30,6 +30,15 @@ Feature: Activities overview for glossary activity
       | glossary1 | student2 | Centaur  | Half-human, half-horse creature from Greek myth. | 0        |
       | glossary3 | student1 | Phoenix  | Mythical bird, regenerates from ashes.           | 1        |
 
+  Scenario: The glossary overview report should generate log events
+    Given I entered the course "Course 1" as "student1" in the app
+    When I press "Activities" in the app
+    And I press "Glossaries" in the app
+    Then the following events should have been logged for "student1" in the app:
+      | name                                                   | course   |
+      | \core\event\course_overview_viewed                     | Course 1 |
+      | \mod_glossary\event\course_module_instance_list_viewed | Course 1 |
+
   Scenario: Teacher can see the glossary relevant information in the glossary overview
     # Add a few comments.
     Given I am on the "Glossary with comments" "glossary activity" page logged in as student2

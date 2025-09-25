@@ -36,6 +36,15 @@ Feature: Activities overview for lesson activity
       | Lesson 1  | student1 | 100    |
       | Lesson 1  | student2 | 90     |
 
+  Scenario: The lesson overview report should generate log events
+    Given I entered the course "Course 1" as "student1" in the app
+    When I press "Activities" in the app
+    And I press "Lessons" in the app
+    Then the following events should have been logged for "student1" in the app:
+      | name                                                 | course   |
+      | \core\event\course_overview_viewed                   | Course 1 |
+      | \mod_lesson\event\course_module_instance_list_viewed | Course 1 |
+
   Scenario: Teacher can see the lesson relevant information in the lesson overview
     Given I entered the course "Course 1" as "teacher1" in the app
     When I press "Activities" in the app

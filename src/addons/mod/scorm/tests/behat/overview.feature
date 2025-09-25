@@ -38,6 +38,15 @@ Feature: Activities overview for SCORM activity
       | scorm1 | student2 | 1       | cmi.core.score.raw    | 100       | item_1        |
       | scorm1 | student2 | 1       | cmi.completion_status | completed | item_1        |
 
+  Scenario: The scorm overview report should generate log events
+    Given I entered the course "Course 1" as "student1" in the app
+    When I press "Activities" in the app
+    And I press "SCORM packages" in the app
+    Then the following events should have been logged for "student1" in the app:
+      | name                                                | course   |
+      | \core\event\course_overview_viewed                  | Course 1 |
+      | \mod_scorm\event\course_module_instance_list_viewed | Course 1 |
+
   Scenario: Teachers can see relevant columns in the scorm overview
     Given I entered the course "Course 1" as "teacher1" in the app
     When I press "Activities" in the app
