@@ -29,10 +29,10 @@ Feature: Activities overview for assign activity
       | student8 | C1     | student        |
       | teacher1 | C1     | editingteacher |
     And the following "activities" exist:
-      | activity | name           | course | idnumber | duedate              | assignsubmission_onlinetext_enabled | assignsubmission_file_enabled | submissiondrafts |
-      | assign   | Date assign    | C1     | assign1  | ##1 Jan 2040 08:00## | 1                                   | 0                             | 0                |
-      | assign   | No submissions | C1     | assign2  | ##tomorrow noon##    | 1                                   | 0                             | 0                |
-      | assign   | Pending grades | C1     | assign3  |                      | 1                                   | 0                             | 0                |
+      | activity | name           | course | idnumber | duedate              | assignsubmission_onlinetext_enabled | submissiondrafts |
+      | assign   | Date assign    | C1     | assign1  | ##1 Jan 2040 08:00## | 1                                   | 0                |
+      | assign   | No submissions | C1     | assign2  | ##tomorrow noon##    | 1                                   | 0                |
+      | assign   | Pending grades | C1     | assign3  |                      | 1                                   | 0                |
     And the following "mod_assign > submissions" exist:
       | assign         | user     | onlinetext                          |
       | Date assign    | student1 | This is a submission for assignment |
@@ -42,6 +42,15 @@ Feature: Activities overview for assign activity
       | gradeitem      | user     | grade |
       | Pending grades | student1 | 50    |
 
+  Scenario: The assign overview report should generate log events
+    Given I entered the course "Course 1" as "student1" in the app
+    When I press "Activities" in the app
+    And I press "Assignments" in the app
+    Then the following events should have been logged for "student1" in the app:
+      | name                                                 | course   |
+      | \core\event\course_overview_viewed                   | Course 1 |
+      | \mod_assign\event\course_module_instance_list_viewed | Course 1 |
+
   Scenario: Teachers can see relevant columns in the assign overview
     Given I entered the course "Course 1" as "teacher1" in the app
     When I press "Activities" in the app
@@ -49,6 +58,8 @@ Feature: Activities overview for assign activity
     And I press "Date assign" "ion-item" in the app
     Then I should find "1 January 2040" within "Due date" "ion-item" in the app
     And I should find "1 of 8" within "Submissions" "ion-item" in the app
+    And I should find "Grade" within "Actions" "ion-item" in the app
+    And I should find "1" within "Grade" "ion-button" in the app
 
     When I press "Grade" within "Actions" "ion-item" in the app
     Then the header should be "Date assign" in the app
@@ -63,6 +74,7 @@ Feature: Activities overview for assign activity
     Then I should find "-" within "Due date" "ion-item" in the app
     And I should find "2 of 8" within "Submissions" "ion-item" in the app
     And I should be able to press "Grade" within "Actions" "ion-item" in the app
+    And I should find "2" within "Grade" "ion-button" in the app
 
   Scenario: The assign overview actions has information about the number of pending elements to grade
     Given I entered the course "Course 1" as "teacher1" in the app

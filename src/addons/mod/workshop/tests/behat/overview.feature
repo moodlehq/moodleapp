@@ -33,6 +33,15 @@ Feature: Activities overview for workshop activity
       | workshop | Activity 1 | C1     | workshop1 | 2                  | 1                  | 100   | 5            | 1             | 2                     | 1               | ##1 Jan 2018 08:00## | ##1 Jan 2040 08:00## |
       | workshop | Activity 2 | C1     | workshop1 | 2                  | 1                  | 100   | 5            | 1             | 2                     | 1               | ##today noon##       | ##tomorrow noon##    |
 
+  Scenario: The workshop overview report should generate log events
+    Given I entered the course "Course 1" as "student1" in the app
+    When I press "Activities" in the app
+    And I press "Workshops" in the app
+    Then the following events should have been logged for "student1" in the app:
+      | name                                                   | course   |
+      | \core\event\course_overview_viewed                     | Course 1 |
+      | \mod_workshop\event\course_module_instance_list_viewed | Course 1 |
+
   Scenario: Students can see relevant columns in the workshop overview
     # Workshop is not compatible with grade generators (hopefully someday).
     Given I am on the "Course 1" "grades > Grader report > View" page logged in as "teacher1"

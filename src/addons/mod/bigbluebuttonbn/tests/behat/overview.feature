@@ -49,6 +49,15 @@ Feature: Activities overview for bigbluebuttonbn activity
     And I click on "Save changes" "button"
     And I log out
 
+  Scenario: The bigbluebuttonbn overview report should generate log events
+    Given I entered the course "Course 1" as "student1" in the app
+    When I press "Activities" in the app
+    And I press "BigBlueButton" in the app
+    Then the following events should have been logged for "student1" in the app:
+      | name                                                          | course   |
+      | \core\event\course_overview_viewed                            | Course 1 |
+      | \mod_bigbluebuttonbn\event\course_module_instance_list_viewed | Course 1 |
+
   Scenario: Teachers can see relevant columns in the bigbluebuttonbn overview
     Given I entered the course "Course 1" as "editingteacher1" in the app
     When I press "Activities" in the app
