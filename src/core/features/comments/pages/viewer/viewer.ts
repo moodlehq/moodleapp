@@ -88,7 +88,7 @@ export default class CoreCommentsViewerPage implements OnInit, OnDestroy, AfterV
     currentUserId: number;
     sending = false;
     newComment = '';
-    readonly isOnline = CoreNetwork.onlineSignal();
+    readonly isOnline = CoreNetwork.onlineSignal;
 
     protected addDeleteCommentsAvailable = false;
     protected syncObserver?: CoreEventObserver;

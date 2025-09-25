@@ -52,6 +52,8 @@ export class CoreNetworkService extends Network {
     protected connectStableTimeout?: number;
     protected readonly online = signal(false);
     private readonly _connectionType = signal(CoreNetworkConnectionType.UNKNOWN);
+    protected readonly cellularSignal = computed<boolean>(() => this.connectionTypeSignal() === CoreNetworkConnectionType.CELL);
+    protected readonly wifiSignal = computed<boolean>(() => this.connectionTypeSignal() === CoreNetworkConnectionType.WIFI);
 
     constructor() {
         super();
@@ -236,7 +238,7 @@ export class CoreNetworkService extends Network {
      *
      * @returns Signal.
      */
-    onlineSignal(): Signal<boolean> {
+    get onlineSignal(): Signal<boolean> {
         return this.online.asReadonly();
     }
 
@@ -245,7 +247,7 @@ export class CoreNetworkService extends Network {
      *
      * @returns Signal.
      */
-    connectionTypeSignal(): Signal<CoreNetworkConnectionType> {
+    get connectionTypeSignal(): Signal<CoreNetworkConnectionType> {
         return this._connectionType.asReadonly();
     }
 
@@ -314,7 +316,7 @@ export class CoreNetworkService extends Network {
      * @returns Whether the device uses a wifi connection.
      */
     isWifi(): boolean {
-        return this.connectionType === CoreNetworkConnectionType.WIFI;
+        return this.wifiSignal();
     }
 
     /**
@@ -323,7 +325,7 @@ export class CoreNetworkService extends Network {
      * @returns Whether the device uses a limited connection.
      */
     isCellular(): boolean {
-        return this.connectionType === CoreNetworkConnectionType.CELL;
+        return this.cellularSignal();
     }
 
     /**
@@ -331,8 +333,8 @@ export class CoreNetworkService extends Network {
      *
      * @returns Signal.
      */
-    isCellularSignal(): Signal<boolean> {
-        return computed<boolean>(() => this.connectionTypeSignal()() === CoreNetworkConnectionType.CELL);
+    get isCellularSignal(): Signal<boolean> {
+        return this.cellularSignal;
     }
 
     /**
@@ -340,8 +342,8 @@ export class CoreNetworkService extends Network {
      *
      * @returns Signal.
      */
-    isWifiSignal(): Signal<boolean> {
-        return computed<boolean>(() => this.connectionTypeSignal()() === CoreNetworkConnectionType.WIFI);
+    get isWifiSignal(): Signal<boolean> {
+        return this.wifiSignal;
     }
 
 }

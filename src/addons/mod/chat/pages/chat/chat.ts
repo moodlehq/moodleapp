@@ -57,7 +57,7 @@ export default class AddonModChatChatPage implements OnInit, OnDestroy, CanLeave
     messages: AddonModChatFormattedMessage[] = [];
     newMessage?: string;
     polling?: number;
-    readonly isOnline = CoreNetwork.onlineSignal();
+    readonly isOnline = CoreNetwork.onlineSignal;
     currentUserId: number;
     sending = false;
     courseId!: number;

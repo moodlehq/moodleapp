@@ -37,7 +37,7 @@ export class AddonModChatUsersModalComponent implements OnInit {
     users: AddonModChatUser[] = [];
     usersLoaded = false;
     currentUserId: number;
-    readonly isOnline = CoreNetwork.onlineSignal();
+    readonly isOnline = CoreNetwork.onlineSignal;
 
     constructor() {
         this.currentUserId = CoreSites.getCurrentSiteUserId();

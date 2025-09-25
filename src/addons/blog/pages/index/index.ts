@@ -90,7 +90,7 @@ export default class AddonBlogIndexPage implements OnInit, OnDestroy {
     syncObserver: CoreEventObserver;
     optionsAvailable = false;
     readonly hasOfflineDataToSync = signal(false);
-    readonly isOnline = CoreNetwork.onlineSignal();
+    readonly isOnline = CoreNetwork.onlineSignal;
     siteId: string;
     syncIcon = CoreConstants.ICON_SYNC;
     readonly syncHidden = computed(() => !this.loaded() || !this.isOnline() || !this.hasOfflineDataToSync());

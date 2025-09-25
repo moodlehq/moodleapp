@@ -104,7 +104,7 @@ export class AddonModH5PActivityIndexComponent extends CoreCourseModuleMainActiv
     hasMissingDependencies = false;
     saveFreq?: number;
     contentState?: string;
-    readonly isOnline = CoreNetwork.onlineSignal();
+    readonly isOnline = CoreNetwork.onlineSignal;
     triedToPlay = false;
 
     protected fetchContentDefaultError = 'addon.mod_h5pactivity.errorgetactivity';

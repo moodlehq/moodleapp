@@ -101,7 +101,7 @@ export default class AddonModForumDiscussionPage implements OnInit, AfterViewIni
     posts: Post[] = [];
     discussionLoaded = false;
     postSubjects!: { [id: string]: string };
-    readonly isOnline = CoreNetwork.onlineSignal();
+    readonly isOnline = CoreNetwork.onlineSignal;
     postHasOffline!: boolean;
     sort: SortType = 'nested';
     trackPosts!: boolean;

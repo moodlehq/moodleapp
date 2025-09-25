@@ -85,7 +85,7 @@ export default class AddonCalendarDayPage implements OnInit, OnDestroy {
     periodName?: string;
     manager?: CoreSwipeSlidesDynamicItemsManager<PreloadedDay, AddonCalendarDaySlidesItemsManagerSource>;
     loaded = false;
-    readonly isOnline = CoreNetwork.onlineSignal();
+    readonly isOnline = CoreNetwork.onlineSignal;
     syncIcon = CoreConstants.ICON_LOADING;
     filter: AddonCalendarFilter = {
         filtered: false,

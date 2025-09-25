@@ -63,7 +63,7 @@ export class AddonModResourceIndexComponent extends CoreCourseModuleMainResource
     warning = '';
     isIOS = false;
     openFileAction = OpenFileAction;
-    readonly isOnline = CoreNetwork.onlineSignal();
+    readonly isOnline = CoreNetwork.onlineSignal;
     isStreamedFile = false;
     shouldOpenInBrowser = false;
 

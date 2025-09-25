@@ -47,8 +47,8 @@ export default class CoreSettingsSynchronizationPage implements OnInit, OnDestro
 
     sitesLoaded = false;
     dataSaver = false;
-    readonly limitedConnection = CoreNetwork.isCellularSignal();
-    readonly isOnline = CoreNetwork.onlineSignal();
+    readonly limitedConnection = CoreNetwork.isCellularSignal;
+    readonly isOnline = CoreNetwork.onlineSignal;
 
     protected isDestroyed = false;
     protected sitesObserver: CoreEventObserver;

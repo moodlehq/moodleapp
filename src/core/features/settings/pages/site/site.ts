@@ -48,8 +48,8 @@ export default class CoreSitePreferencesPage implements AfterViewInit, OnDestroy
     handlers: CoreListItemsManager<CoreSettingsHandlerToDisplay, CoreSettingsHandlersSource>;
 
     dataSaver = false;
-    readonly limitedConnection = CoreNetwork.isCellularSignal();
-    readonly isOnline = CoreNetwork.onlineSignal();
+    readonly limitedConnection = CoreNetwork.isCellularSignal;
+    readonly isOnline = CoreNetwork.onlineSignal;
 
     protected siteId: string;
     protected sitesObserver: CoreEventObserver;
