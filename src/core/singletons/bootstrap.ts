@@ -16,6 +16,7 @@ import { CorePopovers } from '@services/overlays/popovers';
 import { CoreFormatTextOptions } from '@components/bs-tooltip/bs-tooltip';
 import { CoreModals } from '@services/overlays/modals';
 import { CoreDom } from './dom';
+import { CoreWait } from './wait';
 
 /**
  * Singleton with helper functions for Bootstrap.
@@ -459,7 +460,7 @@ export class CoreBootstrap {
             };
 
             // Helper to perform slide/crossfade transition.
-            const goToSlide = (newIndex: number, direction: 'next' | 'prev') => {
+            const goToSlide = async (newIndex: number, direction: 'next' | 'prev') => {
                 const items = Array.from(element.querySelectorAll<HTMLElement>('.carousel-item'));
                 const activeIndex = items.findIndex(item => item.classList.contains('active'));
                 if (newIndex === activeIndex || newIndex < 0 || newIndex >= items.length) {
@@ -475,8 +476,8 @@ export class CoreBootstrap {
 
                 // Animation.
                 nextItem.classList.add(direction === 'next' ? 'carousel-item-next' : 'carousel-item-prev');
-                // Force reflow for transition.
-                void nextItem.offsetWidth;
+                // Wait the render to finish to start the transition.
+                await CoreWait.nextTick();
 
                 activeItem.classList.add(direction === 'next' ? 'carousel-item-start' : 'carousel-item-end');
                 nextItem.classList.add(direction === 'next' ? 'carousel-item-start' : 'carousel-item-end');
