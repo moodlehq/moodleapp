@@ -32,7 +32,6 @@ import { CoreFile } from '@services/file';
 import { CoreUrl } from '@singletons/url';
 import { CoreIframe } from '@singletons/iframe';
 import { DomSanitizer, Router, StatusBar, Translate } from '@singletons';
-import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { CoreScreen, CoreScreenOrientation } from '@services/screen';
 import { Subscription } from 'rxjs';
 import { filter } from 'rxjs/operators';
@@ -89,7 +88,6 @@ export class CoreIframeComponent implements OnChanges, OnDestroy {
 
     protected fullScreenInitialized = false;
     protected style?: HTMLStyleElement;
-    protected orientationObs?: CoreEventObserver;
     protected navSubscription?: Subscription;
     protected messageListenerFunction: (event: MessageEvent) => Promise<void>;
     protected backButtonListener?: (event: BackButtonEvent) => void;
@@ -101,6 +99,15 @@ export class CoreIframeComponent implements OnChanges, OnDestroy {
 
         effect(() => {
             this.initIframeElement(this.iframe());
+        });
+
+        effect(() => {
+            const orientation = CoreScreen.orientationSignal();
+            if (!this.autoFullscreenOnRotate || this.isInHiddenPage()) {
+                return;
+            }
+
+            this.toggleFullscreen(orientation === CoreScreenOrientation.LANDSCAPE);
         });
     }
 
@@ -131,11 +138,9 @@ export class CoreIframeComponent implements OnChanges, OnDestroy {
         if (!this.showFullscreenOnToolbar && !this.autoFullscreenOnRotate) {
             // Full screen disabled, stop watchers if enabled.
             this.navSubscription?.unsubscribe();
-            this.orientationObs?.off();
             this.style?.remove();
             this.backButtonListener && document.removeEventListener('ionBackButton', this.backButtonListener);
             this.navSubscription = undefined;
-            this.orientationObs = undefined;
             this.style = undefined;
             this.backButtonListener = undefined;
             this.fullScreenInitialized = true;
@@ -176,32 +181,10 @@ export class CoreIframeComponent implements OnChanges, OnDestroy {
             }
         }
 
-        if (!this.autoFullscreenOnRotate) {
-            this.orientationObs?.off();
-            this.orientationObs = undefined;
-            this.fullScreenInitialized = true;
-
-            return;
-        }
-
-        if (this.orientationObs) {
-            this.fullScreenInitialized = true;
-
-            return;
-        }
-
-        if (!this.fullScreenInitialized) {
+        if (!this.fullScreenInitialized && this.autoFullscreenOnRotate) {
             // Only change full screen value if it's being initialized.
             this.toggleFullscreen(CoreScreen.isLandscape);
         }
-
-        this.orientationObs = CoreEvents.on(CoreEvents.ORIENTATION_CHANGE, (data) => {
-            if (this.isInHiddenPage()) {
-                return;
-            }
-
-            this.toggleFullscreen(data.orientation == CoreScreenOrientation.LANDSCAPE);
-        });
 
         this.fullScreenInitialized = true;
     }
@@ -321,7 +304,6 @@ export class CoreIframeComponent implements OnChanges, OnDestroy {
      * @inheritdoc
      */
     ngOnDestroy(): void {
-        this.orientationObs?.off();
         this.navSubscription?.unsubscribe();
         window.removeEventListener('message', this.messageListenerFunction);
 

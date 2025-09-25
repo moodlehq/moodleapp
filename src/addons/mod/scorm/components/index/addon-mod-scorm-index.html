@@ -236,7 +236,7 @@
                         </ion-card>
                     }
 
-                    @if (useOnlinePlayer && !isOnline) {
+                    @if (useOnlinePlayer && !isOnline()) {
                         <ion-card class="core-warning-card">
                             <ion-item class="ion-text-wrap">
                                 <ion-icon name="fas-triangle-exclamation" slot="start" aria-hidden="true" />
@@ -248,7 +248,7 @@
                         </ion-card>
                     }
 
-                    @if ((!scorm.lastattemptlock || attemptsLeft > 0) && (!useOnlinePlayer || isOnline)) {
+                    @if ((!scorm.lastattemptlock || attemptsLeft > 0) && (!useOnlinePlayer || isOnline())) {
 
                         <!-- Open SCORM in app form -->
                         @if (!downloading && !skip) {

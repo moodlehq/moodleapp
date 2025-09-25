@@ -29,16 +29,16 @@
                 </ion-toggle>
             </ion-item>
 
-            @if (!isOnline || (dataSaver && limitedConnection)) {
+            @if (!isOnline() || (dataSaver && limitedConnection())) {
                 <ion-card class="core-warning-card">
                     <ion-item class="ion-text-wrap">
                         <ion-icon name="fas-triangle-exclamation" slot="start" aria-hidden="true" />
                         <ion-label>
-                            @if (isOnline && dataSaver && limitedConnection) {
+                            @if (isOnline() && dataSaver && limitedConnection()) {
 
                                 {{ 'core.settings.connectwifitosync' | translate }}
                             }
-                            @if (!isOnline) {
+                            @if (!isOnline()) {
                                 {{ 'core.settings.connecttosync' | translate }}
                             }
                         </ion-label>

@@ -65,6 +65,7 @@ import { CoreCourseSectionComponent, CoreCourseSectionToDisplay } from '../cours
 import { CoreAlerts } from '@services/overlays/alerts';
 import { CoreCourseModuleHelper } from '@features/course/services/course-module-helper';
 import { ADDON_STORAGE_MANAGER_PAGE_NAME } from '@addons/storagemanager/constants';
+import { CoreCourseFormatDynamicComponent } from '@features/course/classes/base-course-format-component';
 
 /**
  * Component to display course contents using a certain format. If the format isn't found, use default one.
@@ -105,9 +106,9 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
     accordionMultipleValue: string[] = [];
 
     // All the possible component classes.
-    courseFormatComponent?: Type<unknown>;
-    singleSectionComponent?: Type<unknown>;
-    allSectionsComponent?: Type<unknown>;
+    courseFormatComponent?: Type<CoreCourseFormatDynamicComponent>;
+    singleSectionComponent?: Type<CoreCourseFormatDynamicComponent>;
+    allSectionsComponent?: Type<CoreCourseFormatDynamicComponent>;
 
     canLoadMore = false;
     lastShownSectionIndex = 0;

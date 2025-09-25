@@ -12,15 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnChanges, Input, viewChild } from '@angular/core';
+import { Component, OnChanges, viewChild } from '@angular/core';
 
-import { CoreCourseFormatComponent } from '@features/course/components/course-format/course-format';
-import { CoreCourseSection } from '@features/course/services/course-helper';
 import { CoreCourseFormatDelegate } from '@features/course/services/format-delegate';
-import { CoreCourseAnyCourseData } from '@features/courses/services/courses';
 import { CoreSitePlugins, CoreSitePluginsContent } from '@features/siteplugins/services/siteplugins';
 import { CoreSitePluginsPluginContentComponent } from '../plugin-content/plugin-content';
 import { CoreSharedModule } from '@/core/shared.module';
+import { CoreCourseFormatDynamicComponent } from '@features/course/classes/base-course-format-component';
 
 /**
  * Component that displays the index of a course format site plugin.
@@ -37,18 +35,7 @@ import { CoreSharedModule } from '@/core/shared.module';
         '[class]': 'component',
     },
 })
-export class CoreSitePluginsCourseFormatComponent implements OnChanges {
-
-    @Input() course?: CoreCourseAnyCourseData; // The course to render.
-    @Input() sections?: CoreCourseSection[]; // List of course sections. The status will be calculated in this component.
-    @Input() initialSectionId?: number; // The section to load first (by ID).
-    @Input() initialSectionNumber?: number; // The section to load first (by number).
-    @Input() moduleId?: number; // The module ID to scroll to. Must be inside the initial selected section.
-
-    // Special input, allows access to the parent instance properties and methods.
-    // Please notice that all the other inputs/outputs are also accessible through this instance, so they could be removed.
-    // However, we decided to keep them to support ngOnChanges and to make templates easier to read.
-    @Input() coreCourseFormatComponent?: CoreCourseFormatComponent;
+export class CoreSitePluginsCourseFormatComponent extends CoreCourseFormatDynamicComponent implements OnChanges {
 
     readonly content = viewChild(CoreSitePluginsPluginContentComponent);
 

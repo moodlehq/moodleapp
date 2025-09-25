@@ -28,10 +28,9 @@ import { AddonCalendarSync } from '../../services/calendar-sync';
 import { CoreCategoryData, CoreCourses, CoreEnrolledCourseData } from '@features/courses/services/courses';
 import { CoreCoursesHelper } from '@features/courses/services/courses-helper';
 import { dayjs, Dayjs } from '@/core/utils/dayjs';
-import { NgZone, Translate } from '@singletons';
+import { Translate } from '@singletons';
 import { CoreNavigator } from '@services/navigator';
 import { Params } from '@angular/router';
-import { Subscription } from 'rxjs';
 import { CoreArray } from '@singletons/array';
 import { CoreConstants } from '@/core/constants';
 import { CoreSwipeSlidesDynamicItemsManager } from '@classes/items-management/swipe-slides-dynamic-items-manager';
@@ -80,14 +79,13 @@ export default class AddonCalendarDayPage implements OnInit, OnDestroy {
 
     // Observers.
     protected eventObservers: CoreEventObserver[] = [];
-    protected onlineObserver: Subscription;
     protected managerUnsubscribe?: () => void;
     protected logView: () => void;
 
     periodName?: string;
     manager?: CoreSwipeSlidesDynamicItemsManager<PreloadedDay, AddonCalendarDaySlidesItemsManagerSource>;
     loaded = false;
-    isOnline = false;
+    readonly isOnline = CoreNetwork.onlineSignal;
     syncIcon = CoreConstants.ICON_LOADING;
     filter: AddonCalendarFilter = {
         filtered: false,
@@ -189,14 +187,6 @@ export default class AddonCalendarDayPage implements OnInit, OnDestroy {
             },
         ));
 
-        // Refresh online status when changes.
-        this.onlineObserver = CoreNetwork.onChange().subscribe(() => {
-            // Execute the callback in the Angular zone, so change detection doesn't stop working.
-            NgZone.run(() => {
-                this.isOnline = CoreNetwork.isOnline();
-            });
-        });
-
         this.logView = CoreTime.once(() => {
             const day = this.manager?.getSelectedItem();
             if (!day) {
@@ -268,7 +258,6 @@ export default class AddonCalendarDayPage implements OnInit, OnDestroy {
      */
     async fetchData(sync?: boolean): Promise<void> {
         this.syncIcon = CoreConstants.ICON_LOADING;
-        this.isOnline = CoreNetwork.isOnline();
 
         if (sync) {
             await this.sync();
@@ -484,7 +473,6 @@ export default class AddonCalendarDayPage implements OnInit, OnDestroy {
      */
     ngOnDestroy(): void {
         this.eventObservers.forEach((observer) => observer.off());
-        this.onlineObserver?.unsubscribe();
         this.manager?.getSource().forgetRelatedSources();
         this.manager?.destroy();
         this.managerUnsubscribe?.();

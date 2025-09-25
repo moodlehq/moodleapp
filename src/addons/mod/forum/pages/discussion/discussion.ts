@@ -28,10 +28,9 @@ import { CoreNavigator } from '@services/navigator';
 import { CoreScreen } from '@services/screen';
 import { CoreSites } from '@services/sites';
 import { CoreUtils } from '@singletons/utils';
-import { NgZone, Translate } from '@singletons';
+import { Translate } from '@singletons';
 import { CoreDom } from '@singletons/dom';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
-import { Subscription } from 'rxjs';
 import { AddonModForumDiscussionsSource } from '../../classes/forum-discussions-source';
 import { AddonModForumDiscussionsSwipeManager } from '../../classes/forum-discussions-swipe-manager';
 import {
@@ -102,7 +101,7 @@ export default class AddonModForumDiscussionPage implements OnInit, AfterViewIni
     posts: Post[] = [];
     discussionLoaded = false;
     postSubjects!: { [id: string]: string };
-    isOnline!: boolean;
+    readonly isOnline = CoreNetwork.onlineSignal;
     postHasOffline!: boolean;
     sort: SortType = 'nested';
     trackPosts!: boolean;
@@ -136,7 +135,6 @@ export default class AddonModForumDiscussionPage implements OnInit, AfterViewIni
     protected forumId?: number;
     protected postId?: number;
     protected parent?: number;
-    protected onlineObserver?: Subscription;
     protected syncObserver?: CoreEventObserver;
     protected syncManualObserver?: CoreEventObserver;
 
@@ -183,16 +181,9 @@ export default class AddonModForumDiscussionPage implements OnInit, AfterViewIni
         }
 
         const currentSite = CoreSites.getCurrentSite();
-        this.isOnline = CoreNetwork.isOnline();
         this.externalUrl = currentSite && currentSite.shouldDisplayInformativeLinks() ?
             currentSite.createSiteUrl('/mod/forum/discuss.php', { d: this.discussionId.toString() }) :
             undefined;
-        this.onlineObserver = CoreNetwork.onChange().subscribe(() => {
-            // Execute the callback in the Angular zone, so change detection doesn't stop working.
-            NgZone.run(() => {
-                this.isOnline = CoreNetwork.isOnline();
-            });
-        });
 
         this.discussionStr = Translate.instant('addon.mod_forum.discussion');
     }
@@ -349,7 +340,6 @@ export default class AddonModForumDiscussionPage implements OnInit, AfterViewIni
      * @inheritdoc
      */
     ngOnDestroy(): void {
-        this.onlineObserver?.unsubscribe();
         this.discussions?.destroy();
     }
 

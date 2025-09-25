@@ -101,7 +101,6 @@ export class AddonBadgesProvider {
      * @param courseId Course ID.
      * @param userId ID of the user to get the badges from.
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved when data is invalidated.
      */
     async invalidateUserBadges(courseId: number, userId: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -157,7 +156,6 @@ export class AddonBadgesProvider {
      *
      * @param hash Badge issued hash.
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved when data is invalidated.
      */
     async invalidateUserBadgeByHash(hash: string, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -214,7 +212,6 @@ export class AddonBadgesProvider {
      *
      * @param id Badge ID.
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved when data is invalidated.ç
      * @since 4.5
      */
     async invalidateBadgeClass(id: number, siteId?: string): Promise<void> {

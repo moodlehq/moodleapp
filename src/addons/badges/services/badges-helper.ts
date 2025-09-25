@@ -45,9 +45,8 @@ export class AddonBadgesHelperProvider {
 
         // Open in app if badge is one of the user badges.
         const badges = await AddonBadges.getUserBadges(0, site.getUserId());
-        const badge = badges.find((badge) => badgeHash == badge.uniquehash);
 
-        return badge !== undefined;
+        return badges.some((badge) => badgeHash === badge.uniquehash);
     }
 
 }

@@ -11,17 +11,16 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-import { Component, Input, OnDestroy, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { CoreNetwork } from '@services/network';
 import { CoreSites } from '@services/sites';
-import { ModalController, NgZone, Translate } from '@singletons';
-import { Subscription } from 'rxjs';
+import { ModalController, Translate } from '@singletons';
 import { AddonModChat, AddonModChatUser } from '../../services/chat';
 import { CoreSharedModule } from '@/core/shared.module';
 import { CoreAlerts } from '@services/overlays/alerts';
 
 /**
- * MMdal that displays the chat session users.
+ * Modal that displays the chat session users.
  */
 @Component({
     selector: 'addon-mod-chat-users-modal',
@@ -30,7 +29,7 @@ import { CoreAlerts } from '@services/overlays/alerts';
         CoreSharedModule,
     ],
 })
-export class AddonModChatUsersModalComponent implements OnInit, OnDestroy {
+export class AddonModChatUsersModalComponent implements OnInit {
 
     @Input({ required: true }) sessionId!: string;
     @Input({ required: true }) cmId!: number;
@@ -38,19 +37,10 @@ export class AddonModChatUsersModalComponent implements OnInit, OnDestroy {
     users: AddonModChatUser[] = [];
     usersLoaded = false;
     currentUserId: number;
-    isOnline: boolean;
-
-    protected onlineSubscription: Subscription;
+    readonly isOnline = CoreNetwork.onlineSignal;
 
     constructor() {
-        this.isOnline = CoreNetwork.isOnline();
         this.currentUserId = CoreSites.getCurrentSiteUserId();
-        this.onlineSubscription = CoreNetwork.onChange().subscribe(() => {
-            // Execute the callback in the Angular zone, so change detection doesn't stop working.
-            NgZone.run(() => {
-                this.isOnline = CoreNetwork.isOnline();
-            });
-        });
     }
 
     /**
@@ -91,13 +81,6 @@ export class AddonModChatUsersModalComponent implements OnInit, OnDestroy {
      */
     beepTo(user: AddonModChatUser): void {
         ModalController.dismiss(<AddonModChatUsersModalResult> { beepTo: user.id, users: this.users });
-    }
-
-    /**
-     * @inheritdoc
-     */
-    ngOnDestroy(): void {
-        this.onlineSubscription.unsubscribe();
     }
 
 }
