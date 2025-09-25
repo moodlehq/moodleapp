@@ -23,8 +23,7 @@ import { CoreListItemsManager } from '@classes/items-management/list-items-manag
 import { CoreRoutedItemsManagerSourcesTracker } from '@classes/items-management/routed-items-manager-sources-tracker';
 import { CoreSettingsHelper } from '@features/settings/services/settings-helper';
 import { CoreNetwork } from '@services/network';
-import { Subscription } from 'rxjs';
-import { NgZone, Translate } from '@singletons';
+import { Translate } from '@singletons';
 import { CoreConstants } from '@/core/constants';
 import { CoreConfig } from '@services/config';
 import { CoreSettingsHandlersSource } from '@features/settings/classes/settings-handlers-source';
@@ -49,12 +48,11 @@ export default class CoreSitePreferencesPage implements AfterViewInit, OnDestroy
     handlers: CoreListItemsManager<CoreSettingsHandlerToDisplay, CoreSettingsHandlersSource>;
 
     dataSaver = false;
-    limitedConnection = false;
-    isOnline = true;
+    readonly limitedConnection = CoreNetwork.isCellularSignal;
+    readonly isOnline = CoreNetwork.onlineSignal;
 
     protected siteId: string;
     protected sitesObserver: CoreEventObserver;
-    protected networkObserver: Subscription;
     protected isDestroyed = false;
 
     get handlerItems(): CoreSettingsHandlerToDisplay[] {
@@ -71,17 +69,6 @@ export default class CoreSitePreferencesPage implements AfterViewInit, OnDestroy
         this.sitesObserver = CoreEvents.on(CoreEvents.SITE_UPDATED, () => {
             this.refreshData();
         }, this.siteId);
-
-        this.isOnline = CoreNetwork.isOnline();
-        this.limitedConnection = CoreNetwork.isCellular();
-
-        this.networkObserver = CoreNetwork.onChange().subscribe(() => {
-            // Execute the callback in the Angular zone, so change detection doesn't stop working.
-            NgZone.run(() => {
-                this.isOnline = CoreNetwork.isOnline();
-                this.limitedConnection = CoreNetwork.isCellular();
-            });
-        });
     }
 
     /**
@@ -163,7 +150,6 @@ export default class CoreSitePreferencesPage implements AfterViewInit, OnDestroy
     ngOnDestroy(): void {
         this.isDestroyed = true;
         this.sitesObserver.off();
-        this.networkObserver.unsubscribe();
         this.handlers.destroy();
     }
 

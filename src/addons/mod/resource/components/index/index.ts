@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { DownloadStatus } from '@/core/constants';
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CoreError } from '@classes/errors/error';
 import { CoreCourseModuleMainResourceComponent } from '@features/course/classes/main-resource-component';
 import { CoreCourse } from '@features/course/services/course';
@@ -23,8 +23,7 @@ import { CoreFileHelper } from '@services/file-helper';
 import { CoreSites } from '@services/sites';
 import { CoreMimetype } from '@singletons/mimetype';
 import { CoreText } from '@singletons/text';
-import { NgZone, Translate } from '@singletons';
-import { Subscription } from 'rxjs';
+import { Translate } from '@singletons';
 import {
     AddonModResource,
     AddonModResourceCustomData,
@@ -52,7 +51,7 @@ import { CoreSharedModule } from '@/core/shared.module';
         CoreCourseModuleNavigationComponent,
     ],
 })
-export class AddonModResourceIndexComponent extends CoreCourseModuleMainResourceComponent implements OnInit, OnDestroy {
+export class AddonModResourceIndexComponent extends CoreCourseModuleMainResourceComponent implements OnInit {
 
     component = ADDON_MOD_RESOURCE_COMPONENT_LEGACY;
     pluginName = 'resource';
@@ -64,7 +63,7 @@ export class AddonModResourceIndexComponent extends CoreCourseModuleMainResource
     warning = '';
     isIOS = false;
     openFileAction = OpenFileAction;
-    isOnline = false;
+    readonly isOnline = CoreNetwork.onlineSignal;
     isStreamedFile = false;
     shouldOpenInBrowser = false;
 
@@ -76,8 +75,6 @@ export class AddonModResourceIndexComponent extends CoreCourseModuleMainResource
     isExternalFile = false;
     outdatedStatus = DownloadStatus.OUTDATED;
 
-    protected onlineObserver?: Subscription;
-
     /**
      * @inheritdoc
      */
@@ -85,15 +82,6 @@ export class AddonModResourceIndexComponent extends CoreCourseModuleMainResource
         super.ngOnInit();
 
         this.isIOS = CorePlatform.isIOS();
-        this.isOnline = CoreNetwork.isOnline();
-
-        // Refresh online status when changes.
-        this.onlineObserver = CoreNetwork.onChange().subscribe(() => {
-            // Execute the callback in the Angular zone, so change detection doesn't stop working.
-            NgZone.run(() => {
-                this.isOnline = CoreNetwork.isOnline();
-            });
-        });
 
         await this.loadContent();
     }
@@ -204,7 +192,6 @@ export class AddonModResourceIndexComponent extends CoreCourseModuleMainResource
      * Opens a file.
      *
      * @param iOSOpenFileAction Action to do in iOS.
-     * @returns Promise resolved when done.
      */
     async open(iOSOpenFileAction?: OpenFileAction): Promise<void> {
         let downloadable = await CoreCourseModulePrefetchDelegate.isModuleDownloadable(this.module, this.courseId);
@@ -215,7 +202,7 @@ export class AddonModResourceIndexComponent extends CoreCourseModuleMainResource
             downloadable = await AddonModResourceHelper.isMainFileDownloadable(this.module);
 
             if (downloadable) {
-                if (this.currentStatus === DownloadStatus.OUTDATED && !this.isOnline && !this.isExternalFile) {
+                if (this.currentStatus === DownloadStatus.OUTDATED && !this.isOnline() && !this.isExternalFile) {
                     // Warn the user that the file isn't updated.
                     const alert = await CoreAlerts.show({
                         message: Translate.instant('addon.mod_resource.resourcestatusoutdatedconfirm'),
@@ -224,20 +211,14 @@ export class AddonModResourceIndexComponent extends CoreCourseModuleMainResource
                     await alert.onWillDismiss();
                 }
 
-                return AddonModResourceHelper.openModuleFile(this.module, this.courseId, { iOSOpenFileAction });
+                await AddonModResourceHelper.openModuleFile(this.module, this.courseId, { iOSOpenFileAction });
+
+                return;
             }
         }
 
         // The resource cannot be downloaded, open the activity in browser.
-        await CoreSites.getCurrentSite()?.openInBrowserWithAutoLogin(this.module.url || '');
-    }
-
-    /**
-     * @inheritdoc
-     */
-    ngOnDestroy(): void {
-        super.ngOnDestroy();
-        this.onlineObserver?.unsubscribe();
+        await CoreSites.getRequiredCurrentSite().openInBrowserWithAutoLogin(this.module.url ?? '');
     }
 
 }

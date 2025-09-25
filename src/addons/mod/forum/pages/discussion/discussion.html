@@ -16,11 +16,11 @@
 </ion-header>
 <core-navbar-buttons slot="end">
     <core-context-menu>
-        @if (discussionLoaded && !postHasOffline && isOnline) {
+        @if (discussionLoaded && !postHasOffline && isOnline()) {
             <core-context-menu-item [priority]="650" [content]="'addon.mod_forum.refreshposts' | translate" [iconAction]="refreshIcon"
                 [closeOnClick]="false" (action)="doRefresh(null, $event)" />
         }
-        @if (discussionLoaded && isMobile && postHasOffline && isOnline) {
+        @if (discussionLoaded && isMobile && postHasOffline && isOnline()) {
             <core-context-menu-item [priority]="550" [content]="'core.settings.synchronizenow' | translate" [iconAction]="syncIcon"
                 [closeOnClick]="false" (action)="doRefresh(null, $event, true)" />
         }

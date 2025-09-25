@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { effect, Injectable, Signal, signal } from '@angular/core';
+import { computed, effect, Injectable, Signal, signal } from '@angular/core';
 import { CorePlatform } from '@services/platform';
 import { Network } from '@awesome-cordova-plugins/network/ngx';
 import { makeSingleton } from '@singletons';
@@ -52,6 +52,8 @@ export class CoreNetworkService extends Network {
     protected connectStableTimeout?: number;
     protected readonly online = signal(false);
     private readonly _connectionType = signal(CoreNetworkConnectionType.UNKNOWN);
+    protected readonly cellularSignal = computed<boolean>(() => this.connectionTypeSignal() === CoreNetworkConnectionType.CELL);
+    protected readonly wifiSignal = computed<boolean>(() => this.connectionTypeSignal() === CoreNetworkConnectionType.WIFI);
 
     constructor() {
         super();
@@ -236,7 +238,7 @@ export class CoreNetworkService extends Network {
      *
      * @returns Signal.
      */
-    onlineSignal(): Signal<boolean> {
+    get onlineSignal(): Signal<boolean> {
         return this.online.asReadonly();
     }
 
@@ -245,7 +247,7 @@ export class CoreNetworkService extends Network {
      *
      * @returns Signal.
      */
-    connectionTypeSignal(): Signal<CoreNetworkConnectionType> {
+    get connectionTypeSignal(): Signal<CoreNetworkConnectionType> {
         return this._connectionType.asReadonly();
     }
 
@@ -314,7 +316,7 @@ export class CoreNetworkService extends Network {
      * @returns Whether the device uses a wifi connection.
      */
     isWifi(): boolean {
-        return this.connectionType === CoreNetworkConnectionType.WIFI;
+        return this.wifiSignal();
     }
 
     /**
@@ -323,7 +325,25 @@ export class CoreNetworkService extends Network {
      * @returns Whether the device uses a limited connection.
      */
     isCellular(): boolean {
-        return this.connectionType === CoreNetworkConnectionType.CELL;
+        return this.cellularSignal();
+    }
+
+    /**
+     * Returns a signal to watch if the device uses a cellular connection.
+     *
+     * @returns Signal.
+     */
+    get isCellularSignal(): Signal<boolean> {
+        return this.cellularSignal;
+    }
+
+    /**
+     * Returns a signal to watch if the device uses a wifi connection.
+     *
+     * @returns Signal.
+     */
+    get isWifiSignal(): Signal<boolean> {
+        return this.wifiSignal;
     }
 
 }

@@ -114,7 +114,7 @@
         <div collapsible-footer appearOnBottom slot="fixed">
             @if (mode === 'external') {
                 <div class="list-item-limited-width">
-                    @if (isIOS && (!shouldOpenInBrowser || !isOnline)) {
+                    @if (isIOS && (!shouldOpenInBrowser || !isOnline())) {
                         <ion-button expand="block" fill="outline" (click)="open(openFileAction.OPEN_WITH)" class="ion-margin ion-text-wrap">
                             <ion-icon name="far-share-from-square" slot="start" aria-hidden="true" />
                             {{ 'core.openwith' | translate }}
