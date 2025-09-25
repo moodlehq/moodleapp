@@ -91,7 +91,7 @@ export class AddonModWikiIndexComponent extends CoreCourseModuleMainActivityComp
     pluginName = 'wiki';
     groupWiki = false;
 
-    readonly isOnline = CoreNetwork.onlineSignal();
+    readonly isOnline = CoreNetwork.onlineSignal;
 
     wiki?: AddonModWikiWiki; // The wiki instance.
     isMainPage = false; // Whether the user is viewing wiki's main page (just entered the wiki).

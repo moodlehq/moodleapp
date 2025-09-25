@@ -74,7 +74,7 @@ export class CoreCourseModuleSummaryComponent implements OnInit, OnDestroy {
     downloadTimeReadable = ''; // Last download time in a readable format.
     grades?: CoreGradesFormattedTableRow[];
     blog = false; // If blog is available.
-    readonly isOnline = CoreNetwork.onlineSignal();
+    readonly isOnline = CoreNetwork.onlineSignal;
     course?: CoreCourseAnyCourseData;
     modicon = '';
     moduleNameTranslated = '';

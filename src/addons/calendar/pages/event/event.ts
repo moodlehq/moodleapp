@@ -96,7 +96,7 @@ export default class AddonCalendarEventPage implements OnInit, OnDestroy {
     reminders: AddonCalendarEventReminder[] = [];
     canEdit = false;
     hasOffline = false;
-    readonly isOnline = CoreNetwork.onlineSignal();
+    readonly isOnline = CoreNetwork.onlineSignal;
     syncIcon = CoreConstants.ICON_LOADING; // Sync icon.
     canScheduleExactAlarms = true;
     scheduleExactWarningHidden = false;

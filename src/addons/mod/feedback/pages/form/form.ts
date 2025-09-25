@@ -80,7 +80,7 @@ export default class AddonModFeedbackFormPage implements OnInit, CanLeave {
     component = ADDON_MOD_FEEDBACK_COMPONENT_LEGACY;
     readonly offline = linkedSignal(() => !this.isOnline());
 
-    readonly isOnline = CoreNetwork.onlineSignal();
+    readonly isOnline = CoreNetwork.onlineSignal;
     feedbackLoaded = false;
     access?: AddonModFeedbackGetFeedbackAccessInformationWSResponse;
     items: AddonModFeedbackFormItem[] = [];
