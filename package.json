@@ -143,7 +143,7 @@
         "@types/node": "^24.0.3",
         "@types/resize-observer-browser": "^0.1.11",
         "@types/webpack-env": "^1.18.8",
-        "angular-eslint": "^20.1.1",
+        "angular-eslint": "^20.3.0",
         "circular-dependency-plugin": "^5.2.2",
         "concurrently": "^8.2.2",
         "cordova-plugin-moodleapp": "file:cordova-plugin-moodleapp",
@@ -172,8 +172,8 @@
         "terser-webpack-plugin": "^5.3.14",
         "ts-jest": "^29.2.6",
         "ts-node": "^10.9.2",
-        "typescript": "~5.8.3",
-        "typescript-eslint": "^8.34.1",
+        "typescript": "~5.9.2",
+        "typescript-eslint": "^8.44.1",
         "vinyl": "^3.0.0"
     },
     "engines": {
