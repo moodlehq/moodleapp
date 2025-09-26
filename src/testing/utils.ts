@@ -98,6 +98,7 @@ async function renderAngularComponent<T>(component: Type<T>, config: RenderConfi
             schemas: [CUSTOM_ELEMENTS_SCHEMA],
             imports: [
                 BrowserModule,
+                // eslint-disable-next-line @typescript-eslint/no-deprecated
                 NoopAnimationsModule,
                 TranslateModule.forChild(),
                 CoreExternalContentDirectiveStub,
@@ -112,6 +113,7 @@ async function renderAngularComponent<T>(component: Type<T>, config: RenderConfi
             ],
             imports: [
                 component,
+                // eslint-disable-next-line @typescript-eslint/no-deprecated
                 NoopAnimationsModule,
                 CoreExternalContentDirectiveStub,
                 ...config.imports,

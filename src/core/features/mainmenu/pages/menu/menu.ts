@@ -55,6 +55,7 @@ const ANIMATION_DURATION = 500;
     selector: 'page-core-mainmenu',
     templateUrl: 'menu.html',
     animations: [
+        /* eslint-disable @typescript-eslint/no-deprecated */
         trigger('menuVisibilityAnimation', [
             state('hidden', style({
                 height: 0,
@@ -73,6 +74,7 @@ const ANIMATION_DURATION = 500;
                 animate(`${ANIMATION_DURATION}ms ease-in-out`, style({ transform: 'translateY(0)' })),
             ]),
         ]),
+        /* eslint-enable @typescript-eslint/no-deprecated */
     ],
     styleUrl: 'menu.scss',
     imports: [

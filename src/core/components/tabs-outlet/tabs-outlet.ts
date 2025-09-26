@@ -287,5 +287,6 @@ interface RouteView {
     savedData?: any;
     savedExtras?: NavigationExtras;
     unlistenEvents: () => void;
+    // eslint-disable-next-line @typescript-eslint/no-deprecated
     animationBuilder?: AnimationBuilder;
 }

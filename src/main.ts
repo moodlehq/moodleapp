@@ -72,6 +72,7 @@ bootstrapApplication(AppComponent, {
         provideAppInitializer(() => {
             CoreCronDelegate.register(CoreSiteInfoCronHandler.instance);
         }),
+        // eslint-disable-next-line @typescript-eslint/no-deprecated
         provideAnimations(),
         // HttpClient is used to make JSON requests. It fails for HEAD requests because there is no content.
         provideHttpClient(withInterceptors([coreInterceptorFn])),
