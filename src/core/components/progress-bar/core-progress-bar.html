@@ -4,8 +4,7 @@
         [attr.aria-valuetext]="progressBarValueText()" [attr.aria-describedby]="ariaDescribedBy()">
     </progress>
     <div class="core-progress-text">
-        @let a11yTextValue = a11yText();
-        @if (a11yTextValue) {
+        @if (a11yText(); as a11yTextValue) {
             <span class="sr-only">{{ a11yTextValue | translate }}</span>
         }
         {{ textToDisplay() }}

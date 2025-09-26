@@ -1,4 +1,3 @@
-@let badgeToShow = badge();
 <ion-header>
     <ion-toolbar>
         <ion-buttons slot="start">
@@ -6,7 +5,7 @@
         </ion-buttons>
         <ion-title>
             <h1>
-                @if (badgeToShow) {
+                @if (badge(); as badgeToShow) {
                     <core-format-text [text]="badgeToShow.name" />
                 } @else {
                     {{ 'addon.badges.badges' | translate }}
@@ -20,7 +19,7 @@
         <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}" />
     </ion-refresher>
     <core-loading [hideUntil]="loaded()" placeholderType="imageandboxes">
-        @if (badgeToShow) {
+        @if (badge(); as badgeToShow) {
             <ion-row class="ion-wrap list-item-limited-width">
                 <ion-col size="auto" class="ion-text-center">
                     @if (badgeToShow.badgeurl) {
