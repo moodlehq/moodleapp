@@ -88,12 +88,12 @@
                         <ion-row *ngFor="let week of month.weeks" class="addon-calendar-week" role="row">
                             <!-- Empty slots (first week). -->
                             <ion-col *ngFor="let value of week.prepadding" class="dayblank addon-calendar-day" role="cell" />
-                            <ion-col *ngFor="let day of week.days" class="addon-calendar-day ion-text-center" [ngClass]='{
-                                    "hasevents": day.hasevents,
-                                    "today": month.isCurrentMonth && day.istoday,
-                                    "weekend": day.isweekend,
-                                    "duration_finish": day.haslastdayofevent
-                                }' [class.addon-calendar-event-past-day]="month.isPastMonth || day.ispast" role="cell"
+                            <ion-col *ngFor="let day of week.days" class="addon-calendar-day ion-text-center"
+                                    [class.hasevents]="day.hasevents"
+                                    [class.today]="month.isCurrentMonth && day.istoday"
+                                    [class.weekend]="day.isweekend"
+                                    [class.duration_finish]="day.haslastdayofevent"
+                                    [class.addon-calendar-event-past-day]="month.isPastMonth || day.ispast" role="cell"
                                 (ariaButtonClick)="dayClicked(day.mday)" [tabindex]="activeView ? 0 : -1"
                                 [attr.aria-current]="month.isCurrentMonth && day.istoday ? 'date' : null">
                                 <p class="addon-calendar-day-number">

@@ -22,7 +22,7 @@
                 </ion-label>
             </ion-item>
         }
-        <ion-item button *ngFor="let handler of handlers" [ngClass]="['core-moremenu-handler', handler.class || '']"
+        <ion-item button *ngFor="let handler of handlers" [class]="['core-moremenu-handler', handler.class]"
             (click)="openHandler(handler)" [attr.aria-label]="handler.title | translate" [detail]="true">
             <ion-icon [name]="handler.icon" slot="start" aria-hidden="true" />
             <ion-label>

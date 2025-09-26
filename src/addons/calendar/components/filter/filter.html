@@ -10,7 +10,7 @@
 <ion-content [fullscreen]="true">
     <ion-list>
         @for (type of types; track type) {
-            <ion-item class="addon-calendar-event" [ngClass]="['addon-calendar-eventtype-'+type]">
+            <ion-item [class]="['addon-calendar-event', 'addon-calendar-eventtype-'+type]">
                 <ion-icon [name]="typeIcons[type]" slot="start" aria-hidden="true" />
                 <ion-toggle [(ngModel)]="filter[type]" (ionChange)="onChange()">
                     {{ 'addon.calendar.' + type + 'events' | translate}}

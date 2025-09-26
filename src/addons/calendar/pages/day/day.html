@@ -67,9 +67,9 @@
                             <ion-list class="list-item-limited-width">
                                 <ng-container *ngFor="let event of day.filteredEvents">
                                     <ion-card>
-                                        <ion-item class="addon-calendar-event ion-text-wrap" [attr.aria-label]="event.name"
-                                            (click)="gotoEvent(event.id, day)" [class.item-dimmed]="event.ispast"
-                                            [ngClass]="['addon-calendar-eventtype-'+event.eventtype]" button [detail]="false">
+                                        <ion-item [class]="['addon-calendar-event', 'ion-text-wrap', 'addon-calendar-eventtype-'+event.eventtype]"
+                                            [class.item-dimmed]="event.ispast" [attr.aria-label]="event.name"
+                                            (click)="gotoEvent(event.id, day)" button [detail]="false">
                                             @if (event.moduleIcon) {
                                                 <core-mod-icon [modicon]="event.moduleIcon" slot="start" [showAlt]="false"
                                                     [modname]="event.modulename" [componentId]="event.instance" [purpose]="event.purpose"

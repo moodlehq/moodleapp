@@ -87,7 +87,7 @@
                         [contextInstanceId]="module.id" [courseId]="courseId" [sanitize]="pageIsOffline" />
                 </h2>
             }
-            <article [ngClass]="{'addon-mod_wiki-noedit': !canEdit}">
+            <article [class.addon-mod_wiki-noedit]="!canEdit">
                 @if (pageContent) {
                     <core-format-text [component]="component" [componentId]="componentId" [text]="pageContent" contextLevel="module"
                         [contextInstanceId]="module.id" [courseId]="courseId" [sanitize]="pageIsOffline" />

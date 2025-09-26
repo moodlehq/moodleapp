@@ -1,8 +1,7 @@
 <ion-button fill="outline" expand="block" [href]="item().parsedData.linkurl" core-link capture="true">
     <core-format-text [text]="content()" contextLevel="module" [contextInstanceId]="activity().cmid" [courseId]="courseId()" />
 
-    @let badgeVal = badge();
-    @if (badgeVal) {
+    @if (badge(); as badgeVal) {
         <ion-badge [color]="badgeColor()" [title]="badgeVal.title" class="ion-text-wrap">
             {{ badgeVal.value }}
         </ion-badge>

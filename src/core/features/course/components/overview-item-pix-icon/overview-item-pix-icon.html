@@ -1,6 +1,6 @@
 <core-loading [hideUntil]="icon() !== undefined" [fullscreen]="false">
     @if (icon()) {
-        <ion-icon [name]="icon()" [class]="extras().class ?? ''" [attr.aria-label]="extras().alt || null"
+        <ion-icon [name]="icon()" [class]="extras().class" [attr.aria-label]="extras().alt || null"
             [attr.title]="extras().title || null" />
     } @else {
         <!-- Couldn't load the icon value. Just render the text so the user can see something. -->

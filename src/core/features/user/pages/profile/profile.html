@@ -89,7 +89,7 @@
                             <ion-item>
                                 <ion-label>
                                     <ion-button *ngFor="let handler of buttonHandlers" expand="block" size="default"
-                                        [ngClass]="['core-user-profile-handler', handler.class || '']"
+                                        [class]="['core-user-profile-handler', handler.class]"
                                         (click)="handlerClicked($event, handler)" [hidden]="handler.hidden"
                                         [attr.aria-label]="handler.title | translate" [disabled]="handler.spinner">
                                         @if (handler.icon) {
@@ -121,8 +121,8 @@
                         </ion-label>
                     </ion-item>
                 }
-                <ion-item button *ngFor="let handler of listItemHandlers" class="ion-text-wrap" (click)="handlerClicked($event, handler)"
-                    [ngClass]="['core-user-profile-handler', handler.class || '']" [hidden]="handler.hidden"
+                <ion-item button *ngFor="let handler of listItemHandlers" (click)="handlerClicked($event, handler)"
+                    [class]="['ion-text-wrap', 'core-user-profile-handler', handler.class]" [hidden]="handler.hidden"
                     [attr.aria-label]="handler.title | translate" [detail]="true">
                     @if (handler.icon) {
                         <ion-icon [name]="handler.icon" slot="start" aria-hidden="true" />
