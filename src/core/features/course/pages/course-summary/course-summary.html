@@ -155,7 +155,7 @@
         <div class="list-item-limited-width">
             @if (canAccessCourse) {
                 @for (item of courseMenuHandlers; track item.name) {
-                    <ion-button (click)="openMenuItem(item)" [class]="'ion-text-wrap '+ item.data.class"
+                    <ion-button (click)="openMenuItem(item)" [class]="['ion-text-wrap', item.data.class]"
                         expand="block">
                         @if (item.data.icon) {
                             <ion-icon [name]="item.data.icon" slot="start" aria-hidden="true" />

@@ -69,7 +69,7 @@
             <thead>
                 <tr>
                     @for (header of overview.headers; track header.key) {
-                        <th class="core-course-overview-header-{{ header.key }}" [ngClass]="header.classes">{{ header.name }}</th>
+                        <th [class]="['core-course-overview-header-'+header.key, header.classes]">{{ header.name }}</th>
                     }
                 </tr>
             </thead>
@@ -78,7 +78,7 @@
                 @for (activity of overview.activities; track activity.cmid) {
                     <tr [class.core-course-overview-activity-has-error]="activity.haserror">
                         @for (item of activity.itemsToRender; track item.key) {
-                            <td class="core-course-overview-item-{{ item.key }}" [ngClass]="item.classes">
+                            <td [class]="['core-course-overview-item-'+ item.key, item.classes]">
                                 @if (item.component) {
                                     <core-dynamic-component [component]="item.component" [data]="item.componentData" />
                                 } @else if (item.content !== null) {

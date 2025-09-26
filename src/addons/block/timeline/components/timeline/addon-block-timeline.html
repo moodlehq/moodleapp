@@ -19,8 +19,8 @@
             <core-combobox [formControl]="filterFormControl" (selectionChange)="filterChanged($event)"
                 [label]="'addon.block_timeline.ariadayfilter' | translate">
                 @for (option of statusFilterOptions; let last = $last; track option.value) {
-                    <ion-select-option
-                        [attr.class]="'ion-text-wrap' + last ? ' core-select-option-border-bottom' : ''" [value]="option.value">
+                    <ion-select-option class="ion-text-wrap"
+                        [class.core-select-option-border-bottom]="last" [value]="option.value">
                         {{ option.name | translate }}
                     </ion-select-option>
                 }

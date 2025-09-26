@@ -43,8 +43,8 @@
                 </ion-item>
             }
 
-            <ion-item button *ngFor="let handler of handlers" class="ion-text-wrap" (click)="handlerClicked($event, handler)"
-                [ngClass]="['core-user-menu-handler', handler.class || '']" [hidden]="handler.hidden"
+            <ion-item button *ngFor="let handler of handlers" (click)="handlerClicked($event, handler)"
+                [class]="['ion-text-wrap', 'core-user-menu-handler', handler.class]" [hidden]="handler.hidden"
                 [attr.aria-label]="handler.title | translate" [detail]="true">
                 @if (handler.icon) {
                     <ion-icon [name]="handler.icon" slot="start" aria-hidden="true" />
@@ -67,9 +67,10 @@
                 }
             </ion-item>
 
-            <ion-item button *ngFor="let handler of accountHandlers; let first = first" class="ion-text-wrap"
+            <ion-item button *ngFor="let handler of accountHandlers; let first = first"
                 (click)="handlerClicked($event, handler)"
-                [ngClass]="['core-user-account-menu-handler', handler.class || '', first ? 'core-user-menu-separator' : '']"
+                [class]="['ion-text-wrap', 'core-user-account-menu-handler', handler.class]"
+                [class.core-user-menu-separator]="first"
                 [hidden]="handler.hidden" [attr.aria-label]="handler.title | translate" [detail]="true">
                 @if (handler.icon) {
                     <ion-icon [name]="handler.icon" slot="start" aria-hidden="true" />
