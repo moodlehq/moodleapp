@@ -1048,7 +1048,7 @@ export class CoreDom {
         if (elementToFocus.classList.contains('ion-focusable')) {
             const app = elementToFocus.closest('ion-app');
             if (app) {
-                app.setFocus([elementToFocus]);
+                app.setFocus([elementToFocus as HTMLElement]);
             }
 
             if (document.activeElement === elementToFocus) {
@@ -1077,7 +1077,7 @@ export class CoreDom {
 
             if (elementToFocus === document.activeElement || (isIonButton && element === document.activeElement)) {
                 await CoreWait.nextTick();
-                if (CorePlatform.isAndroid() && CoreDom.supportsInputKeyboard(elementToFocus)) {
+                if (CorePlatform.isAndroid() && CoreDom.supportsInputKeyboard(elementToFocus as HTMLElement)) {
                     // On some Android versions the keyboard doesn't open automatically.
                     CoreKeyboard.open();
                 }
