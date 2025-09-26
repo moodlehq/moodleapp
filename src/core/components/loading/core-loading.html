@@ -29,12 +29,12 @@
                     <ion-skeleton-text class="large-avatar ion-text-center round" [animated]="true" />
                     @for (i of placeholderLimit()|coreTimes; track i) {
                         <ion-skeleton-text class="placeholder-element" [animated]="true"
-                            [ngStyle]="{'width': placeholderWidth(), 'height': placeholderHeight()}" />
+                            [style.width]="placeholderWidth()" [style.height]="placeholderHeight()" />
                     }
                 } @else {
                     @for (i of placeholderLimit()|coreTimes; track i) {
                         <ion-skeleton-text class="placeholder-element" [animated]="true"
-                            [ngStyle]="{'width': placeholderWidth(), 'height': placeholderHeight()}" />
+                            [style.width]="placeholderWidth()" [style.height]="placeholderHeight()" />
                     }
                 }
             </div>
