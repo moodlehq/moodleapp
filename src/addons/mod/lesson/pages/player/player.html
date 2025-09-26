@@ -30,7 +30,7 @@
         }
 
         @if (lesson) {
-            <div [ngClass]='{"addon-mod_lesson-slideshow": lesson.slideshow}' [ngStyle]="{'width': lessonWidth, 'height': lessonHeight}">
+            <div [class.addon-mod_lesson-slideshow]="lesson.slideshow" [ngStyle]="{'width': lessonWidth, 'height': lessonHeight}">
 
                 @if (endTime) {
                     <core-timer [endTime]="endTime" (finished)="timeUp()" [timeLeftClassThreshold]="-1"

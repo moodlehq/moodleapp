@@ -85,7 +85,7 @@
                     <!-- Pages. -->
                     <!-- The "text-dimmed" class does nothing, but the same goes for the "dimmed" class in Moodle. -->
                     <ion-card *ngFor="let page of retake.answerpages" class="addon-mod_lesson-answerpage"
-                        [ngClass]="{'text-dimmed': page.grayout}">
+                        [class.text-dimmed]="page.grayout">
                         <ion-card-header class="ion-text-wrap">
                             <ion-card-title>{{page.qtype}}: {{page.title}}</ion-card-title>
                         </ion-card-header>
@@ -140,7 +140,7 @@
 
                                         <!-- Truefalse or multichoice. -->
                                         @if (answer[0].isCheckbox) {
-                                            <ion-item class="ion-text-wrap" [ngClass]="{'addon-mod_lesson-highlight': answer[0].highlight}">
+                                            <ion-item class="ion-text-wrap" [class.addon-mod_lesson-highlight]="answer[0].highlight">
                                                 <ion-checkbox [attr.name]="answer[0].name" [ngModel]="answer[0].checked" [disabled]="true">
                                                     <p>
                                                         <core-format-text [component]="component" [componentId]="lesson?.coursemodule"

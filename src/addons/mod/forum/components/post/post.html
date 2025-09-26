@@ -78,7 +78,7 @@
                 </ion-label>
             </ion-item>
         </ion-card-header>
-        <ion-card-content [class]="post.parentid === 0 ? 'ion-padding-top' : ''">
+        <ion-card-content [class.ion-padding-top]="post.parentid === 0">
             @if (post.isprivatereply) {
                 <div class="ion-padding-bottom">
                     <ion-note color="danger">{{ 'addon.mod_forum.postisprivatereply' | translate }}</ion-note>

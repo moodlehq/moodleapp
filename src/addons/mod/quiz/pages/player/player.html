@@ -93,7 +93,7 @@
                     @if (question.type !== 'description' && question.questionnumber) {
                         <ion-item (click)="!isSequential && canReturn && changePage(question.page, false, question.slot)"
                             [detail]="!isSequential && canReturn" [button]="!isSequential && canReturn"
-                            [class]="'ion-text-wrap ' + question.stateClass">
+                            [class]="['ion-text-wrap', question.stateClass]">
                             <ion-label class="ion-text-wrap">
                                 <p class="item-heading">
                                     {{ 'core.question.questionno' | translate:{$a: question.questionnumber} }}

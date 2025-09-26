@@ -177,7 +177,7 @@
                                             </ion-col>
                                         }
 
-                                        <ion-col [ngClass]="{'ion-text-center': overview.lessonscored}">
+                                        <ion-col [class.ion-text-center]="overview.lessonscored">
                                             <p class="item-heading">{{ 'addon.mod_lesson.averagetime' | translate }}</p>
                                             @if (overview.avetime !== null && overview.numofattempts) {
                                                 <p>{{ avetimeReadable }}</p>
@@ -202,7 +202,7 @@
                                             </ion-col>
                                         }
 
-                                        <ion-col [ngClass]="{'ion-text-center': overview.lessonscored}">
+                                        <ion-col [class.ion-text-center]="overview.lessonscored">
                                             <p class="item-heading">{{ 'addon.mod_lesson.hightime' | translate }}</p>
                                             @if (overview.hightime !== null) {
                                                 <p>{{ hightimeReadable }}</p>
@@ -225,7 +225,7 @@
                                             </ion-col>
                                         }
 
-                                        <ion-col [ngClass]="{'ion-text-center': overview.lessonscored}">
+                                        <ion-col [class.ion-text-center]="overview.lessonscored">
                                             <p class="item-heading">{{ 'addon.mod_lesson.lowtime' | translate }}</p>
                                             @if (overview.lowtime !== null) {
                                                 <p>{{ lowtimeReadable }}</p>
@@ -262,7 +262,7 @@
     </core-tabs>
 
     @if (!showLoading) {
-        <div collapsible-footer slot="fixed" [ngClass]="{ 'ion-margin-bottom': showSpinner }">
+        <div collapsible-footer slot="fixed" [class.ion-margin-bottom]="showSpinner">
             @if (!canViewReports && ((lesson && !preventReasons.length) || retakeToReview)) {
                 <div class="list-item-limited-width">
                     <core-loading [hideUntil]="!showSpinner">

@@ -24,7 +24,7 @@
                     @if (question.isPlainText) {
                         <!-- Plain text textarea. -->
                         <ion-textarea [ariaLabel]="'core.question.answer' | translate" class="core-question-textarea"
-                            [ngClass]='{"core-monospaced": question.isMonospaced}' placeholder="{{ 'core.question.answer' | translate }}"
+                            [class.core-monospaced]="question.isMonospaced" placeholder="{{ 'core.question.answer' | translate }}"
                             [attr.name]="question.textarea.name" [ngModel]="question.textarea.text" />
                     } @else {
                         <!-- Rich text editor. -->
@@ -76,7 +76,7 @@
             @if (question.answer || question.answer === '') {
                 <ion-item class="ion-text-wrap">
                     <ion-label>
-                        <core-format-text [ngClass]='{"core-monospaced": question.isMonospaced}' [component]="component"
+                        <core-format-text [class.core-monospaced]="question.isMonospaced" [component]="component"
                             [componentId]="componentId" [text]="question.answer" [contextLevel]="contextLevel"
                             [contextInstanceId]="contextInstanceId" [courseId]="courseId" />
                     </ion-label>
