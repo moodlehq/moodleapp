@@ -35,7 +35,7 @@
                         <span class="core-course-enrol-icons">
                             @for (icon of enrolmentIcons; track icon.label) {
                                 <ion-icon color="medium" [name]="icon.icon" [title]="icon.label | translate"
-                                    [attr.aria-label]="icon.label | translate" [ngClass]="[icon.className]" />
+                                    [attr.aria-label]="icon.label | translate" [class]="icon.className" />
                             }
                         </span>
                     }

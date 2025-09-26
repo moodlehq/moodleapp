@@ -97,7 +97,7 @@
                                                     </td>
                                                 } @else if (column.name !== 'gradeitem' && column.name !== 'feedback' &&
                                                         column.name !== 'grade' && row[column.name] !== undefined) {
-                                                    <td [class]="'ion-text-start core-grades-table-' + column.name"
+                                                    <td [class]="['ion-text-start', 'core-grades-table-' + column.name]"
                                                         [class.ion-hide-md-down]="column.hiddenPhone" [innerHTML]="row[column.name]">
                                                     </td>
                                                 }

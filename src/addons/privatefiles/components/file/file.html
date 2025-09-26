@@ -1,7 +1,7 @@
 <ion-card class="card-file ion-activatable">
 
     @if (file) {
-        <ion-item [ngClass]="{ 'file-selected': showCheckbox && selected }" class="ion-text-wrap item-file" [detail]="false">
+        <ion-item [class.file-selected]="showCheckbox && selected" class="ion-text-wrap item-file" [detail]="false">
 
             @if (showCheckbox) {
                 <ion-checkbox labelPlacement="start" [(ngModel)]="selected" (ngModelChange)="onSelectedFileChange.emit($event)" />

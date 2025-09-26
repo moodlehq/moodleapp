@@ -134,7 +134,7 @@
 
 <!-- Template site selector. -->
 <ng-template #sitelisting let-site="site">
-    <ion-item button (click)="connect(site.url, $event)" [ngClass]="site.className" [attr.aria-label]="site.name" [detail]="true">
+    <ion-item button (click)="connect(site.url, $event)" [class]="site.className" [attr.aria-label]="site.name" [detail]="true">
         @if (siteFinderSettings.displayimage) {
             <ion-thumbnail slot="start">
                 @if (site.imageurl) {

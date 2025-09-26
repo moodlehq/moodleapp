@@ -155,7 +155,7 @@
 
                 @if (timeRemaining || timeLimitEndTime > 0) {
                     <!-- Time remaining. -->
-                    <ion-item class="ion-text-wrap" [ngClass]="[timeRemainingClass]">
+                    <ion-item [class]="['ion-text-wrap', timeRemainingClass]">
                         <ion-label>
                             <p class="item-heading">{{ 'addon.mod_assign.timeremaining' | translate }}</p>
                             @if (timeLimitEndTime > 0) {
@@ -181,7 +181,8 @@
                 @if (lastAttempt && isSubmittedForGrading && lastAttempt.caneditowner !== undefined) {
                     <!-- Editing status. -->
                     <ion-item class="ion-text-wrap"
-                        [ngClass]="{submissioneditable: lastAttempt.caneditowner, submissionnoteditable: !lastAttempt.caneditowner}">
+                            [class.submissioneditable]="lastAttempt.caneditowner"
+                            [class.submissionnoteditable]="!lastAttempt.caneditowner">
                         <ion-label>
                             <p class="item-heading">{{ 'addon.mod_assign.editingstatus' | translate }}</p>
                             @if (lastAttempt.caneditowner) {

@@ -38,8 +38,8 @@
             <!-- List of SCOs. -->
             <ng-container *ngFor="let sco of toc">
                 @if (sco.isvisible) {
-                    <ion-item class="ion-text-wrap" [detail]="sco.prereq && sco.launch"
-                        [ngClass]="'core-padding-' + sco.level + ' addon-mod_scorm-type-' + sco.scormtype"
+                    <ion-item [class]="['ion-text-wrap', 'core-padding-' + sco.level, 'addon-mod_scorm-type-' + sco.scormtype]"
+                        [detail]="sco.prereq && sco.launch"
                         [attr.aria-current]="selected === sco.id ? 'page' : 'false'" (click)="loadSco(sco)"
                         [disabled]="!sco.prereq || !sco.launch ? true : null" [button]="sco.prereq && sco.launch">
                         @if (sco.icon) {

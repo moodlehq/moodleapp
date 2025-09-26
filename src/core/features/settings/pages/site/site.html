@@ -16,7 +16,7 @@
         </ion-refresher>
         <core-loading [hideUntil]="handlers.loaded" placeholderType="column" placeholderHeight="48px">
             <ion-list>
-                <ion-item *ngFor="let handler of handlerItems" class="core-settings-handler" lines="none" [ngClass]="handler.class"
+                <ion-item *ngFor="let handler of handlerItems" lines="none" [class]="['core-settings-handler', handler.class]"
                     [attr.aria-label]="handler.title | translate" (click)="!handler.toggle && handlers.select(handler)"
                     [button]="!handler.toggle" [detail]="!handler.toggle" [attr.aria-current]="handlers.getItemAriaCurrent(handler)">
                     @if (handler.icon) {

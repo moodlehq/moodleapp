@@ -8,7 +8,7 @@
 
 
 <ng-template #dateTemplate>
-    <span [ngClass]='{"text-dimmed": isPast(), "text-danger": isNear()}' [attr.title]="needTitle() ? absoluteDate() : null">
+    <span [class.text-dimmed]="isPast()" [class.text-danger]="isNear()" [attr.title]="needTitle() ? absoluteDate() : null">
         @if (isNear()) {
             <ion-icon class="text-warning" name="fas-triangle-exclamation" [attr.aria-label]="'core.warning' | translate" />
         }
