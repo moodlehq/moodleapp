@@ -13,8 +13,7 @@
         <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}" />
     </ion-refresher>
     <core-loading [hideUntil]="loaded()">
-        @let userDisplay = user();
-        @if (userDisplay) {
+        @if (user(); as userDisplay) {
             <ion-item class="ion-text-wrap">
                 <core-user-avatar [user]="userDisplay" [courseId]="courseId()" slot="start" [linkProfile]="false" />
                 <ion-label>
