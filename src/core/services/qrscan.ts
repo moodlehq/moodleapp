@@ -21,7 +21,6 @@ import { CoreModals } from './overlays/modals';
 import { CorePlatform } from './platform';
 import { Subscription } from 'rxjs';
 import { CoreCustomURLSchemes } from './urlschemes';
-import { QRScannerStatus } from '@moodlehq/cordova-plugin-qrscanner';
 import { QRScannerCamera, QRScannerErrorCode } from '@features/native/plugins/qrscanner';
 import { CoreAlerts } from './overlays/alerts';
 
@@ -33,7 +32,6 @@ export class CoreQRScanService {
 
     protected qrScanData?: {deferred: CorePromisedValue<string>; observable: Subscription};
     protected initialColorSchemeContent = 'light dark';
-    protected status: QRScannerStatus | undefined;
 
     /**
      * Check whether the app can scan QR codes.
@@ -226,10 +224,9 @@ export class CoreQRScanService {
      * @returns Whether the QR scanner camera light can be enabled.
      */
     async canEnableLight(): Promise<boolean> {
+        const status = await QRScanner.getStatus();
 
-        this.status = await QRScanner.getStatus();
-
-        return !!this.status?.canEnableLight;
+        return !!status.canEnableLight;
     }
 
     /**
@@ -238,35 +235,48 @@ export class CoreQRScanService {
      * @returns Whether the QR scanner can switch camera.
      */
     async canSwitchCamera(): Promise<boolean> {
-        this.status = await QRScanner.getStatus();
+        const status = await QRScanner.getStatus();
 
-        return !!this.status?.canChangeCamera;
+        return !!status.canChangeCamera;
     }
 
     /**
      * Toggle the light of the camera.
      *
-     * @returns Promise resolved with the QR scanner status.
+     * @param enable Whether to enable or disable the light.
+     * @returns Whether the light is enabled or not after toggling.
      */
-    async toggleLight(): Promise<boolean> {
-        this.status = this.status?.lightEnabled
-            ? await QRScanner.disableLight()
-            : await QRScanner.enableLight();
+    async toggleLight(enable?: boolean): Promise<boolean> {
+        if (enable === undefined) {
+            let status = await QRScanner.getStatus();
 
-        return this.status.lightEnabled;
+            status = status.lightEnabled
+                ? await QRScanner.disableLight()
+                : await QRScanner.enableLight();
+
+            return !!status.lightEnabled;
+        } else {
+            const status = enable
+                ? await QRScanner.enableLight()
+                : await QRScanner.disableLight();
+
+            return !!status.lightEnabled;
+        }
     }
 
      /**
       * Toggle the camera of the phone.
       *
-      * @returns Promise resolved with the QR scanner status.
+      * @returns The current camera being used after toggling.
       */
     async toggleCamera(): Promise<number> {
-        this.status = this.status?.currentCamera === QRScannerCamera.FRONT_CAMERA
+        let status = await QRScanner.getStatus();
+
+        status = status.currentCamera === QRScannerCamera.FRONT_CAMERA
             ? await QRScanner.useBackCamera()
             : await QRScanner.useFrontCamera();
 
-        return this.status.currentCamera;
+        return status.currentCamera ?? QRScannerCamera.FRONT_CAMERA;
     }
 
     /**
@@ -274,18 +284,21 @@ export class CoreQRScanService {
      *
      * @returns Whether the light is enabled or not.
      */
-    isLightEnabled(): boolean {
-        return !!this.status?.lightEnabled;
+    async isLightEnabled(): Promise<boolean> {
+        const status = await QRScanner.getStatus();
+
+        return !!status.lightEnabled;
     }
 
     /**
      * Get the current camera being used by the QR scanner.
      *
      * @returns The current camera.
-     * @throws Error if the status is not available.
      */
-    getCurrentCamera(): QRScannerCamera {
-        return this.status?.currentCamera ?? QRScannerCamera.FRONT_CAMERA;
+    async getCurrentCamera(): Promise<QRScannerCamera> {
+        const status = await QRScanner.getStatus();
+
+        return status.currentCamera ?? QRScannerCamera.FRONT_CAMERA;
     }
 
 }

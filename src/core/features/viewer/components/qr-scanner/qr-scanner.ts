@@ -38,7 +38,7 @@ export class CoreViewerQRScannerComponent implements OnInit, OnDestroy {
     readonly canEnableTorch = signal(false);
     readonly canSwitchCamera = signal(false);
     readonly torchEnabled = signal(false);
-    readonly camera = signal(CoreQRScan.getCurrentCamera());
+    readonly camera = signal(QRScannerCamera.FRONT_CAMERA);
 
     readonly torchText = computed(() =>
         this.torchEnabled()
@@ -61,6 +61,16 @@ export class CoreViewerQRScannerComponent implements OnInit, OnDestroy {
 
             this.canEnableTorch.set(await CoreQRScan.canEnableLight());
             this.canSwitchCamera.set(await CoreQRScan.canSwitchCamera());
+
+            if (this.canSwitchCamera()) {
+                // Set initial camera.
+                this.camera.set(await CoreQRScan.getCurrentCamera());
+            }
+
+            if (this.canEnableTorch()) {
+                // Set initial torch state.
+                this.torchEnabled.set(await CoreQRScan.isLightEnabled());
+            }
 
             let text = await CoreQRScan.startScanQR();
 
@@ -116,8 +126,15 @@ export class CoreViewerQRScannerComponent implements OnInit, OnDestroy {
     async toggleCamera(): Promise<void> {
         this.camera.set(await CoreQRScan.toggleCamera());
 
-        // When cammera is switched, the light could be disabled.
-        this.torchEnabled.set(CoreQRScan.isLightEnabled());
+        const canEnableTorch = await CoreQRScan.canEnableLight();
+        this.canEnableTorch.set(canEnableTorch);
+
+        if (!canEnableTorch) {
+            // The new camera doesn't support torch, make sure it's disabled.
+            await CoreQRScan.toggleLight(false);
+        } else {
+            this.torchEnabled.set(await CoreQRScan.isLightEnabled());
+        }
     }
 
 }
