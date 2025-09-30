@@ -9,7 +9,8 @@
  * -------------------------------------------
  */
 :root {
-
+    --core-header-toolbar-background: #093ad3;
+    --core-header-toolbar-color: #ffffff;
 }
 
 /*
@@ -17,5 +18,7 @@
  * -------------------------------------------
  */
 :root.dark {
-
+    --medium: #00fffd;
+    --core-header-toolbar-background: #093ad3;
+    --core-header-toolbar-color: #ffffff;
 }
