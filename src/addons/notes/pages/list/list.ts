@@ -18,7 +18,6 @@ import { AddonNotes, AddonNotesNoteFormatted, AddonNotesPublishState } from '@ad
 import { AddonNotesOffline } from '@addons/notes/services/notes-offline';
 import { AddonNotesSync } from '@addons/notes/services/notes-sync';
 import { Component, OnDestroy, OnInit, viewChild } from '@angular/core';
-import { CoreAnimations } from '@components/animations';
 import { CoreUser, CoreUserProfile } from '@features/user/services/user';
 import { IonContent } from '@ionic/angular';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
@@ -42,7 +41,6 @@ import { CoreSharedModule } from '@/core/shared.module';
 @Component({
     selector: 'page-addon-notes-list-page',
     templateUrl: 'list.html',
-    animations: [CoreAnimations.SLIDE_IN_OUT],
     imports: [
         CoreSharedModule,
     ],

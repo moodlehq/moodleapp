@@ -14,7 +14,6 @@
 
 import { Component, input, output, computed } from '@angular/core';
 import { DownloadStatus } from '@/core/constants';
-import { CoreAnimations } from '@components/animations';
 import { toBoolean } from '@/core/transforms/boolean';
 import { CoreBaseModule } from '@/core/base.module';
 import { CoreFaIconDirective } from '@directives/fa-icon';
@@ -31,7 +30,6 @@ import { CoreUpdateNonReactiveAttributesDirective } from '@directives/update-non
     selector: 'core-download-refresh',
     templateUrl: 'core-download-refresh.html',
     styleUrl: 'download-refresh.scss',
-    animations: [CoreAnimations.SHOW_HIDE],
     imports: [
         CoreBaseModule,
         CoreUpdateNonReactiveAttributesDirective,
