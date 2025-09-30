@@ -13,7 +13,7 @@
 @if (displayMode && value && value.content) {
 
     @if (autoLink) {
-        <a [href]="value.content" core-link capture="true">{{ displayValue }}</a>
+        <a [href]="value.content" core-link [capture]="true">{{ displayValue }}</a>
     } @else {
         <span>{{ displayValue }}</span>
     }

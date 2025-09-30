@@ -27,7 +27,7 @@
                 <ion-label>
                     <p class="item-heading">{{site.fullname}}</p>
                     <p>
-                        <core-format-text [text]="site.siteName" clean="true" [siteId]="site.id" />
+                        <core-format-text [text]="site.siteName" [clean]="true" [siteId]="site.id" />
                     </p>
                     @if (displaySiteUrl) {
                         <p>{{site.siteUrl}}</p>
