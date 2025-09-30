@@ -2,7 +2,7 @@
 
     <!-- Download button. -->
     @if (status() === statusNotDownloaded) {
-        <ion-button fill="clear" (click)="download($event, false)" @coreShowHideAnimation
+        <ion-button fill="clear" (click)="download($event, false)" animate.enter="show-animation" animate.leave="hide-animation"
             [ariaLabel]="(statusTranslatable() || translates().notdownloaded) | translate: { name : statusSubject() }">
             <ion-icon slot="icon-only" name="fas-cloud-arrow-down" aria-hidden="true" />
         </ion-button>
@@ -10,7 +10,7 @@
 
     <!-- Refresh button. -->
     @if (status() === statusOutdated || (status() === statusDownloaded && !canTrustDownload())) {
-        <ion-button fill="clear" (click)="download($event, true)" @coreShowHideAnimation
+        <ion-button fill="clear" (click)="download($event, true)" animate.enter="show-animation" animate.leave="hide-animation"
             [ariaLabel]="(statusTranslatable() || translates().outdated) | translate: { name : statusSubject() }">
             <ion-icon slot="icon-only" name="fam-cloud-refresh" aria-hidden="true" />
         </ion-button>
@@ -21,7 +21,7 @@
         <ion-icon class="core-icon-downloaded ion-padding-horizontal" color="success" name="fam-cloud-done"
             [attr.aria-label]="(statusTranslatable() || translates().downloaded) | translate: { name : statusSubject() }" role="status" />
     } @else if (status() === statusDownloading) {
-        <ion-spinner @coreShowHideAnimation
+        <ion-spinner animate.enter="show-animation" animate.leave="hide-animation"
             [attr.aria-label]="(statusTranslatable() || translates().downloading) | translate: { name : statusSubject() }" />
     }
 
@@ -29,5 +29,6 @@
 
 <!-- Spinner. -->
 @if (loading()) {
-    <ion-spinner @coreShowHideAnimation [attr.aria-label]="translates().loading | translate: { name : statusSubject() }" />
+    <ion-spinner animate.enter="show-animation" animate.leave="hide-animation"
+        [attr.aria-label]="translates().loading | translate: { name : statusSubject() }" />
 }

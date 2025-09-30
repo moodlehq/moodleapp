@@ -38,7 +38,6 @@ import { CoreCommentsDBRecord } from '@features/comments/services/database/comme
 import { CoreTime } from '@singletons/time';
 import { CoreNetwork } from '@services/network';
 import { dayjs } from '@/core/utils/dayjs';
-import { CoreAnimations } from '@components/animations';
 import { CoreToasts, ToastDuration } from '@services/overlays/toasts';
 import { CoreLoadings } from '@services/overlays/loadings';
 import { CORE_COMMENTS_AUTO_SYNCED } from '@features/comments/constants';
@@ -56,7 +55,6 @@ import { CoreKeyboard } from '@singletons/keyboard';
 @Component({
     selector: 'page-core-comments-viewer',
     templateUrl: 'viewer.html',
-    animations: [CoreAnimations.SLIDE_IN_OUT],
     styleUrls: ['../../../../../theme/components/discussion.scss', 'viewer.scss'],
     imports: [
         CoreSharedModule,
