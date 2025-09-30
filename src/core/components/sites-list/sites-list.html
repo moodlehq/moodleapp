@@ -31,7 +31,7 @@
         <ion-item-divider sticky="true" class="core-sites-list-sitename ion-text-nowrap">
             <ion-label class="ion-text-nowrap">
                 <h2>
-                    <core-format-text [text]="site.siteName" clean="true" [siteId]="site.id" />
+                    <core-format-text [text]="site.siteName" [clean]="true" [siteId]="site.id" />
                 </h2>
                 @if (displaySiteUrl(site)) {
                     <p>

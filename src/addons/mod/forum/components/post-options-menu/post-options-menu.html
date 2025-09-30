@@ -22,7 +22,8 @@
                 </ion-item>
             }
             @if (url) {
-                <ion-item class="ion-text-wrap" [href]="url" core-link capture="false" button [detail]="false" [showBrowserWarning]="false">
+                <ion-item class="ion-text-wrap" [href]="url" core-link [capture]="false" button [detail]="false"
+                    [showBrowserWarning]="false">
                     <ion-icon name="fas-up-right-from-square" slot="start" aria-hidden="true" />
                     <ion-label>
                         <p class="item-heading">{{ 'core.openinbrowser' | translate }}</p>
