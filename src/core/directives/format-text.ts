@@ -15,16 +15,17 @@
 import {
     Directive,
     ElementRef,
-    Input,
     Output,
     EventEmitter,
-    OnChanges,
-    SimpleChange,
     ViewContainerRef,
     OnDestroy,
     ChangeDetectorRef,
     inject,
     viewChild,
+    input,
+    computed,
+    effect,
+    untracked,
 } from '@angular/core';
 
 import { CoreSites } from '@services/sites';
@@ -73,38 +74,112 @@ import { CoreBootstrap } from '@singletons/bootstrap';
 @Directive({
     selector: 'core-format-text',
 })
-export class CoreFormatTextDirective implements OnChanges, OnDestroy, AsyncDirective {
+export class CoreFormatTextDirective implements OnDestroy, AsyncDirective {
 
-    readonly collapsible = viewChild(CoreCollapsibleItemDirective);
-
-    @Input() text?: string; // The text to format.
-    @Input() siteId?: string; // Site ID to use.
-    @Input() component?: string; // Component for CoreExternalContentDirective.
-    @Input() componentId?: string | number; // Component ID to use in conjunction with the component.
-    @Input({ transform: toBoolean }) adaptImg = true; // Whether to adapt images to screen width.
-    @Input({ transform: toBoolean }) clean = false; // Whether all the HTML tags should be removed.
-    @Input({ transform: toBoolean }) singleLine = false; // Whether new lines should be removed. Only if clean=true.
-    @Input({ transform: toBoolean }) sanitize = false; // Whether to sanitize the text.
-    @Input() highlight?: string; // Text to highlight.
-    @Input({ transform: toBoolean }) filter?: boolean; // Whether to filter the text.
-                                                       // If not defined, true if contextLevel and instanceId are set.
-    @Input() contextLevel?: ContextLevel; // The context level of the text.
-    @Input() contextInstanceId?: number; // The instance ID related to the context.
-    @Input() courseId?: number; // Course ID the text belongs to. It can be used to improve performance with filters.
-    @Input({ transform: toBoolean }) wsNotFiltered = false; // If true it means the WS didn't filter the text for some reason.
-    @Input({ transform: toBoolean }) captureLinks = true; // Whether links should tried to be opened inside the app.
-    @Input({ transform: toBoolean }) openLinksInApp?: boolean; // Whether links should be opened in InAppBrowser.
-    @Input({ transform: toBoolean }) showBrowserWarningInLinks = true; // Whether to show browser warning in all links.
-    @Input({ transform: toBoolean }) disabled = false; // If disabled, autoplay elements will be disabled.
+    protected readonly collapsible = viewChild(CoreCollapsibleItemDirective);
 
     /**
+     * The text to format.
+     */
+    readonly text = input<string>('');
+    protected readonly textComputed = computed(() => {
+        const text = this.text();
+
+        return text ? text.trim() : '';
+    });
+
+    /**
+     * Site ID to use. If not defined, current site.
+     * Do not use it directly, use getSiteId() instead.
+     */
+    readonly siteId = input<string>();
+
+    /**
+     * Component and componentId to use when treating links and media for CoreExternalContentDirective.
+     */
+    readonly component = input<string>();
+    /**
+     * Component ID to use in conjunction with the component.
+     */
+    readonly componentId = input<string | number>();
+    /**
+     * Whether to adapt images to screen width.
+     */
+    readonly adaptImg = input(true, { transform: toBoolean });
+    /**
+     * Whether all the HTML tags should be removed.
+     */
+    readonly clean = input(false, { transform: toBoolean });
+    /**
+     * Whether to remove new lines from the text. Only if clean=true.
+     */
+    readonly singleLine = input(false, { transform: toBoolean });
+    /**
+     * Whether to sanitize the text.
+     */
+    readonly sanitize = input(false, { transform: toBoolean });
+    /**
+     * Text to highlight.
+     */
+    readonly highlight = input<string>();
+    /**
+     * Whether to filter the text. If not defined, true if contextLevel and instanceId are set.
+     */
+    readonly filter = input<boolean, undefined>(undefined, { transform: toBoolean });
+    /**
+     * The context level of the text.
+     */
+    readonly contextLevel = input<ContextLevel>();
+    /**
+     * The instance ID related to the context.
+     * Do not use it directly, use getContextInstanceId() instead.
+     */
+    readonly contextInstanceId = input<number>();
+
+    /**
+     * The course ID the text belongs to. It can be used to improve performance with filters.
+     */
+    readonly courseId = input<number>();
+    /**
+     * Whether the text has been returned from a web service that doesn't filter it, so we should always filter it.
+     */
+    readonly wsNotFiltered = input(false, { transform: toBoolean });
+    /**
+     * Whether links should be captured. If not, they will be opened in the system browser.
+     */
+    readonly captureLinks = input(true, { transform: toBoolean });
+    /**
+     * Whether links should be opened in InAppBrowser.
+     */
+    readonly openLinksInApp = input<boolean, undefined>(undefined, { transform: toBoolean });
+    /**
+     * Whether to show browser warning in all links.
+     */
+    readonly showBrowserWarningInLinks = input(true, { transform: toBoolean });
+    /**
+     * If true, autoplay elements will be disabled.
+     */
+    readonly disabled = input(false, { transform: toBoolean });
+
+    /**
+     * If true, the tag will contain nothing if text is empty.
+     *
      * @deprecated since 5.0. Not used anymore.
      */
-    @Input() hideIfEmpty = false; // If true, the tag will contain nothing if text is empty.
+    readonly hideIfEmpty = input(false);
 
-    @Output() afterRender = new EventEmitter<void>(); // Called when the data is rendered.
-    @Output() filterContentRenderingComplete = new EventEmitter<void>(); // Called when the filters have finished rendering content.
-    @Output() onClick: EventEmitter<void> = new EventEmitter(); // Called when clicked.
+    /**
+     * Called when the data is rendered.
+     */
+    @Output() afterRender = new EventEmitter<void>();
+    /**
+     * Called when the filters have finished rendering content.
+     */
+    @Output() filterContentRenderingComplete = new EventEmitter<void>();
+    /**
+     * Called when the element is clicked.
+     */
+    @Output() onClick: EventEmitter<void> = new EventEmitter();
 
     protected elementControllers: ElementController[] = [];
     protected domPromises: CoreCancellablePromise<void>[] = [];
@@ -124,25 +199,23 @@ export class CoreFormatTextDirective implements OnChanges, OnDestroy, AsyncDirec
         this.element.innerHTML = CoreFormatTextDirective.EMPTY_TEXT;
 
         this.element.addEventListener('click', (event: MouseEvent) => this.elementClicked(event));
-    }
 
-    /**
-     * @inheritdoc
-     */
-    ngOnChanges(changes: { [name: string]: SimpleChange }): void {
-        this.siteId = this.siteId ?? CoreSites.getCurrentSiteId();
+        effect(async () => {
+            // Refresh the contents if any of the relevant inputs change.
+            this.textComputed();
+            this.filter();
+            this.contextLevel();
+            this.contextInstanceId();
 
-        if (changes.text || changes.filter || changes.contextLevel || changes.contextInstanceId) {
-            this.formatAndRenderContents();
+            await untracked(async () => {
+                await this.formatAndRenderContents();
+            });
+        });
 
-            return;
-        }
-
-        if ('disabled' in changes) {
-            const disabled = changes['disabled'].currentValue;
-
+        effect(() => {
+            const disabled = this.disabled();
             this.elementControllers.forEach(controller => disabled ? controller.disable() : controller.enable());
-        }
+        });
     }
 
     /**
@@ -172,6 +245,52 @@ export class CoreFormatTextDirective implements OnChanges, OnDestroy, AsyncDirec
     }
 
     /**
+     * Get the siteId to use.
+     *
+     * @returns The siteId. Empty if no site is logged in.
+     */
+    protected getSiteId(): string {
+        return this.siteId() ?? CoreSites.getCurrentSiteId();
+    }
+
+    /**
+     * Get the site to use.
+     *
+     * @returns The site. Undefined if no site is logged in.
+     */
+    protected async getSite(): Promise<CoreSite | undefined> {
+        const siteId = this.getSiteId();
+
+        return await CorePromiseUtils.ignoreErrors(CoreSites.getSite(siteId));
+    }
+
+    /**
+     * Get the context instance ID to use.
+     *
+     * @returns The context instance ID. Undefined if not available.
+     */
+    protected async getContextInstanceId(): Promise<number | undefined> {
+        const contextLevel = this.contextLevel();
+        const courseId = this.courseId();
+        const contextInstanceId = this.contextInstanceId();
+
+        if (contextLevel !== ContextLevel.COURSE) {
+            return contextInstanceId;
+        }
+
+        if (contextInstanceId === undefined && courseId !== undefined) {
+            return courseId;
+        }
+
+        const site = await this.getSite();
+        if (site && contextInstanceId !== undefined && contextInstanceId <= 0) {
+            return site.getSiteHomeId();
+        }
+
+        return contextInstanceId;
+    }
+
+    /**
      * Apply CoreExternalContentDirective to a certain element.
      *
      * @param element Element to add the attributes to.
@@ -179,16 +298,17 @@ export class CoreFormatTextDirective implements OnChanges, OnDestroy, AsyncDirec
      * @returns External content instance or undefined if siteId is not provided.
      */
     protected addExternalContent(element: Element, onlyInlineStyles = false): CoreExternalContentDirective | undefined {
-        if (!this.siteId) {
+        const siteId = this.getSiteId();
+        if (!siteId) {
             return;
         }
 
         // Angular doesn't let adding directives dynamically. Create the CoreExternalContentDirective manually.
         const extContent = new CoreExternalContentDirective(new ElementRef(element));
 
-        extContent.component = this.component;
-        extContent.componentId = this.componentId;
-        extContent.siteId = this.siteId;
+        extContent.component = this.component();
+        extContent.componentId = this.componentId();
+        extContent.siteId = siteId;
         extContent.url = element.getAttribute('src') ?? element.getAttribute('href') ?? element.getAttribute('xlink:href');
         extContent.posterUrl = element.getAttribute('poster');
 
@@ -303,7 +423,7 @@ export class CoreFormatTextDirective implements OnChanges, OnDestroy, AsyncDirec
 
                 e.preventDefault();
                 e.stopPropagation();
-                CoreViewer.viewImage(imgSrc, img.getAttribute('alt'), this.component, this.componentId);
+                CoreViewer.viewImage(imgSrc, img.getAttribute('alt'), this.component(), this.componentId());
             });
 
             img.parentNode?.appendChild(button);
@@ -335,7 +455,7 @@ export class CoreFormatTextDirective implements OnChanges, OnDestroy, AsyncDirec
             return;
         }
 
-        if (!this.text) {
+        if (!this.textComputed()) {
             return;
         }
 
@@ -368,7 +488,7 @@ export class CoreFormatTextDirective implements OnChanges, OnDestroy, AsyncDirec
         this.externalContentInstances.forEach(extContent => extContent.ngOnDestroy());
         this.externalContentInstances = [];
 
-        if (!this.text) {
+        if (!this.textComputed()) {
             this.element.innerHTML = CoreFormatTextDirective.EMPTY_TEXT; // Remove current contents.
 
             await this.finishRender();
@@ -377,12 +497,10 @@ export class CoreFormatTextDirective implements OnChanges, OnDestroy, AsyncDirec
         }
 
         if (!this.element.getAttribute('singleLine')) {
-            this.element.setAttribute('singleLine', String(this.singleLine));
+            this.element.setAttribute('singleLine', String(this.singleLine()));
         }
 
-        this.text = this.text ? this.text.trim() : '';
-
-        const result = await this.formatContents();
+        const contentsFormatted = await this.formatContents();
 
         // Disable media adapt to correctly calculate the height.
         this.element.classList.add('core-disable-media-adapt');
@@ -390,34 +508,34 @@ export class CoreFormatTextDirective implements OnChanges, OnDestroy, AsyncDirec
         this.element.innerHTML = ''; // Remove current contents.
 
         // Move the children to the current element to be able to calculate the height.
-        CoreDom.moveChildren(result.div, this.element);
+        CoreDom.moveChildren(contentsFormatted.div, this.element);
 
         this.elementControllers.forEach(controller => controller.destroy());
-        this.elementControllers = result.elementControllers;
+        this.elementControllers = contentsFormatted.elementControllers;
 
         await CoreWait.nextTick();
 
         // Add magnifying glasses to images.
         this.addImageViewerButton();
 
-        if (result.options.filter) {
+        if (contentsFormatted.options.filter) {
             // Let filters handle HTML. We do it here because we don't want them to block the render of the text.
             CoreFilterDelegate.handleHtml(
                 this.element,
-                result.filters,
+                contentsFormatted.filters,
                 this.viewContainerRef,
-                result.options,
+                contentsFormatted.options,
                 [],
-                this.component,
-                this.componentId,
-                result.siteId,
+                this.component(),
+                this.componentId(),
+                this.getSiteId(),
             ).finally(() => {
                 this.filterContentRenderingComplete.emit();
             });
         }
 
         this.element.classList.remove('core-disable-media-adapt');
-        await this.finishRender(!result.options.filter);
+        await this.finishRender(!contentsFormatted.options.filter);
     }
 
     /**
@@ -426,30 +544,22 @@ export class CoreFormatTextDirective implements OnChanges, OnDestroy, AsyncDirec
      * @returns Promise resolved with a div element containing the code.
      */
     protected async formatContents(): Promise<FormatContentsResult> {
-        // Retrieve the site since it might be needed later.
-        const site = await CorePromiseUtils.ignoreErrors(CoreSites.getSite(this.siteId));
+        const siteId = this.getSiteId();
 
-        const siteId = site?.getId();
+        const contextLevel = this.contextLevel();
+        const courseId = this.courseId();
+        const contextInstanceId = await this.getContextInstanceId();
+        const text = this.textComputed();
 
-        if (
-            site && this.contextLevel === ContextLevel.COURSE && this.contextInstanceId !== undefined && this.contextInstanceId <= 0
-        ) {
-            this.contextInstanceId = site.getSiteHomeId();
-        }
-
-        if (this.contextLevel === ContextLevel.COURSE && this.contextInstanceId === undefined && this.courseId !== undefined) {
-            this.contextInstanceId = this.courseId;
-        }
-
-        const filter = this.filter ?? !!(this.contextLevel && this.contextInstanceId !== undefined);
+        const filter = this.filter() ?? !!(contextLevel && contextInstanceId !== undefined);
 
         const options: CoreFilterFormatTextOptions = {
-            clean: this.clean,
-            sanitize: this.sanitize,
-            singleLine: this.singleLine,
-            highlight: this.highlight,
-            courseId: this.courseId,
-            wsNotFiltered: this.wsNotFiltered,
+            clean: this.clean(),
+            sanitize: this.sanitize(),
+            singleLine: this.singleLine(),
+            highlight: this.highlight(),
+            courseId: courseId,
+            wsNotFiltered: this.wsNotFiltered(),
         };
 
         let formatted: string;
@@ -457,9 +567,9 @@ export class CoreFormatTextDirective implements OnChanges, OnDestroy, AsyncDirec
 
         if (filter && siteId) {
             const filterResult = await CoreFilterHelper.getFiltersAndFormatText(
-                this.text || '',
-                this.contextLevel || ContextLevel.SYSTEM,
-                this.contextInstanceId ?? -1,
+                text,
+                contextLevel ?? ContextLevel.SYSTEM,
+                contextInstanceId ?? -1,
                 options,
                 siteId,
             );
@@ -467,7 +577,7 @@ export class CoreFormatTextDirective implements OnChanges, OnDestroy, AsyncDirec
             filters = filterResult.filters;
             formatted = filterResult.text;
         } else {
-            formatted = await CoreFilter.formatText(this.text || '', options, [], siteId);
+            formatted = await CoreFilter.formatText(text, options, [], siteId);
         }
 
         formatted = this.treatWindowOpen(formatted);
@@ -476,13 +586,12 @@ export class CoreFormatTextDirective implements OnChanges, OnDestroy, AsyncDirec
 
         div.innerHTML = formatted;
 
-        const elementControllers = this.treatHTMLElements(div, site);
+        const elementControllers = await this.treatHTMLElements(div);
 
         return {
             div,
             filters,
             options,
-            siteId,
             elementControllers,
         };
     }
@@ -491,12 +600,13 @@ export class CoreFormatTextDirective implements OnChanges, OnDestroy, AsyncDirec
      * Treat HTML elements when formatting contents.
      *
      * @param div Div element.
-     * @param site Site instance.
      * @returns Promise resolved when done.
      */
-    protected treatHTMLElements(div: HTMLElement, site?: CoreSite): ElementController[] {
+    protected async treatHTMLElements(div: HTMLElement): Promise<ElementController[]> {
         // Treat alternative content elements first, that way the search of elements won't treat the elements that are removed.
         this.treatAlternativeContentElements(div);
+
+        const site = await this.getSite();
 
         const images = Array.from(div.querySelectorAll('img'));
         const anchors = Array.from(div.querySelectorAll('a'));
@@ -512,7 +622,7 @@ export class CoreFormatTextDirective implements OnChanges, OnDestroy, AsyncDirec
         const svgImages = Array.from(div.querySelectorAll('image'));
         const promises: Promise<void>[] = [];
 
-        this.treatAppUrlElements(div, site);
+        this.treatAppUrlElements(div);
 
         // Walk through the content to find the links and add our directive to it.
         // Important: We need to look for links first because in 'img' we add new links without core-link.
@@ -524,9 +634,9 @@ export class CoreFormatTextDirective implements OnChanges, OnDestroy, AsyncDirec
 
             // Angular doesn't let adding directives dynamically. Create the CoreLinkDirective manually.
             const linkDir = new CoreLinkDirective(new ElementRef(anchor));
-            linkDir.capture = this.captureLinks ?? true;
-            linkDir.inApp = this.openLinksInApp;
-            linkDir.showBrowserWarning = this.showBrowserWarningInLinks;
+            linkDir.capture = this.captureLinks() ?? true;
+            linkDir.inApp = this.openLinksInApp();
+            linkDir.showBrowserWarning = this.showBrowserWarningInLinks();
             linkDir.ngOnInit();
 
             this.addExternalContent(anchor);
@@ -543,7 +653,7 @@ export class CoreFormatTextDirective implements OnChanges, OnDestroy, AsyncDirec
                     externalImages.push(externalImage);
                 }
 
-                if (this.adaptImg && !img.classList.contains('icon')) {
+                if (this.adaptImg() && !img.classList.contains('icon')) {
                     this.adaptImage(img);
                 }
             });
@@ -552,13 +662,13 @@ export class CoreFormatTextDirective implements OnChanges, OnDestroy, AsyncDirec
         const audioControllers = audios.map(audio => {
             this.treatMedia(audio);
 
-            return new MediaElementController(audio, !this.disabled);
+            return new MediaElementController(audio, !this.disabled());
         });
 
         const videoControllers = videos.map(video => {
             this.treatMedia(video, true);
 
-            return new MediaElementController(video, !this.disabled);
+            return new MediaElementController(video, !this.disabled());
         });
 
         const iframeControllers = iframes.map(iframe => {
@@ -569,7 +679,7 @@ export class CoreFormatTextDirective implements OnChanges, OnDestroy, AsyncDirec
 
             promises.push(this.treatIframe(iframe, site));
 
-            return new FrameElementController(iframe, !this.disabled);
+            return new FrameElementController(iframe, !this.disabled());
         }).filter((controller): controller is FrameElementController => controller !== undefined);
 
         svgImages.forEach((image) => {
@@ -615,16 +725,18 @@ export class CoreFormatTextDirective implements OnChanges, OnDestroy, AsyncDirec
 
             CoreIframe.treatFrame(frame, false);
 
-            return new FrameElementController(frame, !this.disabled);
+            return new FrameElementController(frame, !this.disabled());
         }).filter((controller): controller is FrameElementController => controller !== undefined);
 
+        const contextInstanceId = await this.getContextInstanceId();
+
         CoreBootstrap.handleJS(div, {
-            siteId: this.siteId,
-            component: this.component,
-            componentId: this.componentId,
-            contextLevel: this.contextLevel,
-            contextInstanceId: this.contextInstanceId,
-            courseId: this.courseId,
+            siteId: this.getSiteId(),
+            component: this.component(),
+            componentId: this.componentId(),
+            contextLevel: this.contextLevel(),
+            contextInstanceId,
+            courseId: this.courseId(),
         });
 
         if (externalImages.length) {
@@ -694,9 +806,8 @@ export class CoreFormatTextDirective implements OnChanges, OnDestroy, AsyncDirec
      * Treat elements with an app-url data attribute.
      *
      * @param div Div containing the elements.
-     * @param site Site.
      */
-    protected treatAppUrlElements(div: HTMLElement, site?: CoreSite): void {
+    protected treatAppUrlElements(div: HTMLElement): void {
         const appUrlElements = Array.from(div.querySelectorAll<HTMLElement>('*[data-app-url]'));
 
         appUrlElements.forEach((element) => {
@@ -709,7 +820,7 @@ export class CoreFormatTextDirective implements OnChanges, OnDestroy, AsyncDirec
                 event.preventDefault();
                 event.stopPropagation();
 
-                site = site || CoreSites.getCurrentSite();
+                const site = await this.getSite();
                 if (!site || !url) {
                     return;
                 }
@@ -1014,8 +1125,8 @@ export class CoreFormatTextDirective implements OnChanges, OnDestroy, AsyncDirec
         button.addEventListener('click', () => {
             CoreIframe.frameLaunchExternal(url, {
                 site,
-                component: this.component,
-                componentId: this.componentId,
+                component: this.component(),
+                componentId: this.componentId(),
             });
         });
 
@@ -1078,5 +1189,4 @@ type FormatContentsResult = {
     filters: CoreFilterFilter[];
     elementControllers: ElementController[];
     options: CoreFilterFormatTextOptions;
-    siteId?: string;
 };
