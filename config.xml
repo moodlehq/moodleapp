@@ -72,6 +72,9 @@
         <edit-config file="AndroidManifest.xml" mode="merge" target="/manifest/application">
             <application android:allowBackup="false" android:largeHeap="true" android:networkSecurityConfig="@xml/network_security_config" />
         </edit-config>
+        <edit-config file="AndroidManifest.xml" mode="merge" target="/manifest/application/activity">
+            <activity android:enableOnBackInvokedCallback="false" />
+        </edit-config>
         <config-file parent="/manifest/application" target="AndroidManifest.xml">
             <meta-data android:name="firebase_analytics_collection_deactivated" android:value="true" />
         </config-file>
