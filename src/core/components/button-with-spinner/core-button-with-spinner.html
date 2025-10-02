@@ -1,7 +1,7 @@
 @if (loading()) {
-    <ion-spinner @coreShowHideAnimation [attr.aria-label]="loadingLabel() | translate" />
+    <ion-spinner animate.enter="show-animation" animate.leave="hide-animation" [attr.aria-label]="loadingLabel() | translate" />
 } @else {
-    <div @coreShowHideAnimation>
+    <div animate.enter="show-animation" animate.leave="hide-animation">
         <ng-content />
     </div>
 }

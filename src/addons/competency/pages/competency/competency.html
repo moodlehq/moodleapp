@@ -99,7 +99,7 @@
                                 </p>
                             }
                             <ion-item class="ion-text-wrap" *ngFor="let activity of coursemodules" [href]="activity.url"
-                                [attr.aria-label]="activity.name" core-link capture="true">
+                                [attr.aria-label]="activity.name" core-link [capture]="true">
                                 @if (activity.iconurl) {
                                     <core-mod-icon slot="start" [modicon]="activity.iconurl" [showAlt]="false" [colorize]="false" />
                                 }

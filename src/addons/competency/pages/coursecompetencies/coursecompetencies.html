@@ -147,7 +147,7 @@
                                     </p>
                                 }
                                 <ion-item class="ion-text-wrap core-course-module-handler" [attr.aria-label]="activity.name" core-link
-                                    *ngFor="let activity of competency.coursemodules" [href]="activity.url" capture="true">
+                                    *ngFor="let activity of competency.coursemodules" [href]="activity.url" [capture]="true">
                                     @if (activity.iconurl) {
                                         <core-mod-icon slot="start" [modicon]="activity.iconurl" [showAlt]="false" [colorize]="false" />
                                     }
@@ -166,7 +166,7 @@
                                         </p>
                                     }
                                     <ion-item class="ion-text-wrap" *ngFor="let plan of competency.plans" [href]="plan.url"
-                                        [attr.aria-label]="plan.name" core-link capture="true">
+                                        [attr.aria-label]="plan.name" core-link [capture]="true">
                                         <ion-label>
                                             <core-format-text [text]="plan.name" contextLevel="user" [contextInstanceId]="plan.userid" />
                                         </ion-label>

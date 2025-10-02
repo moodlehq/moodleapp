@@ -34,7 +34,7 @@ For further details, see <https://moodledev.io/general/community/plugincontribut
 
 [1]: https://moodle.org
 [2]: https://moodledev.io/general/app/development/development-guide
-[3]: https://tracker.moodle.org
+[3]: https://moodle.atlassian.net
 [4]: https://github.com/moodlehq/moodleapp
 [5]: https://moodledev.io/general/development/process/security
 [6]: https://moodledev.io/general/app/development/plugins-development-guide

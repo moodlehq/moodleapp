@@ -81,7 +81,7 @@
                     </ion-label>
                 </ion-item>
                 @if (courseName) {
-                    <ion-item class="ion-text-wrap" [href]="courseUrl" core-link capture="true" [detail]="true">
+                    <ion-item class="ion-text-wrap" [href]="courseUrl" core-link [capture]="true" [detail]="true">
                         <ion-label>
                             <p class="item-heading">{{ 'core.course' | translate}}</p>
                             <p>
@@ -137,7 +137,7 @@
                 @if (moduleUrl) {
                     <ion-item>
                         <ion-label>
-                            <ion-button expand="block" [href]="moduleUrl" core-link capture="true">
+                            <ion-button expand="block" [href]="moduleUrl" core-link [capture]="true">
                                 {{ 'addon.calendar.gotoactivity' | translate }}
                             </ion-button>
                         </ion-label>

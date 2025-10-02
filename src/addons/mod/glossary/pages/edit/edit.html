@@ -31,7 +31,7 @@
 
                 @if (categories.length > 0) {
                     <ion-item>
-                        <ion-select labelPlacement="stacked" [(ngModel)]="data.categories" multiple="true" interface="action-sheet"
+                        <ion-select labelPlacement="stacked" [(ngModel)]="data.categories" [multiple]="true" interface="action-sheet"
                             [placeholder]="'addon.mod_glossary.categories' | translate" name="categories"
                             [cancelText]="'core.cancel' | translate"
                             [interfaceOptions]="{header: 'addon.mod_glossary.categories' | translate}"

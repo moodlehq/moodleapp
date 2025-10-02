@@ -32,14 +32,14 @@
             </div>
 
             @if (showDelete() && !messageValue.deleted && messageValue.delete !== false) {
-                <ion-button fill="clear" [@coreSlideInOut]="'fromRight'" color="danger" (click)="delete($event)"
-                    [ariaLabel]="'addon.messages.deletemessage' | translate" class="delete-button">
+                <ion-button fill="clear"  color="danger" animate.enter="slide-in-right-animation" animate.leave="slide-out-right-animation"
+                    (click)="delete($event)" [ariaLabel]="'addon.messages.deletemessage' | translate" class="delete-button">
                     <ion-icon name="fas-trash" slot="icon-only" aria-hidden="true" />
                 </ion-button>
             }
             @if (showDelete() && messageValue.deleted) {
-                <ion-button fill="clear" [@coreSlideInOut]="'fromRight'" color="danger" (click)="undoDelete($event)"
-                    [ariaLabel]="'core.restore' | translate" class="delete-button">
+                <ion-button fill="clear" color="danger" animate.enter="slide-in-right-animation" animate.leave="slide-out-right-animation"
+                    (click)="undoDelete($event)" [ariaLabel]="'core.restore' | translate" class="delete-button">
                     <ion-icon name="fas-rotate-left" slot="icon-only" aria-hidden="true" />
                 </ion-button>
             }

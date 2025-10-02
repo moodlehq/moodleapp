@@ -1,5 +1,6 @@
 @if (!hideUntil()) {
-    <div class="core-loading-container" role="status" @coreShowHideAnimation [attr.aria-label]="message()">
+    <div class="core-loading-container" role="status" animate.enter="show-animation" animate.leave="hide-animation"
+        [attr.aria-label]="message()">
         @if (!placeholderType()) {
             <ion-spinner aria-hidden="true" />
             @if (message()) {
@@ -40,7 +41,6 @@
             </div>
         }
     </div>
-}
-@if (hideUntil()) {
-    <ng-content @coreShowHideAnimation />
+} @else {
+    <ng-content />
 }

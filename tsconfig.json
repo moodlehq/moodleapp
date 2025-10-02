@@ -28,7 +28,6 @@
       "cordova-plugin-moodleapp",
       "cordova",
       "dom-mediacapture-record",
-      "faker",
       "jest",
       "node",
       "resize-observer-browser",

@@ -1,3 +1,5 @@
+// Some Bootstrap support on this file has been removed in favour of the app styles.
+
 // This mixin uses an `if()` technique to be compatible with Dart Sass
 // See https://github.com/sass/sass/issues/1873#issuecomment-152293725 for more details
 
@@ -89,60 +91,11 @@
     }
   }
 
-  .form-select {
-    @include form-validation-state-selector($state) {
-      border-color: $border-color;
-
-      @if $enable-validation-icons {
-        &:not([multiple]):not([size]),
-        &:not([multiple])[size="1"] {
-          --#{$prefix}form-select-bg-icon: #{escape-svg($icon)};
-          padding-right: $form-select-feedback-icon-padding-end;
-          background-position: $form-select-bg-position, $form-select-feedback-icon-position;
-          background-size: $form-select-bg-size, $form-select-feedback-icon-size;
-        }
-      }
-
-      &:focus {
-        border-color: $border-color;
-        @if $enable-shadows {
-          @include box-shadow($form-select-box-shadow, $focus-box-shadow);
-        } @else {
-          // Avoid using mixin so we can pass custom focus shadow properly
-          box-shadow: $focus-box-shadow;
-        }
-      }
-    }
-  }
-
   .form-control-color {
     @include form-validation-state-selector($state) {
       @if $enable-validation-icons {
         width: add($form-color-width, $input-height-inner);
       }
-    }
-  }
-
-  .form-check-input {
-    @include form-validation-state-selector($state) {
-      border-color: $border-color;
-
-      &:checked {
-        background-color: $color;
-      }
-
-      &:focus {
-        box-shadow: $focus-box-shadow;
-      }
-
-      ~ .form-check-label {
-        color: $color;
-      }
-    }
-  }
-  .form-check-inline .form-check-input {
-    ~ .#{$state}-feedback {
-      margin-left: .5em;
     }
   }
 

@@ -307,6 +307,7 @@ core-rich-text-editor .core-rte-editor {
         -webkit-appearance: none;
     }
 
+    --input-size: var(--size, 20px);
     input[type=radio],
     input[type=checkbox] {
         position: relative !important;
@@ -314,8 +315,8 @@ core-rich-text-editor .core-rte-editor {
         --color: var(--text-color);
         --color-checked: var(--color);
 
-        width: var(--size);
-        height: var(--size);
+        width: var(--input-size);
+        height: var(--input-size);
         border-radius: var(--border-radius);
         border-width: var(--outer-border-width);
         border-style: var(--border-style);
@@ -331,7 +332,9 @@ core-rich-text-editor .core-rte-editor {
         }
 
         & + label {
-            line-height: var(--size);
+            line-height: var(--input-size);
+            margin-top: 2px;
+            margin-bottom: 2px;
         }
     }
 

@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit, OnDestroy, effect, viewChild } from '@angular/core';
+import { Component, OnInit, OnDestroy, effect, viewChild, signal, ElementRef, inject } from '@angular/core';
 import { IonTabs } from '@ionic/angular';
 import { BackButtonEvent } from '@ionic/core';
 import { Subscription } from 'rxjs';
@@ -26,7 +26,6 @@ import { CoreAriaRoleTab, CoreAriaRoleTabFindable } from '@classes/aria-role-tab
 import { CoreNavigator } from '@services/navigator';
 import { filter } from 'rxjs/operators';
 import { NavigationEnd } from '@angular/router';
-import { trigger, state, style, transition, animate } from '@angular/animations';
 import { CoreSites } from '@services/sites';
 import { CoreDom } from '@singletons/dom';
 import { CoreLogger } from '@singletons/logger';
@@ -46,36 +45,12 @@ import { CoreMainMenuUserButtonComponent } from '../../components/user-menu-butt
 import { BackButtonPriority } from '@/core/constants';
 import { CoreKeyboard } from '@singletons/keyboard';
 
-const ANIMATION_DURATION = 500;
-
 /**
  * Page that displays the main menu of the app.
  */
 @Component({
     selector: 'page-core-mainmenu',
     templateUrl: 'menu.html',
-    animations: [
-        /* eslint-disable @typescript-eslint/no-deprecated */
-        trigger('menuVisibilityAnimation', [
-            state('hidden', style({
-                height: 0,
-                visibility: 'hidden',
-                transform: 'translateY(100%)',
-            })),
-            state('visible', style({
-                visibility: 'visible',
-            })),
-            transition('visible => hidden', [
-                style({ transform: 'translateY(0)' }),
-                animate(`${ANIMATION_DURATION}ms ease-in-out`, style({ transform: 'translateY(100%)' })),
-            ]),
-            transition('hidden => visible', [
-                style({ transform: 'translateY(100%)', visibility: 'visible', height: '*' }),
-                animate(`${ANIMATION_DURATION}ms ease-in-out`, style({ transform: 'translateY(0)' })),
-            ]),
-        ]),
-        /* eslint-enable @typescript-eslint/no-deprecated */
-    ],
     styleUrl: 'menu.scss',
     imports: [
         CoreSharedModule,
@@ -93,7 +68,8 @@ export default class CoreMainMenuPage implements OnInit, OnDestroy {
     selectedTab?: string;
     isMainScreen = false;
     moreBadge = false;
-    visibility = 'hidden';
+    readonly visibility = signal('hidden');
+    readonly hiddenAnimationFinished = signal(true);
     loadingTabsLength = this.getLoadingTabsLength();
 
     protected subscription?: Subscription;
@@ -107,6 +83,7 @@ export default class CoreMainMenuPage implements OnInit, OnDestroy {
     protected logger: CoreLogger;
 
     readonly mainTabs = viewChild.required<IonTabs>('mainTabs');
+    protected hostElement: HTMLElement = inject(ElementRef).nativeElement;
 
     tabAction: CoreMainMenuRoleTab;
 
@@ -170,6 +147,15 @@ export default class CoreMainMenuPage implements OnInit, OnDestroy {
         document.addEventListener('ionBackButton', this.backButtonFunction);
 
         CoreEvents.trigger(CoreEvents.MAIN_HOME_LOADED);
+
+        const tabBar = this.hostElement.querySelector('ion-tab-bar');
+        tabBar?.addEventListener('animationend', (ev) => {
+            if (ev.animationName == 'slideOutBottom') {
+                this.hiddenAnimationFinished.set(true);
+            }
+
+            CoreEvents.trigger(MAIN_MENU_VISIBILITY_UPDATED_EVENT);
+        });
     }
 
     /**
@@ -329,12 +315,12 @@ export default class CoreMainMenuPage implements OnInit, OnDestroy {
             ? ''
             : (this.isMainScreen ? 'visible' : 'hidden');
 
-        if (visibility === this.visibility) {
+        if (visibility === this.visibility()) {
             return;
         }
 
-        this.visibility = visibility;
-        this.notifyVisibilityUpdated();
+        this.hiddenAnimationFinished.set(false);
+        this.visibility.set(visibility);
     }
 
     /**
@@ -384,17 +370,6 @@ export default class CoreMainMenuPage implements OnInit, OnDestroy {
     protected async currentRouteIsMainMenuRoot(): Promise<boolean> {
         // Check if the current route is the root of the current main menu tab.
         return !!CoreNavigator.getCurrentRoute({ routeData: { mainMenuTabRoot: CoreNavigator.getCurrentMainMenuTab() } });
-    }
-
-    /**
-     * Notify that the menu visibility has been updated.
-     */
-    protected async notifyVisibilityUpdated(): Promise<void> {
-        await CoreWait.nextTick();
-        await CoreWait.wait(ANIMATION_DURATION);
-        await CoreWait.nextTick();
-
-        CoreEvents.trigger(MAIN_MENU_VISIBILITY_UPDATED_EVENT);
     }
 
 }

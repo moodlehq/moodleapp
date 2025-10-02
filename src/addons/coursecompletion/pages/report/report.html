@@ -52,10 +52,10 @@
                     <ion-item class="ion-hide-md-up ion-text-wrap">
                         <ion-label>
                             <p class="item-heading">
-                                <core-format-text clean="true" [text]="criteria.details.criteria" [filter]="false" />
+                                <core-format-text [clean]="true" [text]="criteria.details.criteria" [filter]="false" />
                             </p>
                             <p>
-                                <core-format-text clean="true" [text]="criteria.details.requirement" [filter]="false" />
+                                <core-format-text [clean]="true" [text]="criteria.details.requirement" [filter]="false" />
                             </p>
                         </ion-label>
                             <strong slot="end">
@@ -80,13 +80,13 @@
                         @for (criteria of completionDisplay.completions; track criteria) {
                         <ion-row>
                             <ion-col>
-                                <core-format-text clean="true" [text]="criteria.details.type" [filter]="false" />
+                                <core-format-text [clean]="true" [text]="criteria.details.type" [filter]="false" />
                             </ion-col>
                             <ion-col>
-                                <core-format-text clean="true" [text]="criteria.details.criteria" [filter]="false" />
+                                <core-format-text [clean]="true" [text]="criteria.details.criteria" [filter]="false" />
                             </ion-col>
                             <ion-col>
-                                <core-format-text clean="true" [text]="criteria.details.requirement" [filter]="false" />
+                                <core-format-text [clean]="true" [text]="criteria.details.requirement" [filter]="false" />
                             </ion-col>
                             <ion-col>
                                 <core-format-text [text]="criteria.details.status" [filter]="false" />

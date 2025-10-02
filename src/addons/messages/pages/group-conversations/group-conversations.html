@@ -146,7 +146,7 @@
                     } @else if (conversation.type === typeGroup && conversation.members[0]) {
                         <span class="addon-message-last-message-user">{{ conversation.members[0].fullname + ':' }}</span>
                     }
-                    <core-format-text clean="true" singleLine="true" [text]="conversation.lastmessage"
+                    <core-format-text [clean]="true" [singleLine]="true" [text]="conversation.lastmessage"
                         class="addon-message-last-message-text" contextLevel="system" [contextInstanceId]="0" />
                 </p>
             }

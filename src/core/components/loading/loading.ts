@@ -21,7 +21,6 @@ import {
     effect,
 } from '@angular/core';
 import { CoreUtils } from '@singletons/utils';
-import { CoreAnimations } from '@components/animations';
 import { Translate } from '@singletons';
 import { CoreDirectivesRegistry } from '@singletons/directives-registry';
 import { CorePromisedValue } from '@classes/promised-value';
@@ -56,7 +55,6 @@ import { CoreTimesPipe } from '@pipes/times';
     selector: 'core-loading',
     templateUrl: 'core-loading.html',
     styleUrl: 'loading.scss',
-    animations: [CoreAnimations.SHOW_HIDE],
     imports: [
         CoreBaseModule,
         CoreTimesPipe,

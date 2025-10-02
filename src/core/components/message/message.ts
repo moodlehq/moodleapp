@@ -14,7 +14,6 @@
 
 import { ContextLevel } from '@/core/constants';
 import { Component, computed, input, output } from '@angular/core';
-import { CoreAnimations } from '@components/animations';
 import { CoreSites } from '@services/sites';
 import { CoreText } from '@singletons/text';
 import { CoreUserAvatarComponent, CoreUserWithAvatar } from '@components/user-avatar/user-avatar';
@@ -33,7 +32,6 @@ import { CoreFormatDatePipe } from '@pipes/format-date';
     selector: 'core-message',
     templateUrl: 'message.html',
     styleUrl: 'message.scss',
-    animations: [CoreAnimations.SLIDE_IN_OUT],
     imports: [
         CoreBaseModule,
         CoreLongPressDirective,
@@ -44,7 +42,8 @@ import { CoreFormatDatePipe } from '@pipes/format-date';
         CoreFormatDatePipe,
     ],
     host: {
-        '[@coreSlideInOut]': 'isMine() ? "" : "fromLeft"',
+        '[animate.enter]': 'isMine() ? "" : "slide-in-left-animation"',
+        '[animate.leave]': 'isMine() ? "" : "slide-out-left-animation"',
         '[class.is-mine]': 'isMine()',
         '[class.no-user]': '!message()?.showUserData',
     },

@@ -23,7 +23,7 @@ import {
     CUSTOM_ELEMENTS_SCHEMA,
     ComponentRef,
 } from '@angular/core';
-import { IonRouterOutlet, IonTabs, ViewDidEnter, ViewDidLeave } from '@ionic/angular';
+import { IonRouterOutlet, IonTabs, ViewDidEnter, ViewDidLeave, AnimationBuilder } from '@ionic/angular';
 
 import { CoreUtils } from '@singletons/utils';
 import { NavigationExtras, Params } from '@angular/router';
@@ -36,7 +36,6 @@ import { CoreBaseModule } from '@/core/base.module';
 import { CoreFaIconDirective } from '@directives/fa-icon';
 import { CoreUpdateNonReactiveAttributesDirective } from '@directives/update-non-reactive-attributes';
 import { NavDirection, RouterDirection } from '@ionic/core';
-import { AnimationBuilder } from '@angular/animations';
 
 /**
  * This component displays some top scrollable tabs that will autohide on vertical scroll.
@@ -287,6 +286,5 @@ interface RouteView {
     savedData?: any;
     savedExtras?: NavigationExtras;
     unlistenEvents: () => void;
-    // eslint-disable-next-line @typescript-eslint/no-deprecated
     animationBuilder?: AnimationBuilder;
 }

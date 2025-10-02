@@ -68,7 +68,7 @@
                             {{ 'addon.messages.you' | translate }}
                         </span>
                     }
-                    <core-format-text clean="true" singleLine="true" [text]="result.lastmessage" [highlight]="result.highlightMessage"
+                    <core-format-text [clean]="true" [singleLine]="true" [text]="result.lastmessage" [highlight]="result.highlightMessage"
                         contextLevel="system" [contextInstanceId]="0" class="addon-message-last-message-text" />
                 </p>
             </ion-label>

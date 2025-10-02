@@ -1,6 +1,8 @@
 <ion-tabs #mainTabs [hidden]="!showTabs" [class]="'placement-' + tabsPlacement"
     [class.tabshidden]="!isMainScreen && tabsPlacement === 'bottom'" (ionTabsDidChange)="tabChanged($event)">
-    <ion-tab-bar [slot]="tabsPlacement === 'side' ? 'top' : 'bottom'" class="mainmenu-tabs" [@menuVisibilityAnimation]="visibility">
+    <ion-tab-bar [slot]="tabsPlacement === 'side' ? 'top' : 'bottom'" class="mainmenu-tabs"
+        [class.slide-in-bottom-animation]="visibility() === 'visible'" [class.slide-out-bottom-animation]="visibility() === 'hidden'"
+        [hidden]="hiddenAnimationFinished()">
         <core-loading [hideUntil]="loaded" [placeholderType]="tabsPlacement === 'bottom' ? 'rowwrap' : 'column'"
             [placeholderLimit]="loadingTabsLength" />
         @if (loaded && tabsPlacement === 'side') {

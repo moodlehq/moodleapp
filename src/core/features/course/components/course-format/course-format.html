@@ -77,7 +77,7 @@
 @if (loaded && (displayCourseIndex || communicationRoomUrl)) {
     <ion-fab slot="fixed" core-fab vertical="bottom" horizontal="end">
         @if (communicationRoomUrl) {
-            <ion-fab-button size="small" [href]="communicationRoomUrl" core-link capture="false"
+            <ion-fab-button size="small" [href]="communicationRoomUrl" core-link [capture]="false"
                 [attr.aria-label]="'core.course.communicationroomlink' | translate">
                 <ion-icon name="far-comments" aria-hidden="true" />
             </ion-fab-button>

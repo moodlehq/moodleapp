@@ -1,5 +1,5 @@
 <header>
-    <ion-item button="false" detail="false" class="ion-text-wrap">
+    <ion-item [button]="false" [detail]="false" class="ion-text-wrap">
         <ion-thumbnail slot="start">
             <img [src]="icon()" alt="" role="presentation" />
         </ion-thumbnail>
@@ -17,13 +17,13 @@
 
 <ion-list>
     @if (isDownloaded()) {
-        <ion-item button detail="false" lines="none" (click)="close({ status: 'deleteOffline' })">
+        <ion-item button [detail]="false" lines="none" (click)="close({ status: 'deleteOffline' })">
             <ion-icon slot="start" name="fam-cloud-x" aria-hidden="true" />
             <ion-label>{{ 'core.removedownloadeddata' | translate }}</ion-label>
         </ion-item>
     }
 
-    <ion-item button detail="false" (click)="close({ status: 'deleteOnline' })" lines="none">
+    <ion-item button [detail]="false" (click)="close({ status: 'deleteOnline' })" lines="none">
         <ion-icon slot="start" name="fas-trash" aria-hidden="true" color="danger" />
         <ion-label>{{ 'core.delete' | translate }}</ion-label>
     </ion-item>

@@ -1,9 +1,9 @@
 <ion-button fill="clear" (click)="scroll($event, 'backward')" [hidden]="scrollPosition() === 'hidden'"
     [disabled]="scrollPosition() === 'start'" [ariaLabel]="'core.scrollbackward' | translate" [attr.aria-controls]="targetId()">
-    <ion-icon name="fas-chevron-left" slot="icon-only" aria-hidden="true" flip-rtl="false" />
+    <ion-icon name="fas-chevron-left" slot="icon-only" aria-hidden="true" [flipRtl]="false" />
 </ion-button>
 
 <ion-button fill="clear" (click)="scroll($event, 'forward')" [hidden]="scrollPosition() === 'hidden'"
     [disabled]="scrollPosition() === 'end'" [ariaLabel]="'core.scrollforward' | translate" [attr.aria-controls]="targetId()">
-    <ion-icon name="fas-chevron-right" slot="icon-only" aria-hidden="true" flip-rtl="false" />
+    <ion-icon name="fas-chevron-right" slot="icon-only" aria-hidden="true" [flipRtl]="false" />
 </ion-button>

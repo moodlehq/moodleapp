@@ -383,7 +383,7 @@
         @if (policy.onBehalf) {
 
             <ion-item button class="ion-text-wrap core-policy-responseby" core-user-link [userId]="policy.acceptance.usermodified"
-                lines="full" detail="false">
+                lines="full" [detail]="false">
                 <ion-label>
                     <p class="item-heading">{{ 'core.policy.responseby' | translate }}</p>
                     <p class="core-policy-responseby-name">{{ policy.acceptance.modfullname }}</p>

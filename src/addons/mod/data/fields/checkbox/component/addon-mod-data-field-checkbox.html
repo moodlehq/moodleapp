@@ -3,7 +3,7 @@
         @if (editMode) {
             <span [core-mark-required]="field.required" class="core-mark-required"></span>
         }
-        <ion-select [formControlName]="'f_'+field.id" multiple="true" [placeholder]="'addon.mod_data.menuchoose' | translate"
+        <ion-select [formControlName]="'f_'+field.id" [multiple]="true" [placeholder]="'addon.mod_data.menuchoose' | translate"
             [cancelText]="'core.cancel' | translate" [okText]="'core.ok' | translate" [interfaceOptions]="{header: field.name}"
             interface="alert">
             <ion-select-option *ngFor="let option of options" [value]="option.value">
