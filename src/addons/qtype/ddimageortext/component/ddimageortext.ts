@@ -124,6 +124,10 @@ export class AddonQtypeDdImageOrTextComponent
      */
     protected questionRendered(): void {
         if (!this.destroyed && this.question) {
+
+            // Should not happen, but just in case we avoid creating duplicated instances.
+            this.questionInstance?.destroy();
+
             // Create the instance.
             this.questionInstance = new AddonQtypeDdImageOrTextQuestion(
                 this.hostElement,

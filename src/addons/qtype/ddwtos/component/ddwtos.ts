@@ -139,6 +139,9 @@ export class AddonQtypeDdwtosComponent extends CoreQuestionBaseComponent<AddonMo
             await CoreWait.waitForImages(questionTextEl.nativeElement);
         }
 
+        // Should not happen, but just in case we avoid creating duplicated instances.
+        this.questionInstance?.destroy();
+
         // Create the instance.
         this.questionInstance = new AddonQtypeDdwtosQuestion(
             this.hostElement,
