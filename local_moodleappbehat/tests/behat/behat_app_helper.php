@@ -367,7 +367,7 @@ class behat_app_helper extends behat_base {
      * @return mixed Result.
      */
     protected function runtime_js(string $script) {
-        return $this->evaluate_script("window.behat ? window.behat.$script : 'ERROR - Behat API not loaded'");
+        return $this->evaluate_script("window.behat ? await window.behat.$script : 'ERROR - Behat API not loaded'");
     }
 
     /**
