@@ -28,6 +28,7 @@ import {
     KeyValueDiffer,
     Type,
     inject,
+    EventEmitter,
 } from '@angular/core';
 import { AsyncDirective } from '@classes/async-directive';
 import { CorePromisedValue } from '@classes/promised-value';
@@ -218,7 +219,12 @@ export class CoreDynamicComponent<ComponentClass> implements OnChanges, DoCheck,
             return;
         }
 
+        const instance = this.componentRef.instance;
         for (const name in this.data) {
+            // Check instance[name] is an Output.
+            if (instance[name] instanceof EventEmitter) {
+                continue;
+            }
             this.componentRef.setInput(name, this.data[name]);
         }
     }
