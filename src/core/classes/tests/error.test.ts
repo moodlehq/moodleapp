@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import Faker from 'faker';
+import { faker } from '@faker-js/faker';
 
 import { CoreError } from '@classes/errors/error';
 
@@ -22,7 +22,7 @@ describe('CoreError', () => {
 
     it('behaves like an error', () => {
         // Arrange
-        const message = Faker.lorem.sentence();
+        const message = faker.lorem.sentence();
 
         let error: CoreError;
 
@@ -53,7 +53,7 @@ describe('CoreError', () => {
 
         }
 
-        const message = Faker.lorem.sentence();
+        const message = faker.lorem.sentence();
 
         let error: CustomCoreError;
 
