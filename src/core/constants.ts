@@ -99,7 +99,7 @@ export const MOODLE_RELEASES = {
     '4.4': 2024042200,
     '4.5': 2024100700,
     '5.0': 2025041400,
-    '5.1': 2025050000, // @todo [5.1] replace with right value when released. Using a tmp value to be able to test new things.
+    '5.1': 2025100600,
 };
 
 /**

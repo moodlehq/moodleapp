@@ -117,7 +117,7 @@
                                 </ion-label>
                             </ion-item>
                             @if (policy.referToFullPolicyText) {
-                                <ion-item class="ion-text-wrap" button detail="false" (click)="viewFullPolicy(policy)">
+                                <ion-item class="ion-text-wrap" button [detail]="false" (click)="viewFullPolicy(policy)">
                                     <ion-label>
                                         <p [innerHTML]="policy.referToFullPolicyText"></p>
                                     </ion-label>

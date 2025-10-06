@@ -28,11 +28,12 @@
                     <ion-icon color="success" name="fas-check" aria-hidden="true" />
                 } @else if (showDelete) {
                     <ion-button slot="end" fill="clear" color="danger" (click)="deleteSite($event, site)"
-                        [ariaLabel]="'core.login.removeaccount' | translate" [@coreSlideInOut]="'fromRight'">
+                        [ariaLabel]="'core.login.removeaccount' | translate"
+                        animate.enter="slide-in-right-animation" animate.leave="slide-out-right-animation">
                         <ion-icon name="fas-trash" slot="icon-only" aria-hidden="true" />
                     </ion-button>
                 } @else if (site.badge) {
-                    <ion-badge slot="end" @coreShowHideAnimation>
+                    <ion-badge slot="end" animate.enter="slide-in-right-animation" animate.leave="slide-out-right-animation">
                         <span aria-hidden="true">{{site.badge}}</span>
                         <span class="sr-only">{{ 'core.login.sitebadgedescription' | translate:{ count: site.badge }
                             }}</span>

@@ -27,7 +27,7 @@
                     </ion-item>
                 } @else {
                     <!-- Site info without URL and not clickable. -->
-                    <ion-item class="core-usermenu-siteinfo ion-text-wrap" lines="full" detail="false">
+                    <ion-item class="core-usermenu-siteinfo ion-text-wrap" lines="full" [detail]="false">
                         <ion-label>
                             <!-- Show site logo. -->
                             <core-site-logo [hideOnError]="true" siteNameMode="p" />
