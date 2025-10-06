@@ -138,7 +138,7 @@ ion-card.core-course-list-card {
     margin-bottom: var(--card-vertical-margin);
 
     core-course-image {
-        --core-card-top-padding: 40%;
+        --core-course-card-image-aspect-ratio: 5/2;
     }
 
     .core-course-shortname {
@@ -211,7 +211,7 @@ ion-card.core-course-list-card {
 
     ion-card.core-course-list-card {
         core-course-image {
-            --core-card-top-padding: 30%;
+            --core-course-card-image-aspect-ratio: 10/3;
         }
 
         ion-item {
