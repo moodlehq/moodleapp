@@ -1,0 +1,28 @@
+
+.show-animation {
+    animation: fadeIn 500ms ease-in-out;
+}
+
+@keyframes fadeIn {
+	0% {
+		opacity: 0;
+	}
+
+	100% {
+		opacity: 1;
+	}
+}
+
+.hide-animation {
+    animation: fadeOut 500ms ease-in-out;
+}
+
+@keyframes fadeOut {
+	0% {
+		opacity: 1;
+	}
+
+	100% {
+		opacity: 0;
+	}
+}

@@ -17,7 +17,6 @@ import { CoreSiteBasicInfo, CoreSites } from '@services/sites';
 import { CoreAccountsList, CoreLoginHelper } from '@features/login/services/login-helper';
 import { CoreNavigator } from '@services/navigator';
 import { CoreFilter } from '@features/filter/services/filter';
-import { CoreAnimations } from '@components/animations';
 import { ModalController, Translate } from '@singletons';
 import { CoreSharedModule } from '@/core/shared.module';
 import { CoreAlerts } from '@services/overlays/alerts';
@@ -28,7 +27,6 @@ import { CoreAlerts } from '@services/overlays/alerts';
 @Component({
     selector: 'core-login-sites-modal',
     templateUrl: 'sites-modal.html',
-    animations: [CoreAnimations.SLIDE_IN_OUT, CoreAnimations.SHOW_HIDE],
     imports: [
         CoreSharedModule,
     ],

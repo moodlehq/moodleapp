@@ -98,8 +98,8 @@
                         </ion-button>
                     }
                     @if (showDelete && !note.deleted && (type !== 'personal' || note.usermodified === currentUserId)) {
-                        <ion-button slot="end" fill="clear" [@coreSlideInOut]="'fromRight'" color="danger"
-                            (click)="deleteNote($event, note)" [ariaLabel]="'core.delete' | translate">
+                        <ion-button slot="end" animate.enter="slide-in-right-animation" animate.leave="slide-out-right-animation"
+                            fill="clear" color="danger" (click)="deleteNote($event, note)" [ariaLabel]="'core.delete' | translate">
                             <ion-icon name="fas-trash" slot="icon-only" aria-hidden="true" />
                         </ion-button>
                     }

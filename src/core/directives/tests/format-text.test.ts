@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { IonContent } from '@ionic/angular';
-import Faker from 'faker';
+import { faker } from '@faker-js/faker';
 
 import { CoreConfig } from '@services/config';
 import { CoreContentLinksHelper } from '@features/contentlinks/services/contentlinks-helper';
@@ -55,7 +55,7 @@ describe('CoreFormatTextDirective', () => {
 
     it('should render', async () => {
         // Arrange
-        const sentence = Faker.lorem.sentence();
+        const sentence = faker.lorem.sentence();
 
         // Act
         const fixture = await renderWrapperComponent(

@@ -42,7 +42,7 @@
 
                 @if (fileAvailable) {
                     <core-attachments [files]="attachments" [maxSize]="workshop.maxbytes" [maxSubmissions]="workshop.nattachments"
-                        [component]="component" [componentId]="workshop.coursemodule" allowOffline="true"
+                        [component]="component" [componentId]="workshop.coursemodule" [allowOffline]="true"
                         [acceptedTypes]="workshop.submissionfiletypes" [required]="fileRequired" [courseId]="workshop.course" />
                 }
             </form>

@@ -14,7 +14,6 @@
 
 import { toBoolean } from '@/core/transforms/boolean';
 import { Component, input } from '@angular/core';
-import { CoreAnimations } from '@components/animations';
 import { CoreBaseModule } from '@/core/base.module';
 
 /**
@@ -29,7 +28,6 @@ import { CoreBaseModule } from '@/core/base.module';
     selector: 'core-button-with-spinner',
     templateUrl: 'core-button-with-spinner.html',
     styleUrl: 'button-with-spinner.scss',
-    animations: [CoreAnimations.SHOW_HIDE],
     imports: [CoreBaseModule],
 })
 export class CoreButtonWithSpinnerComponent {
