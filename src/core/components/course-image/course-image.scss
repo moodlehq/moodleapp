@@ -4,8 +4,8 @@
 :host {
     --core-image-radius: var(--core-courseimage-radius);
     --core-image-size: 60px;
-    --core-card-top-padding: 40%;
     --core-image-visibility: visible;
+    --core-course-card-image-aspect-ratio: 5/2;
 
     display: flex;
     justify-content: center;
@@ -69,7 +69,7 @@
         --core-image-size: auto;
         --core-image-radius: none;
 
-        padding-top: var(--core-card-top-padding);
+        padding-top: calc(100% / (var(--core-course-card-image-aspect-ratio)));
         overflow: hidden;
         cursor: pointer;
         pointer-events: auto;
