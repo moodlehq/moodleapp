@@ -157,9 +157,7 @@ export default class AddonMessagesDiscussionPage implements OnInit, OnDestroy, A
     }
 
     /**
-     * Runs when the page has loaded. This event only happens once per page being created.
-     * If a page leaves but is cached, then this event will not fire again on a subsequent viewing.
-     * Setup code for the page.
+     * @inheritdoc
      */
     async ngOnInit(): Promise<void> {
         this.conversationId = CoreNavigator.getRouteNumberParam('conversationId');
@@ -173,7 +171,7 @@ export default class AddonMessagesDiscussionPage implements OnInit, OnDestroy, A
     }
 
     /**
-     * View has been initialized.
+     * @inheritdoc
      */
     async ngAfterViewInit(): Promise<void> {
         this.scrollElement = await this.content()?.getScrollElement();
@@ -232,8 +230,6 @@ export default class AddonMessagesDiscussionPage implements OnInit, OnDestroy, A
 
     /**
      * Convenience function to fetch the conversation data.
-     *
-     * @returns Resolved when done.
      */
     protected async fetchData(): Promise<void> {
         let loader: CoreIonLoadingElement | undefined;
@@ -288,7 +284,8 @@ export default class AddonMessagesDiscussionPage implements OnInit, OnDestroy, A
             this.setPolling(); // Make sure we're polling messages.
             this.setContactRequestInfo();
             this.setFooterType();
-            loader && loader.dismiss();
+            // this.loaded = true;
+            loader?.dismiss();
         }
     }
 
@@ -311,7 +308,6 @@ export default class AddonMessagesDiscussionPage implements OnInit, OnDestroy, A
      * Convenience function to fetch messages.
      *
      * @param messagesAreNew If messages loaded are new messages.
-     * @returns Resolved when done.
      */
     protected async fetchMessages(messagesAreNew: boolean = true): Promise<void> {
         this.loadMoreError = false;
@@ -714,8 +710,6 @@ export default class AddonMessagesDiscussionPage implements OnInit, OnDestroy, A
 
     /**
      * Wait until fetching is false.
-     *
-     * @returns Resolved when done.
      */
     protected async waitForFetch(): Promise<void> {
         if (!this.fetching) {
@@ -817,7 +811,6 @@ export default class AddonMessagesDiscussionPage implements OnInit, OnDestroy, A
      * Function to load previous messages.
      *
      * @param infiniteComplete Infinite scroll complete function. Only used from core-infinite-loading.
-     * @returns Resolved when done.
      */
     async loadPrevious(infiniteComplete?: () => void): Promise<void> {
         if (!this.initialized) {
@@ -885,7 +878,7 @@ export default class AddonMessagesDiscussionPage implements OnInit, OnDestroy, A
                 const newScrollHeight = (this.scrollElement?.scrollHeight || 0);
                 const scrollTo = newScrollHeight - oldScrollBottom + infiniteHeight;
 
-                this.content()!.scrollToPoint(0, scrollTo, 0);
+                this.content()?.scrollToPoint(0, scrollTo, 0);
             }, 30);
         }, 30);
     }
@@ -921,11 +914,12 @@ export default class AddonMessagesDiscussionPage implements OnInit, OnDestroy, A
      * Scroll to the first new unread message.
      */
     scrollToFirstUnreadMessage(): void {
-        if (this.newMessages > 0) {
-            const messages = Array.from(this.hostElement.querySelectorAll<HTMLElement>('core-message:not(.is-mine)'));
-
-            CoreDom.scrollToElement(messages[messages.length - this.newMessages]);
+        if (this.newMessages <= 0) {
+            return;
         }
+        const messages = Array.from(this.hostElement.querySelectorAll<HTMLElement>('core-message:not(.is-mine)'));
+
+        CoreDom.scrollToElement(messages[messages.length - this.newMessages]);
     }
 
     /**
@@ -1184,10 +1178,11 @@ export default class AddonMessagesDiscussionPage implements OnInit, OnDestroy, A
         this.requestContactSent = false;
         this.requestContactReceived = false;
         if (this.otherMember && !this.otherMember.iscontact) {
+            const otherMemberId = this.otherMember.id;
             this.requestContactSent = !!this.otherMember.contactrequests?.some((request) =>
-                request.userid == this.currentUserId && request.requesteduserid == this.otherMember!.id);
+                request.userid === this.currentUserId && request.requesteduserid === otherMemberId);
             this.requestContactReceived = !!this.otherMember.contactrequests?.some((request) =>
-                request.userid == this.otherMember!.id && request.requesteduserid == this.currentUserId);
+                request.userid === otherMemberId && request.requesteduserid === this.currentUserId);
         }
     }
 
@@ -1340,8 +1335,6 @@ export default class AddonMessagesDiscussionPage implements OnInit, OnDestroy, A
 
     /**
      * Displays a confirmation modal to send a contact request to the other user of the individual conversation.
-     *
-     * @returns Promise resolved when the request is sent or the dialog is cancelled.
      */
     async createContactRequest(): Promise<void> {
         if (!this.otherMember) {
@@ -1378,8 +1371,6 @@ export default class AddonMessagesDiscussionPage implements OnInit, OnDestroy, A
 
     /**
      * Confirms the contact request of the other user of the individual conversation.
-     *
-     * @returns Promise resolved when the request is confirmed.
      */
     async confirmContactRequest(): Promise<void> {
         if (!this.otherMember) {
@@ -1404,8 +1395,6 @@ export default class AddonMessagesDiscussionPage implements OnInit, OnDestroy, A
 
     /**
      * Declines the contact request of the other user of the individual conversation.
-     *
-     * @returns Promise resolved when the request is confirmed.
      */
     async declineContactRequest(): Promise<void> {
         if (!this.otherMember) {
@@ -1430,8 +1419,6 @@ export default class AddonMessagesDiscussionPage implements OnInit, OnDestroy, A
 
     /**
      * Displays a confirmation modal to remove the other user of the conversation from contacts.
-     *
-     * @returns Promise resolved when the request is sent or the dialog is cancelled.
      */
     async removeContact(): Promise<void> {
         if (!this.otherMember) {
@@ -1468,7 +1455,7 @@ export default class AddonMessagesDiscussionPage implements OnInit, OnDestroy, A
     }
 
     /**
-     * Page destroyed.
+     * @inheritdoc
      */
     ngOnDestroy(): void {
         // Unset again, just in case.
