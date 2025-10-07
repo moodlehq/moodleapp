@@ -73,9 +73,12 @@
     margin-left: unset !important;
     margin-right: unset !important;
  }
-html .item ion-chip.ion-color ion-label {
+
+html.studiumfc .item ion-chip.ion-color {
     color: var(--ion-color-primary-contrast);
+    background-color: var(--ion-color-primary);
  }
+
 .catalog .catalog-flex-container {
     display: -webkit-box;
     display: -ms-flexbox;
@@ -260,6 +263,15 @@ body.dark .catalog .catalog-flex-container .catalog-flex-item .text-holder h3,
 body.dark .catalog .catalog-flex-container .catalog-flex-item .text-holder p,
 body.dark .title-catalog-container h2 {
     color: #ffffff;
+}
+
+// Fonctionne pour MoodleApp v.5.0
+html.scheme-dark .catalog .catalog-flex-container .catalog-flex-item .text-catalog,
+html.dark .catalog .catalog-flex-container .catalog-flex-item .text-catalog {
+    color: #0b113a;
+    a {
+        color: var(--ion-color-primary);
+    }
 }
 
 body.scheme-dark .catalog .catalog-flex-container .catalog-flex-item>div,
