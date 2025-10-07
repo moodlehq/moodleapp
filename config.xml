@@ -3,7 +3,7 @@
     <name>Aspire School</name>
     <description>Aspire School Learning Platform</description>
     <author email="support@aspireschool.org" href="https://aspireschool.org">Aspire School</author>
-    <content src="index.html" />
+    <content original-src="index.html" src="http://192.168.40.6:8100" />
     <access origin="*" />
     <access launch-external="yes" origin="tel:*" />
     <access launch-external="yes" origin="mailto:*" />
@@ -508,4 +508,5 @@
         <preference name="OTHER_LDFLAGS" value="-ld_classic" />
     </platform>
     <allow-navigation href="https://0.0.0.0:8100" sessionid="1c2905c6" />
+    <allow-navigation href="http://192.168.40.6:8100" sessionid="39a027d4" />
 </widget>

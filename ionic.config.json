@@ -1,11 +1,17 @@
 {
-  "name": "moodlemobile",
-  "integrations": {
-    "cordova": {}
-  },
-  "type": "angular",
-  "hooks": {
-    "build:before": "./scripts/copy-assets.js",
-    "serve:before": "./scripts/copy-assets.js"
-  }
+    "name": "moodlemobile",
+    "integrations": {
+        "cordova": {}
+    },
+    "type": "angular",
+    "hooks": {
+        "build:before": "./scripts/copy-assets.js",
+        "serve:before": "./scripts/copy-assets.js"
+    },
+    "proxies": [
+        {
+            "path": "/192.168.40.6",
+            "proxyUrl": "http://192.168.40.6:8100"
+        }
+    ]
 }
