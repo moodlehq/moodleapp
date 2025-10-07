@@ -126,4 +126,47 @@ describe('CoreText singleton', () => {
         expect(CoreText.camelCaseToKebabCase('mix_of-differentTextCases')).toEqual('mix_of-different-text-cases');
     });
 
+    it('check strings contains emojis', () => {
+        expect(CoreText.containsEmoji('')).toBe(false);
+        expect(CoreText.containsEmoji('Hello!')).toBe(false);
+        expect(CoreText.containsEmoji('😀')).toBe(true);
+        expect(CoreText.containsEmoji('Hello 😀!')).toBe(true);
+        expect(CoreText.containsEmoji('👩‍💻')).toBe(true);
+        expect(CoreText.containsEmoji('☀️Moodle')).toBe(true);
+
+        // Check also emojis with skin tones.
+        expect(CoreText.containsEmoji('👍')).toBe(true);
+        expect(CoreText.containsEmoji('👍🏻')).toBe(true);
+
+        // Check also flags.
+        expect(CoreText.containsEmoji('🇺🇦')).toBe(true);
+        expect(CoreText.containsEmoji('🇵🇸')).toBe(true);
+        expect(CoreText.containsEmoji('🏳️‍⚧️')).toBe(true);
+        expect(CoreText.containsEmoji('🏴󠁵󠁳󠁴󠁸󠁿')).toBe(true);
+
+        // Check complex emojis.
+        expect(CoreText.containsEmoji('👩🏽‍⚕️')).toBe(true);
+        expect(CoreText.containsEmoji('👨‍👩‍👧‍👦')).toBe(true);
+        expect(CoreText.containsEmoji('🤼🏻‍♀️')).toBe(true);
+
+        // Check some edge cases.
+        expect(CoreText.containsEmoji('1️⃣')).toBe(true);
+        expect(CoreText.containsEmoji('#️⃣')).toBe(true);
+        expect(CoreText.containsEmoji('*️⃣')).toBe(true);
+        expect(CoreText.containsEmoji('©️')).toBe(true);
+        expect(CoreText.containsEmoji('®️')).toBe(true);
+        expect(CoreText.containsEmoji('™️')).toBe(true);
+        expect(CoreText.containsEmoji('0️⃣1️⃣2️⃣3️⃣4️⃣5️⃣6️⃣7️⃣8️⃣9️⃣')).toBe(true);
+        expect(CoreText.containsEmoji('E=mc²')).toBe(false);
+        expect(CoreText.containsEmoji('3³')).toBe(false);
+        expect(CoreText.containsEmoji('10⁹')).toBe(false);
+        expect(CoreText.containsEmoji('x²')).toBe(false);
+        expect(CoreText.containsEmoji('SO₄²⁻')).toBe(false);
+
+        // Some sequences of characters that look like emojis but aren't.
+        expect(CoreText.containsEmoji('<:custom_emoji:123456789012345678>')).toBe(false);
+        expect(CoreText.containsEmoji('<a:custom_emoji:123456789012345678>')).toBe(false);
+        expect(CoreText.containsEmoji(':)')).toBe(false);
+        expect(CoreText.containsEmoji(':-)')).toBe(false);
+    });
 });
