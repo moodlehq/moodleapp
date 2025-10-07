@@ -91,7 +91,7 @@ describe('CoreFormatTextDirective', () => {
             'Lorem ipsum dolor',
             expect.anything(),
             expect.anything(),
-            undefined,
+            '',
         );
     });
 
