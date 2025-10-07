@@ -476,8 +476,19 @@ export class CoreFormatTextDirective implements OnDestroy, AsyncDirective {
         // Emit the afterRender output.
         this.afterRender.emit();
         if (triggerFilterRender) {
-            this.filterContentRenderingComplete.emit();
+            this.finishFilterContentRendering();
         }
+    }
+
+    /**
+     * Finish the rendering once filters have been applied.
+     */
+    protected async finishFilterContentRendering(): Promise<void> {
+        // Force redraw to make sure emojis are displayed on iOS.
+        if (CorePlatform.isIOS() && CoreText.containsEmoji(this.element.innerText)) {
+            await CoreDom.forceElementRedraw(this.element);
+        }
+        this.filterContentRenderingComplete.emit();
     }
 
     /**
@@ -530,7 +541,7 @@ export class CoreFormatTextDirective implements OnDestroy, AsyncDirective {
                 this.componentId(),
                 this.getSiteId(),
             ).finally(() => {
-                this.filterContentRenderingComplete.emit();
+                this.finishFilterContentRendering();
             });
         }
 
