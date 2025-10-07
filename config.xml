@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<widget android-versionCode="45100" id="org.aspireschool.aspire" ios-CFBundleVersion="4.5.2.0" version="4.5.2" versionCode="45200" xmlns="http://www.w3.org/ns/widgets" xmlns:android="http://schemas.android.com/apk/res/android" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+<widget android-versionCode="45102" id="org.aspireschool.aspire" ios-CFBundleVersion="4.5.2.0" version="4.5.2" versionCode="45202" xmlns="http://www.w3.org/ns/widgets" xmlns:android="http://schemas.android.com/apk/res/android" xmlns:cdv="http://cordova.apache.org/ns/1.0">
     <name>Aspire School</name>
     <description>Aspire School Learning Platform</description>
     <author email="support@aspireschool.org" href="https://aspireschool.org">Aspire School</author>
@@ -38,7 +38,7 @@
     <preference name="load-url-timeout" value="60000" />
     <preference name="AutoHideSplashScreen" value="false" />
     <preference name="android-minSdkVersion" value="24" />
-    <preference name="android-targetSdkVersion" value="34" />
+    <preference name="android-targetSdkVersion" value="36" />
     <preference name="AndroidPersistentFileLocation" value="Compatibility" />
     <preference name="AndroidInsecureFileModeEnabled" value="true" />
     <preference name="CustomURLSchemePluginClearsAndroidIntent" value="true" />
