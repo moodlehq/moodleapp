@@ -1259,6 +1259,24 @@ export class CoreDom {
         return elementPoint > window.innerHeight || elementPoint < scrollTopPos;
     }
 
+    /**
+     * Force a redraw of an element.
+     *
+     * @param element Element to redraw.
+     */
+    static async forceElementRedraw(element?: HTMLElement): Promise<void> {
+        if (!element) {
+            return;
+        }
+
+        const oldDisplay = element.style.display;
+        element.style.display = 'none';
+
+        await CoreWait.nextTick();
+
+        element.style.display = oldDisplay;
+    }
+
 }
 
 /**

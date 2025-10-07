@@ -665,6 +665,19 @@ export class CoreText {
         return Locutus.unserialize<T>(data);
     }
 
+    /**
+     * Check if a string contains any emoji.
+     *
+     * @param text Text to check.
+     * @returns True if contains emoji, false otherwise.
+     */
+    static containsEmoji(text: string): boolean {
+        const base = String.raw`\p{Emoji}(?:\p{EMod}|[\u{E0020}-\u{E007E}]+\u{E007F}|\uFE0F?\u20E3?)`;
+        const regexEmoji = new RegExp(String.raw`\p{RI}{2}|(?![#*\d](?!\uFE0F?\u20E3))${base}(?:\u200D${base})*`, 'gu');
+
+        return regexEmoji.test(text);
+    }
+
 }
 
 /**
