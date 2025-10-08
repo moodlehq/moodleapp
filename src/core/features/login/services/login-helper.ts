@@ -1269,7 +1269,7 @@ export class CoreLoginHelperProvider {
             const dontShowAgain = await CorePrompts.show(message, 'checkbox', {
                 header,
                 placeholderOrLabel: Translate.instant('core.dontshowagain'),
-                buttons: { okText: Translate.instant('core.next'), cancelText: Translate.instant('core.cancel') },
+                buttons: [{ text: Translate.instant('core.ok') }],
             });
 
             if (dontShowAgain) {
