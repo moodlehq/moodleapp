@@ -21,7 +21,7 @@ import { CoreFilepool } from '@services/filepool';
 import { CoreSite } from '@classes/sites/site';
 import { CoreSites } from '@services/sites';
 import { CorePromiseUtils } from '@singletons/promise-utils';
-import { CoreConstants } from '@/core/constants';
+import { CoreConstants, CoreConfigSettingKey } from '@/core/constants';
 import { CoreConfig } from '@services/config';
 import { CoreFilter } from '@features/filter/services/filter';
 import { CoreCourseDownloadStatusHelper } from '@features/course/services/course-download-status-helper';
@@ -281,13 +281,13 @@ export class CoreSettingsHelperProvider {
             }
 
             // Reset the value to solve edge cases.
-            CoreConfig.set(CoreConstants.SETTINGS_ZOOM_LEVEL, CoreZoomLevel.NONE);
+            CoreConfig.set(CoreConfigSettingKey.ZOOM_LEVEL, CoreZoomLevel.NONE);
 
             if (fontSize < 100) {
                 if (fontSize > 90) {
-                    CoreConfig.set(CoreConstants.SETTINGS_ZOOM_LEVEL, CoreZoomLevel.HIGH);
+                    CoreConfig.set(CoreConfigSettingKey.ZOOM_LEVEL, CoreZoomLevel.HIGH);
                 } else if (fontSize > 70) {
-                    CoreConfig.set(CoreConstants.SETTINGS_ZOOM_LEVEL, CoreZoomLevel.MEDIUM);
+                    CoreConfig.set(CoreConfigSettingKey.ZOOM_LEVEL, CoreZoomLevel.MEDIUM);
                 }
             }
 
@@ -304,7 +304,7 @@ export class CoreSettingsHelperProvider {
      * @returns The saved zoom Level option.
      */
     async getZoomLevel(): Promise<CoreZoomLevel> {
-        return CoreConfig.get(CoreConstants.SETTINGS_ZOOM_LEVEL, CoreConstants.CONFIG.defaultZoomLevel);
+        return CoreConfig.get(CoreConfigSettingKey.ZOOM_LEVEL, CoreConstants.CONFIG.defaultZoomLevel);
     }
 
     /**
@@ -324,7 +324,7 @@ export class CoreSettingsHelperProvider {
      * @returns True if pinch-to-zoom is enabled.
      */
     async getPinchToZoom(): Promise<boolean> {
-        return Boolean(await CoreConfig.get(CoreConstants.SETTINGS_PINCH_TO_ZOOM, 0));
+        return Boolean(await CoreConfig.get(CoreConfigSettingKey.PINCH_TO_ZOOM, 0));
     }
 
     /**
@@ -348,7 +348,7 @@ export class CoreSettingsHelperProvider {
         if (CoreConstants.CONFIG.forceColorScheme) {
             this.setColorScheme(CoreConstants.CONFIG.forceColorScheme);
         } else {
-            const scheme = await CoreConfig.get(CoreConstants.SETTINGS_COLOR_SCHEME, CoreColorScheme.LIGHT);
+            const scheme = await CoreConfig.get(CoreConfigSettingKey.COLOR_SCHEME, CoreColorScheme.LIGHT);
             this.setColorScheme(scheme);
         }
     }

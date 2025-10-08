@@ -14,7 +14,7 @@
 
 import { Component, OnDestroy, OnInit } from '@angular/core';
 
-import { CoreConstants } from '@/core/constants';
+import { CoreConfigSettingKey } from '@/core/constants';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { CoreSites } from '@services/sites';
 import { CoreConfig } from '@services/config';
@@ -104,14 +104,14 @@ export default class CoreSettingsSynchronizationPage implements OnInit, OnDestro
 
         this.sitesLoaded = true;
 
-        this.dataSaver = await CoreConfig.get(CoreConstants.SETTINGS_SYNC_ONLY_ON_WIFI, true);
+        this.dataSaver = await CoreConfig.get(CoreConfigSettingKey.SYNC_ONLY_ON_WIFI, true);
     }
 
     /**
      * Called when sync only on wifi setting is enabled or disabled.
      */
     syncOnlyOnWifiChanged(): void {
-        CoreConfig.set(CoreConstants.SETTINGS_SYNC_ONLY_ON_WIFI, this.dataSaver ? 1 : 0);
+        CoreConfig.set(CoreConfigSettingKey.SYNC_ONLY_ON_WIFI, this.dataSaver ? 1 : 0);
     }
 
     /**

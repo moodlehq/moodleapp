@@ -23,7 +23,7 @@ import {
     UrlCreationOptions,
     UrlSegment,
 } from '@angular/router';
-import { CoreConstants } from '@/core/constants';
+import { NO_SITE_ID } from '@features/login/constants';
 import { CoreMainMenu } from '@features/mainmenu/services/mainmenu';
 import { CoreObject } from '@singletons/object';
 import { CoreSites } from '@services/sites';
@@ -257,7 +257,7 @@ export class CoreNavigatorService {
         }
 
         // If the path doesn't belong to a site, call standard navigation.
-        if (siteId === CoreConstants.NO_SITE_ID) {
+        if (siteId === NO_SITE_ID) {
             return this.navigate(path, {
                 ...navigationOptions,
                 reset: true,

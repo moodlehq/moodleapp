@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { CoreConstants } from '@/core/constants';
+import { CoreDownloadIcon } from '@/core/constants';
 import { Params } from '@angular/router';
 import { CoreRoutedItemsManagerSource } from '@classes/items-management/routed-items-manager-source';
 import { SHAREDFILES_PAGE_NAME } from '@features/sharedfiles/constants';
@@ -41,7 +41,7 @@ export class CoreSettingsSectionsSource extends CoreRoutedItemsManagerSource<Cor
             {
                 name: 'core.settings.synchronization',
                 path: 'sync',
-                icon: CoreConstants.ICON_SYNC,
+                icon: CoreDownloadIcon.SYNC,
             },
         ];
 

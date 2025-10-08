@@ -26,7 +26,7 @@ import { CoreNetwork } from '@services/network';
 import { CoreFile, CoreFileFormat } from '@services/file';
 import { CoreMimetype } from '@singletons/mimetype';
 import { CoreText } from '@singletons/text';
-import { CoreConstants, MINIMUM_MOODLE_VERSION } from '@/core/constants';
+import { MINIMUM_MOODLE_VERSION } from '@/core/constants';
 import { CoreError } from '@classes/errors/error';
 import { CoreInterceptor } from '@classes/interceptor';
 import { makeSingleton, Translate, Http, NativeHttp } from '@singletons';
@@ -52,6 +52,10 @@ import { CoreUserNullSupportConfig } from '@features/user/classes/support/null-s
  */
 @Injectable({ providedIn: 'root' })
 export class CoreWSProvider {
+
+    // WS constants.
+    static readonly WS_TIMEOUT = 30000; // Timeout when not in WiFi.
+    static readonly WS_TIMEOUT_WIFI = 30000; // Timeout when in WiFi.
 
     protected logger: CoreLogger;
     protected mimeTypeCache: {[url: string]: string | null} = {}; // A "cache" to store file mimetypes to decrease HEAD requests.
@@ -383,17 +387,17 @@ export class CoreWSProvider {
      * @param url File URL.
      * @returns Promise resolved with the size or -1 if failure.
      */
-    getRemoteFileSize(url: string): Promise<number> {
-        return this.performHead(url).then((response) => {
+    async getRemoteFileSize(url: string): Promise<number> {
+        try {
+            const response = await this.performHead(url);
+
             const contentLength = response.headers.get('Content-Length');
             const size = contentLength ? parseInt(contentLength, 10) : 0;
 
-            if (size) {
-                return size;
-            }
-
+            return size || -1;
+        } catch {
             return -1;
-        }).catch(() => -1);
+        }
     }
 
     /**
@@ -402,7 +406,7 @@ export class CoreWSProvider {
      * @returns Timeout in ms.
      */
     getRequestTimeout(): number {
-        return CoreNetwork.isCellular() ? CoreConstants.WS_TIMEOUT : CoreConstants.WS_TIMEOUT_WIFI;
+        return CoreNetwork.isCellular() ? CoreWSProvider.WS_TIMEOUT : CoreWSProvider.WS_TIMEOUT_WIFI;
     }
 
     /**

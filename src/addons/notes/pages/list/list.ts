@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { CoreConstants } from '@/core/constants';
+import { CoreDownloadIcon } from '@/core/constants';
 import { AddonNotesAddModalReturn } from '@addons/notes/components/add/add-modal';
 import { AddonNotes, AddonNotesNoteFormatted, AddonNotesPublishState } from '@addons/notes/services/notes';
 import { AddonNotesOffline } from '@addons/notes/services/notes-offline';
@@ -52,8 +52,8 @@ export default class AddonNotesListPage implements OnInit, OnDestroy {
     courseId!: number;
     userId?: number;
     type: AddonNotesPublishState = 'course';
-    refreshIcon = CoreConstants.ICON_LOADING;
-    syncIcon = CoreConstants.ICON_LOADING;
+    refreshIcon = CoreDownloadIcon.LOADING;
+    syncIcon = CoreDownloadIcon.LOADING;
     notes: AddonNotesNoteFormatted[] = [];
     hasOffline = false;
     notesLoaded = false;
@@ -87,8 +87,8 @@ export default class AddonNotesListPage implements OnInit, OnDestroy {
 
                 // Refresh the data.
                 this.notesLoaded = false;
-                this.refreshIcon = CoreConstants.ICON_LOADING;
-                this.syncIcon = CoreConstants.ICON_LOADING;
+                this.refreshIcon = CoreDownloadIcon.LOADING;
+                this.syncIcon = CoreDownloadIcon.LOADING;
 
                 this.content().scrollToTop();
                 this.fetchNotes(false);
@@ -150,8 +150,8 @@ export default class AddonNotesListPage implements OnInit, OnDestroy {
             this.canDeleteNotes = canDelete;
 
             this.notesLoaded = true;
-            this.refreshIcon = CoreConstants.ICON_REFRESH;
-            this.syncIcon = CoreConstants.ICON_SYNC;
+            this.refreshIcon = CoreDownloadIcon.REFRESH;
+            this.syncIcon = CoreDownloadIcon.SYNC;
         }
     }
 
@@ -162,8 +162,8 @@ export default class AddonNotesListPage implements OnInit, OnDestroy {
      * @param refresher Refresher instance.
      */
     refreshNotes(showSyncErrors: boolean, refresher?: HTMLIonRefresherElement): void {
-        this.refreshIcon = CoreConstants.ICON_LOADING;
-        this.syncIcon = CoreConstants.ICON_LOADING;
+        this.refreshIcon = CoreDownloadIcon.LOADING;
+        this.syncIcon = CoreDownloadIcon.LOADING;
 
         AddonNotes.invalidateNotes(this.courseId, this.userId).finally(() => {
             this.fetchNotes(true, showSyncErrors).finally(() => {
@@ -179,8 +179,8 @@ export default class AddonNotesListPage implements OnInit, OnDestroy {
      */
     async typeChanged(): Promise<void> {
         this.notesLoaded = false;
-        this.refreshIcon = CoreConstants.ICON_LOADING;
-        this.syncIcon = CoreConstants.ICON_LOADING;
+        this.refreshIcon = CoreDownloadIcon.LOADING;
+        this.syncIcon = CoreDownloadIcon.LOADING;
 
         await this.fetchNotes(true);
     }

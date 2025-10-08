@@ -14,6 +14,7 @@
 
 /* eslint-disable @typescript-eslint/no-deprecated */
 
+import { CoreBytesConstants } from '@/core/constants';
 import { Injectable } from '@angular/core';
 import {
     File,
@@ -360,7 +361,7 @@ export class FileMock extends File {
             throw new Error('File system not available.');
         }
 
-        return (estimate.quota - estimate.usage) / 1024;
+        return (estimate.quota - estimate.usage) / CoreBytesConstants.KILOBYTE;
     }
 
     /**
@@ -835,7 +836,7 @@ export class FileMock extends File {
      */
     private writeFileInChunksMock(writer: FileWriter, data: Blob): Promise<void> {
         let writtenSize = 0;
-        const BLOCK_SIZE = 1024 * 1024;
+        const BLOCK_SIZE = CoreBytesConstants.MEGABYTE;
         const writeNextChunk = () => {
             const size = Math.min(BLOCK_SIZE, data.size - writtenSize);
             const chunk = data.slice(writtenSize, writtenSize + size);

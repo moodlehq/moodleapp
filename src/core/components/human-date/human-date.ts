@@ -14,7 +14,7 @@
 
 import { Component, input, computed, signal } from '@angular/core';
 import { CoreBaseModule } from '@/core/base.module';
-import { CoreConstants } from '@/core/constants';
+import { CoreTimeConstants } from '@/core/constants';
 import { dayjs } from '@/core/utils/dayjs';
 import { CoreTime } from '@singletons/time';
 import { CoreUserPreferences } from '@features/user/services/user-preferences';
@@ -33,7 +33,7 @@ import { CoreUserPreferences } from '@features/user/services/user-preferences';
 export class CoreHumanDateComponent {
 
     readonly timestamp = input.required<number>(); // The timestamp in milliseconds.
-    readonly nearSeconds = input<number | null>(CoreConstants.SECONDS_DAY * 1000); // Milliseconds to considere the date near.
+    readonly nearSeconds = input<number | null>(CoreTimeConstants.SECONDS_DAY * 1000); // Milliseconds to considere the date near.
     readonly timeOnly = input<boolean>(false); // Whether to show only the time.
     readonly link = input<string | undefined>(undefined); // If set, the date will be a link to this URL.
     readonly langTimeFormat = input<string>('strftimedaydatetime'); // Language string to use for the time format.
