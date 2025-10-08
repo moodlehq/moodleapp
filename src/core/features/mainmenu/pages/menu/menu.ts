@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit, OnDestroy, effect, viewChild, signal, ElementRef, inject } from '@angular/core';
+import { Component, OnInit, OnDestroy, effect, viewChild, signal, ElementRef, inject, computed } from '@angular/core';
 import { IonTabs } from '@ionic/angular';
 import { BackButtonEvent } from '@ionic/core';
 import { Subscription } from 'rxjs';
@@ -59,17 +59,28 @@ import { CoreKeyboard } from '@singletons/keyboard';
 })
 export default class CoreMainMenuPage implements OnInit, OnDestroy {
 
+    readonly tabsPlacement = signal<CoreMainMenuPlacement>(CoreMainMenuPlacement.BOTTOM);
+    readonly isMainScreen = signal(false);
+    readonly visibility = computed(() => {
+        const tabsPlacement = this.tabsPlacement();
+        const isMainScreen = this.isMainScreen();
+
+        const visibility = tabsPlacement === CoreMainMenuPlacement.SIDE
+            ? ''
+            : (isMainScreen ? 'visible' : 'hidden');
+
+        return visibility;
+    });
+
+    readonly hiddenAnimationFinished = signal(false);
+
     tabs: CoreMainMenuHandlerToDisplay[] = [];
     allHandlers?: CoreMainMenuHandlerToDisplay[];
-    loaded = false;
+    readonly loaded = signal(false);
     showTabs = false;
-    tabsPlacement: CoreMainMenuPlacement = CoreMainMenuPlacement.BOTTOM;
     morePageName = MAIN_MENU_MORE_PAGE_NAME;
     selectedTab?: string;
-    isMainScreen = false;
     moreBadge = false;
-    readonly visibility = signal('hidden');
-    readonly hiddenAnimationFinished = signal(true);
     loadingTabsLength = this.getLoadingTabsLength();
 
     protected subscription?: Subscription;
@@ -96,8 +107,7 @@ export default class CoreMainMenuPage implements OnInit, OnDestroy {
         this.navSubscription = Router.events
             .pipe(filter(event => event instanceof NavigationEnd))
             .subscribe(() => {
-                this.isMainScreen = !this.mainTabs().outlet?.canGoBack();
-                this.updateVisibility();
+                this.isMainScreen.set(!this.mainTabs().outlet?.canGoBack());
             });
 
         if (CorePlatform.isIOS()) {
@@ -115,6 +125,12 @@ export default class CoreMainMenuPage implements OnInit, OnDestroy {
                 }
             });
         }
+
+        effect(() => {
+            this.visibility();
+            // Tabs changed visibility, reset hidden animation.
+            this.hiddenAnimationFinished.set(false);
+        });
     }
 
     /**
@@ -125,8 +141,7 @@ export default class CoreMainMenuPage implements OnInit, OnDestroy {
 
         this.initAfterLoginNavigations();
 
-        this.isMainScreen = !this.mainTabs().outlet?.canGoBack();
-        this.updateVisibility();
+        this.isMainScreen.set(!this.mainTabs().outlet?.canGoBack());
 
         this.subscription = CoreMainMenuDelegate.getHandlersObservable().subscribe((handlers) => {
             const previousHandlers = this.allHandlers;
@@ -150,7 +165,8 @@ export default class CoreMainMenuPage implements OnInit, OnDestroy {
 
         const tabBar = this.hostElement.querySelector('ion-tab-bar');
         tabBar?.addEventListener('animationend', (ev) => {
-            if (ev.animationName == 'slideOutBottom') {
+            if (ev.animationName === 'slideOutBottom' &&
+                !this.isMainScreen() && this.tabsPlacement() === CoreMainMenuPlacement.BOTTOM) {
                 this.hiddenAnimationFinished.set(true);
             }
 
@@ -167,8 +183,8 @@ export default class CoreMainMenuPage implements OnInit, OnDestroy {
         if (!this.allHandlers) {
             return;
         }
-        this.tabsPlacement = CoreMainMenu.getTabPlacement();
-        this.updateVisibility();
+
+        this.tabsPlacement.set(CoreMainMenu.getTabPlacement());
 
         this.loadingTabsLength = this.getLoadingTabsLength();
 
@@ -207,9 +223,9 @@ export default class CoreMainMenuPage implements OnInit, OnDestroy {
         }
 
         const mainMenuTab = CoreNavigator.getCurrentMainMenuTab();
-        this.loaded = CoreMainMenuDelegate.areHandlersLoaded();
+        this.loaded.set(CoreMainMenuDelegate.areHandlersLoaded());
 
-        if (this.loaded && (!mainMenuTab || removedHandlersPages.includes(mainMenuTab))) {
+        if (this.loaded() && (!mainMenuTab || removedHandlersPages.includes(mainMenuTab))) {
             // No tab selected or handler no longer available, select the first one.
             await CoreWait.nextTick();
 
@@ -231,8 +247,9 @@ export default class CoreMainMenuPage implements OnInit, OnDestroy {
      * @returns The total number of loading tabs to display.
      */
     protected getLoadingTabsLength(): number {
-        return CoreMainMenu.getNumItems() +
-            (this.tabsPlacement === CoreMainMenuPlacement.BOTTOM ? 1 : 2); // +1 for the "More" tab and user button.
+        const isBottomPlacement = this.tabsPlacement() === CoreMainMenuPlacement.BOTTOM;
+
+        return CoreMainMenu.getNumItems() + (isBottomPlacement ? 1 : 2); // +1 for the "More" tab and user button.
     }
 
     /**
@@ -305,22 +322,6 @@ export default class CoreMainMenuPage implements OnInit, OnDestroy {
         this.selectedTab = event.tab;
         this.firstSelectedTab = this.firstSelectedTab ?? event.tab;
         this.selectHistory.push(event.tab);
-    }
-
-    /**
-     * Update menu visibility.
-     */
-    protected updateVisibility(): void {
-        const visibility = this.tabsPlacement === CoreMainMenuPlacement.SIDE
-            ? ''
-            : (this.isMainScreen ? 'visible' : 'hidden');
-
-        if (visibility === this.visibility()) {
-            return;
-        }
-
-        this.hiddenAnimationFinished.set(false);
-        this.visibility.set(visibility);
     }
 
     /**
@@ -401,7 +402,7 @@ class CoreMainMenuRoleTab extends CoreAriaRoleTab<CoreMainMenuPage> {
      * @inheritdoc
      */
     isHorizontal(): boolean {
-        return this.componentInstance.tabsPlacement === CoreMainMenuPlacement.BOTTOM;
+        return this.componentInstance.tabsPlacement() === CoreMainMenuPlacement.BOTTOM;
     }
 
     /**
