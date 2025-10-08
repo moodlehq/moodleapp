@@ -90,13 +90,12 @@
 @keyframes slideInBottom {
     0% {
         height: 0px;
-        visibility: hidden;
+        opacity: 0;
         transform: translateY(100%);
-        border: 0px;
     }
 
     100% {
-        visibility: visible;
+        opacity: 1;
     }
 }
 
@@ -107,11 +106,13 @@
 @keyframes slideOutBottom {
     0% {
         transform: translateY(0);
+        opacity: 1;
+
     }
 
     100% {
         height: 0px;
-        visibility: hidden;
+        opacity: 0;
         transform: translateY(100%);
     }
 }

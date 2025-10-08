@@ -142,10 +142,8 @@ ion-tabs {
         } @else {
             &.tabshidden ion-tab-bar {
                 pointer-events: none;
-
-                ion-tab-button {
-                    height: auto;
-                }
+                height: 0px;
+                border: 0px;
             }
         }
     }
