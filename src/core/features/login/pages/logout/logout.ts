@@ -19,6 +19,7 @@ import { CoreNavigationOptions, CoreNavigator, CoreRedirectPayload } from '@serv
 import { CoreSharedModule } from '@/core/shared.module';
 import { CoreSitePlugins } from '@features/siteplugins/services/siteplugins';
 import { CoreRedirects } from '@singletons/redirects';
+import { NO_SITE_ID } from '@features/login/constants';
 
 /**
  * Page that logs the user out.
@@ -36,7 +37,7 @@ export default class CoreLoginLogoutPage implements OnInit {
      * @inheritdoc
      */
     async ngOnInit(): Promise<void> {
-        const siteId = CoreNavigator.getRouteParam('siteId') ?? CoreConstants.NO_SITE_ID;
+        const siteId = CoreNavigator.getRouteParam('siteId') ?? NO_SITE_ID;
         const logoutOptions = {
             forceLogout: CoreNavigator.getRouteBooleanParam('forceLogout'),
             removeAccount: CoreNavigator.getRouteBooleanParam('removeAccount') ?? !!CoreConstants.CONFIG.removeaccountonlogout,
@@ -55,7 +56,7 @@ export default class CoreLoginLogoutPage implements OnInit {
         }
 
         const shouldReload = CoreSitePlugins.hasSitePluginsLoaded;
-        if (shouldReload && (siteId !== CoreConstants.NO_SITE_ID || redirectData.redirectPath || redirectData.urlToOpen)) {
+        if (shouldReload && (siteId !== NO_SITE_ID || redirectData.redirectPath || redirectData.urlToOpen)) {
             // The app will reload and we need to open a page that isn't the default page. Store the redirect first.
             CoreRedirects.storeRedirect(siteId, redirectData);
         }
@@ -85,7 +86,7 @@ export default class CoreLoginLogoutPage implements OnInit {
      * @param redirectData Redirect data.
      */
     protected async navigateAfterLogout(siteId: string, redirectData: CoreRedirectPayload): Promise<void> {
-        if (siteId === CoreConstants.NO_SITE_ID) {
+        if (siteId === NO_SITE_ID) {
             // No site to load now, just navigate.
             await CoreNavigator.navigate(redirectData.redirectPath ?? '/login/sites', {
                 ...redirectData.redirectOptions,

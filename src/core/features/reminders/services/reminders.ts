@@ -20,7 +20,7 @@ import { makeSingleton, Translate } from '@singletons';
 import { CoreReminderDBRecord, REMINDERS_TABLE } from './database/reminders';
 import { ILocalNotification } from '@awesome-cordova-plugins/local-notifications';
 import { CorePlatform } from '@services/platform';
-import { CoreConstants } from '@/core/constants';
+import { CoreConstants, CoreTimeConstants } from '@/core/constants';
 import { CoreConfig } from '@services/config';
 import { CoreEvents } from '@singletons/events';
 import { lazyMap, LazyMap } from '@/core/utils/lazy-map';
@@ -434,7 +434,7 @@ export class CoreRemindersService {
 
         const key = `${REMINDERS_DEFAULT_NOTIFICATION_TIME_SETTING}#${siteId}`;
 
-        return CoreConfig.get(key, CoreConstants.CONFIG.calendarreminderdefaultvalue || 3600);
+        return CoreConfig.get(key, CoreConstants.CONFIG.calendarreminderdefaultvalue || CoreTimeConstants.SECONDS_HOUR);
     }
 
     /**

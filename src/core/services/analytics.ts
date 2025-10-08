@@ -19,7 +19,7 @@ import { makeSingleton } from '@singletons';
 import { CoreEvents } from '@singletons/events';
 import { CoreSites } from './sites';
 import { CoreConfig, CoreConfigProvider } from './config';
-import { CoreConstants } from '../constants';
+import { CoreConfigSettingKey } from '../constants';
 import { CoreText } from '@singletons/text';
 import { CoreUrl } from '@singletons/url';
 
@@ -92,7 +92,7 @@ export class CoreAnalyticsService extends CoreDelegate<CoreAnalyticsHandler> {
         }
 
         // Check if analytics is enabled by the user.
-        const enabled = await CoreConfig.get<boolean>(CoreConstants.SETTINGS_ANALYTICS_ENABLED, true);
+        const enabled = await CoreConfig.get<boolean>(CoreConfigSettingKey.ANALYTICS_ENABLED, true);
         if (!enabled) {
             return;
         }

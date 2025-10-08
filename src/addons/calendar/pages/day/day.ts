@@ -32,7 +32,7 @@ import { Translate } from '@singletons';
 import { CoreNavigator } from '@services/navigator';
 import { Params } from '@angular/router';
 import { CoreArray } from '@singletons/array';
-import { CoreConstants } from '@/core/constants';
+import { CoreDownloadIcon } from '@/core/constants';
 import { CoreSwipeSlidesDynamicItemsManager } from '@classes/items-management/swipe-slides-dynamic-items-manager';
 import { CoreSwipeSlidesComponent } from '@components/swipe-slides/swipe-slides';
 import {
@@ -86,7 +86,7 @@ export default class AddonCalendarDayPage implements OnInit, OnDestroy {
     manager?: CoreSwipeSlidesDynamicItemsManager<PreloadedDay, AddonCalendarDaySlidesItemsManagerSource>;
     loaded = false;
     readonly isOnline = CoreNetwork.onlineSignal;
-    syncIcon = CoreConstants.ICON_LOADING;
+    syncIcon = CoreDownloadIcon.LOADING;
     filter: AddonCalendarFilter = {
         filtered: false,
         courseId: undefined,
@@ -257,7 +257,7 @@ export default class AddonCalendarDayPage implements OnInit, OnDestroy {
      * @returns Promise resolved when done.
      */
     async fetchData(sync?: boolean): Promise<void> {
-        this.syncIcon = CoreConstants.ICON_LOADING;
+        this.syncIcon = CoreDownloadIcon.LOADING;
 
         if (sync) {
             await this.sync();
@@ -274,7 +274,7 @@ export default class AddonCalendarDayPage implements OnInit, OnDestroy {
         }
 
         this.loaded = true;
-        this.syncIcon = CoreConstants.ICON_SYNC;
+        this.syncIcon = CoreDownloadIcon.SYNC;
     }
 
     /**
@@ -315,7 +315,7 @@ export default class AddonCalendarDayPage implements OnInit, OnDestroy {
      * @returns Promise resolved when done.
      */
     async refreshData(sync?: boolean, afterChange?: boolean): Promise<void> {
-        this.syncIcon = CoreConstants.ICON_LOADING;
+        this.syncIcon = CoreDownloadIcon.LOADING;
 
         const selectedDay = this.manager?.getSelectedItem() || null;
 

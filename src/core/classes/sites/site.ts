@@ -27,7 +27,7 @@ import {
 import { CoreTime } from '@singletons/time';
 import { CoreUrl } from '@singletons/url';
 import { CoreOpener, CoreOpenerOpenInBrowserOptions } from '@singletons/opener';
-import { CoreConstants } from '@/core/constants';
+import { CoreConstants, CoreTimeConstants } from '@/core/constants';
 import { SQLiteDB } from '@classes/sqlitedb';
 import { CoreError } from '@classes/errors/error';
 import { CoreLogger } from '@singletons/logger';
@@ -884,7 +884,7 @@ export class CoreSite extends CoreAuthenticatedSite {
     async getAutoLoginMinTimeBetweenRequests(): Promise<number> {
         const timeBetweenRequests = await CorePromiseUtils.ignoreErrors(
             this.getConfig('tool_mobile_autologinmintimebetweenreq'),
-            CoreConstants.SECONDS_MINUTE * 6,
+            CoreTimeConstants.SECONDS_MINUTE * 6,
         );
 
         return Number(timeBetweenRequests);

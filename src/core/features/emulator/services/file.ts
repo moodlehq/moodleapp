@@ -14,6 +14,7 @@
 
 /* eslint-disable @typescript-eslint/no-deprecated */
 
+import { CoreBytesConstants } from '@/core/constants';
 import { Injectable } from '@angular/core';
 import {
     File,
@@ -401,7 +402,7 @@ export class FileMock extends File {
             });
 
         // General calculation, base 1MB and increasing factor 1.3.
-        let size = await calculateByRequest(1048576, 1.3);
+        let size = await calculateByRequest(CoreBytesConstants.MEGABYTE, 1.3);
 
         // More accurate. Factor is 1.1.
         iterations = 0;
@@ -409,7 +410,7 @@ export class FileMock extends File {
 
         size = await calculateByRequest(size, 1.1);
 
-        return size / 1024; // Return size in KB.
+        return size / CoreBytesConstants.KILOBYTE; // Return size in KB.
     }
 
     /**
@@ -448,7 +449,7 @@ export class FileMock extends File {
             };
 
             // Request a quota to use. Request 500MB.
-            this.getEmulatorNavigator().webkitPersistentStorage.requestQuota(500 * 1024 * 1024, (granted) => {
+            this.getEmulatorNavigator().webkitPersistentStorage.requestQuota(500 * CoreBytesConstants.MEGABYTE, (granted) => {
                 window.requestFileSystem(LocalFileSystem.PERSISTENT, granted, (fileSystem: FileSystem) => {
                     resolve(fileSystem.root.toURL());
                 }, reject);
@@ -873,7 +874,7 @@ export class FileMock extends File {
      */
     private writeFileInChunksMock(writer: FileWriter, data: Blob): Promise<void> {
         let writtenSize = 0;
-        const BLOCK_SIZE = 1024 * 1024;
+        const BLOCK_SIZE = CoreBytesConstants.MEGABYTE;
         const writeNextChunk = () => {
             const size = Math.min(BLOCK_SIZE, data.size - writtenSize);
             const chunk = data.slice(writtenSize, writtenSize + size);
