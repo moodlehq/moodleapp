@@ -68,7 +68,7 @@ export class CoreLogger {
         // Disable log on production and testing.
         if (
             !CoreBrowser.hasDevelopmentSetting('LoggingEnabled') &&
-            (CoreConstants.BUILD.isProduction || CoreConstants.BUILD.isTesting)
+            (CoreConstants.isDevOrTestingBuild())
         ) {
             if (CoreConstants.BUILD.isProduction) {
                 warnLogsDisabled();

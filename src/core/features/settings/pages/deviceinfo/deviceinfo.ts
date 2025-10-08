@@ -195,7 +195,7 @@ export default class CoreSettingsDeviceInfoPage {
         this.fsClickable = CoreFile.usesHTMLAPI();
 
         const showDevOptionsOnConfig = await CoreConfig.get('showDevOptions', 0);
-        this.devOptionsForced = CoreConstants.enableDevTools();
+        this.devOptionsForced = CoreConstants.isDevOrTestingBuild();
         this.showDevOptions = this.devOptionsForced || showDevOptionsOnConfig == 1;
 
         const publicKey = this.deviceInfo.pushId ?
