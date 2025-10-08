@@ -172,6 +172,11 @@ ion-tabs.placement-side .tabs-inner {
     --ion-safe-area-left: 0px;
 }
 
+:root[dir=rtl] ion-tabs.placement-side .tabs-inner {
+    --ion-safe-area-right: 0px;
+    --ion-safe-area-left: var(--root-safe-area-left);
+}
+
 ion-tabs.placement-bottom .tabs-inner {
     --ion-safe-area-bottom: 0px;
 }

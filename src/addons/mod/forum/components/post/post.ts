@@ -102,7 +102,7 @@ export class AddonModForumPostComponent implements OnInit, OnDestroy, OnChanges 
     @Input({ transform: toBoolean }) highlight = false;
     @Output() onPostChange: EventEmitter<void> = new EventEmitter<void>(); // Event emitted when a reply is posted or modified.
 
-    readonly formElement = viewChild.required<ElementRef>('replyFormEl');
+    readonly formElement = viewChild<ElementRef>('replyFormEl');
 
     messageControl = new FormControl<string | null>(null);
 
