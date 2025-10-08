@@ -35,6 +35,7 @@ import { CoreCourseModuleCompletionComponent } from '../module-completion/module
 import { CoreCourseModuleCompletionLegacyComponent } from '../module-completion-legacy/module-completion-legacy';
 import { CoreSharedModule } from '@/core/shared.module';
 import { CoreCourseModuleHelper } from '@features/course/services/course-module-helper';
+import { CoreCourseDownloadStatusIcon } from '@features/course/constants';
 
 /**
  * Component to display a module entry in a list of modules.
@@ -154,11 +155,11 @@ export class CoreCourseModuleComponent implements OnInit, OnDestroy {
 
         switch (prefetchStatus) {
             case DownloadStatus.OUTDATED:
-                this.prefetchStatusIcon.set(CoreConstants.ICON_OUTDATED);
+                this.prefetchStatusIcon.set(CoreCourseDownloadStatusIcon.OUTDATED);
                 this.prefetchStatusText.set('core.outdated');
                 break;
             case DownloadStatus.DOWNLOADED:
-                this.prefetchStatusIcon.set(CoreConstants.ICON_DOWNLOADED);
+                this.prefetchStatusIcon.set(CoreCourseDownloadStatusIcon.DOWNLOADED);
                 this.prefetchStatusText.set('core.downloaded');
                 break;
             default:

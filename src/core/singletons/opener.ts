@@ -21,7 +21,7 @@ import { CorePlatform } from '@services/platform';
 import { CoreSites } from '@services/sites';
 import { CoreMimetype } from '@singletons/mimetype';
 import { Translate, FileOpener, WebIntent, InAppBrowser, NgZone } from '@singletons';
-import { CoreConstants } from '../constants';
+import { CoreConstants, CoreConfigSettingKey } from '../constants';
 import { CoreFile } from '@services/file';
 import { CorePromiseUtils } from './promise-utils';
 import { CoreUrl } from './url';
@@ -56,7 +56,7 @@ export class CoreOpener {
         }
 
         // Check if the user decided not to see the warning.
-        const dontShowWarning = await CoreConfig.get(CoreConstants.SETTINGS_DONT_SHOW_EXTERNAL_LINK_WARN, 0);
+        const dontShowWarning = await CoreConfig.get(CoreConfigSettingKey.DONT_SHOW_EXTERNAL_LINK_WARN, 0);
         if (dontShowWarning) {
             return;
         }
@@ -71,7 +71,7 @@ export class CoreOpener {
         });
 
         if (dontShowAgain) {
-            CoreConfig.set(CoreConstants.SETTINGS_DONT_SHOW_EXTERNAL_LINK_WARN, 1);
+            CoreConfig.set(CoreConfigSettingKey.DONT_SHOW_EXTERNAL_LINK_WARN, 1);
         }
     }
 

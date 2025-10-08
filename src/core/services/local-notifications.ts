@@ -22,7 +22,7 @@ import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { CoreText } from '@singletons/text';
 import { CoreQueueRunner } from '@classes/queue-runner';
 import { CoreError } from '@classes/errors/error';
-import { CoreConstants } from '@/core/constants';
+import { CoreConstants, CoreConfigSettingKey } from '@/core/constants';
 import { makeSingleton, NgZone, Translate, LocalNotifications, ApplicationInit } from '@singletons';
 import { CoreLogger } from '@singletons/logger';
 import {
@@ -155,7 +155,7 @@ export class CoreLocalNotificationsProvider {
                 return;
             }
 
-            const dontShowWarning = await CoreConfig.get(CoreConstants.EXACT_ALARMS_WARNING_DISPLAYED, 0);
+            const dontShowWarning = await CoreConfig.get(CoreConfigSettingKey.EXACT_ALARMS_WARNING_DISPLAYED, 0);
             if (dontShowWarning) {
                 return;
             }
@@ -177,7 +177,7 @@ export class CoreLocalNotificationsProvider {
                 ],
             });
 
-            CoreConfig.set(CoreConstants.EXACT_ALARMS_WARNING_DISPLAYED, 1);
+            CoreConfig.set(CoreConfigSettingKey.EXACT_ALARMS_WARNING_DISPLAYED, 1);
         });
     }
 
@@ -779,7 +779,7 @@ export class CoreLocalNotificationsProvider {
                 if (!this.canDisableSound()) {
                     soundEnabled = true;
                 } else {
-                    soundEnabled = await CoreConfig.get(CoreConstants.SETTINGS_NOTIFICATION_SOUND, true);
+                    soundEnabled = await CoreConfig.get(CoreConfigSettingKey.NOTIFICATION_SOUND, true);
                 }
 
                 if (!soundEnabled) {

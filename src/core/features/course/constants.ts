@@ -83,3 +83,12 @@ export const enum CoreCourseOverviewContentType {
     OVERVIEW_ACTION = 'core_courseformat\\output\\local\\overview\\overviewaction',
     PIX_ICON = 'core\\output\\pix_icon',
 };
+
+export const enum CoreCourseDownloadStatusIcon {
+    LOADING = 'spinner',
+    DOWNLOADED = 'fam-cloud-done',
+    DOWNLOADING = CoreCourseDownloadStatusIcon.LOADING,
+    NOT_DOWNLOADED = 'fas-cloud-arrow-down',
+    OUTDATED = 'fam-cloud-refresh',
+    NOT_DOWNLOADABLE = '',
+};

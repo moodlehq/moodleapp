@@ -83,9 +83,12 @@ export default class CoreSettingsDeviceInfoPage {
     fsClickable = false;
     showDevOptions = false;
     displaySiteUrl = false;
+
     protected devOptionsClickCounter = 0;
     protected devOptionsForced = false;
     protected devOptionsClickTimeout?: number;
+
+    protected static readonly SHOW_DEV_OPTIONS = 'showDevOptions';
 
     constructor() {
         const navigator = window.navigator;
@@ -194,7 +197,7 @@ export default class CoreSettingsDeviceInfoPage {
         this.deviceInfo.fileSystemRoot = basepath;
         this.fsClickable = CoreFile.usesHTMLAPI();
 
-        const showDevOptionsOnConfig = await CoreConfig.get('showDevOptions', 0);
+        const showDevOptionsOnConfig = await CoreConfig.get(CoreSettingsDeviceInfoPage.SHOW_DEV_OPTIONS, 0);
         this.devOptionsForced = CoreConstants.isDevOrTestingBuild();
         this.showDevOptions = this.devOptionsForced || showDevOptionsOnConfig == 1;
 
@@ -243,7 +246,7 @@ export default class CoreSettingsDeviceInfoPage {
         if (this.devOptionsClickCounter == 5) {
             if (!this.showDevOptions) {
                 this.showDevOptions = true;
-                await CoreConfig.set('showDevOptions', 1);
+                await CoreConfig.set(CoreSettingsDeviceInfoPage.SHOW_DEV_OPTIONS, 1);
 
                 CoreToasts.show({
                     message: 'core.settings.youradev',
@@ -251,7 +254,7 @@ export default class CoreSettingsDeviceInfoPage {
                 });
             } else {
                 this.showDevOptions = false;
-                await CoreConfig.delete('showDevOptions');
+                await CoreConfig.delete(CoreSettingsDeviceInfoPage.SHOW_DEV_OPTIONS);
             }
 
             this.devOptionsClickCounter = 0;

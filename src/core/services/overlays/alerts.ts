@@ -26,7 +26,7 @@ import { CoreAnyError, CoreError } from '@classes/errors/error';
 import { CoreErrorHelper } from '@services/error-helper';
 import { CoreLogger } from '@singletons/logger';
 import { CoreConfig } from '@services/config';
-import { CoreConstants } from '@/core/constants';
+import { CoreConfigSettingKey } from '@/core/constants';
 import { CoreErrorLogs } from '@singletons/error-logs';
 import { CoreSiteError } from '@classes/errors/siteerror';
 import { CoreUserSupport } from '@features/user/services/support';
@@ -34,7 +34,7 @@ import { CoreErrorAccordion } from '@services/error-accordion';
 import { CorePlatform } from '@services/platform';
 import { CoreCanceledError } from '@classes/errors/cancelederror';
 import { CoreFileSizeSum } from '@services/plugin-file-delegate';
-import { CoreFile } from '@services/file';
+import { CoreFile, CoreFileProvider } from '@services/file';
 import { CoreNetwork } from '@services/network';
 
 /**
@@ -56,7 +56,7 @@ export class CoreAlertsService {
      */
     protected async init(): Promise<void> {
         // Check if debug messages should be displayed.
-        const debugDisplay = await CoreConfig.get<number>(CoreConstants.SETTINGS_DEBUG_DISPLAY, 0);
+        const debugDisplay = await CoreConfig.get<number>(CoreConfigSettingKey.DEBUG_DISPLAY, 0);
 
         this.debugDisplay = debugDisplay !== 0;
     }
@@ -144,29 +144,13 @@ export class CoreAlertsService {
     ): Promise<void> {
         const readableSize = CoreText.bytesToSize(size.size, 2);
 
-        const getAvailableBytes = async (): Promise<number | null> => {
-            const availableBytes = await CoreFile.calculateFreeSpace();
+        const getAvailableSpace = async (): Promise<string> => {
+            const availableBytes = await CoreFile.getPlatformAvailableBytes(size.size);
 
-            if (CorePlatform.isAndroid()) {
-                return availableBytes;
-            } else {
-                // Space calculation is not accurate on iOS, but it gets more accurate when space is lower.
-                // We'll only use it when space is <500MB, or we're downloading more than twice the reported space.
-                if (availableBytes < CoreConstants.IOS_FREE_SPACE_THRESHOLD || size.size > availableBytes / 2) {
-                    return availableBytes;
-                } else {
-                    return null;
-                }
-            }
-        };
-
-        const getAvailableSpace = (availableBytes: number | null): string => {
             if (availableBytes === null) {
                 return '';
             } else {
-                const availableSize = CoreText.bytesToSize(availableBytes, 2);
-
-                if (CorePlatform.isAndroid() && size.size > availableBytes - CoreConstants.MINIMUM_FREE_SPACE) {
+                if (CorePlatform.isAndroid() && size.size > availableBytes - CoreFileProvider.MINIMUM_FREE_SPACE) {
                     throw new CoreError(
                         Translate.instant(
                             'core.course.insufficientavailablespace',
@@ -175,19 +159,21 @@ export class CoreAlertsService {
                     );
                 }
 
+                const availableSize = CoreText.bytesToSize(availableBytes, 2);
+
                 return Translate.instant('core.course.availablespace', { available: availableSize });
             }
         };
 
-        const availableBytes = await getAvailableBytes();
-
-        const availableSpace = getAvailableSpace(availableBytes);
-        const wifiThreshold = options.wifiThreshold ?? CoreConstants.WIFI_DOWNLOAD_THRESHOLD;
-        const limitedThreshold = options.limitedThreshold ?? CoreConstants.DOWNLOAD_THRESHOLD;
+        const availableSpace = await getAvailableSpace();
 
         let wifiPrefix = '';
+        let sizeThreshold = 0;
         if (CoreNetwork.isCellular()) {
             wifiPrefix = Translate.instant('core.course.confirmlimiteddownload');
+            sizeThreshold = options.limitedThreshold ?? CoreFileProvider.DOWNLOAD_DEFAULT_CONFIRMATION_THRESHOLD;
+        } else {
+            sizeThreshold = options.wifiThreshold ?? CoreFileProvider.WIFI_DOWNLOAD_DEFAULT_CONFIRMATION_THRESHOLD;
         }
 
         if (size.size < 0 || (size.size == 0 && !size.total)) {
@@ -202,8 +188,7 @@ export class CoreAlertsService {
                 'core.course.confirmpartialdownloadsize',
                 { size: readableSize, availableSpace: availableSpace },
             ));
-        } else if (options.alwaysConfirm || size.size >= wifiThreshold ||
-                (CoreNetwork.isCellular() && size.size >= limitedThreshold)) {
+        } else if (options.alwaysConfirm || size.size >= sizeThreshold) {
 
             return this.confirm(wifiPrefix + Translate.instant(
                 options.message ?? (size.size === 0 ? 'core.course.confirmdownloadzerosize' : 'core.course.confirmdownload'),

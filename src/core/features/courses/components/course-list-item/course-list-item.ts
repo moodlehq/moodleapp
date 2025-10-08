@@ -40,6 +40,7 @@ import {
 import {
     CORE_COURSE_ALL_COURSES_CLEARED,
     CORE_COURSE_PROGRESS_UPDATED_EVENT,
+    CoreCourseDownloadStatusIcon,
     COURSE_STATUS_CHANGED_EVENT,
 } from '@features/course/constants';
 import { CoreAlerts } from '@services/overlays/alerts';
@@ -75,7 +76,7 @@ export class CoreCoursesCourseListItemComponent implements OnInit, OnDestroy, On
     enrolmentIcons: CoreEnrolInfoIcon[] = [];
     isEnrolled = false;
     prefetchCourseData: CorePrefetchStatusInfo = {
-        icon: '',
+        icon: CoreCourseDownloadStatusIcon.NOT_DOWNLOADABLE,
         statusTranslatable: 'core.loading',
         status: DownloadStatus.DOWNLOADABLE_NOT_DOWNLOADED,
         loading: true,

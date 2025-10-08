@@ -26,7 +26,7 @@ import {
     CoreCommentsSync,
 } from '@features/comments/services/comments-sync';
 import { IonContent } from '@ionic/angular';
-import { ContextLevel, CoreConstants } from '@/core/constants';
+import { ContextLevel, CoreRefreshIcon, CoreSyncIcon } from '@/core/constants';
 import { CoreNavigator } from '@services/navigator';
 import { Translate } from '@singletons';
 import { CorePromiseUtils } from '@singletons/promise-utils';
@@ -80,8 +80,8 @@ export default class CoreCommentsViewerPage implements OnInit, OnDestroy, AfterV
     canDeleteComments = false;
     showDelete = false;
     hasOffline = false;
-    refreshIcon = CoreConstants.ICON_LOADING;
-    syncIcon = CoreConstants.ICON_LOADING;
+    refreshIcon = CoreRefreshIcon.LOADING;
+    syncIcon = CoreSyncIcon.LOADING;
     offlineComment?: CoreCommentsOfflineWithUser & { pending?: boolean };
     currentUserId: number;
     sending = false;
@@ -107,8 +107,8 @@ export default class CoreCommentsViewerPage implements OnInit, OnDestroy, AfterV
 
                 // Refresh the data.
                 this.commentsLoaded = false;
-                this.refreshIcon = CoreConstants.ICON_LOADING;
-                this.syncIcon = CoreConstants.ICON_LOADING;
+                this.refreshIcon = CoreRefreshIcon.LOADING;
+                this.syncIcon = CoreSyncIcon.LOADING;
 
                 this.page = 0;
                 this.comments = [];
@@ -230,8 +230,8 @@ export default class CoreCommentsViewerPage implements OnInit, OnDestroy, AfterV
             }
         } finally {
             this.commentsLoaded = true;
-            this.refreshIcon = CoreConstants.ICON_REFRESH;
-            this.syncIcon = CoreConstants.ICON_SYNC;
+            this.refreshIcon = CoreRefreshIcon.REFRESH;
+            this.syncIcon = CoreSyncIcon.SYNC;
 
             this.scrollToBottom(this.page === 0);
         }
@@ -277,8 +277,8 @@ export default class CoreCommentsViewerPage implements OnInit, OnDestroy, AfterV
      */
     async refreshComments(showErrors: boolean, refresher?: HTMLIonRefresherElement): Promise<void> {
         this.commentsLoaded = false;
-        this.refreshIcon = CoreConstants.ICON_LOADING;
-        this.syncIcon = CoreConstants.ICON_LOADING;
+        this.refreshIcon = CoreRefreshIcon.LOADING;
+        this.syncIcon = CoreSyncIcon.LOADING;
 
         await CorePromiseUtils.ignoreErrors(this.invalidateComments());
 

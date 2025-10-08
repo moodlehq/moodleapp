@@ -26,3 +26,8 @@ export const ALWAYS_SHOW_LOGIN_FORM_CHANGED = 'always_show_login_form_changed';
 
 // Event indicating that a user left the app because it wasn't supported by a site.
 export const APP_UNSUPPORTED_CHURN = 'app_unsupported_churn';
+
+// Login info to be stored when using SSO.
+export const LOGIN_SSO_LAUNCH_DATA = 'CoreLoginLaunchData';
+
+export const NO_SITE_ID = 'NoSite';

@@ -27,7 +27,7 @@ import {
 import { CoreConfig } from '@services/config';
 import { CoreObject } from '@singletons/object';
 import { CoreCourseModuleHelper } from '@features/course/services/course-module-helper';
-import { ContextLevel, CoreConstants } from '@/core/constants';
+import { ContextLevel, CoreTimeConstants } from '@/core/constants';
 import { dayjs, Dayjs } from '@/core/utils/dayjs';
 import { makeSingleton } from '@singletons';
 import { AddonCalendarOfflineEventDBRecord } from './database/calendar-offline';
@@ -261,7 +261,7 @@ export class AddonCalendarHelperProvider {
         if (eventFormatted.duration == 1) {
             eventFormatted.timeduration = (event.timedurationuntil || 0) - event.timestart;
         } else if (eventFormatted.duration == 2) {
-            eventFormatted.timeduration = (event.timedurationminutes || 0) * CoreConstants.SECONDS_MINUTE;
+            eventFormatted.timeduration = (event.timedurationminutes || 0) * CoreTimeConstants.SECONDS_MINUTE;
         } else {
             eventFormatted.timeduration = 0;
         }
@@ -632,8 +632,8 @@ export class AddonCalendarHelperProvider {
                 fetchTimestarts.push(eventData.timestart);
 
                 for (let i = 1; i < eventData.repeated; i++) {
-                    invalidateTimestarts.push(eventData.timestart + CoreConstants.SECONDS_DAY * 7 * i);
-                    invalidateTimestarts.push(eventData.timestart - CoreConstants.SECONDS_DAY * 7 * i);
+                    invalidateTimestarts.push(eventData.timestart + CoreTimeConstants.SECONDS_DAY * 7 * i);
+                    invalidateTimestarts.push(eventData.timestart - CoreTimeConstants.SECONDS_DAY * 7 * i);
                 }
 
                 // Get the repeated events to invalidate them.
@@ -651,7 +651,7 @@ export class AddonCalendarHelperProvider {
             fetchTimestarts.push(time);
 
             while (eventData.repeated > 1) {
-                time += CoreConstants.SECONDS_DAY * 7;
+                time += CoreTimeConstants.SECONDS_DAY * 7;
                 eventData.repeated--;
                 invalidateTimestarts.push(time);
             }

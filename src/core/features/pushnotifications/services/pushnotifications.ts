@@ -23,7 +23,7 @@ import { CoreLocalNotifications } from '@services/local-notifications';
 import { CoreUtils } from '@singletons/utils';
 import { CoreText } from '@singletons/text';
 import { CoreConfig } from '@services/config';
-import { CoreConstants } from '@/core/constants';
+import { CoreConstants, CoreConfigSettingKey } from '@/core/constants';
 import { CoreSite } from '@classes/sites/site';
 import { makeSingleton, Badge, Device, Translate, ApplicationInit, NgZone } from '@singletons';
 import { CoreLogger } from '@singletons/logger';
@@ -284,7 +284,7 @@ export class CorePushNotificationsProvider {
         let soundEnabled = true;
 
         if (CoreLocalNotifications.canDisableSound()) {
-            soundEnabled = await CoreConfig.get<boolean>(CoreConstants.SETTINGS_NOTIFICATION_SOUND, true);
+            soundEnabled = await CoreConfig.get<boolean>(CoreConfigSettingKey.NOTIFICATION_SOUND, true);
         }
 
         return {

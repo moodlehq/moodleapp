@@ -17,7 +17,7 @@ import { CoreConfig } from '@services/config';
 import { CoreEvents } from '@singletons/events';
 import { CoreSites } from '@services/sites';
 import { CoreText } from '@singletons/text';
-import { CoreConstants } from '@/core/constants';
+import { CoreConfigSettingKey } from '@/core/constants';
 import { CoreForms } from '@singletons/form';
 import { CorePlatform } from '@services/platform';
 import { toBoolean } from '@/core/transforms/boolean';
@@ -67,7 +67,7 @@ export class CoreSendMessageFormComponent {
     protected sendOnEnter = false;
 
     constructor() {
-        CoreConfig.get(CoreConstants.SETTINGS_SEND_ON_ENTER, !CorePlatform.isMobile()).then((sendOnEnter) => {
+        CoreConfig.get(CoreConfigSettingKey.SEND_ON_ENTER, !CorePlatform.isMobile()).then((sendOnEnter) => {
             this.sendOnEnter = !!sendOnEnter;
 
             return;

@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { CoreConstants } from '@/core/constants';
+import { LOADING_ICON } from '@/core/constants';
 import { Component, input } from '@angular/core';
 import { PopoverController } from '@singletons';
 import { CoreContextMenuItemComponent } from './context-menu-item';
@@ -62,7 +62,7 @@ export class CoreContextMenuPopoverComponent {
             event.preventDefault();
             event.stopPropagation();
 
-            if (item.iconAction() === CoreConstants.ICON_LOADING) {
+            if (item.iconAction() === LOADING_ICON) {
                 return false;
             }
 

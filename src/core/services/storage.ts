@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Inject, Injectable, Optional } from '@angular/core';
+import { Inject, Injectable, InjectionToken, Optional } from '@angular/core';
 
 import { AsyncInstance, asyncInstance } from '@/core/utils/async-instance';
 import { CoreAppDB } from './app-db';
@@ -24,7 +24,13 @@ import { SQLiteDB } from '@classes/sqlitedb';
 import { APP_SCHEMA, CoreStorageRecord, TABLE_NAME } from './database/storage';
 import { CoreSites } from './sites';
 import { CoreSite } from '@classes/sites/site';
-import { NULL_INJECTION_TOKEN } from '@/core/constants';
+
+/**
+ * Injection token for optional lazy table constructor.
+ * This token is not provided by any injector, allowing for manual table initialization.
+ */
+export const LAZY_TABLE_CONSTRUCTOR_TOKEN: InjectionToken<() => Promise<CoreStorageTable>>
+    = new InjectionToken('null');
 
 /**
  * Service to store data using key-value pairs.
@@ -40,7 +46,7 @@ export class CoreStorageService {
     table: AsyncInstance<CoreStorageTable>;
 
     // eslint-disable-next-line @angular-eslint/prefer-inject
-    constructor(@Optional() @Inject(NULL_INJECTION_TOKEN) lazyTableConstructor?: () => Promise<CoreStorageTable>) {
+    constructor(@Optional() @Inject(LAZY_TABLE_CONSTRUCTOR_TOKEN) lazyTableConstructor?: () => Promise<CoreStorageTable>) {
         // @todo: Inject the NullInjectionToken inside the constructor.
         // This change can make the service fail so we need to be careful and test it properly.
 
