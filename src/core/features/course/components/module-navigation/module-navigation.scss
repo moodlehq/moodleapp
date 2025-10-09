@@ -1,7 +1,7 @@
 @use "theme/globals" as *;
 
 :host {
-    --height: var(--core-navigation-max-height);
+    --height: var(--core-navigation-max-height, 44px);
     --background: var(--core-navigation-background);
     --button-color: var(--gray-700);
 
@@ -14,6 +14,7 @@
     core-loading {
         text-align: center;
         --loading-inline-min-height: var(--height);
+        --loading-placeholder-padding: 8px;
     }
 
     &.empty {
