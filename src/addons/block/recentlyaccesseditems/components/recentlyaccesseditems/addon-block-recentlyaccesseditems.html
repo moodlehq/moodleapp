@@ -11,7 +11,6 @@
         (scroll)="scrollControls.updateScrollPosition()">
         @if (items) {
             <div (onResize)="scrollControls.updateScrollPosition()" class="flex-row">
-                <div class="safe-area-pseudo-padding-start"></div>
                 <div *ngFor="let item of items" class="core-horizontal-scroll-item">
                     <ion-card>
                         <ion-item class="core-course-module-handler ion-text-wrap" [detail]="false" (click)="action($event, item)" button>
@@ -35,7 +34,6 @@
                         </ion-item>
                     </ion-card>
                 </div>
-                <div class="safe-area-pseudo-padding-end"></div>
             </div>
         }
     </div>
