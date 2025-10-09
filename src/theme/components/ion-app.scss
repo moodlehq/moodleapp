@@ -1,0 +1,4 @@
+ion-app {
+    // Set ion-app height based on the keyboard height.
+    height: calc(100% - var(--keyboard-height, 0px));
+}

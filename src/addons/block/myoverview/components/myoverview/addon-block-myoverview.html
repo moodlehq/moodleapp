@@ -160,7 +160,7 @@
 
     <!-- List of courses. -->
     @if (hasCourses) {
-        <div class="safe-area-padding core-course-list">
+        <div class="core-course-list">
             <ion-grid class="ion-no-padding" [class.core-no-grid]="layout !== 'card'" [class.list-item-limited-width]="layout !== 'card'">
                 <ion-row class="ion-no-padding">
                     <ion-col *ngFor="let course of filteredCourses" class="ion-no-padding" size="12" size-sm="6" size-md="6" size-lg="4"

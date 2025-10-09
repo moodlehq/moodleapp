@@ -65,6 +65,11 @@
 
 }
 
+:host-context(ion-content) {
+    --ion-safe-area-left: var(--root-safe-area-left);
+    --ion-safe-area-right: var(--root-safe-area-right);
+}
+
 :host(.menu-only) {
     --menu-min-width: 0px;
     --menu-max-width: 100%;
@@ -83,4 +88,24 @@
 :host(.outlet-activated) {
     --content-placeholder-display: none;
     --content-outlet-display: var(--content-display);
+}
+
+:host(.menu-and-content) {
+    .menu {
+        --ion-safe-area-right: 0px;
+
+        @include rtl() {
+            --ion-safe-area-right: var(--root-safe-area-right, 0px);
+            --ion-safe-area-left: 0px;
+        }
+    }
+
+    .content-outlet {
+        --ion-safe-area-left: 0px;
+
+        @include rtl() {
+            --ion-safe-area-left: var(--root-safe-area-left, 0px);
+            --ion-safe-area-right: 0px;
+        }
+    }
 }
