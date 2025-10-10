@@ -38,10 +38,7 @@ export class CoreCoursesCourseLinkHandlerService extends CoreCoursesLinksHandler
     ): CoreContentLinksAction[] | Promise<CoreContentLinksAction[]> {
         const courseId = parseInt(params.id, 10);
         const sectionId = params.sectionid ? parseInt(params.sectionid, 10) : undefined;
-        const pageParams: Params = {
-            sectionId: sectionId || undefined,
-        };
-        let sectionNumber = params.section !== undefined ? parseInt(params.section, 10) : NaN;
+        let sectionNumber = params.section !== undefined ? parseInt(params.section, 10) : undefined;
 
         if (!sectionId && !sectionNumber) {
             // Check if the URL has a hash to navigate to the section.
@@ -51,7 +48,10 @@ export class CoreCoursesCourseLinkHandlerService extends CoreCoursesLinksHandler
             }
         }
 
-        if (!isNaN(sectionNumber)) {
+        const pageParams: Params = {};
+        if (sectionId !== undefined && !isNaN(sectionId)) {
+            pageParams.sectionId = sectionId;
+        } else if (sectionNumber !== undefined && !isNaN(sectionNumber)) {
             pageParams.sectionNumber = sectionNumber;
         } else {
             const matches = url.match(/#inst(\d+)/);

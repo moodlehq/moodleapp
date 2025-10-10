@@ -158,16 +158,17 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
 
         // Listen for select course tab events to select the right section if needed.
         this.selectTabObserver = CoreEvents.on(CoreEvents.SELECT_COURSE_TAB, (data) => {
-            if (data.name) {
+            if (data.selectedTab !== '') {
                 return;
             }
 
+            const pageParams = data.pageParams || {};
             let section: CoreCourseSection | undefined;
 
-            if (data.sectionId !== undefined && this.sections) {
-                section = this.sections.find((section) => section.id === data.sectionId);
-            } else if (data.sectionNumber !== undefined && this.sections) {
-                section = this.sections.find((section) => section.section === data.sectionNumber);
+            if (pageParams.sectionId !== undefined && this.sections) {
+                section = this.sections.find((section) => section.id === pageParams.sectionId);
+            } else if (pageParams.sectionNumber !== undefined && this.sections) {
+                section = this.sections.find((section) => section.section === pageParams.sectionNumber);
             }
 
             if (section) {

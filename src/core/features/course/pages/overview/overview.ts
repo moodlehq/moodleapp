@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit, signal, Type, viewChild, WritableSignal } from '@angular/core';
+import { Component, effect, OnInit, signal, Type, viewChild, WritableSignal, OnDestroy } from '@angular/core';
 
 import {
     CoreCourseOverview,
@@ -39,7 +39,8 @@ import { CoreCourse } from '@features/course/services/course';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { CoreScreen } from '@services/screen';
 import { map } from 'rxjs';
-import { CoreCourseOverviewContentType } from '@features/course/constants';
+import { CORE_COURSE_OVERVIEW_OPTION_NAME, CoreCourseOverviewContentType } from '@features/course/constants';
+import { CoreEventObserver, CoreEvents } from '@singletons/events';
 
 /**
  * Page that displays an overview of all activities in a course.
@@ -53,7 +54,7 @@ import { CoreCourseOverviewContentType } from '@features/course/constants';
         CoreSharedModule,
     ],
 })
-export default class CoreCourseOverviewPage implements OnInit {
+export default class CoreCourseOverviewPage implements OnInit, OnDestroy {
 
     readonly loaded = signal(false);
     readonly modTypes = signal<OverviewModType[]>([]);
@@ -63,6 +64,8 @@ export default class CoreCourseOverviewPage implements OnInit {
     readonly isTablet = toSignal(CoreScreen.layoutObservable.pipe(map(() => CoreScreen.isTablet)), { requireSync: true });
     protected courseId!: number;
     protected logView: () => void;
+    protected readonly initialExpand = signal<string | undefined>(undefined);
+    protected selectTabObserver: CoreEventObserver;
 
     protected static readonly RESOURCES_NAME = 'resource';
 
@@ -77,6 +80,29 @@ export default class CoreCourseOverviewPage implements OnInit {
                 url: `/course/overview.php?id=${this.courseId}`,
             });
         });
+
+        effect(() => {
+            const accordionGroup = this.accordionGroup();
+            const initialExpand = this.initialExpand();
+
+            if (accordionGroup && initialExpand) {
+                accordionGroup.value = initialExpand;
+                this.modTypeAccordionChanged(initialExpand);
+            }
+        });
+
+        // Listen for select course tab events to expand the right section if needed.
+        this.selectTabObserver = CoreEvents.on(CoreEvents.SELECT_COURSE_TAB, (data) => {
+            if (data.selectedTab !== CORE_COURSE_OVERVIEW_OPTION_NAME) {
+                return;
+            }
+
+            if (data.pageParams.expand === undefined) {
+                return;
+            }
+
+            this.initialExpand.set(data.pageParams.expand);
+        });
     }
 
     /**
@@ -85,6 +111,7 @@ export default class CoreCourseOverviewPage implements OnInit {
     async ngOnInit(): Promise<void> {
         try {
             this.courseId = CoreNavigator.getRequiredRouteParam('courseId');
+            this.initialExpand.set(CoreNavigator.getRouteParam('expand'));
         } catch (error) {
             CoreAlerts.showError(error);
             CoreNavigator.back();
@@ -376,6 +403,13 @@ export default class CoreCourseOverviewPage implements OnInit {
                 act.isExpanded.set(false);
             }
         });
+    }
+
+    /**
+     * @inheritdoc
+     */
+    ngOnDestroy(): void {
+        this.selectTabObserver.off();
     }
 
 }

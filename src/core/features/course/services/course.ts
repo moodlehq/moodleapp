@@ -16,7 +16,7 @@ import { Injectable } from '@angular/core';
 import { Params } from '@angular/router';
 
 import { CoreNetwork } from '@services/network';
-import { CoreEvents } from '@singletons/events';
+import { CoreEvents, CoreEventSelectCourseTabData } from '@singletons/events';
 import { CoreLogger } from '@singletons/logger';
 import { CoreSitesCommonWSOptions, CoreSites, CoreSitesReadingStrategy, CoreSitesWSOptionsWithFilter } from '@services/sites';
 import { CoreSite } from '@classes/sites/site';
@@ -1402,14 +1402,16 @@ export class CoreCourseProvider {
     /**
      * Select a certain tab in the course. Please use currentViewIsCourse() first to verify user is viewing the course.
      *
-     * @param name Name of the tab. If not provided, course contents.
-     * @param params Other params.
+     * @param selectedTab Name of the tab. If not provided, course contents.
+     * @param params Other page params.
      */
-    selectCourseTab(name?: string, params?: Params): void {
-        params = params || {};
-        params.name = name || '';
+    selectCourseTab(selectedTab: string, params: Params = {}): void {
+        const tabParams: CoreEventSelectCourseTabData = {
+            selectedTab,
+            pageParams: { ...params },
+        };
 
-        CoreEvents.trigger(CoreEvents.SELECT_COURSE_TAB, params);
+        CoreEvents.trigger(CoreEvents.SELECT_COURSE_TAB, tabParams);
     }
 
     /**
