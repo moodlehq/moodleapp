@@ -16,7 +16,7 @@ import { Component, OnDestroy, OnInit, inject } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 
 import { CoreSite, CoreSiteConfig } from '@classes/sites/site';
-import { CoreCourse, CoreCourseWSSection, sectionContentIsModule } from '@features/course/services/course';
+import { CoreCourse, CoreCourseWSSection } from '@features/course/services/course';
 import { CoreSites } from '@services/sites';
 import { CoreSiteHome } from '@features/sitehome/services/sitehome';
 import { CoreCourses } from '@features//courses/services/courses';
@@ -36,6 +36,7 @@ import { Translate } from '@singletons';
 import { CoreSharedModule } from '@/core/shared.module';
 import { CoreCourseModuleComponent } from '../../../course/components/module/module';
 import { CoreBlockSideBlocksButtonComponent } from '../../../block/components/side-blocks-button/side-blocks-button';
+import { CoreCourseSectionComponent } from '@features/course/components/course-section/course-section';
 
 /**
  * Page that displays site home index.
@@ -48,6 +49,7 @@ import { CoreBlockSideBlocksButtonComponent } from '../../../block/components/si
         CoreSharedModule,
         CoreCourseModuleComponent,
         CoreBlockSideBlocksButtonComponent,
+        CoreCourseSectionComponent,
     ],
 })
 export default class CoreSiteHomeIndexPage implements OnInit, OnDestroy {
@@ -64,7 +66,6 @@ export default class CoreSiteHomeIndexPage implements OnInit, OnDestroy {
     currentSite!: CoreSite;
     searchEnabled = false;
     newsForumModule?: CoreCourseModuleData;
-    isModule = sectionContentIsModule;
 
     protected updateSiteObserver: CoreEventObserver;
     protected logView: () => void;

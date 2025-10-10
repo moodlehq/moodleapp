@@ -49,7 +49,7 @@ export class CoreCourseCourseIndexComponent implements OnInit {
     highlighted?: string;
     sectionsToRender: CourseIndexSection[] = [];
     loaded = false;
-    isModule = sectionContentIsModule;
+    readonly isModule = sectionContentIsModule;
 
     protected element: HTMLElement = inject(ElementRef).nativeElement;
 

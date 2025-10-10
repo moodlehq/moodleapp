@@ -12,9 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 import {
-    Component,
-    Input,
-    OnInit,
+  Component,
+  computed,
+  input,
 } from '@angular/core';
 import {
     CoreCourseSection,
@@ -40,29 +40,24 @@ import { CoreCourseModuleComponent } from '../module/module';
         CoreCourseModuleComponent,
     ],
     host: {
-        '[class]': 'collapsible ? "collapsible" : "non-collapsible"',
+        '[class]': 'collapsible() ? "collapsible" : "non-collapsible"',
     },
 })
-export class CoreCourseSectionComponent implements OnInit {
+export class CoreCourseSectionComponent {
 
-    @Input({ required: true }) course!: CoreCourseAnyCourseData; // The course to render.
-    @Input({ required: true }) section!: CoreCourseSectionToDisplay;
-    @Input({ transform: toBoolean }) collapsible = true; // Whether the section can be collapsed.
-    @Input() lastModuleViewed?: CoreCourseViewedModulesDBRecord;
-    @Input() viewedModules: Record<number, boolean> = {};
+    readonly course = input.required<CoreCourseAnyCourseData>(); // The course to render.
+    readonly section = input.required<CoreCourseSectionToDisplay>();
+    readonly collapsible = input(true, { transform: toBoolean }); // Whether the section can be collapsed.
+    readonly lastModuleViewed = input<CoreCourseViewedModulesDBRecord>();
+    readonly viewedModules = input<Record<number, boolean>>({});
 
-    completionStatusIncomplete = CoreCourseModuleCompletionStatus.COMPLETION_INCOMPLETE;
-    highlightedName?: string; // Name to highlight.
-    isModule = sectionContentIsModule;
+    readonly highlightedName = computed(() =>
+        this.section().highlighted && this.highlightedName === undefined
+            ? CoreCourseFormatDelegate.getSectionHightlightedName(this.course())
+            : undefined);
 
-    /**
-     * @inheritdoc
-     */
-    ngOnInit(): void {
-        this.highlightedName = this.section.highlighted && this.highlightedName === undefined
-            ? CoreCourseFormatDelegate.getSectionHightlightedName(this.course)
-            : undefined;
-    }
+    readonly completionStatusIncomplete = CoreCourseModuleCompletionStatus.COMPLETION_INCOMPLETE;
+    readonly isModule = sectionContentIsModule;
 
 }
 

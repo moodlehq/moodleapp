@@ -215,10 +215,6 @@ img[core-external-content]:not([src]) {
     display: inline !important;
 }
 
-.section-summary core-format-text img {
-    border-radius: var(--mdl-shape-borderRadius-lg);
-}
-
 .list-item-limited-width,
 ion-content.limited-width > :not([slot]) {
     max-width: var(--list-item-max-width);

@@ -77,7 +77,7 @@ export default class AddonStorageManagerCourseStoragePage implements OnInit, OnD
     };
 
     statusDownloaded = DownloadStatus.DOWNLOADED;
-    isModule = sectionContentIsModule;
+    readonly isModule = sectionContentIsModule;
 
     protected siteUpdatedObserver?: CoreEventObserver;
     protected courseStatusObserver?: CoreEventObserver;
