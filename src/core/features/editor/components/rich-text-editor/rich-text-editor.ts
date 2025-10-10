@@ -145,7 +145,6 @@ export class CoreEditorRichTextEditorComponent implements AfterViewInit, OnDestr
     async ngOnInit(): Promise<void> {
         this.editorComponentClass = await CoreEditorService.getEditorComponentClass();
         this.editorComponentData = {
-            name: this.name,
             placeholder: this.placeholder,
             component: this.component,
             componentId: this.componentId,

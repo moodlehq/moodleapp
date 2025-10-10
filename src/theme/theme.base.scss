@@ -168,6 +168,11 @@ ion-app > ion-modal.core-modal-lateral {
     --ion-safe-area-top: inherit;
 }
 
+// Remove footer bottom shadow (Android only).
+ion-footer.md {
+    clip-path: inset(-12px 0px 0px 0px);
+}
+
 ion-tabs.placement-side .tabs-inner {
     --ion-safe-area-left: 0px;
 }
