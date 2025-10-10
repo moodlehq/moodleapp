@@ -20,12 +20,12 @@ import { CoreSites } from '@services/sites';
 import { ContextLevel } from '@/core/constants';
 import { Translate } from '@singletons';
 import { CoreObject } from '@singletons/object';
-import { CoreNavigator } from '@services/navigator';
 import { CoreCourseHelper } from '@features/course/services/course-helper';
 import { CoreUrl } from '@singletons/url';
 import { CoreSharedModule } from '@/core/shared.module';
 import { ModFeature, ModArchetype } from '@addons/mod/constants';
 import { CoreCourseModuleHelper } from '@features/course/services/course-module-helper';
+import { CoreCourseOverview } from '@features/course/services/course-overview';
 
 /**
  * Component to render an "activity modules" block.
@@ -125,7 +125,7 @@ export class AddonBlockActivityModulesComponent extends CoreBlockBaseComponent i
      * @returns Course id.
      */
     protected getCourseId(): number {
-        if (this.contextLevel == ContextLevel.COURSE) {
+        if (this.contextLevel === ContextLevel.COURSE) {
             return this.instanceId;
         }
 
@@ -138,12 +138,7 @@ export class AddonBlockActivityModulesComponent extends CoreBlockBaseComponent i
      * @param entry Selected entry.
      */
     gotoCoureListModType(entry: AddonBlockActivityModuleEntry): void {
-        CoreNavigator.navigateToSitePath('course/' + this.getCourseId() + '/list-mod-type', {
-            params: {
-                modName: entry.modName,
-                title: entry.name,
-            },
-        });
+        CoreCourseOverview.navigateToCourseOverview(this.getCourseId(), [entry.modName], entry.name);
     }
 
 }

@@ -986,12 +986,12 @@ export class CoreCourseHelperProvider {
      * @param siteId Site ID. If not defined, current site.
      * @returns Promise resolved when done.
      */
-    async getAndOpenCourse(courseId: number, params?: Params, siteId?: string): Promise<void> {
+    async getAndOpenCourse(courseId: number, params: Params = {}, siteId?: string): Promise<void> {
         siteId = siteId ?? CoreSites.getCurrentSiteId();
 
         // Do not navigate if the course is already being displayed.
         if (siteId === CoreSites.getCurrentSiteId() && CoreCourse.currentViewIsCourse(courseId)) {
-            CoreCourse.selectCourseTab(params?.selectedTab, params);
+            CoreCourse.selectCourseTab(params.selectedTab, params);
 
             return;
         }
