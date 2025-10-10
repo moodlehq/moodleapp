@@ -23,6 +23,7 @@ import { CoreScreenOrientation } from '@services/screen';
 import { CoreSiteInfoResponse, CoreSitePublicConfigResponse } from '@classes/sites/unauthenticated-site';
 import { DownloadStatus } from '../constants';
 import { COURSE_STATUS_CHANGED_EVENT } from '@features/course/constants';
+import { Params } from '@angular/router';
 
 /**
  * Observer instance to stop listening to an event.
@@ -399,9 +400,8 @@ export type CoreEventNotificationSoundChangedData = {
  * Data passed to SELECT_COURSE_TAB event.
  */
 export type CoreEventSelectCourseTabData = {
-    name?: string; // Name of the tab's handler. If not set, load course contents.
-    sectionId?: number;
-    sectionNumber?: number;
+    selectedTab: string; // Name of the tab's handler. If not set, load course contents.
+    pageParams: Params;
 };
 
 /**

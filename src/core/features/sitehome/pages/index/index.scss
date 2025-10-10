@@ -1,4 +1,4 @@
-@use "theme/globals" as *;
+@use "theme/helpers/helpers" as *;
 
 ion-item ion-icon {
     display: inline-block;
@@ -8,23 +8,6 @@ ion-item ion-icon {
     line-height: var(--size);
     --margin-end: 8px;
     @include margin-horizontal(null, var(--margin-end));
-}
-
-section.core-course-module-list-wrapper {
-    border: var(--ion-card-border-width) solid var(--ion-card-border-color);
-    border-radius: var(--ion-card-radius);
-    margin: 12px;
-
-    ion-card {
-        --ion-card-background: transparent;
-    }
-    ion-item {
-        --background: transparent;
-    }
-
-    ion-item-divider {
-        --background: transparent;
-    }
 }
 
 core-course-module.core-sitehome-news {

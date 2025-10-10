@@ -17,6 +17,7 @@ import { Injectable } from '@angular/core';
 import { CoreCronHandler } from '@services/cron';
 import { makeSingleton } from '@singletons';
 import { CorePushNotifications } from '../pushnotifications';
+import { CoreTimeConstants } from '@/core/constants';
 
 /**
  * Cron handler to force a register on a Moodle site when a site is manually synchronized.
@@ -58,7 +59,7 @@ export class CorePushNotificationsRegisterCronHandlerService implements CoreCron
      * @returns Time between consecutive executions (in ms).
      */
     getInterval(): number {
-        return 86400000; // 1 day. We won't do anything with automatic execution, so use a big number.
+        return CoreTimeConstants.MILLISECONDS_DAY; // 1 day. We won't do anything with automatic execution, so use a big number.
     }
 
     /**

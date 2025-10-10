@@ -14,6 +14,24 @@
         }
     }
 
+    &.card {
+        display: block;
+        border: var(--ion-card-border-width) solid var(--ion-card-border-color);
+        border-radius: var(--ion-card-radius);
+        margin: 12px;
+
+        h2.big {
+            font: var(--mdl-typography-subtitle-font-md);
+        }
+
+        ion-card {
+            --ion-card-background: transparent;
+        }
+        ion-item {
+            --background: transparent;
+        }
+    }
+
     &.collapsible {
         .core-course-module-list-wrapper {
             border: var(--ion-card-border-width) solid var(--ion-card-border-color);
@@ -29,6 +47,10 @@
                 --background: transparent;
             }
         }
+    }
+
+    .section-summary core-format-text img {
+        border-radius: var(--mdl-shape-borderRadius-lg);
     }
 
     core-course-module:has( + core-course-section) {

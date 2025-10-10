@@ -21,9 +21,9 @@ import { CoreLogger } from '@singletons/logger';
 import { makeSingleton, Translate } from '@singletons';
 import { CoreWSExternalWarning } from '@services/ws';
 import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
-import { CoreCacheUpdateFrequency, CoreConstants } from '@/core/constants';
+import { CoreCacheUpdateFrequency } from '@/core/constants';
 import { CorePromiseUtils } from '@singletons/promise-utils';
-import { CORE_USER_TF_12, CORE_USER_TF_24 } from '../constants';
+import { CORE_USER_CALENDAR_DEFAULT_STARTING_WEEKDAY, CORE_USER_TF_12, CORE_USER_TF_24 } from '../constants';
 
 /**
  * Service with functionality related to user preferences.
@@ -50,7 +50,7 @@ export class CoreUserPreferencesService {
         const defaultValue = Number(CoreSites.getCurrentSite()?.getStoredConfig('calendar_startwday') ??
             Translate.instant('core.firstdayofweek'));
 
-        return !isNaN(defaultValue) ? defaultValue % 7 : CoreConstants.CALENDAR_DEFAULT_STARTING_WEEKDAY;
+        return !isNaN(defaultValue) ? defaultValue % 7 : CORE_USER_CALENDAR_DEFAULT_STARTING_WEEKDAY;
     }
 
     /**

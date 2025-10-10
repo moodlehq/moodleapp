@@ -20,7 +20,7 @@ import { CoreSites } from '@services/sites';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreUserPreferences } from '@features/user/services/user-preferences';
 import { AddonMessageOutputDelegate, AddonMessageOutputHandlerData } from '@addons/messageoutput/services/messageoutput-delegate';
-import { CoreConstants } from '@/core/constants';
+import { CoreConfigSettingKey } from '@/core/constants';
 import { CoreError } from '@classes/errors/error';
 import { CoreEvents } from '@singletons/events';
 import {
@@ -91,7 +91,7 @@ export default class AddonNotificationsSettingsPage implements OnInit, OnDestroy
      */
     async ngOnInit(): Promise<void> {
         if (this.canChangeSound) {
-            this.notificationSound = await CoreConfig.get<boolean>(CoreConstants.SETTINGS_NOTIFICATION_SOUND, true);
+            this.notificationSound = await CoreConfig.get<boolean>(CoreConfigSettingKey.NOTIFICATION_SOUND, true);
         }
 
         this.fetchPreferences();
@@ -338,7 +338,7 @@ export default class AddonNotificationsSettingsPage implements OnInit, OnDestroy
      * @param enabled True to enable the notification sound, false to disable it.
      */
     async changeNotificationSound(enabled: boolean): Promise<void> {
-        await CorePromiseUtils.ignoreErrors(CoreConfig.set(CoreConstants.SETTINGS_NOTIFICATION_SOUND, enabled ? 1 : 0));
+        await CorePromiseUtils.ignoreErrors(CoreConfig.set(CoreConfigSettingKey.NOTIFICATION_SOUND, enabled ? 1 : 0));
 
         const siteId = CoreSites.getCurrentSiteId();
         CoreEvents.trigger(CoreEvents.NOTIFICATION_SOUND_CHANGED, { enabled }, siteId);

@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { ContextLevel, CoreConstants } from '@/core/constants';
+import { ContextLevel, CoreDownloadIcon } from '@/core/constants';
 import {
     ADDON_BLOG_AUTO_SYNCED,
     ADDON_BLOG_ENTRY_UPDATED,
@@ -92,7 +92,7 @@ export default class AddonBlogIndexPage implements OnInit, OnDestroy {
     readonly hasOfflineDataToSync = signal(false);
     readonly isOnline = CoreNetwork.onlineSignal;
     siteId: string;
-    syncIcon = CoreConstants.ICON_SYNC;
+    syncIcon = CoreDownloadIcon.SYNC;
     readonly syncHidden = computed(() => !this.loaded() || !this.isOnline() || !this.hasOfflineDataToSync());
 
     constructor() {

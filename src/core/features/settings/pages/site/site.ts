@@ -24,7 +24,7 @@ import { CoreRoutedItemsManagerSourcesTracker } from '@classes/items-management/
 import { CoreSettingsHelper } from '@features/settings/services/settings-helper';
 import { CoreNetwork } from '@services/network';
 import { Translate } from '@singletons';
-import { CoreConstants } from '@/core/constants';
+import { CoreConfigSettingKey } from '@/core/constants';
 import { CoreConfig } from '@services/config';
 import { CoreSettingsHandlersSource } from '@features/settings/classes/settings-handlers-source';
 import { CoreToasts } from '@services/overlays/toasts';
@@ -75,7 +75,7 @@ export default class CoreSitePreferencesPage implements AfterViewInit, OnDestroy
      * @inheritdoc
      */
     async ngAfterViewInit(): Promise<void> {
-        this.dataSaver = await CoreConfig.get(CoreConstants.SETTINGS_SYNC_ONLY_ON_WIFI, true);
+        this.dataSaver = await CoreConfig.get(CoreConfigSettingKey.SYNC_ONLY_ON_WIFI, true);
 
         const pageToOpen = CoreNavigator.getRouteParam('page');
 

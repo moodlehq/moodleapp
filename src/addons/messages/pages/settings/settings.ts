@@ -23,7 +23,7 @@ import { CoreUserPreferences } from '@features/user/services/user-preferences';
 import { CoreConfig } from '@services/config';
 import { CoreEvents } from '@singletons/events';
 import { CoreSites } from '@services/sites';
-import { CoreConstants } from '@/core/constants';
+import { CoreConfigSettingKey } from '@/core/constants';
 import { CorePlatform } from '@services/platform';
 import { CoreErrorHelper } from '@services/error-helper';
 import { CoreLoadings } from '@services/overlays/loadings';
@@ -68,7 +68,7 @@ export default class AddonMessagesSettingsPage implements OnInit, OnDestroy {
     }
 
     protected async asyncInit(): Promise<void> {
-        this.sendOnEnter = !!(await CoreConfig.get(CoreConstants.SETTINGS_SEND_ON_ENTER, !CorePlatform.isMobile()));
+        this.sendOnEnter = !!(await CoreConfig.get(CoreConfigSettingKey.SEND_ON_ENTER, !CorePlatform.isMobile()));
     }
 
     /**
@@ -232,7 +232,7 @@ export default class AddonMessagesSettingsPage implements OnInit, OnDestroy {
      */
     sendOnEnterChanged(): void {
         // Save the value.
-        CoreConfig.set(CoreConstants.SETTINGS_SEND_ON_ENTER, this.sendOnEnter ? 1 : 0);
+        CoreConfig.set(CoreConfigSettingKey.SEND_ON_ENTER, this.sendOnEnter ? 1 : 0);
 
         // Notify the app.
         CoreEvents.trigger(

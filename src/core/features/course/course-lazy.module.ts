@@ -17,6 +17,7 @@ import { ROUTES, Routes } from '@angular/router';
 import { resolveIndexRoutes } from '@features/course/course-routing.module';
 import { CoreCourseHelper } from './services/course-helper';
 import { CORE_COURSE_INDEX_PATH } from './constants';
+import { overviewGuard } from './guards/overview';
 
 /**
  * Build module routes.
@@ -49,6 +50,7 @@ function buildRoutes(injector: Injector): Routes {
         {
             path: ':courseId/list-mod-type',
             loadComponent: () => import('@features/course/pages/list-mod-type/list-mod-type'),
+            canActivate: [overviewGuard],
         },
         {
             path: ':courseId/summary',

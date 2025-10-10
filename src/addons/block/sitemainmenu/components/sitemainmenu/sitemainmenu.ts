@@ -12,15 +12,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit, signal } from '@angular/core';
+import { Component, signal } from '@angular/core';
 import { CoreSites } from '@services/sites';
-import { CoreCourse, sectionContentIsModule } from '@features/course/services/course';
+import { CoreCourse } from '@features/course/services/course';
 import { CoreCourseHelper, CoreCourseSection } from '@features/course/services/course-helper';
 import { CoreSiteHome } from '@features/sitehome/services/sitehome';
 import { CoreCourseModulePrefetchDelegate } from '@features/course/services/module-prefetch-delegate';
 import { CoreBlockBaseComponent } from '@features/block/classes/base-block-component';
 import { CoreSharedModule } from '@/core/shared.module';
-import { CoreCourseModuleComponent } from '@features/course/components/module/module';
+import { CoreCourseSectionComponent } from '@features/course/components/course-section/course-section';
 
 /**
  * Component to render a site main menu block.
@@ -30,14 +30,13 @@ import { CoreCourseModuleComponent } from '@features/course/components/module/mo
     templateUrl: 'addon-block-sitemainmenu.html',
     imports: [
         CoreSharedModule,
-        CoreCourseModuleComponent,
+        CoreCourseSectionComponent,
     ],
 })
-export class AddonBlockSiteMainMenuComponent extends CoreBlockBaseComponent implements OnInit {
+export class AddonBlockSiteMainMenuComponent extends CoreBlockBaseComponent {
 
     readonly mainMenuBlock = signal<CoreCourseSection | undefined>(undefined);
     readonly siteHomeId = signal(CoreSites.getCurrentSiteHomeId());
-    readonly isModule = sectionContentIsModule;
 
     protected fetchContentDefaultError = 'Error getting main menu data.';
 
@@ -83,8 +82,10 @@ export class AddonBlockSiteMainMenuComponent extends CoreBlockBaseComponent impl
             undefined,
             true,
         );
+        const section = result.sections[0];
+        section.name = ''; // Do not show section name.
 
-        this.mainMenuBlock.set(result.sections[0]);
+        this.mainMenuBlock.set(section);
     }
 
 }

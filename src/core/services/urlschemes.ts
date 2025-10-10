@@ -31,6 +31,7 @@ import { CoreUrl } from '@singletons/url';
 import { CoreLoadings } from './overlays/loadings';
 import { CoreAlerts } from './overlays/alerts';
 import { CorePlatform } from './platform';
+import { NO_SITE_ID } from '@features/login/constants';
 
 /*
  * Provider to handle custom URL schemes.
@@ -434,7 +435,7 @@ export class CoreCustomURLSchemesProvider {
             await CoreAlerts.confirm(Translate.instant('core.contentlinks.confirmurlothersite'));
 
             await CoreSites.logout({
-                siteId: CoreConstants.NO_SITE_ID,
+                siteId: NO_SITE_ID,
                 redirectPath: '/login/credentials',
                 redirectOptions: { params: pageParams },
             });

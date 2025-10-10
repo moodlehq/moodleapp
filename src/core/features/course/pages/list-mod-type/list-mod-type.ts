@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, signal } from '@angular/core';
 
 import { CoreCourse, CoreCourseWSSection, sectionContentIsModule } from '@features/course/services/course';
 import { CoreCourseModuleDelegate } from '@features/course/services/module-delegate';
@@ -22,33 +22,34 @@ import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreTime } from '@singletons/time';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 import { CoreAlerts } from '@services/overlays/alerts';
-import { CoreCourseModuleComponent } from '../../components/module/module';
 import { CoreSharedModule } from '@/core/shared.module';
 import { ModFeature, ModArchetype } from '@addons/mod/constants';
 import { CoreCourseModuleHelper } from '@features/course/services/course-module-helper';
+import { CoreCourseSectionComponent } from '@features/course/components/course-section/course-section';
 
 /**
  * Page that displays all modules of a certain type in a course.
+ *
+ * @deprecatedonmoodle 5.1 Use course overview instead.
  */
 @Component({
     selector: 'page-core-course-list-mod-type',
     templateUrl: 'list-mod-type.html',
     imports: [
         CoreSharedModule,
-        CoreCourseModuleComponent,
+        CoreCourseSectionComponent,
     ],
 })
 export default class CoreCourseListModTypePage implements OnInit {
 
     private static readonly PAGE_LENGTH = 10; // How many activities should load each time showMoreActivities is called.
 
-    sections: CoreCourseSection[] = [];
-    title = '';
-    loaded = false;
-    courseId = 0;
-    canLoadMore = false;
-    lastShownSectionIndex = -1;
-    isModule = sectionContentIsModule;
+    readonly sections = signal<CoreCourseSection[]>([]);
+    readonly title = signal('');
+    readonly loaded = signal(false);
+    readonly courseId = signal(0);
+    readonly canLoadMore = signal(false);
+    readonly lastShownSectionIndex = signal(-1);
 
     protected modName?: string;
     protected archetypes: Record<string, number> = {}; // To speed up the check of modules.
@@ -63,10 +64,10 @@ export default class CoreCourseListModTypePage implements OnInit {
             CoreAnalytics.logEvent({
                 type: CoreAnalyticsEventType.VIEW_ITEM_LIST,
                 ws: 'core_course_get_contents',
-                name: this.title,
+                name: this.title(),
                 data: { category: this.modName },
                 url: (this.modName === 'resources' ? '/course/resources.php' : `/mod/${this.modName}/index.php`) +
-                    `?id=${this.courseId}`,
+                    `?id=${this.courseId()}`,
             });
         });
     }
@@ -76,8 +77,8 @@ export default class CoreCourseListModTypePage implements OnInit {
      */
     async ngOnInit(): Promise<void> {
         try {
-            this.title = CoreNavigator.getRouteParam('title') || '';
-            this.courseId = CoreNavigator.getRequiredRouteParam('courseId');
+            this.title.set(CoreNavigator.getRouteParam('title') || '');
+            this.courseId.set(CoreNavigator.getRequiredRouteParam('courseId'));
             this.modName = CoreNavigator.getRequiredRouteParam('modName');
         } catch (error) {
             CoreAlerts.showError(error);
@@ -89,7 +90,7 @@ export default class CoreCourseListModTypePage implements OnInit {
         try {
             await this.fetchData();
         } finally {
-            this.loaded = true;
+            this.loaded.set(true);
         }
     }
 
@@ -97,21 +98,21 @@ export default class CoreCourseListModTypePage implements OnInit {
      * Fetches the data.
      */
     protected async fetchData(): Promise<void> {
-        if (!this.courseId) {
+        if (!this.courseId()) {
             return;
         }
 
         try {
             // Get all the modules in the course.
-            let sections = await CoreCourse.getSections(this.courseId, false, true);
+            let sections = await CoreCourse.getSections(this.courseId(), false, true);
 
             sections = this.filterSectionsAndContents(sections);
 
-            const result = await CoreCourseHelper.addHandlerDataForModules(sections, this.courseId);
+            const result = await CoreCourseHelper.addHandlerDataForModules(sections, this.courseId());
 
-            this.sections = result.sections;
+            this.sections.set(result.sections);
 
-            this.lastShownSectionIndex = -1;
+            this.lastShownSectionIndex.set(-1);
             this.showMoreActivities();
         } catch (error) {
             CoreAlerts.showError(error, { default: 'Error getting data' });
@@ -127,6 +128,8 @@ export default class CoreCourseListModTypePage implements OnInit {
      */
     protected filterSectionsAndContents(sections: CoreCourseWSSection[]): CoreCourseWSSection[] {
         return sections.filter((section) => {
+            section.summary = ''; // Don't show section summary.
+
             if (!section.contents.length || section.hiddenbynumsections) {
                 return false;
             }
@@ -174,15 +177,20 @@ export default class CoreCourseListModTypePage implements OnInit {
      * @param infiniteComplete Infinite scroll complete function. Only used from core-infinite-loading.
      */
     showMoreActivities(infiniteComplete?: () => void): void {
-        let modulesLoaded = 0;
-        while (this.lastShownSectionIndex < this.sections.length - 1 && modulesLoaded < CoreCourseListModTypePage.PAGE_LENGTH) {
-            this.lastShownSectionIndex++;
+        const sections = this.sections();
+        let lastShownSectionIndex = this.lastShownSectionIndex();
 
-            const sectionModules = CoreCourse.getSectionsModules([this.sections[this.lastShownSectionIndex]]);
+        let modulesLoaded = 0;
+        while (lastShownSectionIndex < sections.length - 1 && modulesLoaded < CoreCourseListModTypePage.PAGE_LENGTH) {
+            lastShownSectionIndex++;
+
+            const sectionModules = CoreCourse.getSectionsModules([sections[lastShownSectionIndex]]);
             modulesLoaded += sectionModules.length;
         }
 
-        this.canLoadMore = this.lastShownSectionIndex < this.sections.length - 1;
+        this.lastShownSectionIndex.set(lastShownSectionIndex);
+
+        this.canLoadMore.set(lastShownSectionIndex < sections.length - 1);
 
         infiniteComplete?.();
     }
@@ -193,7 +201,7 @@ export default class CoreCourseListModTypePage implements OnInit {
      * @param refresher Refresher.
      */
     async refreshData(refresher: HTMLIonRefresherElement): Promise<void> {
-        await CorePromiseUtils.ignoreErrors(CoreCourse.invalidateSections(this.courseId));
+        await CorePromiseUtils.ignoreErrors(CoreCourse.invalidateSections(this.courseId()));
 
         try {
             await this.fetchData();

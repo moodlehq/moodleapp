@@ -18,7 +18,7 @@ import { CoreAppDB } from '@services/app-db';
 import { CoreNetwork } from '@services/network';
 import { CoreConfig } from '@services/config';
 import { CorePromiseUtils } from '@singletons/promise-utils';
-import { CoreConstants } from '@/core/constants';
+import { CoreConfigSettingKey, CoreTimeConstants } from '@/core/constants';
 import { CoreError } from '@classes/errors/error';
 
 import { makeSingleton, Translate } from '@singletons';
@@ -35,9 +35,18 @@ import { CoreDatabaseCachingStrategy, CoreDatabaseTableProxy } from '@classes/da
 export class CoreCronDelegateService {
 
     // Constants.
-    static readonly DEFAULT_INTERVAL = 3600000; // Default interval is 1 hour.
-    static readonly MIN_INTERVAL = 240000; // Minimum interval is 4 minutes.
-    static readonly MAX_TIME_PROCESS = 120000; // Max time a process can block the queue. Defaults to 2 minutes.
+    /**
+     * Default interval is 1 hour (in ms).
+     */
+    static readonly DEFAULT_INTERVAL = CoreTimeConstants.MILLISECONDS_HOUR;
+    /**
+     * Minimum interval is 4 minutes (in ms).
+     */
+    static readonly MIN_INTERVAL = CoreTimeConstants.MILLISECONDS_MINUTE * 4;
+    /**
+     * Max time a process can block the queue. Defaults to 2 minutes (in ms).
+     */
+    static readonly MAX_TIME_PROCESS = CoreTimeConstants.MILLISECONDS_MINUTE * 2;
 
     protected logger: CoreLogger;
     protected handlers: { [s: string]: CoreCronHandler } = {};
@@ -97,7 +106,7 @@ export class CoreCronDelegateService {
 
         if (isSync) {
             // Check network connection.
-            const syncOnlyOnWifi = await CoreConfig.get(CoreConstants.SETTINGS_SYNC_ONLY_ON_WIFI, false);
+            const syncOnlyOnWifi = await CoreConfig.get(CoreConfigSettingKey.SYNC_ONLY_ON_WIFI, false);
 
             if (syncOnlyOnWifi && !CoreNetwork.isWifi()) {
                 // Cannot execute in this network connection, retry soon.

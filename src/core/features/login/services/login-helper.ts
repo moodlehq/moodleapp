@@ -23,7 +23,7 @@ import { CoreSites, CoreLoginSiteInfo, CoreSiteBasicInfo } from '@services/sites
 import { CoreWS, CoreWSExternalWarning } from '@services/ws';
 import { CoreText, CoreTextFormat } from '@singletons/text';
 import { CoreObject } from '@singletons/object';
-import { CoreConstants } from '@/core/constants';
+import { CoreConstants, CoreTimeConstants } from '@/core/constants';
 import { CoreSite } from '@classes/sites/site';
 import { CoreError, CoreErrorDebug } from '@classes/errors/error';
 import { CoreWSError } from '@classes/errors/wserror';
@@ -54,6 +54,8 @@ import {
     FORGOTTEN_PASSWORD_FEATURE_NAME,
     IDENTITY_PROVIDERS_FEATURE_NAME,
     IDENTITY_PROVIDER_FEATURE_NAME_PREFIX,
+    LOGIN_SSO_LAUNCH_DATA,
+    NO_SITE_ID,
 } from '../constants';
 import { LazyDefaultStandaloneComponent } from '@/app/app-routing.module';
 import { CoreSiteError } from '@classes/errors/siteerror';
@@ -409,7 +411,7 @@ export class CoreLoginHelperProvider {
         if (CoreSites.isLoggedIn()) {
             // Logout first.
             await CoreSites.logout({
-                siteId: CoreConstants.NO_SITE_ID,
+                siteId: NO_SITE_ID,
                 redirectPath: '/login/sites',
                 redirectOptions: { params: { openAddSite: true , showKeyboard } },
             });
@@ -801,7 +803,7 @@ export class CoreLoginHelperProvider {
 
         // Store the siteurl and passport in CoreConfig for persistence.
         // We are "configuring" the app to wait for an SSO. CoreConfig shouldn't be used as a temporary storage.
-        await CoreConfig.set(CoreConstants.LOGIN_LAUNCH_DATA, JSON.stringify(<StoredLoginLaunchData> {
+        await CoreConfig.set(LOGIN_SSO_LAUNCH_DATA, JSON.stringify(<StoredLoginLaunchData> {
             siteUrl,
             passport,
             ...redirectData,
@@ -1144,7 +1146,7 @@ export class CoreLoginHelperProvider {
         // Split signature:::token
         const params = url.split(':::');
 
-        const serializedData = await CoreConfig.get<string>(CoreConstants.LOGIN_LAUNCH_DATA);
+        const serializedData = await CoreConfig.get<string>(LOGIN_SSO_LAUNCH_DATA);
 
         const data = <StoredLoginLaunchData | null> CoreText.parseJSON(serializedData, null);
         if (data === null) {
@@ -1155,7 +1157,7 @@ export class CoreLoginHelperProvider {
         let launchSiteURL = data.siteUrl;
 
         // Reset temporary values.
-        CoreConfig.delete(CoreConstants.LOGIN_LAUNCH_DATA);
+        CoreConfig.delete(LOGIN_SSO_LAUNCH_DATA);
 
         // Validate the signature.
         // We need to check both http and https.
@@ -1448,7 +1450,7 @@ export class CoreLoginHelperProvider {
         const passwordResets = await this.getPasswordResets();
 
         return siteUrl in passwordResets
-            && passwordResets[siteUrl] > Date.now() - CoreConstants.MILLISECONDS_HOUR;
+            && passwordResets[siteUrl] > Date.now() - CoreTimeConstants.MILLISECONDS_HOUR;
     }
 
     /**
@@ -1459,7 +1461,7 @@ export class CoreLoginHelperProvider {
         const siteUrls = Object.keys(passwordResets);
 
         for (const siteUrl of siteUrls) {
-            if (passwordResets[siteUrl] > Date.now() - CoreConstants.MILLISECONDS_HOUR) {
+            if (passwordResets[siteUrl] > Date.now() - CoreTimeConstants.MILLISECONDS_HOUR) {
                 continue;
             }
 

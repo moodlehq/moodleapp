@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { Component, Type } from '@angular/core';
-import { CoreConstants } from '@/core/constants';
+import { CoreConstants, CoreConfigSettingKey } from '@/core/constants';
 import { CoreConfig } from '@services/config';
 import { CoreEvents } from '@singletons/events';
 import { CoreLang } from '@services/lang';
@@ -91,7 +91,7 @@ export default class CoreSettingsGeneralPage {
             } else {
                 this.isAndroid = CorePlatform.isAndroid();
                 this.colorSchemes = CoreSettingsHelper.getAllowedColorSchemes();
-                this.selectedScheme = await CoreConfig.get(CoreConstants.SETTINGS_COLOR_SCHEME, CoreColorScheme.LIGHT);
+                this.selectedScheme = await CoreConfig.get(CoreConfigSettingKey.COLOR_SCHEME, CoreColorScheme.LIGHT);
             }
         }
 
@@ -109,11 +109,11 @@ export default class CoreSettingsGeneralPage {
 
         this.editorSettingsComponentClass = await CoreEditorService.getSettingsComponentClass();
 
-        this.debugDisplay = await CoreConfig.get(CoreConstants.SETTINGS_DEBUG_DISPLAY, false);
+        this.debugDisplay = await CoreConfig.get(CoreConfigSettingKey.DEBUG_DISPLAY, false);
 
         this.analyticsAvailable = await CoreAnalytics.isAnalyticsAvailable();
         if (this.analyticsAvailable) {
-            this.analyticsEnabled = await CoreConfig.get(CoreConstants.SETTINGS_ANALYTICS_ENABLED, true);
+            this.analyticsEnabled = await CoreConfig.get(CoreConfigSettingKey.ANALYTICS_ENABLED, true);
         }
 
         this.displayIframeHelp = CoreIframe.shouldDisplayHelp();
@@ -212,7 +212,7 @@ export default class CoreSettingsGeneralPage {
         });
 
         CoreSettingsHelper.applyZoomLevel(this.selectedZoomLevel);
-        CoreConfig.set(CoreConstants.SETTINGS_ZOOM_LEVEL, this.selectedZoomLevel);
+        CoreConfig.set(CoreConfigSettingKey.ZOOM_LEVEL, this.selectedZoomLevel);
     }
 
     /**
@@ -225,7 +225,7 @@ export default class CoreSettingsGeneralPage {
         ev.preventDefault();
 
         CoreSettingsHelper.applyPinchToZoom(this.pinchToZoom);
-        CoreConfig.set(CoreConstants.SETTINGS_PINCH_TO_ZOOM, this.pinchToZoom ? 1 : 0);
+        CoreConfig.set(CoreConfigSettingKey.PINCH_TO_ZOOM, this.pinchToZoom ? 1 : 0);
     }
 
     /**
@@ -238,7 +238,7 @@ export default class CoreSettingsGeneralPage {
         ev.preventDefault();
 
         CoreSettingsHelper.setColorScheme(this.selectedScheme);
-        CoreConfig.set(CoreConstants.SETTINGS_COLOR_SCHEME, this.selectedScheme);
+        CoreConfig.set(CoreConfigSettingKey.COLOR_SCHEME, this.selectedScheme);
     }
 
     /**
@@ -250,7 +250,7 @@ export default class CoreSettingsGeneralPage {
         ev.stopPropagation();
         ev.preventDefault();
 
-        CoreConfig.set(CoreConstants.SETTINGS_DEBUG_DISPLAY, this.debugDisplay ? 1 : 0);
+        CoreConfig.set(CoreConfigSettingKey.DEBUG_DISPLAY, this.debugDisplay ? 1 : 0);
         CoreAlerts.setDebugDisplay(this.debugDisplay);
     }
 
@@ -265,7 +265,7 @@ export default class CoreSettingsGeneralPage {
 
         await CoreAnalytics.enableAnalytics(this.analyticsEnabled);
 
-        CoreConfig.set(CoreConstants.SETTINGS_ANALYTICS_ENABLED, this.analyticsEnabled ? 1 : 0);
+        CoreConfig.set(CoreConfigSettingKey.ANALYTICS_ENABLED, this.analyticsEnabled ? 1 : 0);
     }
 
     /**

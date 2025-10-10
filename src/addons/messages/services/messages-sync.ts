@@ -26,11 +26,11 @@ import { CoreWSError } from '@classes/errors/wserror';
 import { makeSingleton, Translate } from '@singletons';
 import { CoreSites } from '@services/sites';
 import { CoreNetwork } from '@services/network';
-import { CoreConstants } from '@/core/constants';
 import { CoreUser } from '@features/user/services/user';
 import { CoreError } from '@classes/errors/error';
 import { CoreErrorHelper, CoreErrorObject } from '@services/error-helper';
 import { ADDON_MESSAGES_AUTO_SYNCED } from '../constants';
+import { CoreWS } from '@services/ws';
 
 declare module '@singletons/events' {
 
@@ -214,7 +214,7 @@ export class AddonMessagesSyncProvider extends CoreSyncBaseProvider<AddonMessage
 
         // Get messages sent by the user after the first offline message was sent.
         // We subtract some time because the message could've been saved in server before it was in the app.
-        const timeFrom = Math.floor((messages[0].timecreated - CoreConstants.WS_TIMEOUT - 1000) / 1000);
+        const timeFrom = Math.floor((messages[0].timecreated - CoreWS.getRequestTimeout() - 1000) / 1000);
 
         const onlineMessages = await this.getMessagesSentAfter(timeFrom, conversationId, userId, siteId);
 

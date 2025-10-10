@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { ContextLevel, CoreConstants } from '@/core/constants';
+import { ContextLevel, CoreDownloadIcon } from '@/core/constants';
 import { Component, OnDestroy, OnInit, AfterViewInit, ElementRef, inject, viewChild } from '@angular/core';
 import { ActivatedRoute, ActivatedRouteSnapshot } from '@angular/router';
 import { CoreRoutedItemsManagerSourcesTracker } from '@classes/items-management/routed-items-manager-sources-tracker';
@@ -121,8 +121,8 @@ export default class AddonModForumDiscussionPage implements OnInit, AfterViewIni
         isprivatereply: false,
     };
 
-    refreshIcon = CoreConstants.ICON_LOADING;
-    syncIcon = CoreConstants.ICON_LOADING;
+    refreshIcon = CoreDownloadIcon.LOADING;
+    syncIcon = CoreDownloadIcon.LOADING;
     discussionStr = '';
     component = ADDON_MOD_FORUM_COMPONENT_LEGACY;
     cmId?: number;
@@ -568,8 +568,8 @@ export default class AddonModForumDiscussionPage implements OnInit, AfterViewIni
             CoreAlerts.showError(error);
         } finally {
             this.discussionLoaded = true;
-            this.refreshIcon = CoreConstants.ICON_REFRESH;
-            this.syncIcon = CoreConstants.ICON_SYNC;
+            this.refreshIcon = CoreDownloadIcon.REFRESH;
+            this.syncIcon = CoreDownloadIcon.SYNC;
 
             if (forceMarkAsRead || (hasUnreadPosts && this.trackPosts)) {
                 // Add log in Moodle and mark unread posts as readed.
@@ -675,8 +675,8 @@ export default class AddonModForumDiscussionPage implements OnInit, AfterViewIni
      */
     async refreshPosts(sync?: boolean, showErrors?: boolean): Promise<void> {
         this.content().scrollToTop();
-        this.refreshIcon = CoreConstants.ICON_LOADING;
-        this.syncIcon = CoreConstants.ICON_LOADING;
+        this.refreshIcon = CoreDownloadIcon.LOADING;
+        this.syncIcon = CoreDownloadIcon.LOADING;
 
         const promises: Promise<void>[] = [];
 

@@ -13,6 +13,7 @@
 // limitations under the License.
 
 import { CORE_COURSE_MODULE_FEATURE_PREFIX } from '@features/course/constants';
+import { CoreTimeConstants } from '@/core/constants';
 
 export const ADDON_MOD_QUIZ_COMPONENT = 'AddonModQuiz';
 export const ADDON_MOD_QUIZ_COMPONENT_LEGACY = 'mmaModQuiz';
@@ -25,7 +26,7 @@ export const ADDON_MOD_QUIZ_FEATURE_NAME = CORE_COURSE_MODULE_FEATURE_PREFIX + A
 export const ADDON_MOD_QUIZ_ATTEMPT_FINISHED_EVENT = 'addon_mod_quiz_attempt_finished';
 export const ADDON_MOD_QUIZ_AUTO_SYNCED = 'addon_mod_quiz_autom_synced';
 
-export const ADDON_MOD_QUIZ_SHOW_TIME_BEFORE_DEADLINE = 3600;
+export const ADDON_MOD_QUIZ_SHOW_TIME_BEFORE_DEADLINE = CoreTimeConstants.SECONDS_HOUR;
 export const ADDON_MOD_QUIZ_IMMEDIATELY_AFTER_PERIOD = 120; // Time considered 'immedately after the attempt', in seconds.
 
 /**
