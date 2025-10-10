@@ -24,7 +24,11 @@ import { CoreCourse, CoreCourseWSSection } from '@features/course/services/cours
 import { CoreCourseHelper, CoreCourseModuleData } from '@features/course/services/course-helper';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreNavigationOptions, CoreNavigator } from '@services/navigator';
-import { CORE_COURSE_CONTENTS_PAGE_NAME, CORE_COURSE_PROGRESS_UPDATED_EVENT } from '@features/course/constants';
+import {
+    CORE_COURSE_CONTENTS_PAGE_NAME,
+    CORE_COURSE_PROGRESS_UPDATED_EVENT,
+    CORE_COURSE_SELECT_TAB,
+} from '@features/course/constants';
 import { CoreCourseWithImageAndColor } from '@features/courses/services/courses-helper';
 import { CorePath } from '@singletons/path';
 import { CoreSites } from '@services/sites';
@@ -76,25 +80,25 @@ export default class CoreCourseIndexPage implements OnInit, OnDestroy {
     }
 
     constructor() {
-        this.selectTabObserver = CoreEvents.on(CoreEvents.SELECT_COURSE_TAB, (data) => {
-            if (!data.name) {
-                // If needed, set sectionId and sectionNumber. They'll only be used if the content tabs hasn't been loaded yet.
-                if (data.sectionId) {
-                    this.contentsTab.pageParams.sectionId = data.sectionId;
-                }
-                if (data.sectionNumber !== undefined) {
-                    this.contentsTab.pageParams.sectionNumber = data.sectionNumber;
-                }
+        this.selectTabObserver = CoreEvents.on(CORE_COURSE_SELECT_TAB, (data) => {
+            const index = data.selectedTab
+                ? this.tabs.findIndex((tab) => tab.name === data.selectedTab)
+                : 0;
 
-                // Select course contents.
-                this.tabsComponent()?.selectByIndex(0);
-            } else if (this.tabs) {
-                const index = this.tabs.findIndex((tab) => tab.name === data.name);
+            if (index < 0) {
+                return;
+            }
 
-                if (index >= 0) {
-                    this.tabsComponent()?.selectByIndex(index);
+            if (data.pageParams) {
+                const tab = this.tabs[index];
+
+                if (tab) {
+                    // If needed, set sectionId and sectionNumber. They'll only be used if the content tabs hasn't been loaded yet.
+                    tab.pageParams = { ...tab.pageParams, ...data.pageParams };
                 }
             }
+
+            this.tabsComponent()?.selectByIndex(index);
         });
 
         const siteId = CoreSites.getCurrentSiteId();
@@ -119,8 +123,16 @@ export default class CoreCourseIndexPage implements OnInit, OnDestroy {
 
         CoreNavigator.increaseRouteDepth(path.replace(/(\/deep)+/, ''));
 
+        const courseId = CoreNavigator.getRequiredRouteNumberParam('courseId');
         try {
-            this.course = CoreNavigator.getRequiredRouteParam('course');
+            if (courseId) {
+                this.course = CoreNavigator.getRouteParam('course');
+                if (!this.course) {
+                    this.course = (await CoreCourseHelper.getCourse(courseId)).course;
+                }
+            }  else {
+                this.course = CoreNavigator.getRequiredRouteParam('course');
+            }
         } catch (error) {
             CoreAlerts.showError(error);
             CoreNavigator.back();

@@ -9,6 +9,7 @@ For more information about upgrading, read the official documentation: https://m
  - The (onChange) output in core-combobox has been deprecated, please use (selectionChange) instead.
  - The CoreUserOfflineProvider service has been renamed to CoreUserPreferencesOfflineService and is no longer available for plugins. To read or write preferences please use the new CoreUserPreferencesService service.
  - The AddonCalendarCalendarComponent no longer checks for changes inside the 'filter' input. If you change a property of the object passed to the 'filter' input, make sure to create a new object to make sure Angular detects the changes. E.g. this.filter = { ...this.filter, courseId: 1 };
+ - CoreEvents.SELECT_COURSE_TAB has been deprecated in favour of CORE_COURSE_SELECT_TAB with different structure data.
 
 5.0.0
 =====

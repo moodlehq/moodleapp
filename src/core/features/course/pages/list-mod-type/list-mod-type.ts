@@ -29,6 +29,8 @@ import { CoreCourseModuleHelper } from '@features/course/services/course-module-
 
 /**
  * Page that displays all modules of a certain type in a course.
+ *
+ * @deprecatedonmoodle 5.1 Use course overview instead.
  */
 @Component({
     selector: 'page-core-course-list-mod-type',

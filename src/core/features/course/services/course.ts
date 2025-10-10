@@ -60,6 +60,7 @@ import {
     CORE_COURSE_CORE_MODULES,
     CORE_COURSE_PROGRESS_UPDATED_EVENT,
     CORE_COURSE_STEALTH_MODULES_SECTION_ID,
+    CORE_COURSE_SELECT_TAB,
 } from '../constants';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreObject } from '@singletons/object';
@@ -83,6 +84,7 @@ declare module '@singletons/events' {
      */
     export interface CoreEventsData {
         [CORE_COURSE_PROGRESS_UPDATED_EVENT]: CoreCourseProgressUpdated;
+        [CORE_COURSE_SELECT_TAB]: CoreEventSelectCourseTabData;
     }
 
 }
@@ -1402,13 +1404,21 @@ export class CoreCourseProvider {
     /**
      * Select a certain tab in the course. Please use currentViewIsCourse() first to verify user is viewing the course.
      *
-     * @param name Name of the tab. If not provided, course contents.
-     * @param params Other params.
+     * @param selectedTab Name of the tab. If not provided, course contents.
+     * @param params Other page params.
      */
-    selectCourseTab(name?: string, params?: Params): void {
-        params = params || {};
-        params.name = name || '';
+    selectCourseTab(selectedTab: string, params: Params = {}): void {
+        const tabParams: CoreEventSelectCourseTabData = {
+            selectedTab,
+            pageParams: { ...params },
+        };
 
+        CoreEvents.trigger(CORE_COURSE_SELECT_TAB, tabParams);
+
+        // Deprecated event since 5.1.0. Will be removed in future versions.
+        params = params || {};
+        params.name = selectedTab || '';
+        // eslint-disable-next-line @typescript-eslint/no-deprecated
         CoreEvents.trigger(CoreEvents.SELECT_COURSE_TAB, params);
     }
 
@@ -1905,4 +1915,12 @@ export type CoreCourseGetSectionsOptions = CoreSitesCommonWSOptions & {
 export type CoreCourseGetSectionsModulesOptions<Section, Module> = {
     ignoreSection?: (section: Section) => boolean; // Function to filter sections. Return true to ignore it, false to use it.
     ignoreModule?: (module: Module) => boolean; // Function to filter module. Return true to ignore it, false to use it.
+};
+
+/**
+ * Data passed to SELECT_COURSE_TAB event.
+ */
+type CoreEventSelectCourseTabData = {
+    selectedTab: string; // Name of the tab's handler. If not set, load course contents.
+    pageParams: Params;
 };

@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit, signal, Type, viewChild, WritableSignal } from '@angular/core';
+import { Component, effect, OnInit, signal, Type, viewChild, WritableSignal, OnDestroy } from '@angular/core';
 
 import {
     CoreCourseOverview,
@@ -39,7 +39,12 @@ import { CoreCourse } from '@features/course/services/course';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { CoreScreen } from '@services/screen';
 import { map } from 'rxjs';
-import { CoreCourseOverviewContentType } from '@features/course/constants';
+import {
+    CORE_COURSE_OVERVIEW_OPTION_NAME,
+    CORE_COURSE_SELECT_TAB,
+    CoreCourseOverviewContentType,
+} from '@features/course/constants';
+import { CoreEventObserver, CoreEvents } from '@singletons/events';
 
 /**
  * Page that displays an overview of all activities in a course.
@@ -53,7 +58,7 @@ import { CoreCourseOverviewContentType } from '@features/course/constants';
         CoreSharedModule,
     ],
 })
-export default class CoreCourseOverviewPage implements OnInit {
+export default class CoreCourseOverviewPage implements OnInit, OnDestroy {
 
     readonly loaded = signal(false);
     readonly modTypes = signal<OverviewModType[]>([]);
@@ -63,6 +68,8 @@ export default class CoreCourseOverviewPage implements OnInit {
     readonly isTablet = toSignal(CoreScreen.layoutObservable.pipe(map(() => CoreScreen.isTablet)), { requireSync: true });
     protected courseId!: number;
     protected logView: () => void;
+    protected readonly autoExpand = signal<string[]>([]);
+    protected selectTabObserver: CoreEventObserver;
 
     protected static readonly RESOURCES_NAME = 'resource';
 
@@ -77,6 +84,29 @@ export default class CoreCourseOverviewPage implements OnInit {
                 url: `/course/overview.php?id=${this.courseId}`,
             });
         });
+
+        effect(() => {
+            const accordionGroup = this.accordionGroup();
+            const autoExpand = this.autoExpand();
+
+            if (accordionGroup && autoExpand) {
+                accordionGroup.value = autoExpand;
+                this.modTypeAccordionChanged(autoExpand);
+            }
+        });
+
+        // Listen for select course tab events to expand the right section if needed.
+        this.selectTabObserver = CoreEvents.on(CORE_COURSE_SELECT_TAB, (data) => {
+            if (data.selectedTab !== CORE_COURSE_OVERVIEW_OPTION_NAME) {
+                return;
+            }
+
+            if (data.pageParams.expand === undefined) {
+                return;
+            }
+
+            this.autoExpand.set(data.pageParams.expand);
+        });
     }
 
     /**
@@ -85,6 +115,7 @@ export default class CoreCourseOverviewPage implements OnInit {
     async ngOnInit(): Promise<void> {
         try {
             this.courseId = CoreNavigator.getRequiredRouteParam('courseId');
+            this.autoExpand.set(CoreNavigator.getRouteParam('expand') || []);
         } catch (error) {
             CoreAlerts.showError(error);
             CoreNavigator.back();
@@ -202,15 +233,17 @@ export default class CoreCourseOverviewPage implements OnInit {
     /**
      * An accordion has been expanded or collapsed.
      *
-     * @param modName Mod name that was expanded, undefined if collapsed and none expanded.
+     * @param modNames Array of the module names that are expanded, empty if all are collapsed.
      */
-    modTypeAccordionChanged(modName?: string): void {
-        const modType = modName && this.modTypes().find((modType) => modType.modName === modName);
-        if (!modType) {
-            return;
-        }
+    modTypeAccordionChanged(modNames: string[] = []): void {
+        modNames.forEach((modName) => {
+            const modType = this.modTypes().find((modType) => modType.modName === modName);
+            if (!modType) {
+                return;
+            }
 
-        this.loadActivities(modType);
+            this.loadActivities(modType);
+        });
     }
 
     /**
@@ -376,6 +409,13 @@ export default class CoreCourseOverviewPage implements OnInit {
                 act.isExpanded.set(false);
             }
         });
+    }
+
+    /**
+     * @inheritdoc
+     */
+    ngOnDestroy(): void {
+        this.selectTabObserver.off();
     }
 
 }
