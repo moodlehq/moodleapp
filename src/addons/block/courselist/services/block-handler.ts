@@ -38,9 +38,6 @@ export class AddonBlockCourseListHandlerService extends CoreBlockBaseHandler {
             component: CoreBlockOnlyTitleComponent,
             link: 'courses/list',
             linkParams: { mode: 'my' },
-            navOptions: {
-                preferCurrentTab: false,
-            },
         };
     }
 
