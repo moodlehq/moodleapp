@@ -1,0 +1,13 @@
+/**
+ * File tables.scss.
+ * Contains styles for tables.
+ */
+
+table {
+    caption-side: top;
+    .sticky-column {
+        position: sticky;
+        left: 0;
+        background-color: inherit;
+    }
+}
