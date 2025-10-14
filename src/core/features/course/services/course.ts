@@ -70,7 +70,7 @@ import { MAIN_MENU_HOME_PAGE_NAME } from '@features/mainmenu/constants';
 import { CORE_SITEHOME_PAGE_NAME } from '@features/sitehome/constants';
 import { CoreDom } from '@singletons/dom';
 import { CoreCourseModuleDelegate } from './module-delegate';
-import { ModFeature } from '@addons/mod/constants';
+import { ModFeature, ModPurpose } from '@addons/mod/constants';
 
 export type CoreCourseProgressUpdated = { progress: number; courseId: number };
 
@@ -1668,7 +1668,7 @@ export type CoreCourseGetContentsWSModule = {
     visibleoncoursepage: number; // Is the module visible on course page. Cannot be undefined.
     modicon: string; // Activity icon url.
     modname: string; // Activity module type.
-    purpose?: string; // @since 4.4 The module purpose.
+    purpose?: ModPurpose; // @since 4.4 The module purpose.
     branded?: boolean; // @since 4.4 Whether the module is branded or not.
     modplural: string; // Activity module plural name.
     availability?: string; // Module availability settings.
