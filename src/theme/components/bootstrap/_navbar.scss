@@ -66,7 +66,7 @@
   padding-top: var(--#{$prefix}navbar-brand-padding-y);
   padding-bottom: var(--#{$prefix}navbar-brand-padding-y);
   margin-right: var(--#{$prefix}navbar-brand-margin-end);
-  @include font-size(var(--#{$prefix}navbar-brand-font-size));
+  @include rfs-font-size(var(--#{$prefix}navbar-brand-font-size));
   color: var(--#{$prefix}navbar-brand-color);
   text-decoration: if($link-decoration == none, null, none);
   white-space: nowrap;
@@ -149,7 +149,7 @@
 // Button for toggling the navbar when in its collapsed state
 .navbar-toggler {
   padding: var(--#{$prefix}navbar-toggler-padding-y) var(--#{$prefix}navbar-toggler-padding-x);
-  @include font-size(var(--#{$prefix}navbar-toggler-font-size));
+  @include rfs-font-size(var(--#{$prefix}navbar-toggler-font-size));
   line-height: 1;
   color: var(--#{$prefix}navbar-color);
   background-color: transparent; // remove default button style

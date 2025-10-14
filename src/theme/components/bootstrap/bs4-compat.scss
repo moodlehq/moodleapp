@@ -317,7 +317,7 @@ $close-text-shadow: 0 1px 0 $white !default;
 
 .close {
     float: right;
-    @include font-size($close-font-size);
+    @include rfs-font-size($close-font-size);
     font-weight: $close-font-weight;
     line-height: 1;
     color: $close-color;
@@ -694,7 +694,7 @@ $custom-forms-transition:               background-color .15s ease-in-out, borde
     height: $custom-select-height;
     padding: $custom-select-padding-y ($custom-select-padding-x + $custom-select-indicator-padding) $custom-select-padding-y $custom-select-padding-x;
     font-family: $custom-select-font-family;
-    @include font-size($custom-select-font-size);
+    @include rfs-font-size($custom-select-font-size);
     font-weight: $custom-select-font-weight;
     line-height: $custom-select-line-height;
     color: $custom-select-color;
@@ -741,14 +741,14 @@ $custom-forms-transition:               background-color .15s ease-in-out, borde
     padding-top: $custom-select-padding-y-sm;
     padding-bottom: $custom-select-padding-y-sm;
     padding-left: $custom-select-padding-x-sm;
-    @include font-size($custom-select-font-size-sm);
+    @include rfs-font-size($custom-select-font-size-sm);
 }
 .custom-select-lg {
     height: $custom-select-height-lg;
     padding-top: $custom-select-padding-y-lg;
     padding-bottom: $custom-select-padding-y-lg;
     padding-left: $custom-select-padding-x-lg;
-    @include font-size($custom-select-font-size-lg);
+    @include rfs-font-size($custom-select-font-size-lg);
 }
 
 .custom-file {

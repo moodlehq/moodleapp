@@ -52,7 +52,7 @@
   min-width: var(--#{$prefix}dropdown-min-width);
   padding: var(--#{$prefix}dropdown-padding-y) var(--#{$prefix}dropdown-padding-x);
   margin: 0; // Override default margin of ul
-  @include font-size(var(--#{$prefix}dropdown-font-size));
+  @include rfs-font-size(var(--#{$prefix}dropdown-font-size));
   color: var(--#{$prefix}dropdown-color);
   text-align: left; // Ensures proper alignment if parent has it changed (e.g., modal footer)
   list-style: none;
@@ -219,7 +219,7 @@
   display: block;
   padding: var(--#{$prefix}dropdown-header-padding-y) var(--#{$prefix}dropdown-header-padding-x);
   margin-bottom: 0; // for use with heading elements
-  @include font-size($font-size-sm);
+  @include rfs-font-size($font-size-sm);
   color: var(--#{$prefix}dropdown-header-color);
   white-space: nowrap; // as with > li > a
 }

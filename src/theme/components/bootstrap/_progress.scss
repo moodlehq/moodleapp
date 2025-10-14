@@ -24,7 +24,7 @@
   display: flex;
   height: var(--#{$prefix}progress-height);
   overflow: hidden; // force rounded corners by cropping it
-  @include font-size(var(--#{$prefix}progress-font-size));
+  @include rfs-font-size(var(--#{$prefix}progress-font-size));
   background-color: var(--#{$prefix}progress-bg);
   @include border-radius(var(--#{$prefix}progress-border-radius));
   @include box-shadow(var(--#{$prefix}progress-box-shadow));

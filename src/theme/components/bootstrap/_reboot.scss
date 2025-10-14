@@ -27,7 +27,7 @@
 
 :root {
   @if $font-size-root != null {
-    @include font-size(var(--#{$prefix}root-font-size));
+    @include rfs-font-size(var(--#{$prefix}root-font-size));
   }
 
   @if $enable-smooth-scroll {
@@ -49,7 +49,7 @@
 body {
   margin: 0; // 1
   font-family: var(--#{$prefix}body-font-family);
-  @include font-size(var(--#{$prefix}body-font-size));
+  @include rfs-font-size(var(--#{$prefix}body-font-size));
   font-weight: var(--#{$prefix}body-font-weight);
   line-height: var(--#{$prefix}body-line-height);
   color: var(--#{$prefix}body-color);
@@ -92,32 +92,32 @@ hr {
 
 h1 {
   @extend %heading;
-  @include font-size($h1-font-size);
+  @include rfs-font-size($h1-font-size);
 }
 
 h2 {
   @extend %heading;
-  @include font-size($h2-font-size);
+  @include rfs-font-size($h2-font-size);
 }
 
 h3 {
   @extend %heading;
-  @include font-size($h3-font-size);
+  @include rfs-font-size($h3-font-size);
 }
 
 h4 {
   @extend %heading;
-  @include font-size($h4-font-size);
+  @include rfs-font-size($h4-font-size);
 }
 
 h5 {
   @extend %heading;
-  @include font-size($h5-font-size);
+  @include rfs-font-size($h5-font-size);
 }
 
 h6 {
   @extend %heading;
-  @include font-size($h6-font-size);
+  @include rfs-font-size($h6-font-size);
 }
 
 
@@ -209,7 +209,7 @@ strong {
 // Add the correct font size in all browsers
 
 small {
-  @include font-size($small-font-size);
+  @include rfs-font-size($small-font-size);
 }
 
 
@@ -230,7 +230,7 @@ mark {
 sub,
 sup {
   position: relative;
-  @include font-size($sub-sup-font-size);
+  @include rfs-font-size($sub-sup-font-size);
   line-height: 0;
   vertical-align: baseline;
 }
@@ -272,7 +272,7 @@ code,
 kbd,
 samp {
   font-family: $font-family-code;
-  @include font-size(1em); // Correct the odd `em` font sizing in all browsers.
+  @include rfs-font-size(1em); // Correct the odd `em` font sizing in all browsers.
 }
 
 // 1. Remove browser default top margin
@@ -284,19 +284,19 @@ pre {
   margin-top: 0; // 1
   margin-bottom: 1rem; // 2
   overflow: auto; // 3
-  @include font-size($code-font-size);
+  @include rfs-font-size($code-font-size);
   color: $pre-color;
 
   // Account for some code outputs that place code tags in pre tags
   code {
-    @include font-size(inherit);
+    @include rfs-font-size(inherit);
     color: inherit;
     word-break: normal;
   }
 }
 
 code {
-  @include font-size($code-font-size);
+  @include rfs-font-size($code-font-size);
   color: var(--#{$prefix}code-color);
   word-wrap: break-word;
 
@@ -308,14 +308,14 @@ code {
 
 kbd {
   padding: $kbd-padding-y $kbd-padding-x;
-  @include font-size($kbd-font-size);
+  @include rfs-font-size($kbd-font-size);
   color: $kbd-color;
   background-color: $kbd-bg;
   @include border-radius($border-radius-sm);
 
   kbd {
     padding: 0;
-    @include font-size(1em);
+    @include rfs-font-size(1em);
     font-weight: $nested-kbd-font-weight;
   }
 }
@@ -413,7 +413,7 @@ optgroup,
 textarea {
   margin: 0; // 1
   font-family: inherit;
-  @include font-size(inherit);
+  @include rfs-font-size(inherit);
   line-height: inherit;
 }
 
@@ -504,7 +504,7 @@ legend {
   margin-bottom: $legend-margin-bottom;
   font-weight: $legend-font-weight;
   line-height: inherit;
-  @include font-size($legend-font-size);
+  @include rfs-font-size($legend-font-size);
 
   + * {
     clear: left; // 2
