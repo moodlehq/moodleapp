@@ -84,3 +84,5 @@ export const enum ModArchetype {
     ASSIGNMENT = 2, // Assignment module archetype.
     SYSTEM = 3, // System (not user-addable) module archetype.
 }
+
+export const RESOURCE_ARCHETYPE_NAME = 'resource';

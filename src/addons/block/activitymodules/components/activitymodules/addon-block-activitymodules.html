@@ -4,9 +4,11 @@
     </ion-label>
 </ion-item-divider>
 <core-loading [hideUntil]="loaded" placeholderType="column" placeholderHeight="48px" [placeholderLimit]="8">
-    <ion-item class="ion-text-wrap" *ngFor="let entry of entries" [detail]="true" button (click)="gotoCoureListModType(entry)">
-        <core-mod-icon slot="start" [modicon]="entry.icon" [modname]="entry.iconModName" [showAlt]="false" [colorize]="false"
-            [isBranded]="entry.branded" />
-        <ion-label>{{ entry.name }}</ion-label>
-    </ion-item>
+    @for (entry of entries; track entry.modName) {
+        <ion-item class="ion-text-wrap" [detail]="true" button (click)="gotoCoureListModType(entry)">
+            <core-mod-icon slot="start" [modicon]="entry.icon" [modname]="entry.iconModName" [showAlt]="false" [colorize]="false"
+                [isBranded]="entry.branded" />
+            <ion-label>{{ entry.name }}</ion-label>
+        </ion-item>
+    }
 </core-loading>
