@@ -101,11 +101,12 @@ export default class CoreCourseOverviewPage implements OnInit, OnDestroy {
                 return;
             }
 
-            if (data.pageParams.expand === undefined) {
+            if (data.pageParams.expand === undefined || !data.pageParams.expand.length) {
                 return;
             }
 
-            this.autoExpand.set(data.pageParams.expand);
+            // Ensure the value changes even if it's the same array.
+            this.autoExpand.set([...data.pageParams.expand]);
         });
     }
 
