@@ -54,7 +54,8 @@
                 }
 
                 @if (canViewReports) {
-                    <core-loading [hideUntil]="!showSpinner">
+                    <core-loading [hideUntil]="!showSpinner" [fullscreen]="false" placeholderType="column"
+                        placeholderHeight="28px" [placeholderLimit]="1">
                         @if ((lesson && !preventReasons.length) || retakeToReview) {
                             <ion-list>
                                 <ng-container *ngTemplateOutlet="buttons" />
@@ -262,10 +263,11 @@
     </core-tabs>
 
     @if (!showLoading) {
-        <div collapsible-footer slot="fixed" [class.ion-margin-bottom]="showSpinner">
+        <div collapsible-footer slot="fixed">
             @if (!canViewReports && ((lesson && !preventReasons.length) || retakeToReview)) {
                 <div class="list-item-limited-width">
-                    <core-loading [hideUntil]="!showSpinner">
+                    <core-loading [hideUntil]="!showSpinner" [fullscreen]="false" placeholderType="column"
+                        placeholderHeight="28px" [placeholderLimit]="1">
                         <ng-container *ngTemplateOutlet="buttons" />
                     </core-loading>
                 </div>
