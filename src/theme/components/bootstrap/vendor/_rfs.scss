@@ -303,46 +303,46 @@ $rfs-mq-property-height: if($rfs-mode == max-media-query, max-height, min-height
 }
 
 // Shorthand helper mixins
-@mixin font-size($value) {
+@mixin rfs-font-size($value) {
   @include rfs($value);
 }
 
-@mixin padding($value) {
+@mixin rfs-padding($value) {
   @include rfs($value, padding);
 }
 
-@mixin padding-top($value) {
+@mixin rfs-padding-top($value) {
   @include rfs($value, padding-top);
 }
 
-@mixin padding-right($value) {
+@mixin rfs-padding-right($value) {
   @include rfs($value, padding-right);
 }
 
-@mixin padding-bottom($value) {
+@mixin rfs-padding-bottom($value) {
   @include rfs($value, padding-bottom);
 }
 
-@mixin padding-left($value) {
+@mixin rfs-padding-left($value) {
   @include rfs($value, padding-left);
 }
 
-@mixin margin($value) {
+@mixin rfs-margin($value) {
   @include rfs($value, margin);
 }
 
-@mixin margin-top($value) {
+@mixin rfs-margin-top($value) {
   @include rfs($value, margin-top);
 }
 
-@mixin margin-right($value) {
+@mixin rfs-margin-right($value) {
   @include rfs($value, margin-right);
 }
 
-@mixin margin-bottom($value) {
+@mixin rfs-margin-bottom($value) {
   @include rfs($value, margin-bottom);
 }
 
-@mixin margin-left($value) {
+@mixin rfs-margin-left($value) {
   @include rfs($value, margin-left);
 }
