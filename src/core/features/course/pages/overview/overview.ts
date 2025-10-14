@@ -29,7 +29,7 @@ import { CoreTime } from '@singletons/time';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 import { CoreAlerts } from '@services/overlays/alerts';
 import { CoreSharedModule } from '@/core/shared.module';
-import { ModFeature, ModArchetype } from '@addons/mod/constants';
+import { ModFeature, ModArchetype, ModPurpose } from '@addons/mod/constants';
 import { CoreCourseModuleHelper } from '@features/course/services/course-module-helper';
 import { Translate } from '@singletons';
 import { CoreUrl } from '@singletons/url';
@@ -142,6 +142,7 @@ export default class CoreCourseOverviewPage implements OnInit, OnDestroy {
             const modIcons: Record<string, string> = {};
             let modFullNames: Record<string, string> = {};
             const brandedIcons: Record<string, boolean|undefined> = {};
+            const purposes: Record<string, ModPurpose | undefined> = {};
 
             const modules = CoreCourse.getSectionsModules(sections, {
                 ignoreSection: section => !CoreCourseHelper.canUserViewSection(section),
@@ -171,6 +172,7 @@ export default class CoreCourseOverviewPage implements OnInit, OnDestroy {
                 }
 
                 brandedIcons[mod.modname] = mod.branded;
+                purposes[mod.modname] = mod.purpose;
 
                 // If this is not a theme image, leave it undefined to avoid having specific activity icons.
                 if (CoreUrl.isThemeImageUrl(mod.modicon)) {
@@ -194,6 +196,7 @@ export default class CoreCourseOverviewPage implements OnInit, OnDestroy {
                     modNameTranslated: modName === CoreCourseOverviewPage.RESOURCES_NAME ?
                         modFullNames[modName] : CoreCourseModuleHelper.translateModuleName(modName, modFullNames[modName]),
                     branded: brandedIcons[iconModName],
+                    purpose: purposes[iconModName],
                     loaded: signal(false),
                     overview: signal<OverviewInformation | undefined>(undefined),
                 };
@@ -428,6 +431,7 @@ type OverviewModType = {
     iconModName: string;
     modNameTranslated: string;
     branded?: boolean;
+    purpose?: ModPurpose;
     loaded: WritableSignal<boolean>;
     overview: WritableSignal<OverviewInformation | undefined>;
 };

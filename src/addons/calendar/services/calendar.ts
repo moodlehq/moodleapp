@@ -60,6 +60,7 @@ import { REMINDERS_DEFAULT_REMINDER_TIMEBEFORE } from '@features/reminders/const
 import { AddonCalendarFilter } from './calendar-helper';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreUserPreferences } from '@features/user/services/user-preferences';
+import { ModPurpose } from '@addons/mod/constants';
 
 declare module '@singletons/events' {
 
@@ -1660,7 +1661,7 @@ export type AddonCalendarEventBase = {
     normalisedeventtype: string; // @since 3.7. Normalisedeventtype.
     normalisedeventtypetext: string; // @since 3.7. Normalisedeventtypetext.
     url: string; // Url.
-    purpose?: string; // Purpose. @since 4.0
+    purpose?: ModPurpose; // Purpose. @since 4.0
     branded?: boolean; // Branded. @since 4.4
 };
 
@@ -2021,7 +2022,6 @@ export type AddonCalendarEventToDisplay = Partial<AddonCalendarCalendarEvent> & 
     ispast?: boolean; // Calculated in the app. Whether the event is in the past.
     contextLevel?: ContextLevel;
     contextInstanceId?: number;
-    purpose?: string; // Purpose. @since 4.0
 };
 
 /**

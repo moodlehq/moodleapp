@@ -19,6 +19,7 @@ import { CoreCourseModuleHelper } from '@features/course/services/course-module-
 import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
 import { makeSingleton } from '@singletons';
 import { CoreCourseModuleDelegate } from '@features/course/services/module-delegate';
+import { ModPurpose } from '@addons/mod/constants';
 
 /**
  * Service that provides some features regarding recently accessed items.
@@ -152,7 +153,7 @@ type AddonBlockRecentlyaccesseditemsGetRecentItemsWSResponse = {
     viewurl: string; // Viewurl.
     courseviewurl: string; // Courseviewurl.
     icon: string; // Icon.
-    purpose?: string; // Purpose. @since 4.0
+    purpose?: ModPurpose; // Purpose. @since 4.0
     branded?: boolean; // Branded. @since 4.4
 };
 
