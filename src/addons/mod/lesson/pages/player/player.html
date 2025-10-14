@@ -146,7 +146,7 @@
                                                     [text]="row.text" contextLevel="module" [contextInstanceId]="lesson.coursemodule"
                                                     [courseId]="courseId" />
                                                 <ion-select-option *ngFor="let option of row.options" [value]="option.value">
-                                                    {{option.label}}
+                                                    <core-format-text [clean]="true" [text]="option.label" />
                                                 </ion-select-option>
                                             </ion-select>
                                         </ion-item>
