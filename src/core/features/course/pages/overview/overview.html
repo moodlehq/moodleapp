@@ -20,7 +20,7 @@
         </ion-item>
 
         @if (modTypes().length) {
-            <ion-accordion-group #modTypesAccordion (ionChange)="modTypeAccordionChanged($event.detail.value)">
+            <ion-accordion-group [multiple]="true" #modTypesAccordion (ionChange)="modTypeAccordionChanged($event.detail.value)">
                 @for (modType of modTypes(); track modType.modName) {
                     <ion-accordion [value]="modType.modName" toggleIconSlot="start">
                         <ion-item class="ion-text-wrap divider" slot="header">

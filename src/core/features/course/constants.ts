@@ -26,6 +26,7 @@ export const CORE_COURSE_STEALTH_MODULES_SECTION_ID = -1;
 export const CORE_COURSE_ALL_COURSES_CLEARED = -1;
 
 export const CORE_COURSE_PROGRESS_UPDATED_EVENT = 'progress_updated';
+export const CORE_COURSE_SELECT_TAB = 'course_select_tab';
 
 export const CORE_COURSE_AUTO_SYNCED = 'core_course_autom_synced';
 

@@ -17,11 +17,16 @@ import { CoreLogger } from '@singletons/logger';
 import { CoreSitesCommonWSOptions, CoreSites } from '@services/sites';
 import { CoreSite } from '@classes/sites/site';
 import { CoreCacheUpdateFrequency } from '@/core/constants';
-import { makeSingleton } from '@singletons';
+import { makeSingleton, Translate } from '@singletons';
 import { CoreStatusWithWarningsWSResponse } from '@services/ws';
 import { CoreWSError } from '@classes/errors/wserror';
 import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
 import { CoreText } from '@singletons/text';
+import { CoreCourses } from '@features/courses/services/courses';
+import { CoreAlerts } from '@services/overlays/alerts';
+import { CORE_COURSE_OVERVIEW_OPTION_NAME } from '../constants';
+import { CoreCourseHelper } from './course-helper';
+import { CoreNavigator } from '@services/navigator';
 
 /**
  * Service that provides some features regarding course overview.
@@ -167,6 +172,44 @@ export class CoreCourseOverviewService {
 
             throw new CoreWSError(warning);
         }
+    }
+
+    /**
+     * Navigate to course overview or list-mod-type page depending on whether the overview is available.
+     *
+     * @param courseId Course ID.
+     * @param modNames Array of module names to expand. E.g. 'glossary'. For list-mod-type, only the first one will be used.
+     * @param title Title to pass to list-mod-type page if overview not available.
+     * @param siteId Site ID. If not defined, current site.
+     */
+    async navigateToCourseOverview(courseId: number, modNames: string[] = [], title?: string, siteId?: string): Promise<void> {
+        siteId = siteId || CoreSites.getCurrentSiteId();
+        if (CoreCourseOverview.canGetInformation()) {
+            // Check if it's enabled.
+            const options = await CoreCourses.getCoursesAdminAndNavOptions([courseId]);
+
+            if (!options.navOptions[courseId].overview) {
+                CoreAlerts.showError(Translate.instant('core.nopermissions', {
+                    $a: Translate.instant('core.course.course:viewoverview'),
+                }));
+
+                return;
+            }
+
+            await CoreCourseHelper.getAndOpenCourse(
+                courseId,
+                { selectedTab: CORE_COURSE_OVERVIEW_OPTION_NAME, expand: modNames },
+                siteId,
+            );
+
+            return;
+        }
+
+        // @deprecatedonmoodle 5.1 Use course overview instead.
+        await CoreNavigator.navigateToSitePath(`course/${courseId}/list-mod-type`, {
+            params: { modName: modNames[0], title },
+            siteId,
+        });
     }
 
 }
