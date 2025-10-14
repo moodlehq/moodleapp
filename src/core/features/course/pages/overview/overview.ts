@@ -29,7 +29,7 @@ import { CoreTime } from '@singletons/time';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 import { CoreAlerts } from '@services/overlays/alerts';
 import { CoreSharedModule } from '@/core/shared.module';
-import { ModFeature, ModArchetype, ModPurpose } from '@addons/mod/constants';
+import { ModFeature, ModArchetype, ModPurpose, RESOURCE_ARCHETYPE_NAME } from '@addons/mod/constants';
 import { CoreCourseModuleHelper } from '@features/course/services/course-module-helper';
 import { Translate } from '@singletons';
 import { CoreUrl } from '@singletons/url';
@@ -71,7 +71,6 @@ export default class CoreCourseOverviewPage implements OnInit, OnDestroy {
     protected readonly autoExpand = signal<string[]>([]);
     protected selectTabObserver: CoreEventObserver;
 
-    protected static readonly RESOURCES_NAME = 'resource';
 
     constructor() {
         this.logView = CoreTime.once(async () => {
@@ -164,8 +163,8 @@ export default class CoreCourseOverviewPage implements OnInit, OnDestroy {
                 // Get the full name of the module type.
                 if (archetypes[mod.modname] === ModArchetype.RESOURCE) {
                     // All resources are gathered in a single "Resources" option.
-                    if (!modFullNames[CoreCourseOverviewPage.RESOURCES_NAME]) {
-                        modFullNames[CoreCourseOverviewPage.RESOURCES_NAME] = Translate.instant('core.resources');
+                    if (!modFullNames[RESOURCE_ARCHETYPE_NAME]) {
+                        modFullNames[RESOURCE_ARCHETYPE_NAME] = Translate.instant('core.resources');
                     }
                 } else {
                     modFullNames[mod.modname] = mod.modplural;
@@ -184,7 +183,7 @@ export default class CoreCourseOverviewPage implements OnInit, OnDestroy {
             modFullNames = CoreObject.sortValues(modFullNames);
 
             const modTypes = await Promise.all(Object.keys(modFullNames).map(async (modName): Promise<OverviewModType> => {
-                const iconModName = modName === CoreCourseOverviewPage.RESOURCES_NAME ? 'page' : modName;
+                const iconModName = modName === RESOURCE_ARCHETYPE_NAME ? 'page' : modName;
 
                 const icon = await CoreCourseModuleDelegate.getModuleIconSrc(iconModName, modIcons[iconModName]);
 
@@ -193,7 +192,7 @@ export default class CoreCourseOverviewPage implements OnInit, OnDestroy {
                     iconModName,
                     name: modFullNames[modName],
                     modName,
-                    modNameTranslated: modName === CoreCourseOverviewPage.RESOURCES_NAME ?
+                    modNameTranslated: modName === RESOURCE_ARCHETYPE_NAME ?
                         modFullNames[modName] : CoreCourseModuleHelper.translateModuleName(modName, modFullNames[modName]),
                     branded: brandedIcons[iconModName],
                     purpose: purposes[iconModName],
