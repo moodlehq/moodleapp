@@ -597,7 +597,19 @@ export class CoreUrl {
         }
 
         urlAndHash[0].replace(regex, (match: string, key: string, value: string): string => {
-            params[key] = value !== undefined ? CoreUrl.decodeURIComponent(value) : '';
+            value = value !== undefined ? CoreUrl.decodeURIComponent(value) : '';
+            // If key is an array (e.g. param[]), we'll treat it as a normal param (param) but
+            // store the values as a comma separated list.
+            if (key.endsWith('[]')) {
+                key = key.slice(0, -2);
+                if (params[key] === undefined) {
+                    params[key] = value;
+                } else {
+                    params[key] += `,${value}`;
+                }
+            } else {
+                params[key] = value;
+            }
 
             if (subParams) {
                 params[key] = params[key].replace(subParamsPlaceholder, subParams);

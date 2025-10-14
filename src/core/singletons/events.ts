@@ -48,7 +48,6 @@ export interface CoreEventsData {
     [CoreEvents.USER_NO_LOGIN]: CoreEventUserNoLoginData;
     [CoreEvents.FORM_ACTION]: CoreEventFormActionData;
     [CoreEvents.NOTIFICATION_SOUND_CHANGED]: CoreEventNotificationSoundChangedData;
-    [CoreEvents.SELECT_COURSE_TAB]: CoreEventSelectCourseTabData;
     [CoreEvents.COMPLETION_MODULE_VIEWED]: CoreEventCompletionModuleViewedData;
     [CoreEvents.MANUAL_COMPLETION_CHANGED]: CoreEventManualCompletionChangedData;
     [CoreEvents.SECTION_STATUS_CHANGED]: CoreEventSectionStatusChangedData;
@@ -117,6 +116,9 @@ export class CoreEvents {
      */
     static readonly ORIENTATION_CHANGE = 'orientation_change';
     static readonly SEND_ON_ENTER_CHANGED = 'send_on_enter_changed';
+    /**
+     * @deprecated since 5.1.0. Use CORE_COURSE_SELECT_TAB instead.
+     */
     static readonly SELECT_COURSE_TAB = 'select_course_tab';
     static readonly WS_CACHE_INVALIDATED = 'ws_cache_invalidated';
     static readonly SITE_STORAGE_DELETED = 'site_storage_deleted';
@@ -393,15 +395,6 @@ export type CoreEventFormActionData = {
  */
 export type CoreEventNotificationSoundChangedData = {
     enabled: boolean;
-};
-
-/**
- * Data passed to SELECT_COURSE_TAB event.
- */
-export type CoreEventSelectCourseTabData = {
-    name?: string; // Name of the tab's handler. If not set, load course contents.
-    sectionId?: number;
-    sectionNumber?: number;
 };
 
 /**

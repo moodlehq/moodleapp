@@ -56,6 +56,7 @@ import {
     CORE_COURSE_ALL_SECTIONS_ID,
     CORE_COURSE_ALL_SECTIONS_PREFERRED_PREFIX,
     CORE_COURSE_EXPANDED_SECTIONS_PREFIX,
+    CORE_COURSE_SELECT_TAB,
     CORE_COURSE_STEALTH_MODULES_SECTION_ID,
 } from '@features/course/constants';
 import { toBoolean } from '@/core/transforms/boolean';
@@ -157,17 +158,18 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
         this.currentSite = CoreSites.getRequiredCurrentSite();
 
         // Listen for select course tab events to select the right section if needed.
-        this.selectTabObserver = CoreEvents.on(CoreEvents.SELECT_COURSE_TAB, (data) => {
-            if (data.name) {
+        this.selectTabObserver = CoreEvents.on(CORE_COURSE_SELECT_TAB, (data) => {
+            if (data.selectedTab !== '') {
                 return;
             }
 
+            const pageParams = data.pageParams || {};
             let section: CoreCourseSection | undefined;
 
-            if (data.sectionId !== undefined && this.sections) {
-                section = this.sections.find((section) => section.id === data.sectionId);
-            } else if (data.sectionNumber !== undefined && this.sections) {
-                section = this.sections.find((section) => section.section === data.sectionNumber);
+            if (pageParams.sectionId !== undefined && this.sections) {
+                section = this.sections.find((section) => section.id === pageParams.sectionId);
+            } else if (pageParams.sectionNumber !== undefined && this.sections) {
+                section = this.sections.find((section) => section.section === pageParams.sectionNumber);
             }
 
             if (section) {
