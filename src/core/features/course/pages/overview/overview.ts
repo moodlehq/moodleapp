@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, effect, OnInit, signal, Type, viewChild, WritableSignal, OnDestroy } from '@angular/core';
+import { Component, effect, OnInit, signal, Type, viewChild, WritableSignal, OnDestroy, inject, ElementRef } from '@angular/core';
 
 import {
     CoreCourseOverview,
@@ -45,6 +45,7 @@ import {
     CoreCourseOverviewContentType,
 } from '@features/course/constants';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
+import { CoreDom } from '@singletons/dom';
 
 /**
  * Page that displays an overview of all activities in a course.
@@ -71,6 +72,7 @@ export default class CoreCourseOverviewPage implements OnInit, OnDestroy {
     protected readonly autoExpand = signal<string[]>([]);
     protected selectTabObserver: CoreEventObserver;
 
+    protected hostElement: HTMLElement = inject(ElementRef).nativeElement;
 
     constructor() {
         this.logView = CoreTime.once(async () => {
@@ -84,13 +86,23 @@ export default class CoreCourseOverviewPage implements OnInit, OnDestroy {
             });
         });
 
-        effect(() => {
+        effect(async () => {
             const accordionGroup = this.accordionGroup();
             const autoExpand = this.autoExpand();
 
             if (accordionGroup && autoExpand) {
                 accordionGroup.value = autoExpand;
-                this.modTypeAccordionChanged(autoExpand);
+
+                await this.modTypeAccordionChanged(autoExpand);
+
+                // Scroll to the first expanded mod type. when the accordion animation is done.
+                setTimeout(() => {
+                    const firstModType = autoExpand[0];
+                    CoreDom.scrollToElement(
+                        this.hostElement,
+                        `#${firstModType}_overview_collapsible`,
+                    );
+                }, 300);
             }
         });
 
@@ -237,16 +249,17 @@ export default class CoreCourseOverviewPage implements OnInit, OnDestroy {
      * An accordion has been expanded or collapsed.
      *
      * @param modNames Array of the module names that are expanded, empty if all are collapsed.
+     * @returns Promise resolved when done.
      */
-    modTypeAccordionChanged(modNames: string[] = []): void {
-        modNames.forEach((modName) => {
+    async modTypeAccordionChanged(modNames: string[] = []): Promise<void[]> {
+        return Promise.all(modNames.map(async (modName) => {
             const modType = this.modTypes().find((modType) => modType.modName === modName);
             if (!modType) {
                 return;
             }
 
-            this.loadActivities(modType);
-        });
+            return this.loadActivities(modType);
+        }));
     }
 
     /**
