@@ -131,25 +131,6 @@ ion-list {
     padding: 0 !important;
 }
 
-// Safe areas
-.safe-area-padding,
-.safe-area-padding-horizontal {
-    @include padding-horizontal(var(--ion-safe-area-left), var(--ion-safe-area-right));
-}
-
-.safe-area-margin,
-.safe-margin-horizontal {
-    @include margin-horizontal(var(--ion-safe-area-left), var(--ion-safe-area-right));
-}
-
-.ion-padding.safe-area-padding-horizontal {
-    @include safe-area-padding-horizontal(16px, 16px);
-}
-
-.ion-margin.safe-margin-horizontal {
-    @include safe-area-margin-horizontal(16px, 16px);
-}
-
 // Make sure pages do not overlap the bottom system bar.
 ion-app > ion-router-outlet > .ion-page:not(page-core-mainmenu),
 ion-app > ion-router-outlet > page-core-mainmenu > ion-tabs.placement-side > .tabs-inner,
@@ -168,22 +149,18 @@ ion-app > ion-modal.core-modal-lateral {
     --ion-safe-area-top: inherit;
 }
 
-// Remove footer bottom shadow (Android only).
-ion-footer.md {
-    clip-path: inset(-12px 0px 0px 0px);
+:root[dir=ltr] body:not(.core-iframe-fullscreen) ion-tabs.placement-side .tabs-inner,
+:root[dir=ltr] body:not(.core-iframe-fullscreen) ion-tabs.placement-side .tabs-inner ion-content {
+    --ion-safe-area-left: 0px !important;
 }
 
-ion-tabs.placement-side .tabs-inner {
-    --ion-safe-area-left: 0px;
-}
-
-:root[dir=rtl] ion-tabs.placement-side .tabs-inner {
-    --ion-safe-area-right: 0px;
-    --ion-safe-area-left: var(--root-safe-area-left);
+:root[dir=rtl] body:not(.core-iframe-fullscreen) ion-tabs.placement-side .tabs-inner,
+:root[dir=rtl] body:not(.core-iframe-fullscreen) ion-tabs.placement-side .tabs-inner ion-content {
+    --ion-safe-area-right: 0px !important;
 }
 
 ion-tabs.placement-bottom .tabs-inner {
-    --ion-safe-area-bottom: 0px;
+    --ion-safe-area-bottom: 0px !important;
 }
 
 core-tabs, core-tabs-outlet {
@@ -196,21 +173,6 @@ core-tabs, core-tabs-outlet {
         --color-selected: var(--border-color-active);
         --font-weight-active: var(--core-tab-font-weight-active);
     }
-}
-
-core-split-view.menu-and-content {
-    .menu {
-        --ion-safe-area-right: 0px;
-    }
-
-    .content-outlet {
-        --ion-safe-area-left: 0px;
-    }
-}
-
-// Set ion-app height based on the keyboard height.
-ion-app {
-    height: calc(100% - var(--keyboard-height, 0px));
 }
 
 // Hidden submit button.
@@ -232,16 +194,8 @@ ion-app {
 // Item styles
 [aria-current="page"],
 .item.item-current {
-    @include safe-area-border-start(var(--selected-item-border-width), solid,  var(--selected-item-color));
+    @include border-start(var(--selected-item-border-width), solid,  var(--selected-item-color));
     --padding-start: calc(16px - var(--selected-item-border-width));
-
-    > * {
-        --ion-safe-area-left: 0px;
-    }
-
-    &::part(native) {
-        --ion-safe-area-left: 0px;
-    }
 }
 
 // Extra text colors.
@@ -299,12 +253,6 @@ core-format-text a {
 .core-horizontal-scroll {
     display: block;
     overflow-x: scroll;
-    .safe-area-pseudo-padding-start {
-        @include padding-horizontal(var(--ion-safe-area-left), 0px);
-    }
-    .safe-area-pseudo-padding-end {
-        @include padding-horizontal(0px, var(--ion-safe-area-right));
-    }
 }
 
 // Text formats.
@@ -433,6 +381,9 @@ ion-grid.core-no-grid > ion-row {
     z-index: 3;
     display: block;
     background-color: var(--core-collapsible-footer-background);
+
+    @include padding-horizontal(var(--ion-safe-area-left), var(--ion-safe-area-right));
+
 
     .ion-margin {
         margin-top: 8px;

@@ -49,6 +49,7 @@ import {
     ADDON_MOD_LESSON_COMPONENT_LEGACY,
     ADDON_MOD_LESSON_DATA_SENT_EVENT,
     ADDON_MOD_LESSON_PAGE_NAME,
+    AddonModLessonTab,
 } from '../../constants';
 import { CoreAlerts } from '@services/overlays/alerts';
 import { CoreCourseModuleNavigationComponent } from '@features/course/components/module-navigation/module-navigation';
@@ -79,7 +80,7 @@ export class AddonModLessonIndexComponent extends CoreCourseModuleMainActivityCo
     pluginName = 'lesson';
 
     lesson?: AddonModLessonLessonWSData; // The lesson.
-    selectedTab?: number; // The initial selected tab.
+    selectedTab = AddonModLessonTab.ATTEMPT; // The initial selected tab.
     askPassword?: boolean; // Whether to ask the password.
     canManage?: boolean; // Whether the user can manage the lesson.
     canViewReports?: boolean; // Whether the user can view the lesson reports.
@@ -109,7 +110,7 @@ export class AddonModLessonIndexComponent extends CoreCourseModuleMainActivityCo
     async ngOnInit(): Promise<void> {
         super.ngOnInit();
 
-        this.selectedTab = this.action == 'report' ? 1 : 0;
+        this.selectedTab = this.action === 'report' ? AddonModLessonTab.REPORT : AddonModLessonTab.ATTEMPT;
 
         await this.loadContent(false, true);
     }
@@ -193,7 +194,7 @@ export class AddonModLessonIndexComponent extends CoreCourseModuleMainActivityCo
             }
         }
 
-        if (this.selectedTab == 1 && this.canViewReports) {
+        if (this.selectedTab === AddonModLessonTab.REPORT && this.canViewReports) {
             // Only fetch the report data if the tab is selected.
             promises.push(this.fetchReportData());
         }
@@ -383,7 +384,9 @@ export class AddonModLessonIndexComponent extends CoreCourseModuleMainActivityCo
      */
     protected callAnalyticsLogEvent(): void {
         this.analyticsLogEvent('mod_lesson_view_lesson', {
-            url: this.selectedTab === 1 ? `/mod/lesson/report.php?id=${this.module.id}&action=reportoverview` : undefined,
+            url: this.selectedTab === AddonModLessonTab.REPORT
+                ? `/mod/lesson/report.php?id=${this.module.id}&action=reportoverview`
+                : undefined,
         });
     }
 
@@ -447,8 +450,8 @@ export class AddonModLessonIndexComponent extends CoreCourseModuleMainActivityCo
      * First tab selected.
      */
     indexSelected(): void {
-        const tabHasChanged = this.selectedTab !== 0;
-        this.selectedTab = 0;
+        const tabHasChanged = this.selectedTab !== AddonModLessonTab.ATTEMPT;
+        this.selectedTab = AddonModLessonTab.ATTEMPT;
 
         if (tabHasChanged) {
             this.callAnalyticsLogEvent();
@@ -459,8 +462,8 @@ export class AddonModLessonIndexComponent extends CoreCourseModuleMainActivityCo
      * Reports tab selected.
      */
     reportsSelected(): void {
-        const tabHasChanged = this.selectedTab !== 1;
-        this.selectedTab = 1;
+        const tabHasChanged = this.selectedTab !== AddonModLessonTab.REPORT;
+        this.selectedTab = AddonModLessonTab.REPORT;
 
         if (!this.groupInfo) {
             this.fetchReportData().catch((error) => {

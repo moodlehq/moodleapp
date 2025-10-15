@@ -15,7 +15,7 @@
     <ion-refresher slot="fixed" [disabled]="!loaded" (ionRefresh)="refreshData($event.target)">
         <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}" />
     </ion-refresher>
-    <ion-grid class="safe-area-padding">
+    <ion-grid>
         <ion-row class="ion-no-padding ion-wrap">
             <ion-col class="ion-no-padding" size="12" size-sm="6" [attr.col-sm-6]="collections && collections.length > 1 ? '' : null">
                 <core-search-box (searchTextChange)="searchTags($event)" [searchText]="query" [disabled]="searching"

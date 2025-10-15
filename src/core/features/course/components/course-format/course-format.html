@@ -47,7 +47,7 @@
 
         @if (displayCourseIndex && (previousSection || nextSection)) {
             <div collapsible-footer appearOnBottom slot="fixed">
-                <div class="core-course-section-nav-buttons safe-area-padding-horizontal list-item-limited-width">
+                <div class="core-course-section-nav-buttons list-item-limited-width">
                     @if (previousSection) {
                         <ion-button (click)="sectionChanged(previousSection)" expand="block"
                             [ariaLabel]="('core.previous' | translate) + ': ' + previousSection.name" class="ion-text-nowrap">

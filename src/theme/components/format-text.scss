@@ -212,8 +212,8 @@ core-format-text {
 core-format-text,
 .item core-format-text,
 core-rich-text-editor .core-rte-editor {
-    @import "atto";
     @import "bootstrap/bootstrap";
+    @import "moodle/moodle";
 
     @include core-headings();
 

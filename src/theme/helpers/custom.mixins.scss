@@ -235,75 +235,29 @@
     @include property-horizontal(border, null, $px $type $color);
 }
 
-@mixin safe-area-border-start($px, $type, $color) {
-    $safe-area-position: calc(var(--ion-safe-area-left) + #{$px});
-
-    @include border-start($safe-area-position, $type, $color);
-}
-
-@mixin safe-area-border-end($px, $type, $color) {
-    $safe-area-position: calc(var(--ion-safe-area-right) + #{$px});
-
-    @include border-end($safe-area-position, $type, $color);
-}
-
-@mixin safe-area-margin-horizontal($start, $end: $start) {
-    $safe-area-end: null;
-    $safe-area-start: null;
-
-    @if ($end) {
-        $safe-area-end: calc(var(--ion-safe-area-right) + #{$end});
+@mixin safe-area-padding-start() {
+    padding-left: var(--ion-safe-area-left);
+    @include rtl() {
+        padding-left: 0px;
+        padding-right: var(--ion-safe-area-right);
     }
-    @if ($start) {
-        $safe-area-start: calc(var(--ion-safe-area-left) + #{$start});
+}
+
+@mixin safe-area-padding-end() {
+    padding-right: var(--ion-safe-area-right);
+    @include rtl() {
+        padding-right: 0px;
+        padding-left: var(--ion-safe-area-left);
     }
-
-    @include margin-horizontal($safe-area-start, $safe-area-end);
 }
 
-@mixin safe-area-margin-start($start, $end) {
-    $safe-area-start: calc(var(--ion-safe-area-left) + #{$start});
-
-    @include margin-horizontal($safe-area-start, $end);
-}
-
-@mixin safe-area-margin-end($start, $end) {
-    $safe-area-end: calc(var(--ion-safe-area-right) + #{$end});
-
-    @include margin-horizontal($start, $safe-area-end);
-}
-
-@mixin safe-area-padding-horizontal($start, $end: $start) {
-    $safe-area-end: null;
-    $safe-area-start: null;
-
-    @if ($end) {
-        $safe-area-end: calc(var(--ion-safe-area-right) + #{$end});
+@mixin safe-area-padding-horizontal() {
+    padding-left: var(--ion-safe-area-left);
+    padding-right: var(--ion-safe-area-right);
+    @include rtl() {
+        padding-left: var(--ion-safe-area-right);
+        padding-right: var(--ion-safe-area-left);
     }
-    @if ($start) {
-        $safe-area-start: calc(var(--ion-safe-area-left) + #{$start});
-    }
-
-    @include padding-horizontal($safe-area-start, $safe-area-end);
-}
-
-@mixin safe-area-padding-start($start, $end) {
-    $safe-area-start: calc(var(--ion-safe-area-left) + #{$start});
-
-    @include padding-horizontal($safe-area-start, $end);
-}
-
-@mixin safe-area-padding-end($start, $end) {
-    $safe-area-end: calc(var(--ion-safe-area-right) + #{$end});
-
-    @include padding-horizontal($start, $safe-area-end);
-}
-
-@mixin safe-area-position($top: null, $end: null, $bottom: null, $start: null) {
-    $safe-area-start: calc(var(--ion-safe-area-left) + #{$start});
-    $safe-area-end: calc(var(--ion-safe-area-right) + #{$end});
-
-    @include position($top, $safe-area-end, $bottom, $safe-area-start);
 }
 
 @mixin core-headings() {

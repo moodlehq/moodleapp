@@ -38,9 +38,6 @@ export class AddonBlockLearningPlansHandlerService extends CoreBlockBaseHandler 
             class: 'addon-block-learning-plans',
             component: CoreBlockOnlyTitleComponent,
             link: ADDON_COMPETENCY_LEARNING_PLANS_PAGE,
-            navOptions: {
-                preferCurrentTab: false,
-            },
         };
     }
 

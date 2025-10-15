@@ -26,7 +26,7 @@ ion-item.item {
     }
 
     &.item-hightlighted {
-        @include safe-area-border-start(var(--selected-item-border-width), solid,  var(--selected-item-color));
+        @include border-start(var(--selected-item-border-width), solid,  var(--selected-item-color));
     }
 
     &.divider.section {
