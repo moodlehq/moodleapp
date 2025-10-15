@@ -22,11 +22,6 @@ body.core-iframe-fullscreen {
 
         ion-tab-bar.mainmenu-tabs {
             display: none;
-
-            // Restore original safe area.
-            .tabs-inner {
-                --ion-safe-area-left: var(--root-safe-area-left);
-            }
         }
 
         .ion-page ion-header {
@@ -49,11 +44,15 @@ body.core-iframe-fullscreen {
                 flex-direction: row-reverse;
                 ion-header {
                     width: calc(var(--core-header-toolbar-height) + var(--ion-safe-area-right));
-                    @include safe-area-padding-horizontal(null, 0px);
+                    @include rtl() {
+                        width: calc(var(--core-header-toolbar-height) + var(--ion-safe-area-left));
+                    }
                     background: var(--core-header-toolbar-background);
+                    padding-top: var(--ion-safe-area-top);
+                    @include safe-area-padding-end();
 
                     ion-toolbar {
-                        padding: 0;
+                        padding: 0px;
                         height: 100%;
                         --padding-start: 0px;
                         --padding-end: 0px;

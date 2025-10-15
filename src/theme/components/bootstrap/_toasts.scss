@@ -19,7 +19,7 @@
 
   width: var(--#{$prefix}toast-max-width);
   max-width: 100%;
-  @include font-size(var(--#{$prefix}toast-font-size));
+  @include rfs-font-size(var(--#{$prefix}toast-font-size));
   color: var(--#{$prefix}toast-color);
   pointer-events: auto;
   background-color: var(--#{$prefix}toast-bg);

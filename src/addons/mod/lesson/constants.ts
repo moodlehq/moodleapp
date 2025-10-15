@@ -58,3 +58,8 @@ export const enum AddonModLessonPageSubtype {
 }
 
 export const ADDON_MOD_LESSON_OTHER_ANSWERS = '@#wronganswer#@';
+
+export enum AddonModLessonTab {
+    ATTEMPT = 0,
+    REPORT = 1
+}

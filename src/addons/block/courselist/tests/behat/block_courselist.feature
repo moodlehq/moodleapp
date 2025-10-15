@@ -38,6 +38,8 @@ Feature: View the my courses block and check it links to the my page
     And I should find "Course 2" in the app
     And I should find "Course 3" in the app
     And I should not find "Course 4" in the app
+    But I should find "Back" in the app
+
 
   Scenario: Block is included in disabled features
     # Add another block just to ensure there is something in the block region and the drawer is displayed.

@@ -245,7 +245,6 @@ export default class AddonModLessonPlayerPage implements OnInit, OnDestroy, CanL
      *
      * @param pageId Page to load.
      * @param ignoreCurrent If true, allow loading current page.
-     * @returns Promise resolved when done.
      */
     async changePage(pageId: number, ignoreCurrent?: boolean): Promise<void> {
         if (!ignoreCurrent && !this.eolData && this.currentPage == pageId) {
@@ -253,7 +252,7 @@ export default class AddonModLessonPlayerPage implements OnInit, OnDestroy, CanL
             return;
         }
 
-        this.loaded = true;
+        this.loaded = false;
         this.messages = [];
 
         try {
@@ -376,7 +375,6 @@ export default class AddonModLessonPlayerPage implements OnInit, OnDestroy, CanL
      * Finish the retake.
      *
      * @param outOfTime Whether the retake is finished because the user ran out of time.
-     * @returns Promise resolved when done.
      */
     protected async finishRetake(outOfTime?: boolean): Promise<void> {
         if (!this.lesson) {
@@ -460,7 +458,6 @@ export default class AddonModLessonPlayerPage implements OnInit, OnDestroy, CanL
      * Jump to a certain page after performing an action.
      *
      * @param pageId The page to load.
-     * @returns Promise resolved when done.
      */
     protected async jumpToPage(pageId: number): Promise<void> {
         if (pageId === 0) {
@@ -472,20 +469,21 @@ export default class AddonModLessonPlayerPage implements OnInit, OnDestroy, CanL
             return;
         } else if (pageId == AddonModLessonJumpTo.EOL) {
             // End of lesson reached.
-            return this.finishRetake();
+            await this.finishRetake();
+
+            return;
         }
 
         // Load new page.
         this.messages = [];
 
-        return this.loadPage(pageId);
+        await this.loadPage(pageId);
     }
 
     /**
      * Start or continue a retake.
      *
      * @param pageId The page to load.
-     * @returns Promise resolved when done.
      */
     protected async launchRetake(pageId?: number): Promise<void> {
         let data: AddonModLessonLaunchAttemptWSResponse | undefined;
@@ -517,13 +515,11 @@ export default class AddonModLessonPlayerPage implements OnInit, OnDestroy, CanL
             this.endTime = timers[timers.length - 1].starttime + this.lesson!.timelimit;
         }
 
-        return this.loadPage(this.currentPage);
+        await this.loadPage(this.currentPage);
     }
 
     /**
      * Load the lesson menu.
-     *
-     * @returns Promise resolved when done.
      */
     protected async loadMenu(): Promise<void> {
         if (this.loadingMenu || !this.lesson) {
@@ -557,12 +553,13 @@ export default class AddonModLessonPlayerPage implements OnInit, OnDestroy, CanL
      * Load a certain page.
      *
      * @param pageId The page to load.
-     * @returns Promise resolved when done.
      */
     protected async loadPage(pageId: number): Promise<void> {
         if (pageId == AddonModLessonJumpTo.EOL) {
             // End of lesson reached.
-            return this.finishRetake();
+            await this.finishRetake();
+
+            return;
         } else if (!this.lesson) {
             return;
         }
@@ -584,9 +581,11 @@ export default class AddonModLessonPlayerPage implements OnInit, OnDestroy, CanL
             options,
         );
 
-        if (data.newpageid == AddonModLessonJumpTo.EOL) {
+        if (data.newpageid === AddonModLessonJumpTo.EOL) {
             // End of lesson reached.
-            return this.finishRetake();
+            await this.finishRetake();
+
+            return;
         }
 
         this.pageData = data;
@@ -668,7 +667,6 @@ export default class AddonModLessonPlayerPage implements OnInit, OnDestroy, CanL
      *
      * @param data The data to send.
      * @param formSubmitted Whether a form was submitted.
-     * @returns Promise resolved when done.
      */
     protected async processPage(data: CoreFormFields, formSubmitted?: boolean): Promise<void> {
         if (!this.lesson || !this.pageData) {
@@ -725,7 +723,9 @@ export default class AddonModLessonPlayerPage implements OnInit, OnDestroy, CanL
 
             if (result.nodefaultresponse || result.inmediatejump) {
                 // Don't display feedback or force a redirect to a new page. Load the new page.
-                return await this.jumpToPage(result.newpageid);
+                await this.jumpToPage(result.newpageid);
+
+                return;
             }
 
             // Not inmediate jump, show the feedback.
@@ -827,8 +827,6 @@ export default class AddonModLessonPlayerPage implements OnInit, OnDestroy, CanL
 
     /**
      * Show the navigation modal.
-     *
-     * @returns Promise resolved when done.
      */
     async showMenu(): Promise<void> {
         this.menuShown = true;

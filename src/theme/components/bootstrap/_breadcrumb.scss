@@ -15,7 +15,7 @@
   flex-wrap: wrap;
   padding: var(--#{$prefix}breadcrumb-padding-y) var(--#{$prefix}breadcrumb-padding-x);
   margin-bottom: var(--#{$prefix}breadcrumb-margin-bottom);
-  @include font-size(var(--#{$prefix}breadcrumb-font-size));
+  @include rfs-font-size(var(--#{$prefix}breadcrumb-font-size));
   list-style: none;
   background-color: var(--#{$prefix}breadcrumb-bg);
   @include border-radius(var(--#{$prefix}breadcrumb-border-radius));

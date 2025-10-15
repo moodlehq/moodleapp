@@ -34,7 +34,7 @@
   align-items: center;
   width: 100%;
   padding: var(--#{$prefix}accordion-btn-padding-y) var(--#{$prefix}accordion-btn-padding-x);
-  @include font-size($font-size-base);
+  @include rfs-font-size($font-size-base);
   color: var(--#{$prefix}accordion-btn-color);
   text-align: left; // Reset button style
   background-color: var(--#{$prefix}accordion-btn-bg);

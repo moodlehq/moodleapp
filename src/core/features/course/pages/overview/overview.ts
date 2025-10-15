@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, effect, OnInit, signal, Type, viewChild, WritableSignal, OnDestroy } from '@angular/core';
+import { Component, effect, OnInit, signal, Type, viewChild, WritableSignal, OnDestroy, inject, ElementRef } from '@angular/core';
 
 import {
     CoreCourseOverview,
@@ -29,7 +29,7 @@ import { CoreTime } from '@singletons/time';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 import { CoreAlerts } from '@services/overlays/alerts';
 import { CoreSharedModule } from '@/core/shared.module';
-import { ModFeature, ModArchetype, ModPurpose } from '@addons/mod/constants';
+import { ModFeature, ModArchetype, ModPurpose, RESOURCE_ARCHETYPE_NAME } from '@addons/mod/constants';
 import { CoreCourseModuleHelper } from '@features/course/services/course-module-helper';
 import { Translate } from '@singletons';
 import { CoreUrl } from '@singletons/url';
@@ -45,6 +45,7 @@ import {
     CoreCourseOverviewContentType,
 } from '@features/course/constants';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
+import { CoreDom } from '@singletons/dom';
 
 /**
  * Page that displays an overview of all activities in a course.
@@ -71,7 +72,7 @@ export default class CoreCourseOverviewPage implements OnInit, OnDestroy {
     protected readonly autoExpand = signal<string[]>([]);
     protected selectTabObserver: CoreEventObserver;
 
-    protected static readonly RESOURCES_NAME = 'resource';
+    protected hostElement: HTMLElement = inject(ElementRef).nativeElement;
 
     constructor() {
         this.logView = CoreTime.once(async () => {
@@ -85,13 +86,23 @@ export default class CoreCourseOverviewPage implements OnInit, OnDestroy {
             });
         });
 
-        effect(() => {
+        effect(async () => {
             const accordionGroup = this.accordionGroup();
             const autoExpand = this.autoExpand();
 
             if (accordionGroup && autoExpand) {
                 accordionGroup.value = autoExpand;
-                this.modTypeAccordionChanged(autoExpand);
+
+                await this.modTypeAccordionChanged(autoExpand);
+
+                // Scroll to the first expanded mod type. when the accordion animation is done.
+                setTimeout(() => {
+                    const firstModType = autoExpand[0];
+                    CoreDom.scrollToElement(
+                        this.hostElement,
+                        `#${firstModType}_overview_collapsible`,
+                    );
+                }, 300);
             }
         });
 
@@ -164,8 +175,8 @@ export default class CoreCourseOverviewPage implements OnInit, OnDestroy {
                 // Get the full name of the module type.
                 if (archetypes[mod.modname] === ModArchetype.RESOURCE) {
                     // All resources are gathered in a single "Resources" option.
-                    if (!modFullNames[CoreCourseOverviewPage.RESOURCES_NAME]) {
-                        modFullNames[CoreCourseOverviewPage.RESOURCES_NAME] = Translate.instant('core.resources');
+                    if (!modFullNames[RESOURCE_ARCHETYPE_NAME]) {
+                        modFullNames[RESOURCE_ARCHETYPE_NAME] = Translate.instant('core.resources');
                     }
                 } else {
                     modFullNames[mod.modname] = mod.modplural;
@@ -184,7 +195,7 @@ export default class CoreCourseOverviewPage implements OnInit, OnDestroy {
             modFullNames = CoreObject.sortValues(modFullNames);
 
             const modTypes = await Promise.all(Object.keys(modFullNames).map(async (modName): Promise<OverviewModType> => {
-                const iconModName = modName === CoreCourseOverviewPage.RESOURCES_NAME ? 'page' : modName;
+                const iconModName = modName === RESOURCE_ARCHETYPE_NAME ? 'page' : modName;
 
                 const icon = await CoreCourseModuleDelegate.getModuleIconSrc(iconModName, modIcons[iconModName]);
 
@@ -193,7 +204,7 @@ export default class CoreCourseOverviewPage implements OnInit, OnDestroy {
                     iconModName,
                     name: modFullNames[modName],
                     modName,
-                    modNameTranslated: modName === CoreCourseOverviewPage.RESOURCES_NAME ?
+                    modNameTranslated: modName === RESOURCE_ARCHETYPE_NAME ?
                         modFullNames[modName] : CoreCourseModuleHelper.translateModuleName(modName, modFullNames[modName]),
                     branded: brandedIcons[iconModName],
                     purpose: purposes[iconModName],
@@ -238,16 +249,17 @@ export default class CoreCourseOverviewPage implements OnInit, OnDestroy {
      * An accordion has been expanded or collapsed.
      *
      * @param modNames Array of the module names that are expanded, empty if all are collapsed.
+     * @returns Promise resolved when done.
      */
-    modTypeAccordionChanged(modNames: string[] = []): void {
-        modNames.forEach((modName) => {
+    async modTypeAccordionChanged(modNames: string[] = []): Promise<void[]> {
+        return Promise.all(modNames.map(async (modName) => {
             const modType = this.modTypes().find((modType) => modType.modName === modName);
             if (!modType) {
                 return;
             }
 
-            this.loadActivities(modType);
-        });
+            return this.loadActivities(modType);
+        }));
     }
 
     /**
