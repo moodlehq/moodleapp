@@ -34,6 +34,7 @@ import {
 import {
     ADDON_MOD_CHOICE_AUTO_SYNCED,
     ADDON_MOD_CHOICE_COMPONENT_LEGACY,
+    ADDON_MOD_CHOICE_MODNAME,
     ADDON_MOD_CHOICE_PUBLISH_ANONYMOUS,
     AddonModChoiceShowResults,
 } from '../../constants';
@@ -60,7 +61,7 @@ import { CoreGroupInfo, CoreGroups } from '@services/groups';
 export class AddonModChoiceIndexComponent extends CoreCourseModuleMainActivityComponent implements OnInit {
 
     component = ADDON_MOD_CHOICE_COMPONENT_LEGACY;
-    pluginName = 'choice';
+    pluginName = ADDON_MOD_CHOICE_MODNAME;
 
     choice?: AddonModChoiceChoice;
     options: AddonModChoiceOption[] = [];
@@ -164,7 +165,6 @@ export class AddonModChoiceIndexComponent extends CoreCourseModuleMainActivityCo
      * Convenience function to get choice options.
      *
      * @param choice Choice data.
-     * @returns Promise resolved when done.
      */
     protected async fetchOptions(choice: AddonModChoiceChoice): Promise<void> {
         let options = await AddonModChoice.getOptions(choice.id, { cmId: this.module.id });
@@ -361,6 +361,32 @@ export class AddonModChoiceIndexComponent extends CoreCourseModuleMainActivityCo
             return Object.assign(result, { percentageamountfixed: result.percentageamount.toFixed(1) });
         });
 
+        // Workaround to MOBILE-4904:
+        // Show the user choice when the choice is closed and the results are not anonymous.
+        if (this.results.length >= 0 && this.options.length === 0 && !this.canEdit && !this.showPreview) {
+            this.results.forEach((result) => {
+                if (result.userresponses.length > 0) {
+                    const option = {
+                        id: result.id,
+                        text: result.text,
+                        maxanswers: 0,
+                        displaylayout: false,
+                        countanswers: result.numberofuser,
+                        checked: false,
+                        disabled: false,
+                    };
+
+                    result.userresponses.forEach((user) => {
+                        if (user.userid == this.userId) {
+                            option.checked = true;
+                        }
+                    });
+
+                    this.options.push(option);
+                }
+            });
+        }
+
         this.canSeeResults = hasVotes || AddonModChoice.canStudentSeeResults(choice, this.hasAnsweredOnline, this.now);
     }
 
@@ -380,7 +406,7 @@ export class AddonModChoiceIndexComponent extends CoreCourseModuleMainActivityCo
     /**
      * Return true if the user has selected at least one option.
      *
-     * @returns True if the user has responded.
+     * @returns Wether  the user has responded.
      */
     canSave(): boolean {
         if (!this.choice) {
@@ -478,12 +504,13 @@ export class AddonModChoiceIndexComponent extends CoreCourseModuleMainActivityCo
      * Function to call when some data has changed. It will refresh/prefetch data.
      *
      * @param online Whether the data was sent to server or stored in offline.
-     * @returns Promise resolved when done.
      */
     protected async dataUpdated(online: boolean): Promise<void> {
         if (!online || !this.isPrefetched()) {
             // Not downloaded, just refresh the data.
-            return this.refreshContent(false);
+            await this.refreshContent(false);
+
+            return;
         }
 
         try {
@@ -494,7 +521,9 @@ export class AddonModChoiceIndexComponent extends CoreCourseModuleMainActivityCo
             this.showLoadingAndFetch(false, false);
         } catch {
             // Prefetch failed, refresh the data.
-            return this.refreshContent(false);
+            await this.refreshContent(false);
+
+            return;
         }
     }
 
@@ -520,8 +549,6 @@ export class AddonModChoiceIndexComponent extends CoreCourseModuleMainActivityCo
 
     /**
      * Group changed, reload some data.
-     *
-     * @returns Promise resolved when done.
      */
     async groupChanged(): Promise<void> {
         if (!this.choice) {
