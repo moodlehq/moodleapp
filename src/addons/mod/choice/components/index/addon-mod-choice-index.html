@@ -47,19 +47,23 @@
                 <ion-card>
                     @if (choice.allowmultiple) {
 
-                        <ion-item class="ion-text-wrap" *ngFor="let option of options">
-                            <ion-checkbox [(ngModel)]="option.checked" [disabled]="option.disabled || showPreview">
-                                <ng-container *ngTemplateOutlet="optionLabelTemplate; context: {option, choice}" />
-                            </ion-checkbox>
-                        </ion-item>
+                        @for (option of options; track option.id) {
+                            <ion-item class="ion-text-wrap">
+                                <ion-checkbox [(ngModel)]="option.checked" [disabled]="option.disabled || showPreview">
+                                    <ng-container *ngTemplateOutlet="optionLabelTemplate; context: {option, choice}" />
+                                </ion-checkbox>
+                            </ion-item>
+                        }
 
                     } @else {
                         <ion-radio-group [(ngModel)]="selectedOption.id">
-                            <ion-item class="ion-text-wrap" *ngFor="let option of options">
-                                <ion-radio [value]="option.id" [disabled]="option.disabled || showPreview">
-                                    <ng-container *ngTemplateOutlet="optionLabelTemplate; context: {option, choice}" />
-                                </ion-radio>
-                            </ion-item>
+                            @for (option of options; track option.id) {
+                                <ion-item class="ion-text-wrap">
+                                    <ion-radio [value]="option.id" [disabled]="option.disabled || showPreview">
+                                        <ng-container *ngTemplateOutlet="optionLabelTemplate; context: {option, choice}" />
+                                    </ion-radio>
+                                </ion-item>
+                            }
                         </ion-radio-group>
                     }
                 </ion-card>
@@ -70,7 +74,7 @@
                             <h2>{{ 'addon.mod_choice.yourselection' | translate }}</h2>
                         </ion-label>
                     </ion-item-divider>
-                    <ng-container *ngFor="let option of options">
+                    @for (option of options; track option.id) {
                         @if (option.checked) {
                             <ion-item class="ion-text-wrap">
                                 <ion-label>
@@ -79,7 +83,7 @@
                                 </ion-label>
                             </ion-item>
                         }
-                    </ng-container>
+                    }
                 </ion-card>
             }
         }
@@ -118,40 +122,45 @@
 
                     @if (choice.publish && results) {
                         <ion-col size="12" size-lg="6">
-                            <ion-item-group *ngFor="let result of results">
-                                <ion-item [button]="result.numberofuser > 0" class="divider ion-text-wrap" (click)="toggle(result)"
-                                    [attr.aria-label]="(result.expanded ? 'core.collapse' : 'core.expand') | translate" [detail]="false">
-                                    <ion-icon [name]="result.numberofuser > 0 ? 'fas-chevron-right' : ''" flip-rtl slot="start"
-                                        aria-hidden="true" class="expandable-status-icon"
-                                        [class.expandable-status-icon-expanded]="result.expanded" />
-                                    <ion-label>
-                                        <h3 class="item-heading">
-                                            <core-format-text [text]="result.text" contextLevel="module" [contextInstanceId]="module.id"
-                                                [courseId]="courseId" />
-                                        </h3>
-                                        <p>
-                                            {{ 'addon.mod_choice.numberofuser' | translate }}: {{ result.numberofuser }}
-                                            ({{ 'core.percentagenumber' | translate: {$a: result.percentageamountfixed} }})
-                                        </p>
-                                        @if (choice.limitanswers && choice.showavailable) {
-                                            <p>
-                                                {{ 'addon.mod_choice.limita' | translate:{$a: result.maxanswer} }}
-                                            </p>
-                                        }
-                                    </ion-label>
-                                </ion-item>
-
-                                @if (result.expanded) {
-                                    <ion-item *ngFor="let user of result.userresponses" core-user-link [courseId]="courseId"
-                                        [userId]="user.userid" [attr.aria-label]="user.fullname" class="ion-text-wrap">
-                                        <core-user-avatar [user]="user" slot="start" [courseId]="courseId" [linkProfile]="false" />
+                            @for (result of results; track result.id) {
+                                <ion-item-group>
+                                    <ion-item [button]="result.numberofuser > 0" class="divider ion-text-wrap"
+                                        (click)="toggle(result)" [detail]="false"
+                                        [attr.aria-label]="(result.expanded ? 'core.collapse' : 'core.expand') | translate">
+                                        <ion-icon [name]="result.numberofuser > 0 ? 'fas-chevron-right' : ''" flip-rtl slot="start"
+                                            aria-hidden="true" class="expandable-status-icon"
+                                            [class.expandable-status-icon-expanded]="result.expanded" />
                                         <ion-label>
-                                            <p>{{user.fullname}}</p>
+                                            <h3 class="item-heading">
+                                                <core-format-text [text]="result.text" contextLevel="module" [contextInstanceId]="module.id"
+                                                    [courseId]="courseId" />
+                                            </h3>
+                                            <p>
+                                                {{ 'addon.mod_choice.numberofuser' | translate }}: {{ result.numberofuser }}
+                                                ({{ 'core.percentagenumber' | translate: {$a: result.percentageamountfixed} }})
+                                            </p>
+                                            @if (choice.limitanswers && choice.showavailable) {
+                                                <p>
+                                                    {{ 'addon.mod_choice.limita' | translate:{$a: result.maxanswer} }}
+                                                </p>
+                                            }
                                         </ion-label>
                                     </ion-item>
-                                }
 
-                            </ion-item-group>
+                                    @if (result.expanded) {
+                                        @for (user of result.userresponses; track user.userid) {
+                                            <ion-item core-user-link [courseId]="courseId"
+                                                [userId]="user.userid" [attr.aria-label]="user.fullname" class="ion-text-wrap">
+                                                <core-user-avatar [user]="user" slot="start" [courseId]="courseId" [linkProfile]="false" />
+                                                <ion-label>
+                                                    <p>{{user.fullname}}</p>
+                                                </ion-label>
+                                            </ion-item>
+                                        }
+                                    }
+
+                                </ion-item-group>
+                            }
                         </ion-col>
                         }
                 </ion-row>
