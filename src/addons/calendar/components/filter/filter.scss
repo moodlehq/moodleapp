@@ -13,4 +13,9 @@
             font-size: var(--mdl-typography-icon-fontSize-sm);
         }
     }
+
+    ion-item.item.item-lines-default:last-child {
+        --inner-border-width: 0px;
+        --border-width: 0px;
+    }
 }
