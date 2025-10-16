@@ -27,7 +27,7 @@
         <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}" />
     </ion-refresher>
 
-    <core-loading [hideUntil]="loaded">
+    <core-loading [hideUntil]="loaded" placeholderType="column" placeholderHeight="70px" [placeholderLimit]="8">
         <div class="core-swipe-slides-container">
             <!-- Period name and arrows to navigate. -->
             <ion-grid class="ion-no-padding">
@@ -50,7 +50,7 @@
 
             <core-swipe-slides [manager]="manager">
                 <ng-template let-day="item">
-                    <core-loading [hideUntil]="day.loaded">
+                    <core-loading [hideUntil]="day.loaded" placeholderType="column" placeholderHeight="70px" [placeholderLimit]="8">
                         <!-- There is data to be synchronized -->
                         @if (day.hasOffline) {
                             <ion-card class="core-warning-card list-item-limited-width">
