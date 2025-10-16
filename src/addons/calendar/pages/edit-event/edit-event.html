@@ -35,7 +35,11 @@
                         <ng-template>
                             <ion-datetime id="timestart" formControlName="timestart" presentation="date-time" [max]="maxDate"
                                 [min]="minDate" [showDefaultButtons]="true">
-                                <span slot="title">{{'core.date' | translate}}</span>
+                                <span slot="title">
+                                    <span class="ion-datetime-date-title">{{'core.date' | translate}}</span>
+                                    <span class="ion-datetime-time-title">{{'core.time' | translate}}</span>
+                                </span>
+
                             </ion-datetime>
                         </ng-template>
                     </ion-modal>
