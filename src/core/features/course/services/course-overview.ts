@@ -182,7 +182,7 @@ export class CoreCourseOverviewService {
      * @param title Title to pass to list-mod-type page if overview not available.
      * @param siteId Site ID. If not defined, current site.
      */
-    async navigateToCourseOverview(courseId: number, modNames: string[] = [], title?: string, siteId?: string): Promise<void> {
+    async navigateToCourseOverview(courseId: number, modNames: string, title?: string, siteId?: string): Promise<void> {
         siteId = siteId || CoreSites.getCurrentSiteId();
         if (CoreCourseOverview.canGetInformation()) {
             // Check if it's enabled.
@@ -205,9 +205,10 @@ export class CoreCourseOverviewService {
             return;
         }
 
+        const firstModName = modNames.split(',')[0];
         // @deprecatedonmoodle 5.1 Use course overview instead.
         await CoreNavigator.navigateToSitePath(`course/${courseId}/list-mod-type`, {
-            params: { modName: modNames[0], title },
+            params: { modName: firstModName, title },
             siteId,
         });
     }
