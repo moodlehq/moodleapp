@@ -209,11 +209,16 @@ export default class CoreCourseIndexPage implements OnInit, OnDestroy {
         // Create the full path.
         handlers.forEach((handler, index) => {
             handler.data.page = CorePath.concatenatePaths(this.currentPagePath, handler.data.page);
-            handler.data.pageParams = handler.data.pageParams || {};
 
             // Check if this handler should be the first selected tab.
             if (this.firstTabName && handler.name == this.firstTabName) {
                 tabToLoad = index + 1;
+
+                const routeParamsForTab = CoreNavigator.getRouteQueryParams(this.route);
+
+                handler.data.pageParams = { ...handler.data.pageParams, ...routeParamsForTab };
+            } else {
+                handler.data.pageParams = handler.data.pageParams || {};
             }
         });
 
