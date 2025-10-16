@@ -68,7 +68,7 @@ export type CoreNavigationOptions = AnimationOptions & {
 };
 
 /**
- * Route options to get route or params values.
+ * Route options to get current route.
  */
 export type CoreNavigatorCurrentRouteOptions = Partial<{
     params: Params; // Params to get the value from.
@@ -76,6 +76,14 @@ export type CoreNavigatorCurrentRouteOptions = Partial<{
     pageComponent: unknown;
     routeData: Record<string, unknown>;
 }>;
+
+/**
+ * Route options to get route or params values.
+ */
+export type CoreNavigatorParamRouteOptions = {
+    queryParams?: Params; // Query params to get the value from.
+    route?: ActivatedRoute; // Current Route.
+};
 
 /**
  * Service to provide some helper functions regarding navigation.
@@ -318,16 +326,26 @@ export class CoreNavigatorService {
      * @param route Current route.
      * @returns Value of the parameter, undefined if not found.
      */
-    protected getRouteSnapshotParam<T = unknown>(name: string, route?: ActivatedRoute): T | undefined {
+    protected getRouteSnapshotParam<T = unknown>(
+        name: string,
+        route?: ActivatedRoute,
+    ): { value: T; origin: 'query' | 'params' } | undefined {
         if (!route) {
             return;
         }
 
+        let origin: 'query' | 'params' = 'query';
+
         if (route.snapshot) {
-            const value = route.snapshot.queryParams[name] ?? route.snapshot.params[name];
+            let value = route.snapshot.queryParams[name];
+
+            if (value === undefined) {
+                value = route.snapshot.params[name];
+                origin = 'params';
+            }
 
             if (value !== undefined) {
-                return value;
+                return { value, origin };
             }
         }
 
@@ -343,26 +361,36 @@ export class CoreNavigatorService {
      * @param routeOptions Optional routeOptions to get the params or route value from. If missing, it will autodetect.
      * @returns Value of the parameter, undefined if not found.
      */
-    getRouteParam<T = string>(name: string, routeOptions: CoreNavigatorCurrentRouteOptions = {}): T | undefined {
+    getRouteParam<T = string>(name: string, routeOptions: CoreNavigatorParamRouteOptions = {}): T | undefined {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         let value: any;
+        let origin = '';
+        let route: ActivatedRoute | undefined = undefined;
 
-        if (!routeOptions.params) {
-            let route = this.getCurrentRoute();
+        if (routeOptions.queryParams) {
+            value = routeOptions.queryParams[name];
+            origin = 'query';
+        } else {
+            route = this.getCurrentRoute();
             if (!route?.snapshot && routeOptions.route) {
                 route = routeOptions.route;
             }
 
-            value = this.getRouteSnapshotParam(name, route);
-        } else {
-            value = routeOptions.params[name];
+            const valueOrigin = this.getRouteSnapshotParam(name, route);
+            if (valueOrigin) {
+                value = valueOrigin.value;
+                origin = valueOrigin.origin;
+            }
         }
 
-        if (value === undefined) {
-            return;
+        if (origin === 'query') {
+            value = this.getStoredParam(value, true);
+            if (route) {
+                route.queryParams[name] = value;
+            }
         }
 
-        return <T> this.getStoredParam(value, true);
+        return <T> value;
     }
 
     /**
@@ -373,7 +401,7 @@ export class CoreNavigatorService {
      * @param routeOptions Optional routeOptions to get the params or route value from. If missing, it will autodetect.
      * @returns Value of the parameter, undefined if not found.
      */
-    getRouteNumberParam(name: string, routeOptions: CoreNavigatorCurrentRouteOptions = {}): number | undefined {
+    getRouteNumberParam(name: string, routeOptions: CoreNavigatorParamRouteOptions = {}): number | undefined {
         const value = this.getRouteParam<string>(name, routeOptions);
 
         return value !== undefined ? Number(value) : value;
@@ -387,7 +415,7 @@ export class CoreNavigatorService {
      * @param routeOptions Optional routeOptions to get the params or route value from. If missing, it will autodetect.
      * @returns Value of the parameter, undefined if not found.
      */
-    getRouteBooleanParam(name: string, routeOptions: CoreNavigatorCurrentRouteOptions = {}): boolean | undefined {
+    getRouteBooleanParam(name: string, routeOptions: CoreNavigatorParamRouteOptions = {}): boolean | undefined {
         const value = this.getRouteParam<string>(name, routeOptions);
 
         if (value === undefined) {
@@ -416,7 +444,7 @@ export class CoreNavigatorService {
      * @param routeOptions Optional routeOptions to get the params or route value from. If missing, it will autodetect.
      * @returns Value of the parameter, undefined if not found.
      */
-    getRequiredRouteParam<T = unknown>(name: string, routeOptions: CoreNavigatorCurrentRouteOptions = {}): T {
+    getRequiredRouteParam<T = unknown>(name: string, routeOptions: CoreNavigatorParamRouteOptions = {}): T {
         const value = this.getRouteParam<T>(name, routeOptions);
 
         if (value === undefined) {
@@ -436,7 +464,7 @@ export class CoreNavigatorService {
      * @param routeOptions Optional routeOptions to get the params or route value from. If missing, it will autodetect.
      * @returns Value of the parameter, undefined if not found.
      */
-    getRequiredRouteNumberParam(name: string, routeOptions: CoreNavigatorCurrentRouteOptions = {}): number {
+    getRequiredRouteNumberParam(name: string, routeOptions: CoreNavigatorParamRouteOptions = {}): number {
         const value = this.getRouteNumberParam(name, routeOptions);
 
         if (value === undefined) {
@@ -456,7 +484,7 @@ export class CoreNavigatorService {
      * @param routeOptions Optional routeOptions to get the params or route value from. If missing, it will autodetect.
      * @returns Value of the parameter, undefined if not found.
      */
-    getRequiredRouteBooleanParam(name: string, routeOptions: CoreNavigatorCurrentRouteOptions = {}): boolean {
+    getRequiredRouteBooleanParam(name: string, routeOptions: CoreNavigatorParamRouteOptions = {}): boolean {
         const value = this.getRouteBooleanParam(name, routeOptions);
 
         if (value === undefined) {
@@ -759,8 +787,10 @@ export class CoreNavigatorService {
         const params = { ...this.getRouteProperty(route, 'queryParams', {}) };
 
         Object.keys(params).forEach((name) => {
-            // @TODO: If they are previously retrieved, they won't be available anymore.
             params[name] = this.getStoredParam(params[name], false);
+
+            // Override the param.
+            route.queryParams[name] = params[name];
         });
 
         return params;
