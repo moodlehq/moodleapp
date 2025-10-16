@@ -362,20 +362,7 @@ export class CoreNavigatorService {
             return;
         }
 
-        let storedParam = this.storedParams[value];
-
-        // Remove the parameter from our map if it's in there.
-        delete this.storedParams[value];
-
-        if (!CorePlatform.isMobile() && !storedParam) {
-            // Try to retrieve the param from local storage in browser.
-            const storageParam = localStorage.getItem(value);
-            if (storageParam) {
-                storedParam = CoreText.parseJSON(storageParam);
-            }
-        }
-
-        return <T> storedParam ?? value;
+        return <T> this.getStoredParam(value, true);
     }
 
     /**
@@ -768,7 +755,15 @@ export class CoreNavigatorService {
      * @returns Query params.
      */
     getRouteQueryParams(route: ActivatedRouteSnapshot | ActivatedRoute): Params {
-        return this.getRouteProperty(route, 'queryParams', {});
+        // Spread operator is used because getRouteProperty can return a readonly object.
+        const params = { ...this.getRouteProperty(route, 'queryParams', {}) };
+
+        Object.keys(params).forEach((name) => {
+            // @TODO: If they are previously retrieved, they won't be available anymore.
+            params[name] = this.getStoredParam(params[name], false);
+        });
+
+        return params;
     }
 
     /**
@@ -778,6 +773,37 @@ export class CoreNavigatorService {
      */
     currentRouteCanBlockLeave(): boolean {
         return !!this.getCurrentRoute().snapshot?.routeConfig?.canDeactivate?.length;
+    }
+
+    /**
+     * Given a stored param name, retrieve the stored param.
+     * If the param is not a stored param, it will be returned as is.
+     *
+     * @param paramName Param name.
+     * @param remove Whether to remove the param from the stored params after retrieving it.
+     * @returns Param value.
+     */
+    protected getStoredParam(paramName: unknown, remove = false): string | unknown {
+        if (typeof paramName !== 'string' || !paramName.startsWith('param-')) {
+            return paramName;
+        }
+
+        let storedParam = this.storedParams[paramName];
+
+        if (remove) {
+            // Remove the parameter from our map if it's in there.
+            delete this.storedParams[paramName];
+        }
+
+        if (!CorePlatform.isMobile() && !storedParam) {
+            // Try to retrieve the param from local storage in browser.
+            const storageParam = localStorage.getItem(paramName);
+            if (storageParam) {
+                storedParam = CoreText.parseJSON(storageParam);
+            }
+        }
+
+        return storedParam ?? paramName;
     }
 
     /**
