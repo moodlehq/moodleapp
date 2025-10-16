@@ -112,12 +112,12 @@ export default class CoreCourseOverviewPage implements OnInit, OnDestroy {
                 return;
             }
 
-            if (data.pageParams.expand === undefined || !data.pageParams.expand.length) {
+            if (!data.pageParams.expand) {
                 return;
             }
 
-            // Ensure the value changes even if it's the same array.
-            this.autoExpand.set([...data.pageParams.expand]);
+            const expand = data.pageParams.expand.split(',');
+            this.autoExpand.set(expand);
         });
     }
 
@@ -127,7 +127,9 @@ export default class CoreCourseOverviewPage implements OnInit, OnDestroy {
     async ngOnInit(): Promise<void> {
         try {
             this.courseId = CoreNavigator.getRequiredRouteParam('courseId');
-            this.autoExpand.set(CoreNavigator.getRouteParam('expand') || []);
+            const expand = CoreNavigator.getRouteParam('expand')?.split(',') || [];
+
+            this.autoExpand.set(expand);
         } catch (error) {
             CoreAlerts.showError(error);
             CoreNavigator.back();

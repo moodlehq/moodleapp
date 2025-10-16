@@ -41,8 +41,7 @@ export class CoreCourseOverviewLinkHandlerService extends CoreContentLinksHandle
 
         return [{
             action: async (siteId): Promise<void> => {
-                const expand = params.expand?.split(',') || [];
-                await CoreCourseOverview.navigateToCourseOverview(courseId, expand, undefined, siteId);
+                await CoreCourseOverview.navigateToCourseOverview(courseId, params.expand, undefined, siteId);
             },
         }];
     }

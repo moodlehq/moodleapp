@@ -1851,7 +1851,7 @@ export class CoreCourseHelperProvider {
         navOptions?: CoreNavigationOptions & { siteId?: string },
     ): Promise<void> {
         const siteId = navOptions?.siteId;
-        if (!siteId || siteId == CoreSites.getCurrentSiteId()) {
+        if (!siteId || siteId === CoreSites.getCurrentSiteId()) {
             // Current site, we can open the course.
             return CoreCourse.openCourse(course, navOptions);
         } else {
