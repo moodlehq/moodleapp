@@ -461,10 +461,6 @@ export class CoreCourseHelperProvider {
         alwaysConfirm = false,
     ): Promise<void> {
         let hasEmbeddedFiles = false;
-        const sizeSum: CoreFileSizeSum = {
-            size: 0,
-            total: true,
-        };
 
         const getSectionSize = async (section: CoreCourseWSSection): Promise<CoreFileSizeSum> => {
             if (section.id === CORE_COURSE_ALL_SECTIONS_ID) {
@@ -489,13 +485,12 @@ export class CoreCourseHelperProvider {
             }), { size: 0, total: true });
         };
 
-        await Promise.all(sections.map(async (section) => {
-            await getSectionSize(section);
-        }));
+        const sectionsSizes = await Promise.all(sections.map((section) => getSectionSize(section)));
 
-        if (hasEmbeddedFiles) {
-            sizeSum.total = false;
-        }
+        const sizeSum = sectionsSizes.reduce((sizeSum, contentSize) => ({
+            size: sizeSum.size + contentSize.size,
+            total: sizeSum.total && contentSize.total,
+        }), { size: 0, total: !hasEmbeddedFiles });
 
         // Show confirm modal if needed.
         await CoreAlerts.confirmDownloadSize(sizeSum, { alwaysConfirm });
