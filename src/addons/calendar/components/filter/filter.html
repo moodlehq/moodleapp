@@ -8,17 +8,22 @@
     </ion-toolbar>
 </ion-header>
 <ion-content [fullscreen]="true">
-    <ion-list>
-        @for (type of types; track type) {
-            <ion-item [class]="['addon-calendar-event', 'addon-calendar-eventtype-'+type]">
-                <ion-icon [name]="typeIcons[type]" slot="start" aria-hidden="true" />
-                <ion-toggle [(ngModel)]="filter[type]" (ionChange)="onChange()">
-                    {{ 'addon.calendar.' + type + 'events' | translate}}
-                </ion-toggle>
-            </ion-item>
-        }
-        @if (filter.course || filter.category || filter.group) {
-            <core-spacer />
+    @if (types.length > 0) {
+        <ion-list>
+            @for (type of types; track type) {
+                <ion-item [class]="['addon-calendar-event', 'addon-calendar-eventtype-'+type]">
+                    <ion-icon [name]="typeIcons[type]" slot="start" aria-hidden="true" />
+                    <ion-toggle [(ngModel)]="filter[type]" (ionChange)="onChange()">
+                        {{ 'addon.calendar.' + type + 'events' | translate}}
+                    </ion-toggle>
+                </ion-item>
+            }
+        </ion-list>
+    }
+
+    @if (filter.course || filter.category || filter.group) {
+        <core-spacer />
+        <ion-list>
             <ion-radio-group [(ngModel)]="courseId" (ionChange)="onChange()">
                 @for (course of sortedCourses; track course.id) {
                     <ion-item class="ion-text-wrap">
@@ -32,6 +37,6 @@
                     </ion-item>
                 }
             </ion-radio-group>
-        }
-    </ion-list>
+        </ion-list>
+    }
 </ion-content>

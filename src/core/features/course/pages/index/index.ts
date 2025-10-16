@@ -35,6 +35,7 @@ import { CoreSites } from '@services/sites';
 import { CoreWait } from '@singletons/wait';
 import { CoreAlerts } from '@services/overlays/alerts';
 import { CoreSharedModule } from '@/core/shared.module';
+import { CorePlatform } from '@services/platform';
 
 /**
  * Page that displays the list of courses the user is enrolled in.
@@ -149,6 +150,13 @@ export default class CoreCourseIndexPage implements OnInit, OnDestroy {
         this.modNavOptions = CoreNavigator.getRouteParam<CoreNavigationOptions>('modNavOptions');
         this.openModule = CoreNavigator.getRouteBooleanParam('openModule') ?? true; // If false, just scroll to module.
         this.currentPagePath = CoreNavigator.getCurrentPath();
+
+        if (!CorePlatform.isMobile()) {
+            // Remove what's after course/courseId in the path using a regex.
+            // This can happen when refreshing the page from browser.
+            this.currentPagePath = this.currentPagePath.replace(/(\/course\/\d+).*/, '$1');
+        }
+
         this.contentsTab.page = CorePath.concatenatePaths(this.currentPagePath, this.contentsTab.page);
         this.contentsTab.pageParams = {
             course: this.course,
@@ -209,11 +217,16 @@ export default class CoreCourseIndexPage implements OnInit, OnDestroy {
         // Create the full path.
         handlers.forEach((handler, index) => {
             handler.data.page = CorePath.concatenatePaths(this.currentPagePath, handler.data.page);
-            handler.data.pageParams = handler.data.pageParams || {};
 
             // Check if this handler should be the first selected tab.
             if (this.firstTabName && handler.name == this.firstTabName) {
                 tabToLoad = index + 1;
+
+                const routeParamsForTab = CoreNavigator.getRouteQueryParams(this.route);
+
+                handler.data.pageParams = { ...handler.data.pageParams, ...routeParamsForTab };
+            } else {
+                handler.data.pageParams = handler.data.pageParams || {};
             }
         });
 

@@ -35,7 +35,11 @@
                         <ng-template>
                             <ion-datetime id="timestart" formControlName="timestart" presentation="date-time" [max]="maxDate"
                                 [min]="minDate" [showDefaultButtons]="true">
-                                <span slot="title">{{'core.date' | translate}}</span>
+                                <span slot="title">
+                                    <span class="ion-datetime-date-title">{{'core.date' | translate}}</span>
+                                    <span class="ion-datetime-time-title">{{'core.time' | translate}}</span>
+                                </span>
+
                             </ion-datetime>
                         </ng-template>
                     </ion-modal>
@@ -49,82 +53,85 @@
                             <p class="item-heading" [core-mark-required]="true">{{ 'addon.calendar.eventkind' | translate }}</p>
                         </ion-label>
                         <p slot="end">{{eventTypes[0].name | translate }}</p>
-                    }
-                    @if (eventTypes.length > 1) {
+                    } @else if (eventTypes.length > 1) {
                         <ion-select formControlName="eventtype" interface="action-sheet" [cancelText]="'core.cancel' | translate"
                             [interfaceOptions]="{header: 'addon.calendar.eventkind' | translate}">
                             <div [core-mark-required]="true" slot="label">{{ 'addon.calendar.eventkind' | translate }}</div>
-                            <ion-select-option *ngFor="let type of eventTypes" [value]="type.value">
-                                {{ type.name | translate }}
-                            </ion-select-option>
+                            @for (type of eventTypes; track type.value) {
+                                <ion-select-option [value]="type.value">{{ type.name | translate }}</ion-select-option>
+                            }
                         </ion-select>
                     }
                 </ion-item>
 
-                @if (typeControl.value === 'category') {
-                    <!-- Category. -->
-                    <ion-item class="ion-text-wrap">
-                        <ion-select formControlName="categoryid" interface="action-sheet" [placeholder]="'core.noselection' | translate"
-                            [cancelText]="'core.cancel' | translate" [interfaceOptions]="{header: 'core.category' | translate}">
-                            <p [core-mark-required]="true" slot="label">{{ 'core.category' | translate }}</p>
-                            <ion-select-option *ngFor="let category of categories" [value]="category.id">
-                                {{ category.name }}
-                            </ion-select-option>
-                        </ion-select>
-                    </ion-item>
-                }
-
-                <!-- Course. -->
-                @if (typeControl.value === 'course') {
-                    <ion-item class="ion-text-wrap">
-                        <ion-select formControlName="courseid" interface="action-sheet" [placeholder]="'core.noselection' | translate"
-                            [cancelText]="'core.cancel' | translate" [interfaceOptions]="{header: 'core.course' | translate}">
-                            <p [core-mark-required]="true" slot="label">{{ 'core.course' | translate }}</p>
-                            <ion-select-option *ngFor="let course of courses" [value]="course.id">{{ course.fullname }}</ion-select-option>
-                        </ion-select>
-                    </ion-item>
-                }
-
-                <!-- Group. -->
-                @if (typeControl.value === 'group') {
-
-                    <!-- Select the course. -->
-                    <ion-item class="ion-text-wrap">
-                        <ion-select formControlName="groupcourseid" interface="action-sheet" [placeholder]="'core.noselection' | translate"
-                            [cancelText]="'core.cancel' | translate" (ionChange)="groupCourseSelected()"
-                            [interfaceOptions]="{header: 'core.course' | translate}">
-                            <p [core-mark-required]="true" slot="label">{{ 'core.course' | translate }}</p>
-                            <ion-select-option *ngFor="let course of courses" [value]="course.id">
-                                {{ course.fullname }}
-                            </ion-select-option>
-                        </ion-select>
-                    </ion-item>
-                    @if (loadingGroups) {
-                        <!-- Loading groups. -->
+                @switch (typeControl.value) {
+                    @case ('category') {
                         <ion-item class="ion-text-wrap">
-                            <ion-label>
-                                <ion-spinner [attr.aria-label]="'core.loading' | translate" />
-                            </ion-label>
-                        </ion-item>
-                    } @else if (courseGroupSet && !groups.length) {
-                        <!-- The course has no groups. -->
-                        <ion-item class="ion-text-wrap core-danger-item">
-                            <ion-label>
-                                <p>{{ 'core.coursenogroups' | translate }}</p>
-                            </ion-label>
-                        </ion-item>
-                    } @else if (groups.length > 0) {
-                        <!-- Select the group. -->
-                        <!-- The course has no groups. -->
-                        <ion-item class="ion-text-wrap core-edit-set-group">
-                            <ion-select formControlName="groupid" interface="action-sheet" [placeholder]="'core.noselection' | translate"
-                                [cancelText]="'core.cancel' | translate" [interfaceOptions]="{header: 'core.group' | translate}">
-                                <p [core-mark-required]="true" slot="label">{{ 'core.group' | translate }}</p>
-                                <ion-select-option *ngFor="let group of groups" [value]="group.id">{{ group.name }}</ion-select-option>
+                            <ion-select formControlName="categoryid" interface="action-sheet" [placeholder]="'core.noselection' | translate"
+                                [cancelText]="'core.cancel' | translate" [interfaceOptions]="{header: 'core.category' | translate}">
+                                <p [core-mark-required]="true" slot="label">{{ 'core.category' | translate }}</p>
+                                @for (category of categories; track category.id) {
+                                    <ion-select-option [value]="category.id">{{ category.name }}</ion-select-option>
+                                }
                             </ion-select>
                         </ion-item>
                     }
 
+                    @case ('course') {
+                        <ion-item class="ion-text-wrap">
+                            <ion-select formControlName="courseid" interface="action-sheet" [placeholder]="'core.noselection' | translate"
+                                [cancelText]="'core.cancel' | translate" [interfaceOptions]="{header: 'core.course' | translate}">
+                                <p [core-mark-required]="true" slot="label">{{ 'core.course' | translate }}</p>
+                                @for (course of courses; track course.id) {
+                                    <ion-select-option [value]="course.id">{{ course.fullname }}</ion-select-option>
+                                }
+                            </ion-select>
+                        </ion-item>
+                    }
+
+                    @case ('group') {
+                        <!-- Select the course. -->
+                        <ion-item class="ion-text-wrap">
+                            <ion-select formControlName="groupcourseid" interface="action-sheet"
+                                [placeholder]="'core.noselection' | translate"
+                                [cancelText]="'core.cancel' | translate" (ionChange)="groupCourseSelected()"
+                                [interfaceOptions]="{header: 'core.course' | translate}">
+                                <p [core-mark-required]="true" slot="label">{{ 'core.course' | translate }}</p>
+                                @for (course of courses; track course.id) {
+                                    <ion-select-option [value]="course.id">{{ course.fullname }}</ion-select-option>
+                                }
+                            </ion-select>
+                        </ion-item>
+                        @if (loadingGroups) {
+                            <!-- Loading groups. -->
+                            <ion-item class="ion-text-wrap">
+                                <ion-label>
+                                    <ion-spinner [attr.aria-label]="'core.loading' | translate" />
+                                </ion-label>
+                            </ion-item>
+                        } @else if (courseGroupSet && !groups.length) {
+                            <!-- The course has no groups. -->
+                            <ion-item class="ion-text-wrap core-danger-item">
+                                <ion-label>
+                                    <p>{{ 'core.coursenogroups' | translate }}</p>
+                                </ion-label>
+                            </ion-item>
+                        } @else if (groups.length > 0) {
+                            <!-- Select the group. -->
+                            <!-- The course has no groups. -->
+                            <ion-item class="ion-text-wrap core-edit-set-group">
+                                <ion-select formControlName="groupid" interface="action-sheet"
+                                    [placeholder]="'core.noselection' | translate"
+                                    [cancelText]="'core.cancel' | translate" [interfaceOptions]="{header: 'core.group' | translate}">
+                                    <p [core-mark-required]="true" slot="label">{{ 'core.group' | translate }}</p>
+                                    @for (group of groups; track group.id) {
+                                        <ion-select-option [value]="group.id">{{ group.name }}</ion-select-option>
+                                    }
+                                </ion-select>
+                            </ion-item>
+                        }
+
+                    }
                 }
 
                 <!-- Reminders. Right now, only allow adding them here for new events. -->

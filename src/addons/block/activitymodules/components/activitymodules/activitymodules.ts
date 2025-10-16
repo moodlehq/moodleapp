@@ -138,7 +138,7 @@ export class AddonBlockActivityModulesComponent extends CoreBlockBaseComponent i
      * @param entry Selected entry.
      */
     gotoCoureListModType(entry: AddonBlockActivityModuleEntry): void {
-        CoreCourseOverview.navigateToCourseOverview(this.getCourseId(), [entry.modName], entry.name);
+        CoreCourseOverview.navigateToCourseOverview(this.getCourseId(), entry.modName, entry.name);
     }
 
 }

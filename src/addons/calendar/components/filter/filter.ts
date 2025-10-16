@@ -78,6 +78,10 @@ export class AddonCalendarFilterComponent implements OnInit {
                 return 1;
             }
 
+            if (this.showFullName) {
+                return (a.fullname?.toLowerCase() ?? '').localeCompare(b.fullname?.toLowerCase() ?? '');
+            }
+
             return (a.shortname?.toLowerCase() ?? '').localeCompare(b.shortname?.toLowerCase() ?? '');
         });
     }

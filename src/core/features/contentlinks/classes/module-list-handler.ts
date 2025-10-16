@@ -51,7 +51,7 @@ export class CoreContentLinksModuleListHandler extends CoreContentLinksHandlerBa
         return [{
             action: async (siteId): Promise<void> => {
                 const title = this.title || Translate.instant(`addon.mod_${this.modName}.modulenameplural`);
-                await CoreCourseOverview.navigateToCourseOverview(parseInt(params.id), [this.modName], title, siteId);
+                await CoreCourseOverview.navigateToCourseOverview(parseInt(params.id), this.modName, title, siteId);
             },
         }];
     }
