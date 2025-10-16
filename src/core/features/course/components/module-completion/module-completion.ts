@@ -61,8 +61,7 @@ export class CoreCourseModuleCompletionComponent
             return;
         }
 
-        const hasConditions = !this.completion.isautomatic || (this.completion.details?.length || 0) > 0;
-        this.showCompletionInfo = hasConditions && (this.showCompletionConditions || this.showManualCompletion);
+        this.showCompletionInfo = this.showCompletionConditions || this.showManualCompletion;
         if (!this.showCompletionInfo) {
             return;
         }
