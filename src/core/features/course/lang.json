@@ -34,6 +34,7 @@
     "downloadcourse": "Download course",
     "downloadcoursesprogressdescription": "Downloading courses: downloaded {{count}} out of {{total}}.",
     "downloadsectionprogressdescription": "Downloading section: downloaded {{count}} out of {{total}}.",
+    "emptyconditionsinfo": "There are no completion conditions set for this activity.",
     "enddate": "Course end date",
     "errordownloadingcourse": "Error downloading course.",
     "errordownloadingsection": "Error downloading section.",
