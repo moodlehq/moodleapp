@@ -85,6 +85,7 @@ export class CoreNavigatorService {
     protected routesDepth: Record<string, number> = {};
     protected storedParams: Record<number, unknown> = {};
     protected lastParamId = 0;
+    protected static readonly STORED_PARAM_PREFIX = 'param-';
 
     /**
      * Check whether the active route is using the given path.
@@ -347,8 +348,6 @@ export class CoreNavigatorService {
 
     /**
      * Get a parameter for the current route.
-     * Please notice that objects can only be retrieved once. You must call this function only once per page and parameter,
-     * unless there's a new navigation to the page.
      *
      * @param name Name of the parameter.
      * @returns Value of the parameter, undefined if not found.
@@ -361,8 +360,7 @@ export class CoreNavigatorService {
             let value = valueOrigin.value;
 
             if (valueOrigin.origin === 'query') {
-                value = this.getStoredParam(value, true) as T;
-                route.queryParams[name] = value;
+                value = this.getStoredParam(name, value, route) as T;
             }
 
             return value;
@@ -409,8 +407,6 @@ export class CoreNavigatorService {
 
     /**
      * Get a parameter for the current route.
-     * Please notice that objects can only be retrieved once. You must call this function only once per page and parameter,
-     * unless there's a new navigation to the page.
      *
      * This function will fail if parameter is not found.
      *
@@ -664,7 +660,7 @@ export class CoreNavigatorService {
      * @returns New param Id.
      */
     protected getNewParamId(): string {
-        return `param-${++this.lastParamId}`;
+        return `${CoreNavigatorService.STORED_PARAM_PREFIX}${++this.lastParamId}`;
     }
 
     /**
@@ -758,10 +754,7 @@ export class CoreNavigatorService {
         const params = { ...this.getRouteProperty(route, 'queryParams', {}) };
 
         Object.keys(params).forEach((name) => {
-            params[name] = this.getStoredParam(params[name], false);
-
-            // Override the param.
-            route.queryParams[name] = params[name];
+            params[name] = this.getStoredParam(name, params[name], route);
         });
 
         return params;
@@ -780,31 +773,33 @@ export class CoreNavigatorService {
      * Given a stored param name, retrieve the stored param.
      * If the param is not a stored param, it will be returned as is.
      *
-     * @param paramName Param name.
-     * @param remove Whether to remove the param from the stored params after retrieving it.
+     * @param name Param name.
+     * @param value Param value to obtain the stored param.
+     * @param route Route where to override the query param if needed.
      * @returns Param value.
      */
-    protected getStoredParam(paramName: unknown, remove = false): string | unknown {
-        if (typeof paramName !== 'string' || !paramName.startsWith('param-')) {
-            return paramName;
+    protected getStoredParam(name: string, value: unknown, route: ActivatedRouteSnapshot | ActivatedRoute): string | unknown {
+        if (typeof value !== 'string' || !value.startsWith(CoreNavigatorService.STORED_PARAM_PREFIX)) {
+            return value;
         }
 
-        let storedParam = this.storedParams[paramName];
+        let storedParam = this.storedParams[value];
 
-        if (remove) {
-            // Remove the parameter from our map if it's in there.
-            delete this.storedParams[paramName];
-        }
+        // Remove the parameter from our map if it's in there.
+        delete this.storedParams[value];
 
         if (!CorePlatform.isMobile() && !storedParam) {
             // Try to retrieve the param from local storage in browser.
-            const storageParam = localStorage.getItem(paramName);
+            const storageParam = localStorage.getItem(value);
             if (storageParam) {
                 storedParam = CoreText.parseJSON(storageParam);
             }
         }
 
-        return storedParam ?? paramName;
+        // Override the param in the route so it's not retrieved again.
+        route.queryParams[name] = storedParam ?? value;
+
+        return storedParam ?? value;
     }
 
     /**
