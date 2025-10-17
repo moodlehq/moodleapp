@@ -42,6 +42,7 @@ import { ADDON_CALENDAR_UNDELETED_EVENT_EVENT } from '@addons/calendar/constants
 import { CoreAlerts } from '@services/overlays/alerts';
 import { CoreSharedModule } from '@/core/shared.module';
 import { CoreUserPreferences } from '@features/user/services/user-preferences';
+import { AddonCalendarEventCardComponent } from '../calendar-event-card/calendar-event-card';
 
 /**
  * Component that displays upcoming events.
@@ -52,6 +53,7 @@ import { CoreUserPreferences } from '@features/user/services/user-preferences';
     styleUrl: '../../calendar-common.scss',
     imports: [
         CoreSharedModule,
+        AddonCalendarEventCardComponent,
     ],
 })
 export class AddonCalendarUpcomingEventsComponent implements OnInit, DoCheck, OnDestroy {
@@ -125,14 +127,14 @@ export class AddonCalendarUpcomingEventsComponent implements OnInit, DoCheck, On
     }
 
     /**
-     * Component loaded.
+     * @inheritdoc
      */
     ngOnInit(): void {
         this.fetchData();
     }
 
     /**
-     * Detect and act upon changes that Angular can’t or won’t detect on its own (objects and arrays).
+     * @inheritdoc
      */
     ngDoCheck(): void {
         // Check if there's any change in the filter object.
@@ -144,8 +146,6 @@ export class AddonCalendarUpcomingEventsComponent implements OnInit, DoCheck, On
 
     /**
      * Fetch data.
-     *
-     * @returns Promise resolved when done.
      */
     async fetchData(): Promise<void> {
         const promises: Promise<void>[] = [];
@@ -198,8 +198,6 @@ export class AddonCalendarUpcomingEventsComponent implements OnInit, DoCheck, On
 
     /**
      * Fetch upcoming events.
-     *
-     * @returns Promise resolved when done.
      */
     async fetchEvents(): Promise<void> {
         // Don't pass courseId and categoryId, we'll filter them locally.
@@ -223,8 +221,6 @@ export class AddonCalendarUpcomingEventsComponent implements OnInit, DoCheck, On
 
     /**
      * Load categories to be able to filter events.
-     *
-     * @returns Promise resolved when done.
      */
     protected async loadCategories(): Promise<void> {
         if (this.categoriesRetrieved) {
@@ -338,10 +334,10 @@ export class AddonCalendarUpcomingEventsComponent implements OnInit, DoCheck, On
     }
 
     /**
-     * Component destroyed.
+     * @inheritdoc
      */
     ngOnDestroy(): void {
-        this.undeleteEventObserver?.off();
+        this.undeleteEventObserver.off();
     }
 
 }
