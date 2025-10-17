@@ -51,7 +51,7 @@ swiper-container {
         display: flex;
         flex-direction: column;
         flex-grow: 1;
-        overflow-x: hidden;
+        overflow: hidden;
 
         swiper-container {
             flex-grow: 1;

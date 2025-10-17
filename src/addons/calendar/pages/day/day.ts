@@ -59,6 +59,7 @@ import { CoreObject } from '@singletons/object';
 import { CoreAlerts } from '@services/overlays/alerts';
 import { CoreSharedModule } from '@/core/shared.module';
 import { CoreUserPreferences } from '@features/user/services/user-preferences';
+import { AddonCalendarEventCardComponent } from '@addons/calendar/components/calendar-event-card/calendar-event-card';
 
 /**
  * Page that displays the calendar events for a certain day.
@@ -69,6 +70,7 @@ import { CoreUserPreferences } from '@features/user/services/user-preferences';
     styleUrls: ['../../calendar-common.scss', 'day.scss'],
     imports: [
         CoreSharedModule,
+        AddonCalendarEventCardComponent,
     ],
 })
 export default class AddonCalendarDayPage implements OnInit, OnDestroy {
