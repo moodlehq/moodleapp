@@ -49,7 +49,7 @@
             flex-grow: 1;
 
             &::part(container) {
-                touch-action: pan-x pinch-zoom;
+                touch-action: pan-x pan-y pinch-zoom;
             }
 
             swiper-slide {
