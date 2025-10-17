@@ -178,7 +178,6 @@ export class CoreCourseModuleComponent implements OnInit, OnDestroy {
             await CoreCourseModuleDelegate.manualCompletionAlwaysShown(this.module);
 
         this.hasCompletion = !!this.module.completiondata && this.module.uservisible &&
-            (!this.module.completiondata.isautomatic || (this.module.completiondata.details?.length || 0) > 0) &&
             (this.showCompletionConditions || this.showManualCompletion);
 
     }
