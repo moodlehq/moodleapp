@@ -351,32 +351,22 @@ export class CoreNavigatorService {
      * unless there's a new navigation to the page.
      *
      * @param name Name of the parameter.
-     * @param queryParams Optional queryParams to get the params or route value from. If missing, it will autodetect.
      * @returns Value of the parameter, undefined if not found.
      */
-    getRouteParam<T = string>(name: string, queryParams?: Params): T | undefined {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        let value: any;
-        let origin = '';
+    getRouteParam<T = string>(name: string): T | undefined {
         const route = this.getCurrentRoute();
 
-        if (queryParams) {
-            value = queryParams[name];
-            origin = 'query';
-        } else {
-            const valueOrigin = this.getRouteSnapshotParam(name, route);
-            if (valueOrigin) {
-                value = valueOrigin.value;
-                origin = valueOrigin.origin;
+        const valueOrigin = this.getRouteSnapshotParam<T>(name, route);
+        if (valueOrigin) {
+            let value = valueOrigin.value;
+
+            if (valueOrigin.origin === 'query') {
+                value = this.getStoredParam(value, true) as T;
+                route.queryParams[name] = value;
             }
-        }
 
-        if (origin === 'query') {
-            value = this.getStoredParam(value, true);
-            route.queryParams[name] = value;
+            return value;
         }
-
-        return <T> value;
     }
 
     /**
@@ -384,11 +374,10 @@ export class CoreNavigatorService {
      * Angular router automatically converts numbers to string, this function automatically converts it back to number.
      *
      * @param name Name of the parameter.
-     * @param queryParams Optional queryParams to get the params or route value from. If missing, it will autodetect.
      * @returns Value of the parameter, undefined if not found.
      */
-    getRouteNumberParam(name: string, queryParams?: Params): number | undefined {
-        const value = this.getRouteParam<string>(name, queryParams);
+    getRouteNumberParam(name: string): number | undefined {
+        const value = this.getRouteParam<string>(name);
 
         return value !== undefined ? Number(value) : value;
     }
@@ -398,11 +387,10 @@ export class CoreNavigatorService {
      * Angular router automatically converts booleans to string, this function automatically converts it back to boolean.
      *
      * @param name Name of the parameter.
-     * @param queryParams Optional queryParams to get the params or route value from. If missing, it will autodetect.
      * @returns Value of the parameter, undefined if not found.
      */
-    getRouteBooleanParam(name: string, queryParams?: Params): boolean | undefined {
-        const value = this.getRouteParam<string>(name, queryParams);
+    getRouteBooleanParam(name: string): boolean | undefined {
+        const value = this.getRouteParam<string>(name);
 
         if (value === undefined) {
             return value;
@@ -427,11 +415,10 @@ export class CoreNavigatorService {
      * This function will fail if parameter is not found.
      *
      * @param name Name of the parameter.
-     * @param queryParams Optional queryParams to get the params or route value from. If missing, it will autodetect.
      * @returns Value of the parameter, undefined if not found.
      */
-    getRequiredRouteParam<T = unknown>(name: string, queryParams?: Params): T {
-        const value = this.getRouteParam<T>(name, queryParams);
+    getRequiredRouteParam<T = unknown>(name: string): T {
+        const value = this.getRouteParam<T>(name);
 
         if (value === undefined) {
             throw new CoreError(`Required param '${name}' not found.`);
@@ -447,11 +434,10 @@ export class CoreNavigatorService {
      * This function will fail if parameter is not found.
      *
      * @param name Name of the parameter.
-     * @param queryParams Optional queryParams to get the params or route value from. If missing, it will autodetect.
      * @returns Value of the parameter, undefined if not found.
      */
-    getRequiredRouteNumberParam(name: string, queryParams?: Params): number {
-        const value = this.getRouteNumberParam(name, queryParams);
+    getRequiredRouteNumberParam(name: string): number {
+        const value = this.getRouteNumberParam(name);
 
         if (value === undefined) {
             throw new CoreError(`Required number param '${name}' not found.`);
@@ -467,11 +453,10 @@ export class CoreNavigatorService {
      * This function will fail if parameter is not found.
      *
      * @param name Name of the parameter.
-     * @param queryParams Optional queryParams to get the params or route value from. If missing, it will autodetect.
      * @returns Value of the parameter, undefined if not found.
      */
-    getRequiredRouteBooleanParam(name: string, queryParams?: Params): boolean {
-        const value = this.getRouteBooleanParam(name, queryParams);
+    getRequiredRouteBooleanParam(name: string): boolean {
+        const value = this.getRouteBooleanParam(name);
 
         if (value === undefined) {
             throw new CoreError(`Required boolean param '${name}' not found.`);
