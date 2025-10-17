@@ -38,12 +38,14 @@
 
     <!-- There is data to be synchronized -->
     @if (hasOffline) {
-        <ion-card class="core-warning-card">
-            <ion-item>
-                <ion-icon name="fas-triangle-exclamation" slot="start" aria-hidden="true" />
-                <ion-label>{{ 'core.hasdatatosync' | translate:{$a: 'addon.calendar.calendar' | translate} }}</ion-label>
-            </ion-item>
-        </ion-card>
+        <div class="list-item-limited-width">
+            <ion-card class="core-warning-card">
+                <ion-item>
+                    <ion-icon name="fas-triangle-exclamation" slot="start" aria-hidden="true" />
+                    <ion-label>{{ 'core.hasdatatosync' | translate:{$a: 'addon.calendar.calendar' | translate} }}</ion-label>
+                </ion-item>
+            </ion-card>
+        </div>
     }
 
     <addon-calendar-calendar [hidden]="!showCalendar" [initialYear]="year" [initialMonth]="month" [filter]="filter"

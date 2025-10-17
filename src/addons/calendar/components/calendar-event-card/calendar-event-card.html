@@ -1,0 +1,40 @@
+@let calEvent = event();
+<ion-card>
+    <ion-item [attr.aria-label]="calEvent.name" (click)="onEventClicked.emit()" button [class.item-dimmed]="calEvent.ispast"
+        [class]="['ion-text-wrap', 'addon-calendar-event', 'addon-calendar-eventtype-'+calEvent.eventtype]" [detail]="false">
+        @if (calEvent.moduleIcon) {
+            <core-mod-icon [modicon]="calEvent.moduleIcon" slot="start" [modname]="calEvent.modulename"
+                [componentId]="calEvent.instance" [showAlt]="false" [purpose]="calEvent.purpose" [isBranded]="calEvent.branded" />
+        } @else if (calEvent.eventIcon) {
+            <ion-icon [name]="calEvent.eventIcon" slot="start" aria-hidden="true" />
+        }
+        <ion-label>
+            <!-- Add the icon title so accessibility tools read it. -->
+            <span class="sr-only">
+                {{ 'addon.calendar.type' + calEvent.formattedType | translate }}
+                @if (calEvent.moduleIcon && calEvent.iconTitle) {
+                    <span class="sr-only">{{ calEvent.iconTitle }}</span>
+                }
+            </span>
+            <p class="item-heading">
+                <core-format-text [text]="calEvent.name" [contextLevel]="calEvent.contextLevel"
+                    [contextInstanceId]="calEvent.contextInstanceId" [sanitize]="calEvent.offline" />
+            </p>
+            <p>
+                <core-format-text [text]="calEvent.formattedtime" [filter]="false" />
+            </p>
+        </ion-label>
+        @if (calEvent.deleted) {
+            <ion-note slot="end">
+                <ion-icon name="fas-trash" aria-hidden="true" />
+                <span class="ion-text-wrap">{{ 'core.deletedoffline' | translate }}</span>
+            </ion-note>
+        } @else if (calEvent.offline) {
+            <ion-note slot="end">
+                <ion-icon name="fas-clock" aria-hidden="true" />
+                <span class="ion-text-wrap">{{ 'core.notsent' | translate }}</span>
+            </ion-note>
+        }
+
+    </ion-item>
+</ion-card>
