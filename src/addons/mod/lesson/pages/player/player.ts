@@ -74,7 +74,7 @@ import { CoreSharedModule } from '@/core/shared.module';
 })
 export default class AddonModLessonPlayerPage implements OnInit, OnDestroy, CanLeave {
 
-    readonly content = viewChild(IonContent);
+    readonly content = viewChild.required(IonContent);
     readonly formElement = viewChild<ElementRef>('questionFormEl');
 
     component = ADDON_MOD_LESSON_COMPONENT_LEGACY;

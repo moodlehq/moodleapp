@@ -59,7 +59,7 @@ import { CoreLoadings } from '@services/overlays/loadings';
 })
 export default class AddonModQuizReviewPage implements OnInit {
 
-    readonly content = viewChild(IonContent);
+    readonly content = viewChild.required(IonContent);
 
     protected static readonly QUESTIONS_PER_LOAD_WHEN_SHOW_ALL = 10;
 
@@ -138,7 +138,7 @@ export default class AddonModQuizReviewPage implements OnInit {
         }
 
         this.loaded = false;
-        this.content()?.scrollToTop();
+        this.content().scrollToTop();
 
         try {
             await this.loadPage(page);

@@ -62,7 +62,7 @@ import { CoreContentLinksHelper } from '@features/contentlinks/services/contentl
 })
 export default class AddonModFeedbackFormPage implements OnInit, CanLeave {
 
-    readonly content = viewChild(IonContent);
+    readonly content = viewChild.required(IonContent);
 
     protected module?: CoreCourseModuleData;
     protected currentPage?: number;
@@ -340,7 +340,7 @@ export default class AddonModFeedbackFormPage implements OnInit, CanLeave {
             return;
         }
 
-        this.content()?.scrollToTop();
+        this.content().scrollToTop();
         this.feedbackLoaded = false;
 
         const responses = AddonModFeedbackHelper.getPageItemsResponses(this.items);

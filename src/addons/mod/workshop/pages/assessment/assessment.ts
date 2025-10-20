@@ -65,7 +65,7 @@ import { CoreErrorHelper } from '@services/error-helper';
 })
 export default class AddonModWorkshopAssessmentPage implements OnInit, OnDestroy, CanLeave {
 
-    readonly formElement = viewChild.required<ElementRef>('evaluateFormEl');
+    readonly formElement = viewChild<ElementRef>('evaluateFormEl');
 
     assessment!: AddonModWorkshopSubmissionAssessmentWithFormData;
     submission!: AddonModWorkshopSubmissionData;

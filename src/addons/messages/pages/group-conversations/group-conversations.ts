@@ -73,7 +73,7 @@ const enum AddonMessagesGroupConversationOptionNames {
 export default class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
 
     readonly splitView = viewChild.required(CoreSplitViewComponent);
-    readonly content = viewChild(IonContent);
+    readonly content = viewChild.required(IonContent);
     readonly accordionGroup = viewChild.required<IonAccordionGroup>('accordionGroup');
 
     loaded = false;
@@ -189,7 +189,7 @@ export default class AddonMessagesGroupConversationsPage implements OnInit, OnDe
 
                     if (isNewer) {
                         // The last message is newer than the previous one, scroll to top to keep viewing the conversation.
-                        this.content()?.scrollToTop();
+                        this.content().scrollToTop();
                     }
                 }
             },

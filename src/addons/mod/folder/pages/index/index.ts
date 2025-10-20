@@ -34,7 +34,7 @@ import { CoreSharedModule } from '@/core/shared.module';
 export default class AddonModFolderIndexPage extends CoreCourseModuleMainActivityPage<AddonModFolderIndexComponent>
     implements OnInit {
 
-    readonly activityComponent = viewChild(AddonModFolderIndexComponent);
+    readonly activityComponent = viewChild.required(AddonModFolderIndexComponent);
 
     folderInstance?: AddonModFolderFolder;
     subfolder?: AddonModFolderFolderFormattedData;

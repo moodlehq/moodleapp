@@ -28,6 +28,6 @@ import { CoreSharedModule } from '@/core/shared.module';
 })
 export default class AddonModForumIndexPage extends CoreCourseModuleMainActivityPage<AddonModForumIndexComponent> {
 
-    readonly activityComponent = viewChild(AddonModForumIndexComponent);
+    readonly activityComponent = viewChild.required(AddonModForumIndexComponent);
 
 }
