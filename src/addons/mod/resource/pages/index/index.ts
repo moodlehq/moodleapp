@@ -30,6 +30,6 @@ import { CoreSharedModule } from '@/core/shared.module';
 })
 export default class AddonModResourceIndexPage extends CoreCourseModuleMainActivityPage<AddonModResourceIndexComponent> {
 
-    readonly activityComponent = viewChild(AddonModResourceIndexComponent);
+    readonly activityComponent = viewChild.required(AddonModResourceIndexComponent);
 
 }

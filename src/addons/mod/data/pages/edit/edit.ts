@@ -64,8 +64,8 @@ import { CoreSharedModule } from '@/core/shared.module';
 })
 export default class AddonModDataEditPage implements OnInit {
 
-    readonly content = viewChild(IonContent);
-    readonly formElement = viewChild.required<ElementRef>('editFormEl');
+    readonly content = viewChild.required(IonContent);
+    readonly formElement = viewChild<ElementRef>('editFormEl');
 
     protected entryId?: number;
     protected fieldsArray: AddonModDataField[] = [];
@@ -552,9 +552,9 @@ export default class AddonModDataEditPage implements OnInit {
      * Scroll to first error or to the top if not found.
      */
     protected async scrollToFirstError(): Promise<void> {
-        const scrolled = await CoreDom.scrollToElement(this.formElement().nativeElement, '.addon-data-error');
+        const scrolled = await CoreDom.scrollToElement(this.formElement()?.nativeElement, '.addon-data-error');
         if (!scrolled) {
-            this.content()?.scrollToTop();
+            this.content().scrollToTop();
         }
     }
 

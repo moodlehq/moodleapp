@@ -70,7 +70,7 @@ import { CoreSharedModule } from '@/core/shared.module';
 })
 export default class AddonMessagesDiscussionPage implements OnInit, OnDestroy, AfterViewInit {
 
-    readonly content = viewChild(IonContent);
+    readonly content = viewChild.required(IonContent);
     readonly infinite = viewChild(CoreInfiniteLoadingComponent);
 
     protected fetching = false;
@@ -174,7 +174,7 @@ export default class AddonMessagesDiscussionPage implements OnInit, OnDestroy, A
      * @inheritdoc
      */
     async ngAfterViewInit(): Promise<void> {
-        this.scrollElement = await this.content()?.getScrollElement();
+        this.scrollElement = await this.content().getScrollElement();
     }
 
     /**
@@ -878,7 +878,7 @@ export default class AddonMessagesDiscussionPage implements OnInit, OnDestroy, A
                 const newScrollHeight = (this.scrollElement?.scrollHeight || 0);
                 const scrollTo = newScrollHeight - oldScrollBottom + infiniteHeight;
 
-                this.content()?.scrollToPoint(0, scrollTo, 0);
+                this.content().scrollToPoint(0, scrollTo, 0);
             }, 30);
         }, 30);
     }
