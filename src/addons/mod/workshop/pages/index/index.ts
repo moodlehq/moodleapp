@@ -32,7 +32,7 @@ import { CoreSharedModule } from '@/core/shared.module';
 export default class AddonModWorkshopIndexPage extends CoreCourseModuleMainActivityPage<AddonModWorkshopIndexComponent>
     implements OnInit {
 
-    readonly activityComponent = viewChild(AddonModWorkshopIndexComponent);
+    readonly activityComponent = viewChild.required(AddonModWorkshopIndexComponent);
 
     selectedGroup = 0;
 

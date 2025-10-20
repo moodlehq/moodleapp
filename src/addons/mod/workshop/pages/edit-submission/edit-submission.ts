@@ -63,7 +63,7 @@ import { CorePromiseUtils } from '@singletons/promise-utils';
 })
 export default class AddonModWorkshopEditSubmissionPage implements OnInit, OnDestroy, CanLeave {
 
-    readonly formElement = viewChild.required<ElementRef>('editFormEl');
+    readonly formElement = viewChild<ElementRef>('editFormEl');
 
     module!: CoreCourseModuleData;
     courseId!: number;

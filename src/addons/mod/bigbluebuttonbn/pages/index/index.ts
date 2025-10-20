@@ -30,6 +30,6 @@ import { CoreSharedModule } from '@/core/shared.module';
 })
 export default class AddonModBBBIndexPage extends CoreCourseModuleMainActivityPage<AddonModBBBIndexComponent> {
 
-    readonly activityComponent = viewChild(AddonModBBBIndexComponent);
+    readonly activityComponent = viewChild.required(AddonModBBBIndexComponent);
 
 }

@@ -32,7 +32,7 @@ import { CoreSharedModule } from '@/core/shared.module';
 export default class AddonModLessonIndexPage extends CoreCourseModuleMainActivityPage<AddonModLessonIndexComponent>
     implements OnInit {
 
-    readonly activityComponent = viewChild(AddonModLessonIndexComponent);
+    readonly activityComponent = viewChild.required(AddonModLessonIndexComponent);
 
     group?: number; // The group to display.
     action?: string; // The "action" to display first.
