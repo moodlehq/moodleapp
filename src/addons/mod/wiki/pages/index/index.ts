@@ -31,7 +31,7 @@ import { CoreSharedModule } from '@/core/shared.module';
 })
 export default class AddonModWikiIndexPage extends CoreCourseModuleMainActivityPage<AddonModWikiIndexComponent> implements OnInit {
 
-    readonly activityComponent = viewChild(AddonModWikiIndexComponent);
+    readonly activityComponent = viewChild.required(AddonModWikiIndexComponent);
 
     action?: string;
     pageId?: number;
@@ -58,14 +58,14 @@ export default class AddonModWikiIndexPage extends CoreCourseModuleMainActivityP
      * User entered the page.
      */
     ionViewDidEnter(): void {
-        this.activityComponent()?.ionViewDidEnter();
+        this.activityComponent().ionViewDidEnter();
     }
 
     /**
      * User left the page.
      */
     ionViewDidLeave(): void {
-        this.activityComponent()?.ionViewDidLeave();
+        this.activityComponent().ionViewDidLeave();
     }
 
 }

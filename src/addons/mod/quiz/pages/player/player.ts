@@ -87,7 +87,7 @@ import { CoreSharedModule } from '@/core/shared.module';
 })
 export default class AddonModQuizPlayerPage implements OnInit, OnDestroy, CanLeave {
 
-    readonly content = viewChild(IonContent);
+    readonly content = viewChild.required(IonContent);
     readonly questionComponents = viewChildren(CoreQuestionComponent);
     readonly formElement = viewChild<ElementRef>('quizForm');
 
@@ -264,7 +264,7 @@ export default class AddonModQuizPlayerPage implements OnInit, OnDestroy, CanLea
                 if (scrollTop != -1) {
                     // Wait for content to be rendered.
                     setTimeout(() => {
-                        this.content()?.scrollToPoint(0, scrollTop);
+                        this.content().scrollToPoint(0, scrollTop);
                     }, 50);
                 }
             }
@@ -308,7 +308,7 @@ export default class AddonModQuizPlayerPage implements OnInit, OnDestroy, CanLea
             return;
         }
 
-        this.content()?.scrollToTop();
+        this.content().scrollToTop();
 
         // First try to save the attempt data. We only save it if we're not seeing the summary.
         if (!this.showSummary) {

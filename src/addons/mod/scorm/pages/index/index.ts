@@ -32,7 +32,7 @@ import { CoreSharedModule } from '@/core/shared.module';
 export default class AddonModScormIndexPage extends CoreCourseModuleMainActivityPage<AddonModScormIndexComponent>
     implements OnInit {
 
-    readonly activityComponent = viewChild(AddonModScormIndexComponent);
+    readonly activityComponent = viewChild.required(AddonModScormIndexComponent);
 
     autoPlayData?: AddonModScormAutoPlayData; // Data to auto-play the SCORM.
 

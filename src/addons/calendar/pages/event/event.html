@@ -16,8 +16,8 @@
                 <core-context-menu-item [hidden]="!eventLoaded || (!hasOffline && event && !event.deleted) || !isOnline()" [priority]="400"
                     [content]="'core.settings.synchronizenow' | translate" (action)="doRefresh(undefined, $event, true)"
                     [iconAction]="syncIcon" [closeOnClick]="false" />
-                <core-context-menu-item [hidden]="!event || !event.canedit || event.deleted || (!canEdit && event.id > 0)" [priority]="300"
-                    [content]="'core.edit' | translate" (action)="openEdit()" iconAction="fas-pen" />
+                <core-context-menu-item [hidden]="!event || !event.canedit || event.deleted || (!canEdit && event.id > 0) || !isOnline()"
+                    [priority]="300" [content]="'core.edit' | translate" (action)="openEdit()" iconAction="fas-pen" />
                 <core-context-menu-item [hidden]="!event || !event.candelete || event.deleted" [priority]="200"
                     [content]="'core.delete' | translate" (action)="deleteEvent()" iconAction="fas-trash" />
                 <core-context-menu-item [hidden]="!event || !event.deleted" [priority]="200" [content]="'core.restore' | translate"

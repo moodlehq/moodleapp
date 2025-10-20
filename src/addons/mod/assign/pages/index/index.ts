@@ -35,7 +35,7 @@ export default class AddonModAssignIndexPage extends CoreCourseModuleMainActivit
 
     private action?: string;
 
-    readonly activityComponent = viewChild(AddonModAssignIndexComponent);
+    readonly activityComponent = viewChild.required(AddonModAssignIndexComponent);
 
     constructor() {
         super();
@@ -49,8 +49,8 @@ export default class AddonModAssignIndexPage extends CoreCourseModuleMainActivit
     async ngAfterViewInit(): Promise<void> {
         switch (this.action) {
             case 'editsubmission':
-                await CoreWait.waitFor(() => !!this.activityComponent()?.submissionComponent(), { timeout: 5000 });
-                await this.activityComponent()?.submissionComponent()?.goToEdit();
+                await CoreWait.waitFor(() => !!this.activityComponent().submissionComponent(), { timeout: 5000 });
+                await this.activityComponent().submissionComponent()?.goToEdit();
 
                 break;
         }

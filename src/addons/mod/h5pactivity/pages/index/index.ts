@@ -37,14 +37,14 @@ export default class AddonModH5PActivityIndexPage extends CoreCourseModuleMainAc
     canLeaveSafely = false;
     remainingTimeout?: number;
 
-    readonly activityComponent = viewChild(AddonModH5PActivityIndexComponent);
+    readonly activityComponent = viewChild.required(AddonModH5PActivityIndexComponent);
 
     /**
      * @inheritdoc
      */
     async canLeave(): Promise<boolean> {
         const activityComponent = this.activityComponent();
-        if (!activityComponent?.playing || activityComponent.isOpeningPage || activityComponent.saveStateEnabled) {
+        if (!activityComponent.playing || activityComponent.isOpeningPage || activityComponent.saveStateEnabled) {
             return true;
         }
 

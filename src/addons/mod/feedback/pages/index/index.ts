@@ -33,7 +33,7 @@ import { CoreSharedModule } from '@/core/shared.module';
 export default class AddonModFeedbackIndexPage extends CoreCourseModuleMainActivityPage<AddonModFeedbackIndexComponent>
     implements OnInit {
 
-    readonly activityComponent = viewChild(AddonModFeedbackIndexComponent);
+    readonly activityComponent = viewChild.required(AddonModFeedbackIndexComponent);
 
     selectedTab?: AddonModFeedbackIndexTabName;
     selectedGroup?: number;

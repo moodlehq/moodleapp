@@ -49,7 +49,7 @@ export default class AddonModChatChatPage implements OnInit, OnDestroy, CanLeave
 
     protected static readonly POLL_INTERVAL = 4000;
 
-    readonly content = viewChild(IonContent);
+    readonly content = viewChild.required(IonContent);
     readonly sendMessageForm = viewChild(CoreSendMessageFormComponent);
 
     loaded = false;
@@ -360,7 +360,7 @@ export default class AddonModChatChatPage implements OnInit, OnDestroy, CanLeave
         // Need a timeout to leave time to the view to be rendered.
         await CoreWait.nextTick();
         if (!this.viewDestroyed) {
-            this.content()?.scrollToBottom();
+            this.content().scrollToBottom();
         }
     }
 

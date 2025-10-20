@@ -68,7 +68,7 @@ import { CoreSharedModule } from '@/core/shared.module';
 })
 export default class CoreCourseContentsPage implements OnInit, OnDestroy, CoreRefreshContext {
 
-    readonly content = viewChild(IonContent);
+    readonly content = viewChild.required(IonContent);
     readonly formatComponent = viewChild(CoreCourseFormatComponent);
 
     course!: CoreCourseAnyCourseData;

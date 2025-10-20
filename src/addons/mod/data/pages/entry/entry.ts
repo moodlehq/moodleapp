@@ -67,7 +67,7 @@ import { CoreRatingAggregateComponent } from '@features/rating/components/aggreg
 })
 export default class AddonModDataEntryPage implements OnInit, OnDestroy {
 
-    readonly content = viewChild(IonContent);
+    readonly content = viewChild.required(IonContent);
     readonly comments = viewChild(CoreCommentsCommentsComponent);
 
     protected entryId?: number;
@@ -250,7 +250,7 @@ export default class AddonModDataEntryPage implements OnInit, OnDestroy {
 
             CoreAlerts.showError(error, { default: Translate.instant('core.course.errorgetmodule') });
         } finally {
-            this.content()?.scrollToTop();
+            this.content().scrollToTop();
             this.entryLoaded = true;
         }
     }

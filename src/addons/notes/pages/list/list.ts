@@ -47,7 +47,7 @@ import { CoreSharedModule } from '@/core/shared.module';
 })
 export default class AddonNotesListPage implements OnInit, OnDestroy {
 
-    readonly content = viewChild(IonContent);
+    readonly content = viewChild.required(IonContent);
 
     courseId!: number;
     userId?: number;
@@ -90,7 +90,7 @@ export default class AddonNotesListPage implements OnInit, OnDestroy {
                 this.refreshIcon = CoreConstants.ICON_LOADING;
                 this.syncIcon = CoreConstants.ICON_LOADING;
 
-                this.content()?.scrollToTop();
+                this.content().scrollToTop();
                 this.fetchNotes(false);
             }
         }, CoreSites.getCurrentSiteId());

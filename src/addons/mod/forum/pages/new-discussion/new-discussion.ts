@@ -81,8 +81,8 @@ type NewDiscussionData = {
 })
 export default class AddonModForumNewDiscussionPage implements OnInit, OnDestroy, CanLeave {
 
-    readonly formElement = viewChild.required<ElementRef>('newDiscFormEl');
-    readonly messageEditor = viewChild.required(CoreEditorRichTextEditorComponent);
+    readonly formElement = viewChild<ElementRef>('newDiscFormEl');
+    readonly messageEditor = viewChild(CoreEditorRichTextEditorComponent);
 
     component = ADDON_MOD_FORUM_COMPONENT_LEGACY;
     messageControl = new FormControl<string | null>(null);
@@ -518,7 +518,7 @@ export default class AddonModForumNewDiscussionPage implements OnInit, OnDestroy
             this.newDiscussion.message = null;
             this.newDiscussion.files = [];
             this.newDiscussion.postToAllGroups = false;
-            this.messageEditor().clearText();
+            this.messageEditor()?.clearText();
             this.originalData = CoreUtils.clone(this.newDiscussion);
         } else {
             CoreNavigator.back();

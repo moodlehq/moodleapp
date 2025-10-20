@@ -62,7 +62,7 @@ import { CoreKeyboard } from '@singletons/keyboard';
 })
 export default class CoreCommentsViewerPage implements OnInit, OnDestroy, AfterViewInit {
 
-    readonly content = viewChild(IonContent);
+    readonly content = viewChild.required(IonContent);
 
     comments: CoreCommentsDataToDisplay[] = [];
     commentsLoaded = false;
@@ -157,7 +157,7 @@ export default class CoreCommentsViewerPage implements OnInit, OnDestroy, AfterV
      * @inheritdoc
      */
     async ngAfterViewInit(): Promise<void> {
-        this.scrollElement = await this.content()?.getScrollElement();
+        this.scrollElement = await this.content().getScrollElement();
     }
 
     /**

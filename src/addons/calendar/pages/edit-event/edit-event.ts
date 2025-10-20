@@ -71,8 +71,7 @@ import { DEFAULT_TEXT_FORMAT } from '@singletons/text';
 })
 export default class AddonCalendarEditEventPage implements OnInit, OnDestroy, CanLeave {
 
-    readonly descriptionEditor = viewChild.required(CoreEditorRichTextEditorComponent);
-    readonly formElement = viewChild.required<ElementRef<HTMLFormElement>>('editEventForm');
+    readonly formElement = viewChild<ElementRef<HTMLFormElement>>('editEventForm');
 
     title = 'addon.calendar.newevent';
     component = ADDON_CALENDAR_COMPONENT;
@@ -160,8 +159,6 @@ export default class AddonCalendarEditEventPage implements OnInit, OnDestroy, Ca
 
     /**
      * Fetch the data needed to render the form.
-     *
-     * @returns Promise resolved when done.
      */
     protected async fetchData(): Promise<void> {
         this.error = false;
@@ -448,7 +445,6 @@ export default class AddonCalendarEditEventPage implements OnInit, OnDestroy, Ca
      * Load groups of a certain course.
      *
      * @param courseId Course ID.
-     * @returns Promise resolved when done.
      */
     protected async loadGroups(courseId: number): Promise<void> {
         this.loadingGroups = true;
@@ -629,8 +625,6 @@ export default class AddonCalendarEditEventPage implements OnInit, OnDestroy, Ca
 
     /**
      * Init reminders.
-     *
-     * @returns Promise resolved when done.
      */
     protected async initReminders(): Promise<void> {
         // Don't init reminders when editing an event. Right now, only allow adding reminders for new events.
