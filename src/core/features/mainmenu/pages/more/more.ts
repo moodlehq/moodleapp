@@ -27,6 +27,7 @@ import { CoreViewer } from '@features/viewer/services/viewer';
 import { CoreSharedModule } from '@/core/shared.module';
 import { CoreMainMenuUserButtonComponent } from '../../components/user-menu-button/user-menu-button';
 import { CoreContentLinksHelper } from '@features/contentlinks/services/contentlinks-helper';
+import { CoreUrl } from '@singletons/url';
 
 /**
  * Page that displays the more page of the app.
@@ -160,7 +161,7 @@ export default class CoreMainMenuMorePage implements OnInit, OnDestroy {
 
         // Check if it's a URL.
         if (/^[^:]{2,}:\/\/[^ ]+$/i.test(text)) {
-            await CoreContentLinksHelper.visitLink(text, {
+            await CoreContentLinksHelper.visitLink(CoreUrl.decodeURI(text), {
                 checkRoot: true,
                 openBrowserRoot: true,
             });
