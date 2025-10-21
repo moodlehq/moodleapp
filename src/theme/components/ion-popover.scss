@@ -4,11 +4,9 @@ ion-popover {
 
         // When CSS zoom is not 100%, the calculated position is incorrect.
         // Workaround: revert zoom on the element but keep it for children.
-        &::part(content) {
-            zoom: calc(1 / var(--zoom-ratio));
-            & > * {
-                zoom: var(--zoom-ratio);
-            }
+        zoom: calc(1 / var(--zoom-ratio));
+        & > * {
+            zoom: var(--zoom-ratio);
         }
     }
     &.md {
