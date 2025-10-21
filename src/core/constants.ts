@@ -169,6 +169,13 @@ export const enum CoreSyncIcon {
     SYNC = 'fas-rotate',
 };
 
+export enum CoreLinkOpenMethod {
+    APP = 'app',
+    INAPPBROWSER = 'inappbrowser',
+    BROWSER = 'browser',
+    EMBEDDED = 'embedded',
+};
+
 /**
  * Static class to contain all the core constants.
  */

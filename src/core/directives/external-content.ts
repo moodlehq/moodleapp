@@ -32,7 +32,7 @@ import { CoreLogger } from '@singletons/logger';
 import { CoreError } from '@classes/errors/error';
 import { CoreSite } from '@classes/sites/site';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
-import { DownloadStatus } from '../constants';
+import { CoreLinkOpenMethod, DownloadStatus } from '../constants';
 import { CoreNetwork } from '@services/network';
 import { Translate } from '@singletons';
 import type { AsyncDirective } from '@coretypes/async-directive';
@@ -370,7 +370,7 @@ export class CoreExternalContentDirective implements AfterViewInit, OnChanges, O
         const tagName = this.element.tagName;
         const openIn = tagName === 'A' && this.element.getAttribute('data-open-in');
 
-        if (openIn === 'app' || openIn === 'browser') {
+        if (openIn === CoreLinkOpenMethod.APP || openIn === CoreLinkOpenMethod.BROWSER) {
             // The file is meant to be opened in browser or InAppBrowser, don't use the downloaded URL because it won't work.
             if (!site.isSitePluginFileUrl(url)) {
                 return url;

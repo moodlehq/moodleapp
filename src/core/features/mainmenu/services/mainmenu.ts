@@ -16,7 +16,7 @@ import { Injectable } from '@angular/core';
 
 import { CoreLang, CoreLangFormat, CoreLangLanguage } from '@services/lang';
 import { CoreSites } from '@services/sites';
-import { CoreConstants } from '@/core/constants';
+import { CoreConstants, CoreLinkOpenMethod } from '@/core/constants';
 import { CoreMainMenuDelegate, CoreMainMenuPageNavHandlerToDisplay } from './mainmenu-delegate';
 import { Device, makeSingleton } from '@singletons';
 import { CoreText } from '@singletons/text';
@@ -113,7 +113,7 @@ export class CoreMainMenuProvider {
 
         let position = 0; // Position of each item, to keep the same order as it's configured.
 
-        if (!itemsString || typeof itemsString != 'string') {
+        if (!itemsString || typeof itemsString !== 'string') {
             // Setting not valid.
             return result;
         }
@@ -136,7 +136,9 @@ export class CoreMainMenuProvider {
             const id = `${url}#${type}`;
             if (!icon) {
                 // Icon not defined, use default one.
-                icon = type == 'embedded' ? 'fas-expand' : 'fas-link'; // @todo Find a better icon for embedded.
+                icon = type == CoreLinkOpenMethod.EMBEDDED
+                    ? 'fas-expand' // @todo Find a better icon for embedded.
+                    : 'fas-link';
             }
 
             if (!map[id]) {
@@ -283,7 +285,7 @@ export class CoreMainMenuProvider {
      * @returns Promise resolved with boolean: whether it's the root of a main menu tab.
      */
     async isMainMenuTab(pageName: string): Promise<boolean> {
-        if (pageName == MAIN_MENU_MORE_PAGE_NAME) {
+        if (pageName === MAIN_MENU_MORE_PAGE_NAME) {
             return true;
         }
 
@@ -330,7 +332,7 @@ export type CoreMainMenuCustomItem = {
     /**
      * Type of the item: app, inappbrowser, browser or embedded.
      */
-    type: string;
+    type: CoreLinkOpenMethod;
 
     /**
      * Url of the item.
@@ -360,7 +362,7 @@ export type CoreMainMenuLocalizedCustomItem = Omit<CoreMainMenuCustomItem, 'labe
  */
 type CustomMenuItemsMap = Record<string, {
     url: string;
-    type: string;
+    type: CoreLinkOpenMethod;
     position: number;
     labels: {
         [lang: string]: {
