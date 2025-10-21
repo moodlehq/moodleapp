@@ -53,7 +53,7 @@ import { MediaElementController } from '@classes/element-controllers/MediaElemen
 import { FrameElement, FrameElementController } from '@classes/element-controllers/FrameElementController';
 import { CoreUrl } from '@singletons/url';
 import { CoreIcons } from '@singletons/icons';
-import { ContextLevel } from '../constants';
+import { ContextLevel, CoreLinkOpenMethod } from '../constants';
 import { CoreWait } from '@singletons/wait';
 import { toBoolean } from '../transforms/boolean';
 import { CoreViewer } from '@features/viewer/services/viewer';
@@ -839,7 +839,7 @@ export class CoreFormatTextDirective implements OnDestroy, AsyncDirective {
                 // Try to convert the URL to absolute if needed.
                 url = CoreUrl.toAbsoluteURL(site.getURL(), url);
                 const confirmMessage = element.dataset.appUrlConfirm;
-                const openInApp = element.dataset.openIn === 'app';
+                const openInApp = element.dataset.openIn === CoreLinkOpenMethod.APP;
                 const refreshOnResume = element.dataset.appUrlResumeAction === 'refresh';
 
                 if (confirmMessage) {
