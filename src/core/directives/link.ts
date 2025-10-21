@@ -19,7 +19,7 @@ import { CoreFileHelper } from '@services/file-helper';
 import { CoreSites } from '@services/sites';
 import { CoreUrl } from '@singletons/url';
 import { CoreOpener } from '@singletons/opener';
-import { CoreConstants } from '@/core/constants';
+import { CoreConstants, CoreLinkOpenMethod } from '@/core/constants';
 import { CoreContentLinksHelper } from '@features/contentlinks/services/contentlinks-helper';
 import { CoreCustomURLSchemes } from '@services/urlschemes';
 import { DomSanitizer } from '@singletons';
@@ -187,8 +187,8 @@ export class CoreLinkDirective implements OnInit {
     protected async openExternalLink(href: string, openIn?: string | null): Promise<void> {
         // Priority order is: core-link inApp attribute > forceOpenLinksIn setting > data-open-in HTML attribute.
         const openInApp = this.inApp ??
-            (CoreConstants.CONFIG.forceOpenLinksIn !== 'browser' &&
-                (CoreConstants.CONFIG.forceOpenLinksIn === 'app' || openIn === 'app'));
+            (CoreConstants.CONFIG.forceOpenLinksIn !== CoreLinkOpenMethod.BROWSER &&
+                (CoreConstants.CONFIG.forceOpenLinksIn === CoreLinkOpenMethod.APP || openIn === CoreLinkOpenMethod.APP));
 
         // Check if we need to auto-login.
         if (!CoreSites.isLoggedIn()) {
