@@ -29,6 +29,7 @@ import { CoreMainMenuUserButtonComponent } from '../../components/user-menu-butt
 import { CoreContentLinksHelper } from '@features/contentlinks/services/contentlinks-helper';
 import { CoreUrl } from '@singletons/url';
 import { CoreCustomMenu, CoreCustomMenuItem } from '@features/mainmenu/services/custommenu';
+import { CoreCustomMenuItemComponent } from '@features/mainmenu/components/custom-menu-item/custom-menu-item';
 
 /**
  * Page that displays the more page of the app.
@@ -40,6 +41,7 @@ import { CoreCustomMenu, CoreCustomMenuItem } from '@features/mainmenu/services/
     imports: [
         CoreSharedModule,
         CoreMainMenuUserButtonComponent,
+        CoreCustomMenuItemComponent,
     ],
 })
 export default class CoreMainMenuMorePage implements OnInit, OnDestroy {
@@ -131,15 +133,6 @@ export default class CoreMainMenuMorePage implements OnInit, OnDestroy {
         const params = handler.pageParams;
 
         CoreNavigator.navigateToSitePath(handler.page, { params });
-    }
-
-    /**
-     * Open an embedded custom item.
-     *
-     * @param item Item to open.
-     */
-    openItem(item: CoreCustomMenuItem): void {
-        CoreViewer.openIframeViewer(item.label, item.url);
     }
 
     /**
