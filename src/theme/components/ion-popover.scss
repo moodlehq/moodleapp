@@ -1,13 +1,6 @@
 ion-popover {
     &::part(content) {
         border-radius: var(--modal-radius);
-
-        // When CSS zoom is not 100%, the calculated position is incorrect.
-        // Workaround: revert zoom on the element but keep it for children.
-        zoom: calc(1 / var(--zoom-ratio));
-        & > * {
-            zoom: var(--zoom-ratio);
-        }
     }
     &.md {
         margin-top: 2px;
