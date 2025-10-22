@@ -466,8 +466,13 @@ export class CoreAuthenticatedSite extends CoreUnauthenticatedSite {
         }
 
         const observable = this.performRequest<T>(method, data, preSets, wsPreSets).pipe(
-            // Return a clone of the original object, this may prevent errors if in the callback the object is modified.
-            map((data) => CoreUtils.clone(data)),
+            map((data) => {
+                // Always clone the object because it can be modified when applying patches or in the caller function
+                // and we don't want to store the modified object in cache.
+                const clonedData = CoreUtils.clone(data);
+
+                return this.applyWSOverrides(method, clonedData);
+            }),
         );
 
         this.setOngoingRequest(cacheId, preSets, observable);
@@ -1361,13 +1366,13 @@ export class CoreAuthenticatedSite extends CoreUnauthenticatedSite {
      * @inheritdoc
      */
     async getPublicConfig(options: { readingStrategy?: CoreSitesReadingStrategy } = {}): Promise<CoreSitePublicConfigResponse> {
+        const method = 'tool_mobile_get_public_config';
         const ignoreCache = options.readingStrategy === CoreSitesReadingStrategy.ONLY_NETWORK ||
             options.readingStrategy ===  CoreSitesReadingStrategy.PREFER_NETWORK;
         if (!ignoreCache && this.publicConfig) {
-            return this.publicConfig;
+            return this.overridePublicConfig(this.publicConfig);
         }
 
-        const method = 'tool_mobile_get_public_config';
         const cacheId = this.getCacheId(method, {});
         const cachePreSets: CoreSiteWSPreSets = {
             getFromCache: true,
@@ -1392,8 +1397,7 @@ export class CoreAuthenticatedSite extends CoreUnauthenticatedSite {
 
         const subject = new Subject<CoreSitePublicConfigResponse>();
         const observable = subject.pipe(
-            // Return a clone of the original object, this may prevent errors if in the callback the object is modified.
-            map((data) => CoreUtils.clone(data)),
+            map((data) => this.overridePublicConfig(data)),
             finalize(() => {
                 this.clearOngoingRequest(cacheId, cachePreSets, observable);
             }),

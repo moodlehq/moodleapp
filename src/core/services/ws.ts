@@ -133,7 +133,7 @@ export class CoreWSProvider {
      *
      * @param method The WebService method to be called.
      * @param data Arguments to pass to the method.
-     * @param preSets Extra settings and information. Only some
+     * @param preSets Extra settings and information.
      * @returns Promise resolved with the response data in success and rejected with CoreAjaxError.
      */
     callAjax<T = unknown>(method: string, data: Record<string, unknown>, preSets: CoreWSAjaxPreSets): Promise<T> {

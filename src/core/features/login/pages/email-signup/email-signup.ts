@@ -192,7 +192,7 @@ export default class CoreLoginEmailSignupPage implements OnInit {
             if (configValid) {
                 // Check content verification.
                 if (this.ageDigitalConsentVerification === undefined) {
-                    this.ageDigitalConsentVerification = await CoreLoginSignUp.isAgeVerificationEnabled(this.site.getURL());
+                    this.ageDigitalConsentVerification = await CoreLoginSignUp.isAgeVerificationEnabled(this.site);
                 }
 
                 await this.getSignupSettings();
@@ -210,7 +210,7 @@ export default class CoreLoginEmailSignupPage implements OnInit {
      * Get signup settings from server.
      */
     protected async getSignupSettings(): Promise<void> {
-        this.settings = await CoreLoginSignUp.getEmailSignupSettings(this.site.getURL());
+        this.settings = await CoreLoginSignUp.getEmailSignupSettings(this.site);
 
         if (CoreUserProfileFieldDelegate.hasRequiredUnsupportedField(this.settings.profilefields)) {
             this.allRequiredSupported = false;
@@ -330,7 +330,7 @@ export default class CoreLoginEmailSignupPage implements OnInit {
                 this.signupForm.value,
             );
 
-            const result = await CoreLoginSignUp.emailSignup(userInfo, this.site.getURL(), {
+            const result = await CoreLoginSignUp.emailSignup(userInfo, this.site, {
                 recaptchaResponse, customProfileFields, redirect,
             });
 
@@ -410,7 +410,7 @@ export default class CoreLoginEmailSignupPage implements OnInit {
 
         try {
             const age = parseInt(this.ageVerificationForm.value.age, 10);
-            const isMinor = await CoreLoginSignUp.isMinor(age, this.ageVerificationForm.value.country, this.site.getURL());
+            const isMinor = await CoreLoginSignUp.isMinor(age, this.ageVerificationForm.value.country, this.site);
 
             CoreForms.triggerFormSubmittedEvent(this.ageFormElement(), true);
 
