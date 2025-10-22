@@ -52,25 +52,11 @@
                 </ion-item>
             }
         }
-        <ng-container *ngFor="let item of customItems">
-            @if (item.type !== 'embedded') {
-                <ion-item button [href]="item.url" [attr.aria-label]="item.label" core-link [capture]="item.type === 'app'"
-                    [inApp]="item.type === 'inappbrowser'" class="core-moremenu-customitem" [detail]="true"
-                    [detailIcon]="item.type === 'browser' ? 'open-outline' : 'chevron-forward'">
-                    <ion-icon [name]="item.icon" slot="start" aria-hidden="true" />
-                    <ion-label>
-                        <p class="item-heading">{{item.label}}</p>
-                    </ion-label>
-                </ion-item>
-            } @else {
-                <ion-item button (click)="openItem(item)" [attr.aria-label]="item.label" class="core-moremenu-customitem" [detail]="true">
-                    <ion-icon [name]="item.icon" slot="start" aria-hidden="true" />
-                    <ion-label>
-                        <p class="item-heading">{{item.label}}</p>
-                    </ion-label>
-                </ion-item>
-            }
-        </ng-container>
+
+        @for (item of customItems; track item) {
+            <core-custom-menu-item [type]="item.type" [label]="item.label" [icon]="item.icon" [url]="item.url" />
+        }
+        
         @if (showScanQR) {
             <ion-item button (click)="scanQR()" [detail]="true">
                 <ion-icon name="fas-qrcode" slot="start" aria-hidden="true" />
