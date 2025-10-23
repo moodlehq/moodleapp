@@ -1349,6 +1349,27 @@ class behat_app extends behat_app_helper {
     }
 
     /**
+     * Change language in the app
+     *
+     * @When /^I change language to "(.+)" in the app$/
+     * @param string $language Language code.
+     */
+    public function i_change_language(string $langcode) {
+        $this->spin(function() use ($langcode) {
+            $result = $this->runtime_js("changeLanguage('$langcode')");
+
+            if ($result !== 'OK') {
+                throw new DriverException('Error changing language - ' . $result);
+            }
+
+            return true;
+        });
+
+        // Wait the app to be restarted.
+        $this->prepare_browser();
+    }
+
+    /**
      * Change the viewport size in the browser running the Moodle App.
      *
      * @Given /^I change viewport size to "(?P<width>\d+)x(?P<height>\d+)" in the app$/
