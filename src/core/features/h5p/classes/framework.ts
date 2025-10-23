@@ -58,6 +58,7 @@ import { CoreFilepool } from '@services/filepool';
 import { CoreFileHelper } from '@services/file-helper';
 import { CoreUrl, CoreUrlPartNames } from '@singletons/url';
 import { CorePromiseUtils } from '@singletons/promise-utils';
+import { CoreArray } from '@singletons/array';
 
 /**
  * Equivalent to Moodle's implementation of H5PFrameworkInterface.
@@ -654,15 +655,7 @@ export class CoreH5PFramework {
                         'l1.minorversion < l2.minorversion)) ' +
                     'WHERE l1.addto IS NOT NULL AND l2.machinename IS NULL';
 
-        const result = await db.execute(query);
-
-        const addons: CoreH5PLibraryAddonData[] = [];
-
-        for (let i = 0; i < result.rows.length; i++) {
-            addons.push(this.parseLibAddonData(result.rows.item(i)));
-        }
-
-        return addons;
+        return await db.getRecordsSql<CoreH5PLibraryAddonData>(query);
     }
 
     /**
@@ -762,17 +755,9 @@ export class CoreH5PFramework {
 
         query += ' ORDER BY hcl.weight';
 
-        const result = await db.execute(query, queryArgs);
+        const dependencies = await db.getRecordsSql<CoreH5PContentDependencyData>(query, queryArgs);
 
-        const dependencies: {[machineName: string]: CoreH5PContentDependencyData} = {};
-
-        for (let i = 0; i < result.rows.length; i++) {
-            const dependency = result.rows.item(i);
-
-            dependencies[dependency.machineName] = dependency;
-        }
-
-        return dependencies;
+        return CoreArray.toObject(dependencies, 'machineName');
     }
 
     /**
@@ -831,10 +816,9 @@ export class CoreH5PFramework {
 
         const db = await CoreSites.getSiteDb(siteId);
 
-        const result = await db.execute(sql, sqlParams);
+        const dependencies = await db.getRecordsSql<LibraryDependency>(sql, sqlParams);
 
-        for (let i = 0; i < result.rows.length; i++) {
-            const dependency: LibraryDependency = result.rows.item(i);
+        dependencies.forEach((dependency) => {
             const key = `${dependency.dependencytype}Dependencies`;
 
             libraryData[key].push({
@@ -842,7 +826,7 @@ export class CoreH5PFramework {
                 majorVersion: dependency.majorversion,
                 minorVersion: dependency.minorversion,
             });
-        }
+        });
 
         return libraryData;
     }
