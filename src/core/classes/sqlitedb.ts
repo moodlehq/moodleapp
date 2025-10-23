@@ -435,6 +435,7 @@ export class SQLiteDB {
     /**
      * Execute a SQL query.
      * IMPORTANT: Use this function only if you cannot use any of the other functions in this API.
+     * Please notice that the rows property in the result cannot be converted to an array using Array.from().
      *
      * @param sql SQL query to execute.
      * @param params Query parameters.
