@@ -476,7 +476,7 @@ class behat_app extends behat_app_helper {
     /**
      * Presses standard buttons in the app.
      *
-     * @When /^I press the (back|more menu|page menu|user menu) button in the app$/
+     * @When /^I press the (back|more menu|page context menu|user menu) button in the app$/
      * @param string $button Button type
      * @throws DriverException If the button push doesn't work
      */
@@ -485,7 +485,30 @@ class behat_app extends behat_app_helper {
             $result = $this->runtime_js("pressStandard('$button')");
 
             if ($result !== 'OK') {
-                throw new DriverException('Error pressing standard button - ' . $result);
+                throw new DriverException("Error pressing $button button - $result");
+            }
+
+            return true;
+        });
+
+        $this->wait_for_pending_js();
+    }
+
+    /**
+     * Presses deprecated page menu button in the app.
+     *
+     * @When /^I press the page menu button in the app$/
+     * @throws DriverException If the button push doesn't work
+     * @deprecated since 5.1 Use "I press the page context menu button in the app" instead.
+     */
+    public function i_press_the_page_menu_button_in_the_app() {
+        $button = 'page context menu';
+
+        $this->spin(function() use ($button) {
+            $result = $this->runtime_js("pressStandard('$button')");
+
+            if ($result !== 'OK') {
+                throw new DriverException('Error pressing deprecated page menu button - ' . $result);
             }
 
             return true;

@@ -240,7 +240,7 @@ Feature: Test competency navigation
     And I set the field "Search" to "student" in the app
     And I press "Search" "button" in the app
     And I press "Student first" in the app
-    And I press "Display options" in the app
+    And I press the page context menu button in the app
     And I press "User info" in the app
     And I press "Learning plans" in the app
     Then I should find "Cookery" in the app
@@ -428,7 +428,7 @@ Feature: Test competency navigation
     And I press "Search people and messages" in the app
     And I set the field "Search" to "student" in the app
     And I press "Search" "button" in the app
-    And I press "Display options" in the app
+    And I press the page context menu button in the app
     And I press "User info" in the app
     And I press "Learning plans" in the app
     Then I should find "Cookery is important" in the app

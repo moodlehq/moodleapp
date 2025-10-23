@@ -244,16 +244,19 @@ export class TestingBehatRuntimeService {
 
         switch (button) {
             case 'more menu':
-                foundButton = TestingBehatDomUtils.findElementBasedOnText({
-                    text: 'More',
-                    selector: 'ion-tab-button',
-                }, options);
+                foundButton = TestingBehatDomUtils.findElementBasedOnSelector('ion-tab-button#tab-button-more', options);
                 break;
             case 'user menu' :
-                foundButton = TestingBehatDomUtils.findElementBasedOnText({ text: 'User account' }, options);
+                foundButton = TestingBehatDomUtils.findElementBasedOnSelector(
+                    'core-user-menu-button core-user-avatar',
+                    options,
+                );
                 break;
-            case 'page menu':
-                foundButton = TestingBehatDomUtils.findElementBasedOnText({ text: 'Display options' }, options);
+            case 'page context menu':
+                foundButton = TestingBehatDomUtils.findElementBasedOnSelector(
+                    'ion-header core-context-menu ion-button',
+                    options,
+                );
                 break;
             default:
                 return 'ERROR: Unsupported standard button type';
@@ -321,14 +324,10 @@ export class TestingBehatRuntimeService {
     protected async goBack(): Promise<boolean> {
         const options: TestingBehatFindOptions = {
             onlyClickable: true,
-            containerName: '',
+            containerName: 'ion-header',
         };
 
-        const foundButton = TestingBehatDomUtils.findElementBasedOnText({
-            text: 'Back',
-            selector: 'ion-back-button',
-        }, options);
-
+        const foundButton = TestingBehatDomUtils.findElementBasedOnSelector('ion-back-button', options);
         if (!foundButton) {
             return false;
         }
