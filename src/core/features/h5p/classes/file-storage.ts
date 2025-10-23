@@ -200,9 +200,9 @@ export class CoreH5PFileStorage {
                     'WHERE hcl.libraryid = ?';
         const queryArgs = [libraryId];
 
-        const result = await db.execute(query, queryArgs);
+        const entries = await db.getRecordsSql<{foldername: string}>(query, queryArgs);
 
-        await Promise.all(Array.from(result.rows).map(async (entry: {foldername: string}) => {
+        await Promise.all(entries.map(async (entry) => {
             try {
                 // Delete the index.html.
                 await this.deleteContentIndex(entry.foldername, site.getId());
