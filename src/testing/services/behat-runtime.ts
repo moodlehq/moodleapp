@@ -33,6 +33,8 @@ import { LocalNotificationsMock } from '@features/emulator/services/local-notifi
 import { GetClosureArgs } from '@/core/utils/types';
 import { CoreIframeComponent } from '@components/iframe/iframe';
 import { CorePromiseUtils } from '@singletons/promise-utils';
+import { CoreLang } from '@services/lang';
+import { CoreEvents } from '@singletons/events';
 
 /**
  * Behat runtime servive with public API.
@@ -898,6 +900,28 @@ export class TestingBehatRuntimeService {
         }
 
         direction === 'left' ? ionContent.swipeNavigation.swipeLeft() : ionContent.swipeNavigation.swipeRight();
+
+        return 'OK';
+    }
+
+    /**
+     * Change app language.
+     *
+     * @param language Language code to set.
+     * @returns OK if successful.
+     */
+    async changeLanguage(language: string): Promise<string> {
+        this.log(`Action - Change language to: ${language}`);
+        await CoreLang.changeCurrentLanguage(language);
+
+        const sites = await CoreSites.getSitesInstances();
+        await CorePromiseUtils.ignoreErrors(Promise.all(sites.map((site) => site.invalidateWsCache())));
+
+        CoreEvents.trigger(CoreEvents.LANGUAGE_CHANGED, language);
+
+        CoreNavigator.navigate('/reload', {
+            reset: true,
+        });
 
         return 'OK';
     }
