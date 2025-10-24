@@ -96,12 +96,14 @@ export class CoreCoursesCourseListItemComponent implements OnInit, OnDestroy, On
      */
     getCleanCourseName(): string {
         const name = this.course.displayname || this.course.fullname || '';
-        // Remove PN, FS1, FS2, Y1-Y12 and T1-T3 patterns
+        // Remove PN, FS1, FS2, Y1-Y12 and T1-T3 patterns along with surrounding dashes/spaces
         return name
-            .replace(/\b(PN|FS[12]|Y([1-9]|1[0-2]))\b/gi, '') // Remove PN, FS1, FS2, Y1 to Y12
-            .replace(/\bT[1-3]\b/gi, '') // Remove T1, T2, T3
-            .trim() // Remove extra spaces
-            .replace(/\s+/g, ' '); // Replace multiple spaces with single space
+            .replace(/\s*-?\s*\b(PN|FS[12]|Y([1-9]|1[0-2]))\b\s*-?\s*/gi, ' ') // Remove PN, FS1, FS2, Y1-Y12 with dashes
+            .replace(/\s*-?\s*\bT[1-3]\b\s*-?\s*/gi, ' ') // Remove T1, T2, T3 with dashes
+            .replace(/\s*-+\s*$/g, '') // Remove trailing dashes with spaces
+            .replace(/^\s*-+\s*/g, '') // Remove leading dashes with spaces
+            .replace(/\s+/g, ' ') // Replace multiple spaces with single space
+            .trim(); // Final trim
     }
 
     /**

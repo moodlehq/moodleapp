@@ -1,5 +1,5 @@
 {
-    "app_id": "org.aspireschool.aspire",
+    "app_id": "org.capriolegroup.aspire",
     "appname": "Aspire School",
     "versioncode": 45200,
     "versionname": "4.5.2",
@@ -105,7 +105,7 @@
     "forceLoginLogo": false,
     "ioswebviewscheme": "moodleappfs",
     "appstores": {
-        "android": "org.aspireschool.aspire",
+        "android": "org.capriolegroup.aspire",
         "ios": "id633359593"
     },
     "wsrequestqueuelimit": 10,
