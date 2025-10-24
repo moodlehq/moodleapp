@@ -1,7 +1,7 @@
 {
     "app_id": "ca.umontreal.studium",
     "appname": "StudiUM Mobile",
-    "versioncode": 50003,
+    "versioncode": 50004,
     "versionname": "5.0.0",
     "cache_update_frequency_usually": 420000,
     "cache_update_frequency_often": 1200000,
@@ -20,7 +20,7 @@
         "high": 120
     },
     "customurlscheme": "studiummobile",
-    "sites": [{"name": "StudiUM PP", "url": "https://udem-moodle-stage.cena-test.catalyst-ca.net/"}, {"name": "StudiUM formation continue PP", "url": "https://udem-fc-stage.cena-test.catalyst-ca.net/"}],
+    "sites": [{"name": "StudiUM Staging", "url": "https://studium-staging.umontreal.ca/"}, {"name": "StudiUM formation continue Staging", "url": "https://studiumfc-staging.umontreal.ca/"}],
     "multisitesdisplay": "radio",
     "sitefindersettings": {},
     "onlyallowlistedsites": false,
