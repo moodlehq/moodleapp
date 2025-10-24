@@ -41,6 +41,12 @@ jobs:
         working-directory: app
         run: npm ci --no-audit
 
+      - name: Install languages
+        working-directory: app
+        run: |
+          npx gulp lang
+          npm run lang:update-langpacks
+
       - name: Build app
         working-directory: app
         run: npm run build:test
