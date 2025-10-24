@@ -1,5 +1,5 @@
 ## BUILD STAGE
-FROM node:lts-jod as build-stage
+FROM node:lts-jod AS build-stage
 
 WORKDIR /app
 
@@ -30,7 +30,7 @@ RUN mkdir /app/ssl
 RUN openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout /app/ssl/certificate.key -out /app/ssl/certificate.crt -subj="/O=Moodle"
 
 ## SERVE STAGE
-FROM nginx:alpine as serve-stage
+FROM nginx:alpine AS serve-stage
 
 # Copy assets & config
 COPY --from=build-stage /app/www /usr/share/nginx/html
