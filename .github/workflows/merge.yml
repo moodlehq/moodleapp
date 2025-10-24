@@ -2,7 +2,7 @@ name: Merge
 
 on:
   push:
-    branches: [ main, v*.x ]
+    branches: [main, v*.x]
 
 jobs:
   merge:
@@ -10,11 +10,11 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v4
-      with:
-        persist-credentials: false
-        fetch-depth: 0
-    - name: Prepare builds
-      env:
-        GIT_TOKEN: ${{ secrets.GIT_TOKEN }}
-      run: ./.github/scripts/merge.sh
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Prepare builds
+        env:
+          GIT_TOKEN: ${{ secrets.GIT_TOKEN }}
+        run: ./.github/scripts/merge.sh

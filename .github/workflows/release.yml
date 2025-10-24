@@ -4,12 +4,12 @@ on:
   workflow_dispatch:
     inputs:
       release_type:
-        description: 'Final release or beta'
+        description: "Final release or beta"
         required: true
         type: choice
         options:
-        - final
-        - beta
+          - final
+          - beta
 
 jobs:
   release:
@@ -19,16 +19,16 @@ jobs:
       RELEASE_TYPE: ${{ github.event.inputs.release_type || 'final' }}
 
     steps:
-    - uses: actions/checkout@v4
-      with:
-        persist-credentials: false
-        fetch-depth: 0
-    - uses: actions/setup-node@v4
-      with:
-        node-version-file: '.nvmrc'
-    - name: Install npm packages
-      run: npm ci --no-audit
-    - name: Create release tags
-      env:
-        GIT_TOKEN: ${{ secrets.GIT_TOKEN }}
-      run: ./.github/scripts/release.sh $RELEASE_TYPE
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: ".nvmrc"
+      - name: Install npm packages
+        run: npm ci --no-audit
+      - name: Create release tags
+        env:
+          GIT_TOKEN: ${{ secrets.GIT_TOKEN }}
+        run: ./.github/scripts/release.sh $RELEASE_TYPE
