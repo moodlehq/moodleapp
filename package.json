@@ -129,7 +129,7 @@
     },
     "devDependencies": {
         "@angular-builders/custom-webpack": "20.0.0",
-        "@angular/build": "20.3.3",
+        "@angular/build": "20.3.7",
         "@angular/cli": "20.3.3",
         "@angular/compiler-cli": "20.3.2",
         "@angular/language-service": "20.3.2",
