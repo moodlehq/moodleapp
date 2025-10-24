@@ -1,10 +1,10 @@
 ## BUILD STAGE
-FROM node:lts-jod as build-stage
+FROM node:lts-jod AS build-stage
 
 WORKDIR /app
 
 # Update platform dependencies
-RUN apt-get update && apt-get install libsecret-1-0 -y
+RUN apt-get update && apt-get install libsecret-1-0 jq -y
 
 # Prepare native plugin
 COPY ./cordova-plugin-moodleapp/package*.json /app/cordova-plugin-moodleapp/
@@ -23,6 +23,8 @@ ARG build_command="npm run build:prod"
 COPY . /app
 # We want emulator code in Docker images ― even for production bundles ― because they will always run in a browser environment.
 RUN cp /app/src/core/features/emulator/emulator.module.ts /app/src/core/features/emulator/emulator.module.prod.ts
+RUN npx gulp lang
+RUN npm run lang:update-langpacks
 RUN ${build_command}
 
 # Generate SSL certificate
@@ -30,7 +32,7 @@ RUN mkdir /app/ssl
 RUN openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout /app/ssl/certificate.key -out /app/ssl/certificate.crt -subj="/O=Moodle"
 
 ## SERVE STAGE
-FROM nginx:alpine as serve-stage
+FROM nginx:alpine AS serve-stage
 
 # Copy assets & config
 COPY --from=build-stage /app/www /usr/share/nginx/html
