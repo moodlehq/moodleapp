@@ -4,36 +4,34 @@ on:
   workflow_dispatch:
     inputs:
       behat_tags:
-        description: 'Behat tags to execute'
+        description: "Behat tags to execute"
       moodle_branch:
-        description: 'Moodle branch'
+        description: "Moodle branch"
         required: true
-        default: 'main'
+        default: "main"
       moodle_repository:
-        description: 'Moodle repository'
+        description: "Moodle repository"
         required: true
-        default: 'https://github.com/moodle/moodle.git'
+        default: "https://github.com/moodle/moodle.git"
 
 concurrency:
-    group: acceptance-${{ github.ref }}
-    cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
+  group: snapshots-${{ github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
 
 jobs:
-
   build:
     runs-on: ubuntu-latest
     outputs:
       tags: ${{ steps.set-tags.outputs.tags }}
 
     steps:
-
       - uses: actions/checkout@v4
         with:
           path: app
 
       - uses: actions/setup-node@v4
         with:
-          node-version-file: 'app/.nvmrc'
+          node-version-file: "app/.nvmrc"
 
       - name: Install npm dependencies
         working-directory: app
@@ -104,25 +102,23 @@ jobs:
         tags: ${{ fromJSON(needs.build.outputs.tags) }}
 
     services:
-
       postgres:
         image: postgres:15
         env:
-          POSTGRES_USER: 'postgres'
-          POSTGRES_HOST_AUTH_METHOD: 'trust'
+          POSTGRES_USER: "postgres"
+          POSTGRES_HOST_AUTH_METHOD: "trust"
         ports:
           - 5432:5432
         options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 3
 
     steps:
-
       - uses: actions/checkout@v4
         with:
           path: app
 
       - uses: actions/setup-node@v4
         with:
-          node-version-file: 'app/.nvmrc'
+          node-version-file: "app/.nvmrc"
 
       - uses: shivammathur/setup-php@v2
         with:
@@ -209,7 +205,6 @@ jobs:
     needs: [behat]
 
     steps:
-
       - uses: actions/download-artifact@v4
         with:
           path: snapshots
