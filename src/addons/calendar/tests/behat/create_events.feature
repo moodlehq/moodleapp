@@ -57,7 +57,7 @@ Feature: Test creation of calendar events in app
     And I should find "Barcelona" in the app
     But I should not find "Ending time" in the app
 
-    When I press "Display options" in the app
+    When I press the page context menu button in the app
     Then I should find "Edit" in the app
     And I should find "Delete" in the app
 

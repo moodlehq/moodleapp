@@ -31,7 +31,7 @@ Feature: Test basic usage of messages in app
     And I press "Student1 student1" in the app
     And I set the field "New message" to "heeey student" in the app
     And I press "Send" in the app
-    And I press "Display options" in the app
+    And I press the page context menu button in the app
     And I press "Add to contacts" in the app
     And I press "Add" near "Are you sure you want to add Student1 student1 to your contacts?" in the app
     Then I should find "Contact request sent" in the app
@@ -133,7 +133,7 @@ Feature: Test basic usage of messages in app
     And I press "Send" in the app
     Then I should find "heeey student" in the app
 
-    When I press "Display options" in the app
+    When I press the page context menu button in the app
     And I press "Add to contacts" in the app
     And I press "Add" in the app
     Then I should find "Contact request sent" in the app
@@ -148,7 +148,7 @@ Feature: Test basic usage of messages in app
     When I press "Accept and add to contacts" in the app
     Then I should not find "Teacher teacher would like to contact you" in the app
 
-    When I press "Display options" in the app
+    When I press the page context menu button in the app
     And I press "User info" in the app
     And I press "Message" in the app
     And I set the field "New message" to "hi" in the app
@@ -156,12 +156,12 @@ Feature: Test basic usage of messages in app
     Then I should find "heeey student" in the app
     And I should find "hi" in the app
 
-    When I press "Display options" in the app
+    When I press the page context menu button in the app
     And I press "Remove from contacts" in the app
     And I press "Remove" in the app
     And I wait loading to finish in the app
     And I go back 2 times in the app
-    And I press "Display options" in the app
+    And I press the page context menu button in the app
     Then I should find "Add to contacts" in the app
 
     When I press "Delete conversation" in the app
@@ -276,7 +276,7 @@ Feature: Test basic usage of messages in app
     And I should find "Starred (1)" in the app
 
     When I press "star message" in the app
-    And I press "Display options" in the app
+    And I press the page context menu button in the app
     And I press "Star conversation" in the app
     And I go back in the app
     Then I should find "Private (1)" in the app
@@ -291,7 +291,7 @@ Feature: Test basic usage of messages in app
     When I press "Participants" in the app
     And I press "Student1 student1" in the app
     And I press "Message" in the app
-    And I press "Display options" in the app
+    And I press the page context menu button in the app
     And I press "Block user" in the app
     And I press "Block user" near "Are you sure you want to block Student1 student1?" in the app
     Then I should find "You have blocked this user" in the app
@@ -306,7 +306,7 @@ Feature: Test basic usage of messages in app
     When I press "Participants" in the app
     And I press "Student1 student1" in the app
     And I press "Message" in the app
-    And I press "Display options" in the app
+    And I press the page context menu button in the app
     Then I should find "Unblock user" in the app
     But I should not find "Block user" in the app
 
@@ -332,15 +332,15 @@ Feature: Test basic usage of messages in app
     And I press "Send" in the app
     Then I should find "test message" in the app
 
-    When I press "Display options" in the app
+    When I press the page context menu button in the app
     And I press "Mute" in the app
     Then I should find "Muted conversation" in the app
 
-    When I press "Display options" in the app
+    When I press the page context menu button in the app
     And I press "Unmute" in the app
     Then I should not find "Muted conversation" in the app
 
-    When I press "Display options" in the app
+    When I press the page context menu button in the app
     When I press "Mute" in the app
     Then I should find "Muted conversation" in the app
 
@@ -369,12 +369,12 @@ Feature: Test basic usage of messages in app
     When I switch network connection to wifi
     And I go back in the app
     And I press "Student1 student1" in the app
-    And I press "Display options" in the app
+    And I press the page context menu button in the app
     Then I should find "Show delete messages" in the app
     And I should find "Delete conversation" in the app
 
     When I press "Unstar conversation" in the app
-    And I press "Display options" in the app
+    And I press the page context menu button in the app
     Then I should find "Star conversation" in the app
     And I should find "Delete conversation" in the app
 
@@ -388,7 +388,7 @@ Feature: Test basic usage of messages in app
     Then I should find "self conversation online" in the app
     But I should not find "self conversation offline" in the app
 
-    When I press "Display options" in the app
+    When I press the page context menu button in the app
     And I press "Delete conversation" in the app
     And I press "Delete" near "Are you sure you would like to delete this entire personal conversation?" in the app
     Then I should not find "self conversation online" in the app
