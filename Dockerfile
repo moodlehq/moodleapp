@@ -4,7 +4,7 @@ FROM node:lts-jod AS build-stage
 WORKDIR /app
 
 # Update platform dependencies
-RUN apt-get update && apt-get install libsecret-1-0 -y
+RUN apt-get update && apt-get install libsecret-1-0 jq -y
 
 # Prepare native plugin
 COPY ./cordova-plugin-moodleapp/package*.json /app/cordova-plugin-moodleapp/
@@ -23,6 +23,8 @@ ARG build_command="npm run build:prod"
 COPY . /app
 # We want emulator code in Docker images ― even for production bundles ― because they will always run in a browser environment.
 RUN cp /app/src/core/features/emulator/emulator.module.ts /app/src/core/features/emulator/emulator.module.prod.ts
+RUN npx gulp lang
+RUN npm run lang:update-langpacks
 RUN ${build_command}
 
 # Generate SSL certificate
