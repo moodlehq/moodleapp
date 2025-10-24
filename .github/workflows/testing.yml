@@ -3,83 +3,82 @@ name: Testing
 on: [push, pull_request]
 
 concurrency:
-    group: testing-${{ github.ref }}
-    cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
+  group: testing-${{ github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
 
 jobs:
   test:
-
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v4
-    - uses: actions/setup-node@v4
-      with:
-        node-version-file: '.nvmrc'
-    - name: Install npm packages
-      run: |
-        npm ci --no-audit
-        npm ci --no-audit --prefix cordova-plugin-moodleapp
-    - name: Check langindex
-      run: |
-        result=$(cat scripts/langindex.json | grep \"TBD\" | wc -l); test $result -eq 0
-        if [ $result -ne 0 ]; then
-          echo "::error::There are lang strings to be decided on langindex.json"
-          exit 1
-        fi
-        gulp
-        langcount=`jq -r '. | length' src/assets/lang/en.json`
-        langindexcount=`jq -r '. | length' scripts/langindex.json`
-        if [ $langcount -ne $langindexcount ]; then
-          echo "::error::Lang file has $langcount while langindex $langindexcount"
-          exit 1
-        fi
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: ".nvmrc"
+      - name: Install npm packages
+        run: |
+          npm ci --no-audit
+          npm ci --no-audit --prefix cordova-plugin-moodleapp
+      - name: Check langindex
+        run: |
+          result=$(cat scripts/langindex.json | grep \"TBD\" | wc -l); test $result -eq 0
+          if [ $result -ne 0 ]; then
+            echo "::error::There are lang strings to be decided on langindex.json"
+            exit 1
+          fi
+          gulp
+          langcount=`jq -r '. | length' src/assets/lang/en.json`
+          langindexcount=`jq -r '. | length' scripts/langindex.json`
+          if [ $langcount -ne $langindexcount ]; then
+            echo "::error::Lang file has $langcount while langindex $langindexcount"
+            exit 1
+          fi
 
-        langkeys=`jq -r 'keys[]' src/assets/lang/en.json`
-        langindex=`jq -r 'keys[]' scripts/langindex.json`
-        found=0
-        for i in $langkeys; do
-            skip=
-            for j in $langindex; do
-                if [ "$i" == "$j" ]; then
-                  skip=1
-                  break;
-                fi
-            done
-            [[ -n $skip ]] || { echo "$i key not found"; found=$(($found + 1)); }
-        done
-        if [ $found -ne 0 ]; then
-          echo "::error::Found $found missing langkeys"
-          exit 1
-        fi
-    - name: Run Linters (ignore warnings)
-      run: |
-        npm run lint -- --quiet
-        npm run lint --prefix cordova-plugin-moodleapp
-    - name: Run tests
-      run: npm run test:ci
-    - name: Production builds
-      run: |
-        npm run build:prod
-        npm run prod --prefix cordova-plugin-moodleapp
-      env:
+          langkeys=`jq -r 'keys[]' src/assets/lang/en.json`
+          langindex=`jq -r 'keys[]' scripts/langindex.json`
+          found=0
+          for i in $langkeys; do
+              skip=
+              for j in $langindex; do
+                  if [ "$i" == "$j" ]; then
+                    skip=1
+                    break;
+                  fi
+              done
+              [[ -n $skip ]] || { echo "$i key not found"; found=$(($found + 1)); }
+          done
+          if [ $found -ne 0 ]; then
+            echo "::error::Found $found missing langkeys"
+            exit 1
+          fi
+      - name: Run Linters (ignore warnings)
+        run: |
+          npm run lint -- --quiet
+          npm run lint --prefix cordova-plugin-moodleapp
+      - name: Run tests
+        run: npm run test:ci
+      - name: Production builds
+        run: |
+          npm run build:prod
+          npm run prod --prefix cordova-plugin-moodleapp
+        env:
           MOODLE_APP_CIRCULAR_DEPENDENCIES: true
-    - name: Circular dependencies
-      run: |
-        cat circular-dependencies
-        lines=$(cat circular-dependencies | wc -l)
-        echo "Total circular dependencies: $lines"
-        test $lines -eq 80
-    - name: JavaScript code compatibility
-      run: |
-        # Check for ES2021 features, allowing ErrorCause feature.
-        # browserslist is not used here because of a bug in es-check
-        # See https://github.com/yowainwright/es-check/blob/main/constants.js to see the list of features and polyfills.
-        npx es-check --config=.escheckrc
-        # In order to support Chrome 93 and iOS 15 we need to find Static initialization blocks are not present in the code.
-        # See https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Classes/Static_initialization_blocks
-        # acorn is used by es-check but cannot check for this feature only, so we need to check it manually.
-        if grep -qE '(^|[^-])\bstatic[ ]*\{' www/*.js cordova-plugin-moodleapp/www/*.js; then
-          echo "::error::Static initialization blocks are not supported in Chrome 93 and iOS 15."
-          exit 1
-        fi
+      - name: Circular dependencies
+        run: |
+          cat circular-dependencies
+          lines=$(cat circular-dependencies | wc -l)
+          echo "Total circular dependencies: $lines"
+          test $lines -eq 80
+      - name: JavaScript code compatibility
+        run: |
+          # Check for ES2021 features, allowing ErrorCause feature.
+          # browserslist is not used here because of a bug in es-check
+          # See https://github.com/yowainwright/es-check/blob/main/constants.js to see the list of features and polyfills.
+          npx es-check --config=.escheckrc
+          # In order to support Chrome 93 and iOS 15 we need to find Static initialization blocks are not present in the code.
+          # See https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Classes/Static_initialization_blocks
+          # acorn is used by es-check but cannot check for this feature only, so we need to check it manually.
+          if grep -qE '(^|[^-])\bstatic[ ]*\{' www/*.js cordova-plugin-moodleapp/www/*.js; then
+            echo "::error::Static initialization blocks are not supported in Chrome 93 and iOS 15."
+            exit 1
+          fi

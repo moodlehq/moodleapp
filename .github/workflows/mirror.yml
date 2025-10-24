@@ -2,7 +2,7 @@ name: Mirror
 
 on:
   push:
-    branches: [ main, v*.x ]
+    branches: [main, v*.x]
 
 jobs:
   mirror:
@@ -10,11 +10,11 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v4
-      with:
-        persist-credentials: false
-        fetch-depth: 0
-    - name: Mirror the branch and tags
-      env:
-        GIT_TOKEN: ${{ secrets.GIT_TOKEN }}
-      run: ./.github/scripts/mirror.sh
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Mirror the branch and tags
+        env:
+          GIT_TOKEN: ${{ secrets.GIT_TOKEN }}
+        run: ./.github/scripts/mirror.sh

@@ -1,22 +1,22 @@
 name: Update Behat plugin
 
-on: ['push']
+on: ["push"]
 
 jobs:
   update:
     if: github.repository == 'moodlehq/moodleapp' || github.repository == 'moodlemobile/moodleapp'
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4
-    - uses: actions/setup-node@v4
-      with:
-        node-version-file: '.nvmrc'
-    - name: Install npm packages
-      run: npm ci --no-audit
-    - name: Update Behat plugin
-      env:
-        GIT_TOKEN: ${{ secrets.GIT_TOKEN }}
-        BEHAT_PLUGIN_GITHUB_REPOSITORY: ${{ secrets.BEHAT_PLUGIN_GITHUB_REPOSITORY }}
-        BEHAT_PLUGIN_BRANCH: ${{ secrets.BEHAT_PLUGIN_BRANCH }}
-        BEHAT_PLUGIN_EXCLUDE_FEATURES: ${{ secrets.BEHAT_PLUGIN_EXCLUDE_FEATURES }}
-      run: ./.github/scripts/update_behat_plugin.sh
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: ".nvmrc"
+      - name: Install npm packages
+        run: npm ci --no-audit
+      - name: Update Behat plugin
+        env:
+          GIT_TOKEN: ${{ secrets.GIT_TOKEN }}
+          BEHAT_PLUGIN_GITHUB_REPOSITORY: ${{ secrets.BEHAT_PLUGIN_GITHUB_REPOSITORY }}
+          BEHAT_PLUGIN_BRANCH: ${{ secrets.BEHAT_PLUGIN_BRANCH }}
+          BEHAT_PLUGIN_EXCLUDE_FEATURES: ${{ secrets.BEHAT_PLUGIN_EXCLUDE_FEATURES }}
+        run: ./.github/scripts/update_behat_plugin.sh
