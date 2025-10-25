@@ -1,21 +1,9 @@
-<?xml version='1.0' encoding='utf-8' ?>
-<widget
-    android-versionCode="45102"
-    id="org.capriolegroup.aspire"
-    ios-CFBundleVersion="4.5.2.0"
-    version="4.5.2"
-    versionCode="45202"
-    xmlns="http://www.w3.org/ns/widgets"
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:cdv="http://cordova.apache.org/ns/1.0"
->
+<?xml version='1.0' encoding='utf-8'?>
+<widget android-versionCode="45102" id="org.capriolegroup.aspire" ios-CFBundleVersion="4.5.2.0" version="4.5.2" versionCode="45202" xmlns="http://www.w3.org/ns/widgets" xmlns:android="http://schemas.android.com/apk/res/android" xmlns:cdv="http://cordova.apache.org/ns/1.0">
     <name>Aspire School</name>
     <description>Aspire School Learning Platform</description>
-    <author
-        email="support@aspireschool.org"
-        href="https://aspireschool.org"
-    >Aspire School</author>
-    <content original-src="index.html" src="http://192.168.40.6:8100" />
+    <author email="support@aspireschool.org" href="https://aspireschool.org">Aspire School</author>
+    <content src="index.html" />
     <access origin="*" />
     <access launch-external="yes" origin="tel:*" />
     <access launch-external="yes" origin="mailto:*" />
@@ -30,10 +18,7 @@
     <allow-intent href="sms:*" />
     <allow-intent href="mailto:*" />
     <allow-intent href="geo:*" />
-    <hook
-        src="scripts/cordova-hooks/before_plugin_add.sh"
-        type="before_plugin_add"
-    />
+    <hook src="scripts/cordova-hooks/before_plugin_add.sh" type="before_plugin_add" />
     <preference name="permissions" value="none" />
     <preference name="orientation" value="default" />
     <preference name="target-device" value="universal" />
@@ -73,128 +58,50 @@
         <param name="ios-package" onload="true" value="CDVStatusBar" />
     </feature>
     <platform name="android">
-        <preference
-            name="AndroidWindowSplashScreenAnimatedIcon"
-            value="resources/android/android-splash.xml"
-        />
-        <preference
-            name="AndroidWindowSplashScreenBackground"
-            value="#4A9B8E"
-        />
-        <preference
-            name="AndroidWindowSplashScreenIconBackgroundColor"
-            value="#4A9B8E"
-        />
-        <resource-file
-            src="google-services.json"
-            target="app/google-services.json"
-        />
-        <resource-file
-            src="resources/android/icon/drawable-ldpi-smallicon.png"
-            target="app/src/main/res/mipmap-ldpi/smallicon.png"
-        />
-        <resource-file
-            src="resources/android/icon/drawable-mdpi-smallicon.png"
-            target="app/src/main/res/mipmap-mdpi/smallicon.png"
-        />
-        <resource-file
-            src="resources/android/icon/drawable-hdpi-smallicon.png"
-            target="app/src/main/res/mipmap-hdpi/smallicon.png"
-        />
-        <resource-file
-            src="resources/android/icon/drawable-xhdpi-smallicon.png"
-            target="app/src/main/res/mipmap-xhdpi/smallicon.png"
-        />
-        <resource-file
-            src="resources/android/xml/network_security_config.xml"
-            target="app/src/main/res/xml/network_security_config.xml"
-        />
-        <resource-file
-            src="resources/android/xml/backup_rules.xml"
-            target="app/src/main/res/xml/backup_rules.xml"
-        />
-        <edit-config
-            file="AndroidManifest.xml"
-            mode="merge"
-            target="/manifest/application"
-        >
-            <application
-                android:allowBackup="true"
-                android:dataExtractionRules="@xml/backup_rules"
-                android:largeHeap="true"
-                android:networkSecurityConfig="@xml/network_security_config"
-            />
+        <preference name="AndroidWindowSplashScreenAnimatedIcon" value="resources/android/android-splash.xml" />
+        <preference name="AndroidWindowSplashScreenBackground" value="#4A9B8E" />
+        <preference name="AndroidWindowSplashScreenIconBackgroundColor" value="#4A9B8E" />
+        <resource-file src="google-services.json" target="app/google-services.json" />
+        <resource-file src="resources/android/icon/drawable-ldpi-smallicon.png" target="app/src/main/res/mipmap-ldpi/smallicon.png" />
+        <resource-file src="resources/android/icon/drawable-mdpi-smallicon.png" target="app/src/main/res/mipmap-mdpi/smallicon.png" />
+        <resource-file src="resources/android/icon/drawable-hdpi-smallicon.png" target="app/src/main/res/mipmap-hdpi/smallicon.png" />
+        <resource-file src="resources/android/icon/drawable-xhdpi-smallicon.png" target="app/src/main/res/mipmap-xhdpi/smallicon.png" />
+        <resource-file src="resources/android/xml/network_security_config.xml" target="app/src/main/res/xml/network_security_config.xml" />
+        <resource-file src="resources/android/xml/backup_rules.xml" target="app/src/main/res/xml/backup_rules.xml" />
+        <edit-config file="AndroidManifest.xml" mode="merge" target="/manifest/application">
+            <application android:allowBackup="true" android:dataExtractionRules="@xml/backup_rules" android:largeHeap="true" android:networkSecurityConfig="@xml/network_security_config" />
         </edit-config>
-        <config-file
-            parent="/manifest/application"
-            target="AndroidManifest.xml"
-        >
-            <meta-data
-                android:name="firebase_analytics_collection_deactivated"
-                android:value="true"
-            />
+        <config-file parent="/manifest/application" target="AndroidManifest.xml">
+            <meta-data android:name="firebase_analytics_collection_deactivated" android:value="true" />
         </config-file>
         <config-file parent="/*" target="AndroidManifest.xml">
-            <uses-feature
-                android:name="android.hardware.bluetooth"
-                android:required="false"
-            />
-            <uses-permission
-                android:name="android.permission.MODIFY_AUDIO_SETTINGS"
-            />
+            <uses-feature android:name="android.hardware.bluetooth" android:required="false" />
+            <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
         </config-file>
     </platform>
     <platform name="ios">
         <resource-file src="GoogleService-Info.plist" />
-        <edit-config
-            file="*-Info.plist"
-            mode="merge"
-            target="NSCameraUsageDescription"
-        >
-            <string
-            >We need camera access to take pictures so you can use them for changing your profile picture, attach them in your tasks submission and share them with the teachers.</string>
+        <edit-config file="*-Info.plist" mode="merge" target="NSCameraUsageDescription">
+            <string>We need camera access to take pictures so you can use them for changing your profile picture, attach them in your tasks submission and share them with the teachers.</string>
         </edit-config>
-        <edit-config
-            file="*-Info.plist"
-            mode="merge"
-            target="NSPhotoLibraryUsageDescription"
-        >
-            <string
-            >We need photo library access to get pictures from there so you can use them for changing your profile picture, attach them in your tasks submission and share them with the teachers.</string>
+        <edit-config file="*-Info.plist" mode="merge" target="NSPhotoLibraryUsageDescription">
+            <string>We need photo library access to get pictures from there so you can use them for changing your profile picture, attach them in your tasks submission and share them with the teachers.</string>
         </edit-config>
-        <edit-config
-            file="*-Info.plist"
-            mode="merge"
-            target="UISupportsDocumentBrowser"
-        >
+        <edit-config file="*-Info.plist" mode="merge" target="UISupportsDocumentBrowser">
             <true />
         </edit-config>
-        <edit-config
-            file="*-Info.plist"
-            mode="merge"
-            target="CFBundleShortVersionString"
-        >
+        <edit-config file="*-Info.plist" mode="merge" target="CFBundleShortVersionString">
             <string>4.5.0</string>
         </edit-config>
-        <edit-config
-            file="*-Info.plist"
-            mode="overwrite"
-            target="CFBundleLocalizations"
-        >
+        <edit-config file="*-Info.plist" mode="overwrite" target="CFBundleLocalizations">
             <array>
                 <string>en</string>
             </array>
         </edit-config>
-        <config-file
-            parent="FIREBASE_ANALYTICS_COLLECTION_DEACTIVATED"
-            target="*-Info.plist"
-        >
+        <config-file parent="FIREBASE_ANALYTICS_COLLECTION_DEACTIVATED" target="*-Info.plist">
             <string>YES</string>
         </config-file>
-        <config-file
-            parent="UISupportedInterfaceOrientations"
-            target="*-Info.plist"
-        >
+        <config-file parent="UISupportedInterfaceOrientations" target="*-Info.plist">
             <array>
                 <string>UIInterfaceOrientationPortrait</string>
                 <string>UIInterfaceOrientationPortraitUpsideDown</string>
@@ -202,10 +109,7 @@
                 <string>UIInterfaceOrientationLandscapeRight</string>
             </array>
         </config-file>
-        <config-file
-            parent="UISupportedInterfaceOrientations~ipad"
-            target="*-Info.plist"
-        >
+        <config-file parent="UISupportedInterfaceOrientations~ipad" target="*-Info.plist">
             <array>
                 <string>UIInterfaceOrientationPortrait</string>
                 <string>UIInterfaceOrientationPortraitUpsideDown</string>
@@ -216,17 +120,10 @@
         <config-file parent="UIRequiresFullScreen" target="*-Info.plist">
             <false />
         </config-file>
-        <config-file
-            parent="NSCrossWebsiteTrackingUsageDescription"
-            target="*-Info.plist"
-        >
-            <string
-            >This app needs third party cookies to correctly render embedded content from the Moodle site.</string>
+        <config-file parent="NSCrossWebsiteTrackingUsageDescription" target="*-Info.plist">
+            <string>This app needs third party cookies to correctly render embedded content from the Moodle site.</string>
         </config-file>
-        <config-file
-            parent="ITSAppUsesNonExemptEncryption"
-            target="*-Info.plist"
-        >
+        <config-file parent="ITSAppUsesNonExemptEncryption" target="*-Info.plist">
             <false />
         </config-file>
         <config-file parent="CFBundleDocumentTypes" target="*-Info.plist">
@@ -570,8 +467,7 @@
                     <key>LSItemContentTypes</key>
                     <array>
                         <string>com.microsoft.powerpoint.​ppt</string>
-                        <string
-                        >org.openxmlformats.presentationml.presentation</string>
+                        <string>org.openxmlformats.presentationml.presentation</string>
                     </array>
                 </dict>
                 <dict>
@@ -594,8 +490,7 @@
                     <array>
                         <string>com.microsoft.word.doc</string>
                         <string>com.microsoft.word.wordml</string>
-                        <string
-                        >org.openxmlformats.wordprocessingml.document</string>
+                        <string>org.openxmlformats.wordprocessingml.document</string>
                     </array>
                 </dict>
                 <dict>

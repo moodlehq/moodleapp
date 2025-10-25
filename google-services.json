@@ -10,7 +10,7 @@
             "client_info": {
                 "mobilesdk_app_id": "1:111111111111:android:1111111111111111",
                 "android_client_info": {
-                    "package_name": "org.aspireschool.aspire"
+                    "package_name": "org.capriolegroup.aspire"
                 }
             },
             "oauth_client": [
