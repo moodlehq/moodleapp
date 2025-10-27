@@ -49,8 +49,8 @@ export default class AddonModChatChatPage implements OnInit, OnDestroy, CanLeave
 
     protected static readonly POLL_INTERVAL = 4000;
 
-    readonly content = viewChild.required(IonContent);
-    readonly sendMessageForm = viewChild(CoreSendMessageFormComponent);
+    protected readonly content = viewChild.required(IonContent);
+    protected readonly sendMessageForm = viewChild(CoreSendMessageFormComponent);
 
     loaded = false;
     title = '';
@@ -196,7 +196,7 @@ export default class AddonModChatChatPage implements OnInit, OnDestroy, CanLeave
 
         if (modalData) {
             if (modalData.talkTo) {
-                this.newMessage = `To ${modalData.talkTo}: ${this.sendMessageForm()?.message || ''}`;
+                this.newMessage = `To ${modalData.talkTo}: ${this.sendMessageForm()?.message() ?? ''}`;
             }
             if (modalData.beepTo) {
                 this.sendMessage('', modalData.beepTo);
