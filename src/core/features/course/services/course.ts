@@ -277,10 +277,10 @@ export class CoreCourseProvider {
         courseId: number,
         siteId?: string,
         userId?: number,
-        forceCache: boolean = false,
-        ignoreCache: boolean = false,
-        includeOffline: boolean = true,
-    ): Promise<Record<string, CoreCourseCompletionActivityStatus>> {
+        forceCache = false,
+        ignoreCache = false,
+        includeOffline = true,
+    ): Promise<Record<number, CoreCourseCompletionActivityStatus>> {
 
         const site = await CoreSites.getSite(siteId);
         userId = userId || site.getUserId();
@@ -1547,10 +1547,10 @@ export type CoreCourseCompletionActivityStatus = {
     cmid: number; // Course module ID.
     modname: string; // Activity module name.
     instance: number; // Instance ID.
-    state: number; // Completion state value: 0 means incomplete, 1 complete, 2 complete pass, 3 complete fail.
+    state: CoreCourseModuleCompletionStatus; // Completion state value.
     timecompleted: number; // Timestamp for completed activity.
     tracking: CoreCourseModuleCompletionTracking; // Type of tracking: 0 means none, 1 manual, 2 automatic.
-    overrideby?: number | null; // The user id who has overriden the status, or null.
+    overrideby: number | null; // The user id who has overriden the status, or null.
     valueused?: boolean; // Whether the completion status affects the availability of another activity.
     hascompletion?: boolean; // @since 3.11. Whether this activity module has completion enabled.
     isautomatic?: boolean; // @since 3.11. Whether this activity module instance tracks completion automatically.
