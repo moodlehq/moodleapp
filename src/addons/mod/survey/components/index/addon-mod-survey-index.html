@@ -35,18 +35,21 @@
             <!-- Survey questions -->
             <form>
                 <ion-grid class="ion-no-padding ion-text-wrap">
-                    <ng-container *ngFor="let question of questions; let questionIndex=index; let isEven=even;"
-                        class="ion-no-padding ion-text-wrap">
-                        <!-- Parent question (Category header) -->
+                    @for (question of questions; track question.id; let questionIndex = $index; let isEven=$even) {
                         @if (question.multiArray?.length) {
-
+                            <!-- Parent question (Category header) -->
                             <h3 class="ion-padding-horizontal" [class.ion-padding-top]="questionIndex === 1">{{ question.text }}</h3>
+
                             <ion-row class="ion-align-items-center ion-hide-md-down ion-padding">
-                                <ion-col size="7" class="ion-padding">{{ 'addon.mod_survey.responses' | translate }}</ion-col>
-                                <ion-col size="1" class="ion-text-center option-name"
-                                    *ngFor="let option of question.optionsArray; let indexOption=index;">
-                                    {{ option }}
+                                <ion-col size="6" class="ion-padding">{{ 'addon.mod_survey.responses' | translate }}</ion-col>
+                                <ion-col size="1" class="ion-text-center option-name">
+                                    {{ 'core.question.notyetanswered' | translate }}
                                 </ion-col>
+                                @for (option of question.optionsArray; track option; let indexOption = $index) {
+                                    <ion-col size="1" class="ion-text-center option-name">
+                                        {{ option }}
+                                    </ion-col>
+                                }
                             </ion-row>
                             <ion-item class="ion-text-wrap addon-mod_survey-question" [class.even]="isEven" lines="full">
                                 <ion-label>
@@ -56,73 +59,74 @@
 
                         }
 
-                        <!-- Subquestion -->
                         @if (question.parent !== 0) {
-
-                            <ion-radio-group [(ngModel)]="answers[question.name]" [required]="!!question.required" [name]="question.name">
+                            <!-- Subquestion -->
+                            <ion-radio-group [(ngModel)]="answers[question.name]" [required]="question.required" [name]="question.name">
                                 <ion-row class="ion-align-items-center ion-padding-horizontal" [class.even]="isEven">
 
-                                    <ion-col size="7">
+                                    <ion-col size="6">
                                         <span id="addon-mod_survey-{{question.name}}" [core-mark-required]="question.required">
                                             <strong>{{question.num}}.</strong> {{ question.text }}
                                         </span>
                                     </ion-col>
 
                                     <!-- Tablet view: radio buttons -->
-                                    <ion-col class="ion-hide-md-down ion-text-center" size="1"
-                                        *ngFor="let option of question.optionsArray; let value=index;">
+                                    <ion-col class="ion-hide-md-down ion-text-center" size="1">
                                         <!-- Empty slot to avoid errors on migration tslint checks -->
-                                        <ion-radio [value]="value + 1"
-                                            [attr.aria-label]="question.num + '. '+question.text + ': ' + option" />
+                                        <ion-radio value="-1"
+                                            [attr.aria-label]="question.num + '. '+question.text + ': ' +
+                                            ('core.question.notyetanswered' | translate)" />
                                     </ion-col>
+                                    @for (option of question.optionsArray; track option; let value = $index) {
+                                        <ion-col class="ion-hide-md-down ion-text-center" size="1">
+                                            <!-- Empty slot to avoid errors on migration tslint checks -->
+                                            <ion-radio [value]="value + 1"
+                                                [attr.aria-label]="question.num + '. '+question.text + ': ' + option" />
+                                        </ion-col>
+                                    }
                                     <ion-col class="ion-hide-md-up" size="5">
                                         <ion-select class="ion-padding" [(ngModel)]="answers[question.name]"
-                                            [required]="!!question.required" [attr.aria-labelledby]="'addon-mod_survey-'+question.name"
+                                            [required]="question.required" [attr.aria-labelledby]="'addon-mod_survey-'+question.name"
                                             interface="action-sheet" [name]="question.name" [cancelText]="'core.cancel' | translate"
                                             [interfaceOptions]="{header: question.text}">
-                                            <ion-select-option value="-1" selected
-                                                disabled>{{ 'core.choose' | translate }}</ion-select-option>
-                                            <ion-select-option *ngFor="let option of question.optionsArray; let value=index;"
-                                                [value]="value +1">
-                                                {{option}}
-                                            </ion-select-option>
+                                            <ion-select-option value="-1" selected disabled>
+                                                {{ 'core.question.notyetanswered' | translate }}</ion-select-option>
+                                            @for (option of question.optionsArray; track option; let value = $index) {
+                                                <ion-select-option [value]="value +1">{{option}}</ion-select-option>
+                                            }
                                         </ion-select>
                                     </ion-col>
                                 </ion-row>
                             </ion-radio-group>
 
-                        }
-
-                        <!-- Single question (don't belong to a category) -->
-                        @if ((!question.multiArray || question.multiArray.length === 0) && question.parent === 0) {
-
+                        } @else if (!question.multiArray || question.multiArray.length === 0) {
+                            <!-- Single question (don't belong to a category) -->
                             @if (question.type > 0) {
                                 <ion-row class="ion-align-items-center ion-padding" [class.even]="isEven">
-                                    <ion-col size="7">
+                                    <ion-col size="6">
                                         <span id="addon-mod_survey-{{question.name}}" [core-mark-required]="question.required">
                                             <strong>{{question.num}}.</strong> {{ question.text }}
                                         </span>
                                     </ion-col>
-                                    <ion-col size="5">
+                                    <ion-col size="6">
                                         <ion-select class="ion-padding" [(ngModel)]="answers[question.name]"
-                                            [required]="!!question.required" [attr.aria-labelledby]="'addon-mod_survey-'+question.name"
+                                            [required]="question.required" [attr.aria-labelledby]="'addon-mod_survey-'+question.name"
                                             interface="action-sheet" [name]="question.name" [cancelText]="'core.cancel' | translate"
                                             [interfaceOptions]="{header: question.text}">
                                             <ion-select-option [value]="question.required ? '-1' : '0'" selected
                                                 [disabled]="question.required">
-                                                {{ 'core.choose' | translate }}
+                                                {{ 'core.question.notyetanswered' | translate }}
                                             </ion-select-option>
-                                            <ion-select-option *ngFor="let option of question.optionsArray; let value=index;"
-                                                [value]="value +1">
-                                                {{option}}
-                                            </ion-select-option>
+                                            @for (option of question.optionsArray; track option; let value = $index) {
+                                                <ion-select-option [value]="value +1">{{option}}</ion-select-option>
+                                            }
                                         </ion-select>
                                     </ion-col>
                                 </ion-row>
                             } @else {
                                 <ion-item class="ion-text-wrap" [class.even]="isEven">
                                     <ion-textarea labelPlacement="floating" [(ngModel)]="answers[question.name]" [name]="question.name"
-                                        [required]="!!question.required">
+                                        [required]="question.required">
                                         <p slot="label" [core-mark-required]="question.required">
                                             <strong>{{question.num}}.</strong> {{ question.text }}
                                         </p>
@@ -130,8 +134,7 @@
                                 </ion-item>
                             }
                         }
-
-                    </ng-container>
+                    }
                 </ion-grid>
             </form>
         }
