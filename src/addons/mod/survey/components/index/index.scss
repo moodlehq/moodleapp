@@ -1,6 +1,6 @@
 :host {
-    --grid-background: var(--white);
-    --even-background: var(--gray-200);
+    --grid-background: var(--core-table-odd-cell-background);
+    --even-background: var(--core-table-even-cell-background);
 
     .option-name {
         font-size: var(--text-size);
@@ -23,9 +23,4 @@
         width: var(--a11y-sizing-minTargetSize);
         padding: 12px;
     }
-}
-
-:host-context(:root.dark) {
-    --grid-background: var(--gray-900);
-    --even-background: var(--medium);
 }
