@@ -91,7 +91,7 @@
                                     @for (handler of buttonHandlers; track handler.name) {
                                         <ion-button expand="block" size="default"
                                             [class]="['core-user-profile-handler', handler.class]"
-                                            (click)="handlerClicked($event, handler)" [hidden]="handler.hidden"
+                                            (click)="handlerClicked($event, handler)"
                                             [attr.aria-label]="handler.title | translate" [disabled]="handler.spinner">
                                             @if (handler.icon) {
                                                 <ion-icon [name]="handler.icon" slot="start" aria-hidden="true" />
