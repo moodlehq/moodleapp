@@ -291,10 +291,10 @@ export type AddonModSurveyQuestion = {
     id: number; // Question id.
     text: string; // Question text.
     shorttext: string; // Question short text.
-    multi: string; // Subquestions ids.
+    multi: string | null; // Subquestions ids.
     intro: string; // The question intro.
     type: number; // Question type.
-    options: string; // Question options.
+    options: string | null; // Question options.
     parent: number; // Parent question (for subquestions).
 };
 
