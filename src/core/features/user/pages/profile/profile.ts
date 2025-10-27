@@ -57,8 +57,8 @@ export default class CoreUserProfilePage implements OnInit, OnDestroy {
     isSuspended = false;
     isEnrolled = true;
     rolesFormatted?: string;
-    listItemHandlers: CoreUserProfileHandlerData[] = [];
-    buttonHandlers: CoreUserProfileHandlerData[] = [];
+    listItemHandlers: HandlerData[] = [];
+    buttonHandlers: HandlerData[] = [];
 
     users?: CoreUserSwipeItemsManager;
 
@@ -163,14 +163,14 @@ export default class CoreUserProfilePage implements OnInit, OnDestroy {
                 handlers.forEach((handler) => {
                     switch (handler.type) {
                         case CoreUserProfileHandlerType.BUTTON:
-                            this.buttonHandlers.push(handler.data);
+                            this.buttonHandlers.push({ name: handler.name, ...handler.data });
                             break;
                         case CoreUserProfileHandlerType.LIST_ACCOUNT_ITEM:
                             // Discard this for now.
                             break;
                         case CoreUserProfileHandlerType.LIST_ITEM:
                         default:
-                            this.listItemHandlers.push(handler.data);
+                            this.listItemHandlers.push({ name: handler.name, ...handler.data });
                             break;
                     }
                 });
@@ -262,3 +262,5 @@ class CoreUserSwipeItemsManager extends CoreSwipeNavigationItemsManager {
     }
 
 }
+
+type HandlerData = CoreUserProfileHandlerData & { name: string };

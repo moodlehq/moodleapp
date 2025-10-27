@@ -52,8 +52,8 @@ export class CoreMainMenuUserMenuComponent implements OnInit, OnDestroy {
     siteInfo?: CoreSiteInfo;
     siteUrl?: string;
     displaySiteUrl = false;
-    handlers: CoreUserProfileHandlerData[] = [];
-    accountHandlers: CoreUserProfileHandlerData[] = [];
+    handlers: HandlerData[] = [];
+    accountHandlers: HandlerData[] = [];
     handlersLoaded = false;
     user?: CoreUserProfile;
     displaySwitchAccount = true;
@@ -100,7 +100,10 @@ export class CoreMainMenuUserMenuComponent implements OnInit, OnDestroy {
 
                 let newHandlers = handlers
                     .filter((handler) => handler.type === CoreUserProfileHandlerType.LIST_ITEM)
-                    .map((handler) => handler.data);
+                    .map((handler) => ({
+                        name: handler.name,
+                        ...handler.data,
+                    }));
 
                 // Only update handlers if they have changed, to prevent a blink effect.
                 if (newHandlers.length !== this.handlers.length ||
@@ -110,7 +113,10 @@ export class CoreMainMenuUserMenuComponent implements OnInit, OnDestroy {
 
                 newHandlers = handlers
                     .filter((handler) => handler.type === CoreUserProfileHandlerType.LIST_ACCOUNT_ITEM)
-                    .map((handler) => handler.data);
+                    .map((handler) => ({
+                        name: handler.name,
+                        ...handler.data,
+                    }));
 
                 // Only update handlers if they have changed, to prevent a blink effect.
                 if (newHandlers.length !== this.accountHandlers.length ||
@@ -258,3 +264,5 @@ export class CoreMainMenuUserMenuComponent implements OnInit, OnDestroy {
     }
 
 }
+
+type HandlerData = CoreUserProfileHandlerData & { name: string };

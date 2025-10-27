@@ -163,7 +163,7 @@ export interface CoreUserProfileHandlerToDisplay {
     /**
      * Name of the handler.
      */
-    name?: string;
+    name: string;
 
     /**
      * Data to display.
