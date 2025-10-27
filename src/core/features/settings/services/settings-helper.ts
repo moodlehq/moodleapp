@@ -403,7 +403,7 @@ export class CoreSettingsHelperProvider {
             return;
         }
 
-        element.setAttribute('content', content.replace(/maximum-scale=\d\.\d/, `maximum-scale=${pinchToZoom ? '4.0' : '1.0'}`));
+        element.setAttribute('content', content.replace(/maximum-scale=\d\.\d/, `maximum-scale=${pinchToZoom ? '2.0' : '1.0'}`));
 
         // Force layout reflow.
         document.body.style.width = '99.9999%';
