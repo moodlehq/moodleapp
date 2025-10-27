@@ -13,6 +13,7 @@
 // limitations under the License.
 
 import { DownloadStatus } from '@/core/constants';
+import { CoreCourseModuleCompletionStatus } from '@features/course/constants';
 import { CoreSiteSchema } from '@services/sites';
 
 /**
@@ -139,7 +140,7 @@ export type CoreCourseViewedModulesDBPrimaryKeys = typeof COURSE_VIEWED_MODULES_
 
 export type CoreCourseManualCompletionDBRecord = {
     cmid: number;
-    completed: number;
+    completed: CoreCourseModuleCompletionStatus;
     courseid: number;
     timecompleted: number;
 };
