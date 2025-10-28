@@ -915,6 +915,7 @@ export type CoreSitePluginsUserHandlerData = CoreSitePluginsHandlerCommonData & 
     priority?: number;
     ptrenabled?: boolean;
     displayinusermenu?: CoreSitePluginsDisplayInUserMenu;
+    displayinline?: boolean;
 };
 
 /**

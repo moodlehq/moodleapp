@@ -60,7 +60,6 @@ export class CoreMainMenuUserMenuComponent implements OnInit, OnDestroy {
     displaySwitchAccount = true;
     displayContactSupport = false;
     removeAccountOnLogout = false;
-    handlerComponentData: Record<string, unknown> = {};
 
     protected siteId?: string;
     protected siteName?: string;
@@ -94,7 +93,7 @@ export class CoreMainMenuUserMenuComponent implements OnInit, OnDestroy {
             };
         }
 
-        this.handlerComponentData = {
+        const defaultComponentData = {
             user: this.user,
             context: CoreUserDelegateContext.USER_MENU,
         };
@@ -110,6 +109,10 @@ export class CoreMainMenuUserMenuComponent implements OnInit, OnDestroy {
                     .map((handler) => ({
                         name: handler.name,
                         ...handler.data,
+                        componentData: 'componentData' in handler.data ? {
+                            ...defaultComponentData,
+                            ...(handler.data.componentData || {}),
+                        } : undefined,
                     }));
 
                 // Only update handlers if they have changed, to prevent a blink effect.
@@ -123,6 +126,10 @@ export class CoreMainMenuUserMenuComponent implements OnInit, OnDestroy {
                     .map((handler) => ({
                         name: handler.name,
                         ...handler.data,
+                        componentData: 'componentData' in handler.data ? {
+                            ...defaultComponentData,
+                            ...(handler.data.componentData || {}),
+                        } : undefined,
                     }));
 
                 // Only update handlers if they have changed, to prevent a blink effect.

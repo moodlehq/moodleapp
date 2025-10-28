@@ -181,6 +181,11 @@ export type CoreUserProfileListComponentHandlerData =  {
      * Component to render.
      */
     component: Type<unknown>;
+
+    /**
+     * Data to pass to the component. The app will also provide some default data.
+     */
+    componentData?: Record<string, unknown>;
 };
 
 /**

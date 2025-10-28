@@ -18,6 +18,7 @@ import {
     CoreUserProfileListHandlerData,
 } from '@features/user/services/user-delegate';
 import { CoreSitePluginsBaseUserProfileHandler } from './base-user-handler';
+import { CoreSitePluginsUserProfileItemComponent } from '@features/siteplugins/components/user-profile-item/user-profile-item';
 
 /**
  * Handler to display a list site plugin in the user profile.
@@ -31,8 +32,18 @@ export class CoreSitePluginsUserProfileListHandler extends CoreSitePluginsBaseUs
      * @inheritdoc
      */
     getDisplayData(): CoreUserProfileListHandlerData {
-        // @todo: Support rendering component list handlers.
-        return this.getActionDisplayData();
+        if (!this.handlerSchema.displayinline) {
+            return this.getActionDisplayData();
+        }
+
+        return {
+            component: CoreSitePluginsUserProfileItemComponent,
+            componentData: {
+                component: this.plugin.component,
+                method: this.handlerSchema.method,
+                initResult: this.initResult,
+            },
+        };
     }
 
 }

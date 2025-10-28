@@ -103,7 +103,7 @@
     @let handler = castHandlerType(handlerUntyped);
 
     @if ('component' in handler) {
-        <core-dynamic-component [component]="handler.component" [data]="handlerComponentData" />
+        <core-dynamic-component [component]="handler.component" [data]="handler.componentData" />
     } @else {
         <ion-item button (click)="handlerClicked($event, handler)" [class]="['ion-text-wrap', typeClass, handler.class]"
             [class.core-user-menu-separator]="addSeparator" [hidden]="handler.hidden"

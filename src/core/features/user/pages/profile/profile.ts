@@ -61,7 +61,6 @@ export default class CoreUserProfilePage implements OnInit, OnDestroy {
     rolesFormatted?: string;
     listItemHandlers: ListHandlerData[] = [];
     buttonHandlers: ButtonHandlerData[] = [];
-    handlerComponentData: Record<string, unknown> = {};
 
     users?: CoreUserSwipeItemsManager;
 
@@ -159,7 +158,7 @@ export default class CoreUserProfilePage implements OnInit, OnDestroy {
             this.subscription?.unsubscribe();
 
             const context = this.courseId ? CoreUserDelegateContext.COURSE : CoreUserDelegateContext.SITE;
-            this.handlerComponentData = {
+            const defaultComponentData = {
                 user: this.user,
                 context,
                 courseId: this.courseId,
@@ -178,7 +177,14 @@ export default class CoreUserProfilePage implements OnInit, OnDestroy {
                             break;
                         case CoreUserProfileHandlerType.LIST_ITEM:
                         default:
-                            this.listItemHandlers.push({ name: handler.name, ...handler.data });
+                            this.listItemHandlers.push({
+                                name: handler.name,
+                                ...handler.data,
+                                componentData: 'componentData' in handler.data ? {
+                                    ...defaultComponentData,
+                                    ...(handler.data.componentData || {}),
+                                } : undefined,
+                            });
                             break;
                     }
                 });

@@ -126,7 +126,7 @@
 
                 @for (handler of listItemHandlers; track handler.name) {
                     @if ('component' in handler) {
-                        <core-dynamic-component [component]="handler.component" [data]="handlerComponentData" />
+                        <core-dynamic-component [component]="handler.component" [data]="handler.componentData" />
                     } @else {
                         <ion-item button (click)="handlerClicked($event, handler)"
                             [class]="['ion-text-wrap', 'core-user-profile-handler', handler.class]" [hidden]="handler.hidden"
