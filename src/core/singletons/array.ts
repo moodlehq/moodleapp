@@ -35,10 +35,10 @@ export class CoreArray {
     static toObject<T>(
         array: T[] = [],
         propertyName?: string,
-        result: Record<string, T> = {},
-    ): Record<string, T> {
+        result: Record<string | number | symbol, T> = {},
+    ): Record<string | number | symbol, T> {
         for (const entry of array) {
-            const key = propertyName ? entry[propertyName] : entry;
+            const key: string | number | symbol = propertyName ? entry[propertyName] : entry;
 
             result[key] = entry;
         }
