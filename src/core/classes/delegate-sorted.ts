@@ -106,13 +106,9 @@ export class CoreSortedDelegate<
         const displayData: DisplayType[] = [];
 
         for (const name in this.enabledHandlers) {
-            const handler = this.enabledHandlers[name];
-            const data = <DisplayType> handler.getDisplayData();
+            const handler = this.getHandlerDisplayData(name);
 
-            data.priority = data.priority ?? handler.priority ?? 0;
-            data.name = handler.name;
-
-            displayData.push(data);
+            displayData.push(handler);
         }
 
         // Sort them by priority.
@@ -121,6 +117,22 @@ export class CoreSortedDelegate<
         this.handlersLoaded = true;
         this.sortedHandlersRxJs.next(displayData);
         this.sortedHandlers = displayData;
+    }
+
+    /**
+     * Get display data for a handler.
+     *
+     * @param name Name of the handler.
+     * @returns Display data.
+     */
+    protected getHandlerDisplayData(name: string): DisplayType {
+        const handler = this.enabledHandlers[name];
+        const data: DisplayType = handler.getDisplayData();
+
+        data.priority = data.priority ?? handler.priority ?? 0;
+        data.name = handler.name;
+
+        return data;
     }
 
 }

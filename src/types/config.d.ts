@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { CoreColorScheme, CoreZoomLevel } from '@features/settings/services/settings-helper';
-import { CoreMainMenuLocalizedCustomItem } from '@features/mainmenu/services/mainmenu';
+import { CoreMainMenuLocalizedCustomItem, CoreMainMenuOverrideItem } from '@features/mainmenu/services/mainmenu';
 import { CoreLoginSiteInfo, CoreSitesDemoSiteData } from '@services/sites';
 import { OpenFileAction } from '@singletons/opener';
 import { CoreLoginSiteFinderSettings, CoreLoginSiteSelectorListMethod } from '@features/login/services/login-helper';
@@ -80,4 +80,5 @@ export interface EnvironmentConfig {
     clearIABSessionWhenAutoLogin?: 'android' | 'ios' | 'all'; // Clear the session every time a new IAB is opened with auto-login.
     disabledFeatures?: string; // Disabled features for the whole app, using the same format as tool_mobile_disabledfeatures.
     collapsibleItemsExpanded: boolean; // Expand or collapse the collapsible items by default.
+    overrideMainMenuButtons: CoreMainMenuOverrideItem[]; // Override main menu items.
 }
