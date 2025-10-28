@@ -30,6 +30,12 @@ export enum CoreUserProfileHandlerType {
     BUTTON = 'button', // User profile handler type to be shown as a button.
 }
 
+type HandlerDataPerType = {
+  [CoreUserProfileHandlerType.LIST_ITEM]: CoreUserProfileListHandlerData;
+  [CoreUserProfileHandlerType.LIST_ACCOUNT_ITEM]: CoreUserProfileListHandlerData;
+  [CoreUserProfileHandlerType.BUTTON]: CoreUserProfileButtonHandlerData;
+};
+
 declare module '@singletons/events' {
 
     /**
@@ -98,20 +104,20 @@ export interface CoreUserProfileHandler extends CoreDelegateHandler {
      * @param contextId Context ID.
      * @returns Data to be shown.
      */
-    getDisplayData(user: CoreUserProfile, context: CoreUserDelegateContext, contextId: number): CoreUserProfileHandlerData;
+    getDisplayData(user: CoreUserProfile, context: CoreUserDelegateContext, contextId: number): HandlerDataPerType[this['type']];
 }
 
 /**
- * Data needed to render a user profile handler. It's returned by the handler.
+ * Common data shared by the handler data types.
  */
-export interface CoreUserProfileHandlerData {
+type CoreUserProfileCommonHandlerData = {
     /**
      * Title to display.
      */
     title: string;
 
     /**
-     * Name of the icon to display. Mandatory for CoreUserProfileHandlerType.BUTTON.
+     * Name of the icon to display.
      */
     icon?: string;
 
@@ -119,31 +125,6 @@ export interface CoreUserProfileHandlerData {
      * Additional class to add to the HTML.
      */
     class?: string;
-
-    /**
-     * If enabled, element will be hidden. Only for CoreUserProfileHandlerType.LIST_ITEM.
-     */
-    hidden?: boolean;
-
-    /**
-     * If the handler has badge to show or not. Only for CoreUserProfileHandlerType.LIST_ITEM.
-     */
-    showBadge?: boolean;
-
-    /**
-     * Text to display on the badge. Only used if showBadge is true and only for CoreUserProfileHandlerType.LIST_ITEM.
-     */
-    badge?: string;
-
-    /**
-     * Accessibility text to add on the badge. Only used if showBadge is true and only for CoreUserProfileHandlerType.LIST_ITEM.
-     */
-    badgeA11yText?: string;
-
-    /**
-     * If true, the badge number is being loaded. Only used if showBadge is true and only for CoreUserProfileHandlerType.LIST_ITEM.
-     */
-    loading?: boolean;
 
     /**
      * Action to do when clicked.
@@ -154,7 +135,47 @@ export interface CoreUserProfileHandlerData {
      * @param contextId Context ID.
      */
     action(event: Event, user: CoreUserProfile, context: CoreUserDelegateContext, contextId?: number): void;
-}
+};
+
+/**
+ * Data needed to render a button user profile handler. It's returned by the handler.
+ */
+export type CoreUserProfileButtonHandlerData = CoreUserProfileCommonHandlerData;
+
+/**
+ * Data needed to render a list item or account list item user profile handler. It's returned by the handler.
+ */
+export type CoreUserProfileListHandlerData = CoreUserProfileCommonHandlerData & {
+    /**
+     * If enabled, element will be hidden.
+     */
+    hidden?: boolean;
+
+    /**
+     * If the handler has badge to show or not.
+     */
+    showBadge?: boolean;
+
+    /**
+     * Text to display on the badge. Only used if showBadge is true.
+     */
+    badge?: string;
+
+    /**
+     * Accessibility text to add on the badge. Only used if showBadge is true.
+     */
+    badgeA11yText?: string;
+
+    /**
+     * If true, the badge number is being loaded. Only used if showBadge is true
+     */
+    loading?: boolean;
+};
+
+/**
+ * All possible types of handler data.
+ */
+export type CoreUserProfileHandlerData = CoreUserProfileButtonHandlerData | CoreUserProfileListHandlerData;
 
 /**
  * Data returned by the delegate for each handler.
@@ -176,9 +197,9 @@ export interface CoreUserProfileHandlerToDisplay {
     priority?: number;
 
     /**
-     * The type of the handler. See CoreUserProfileHandler.
+     * The type of the handler.
      */
-    type: string;
+    type: CoreUserProfileHandlerType;
 }
 
 /**

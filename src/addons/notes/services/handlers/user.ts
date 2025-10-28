@@ -17,7 +17,7 @@ import { CoreUserProfile } from '@features/user/services/user';
 import {
     CoreUserProfileHandler,
     CoreUserProfileHandlerType,
-    CoreUserProfileHandlerData,
+    CoreUserProfileListHandlerData,
     CoreUserDelegateContext,
 } from '@features/user/services/user-delegate';
 import { CoreNavigator } from '@services/navigator';
@@ -31,9 +31,9 @@ import { AddonNotes } from '../notes';
 @Injectable( { providedIn: 'root' } )
 export class AddonNotesUserHandlerService implements CoreUserProfileHandler {
 
+    readonly type = CoreUserProfileHandlerType.LIST_ITEM;
     name = 'AddonNotes:notes';
     priority = 250;
-    type = CoreUserProfileHandlerType.LIST_ITEM;
     cacheEnabled = true;
 
     /**
@@ -59,7 +59,7 @@ export class AddonNotesUserHandlerService implements CoreUserProfileHandler {
     /**
      * @inheritdoc
      */
-    getDisplayData(): CoreUserProfileHandlerData {
+    getDisplayData(): CoreUserProfileListHandlerData {
         return {
             icon: 'fas-receipt',
             title: 'addon.notes.notes',

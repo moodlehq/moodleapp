@@ -18,7 +18,7 @@ import { CoreUserProfile } from '@features/user/services/user';
 import {
     CoreUserProfileHandlerType,
     CoreUserProfileHandler,
-     CoreUserProfileHandlerData,
+    CoreUserProfileButtonHandlerData,
 } from '@features/user/services/user-delegate';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSites } from '@services/sites';
@@ -31,9 +31,9 @@ import { AddonMessages } from '../messages';
 @Injectable({ providedIn: 'root' })
 export class AddonMessagesSendMessageUserHandlerService implements CoreUserProfileHandler {
 
+    readonly type = CoreUserProfileHandlerType.BUTTON;
     name = 'AddonMessages:sendMessage';
     priority = 1000;
-    type = CoreUserProfileHandlerType.BUTTON;
 
     /**
      * @inheritdoc
@@ -64,7 +64,7 @@ export class AddonMessagesSendMessageUserHandlerService implements CoreUserProfi
      *
      * @returns Data needed to render the handler.
      */
-    getDisplayData(): CoreUserProfileHandlerData {
+    getDisplayData(): CoreUserProfileButtonHandlerData {
         return {
             icon: 'fas-paper-plane',
             title: 'addon.messages.message',

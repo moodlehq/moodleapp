@@ -26,6 +26,8 @@ import {
     CoreUserDelegateContext,
     CoreUserProfileHandlerType,
     CoreUserProfileHandlerData,
+    CoreUserProfileListHandlerData,
+    CoreUserProfileButtonHandlerData,
 } from '@features/user/services/user-delegate';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreNavigator } from '@services/navigator';
@@ -57,8 +59,8 @@ export default class CoreUserProfilePage implements OnInit, OnDestroy {
     isSuspended = false;
     isEnrolled = true;
     rolesFormatted?: string;
-    listItemHandlers: HandlerData[] = [];
-    buttonHandlers: HandlerData[] = [];
+    listItemHandlers: ListHandlerData[] = [];
+    buttonHandlers: ButtonHandlerData[] = [];
 
     users?: CoreUserSwipeItemsManager;
 
@@ -263,4 +265,6 @@ class CoreUserSwipeItemsManager extends CoreSwipeNavigationItemsManager {
 
 }
 
-type HandlerData = CoreUserProfileHandlerData & { name: string };
+type ListHandlerData = CoreUserProfileListHandlerData & { name: string };
+
+type ButtonHandlerData = CoreUserProfileButtonHandlerData & { name: string };

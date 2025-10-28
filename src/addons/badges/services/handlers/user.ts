@@ -17,7 +17,7 @@ import { CoreCourseUserAdminOrNavOptionIndexed } from '@features/courses/service
 import {
     CoreUserDelegateContext,
     CoreUserProfileHandler,
-    CoreUserProfileHandlerData,
+    CoreUserProfileListHandlerData,
     CoreUserProfileHandlerType,
 } from '@features/user/services/user-delegate';
 import { CoreNavigator } from '@services/navigator';
@@ -31,9 +31,9 @@ import { AddonBadges } from '../badges';
 @Injectable({ providedIn: 'root' })
 export class AddonBadgesUserHandlerService implements CoreUserProfileHandler {
 
+    readonly type = CoreUserProfileHandlerType.LIST_ITEM;
     name = 'AddonBadges:fakename'; // This name doesn't match any disabled feature, they'll be checked in isEnabledForContext.
     priority = 300;
-    type = CoreUserProfileHandlerType.LIST_ITEM;
 
     /**
      * @inheritdoc
@@ -74,7 +74,7 @@ export class AddonBadgesUserHandlerService implements CoreUserProfileHandler {
     /**
      * @inheritdoc
      */
-    getDisplayData(): CoreUserProfileHandlerData {
+    getDisplayData(): CoreUserProfileListHandlerData {
         return {
             icon: 'fas-trophy',
             title: 'addon.badges.badges',

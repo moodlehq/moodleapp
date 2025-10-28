@@ -17,7 +17,7 @@ import {
     CoreUserDelegateContext,
     CoreUserProfileHandlerType,
     CoreUserProfileHandler,
-    CoreUserProfileHandlerData,
+    CoreUserProfileListHandlerData,
 } from '@features/user/services/user-delegate';
 import { CoreSites } from '@services/sites';
 import { makeSingleton } from '@singletons';
@@ -31,7 +31,7 @@ import { ACCEPTANCES_PAGE_NAME, POLICY_PAGE_NAME } from '@features/policy/consta
 @Injectable({ providedIn: 'root' })
 export class CorePolicyUserHandlerService implements CoreUserProfileHandler {
 
-    type = CoreUserProfileHandlerType.LIST_ACCOUNT_ITEM;
+    readonly type = CoreUserProfileHandlerType.LIST_ACCOUNT_ITEM;
     name = 'CorePolicy';
     priority = 50;
 
@@ -68,7 +68,7 @@ export class CorePolicyUserHandlerService implements CoreUserProfileHandler {
     /**
      * @inheritdoc
      */
-    getDisplayData(): CoreUserProfileHandlerData {
+    getDisplayData(): CoreUserProfileListHandlerData {
         return {
             icon: 'fas-file-shield',
             title: 'core.policy.policiesagreements',

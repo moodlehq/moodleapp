@@ -21,7 +21,7 @@ import {
     CoreUserDelegateContext,
     CoreUserProfileHandlerType ,
     CoreUserProfileHandler,
-    CoreUserProfileHandlerData,
+    CoreUserProfileListHandlerData,
 } from '@features/user/services/user-delegate';
 import { PARTICIPANTS_PAGE_NAME } from '@features/user/constants';
 import { CoreNavigator } from '@services/navigator';
@@ -36,10 +36,9 @@ import { GRADES_PAGE_NAME } from '../../constants';
 @Injectable({ providedIn: 'root' })
 export class CoreGradesUserHandlerService implements CoreUserProfileHandler {
 
-    // This name doesn't match any disabled feature, they'll be checked in isEnabledForContext.
-    name = 'CoreGrades:fakename';
+    readonly type = CoreUserProfileHandlerType.LIST_ITEM;
+    name = 'CoreGrades:fakename'; // This name doesn't match any disabled feature, they'll be checked in isEnabledForContext.
     priority = 500;
-    type = CoreUserProfileHandlerType.LIST_ITEM;
     cacheEnabled = true;
 
     /**
@@ -89,7 +88,7 @@ export class CoreGradesUserHandlerService implements CoreUserProfileHandler {
     /**
      * @inheritdoc
      */
-    getDisplayData(user: CoreUserProfile, context: CoreUserDelegateContext): CoreUserProfileHandlerData {
+    getDisplayData(user: CoreUserProfile, context: CoreUserDelegateContext): CoreUserProfileListHandlerData {
         if (context === CoreUserDelegateContext.COURSE) {
             return {
                 icon: 'fas-chart-bar',

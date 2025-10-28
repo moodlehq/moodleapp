@@ -25,6 +25,7 @@ import {
     CoreUserDelegate,
     CoreUserProfileHandlerType,
     CoreUserDelegateContext,
+    CoreUserProfileListHandlerData,
 } from '@features/user/services/user-delegate';
 import { CoreModals } from '@services/overlays/modals';
 import { CoreNavigator } from '@services/navigator';
@@ -265,4 +266,4 @@ export class CoreMainMenuUserMenuComponent implements OnInit, OnDestroy {
 
 }
 
-type HandlerData = CoreUserProfileHandlerData & { name: string };
+type HandlerData = CoreUserProfileListHandlerData & { name: string };
