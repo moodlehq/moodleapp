@@ -125,30 +125,33 @@
                 }
 
                 @for (handler of listItemHandlers; track handler.name) {
-                    <ion-item button (click)="handlerClicked($event, handler)"
-                        [class]="['ion-text-wrap', 'core-user-profile-handler', handler.class]" [hidden]="handler.hidden"
-                        [attr.aria-label]="handler.title | translate" [detail]="true">
-                        @if (handler.icon) {
-                            <ion-icon [name]="handler.icon" slot="start" aria-hidden="true" />
-                        }
-                        <ion-label>
-                            <p class="item-heading">{{ handler.title | translate }}</p>
-                        </ion-label>
-                        @if (handler.showBadge) {
-                            <ion-badge slot="end" [hidden]="handler.loading || !handler.badge" aria-hidden="true">
-                                {{handler.badge}}
-                            </ion-badge>
-                            @if (handler.badge && handler.badgeA11yText) {
-                                <span class="sr-only">
-                                    {{ handler.badgeA11yText | translate: {$a : handler.badge } }}
-                                </span>
+                    @if ('component' in handler) {
+                        <core-dynamic-component [component]="handler.component" [data]="handlerComponentData" />
+                    } @else {
+                        <ion-item button (click)="handlerClicked($event, handler)"
+                            [class]="['ion-text-wrap', 'core-user-profile-handler', handler.class]" [hidden]="handler.hidden"
+                            [attr.aria-label]="handler.title | translate" [detail]="true">
+                            @if (handler.icon) {
+                                <ion-icon [name]="handler.icon" slot="start" aria-hidden="true" />
                             }
-                            @if (handler.loading) {
-                                <ion-spinner slot="end" [attr.aria-label]="'core.loading' | translate" />
+                            <ion-label>
+                                <p class="item-heading">{{ handler.title | translate }}</p>
+                            </ion-label>
+                            @if (handler.showBadge) {
+                                <ion-badge slot="end" [hidden]="handler.loading || !handler.badge" aria-hidden="true">
+                                    {{handler.badge}}
+                                </ion-badge>
+                                @if (handler.badge && handler.badgeA11yText) {
+                                    <span class="sr-only">
+                                        {{ handler.badgeA11yText | translate: {$a : handler.badge } }}
+                                    </span>
+                                }
+                                @if (handler.loading) {
+                                    <ion-spinner slot="end" [attr.aria-label]="'core.loading' | translate" />
+                                }
                             }
-                        }
-
-                    </ion-item>
+                        </ion-item>
+                    }
                 }
             </ion-list>
         }

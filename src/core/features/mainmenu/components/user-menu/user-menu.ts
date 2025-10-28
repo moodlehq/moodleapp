@@ -21,7 +21,7 @@ import { CoreUserAuthenticatedSupportConfig } from '@features/user/classes/suppo
 import { CoreUserSupport } from '@features/user/services/support';
 import { CoreUser, CoreUserProfile } from '@features/user/services/user';
 import {
-    CoreUserProfileHandlerData,
+    CoreUserProfileListActionHandlerData,
     CoreUserDelegate,
     CoreUserProfileHandlerType,
     CoreUserDelegateContext,
@@ -60,6 +60,7 @@ export class CoreMainMenuUserMenuComponent implements OnInit, OnDestroy {
     displaySwitchAccount = true;
     displayContactSupport = false;
     removeAccountOnLogout = false;
+    handlerComponentData: Record<string, unknown> = {};
 
     protected siteId?: string;
     protected siteName?: string;
@@ -92,6 +93,11 @@ export class CoreMainMenuUserMenuComponent implements OnInit, OnDestroy {
                 fullname: this.siteInfo.fullname,
             };
         }
+
+        this.handlerComponentData = {
+            user: this.user,
+            context: CoreUserDelegateContext.USER_MENU,
+        };
 
         this.subscription = CoreUserDelegate.getProfileHandlersFor(this.user, CoreUserDelegateContext.USER_MENU)
             .subscribe((handlers) => {
@@ -165,7 +171,7 @@ export class CoreMainMenuUserMenuComponent implements OnInit, OnDestroy {
      * @param event Click event.
      * @param handler Handler that was clicked.
      */
-    async handlerClicked(event: Event, handler: CoreUserProfileHandlerData): Promise<void> {
+    async handlerClicked(event: Event, handler: CoreUserProfileListActionHandlerData): Promise<void> {
         if (!this.user) {
             return;
         }
@@ -245,6 +251,16 @@ export class CoreMainMenuUserMenuComponent implements OnInit, OnDestroy {
         await this.close(event);
 
         await CoreLoginHelper.goToAddSite(true, true);
+    }
+
+    /**
+     * Helper function to cast to the proper type in the template.
+     *
+     * @param handler Variable to cast.
+     * @returns Casted variable.
+     */
+    castHandlerType(handler: HandlerData): HandlerData {
+        return handler;
     }
 
     /**

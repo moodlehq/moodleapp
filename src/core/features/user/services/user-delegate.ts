@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Injectable } from '@angular/core';
+import { Injectable, Type } from '@angular/core';
 import { Subject, BehaviorSubject } from 'rxjs';
 
 import { CoreDelegate, CoreDelegateHandler } from '@classes/delegate';
@@ -108,9 +108,10 @@ export interface CoreUserProfileHandler extends CoreDelegateHandler {
 }
 
 /**
- * Common data shared by the handler data types.
+ * Common data shared by the "action" handler data types. The action types are meant to display some basic info (e.g. title, icon)
+ * and perform an action when clicked.
  */
-type CoreUserProfileCommonHandlerData = {
+type CoreUserProfileActionCommonHandlerData = {
     /**
      * Title to display.
      */
@@ -140,12 +141,12 @@ type CoreUserProfileCommonHandlerData = {
 /**
  * Data needed to render a button user profile handler. It's returned by the handler.
  */
-export type CoreUserProfileButtonHandlerData = CoreUserProfileCommonHandlerData;
+export type CoreUserProfileButtonHandlerData = CoreUserProfileActionCommonHandlerData;
 
 /**
- * Data needed to render a list item or account list item user profile handler. It's returned by the handler.
+ * Data needed to render an "action" list item or account list item user profile handler. It's returned by the handler.
  */
-export type CoreUserProfileListHandlerData = CoreUserProfileCommonHandlerData & {
+export type CoreUserProfileListActionHandlerData = CoreUserProfileActionCommonHandlerData & {
     /**
      * If enabled, element will be hidden.
      */
@@ -171,6 +172,21 @@ export type CoreUserProfileListHandlerData = CoreUserProfileCommonHandlerData & 
      */
     loading?: boolean;
 };
+
+/**
+ * Data needed to render a "component" list item or account list item user profile handler. It's returned by the handler.
+ */
+export type CoreUserProfileListComponentHandlerData =  {
+    /**
+     * Component to render.
+     */
+    component: Type<unknown>;
+};
+
+/**
+ * All possible types of list handler data.
+ */
+export type CoreUserProfileListHandlerData = CoreUserProfileListActionHandlerData | CoreUserProfileListComponentHandlerData;
 
 /**
  * All possible types of handler data.

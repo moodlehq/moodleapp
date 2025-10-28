@@ -25,7 +25,7 @@ import {
     CoreUserDelegate,
     CoreUserDelegateContext,
     CoreUserProfileHandlerType,
-    CoreUserProfileHandlerData,
+    CoreUserProfileListActionHandlerData,
     CoreUserProfileListHandlerData,
     CoreUserProfileButtonHandlerData,
 } from '@features/user/services/user-delegate';
@@ -61,6 +61,7 @@ export default class CoreUserProfilePage implements OnInit, OnDestroy {
     rolesFormatted?: string;
     listItemHandlers: ListHandlerData[] = [];
     buttonHandlers: ButtonHandlerData[] = [];
+    handlerComponentData: Record<string, unknown> = {};
 
     users?: CoreUserSwipeItemsManager;
 
@@ -158,6 +159,11 @@ export default class CoreUserProfilePage implements OnInit, OnDestroy {
             this.subscription?.unsubscribe();
 
             const context = this.courseId ? CoreUserDelegateContext.COURSE : CoreUserDelegateContext.SITE;
+            this.handlerComponentData = {
+                user: this.user,
+                context,
+                courseId: this.courseId,
+            };
 
             this.subscription = CoreUserDelegate.getProfileHandlersFor(user, context, this.courseId).subscribe((handlers) => {
                 this.listItemHandlers = [];
@@ -165,7 +171,7 @@ export default class CoreUserProfilePage implements OnInit, OnDestroy {
                 handlers.forEach((handler) => {
                     switch (handler.type) {
                         case CoreUserProfileHandlerType.BUTTON:
-                            this.buttonHandlers.push({ name: handler.name, ...handler.data });
+                            this.buttonHandlers.push({ name: handler.name, ...handler.data } as ButtonHandlerData);
                             break;
                         case CoreUserProfileHandlerType.LIST_ACCOUNT_ITEM:
                             // Discard this for now.
@@ -231,7 +237,7 @@ export default class CoreUserProfilePage implements OnInit, OnDestroy {
      * @param event Click event.
      * @param handler Handler that was clicked.
      */
-    handlerClicked(event: Event, handler: CoreUserProfileHandlerData): void {
+    handlerClicked(event: Event, handler: CoreUserProfileButtonHandlerData | CoreUserProfileListActionHandlerData): void {
         if (!this.user) {
             return;
         }
