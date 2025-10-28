@@ -19,6 +19,7 @@ import { CoreDelegateDisplayHandler, CoreDelegateToDisplay } from '@classes/dele
 import { CoreSortedDelegate } from '@classes/delegate-sorted';
 import { makeSingleton } from '@singletons';
 import { MAIN_MENU_FEATURE_PREFIX } from '../constants';
+import { CoreConstants } from '@/core/constants';
 
 /**
  * Interface that all main menu handlers must implement.
@@ -108,6 +109,27 @@ export interface CoreMainMenuHandlerToDisplay extends CoreDelegateToDisplay, Cor
 export class CoreMainMenuDelegateService extends CoreSortedDelegate<CoreMainMenuHandlerToDisplay, CoreMainMenuHandler> {
 
     protected featurePrefix = MAIN_MENU_FEATURE_PREFIX;
+
+    /**
+     * @inheritdoc
+     */
+    protected getHandlerDisplayData(name: string): CoreMainMenuHandlerToDisplay {
+        const data = super.getHandlerDisplayData(name);
+
+        // Override priority and icon if needed.
+        const config = CoreConstants.CONFIG.overrideMainMenuButtons ?? [];
+        const override = config.find((entry) => entry.handler === name);
+        if (override) {
+            if (override.priority !== undefined) {
+                data.priority = override.priority;
+            }
+            if (override.icon !== undefined) {
+                data.icon = override.icon;
+            }
+        }
+
+        return data;
+    }
 
 }
 
