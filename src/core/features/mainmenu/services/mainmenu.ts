@@ -180,3 +180,12 @@ export type CoreMainMenuHandlerBadgeUpdatedEventData = {
     handler: string; // Handler name.
     value: number; // New counter value.
 };
+
+/**
+ * Override for a main menu item.
+ */
+export type CoreMainMenuOverrideItem = {
+    handler: string; // Handler name.
+    icon?: string; // New icon name.
+    priority?: number; // New priority.
+};
