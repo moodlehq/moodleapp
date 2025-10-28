@@ -34,6 +34,7 @@ import { CoreContentLinksHelper } from '@features/contentlinks/services/contentl
     ],
     host: {
         '[attr.data-course-id]': 'course()?.id ?? null',
+        '[attr.data-category-id]': 'course()?.categoryid ?? null',
     },
 })
 export class AddonBlockTimelineEventsComponent implements OnInit {

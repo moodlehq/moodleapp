@@ -57,6 +57,10 @@ export class CoreCourseCourseIndexComponent implements OnInit {
         return this.course?.id ?? null;
     }
 
+    @HostBinding('attr.data-category-id') protected get courseCategoryId(): number | null {
+        return this.course?.categoryid ?? null;
+    }
+
     /**
      * @inheritdoc
      */
