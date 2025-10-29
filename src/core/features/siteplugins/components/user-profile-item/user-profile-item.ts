@@ -13,10 +13,10 @@
 // limitations under the License.
 
 import { CoreSharedModule } from '@/core/shared.module';
-import { Component, computed, input } from '@angular/core';
+import { Component, computed, input, viewChild } from '@angular/core';
 import { CoreSitePluginsPluginContentComponent } from '../plugin-content/plugin-content';
 import { CoreUserProfile } from '@features/user/services/user';
-import { CoreUserDelegateContext } from '@features/user/services/user-delegate';
+import { CoreUserDelegateContext, CoreUserProfileHandlerComponent } from '@features/user/services/user-delegate';
 
 /**
  * Component to render a site plugin user profile item.
@@ -29,7 +29,9 @@ import { CoreUserDelegateContext } from '@features/user/services/user-delegate';
         CoreSitePluginsPluginContentComponent,
     ],
 })
-export class CoreSitePluginsUserProfileItemComponent {
+export class CoreSitePluginsUserProfileItemComponent implements CoreUserProfileHandlerComponent {
+
+    readonly pluginContent = viewChild(CoreSitePluginsPluginContentComponent);
 
     readonly user = input.required<CoreUserProfile>();
     readonly context = input.required<CoreUserDelegateContext>();
@@ -49,5 +51,19 @@ export class CoreSitePluginsUserProfileItemComponent {
         context: this.context(),
         courseId: this.courseId(),
     }));
+
+    /**
+     * @inheritdoc
+     */
+    async invalidateContent(): Promise<void> {
+        // The reloadContent also invalidates the info, no need to invalidate it here too.
+    }
+
+    /**
+     * @inheritdoc
+     */
+    async reloadContent(): Promise<void> {
+        await this.pluginContent()?.refreshContent(true);
+    }
 
 }

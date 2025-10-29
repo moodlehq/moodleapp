@@ -180,7 +180,7 @@ export type CoreUserProfileListComponentHandlerData =  {
     /**
      * Component to render.
      */
-    component: Type<unknown>;
+    component: Type<CoreUserProfileHandlerComponent>;
 
     /**
      * Data to pass to the component. The app will also provide some default data.
@@ -221,6 +221,21 @@ export interface CoreUserProfileHandlerToDisplay {
      * The type of the handler.
      */
     type: CoreUserProfileHandlerType;
+}
+
+/**
+ * Interface for user profile handler components.
+ */
+export interface CoreUserProfileHandlerComponent {
+    /**
+     * Invalidate the component content.
+     */
+    invalidateContent(): Promise<void>;
+
+    /**
+     * Reload the component content.
+     */
+    reloadContent(): Promise<void>;
 }
 
 /**

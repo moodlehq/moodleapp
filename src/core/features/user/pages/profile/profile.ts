@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { ActivatedRoute, ActivatedRouteSnapshot } from '@angular/router';
-import { Component, OnDestroy, OnInit, inject } from '@angular/core';
+import { Component, OnDestroy, OnInit, inject, viewChildren } from '@angular/core';
 import { Subscription } from 'rxjs';
 
 import { CoreSite } from '@classes/sites/site';
@@ -28,6 +28,7 @@ import {
     CoreUserProfileListActionHandlerData,
     CoreUserProfileListHandlerData,
     CoreUserProfileButtonHandlerData,
+    CoreUserProfileHandlerComponent,
 } from '@features/user/services/user-delegate';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreNavigator } from '@services/navigator';
@@ -41,6 +42,7 @@ import { Translate } from '@singletons';
 import { CoreAlerts } from '@services/overlays/alerts';
 import { CoreSharedModule } from '@/core/shared.module';
 import { CORE_USER_PROFILE_REFRESHED } from '@features/user/constants';
+import { CoreDynamicComponent } from '@components/dynamic-component/dynamic-component';
 
 @Component({
     selector: 'page-core-user-profile',
@@ -51,6 +53,8 @@ import { CORE_USER_PROFILE_REFRESHED } from '@features/user/constants';
     ],
 })
 export default class CoreUserProfilePage implements OnInit, OnDestroy {
+
+    readonly dynamicComponents = viewChildren<CoreDynamicComponent<CoreUserProfileHandlerComponent>>(CoreDynamicComponent);
 
     userLoaded = false;
     isLoadingHandlers = false;
@@ -210,9 +214,15 @@ export default class CoreUserProfilePage implements OnInit, OnDestroy {
             CoreUser.invalidateUserCache(this.userId),
             CoreCourses.invalidateUserNavigationOptions(),
             CoreCourses.invalidateUserAdministrationOptions(),
+            ...(this.dynamicComponents()?.map((component) =>
+                Promise.resolve(component.callComponentMethod('invalidateContent'))) || []),
         ]));
 
         await this.fetchUser();
+
+        await CorePromiseUtils.allPromisesIgnoringErrors(
+            this.dynamicComponents()?.map((component) => Promise.resolve(component.callComponentMethod('reloadContent'))),
+        );
 
         event?.complete();
 

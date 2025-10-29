@@ -13,6 +13,9 @@
     </ion-toolbar>
 </ion-header>
 <ion-content>
+    <ion-refresher slot="fixed" (ionRefresh)="refreshData($event.target)">
+        <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}" />
+    </ion-refresher>
     <core-loading [hideUntil]="handlersLoaded" placeholderType="column" placeholderHeight="48px">
         <ion-list>
             @if (siteInfo) {
@@ -36,9 +39,9 @@
                 }
 
                 <ion-item button class="core-usermenu-profile ion-text-wrap" lines="full" (click)="openUserProfile($event)" [detail]="true">
-                    <core-user-avatar [site]="siteInfo" [userId]="siteInfo.userid" [linkProfile]="false" slot="start" />
+                    <core-user-avatar [user]="user" [linkProfile]="false" slot="start" />
                     <ion-label>
-                        <p class="item-heading">{{ siteInfo.fullname }}</p>
+                        <p class="item-heading">{{ user?.fullname ?? siteInfo.fullname }}</p>
                     </ion-label>
                 </ion-item>
             }

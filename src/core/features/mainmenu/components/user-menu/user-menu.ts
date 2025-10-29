@@ -14,7 +14,7 @@
 
 import { CoreConstants } from '@/core/constants';
 import { CoreSharedModule } from '@/core/shared.module';
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, viewChildren } from '@angular/core';
 import { CoreSiteInfo } from '@classes/sites/unauthenticated-site';
 import { CoreFilter } from '@features/filter/services/filter';
 import { CoreUserAuthenticatedSupportConfig } from '@features/user/classes/support/authenticated-support-config';
@@ -26,6 +26,7 @@ import {
     CoreUserProfileHandlerType,
     CoreUserDelegateContext,
     CoreUserProfileListHandlerData,
+    CoreUserProfileHandlerComponent,
 } from '@features/user/services/user-delegate';
 import { CoreModals } from '@services/overlays/modals';
 import { CoreNavigator } from '@services/navigator';
@@ -35,6 +36,8 @@ import { Subscription } from 'rxjs';
 import { CoreLoginHelper } from '@features/login/services/login-helper';
 import { CoreSiteLogoComponent } from '@/core/components/site-logo/site-logo';
 import { CoreAlerts } from '@services/overlays/alerts';
+import { CoreDynamicComponent } from '@components/dynamic-component/dynamic-component';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 
 /**
  * Component to display a user menu.
@@ -49,6 +52,8 @@ import { CoreAlerts } from '@services/overlays/alerts';
     ],
 })
 export class CoreMainMenuUserMenuComponent implements OnInit, OnDestroy {
+
+    readonly dynamicComponents = viewChildren<CoreDynamicComponent<CoreUserProfileHandlerComponent>>(CoreDynamicComponent);
 
     siteInfo?: CoreSiteInfo;
     siteUrl?: string;
@@ -79,20 +84,28 @@ export class CoreMainMenuUserMenuComponent implements OnInit, OnDestroy {
         this.removeAccountOnLogout = !!CoreConstants.CONFIG.removeaccountonlogout;
         this.displaySiteUrl = currentSite.shouldDisplayInformativeLinks();
 
+        await this.loadData();
+    }
+
+    /**
+     * Load data.
+     */
+    async loadData(): Promise<void> {
         if (!this.siteInfo) {
             return;
         }
 
-        // Load the handlers.
         try {
             this.user = await CoreUser.getProfile(this.siteInfo.userid);
         } catch {
             this.user = {
                 id: this.siteInfo.userid,
                 fullname: this.siteInfo.fullname,
+                profileimageurl: this.siteInfo.userpictureurl,
             };
         }
 
+        // Load the handlers.
         const defaultComponentData = {
             user: this.user,
             context: CoreUserDelegateContext.USER_MENU,
@@ -140,6 +153,28 @@ export class CoreMainMenuUserMenuComponent implements OnInit, OnDestroy {
 
                 this.handlersLoaded = CoreUserDelegate.areHandlersLoaded(this.user.id, CoreUserDelegateContext.USER_MENU);
             });
+    }
+
+    /**
+     * Refresh the data.
+     *
+     * @param event Event.
+     * @returns Promise resolved when done.
+     */
+    async refreshData(event?: HTMLIonRefresherElement): Promise<void> {
+        await CorePromiseUtils.ignoreErrors(Promise.all([
+            this.user ? CoreUser.invalidateUserCache(this.user.id) : Promise.resolve(),
+            ...(this.dynamicComponents()?.map((component) =>
+                Promise.resolve(component.callComponentMethod('invalidateContent'))) || []),
+        ]));
+
+        await this.loadData();
+
+        await CorePromiseUtils.allPromisesIgnoringErrors(
+            this.dynamicComponents()?.map((component) => Promise.resolve(component.callComponentMethod('reloadContent'))),
+        );
+
+        event?.complete();
     }
 
     /**
