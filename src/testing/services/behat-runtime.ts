@@ -35,6 +35,8 @@ import { CoreIframeComponent } from '@components/iframe/iframe';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreLang } from '@services/lang';
 import { CoreEvents } from '@singletons/events';
+import { CoreBrowser } from '@singletons/browser';
+import { CoreText } from '@singletons/text';
 
 /**
  * Behat runtime servive with public API.
@@ -90,9 +92,7 @@ export class TestingBehatRuntimeService {
         TestingBehatBlocking.init();
 
         if (options.configOverrides) {
-            // Set the cookie so it's maintained between reloads.
-            document.cookie = `MoodleAppConfig=${JSON.stringify(options.configOverrides)}`;
-            CoreConfig.patchEnvironment(options.configOverrides, { patchDefault: true });
+            this.patchEnvironment(options.configOverrides, true);
         }
 
         // Spy on window.open.
@@ -105,6 +105,35 @@ export class TestingBehatRuntimeService {
 
         // Reduce iframes timeout to speed up tests.
         CoreIframeComponent.loadingTimeout = 1000;
+    }
+
+    /**
+     * Patch environment variables at runtime for Behat.
+     *
+     * @param overrides Environment variable overrides.
+     * @param patchDefault Whether to patch default values as well.
+     * @returns OK if successful, or ERROR: followed by message.
+     */
+    patchEnvironment(overrides: Partial<EnvironmentConfig>, patchDefault = false): string {
+        try {
+            if (patchDefault) {
+                // Set the cookie so it's maintained between reloads.
+                let cookie = CoreBrowser.getDevelopmentSetting('Config');
+                // Override existing config.
+                if (cookie) {
+                    const currentConfig = CoreText.parseJSON(cookie, {});
+                    overrides = { ...currentConfig, ...overrides };
+                }
+
+                CoreBrowser.setDevelopmentSetting('Config', JSON.stringify(overrides));
+            }
+
+            CoreConfig.patchEnvironment(overrides, { patchDefault });
+
+            return 'OK';
+        } catch (error) {
+            return `ERROR: ${error instanceof Error ? error.message : error}`;
+        }
     }
 
     /**
