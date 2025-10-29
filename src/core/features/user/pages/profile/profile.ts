@@ -226,18 +226,6 @@ export default class CoreUserProfilePage implements OnInit, OnDestroy {
     }
 
     /**
-     * Open the page with the user details.
-     */
-    openUserDetails(): void {
-        CoreNavigator.navigateToSitePath('user/about', {
-            params: {
-                courseId: this.courseId,
-                userId: this.userId,
-            },
-        });
-    }
-
-    /**
      * A handler was clicked.
      *
      * @param event Click event.

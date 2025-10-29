@@ -109,13 +109,7 @@
                         }
                     </div>
                 }
-                <ion-item button class="ion-text-wrap core-user-profile-handler" (click)="openUserDetails()"
-                    [attr.aria-label]="'core.user.details' | translate" [detail]="true">
-                    <ion-icon name="fas-user" slot="start" aria-hidden="true" />
-                    <ion-label>
-                        <p class="item-heading">{{ 'core.user.details' | translate }}</p>
-                    </ion-label>
-                </ion-item>
+
                 @if (isLoadingHandlers) {
                     <ion-item class="ion-text-center core-loading-handlers">
                         <ion-label>
