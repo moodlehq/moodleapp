@@ -37,19 +37,6 @@ type HandlerDataPerType = {
   [CoreUserProfileHandlerType.BUTTON]: CoreUserProfileButtonHandlerData;
 };
 
-declare module '@singletons/events' {
-
-    /**
-     * Augment CoreEventsData interface with events specific to this service.
-     *
-     * @see https://www.typescriptlang.org/docs/handbook/declaration-merging.html#module-augmentation
-     */
-    export interface CoreEventsData {
-        [USER_DELEGATE_UPDATE_HANDLER_EVENT]: CoreUserUpdateHandlerData;
-    }
-
-}
-
 /**
  * Interface that all user profile handlers must implement.
  */
@@ -225,11 +212,6 @@ export type CoreUserProfileHandlerToDisplay = {
 };
 
 /**
- * Delegate update handler event.
- */
-export const USER_DELEGATE_UPDATE_HANDLER_EVENT = 'CoreUserDelegate_update_handler_event';
-
-/**
  * Service to interact with plugins to be shown in user profile. Provides functions to register a plugin
  * and notify an update in the data.
  */
@@ -248,21 +230,6 @@ export class CoreUserDelegateService extends CoreDelegate<CoreUserProfileHandler
 
     constructor() {
         super();
-
-        CoreEvents.on(USER_DELEGATE_UPDATE_HANDLER_EVENT, (data) => {
-            const handlersData = this.getHandlersData(data.userId, data.context, data.contextId);
-
-            // Search the handler.
-            const handler = handlersData.handlers.find((userHandler) => userHandler.name == data.handler);
-
-            if (!handler) {
-                return;
-            }
-
-            // Update the data and notify.
-            Object.assign(handler.data, data.data);
-            handlersData.observable.next(handlersData.handlers);
-        });
 
         CoreEvents.on(CoreEvents.LOGOUT, () => {
             this.clearHandlerCache();
@@ -546,14 +513,3 @@ export enum CoreUserDelegateContext {
     COURSE = 'course',
     USER_MENU = 'user_menu',
 }
-
-/**
- * Data passed to UPDATE_HANDLER_EVENT event.
- */
-export type CoreUserUpdateHandlerData = {
-    handler: string; // Name of the handler.
-    userId: number; // User affected.
-    context: CoreUserDelegateContext; // Context affected.
-    contextId?: number; // ID related to the context.
-    data: Record<string, unknown>; // Data to set to the handler.
-};
