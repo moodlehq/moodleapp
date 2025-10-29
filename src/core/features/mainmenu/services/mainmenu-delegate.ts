@@ -21,6 +21,9 @@ import { ReloadableComponent } from '@coretypes/reloadable-component';
 import { makeSingleton } from '@singletons';
 import { MAIN_MENU_FEATURE_PREFIX } from '../constants';
 import { CoreConstants } from '@/core/constants';
+import { CoreEvents } from '@singletons/events';
+import { CoreConfigProvider } from '@services/config';
+import { CoreMainMenuOverrideItem } from './mainmenu';
 
 /**
  * Interface that all main menu handlers must implement.
@@ -126,6 +129,24 @@ export type CoreMainMenuHandlerToDisplay = CoreMainMenuPageNavHandlerToDisplay |
 export class CoreMainMenuDelegateService extends CoreSortedDelegate<CoreMainMenuHandlerToDisplay, CoreMainMenuHandler> {
 
     protected featurePrefix = MAIN_MENU_FEATURE_PREFIX;
+    protected currentOverrides: CoreMainMenuOverrideItem[];
+
+    constructor() {
+        super();
+
+        this.currentOverrides = CoreConstants.CONFIG.overrideMainMenuButtons ?? [];
+
+        CoreEvents.on(CoreConfigProvider.ENVIRONMENT_UPDATED, (config) => {
+            const newConfig = config.overrideMainMenuButtons ?? [];
+            if (JSON.stringify(this.currentOverrides) === JSON.stringify(newConfig)) {
+                return;
+            }
+
+            this.currentOverrides = newConfig;
+
+            this.updateData();
+        });
+    }
 
     /**
      * @inheritdoc
@@ -134,7 +155,8 @@ export class CoreMainMenuDelegateService extends CoreSortedDelegate<CoreMainMenu
         const data = super.getHandlerDisplayData(name);
 
         // Override priority and icon if needed.
-        const config = CoreConstants.CONFIG.overrideMainMenuButtons ?? [];
+        const config = this.currentOverrides;
+
         const override = config.find((entry) => entry.handler === name);
         if (override) {
             if (override.priority !== undefined) {
