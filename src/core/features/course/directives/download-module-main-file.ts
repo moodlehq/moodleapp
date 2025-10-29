@@ -14,11 +14,12 @@
 
 import { Directive, Input, OnInit, ElementRef, inject } from '@angular/core';
 import { CoreCourse, CoreCourseModuleContentFile } from '@features/course/services/course';
-import { CoreCourseHelper, CoreCourseModuleData } from '@features/course/services/course-helper';
+import { CoreCourseModuleData } from '@features/course/services/course-helper';
 import { CoreLoadings } from '@services/overlays/loadings';
 import { CoreOpenerOpenFileOptions } from '@static/opener';
 import { CoreAlerts } from '@services/overlays/alerts';
 import { Translate } from '@singletons';
+import { CoreCoursePrefetch } from '../services/course-prefetch';
 
 /**
  * Directive to allow downloading and open the main file of a module.
@@ -69,7 +70,7 @@ export class CoreCourseDownloadModuleMainFileDirective implements OnInit {
 
                 const componentId = this.componentId ? Number(this.componentId) : this.module.id;
 
-                await CoreCourseHelper.downloadModuleAndOpenFile(
+                await CoreCoursePrefetch.downloadModuleAndOpenFile(
                     this.module,
                     courseId ?? this.module.course,
                     this.component,

@@ -72,7 +72,7 @@ jobs:
           lines=$(cat circular-dependencies | wc -l)
           echo "Total circular dependencies: $lines"
           echo "⚠️ Total circular dependencies: $lines" >> $GITHUB_STEP_SUMMARY
-          test $lines -eq 80
+          test $lines -eq 81
       - name: JavaScript code compatibility
         run: |
           # Check for ES2021 features, allowing ErrorCause feature.

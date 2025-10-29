@@ -17,7 +17,7 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { CoreQueueRunner } from '@classes/queue-runner';
 import { CORE_COURSE_ALL_COURSES_CLEARED, COURSE_STATUS_CHANGED_EVENT } from '@features/course/constants';
 import { CoreCourse } from '@features/course/services/course';
-import { CoreCourseHelper } from '@features/course/services/course-helper';
+import { CoreCoursePrefetch } from '@features/course/services/course-prefetch';
 import { CoreCourses, CoreEnrolledCourseData } from '@features/courses/services/courses';
 import { CoreSettingsHelper, CoreSiteSpaceUsage } from '@features/settings/services/settings-helper';
 import { CoreSiteHome } from '@features/sitehome/services/sitehome';
@@ -133,7 +133,7 @@ export default class AddonStorageManagerCoursesStoragePage implements OnInit, On
         const deletedCourseIds = this.completelyDownloadedCourses.map((course) => course.id);
 
         try {
-            await Promise.all(deletedCourseIds.map((courseId) => CoreCourseHelper.deleteCourseFiles(courseId)));
+            await Promise.all(deletedCourseIds.map((courseId) => CoreCoursePrefetch.deleteCourseFiles(courseId)));
 
             await this.downloadedCoursesQueue.run(async () => {
                 await this.setDownloadedCourses(this.downloadedCourses.filter((course) => !deletedCourseIds.includes(course.id)));
@@ -168,7 +168,7 @@ export default class AddonStorageManagerCoursesStoragePage implements OnInit, On
         const modal = await CoreLoadings.show('core.deleting', true);
 
         try {
-            await CoreCourseHelper.deleteCourseFiles(course.id);
+            await CoreCoursePrefetch.deleteCourseFiles(course.id);
 
             await this.downloadedCoursesQueue.run(async () => {
                 await this.setDownloadedCourses(CoreArray.withoutItem(this.downloadedCourses, course));
@@ -246,7 +246,7 @@ export default class AddonStorageManagerCoursesStoragePage implements OnInit, On
         const sections = await CoreCourse.getSections(courseId);
         const modules = CoreCourse.getSectionsModules(sections);
 
-        return CoreCourseHelper.getModulesDownloadedSize(modules, courseId);
+        return CoreCoursePrefetch.getModulesDownloadedSize(modules, courseId);
     }
 
     /**

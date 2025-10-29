@@ -35,6 +35,7 @@ import { CoreErrorHelper, CoreErrorObject } from '@services/error-helper';
 import { CorePromiseUtils } from '@static/promise-utils';
 import { CoreAlerts } from '@services/overlays/alerts';
 import { CoreCourseModuleHelper } from '../services/course-module-helper';
+import { CoreCoursePrefetch } from '../services/course-prefetch';
 
 /**
  * Result of a resource download.
@@ -221,7 +222,7 @@ export class CoreCourseModuleMainResourceComponent implements OnInit, OnDestroy,
         }
 
         const lastDownloaded =
-                await CoreCourseHelper.getModulePackageLastDownloaded(this.module, this.component);
+                await CoreCoursePrefetch.getModulePackageLastDownloaded(this.module, this.component);
 
         this.downloadTimeReadable = CoreText.capitalize(lastDownloaded.downloadTimeReadable);
     }

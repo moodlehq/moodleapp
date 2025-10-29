@@ -22,7 +22,7 @@ import {
     CoreCourseSummaryExporterData,
 } from '@features/courses/services/courses';
 import { CoreCoursesHelper, CoreEnrolledCourseDataWithExtraInfoAndOptions } from '@features/courses/services/courses-helper';
-import { CoreCourseHelper, CorePrefetchStatusInfo } from '@features/course/services/course-helper';
+import { CoreCoursePrefetch, CorePrefetchStatusInfo } from '@features/course/services/course-prefetch';
 import { CoreCourseOptionsDelegate } from '@features/course/services/course-options-delegate';
 import { CoreBlockBaseComponent } from '@features/block/classes/base-block-component';
 import { CoreSite } from '@classes/sites/site';
@@ -490,7 +490,8 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
 
         this.prefetchIconsInitialized = true;
 
-        this.prefetchCoursesData = await CoreCourseHelper.initPrefetchCoursesIcons(this.filteredCourses, this.prefetchCoursesData);
+        this.prefetchCoursesData =
+            await CoreCoursePrefetch.initPrefetchCoursesIcons(this.filteredCourses, this.prefetchCoursesData);
     }
 
     /**
@@ -502,7 +503,7 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
         const initialIcon = this.prefetchCoursesData.icon;
 
         try {
-            await CoreCourseHelper.prefetchCourses(this.filteredCourses, this.prefetchCoursesData);
+            await CoreCoursePrefetch.prefetchCourses(this.filteredCourses, this.prefetchCoursesData);
         } catch (error) {
             if (!this.isDestroyed) {
                 CoreAlerts.showError(error, { default: Translate.instant('core.course.errordownloadingcourse') });

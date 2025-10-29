@@ -54,6 +54,7 @@ export async function getCourseServices(): Promise<Type<unknown>[]> {
     const { CoreCourseOptionsDelegateService } = await import('@features/course/services/course-options-delegate');
     const { CoreCourseOfflineProvider } = await import('@features/course/services/course-offline');
     const { CoreCourseSyncProvider } = await import('@features/course/services/sync');
+    const { CoreCoursePrefetchService } = await import('@features/course/services/course-prefetch');
 
     return [
         CoreCourseProvider,
@@ -67,6 +68,7 @@ export async function getCourseServices(): Promise<Type<unknown>[]> {
         CoreCourseOptionsDelegateService,
         CoreCourseOfflineProvider,
         CoreCourseSyncProvider,
+        CoreCoursePrefetchService,
     ];
 }
 
