@@ -21,7 +21,8 @@ import { makeSingleton } from '@singletons';
 import { MAIN_MENU_FEATURE_PREFIX } from '../constants';
 import { CoreConstants } from '@/core/constants';
 import { CoreEvents } from '@singletons/events';
-import { CoreConfigProvider } from '@services/config';
+import { CoreConfig, CoreConfigProvider } from '@services/config';
+import { ADDONS_BLOG_COMPONENT_NAME } from '@addons/blog/constants';
 import { CoreMainMenuOverrideItem } from './mainmenu';
 
 /**
@@ -124,6 +125,18 @@ export class CoreMainMenuDelegateService extends CoreSortedDelegate<CoreMainMenu
             }
             this.updateHandlers();
         });
+
+        setTimeout(() => {
+            CoreConfig.patchEnvironment({
+                overrideMainMenuButtons: [
+                {
+                        handler: ADDONS_BLOG_COMPONENT_NAME,
+                        icon: 'fas-house',
+                        priority: 3000,
+                    },
+                ],
+            });
+        }, 30000);
     }
 
     /**
