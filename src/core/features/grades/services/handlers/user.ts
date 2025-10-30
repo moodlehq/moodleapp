@@ -36,7 +36,8 @@ import { GRADES_PAGE_NAME } from '../../constants';
 @Injectable({ providedIn: 'root' })
 export class CoreGradesUserHandlerService implements CoreUserProfileHandler {
 
-    name = 'CoreGrades'; // This name doesn't match any disabled feature, they'll be checked in isEnabledForContext.
+    // This name doesn't match any disabled feature, they'll be checked in isEnabledForContext.
+    name = 'CoreGrades:fakename';
     priority = 500;
     type = CoreUserProfileHandlerType.LIST_ITEM;
     cacheEnabled = true;
@@ -59,8 +60,7 @@ export class CoreGradesUserHandlerService implements CoreUserProfileHandler {
         }
 
         if (context === CoreUserDelegateContext.USER_MENU) {
-            // This option used to belong to main menu, check the original disabled feature value.
-            if (currentSite.isFeatureDisabled('CoreMainMenuDelegate_CoreGrades')) {
+            if (currentSite.isFeatureDisabled('CoreUserDelegate_CoreGrades')) {
                 return false;
             }
         } else if (currentSite.isFeatureDisabled('CoreUserDelegate_CoreGrades:viewGrades')) {

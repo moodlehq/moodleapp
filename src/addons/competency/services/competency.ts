@@ -47,9 +47,8 @@ export class AddonCompetencyProvider {
         }
 
         return site.canUseAdvancedFeature('enablecompetencies') &&
-            !(site.isFeatureDisabled('CoreMainMenuDelegate_AddonCompetency') &&
-            site.isFeatureDisabled('CoreCourseOptionsDelegate_AddonCompetency') &&
-            site.isFeatureDisabled('CoreUserDelegate_AddonCompetency'));
+            !(site.isFeatureDisabled('CoreUserDelegate_AddonCompetency') &&
+            site.isFeatureDisabled('CoreCourseOptionsDelegate_AddonCompetency'));
     }
 
     /**
