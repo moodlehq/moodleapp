@@ -42,8 +42,8 @@ export class AddonModDataActionsMenuComponent  {
 
 }
 
-export interface AddonModDataActionsMenuItem {
+export type AddonModDataActionsMenuItem = {
     text: string;
     icon: string;
     action: () => void;
-}
+};

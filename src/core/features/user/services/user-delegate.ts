@@ -202,7 +202,7 @@ export type CoreUserProfileHandlerData = CoreUserProfileButtonHandlerData | Core
 /**
  * Data returned by the delegate for each handler.
  */
-export interface CoreUserProfileHandlerToDisplay {
+export type CoreUserProfileHandlerToDisplay = {
     /**
      * Name of the handler.
      */
@@ -222,7 +222,7 @@ export interface CoreUserProfileHandlerToDisplay {
      * The type of the handler.
      */
     type: CoreUserProfileHandlerType;
-}
+};
 
 /**
  * Delegate update handler event.

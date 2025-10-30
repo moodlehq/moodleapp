@@ -226,17 +226,17 @@ function createNewServiceInstance<Service = unknown>
     }
 }
 
-export interface RenderConfig {
+export type RenderConfig = {
     declarations: unknown[];
     providers: unknown[];
     imports: unknown[];
     translations?: Record<string, string>;
     standalone?: boolean;
-}
+};
 
-export interface RenderPageConfig extends RenderConfig {
+export type RenderPageConfig = RenderConfig & {
     routeParams: Record<string, unknown>;
-}
+};
 
 export type TestingComponentFixture<T = unknown> = Omit<ComponentFixture<T>, 'nativeElement'> & { nativeElement: Element };
 

@@ -18,9 +18,9 @@ import { CoreItemsManagerSource } from './items-manager-source';
 /**
  * Listeners.
  */
-export interface CoreItemsanagerListener<Item> {
+export type CoreItemsManagerListener<Item> = {
     onSelectedItemUpdated?(item: Item): void;
-}
+};
 
 /**
  * Helper to manage a collection of items in a page.
@@ -33,7 +33,7 @@ export abstract class CoreItemsManager<
     protected source?: { instance: Source; unsubscribe: () => void };
     protected itemsMap: Record<string, Item> | null = null;
     protected selectedItem: Item | null = null;
-    protected listeners: CoreItemsanagerListener<Item>[] = [];
+    protected listeners: CoreItemsManagerListener<Item>[] = [];
 
     constructor(source: Source) {
         this.setSource(source);
@@ -119,7 +119,7 @@ export abstract class CoreItemsManager<
      * @param listener Listener.
      * @returns Unsubscribe function.
      */
-    addListener(listener: CoreItemsanagerListener<Item>): () => void {
+    addListener(listener: CoreItemsManagerListener<Item>): () => void {
         this.listeners.push(listener);
 
         return () => this.removeListener(listener);
@@ -130,7 +130,7 @@ export abstract class CoreItemsManager<
      *
      * @param listener Listener.
      */
-    removeListener(listener: CoreItemsanagerListener<Item>): void {
+    removeListener(listener: CoreItemsManagerListener<Item>): void {
         const index = this.listeners.indexOf(listener);
 
         if (index === -1) {

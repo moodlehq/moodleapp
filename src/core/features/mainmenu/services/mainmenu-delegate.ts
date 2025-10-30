@@ -22,12 +22,13 @@ import { makeSingleton } from '@singletons';
 /**
  * Interface that all main menu handlers must implement.
  */
-export type CoreMainMenuHandler = CoreDelegateDisplayHandler<CoreMainMenuHandlerToDisplay>;
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
+export interface CoreMainMenuHandler extends CoreDelegateDisplayHandler<CoreMainMenuHandlerToDisplay> {}
 
 /**
  * Data needed to render a main menu handler. It's returned by the handler.
  */
-export interface CoreMainMenuHandlerData {
+export type CoreMainMenuHandlerData = {
     /**
      * Name of the page to load for the handler.
      */
@@ -82,12 +83,12 @@ export interface CoreMainMenuHandlerData {
      * Priority of the handler. If set, overrides the priority defined in CoreMainMenuHandler.
      */
     priority?: number;
-}
+};
 
 /**
  * Data returned by the delegate for each handler.
  */
-export interface CoreMainMenuHandlerToDisplay extends CoreDelegateToDisplay, CoreMainMenuHandlerData {
+export type CoreMainMenuHandlerToDisplay = CoreDelegateToDisplay & CoreMainMenuHandlerData & {
     /**
      * Hide tab. Used then resizing.
      */
@@ -97,7 +98,7 @@ export interface CoreMainMenuHandlerToDisplay extends CoreDelegateToDisplay, Cor
      * Used to control tabs.
      */
     id?: string;
-}
+};
 
 /**
  * Service to interact with plugins to be shown in the main menu. Provides functions to register a plugin

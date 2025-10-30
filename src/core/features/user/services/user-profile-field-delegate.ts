@@ -54,7 +54,7 @@ export interface CoreUserProfileFieldHandler extends CoreDelegateHandler {
     ): Promise<CoreUserProfileFieldHandlerData | undefined>;
 }
 
-export interface CoreUserProfileFieldHandlerData {
+export type CoreUserProfileFieldHandlerData = {
     /**
      * Name of the custom field.
      */
@@ -69,7 +69,7 @@ export interface CoreUserProfileFieldHandlerData {
      * Value of the custom field.
      */
     value: unknown;
-}
+};
 
 /**
  * Service to interact with user profile fields.

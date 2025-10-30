@@ -53,7 +53,7 @@ export interface CoreBlockHandler extends CoreDelegateHandler {
 /**
  * Data needed to render a block. It's returned by the handler.
  */
-export interface CoreBlockHandlerData {
+export type CoreBlockHandlerData = {
     /**
      * Title to display for the block.
      */
@@ -89,7 +89,7 @@ export interface CoreBlockHandlerData {
      * Navigation options.
      */
     navOptions?: CoreNavigationOptions;
-}
+};
 
 /**
  * Delegate to register block handlers.

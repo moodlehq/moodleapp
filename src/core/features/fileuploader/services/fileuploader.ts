@@ -39,12 +39,12 @@ import { CorePromiseUtils } from '@singletons/promise-utils';
 /**
  * File upload options.
  */
-export interface CoreFileUploaderOptions extends CoreWSFileUploadOptions {
+export type CoreFileUploaderOptions = CoreWSFileUploadOptions & {
     /**
      * Whether the file should be deleted after the upload (if success).
      */
     deleteAfterUpload?: boolean;
-}
+};
 
 /**
  * Service to upload files.

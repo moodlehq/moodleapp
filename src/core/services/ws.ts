@@ -1319,7 +1319,7 @@ export const CoreWS = makeSingleton(CoreWSProvider);
 /**
  * File upload options.
  */
-export interface CoreWSFileUploadOptions extends FileUploadOptions {
+export type CoreWSFileUploadOptions = FileUploadOptions & {
     /**
      * The file area where to put the file. By default, 'draft'.
      */
@@ -1329,7 +1329,7 @@ export interface CoreWSFileUploadOptions extends FileUploadOptions {
      * Item ID of the area where to put the file. By default, 0.
      */
     itemId?: number;
-}
+};
 
 /**
  * Structure of warnings returned by WS.

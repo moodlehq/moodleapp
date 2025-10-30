@@ -365,7 +365,7 @@ export const CoreUserTours = makeSingleton(CoreUserToursService);
 /**
  * User Tour controller.
  */
-export interface CoreUserToursUserTour {
+export type CoreUserToursUserTour = {
 
     /**
      * Cancelling a User Tour removes it from the queue if it was pending or dismisses it without
@@ -373,7 +373,7 @@ export interface CoreUserToursUserTour {
      */
     cancel(): Promise<void>;
 
-}
+};
 
 /**
  * User Tour side.
@@ -399,7 +399,7 @@ export const enum CoreUserToursAlignment {
 /**
  * Basic options to create a User Tour.
  */
-export interface CoreUserToursBasicOptions {
+export type CoreUserToursBasicOptions = {
 
     /**
      * Unique identifier.
@@ -446,12 +446,12 @@ export interface CoreUserToursBasicOptions {
      */
     afterTimeout?: number;
 
-}
+};
 
 /**
  * Options to create a focused User Tour.
  */
-export interface CoreUserToursFocusedOptions extends CoreUserToursBasicOptions {
+export type CoreUserToursFocusedOptions = CoreUserToursBasicOptions & {
 
     /**
      * Element to focus.
@@ -468,4 +468,4 @@ export interface CoreUserToursFocusedOptions extends CoreUserToursBasicOptions {
      */
     alignment: CoreUserToursAlignment;
 
-}
+};

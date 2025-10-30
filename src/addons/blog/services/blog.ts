@@ -444,7 +444,7 @@ export type CoreBlogGetEntriesWSResponse = {
 /**
  * Data returned by blog's post_exporter.
  */
-export interface AddonBlogPost {
+export type AddonBlogPost = {
     id: number; // Post/entry id.
     module: string; // Where it was published the post (blog, blog_external...).
     userid: number; // Post author.
@@ -467,7 +467,7 @@ export interface AddonBlogPost {
     summaryfiles: CoreWSExternalFile[]; // Summaryfiles.
     attachmentfiles?: CoreWSExternalFile[]; // Attachmentfiles.
     tags?: CoreTagItem[]; // @since 3.7. Tags.
-}
+};
 
 /**
  * Params of core_blog_view_entries WS.

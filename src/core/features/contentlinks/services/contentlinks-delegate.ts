@@ -96,7 +96,7 @@ export interface CoreContentLinksHandler {
 /**
  * Action to perform when a link is clicked.
  */
-export interface CoreContentLinksAction {
+export type CoreContentLinksAction = {
     /**
      * A message to identify the action. Default: 'core.view'.
      */
@@ -118,12 +118,12 @@ export interface CoreContentLinksAction {
      * @param siteId The site ID.
      */
     action(siteId: string): Promise<void>;
-}
+};
 
 /**
  * Actions and priority for a handler and URL.
  */
-export interface CoreContentLinksHandlerActions {
+export type CoreContentLinksHandlerActions = {
     /**
      * Handler's priority.
      */
@@ -133,7 +133,7 @@ export interface CoreContentLinksHandlerActions {
      * List of actions.
      */
     actions: CoreContentLinksAction[];
-}
+};
 
 /**
  * Delegate to register handlers to handle links.

@@ -158,8 +158,8 @@ export const CoreUserSupport = makeSingleton(CoreUserSupportService);
 /**
  * Options to configure interaction with support.
  */
-export interface CoreUserSupportContactOptions {
+export type CoreUserSupportContactOptions = {
     supportConfig?: CoreUserSupportConfig | null;
     subject?: string | null;
     message?: string | null;
-}
+};

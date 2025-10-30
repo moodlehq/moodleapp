@@ -21,7 +21,7 @@ type SQLiteDBColumnType = 'INTEGER' | 'REAL' | 'TEXT' | 'BLOB';
 /**
  * Schema of a table.
  */
-export interface SQLiteDBTableSchema {
+export type SQLiteDBTableSchema = {
     /**
      * The table name.
      */
@@ -51,12 +51,12 @@ export interface SQLiteDBTableSchema {
      * Check constraint for the table.
      */
     tableCheck?: string;
-}
+};
 
 /**
  * Schema of a column.
  */
-export interface SQLiteDBColumnSchema {
+export type SQLiteDBColumnSchema = {
     /**
      * Column's name.
      */
@@ -96,12 +96,12 @@ export interface SQLiteDBColumnSchema {
      * Default value for the column.
      */
     default?: string;
-}
+};
 
 /**
  * Schema of a foreign key.
  */
-export interface SQLiteDBForeignKeySchema {
+export type SQLiteDBForeignKeySchema = {
     /**
      * Columns to include in this foreign key.
      */
@@ -121,7 +121,7 @@ export interface SQLiteDBForeignKeySchema {
      * Text with the actions to apply to the foreign key.
      */
     actions?: string;
-}
+};
 
 /**
  * Class to interact with the local database.

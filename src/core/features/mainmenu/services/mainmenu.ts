@@ -326,7 +326,7 @@ export const CoreMainMenu = makeSingleton(CoreMainMenuProvider);
 /**
  * Custom main menu item.
  */
-export interface CoreMainMenuCustomItem {
+export type CoreMainMenuCustomItem = {
     /**
      * Type of the item: app, inappbrowser, browser or embedded.
      */
@@ -346,7 +346,7 @@ export interface CoreMainMenuCustomItem {
      * Name of the icon to display for the item.
      */
     icon: string;
-}
+};
 
 /**
  * Custom main menu item with localized text.

@@ -112,7 +112,7 @@ export interface CoreCourseOptionsMenuHandler extends CoreCourseOptionsHandler {
 /**
  * Data needed to render a course handler. It's returned by the handler.
  */
-export interface CoreCourseOptionsHandlerData {
+export type CoreCourseOptionsHandlerData = {
     /**
      * Title to display for the handler.
      */
@@ -132,12 +132,12 @@ export interface CoreCourseOptionsHandlerData {
      * Params to pass to the page (other than 'courseId' which is always sent).
      */
     pageParams?: Params;
-}
+};
 
 /**
  * Data needed to render a course menu handler. It's returned by the handler.
  */
-export interface CoreCourseOptionsMenuHandlerData {
+export type CoreCourseOptionsMenuHandlerData = {
     /**
      * Title to display for the handler.
      */
@@ -162,12 +162,12 @@ export interface CoreCourseOptionsMenuHandlerData {
      * Name of the icon to display for the handler.
      */
     icon: string; // Name of the icon to display in the tab.
-}
+};
 
 /**
  * Data returned by the delegate for each handler.
  */
-export interface CoreCourseOptionsHandlerToDisplay extends CoreDelegateToDisplay {
+export type CoreCourseOptionsHandlerToDisplay = CoreDelegateToDisplay & {
     /**
      * Data to display.
      */
@@ -180,12 +180,12 @@ export interface CoreCourseOptionsHandlerToDisplay extends CoreDelegateToDisplay
      * @returns Promise resolved when done.
      */
     prefetch?(course: CoreCourseAnyCourseData): Promise<void>;
-}
+};
 
 /**
  * Additional data returned if it is a menu item.
  */
-export interface CoreCourseOptionsMenuHandlerToDisplay {
+export type CoreCourseOptionsMenuHandlerToDisplay = {
     /**
      * Data to display.
      */
@@ -208,7 +208,7 @@ export interface CoreCourseOptionsMenuHandlerToDisplay {
      * @returns Promise resolved when done.
      */
     prefetch?(course: CoreCourseAnyCourseData): Promise<void>;
-}
+};
 
 /**
  * Service to interact with plugins to be shown in each course (participants, learning plans, ...).

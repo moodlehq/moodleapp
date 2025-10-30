@@ -143,7 +143,7 @@ export interface CoreCourseModuleHandler extends CoreDelegateHandler {
 /**
  * Data needed to render the module in course contents.
  */
-export interface CoreCourseModuleHandlerData {
+export type CoreCourseModuleHandlerData = {
     /**
      * The title to display in the module.
      */
@@ -221,7 +221,7 @@ export interface CoreCourseModuleHandlerData {
      * On Destroy function in case it's needed.
      */
     onDestroy?(): void;
-}
+};
 
 /**
  * Interface that all the components to render the module in singleactivity must implement.
@@ -240,7 +240,7 @@ export interface CoreCourseModuleMainComponent {
 /**
  * A button to display in a module item.
  */
-export interface CoreCourseModuleHandlerButton {
+export type CoreCourseModuleHandlerButton = {
     /**
      * The label to add to the button.
      */
@@ -266,7 +266,7 @@ export interface CoreCourseModuleHandlerButton {
      * @returns Promise resolved when done.
      */
     action(event: Event, module: CoreCourseModuleData, courseId: number, options?: CoreNavigationOptions): Promise<void> | void;
-}
+};
 
 /**
  * Data to render a course overview item.
