@@ -262,30 +262,6 @@ export class AddonPrivateFilesProvider {
     }
 
     /**
-     * Check if Files is disabled in a certain site.
-     *
-     * @param siteId Site Id. If not defined, use current site.
-     * @returns Promise resolved with true if disabled, rejected or resolved with false otherwise.
-     */
-    async isDisabled(siteId?: string): Promise<boolean> {
-        const site = await CoreSites.getSite(siteId);
-
-        return this.isDisabledInSite(site);
-    }
-
-    /**
-     * Check if Files is disabled in a certain site.
-     *
-     * @param site Site. If not defined, use current site.
-     * @returns Whether it's disabled.
-     */
-    isDisabledInSite(site: CoreSite): boolean {
-        site = site || CoreSites.getCurrentSite();
-
-        return site.isFeatureDisabled('CoreMainMenuDelegate_AddonPrivateFiles');
-    }
-
-    /**
      * Return whether or not the plugin is enabled.
      *
      * @returns True if enabled, false otherwise.

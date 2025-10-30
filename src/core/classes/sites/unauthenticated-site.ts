@@ -77,6 +77,9 @@ export class CoreUnauthenticatedSite {
         { old: /_mmaModWorkshop/g, new: '_AddonModWorkshop' },
         { old: /remoteAddOn_/g, new: 'sitePlugin_' },
         { old: /AddonNotes:addNote/g, new: 'AddonNotes:notes' },
+        { old: /CoreMainMenuDelegate_AddonCompetency/g, new: 'CoreUserDelegate_AddonCompetency' },
+        { old: /CoreMainMenuDelegate_AddonPrivateFiles/g, new: 'CoreUserDelegate_AddonPrivateFiles' },
+        { old: /CoreMainMenuDelegate_CoreGrades/g, new: 'CoreUserDelegate_CoreGrades' },
     ];
 
     /**
