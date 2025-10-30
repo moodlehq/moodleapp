@@ -137,14 +137,11 @@ export class CoreReadingModeDirective implements AfterViewInit, OnDestroy {
             this.disabledStyles = this.disabledStyles.concat(disabledStyles);
 
             // Rename style attributes on DOM elements.
-            const renamedStyles: HTMLElement[] = Array.from(element.querySelectorAll('*[style]'));
-            renamedStyles.forEach((element: HTMLElement) => {
-                this.renamedStyles.push(element);
+            this.renamedStyles = Array.from(element.querySelectorAll('*[style]'));
+            this.renamedStyles.forEach((element: HTMLElement) => {
                 element.setAttribute('data-original-style', element.getAttribute('style') || '');
                 element.removeAttribute('style');
             });
-
-            this.renamedStyles = this.renamedStyles.concat(renamedStyles);
 
             // Navigate to parent hidding all other elements.
             let currentChild = element;
