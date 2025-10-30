@@ -15,7 +15,7 @@
 import { Injectable } from '@angular/core';
 import { makeSingleton } from '@singletons';
 import { CoreMainMenuHomeDelegate } from '../home-delegate';
-import { CoreMainMenuHandler, CoreMainMenuHandlerData } from '../mainmenu-delegate';
+import { CoreMainMenuHandler, CoreMainMenuPageNavHandlerData } from '../mainmenu-delegate';
 import { MAIN_MENU_HOME_PAGE_NAME } from '@features/mainmenu/constants';
 
 /**
@@ -39,7 +39,7 @@ export class CoreMainMenuHomeHandlerService implements CoreMainMenuHandler {
     /**
      * @inheritdoc
      */
-    getDisplayData(): CoreMainMenuHandlerData {
+    getDisplayData(): CoreMainMenuPageNavHandlerData {
         return {
             icon: 'fas-gauge-high',
             title: 'core.mainmenu.home',

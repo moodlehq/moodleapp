@@ -17,7 +17,7 @@ import { Injectable } from '@angular/core';
 import { CoreLang, CoreLangFormat, CoreLangLanguage } from '@services/lang';
 import { CoreSites } from '@services/sites';
 import { CoreConstants } from '@/core/constants';
-import { CoreMainMenuDelegate, CoreMainMenuHandlerToDisplay } from './mainmenu-delegate';
+import { CoreMainMenuDelegate, CoreMainMenuPageNavHandlerToDisplay } from './mainmenu-delegate';
 import { Device, makeSingleton } from '@singletons';
 import { CoreText } from '@singletons/text';
 import { CoreScreen } from '@services/screen';
@@ -77,10 +77,10 @@ export class CoreMainMenuProvider {
      *
      * @returns Promise resolved with the current main menu handlers.
      */
-    async getCurrentMainMenuHandlers(): Promise<CoreMainMenuHandlerToDisplay[]> {
+    async getCurrentMainMenuHandlers(): Promise<CoreMainMenuPageNavHandlerToDisplay[]> {
         const handlers = await CoreMainMenuDelegate.getHandlersWhenLoaded();
 
-        return handlers.filter(handler => !handler.onlyInMore).slice(0, this.getNumItems());
+        return CoreMainMenuDelegate.skipOnlyMoreHandlers(handlers).slice(0, this.getNumItems());
     }
 
     /**

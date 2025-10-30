@@ -836,7 +836,7 @@ export class CoreSitePluginsInitService {
         handlerSchema: CoreSitePluginsMainMenuHandlerData,
         initResult: CoreSitePluginsContent | null,
     ): string | undefined {
-        if (!handlerSchema.displaydata) {
+        if (!handlerSchema.displaydata && !handlerSchema.displayinline) {
             // Required data not provided, stop.
             this.logger.warn('Ignore site plugin because it doesn\'t provide displaydata', plugin, handlerSchema);
 
@@ -847,7 +847,7 @@ export class CoreSitePluginsInitService {
 
         // Create and register the handler.
         const uniqueName = CoreSitePlugins.getHandlerUniqueName(plugin, handlerName);
-        const prefixedTitle = this.getPrefixedString(plugin.addon, handlerSchema.displaydata.title);
+        const prefixedTitle = this.getPrefixedString(plugin.addon, handlerSchema.displaydata?.title);
 
         CoreMainMenuDelegate.registerHandler(
             new CoreSitePluginsMainMenuHandler(uniqueName, prefixedTitle, plugin, handlerSchema, initResult),

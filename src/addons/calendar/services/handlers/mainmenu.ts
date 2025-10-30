@@ -15,7 +15,7 @@
 import { Injectable } from '@angular/core';
 import { AddonCalendar } from '../calendar';
 import { makeSingleton } from '@singletons';
-import { CoreMainMenuHandler, CoreMainMenuHandlerData } from '@features/mainmenu/services/mainmenu-delegate';
+import { CoreMainMenuHandler, CoreMainMenuPageNavHandlerData } from '@features/mainmenu/services/mainmenu-delegate';
 import { ADDON_CALENDAR_PAGE_NAME } from '@addons/calendar/constants';
 
 /**
@@ -41,7 +41,7 @@ export class AddonCalendarMainMenuHandlerService implements CoreMainMenuHandler 
      *
      * @returns Data needed to render the handler.
      */
-    getDisplayData(): CoreMainMenuHandlerData {
+    getDisplayData(): CoreMainMenuPageNavHandlerData {
         return {
             icon: 'far-calendar',
             title: 'addon.calendar.calendar',
