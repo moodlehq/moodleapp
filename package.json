@@ -1,6 +1,6 @@
 {
     "name": "moodlemobile",
-    "version": "4.5.4",
+    "version": "4.5.5",
     "description": "The official app for Moodle.",
     "author": {
         "name": "Moodle Pty Ltd.",
@@ -119,7 +119,6 @@
         "moment": "2.30.1",
         "moment-timezone": "0.5.45",
         "mp3-mediarecorder": "4.0.5",
-        "nl.kingsquare.cordova.background-audio": "1.0.1",
         "ogv": "1.9.0",
         "rxjs": "7.8.1",
         "swiper": "11.1.14",
@@ -238,7 +237,6 @@
             "cordova-plugin-wkuserscript": {},
             "cordova-plugin-wkwebview-cookies": {},
             "cordova-sqlite-storage": {},
-            "nl.kingsquare.cordova.background-audio": {},
             "cordova-plugin-ionic": {
                 "APP_ID": "f9e94571",
                 "CHANNEL_NAME": "Production",
