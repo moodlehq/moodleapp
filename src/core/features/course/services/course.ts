@@ -443,9 +443,10 @@ export class CoreCourseProvider {
      *
      * @param siteId Site id.
      * @returns Resolves with an array containing downloaded course ids.
-     * @deprecated since 5.0. Use CoreCourseStatusHelper.getDownloadedCourseIds.
+     * @deprecated since 5.2. Not used anymore.
      */
     async getDownloadedCourseIds(siteId?: string): Promise<number[]> {
+        // eslint-disable-next-line @typescript-eslint/no-deprecated
         return CoreCourseDownloadStatusHelper.getDownloadedCourseIds(siteId);
     }
 

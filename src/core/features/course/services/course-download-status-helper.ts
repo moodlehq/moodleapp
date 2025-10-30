@@ -118,7 +118,9 @@ export class CoreCourseDownloadStatusHelperService {
      * Obtain ids of downloaded courses.
      *
      * @param siteId Site id.
-     * @returns Resolves with an array containing downloaded course ids.
+     * @returns Resolves with an array containing downloaded course ids.ç
+     *
+     * @deprecated since 5.2. Not used anymore.
      */
     async getDownloadedCourseIds(siteId?: string): Promise<number[]> {
         const downloadedStatuses: DownloadStatus[] =
@@ -155,7 +157,7 @@ export class CoreCourseDownloadStatusHelperService {
             status: entry.previous || DownloadStatus.DOWNLOADABLE_NOT_DOWNLOADED,
             updated: Date.now(),
             // Going back from downloading to previous status, restore previous download time.
-            downloadTime: entry.status == DownloadStatus.DOWNLOADING ? entry.previousDownloadTime : entry.downloadTime,
+            downloadTime: entry.status === DownloadStatus.DOWNLOADING ? entry.previousDownloadTime : entry.downloadTime,
         };
 
         await this.tables[site.getId()].update(newData, { id: courseId });
