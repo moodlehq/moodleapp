@@ -48,28 +48,8 @@ export class AddonPrivateFilesUserHandlerService implements CoreUserProfileHandl
     /**
      * @inheritdoc
      */
-    async isEnabledForContext(context: CoreUserDelegateContext): Promise<boolean> {
-        // Private files only available in user menu.
-        if (context !== CoreUserDelegateContext.USER_MENU) {
-            return false;
-        }
-
-        // Check if feature is disabled.
-        const currentSite = CoreSites.getCurrentSite();
-        if (!currentSite) {
-            return false;
-        }
-
-        // This option used to belong to main menu, check the original disabled feature value.
-        return !currentSite.isFeatureDisabled('CoreMainMenuDelegate_AddonPrivateFiles');
-    }
-
-    /**
-     * @inheritdoc
-     */
     async isEnabledForUser(user: CoreUserProfile, context: CoreUserDelegateContext): Promise<boolean> {
-        // Private files only available for the current user.
-        return user.id == CoreSites.getCurrentSiteUserId() && context === CoreUserDelegateContext.USER_MENU;
+        return user.id === CoreSites.getCurrentSiteUserId() && context === CoreUserDelegateContext.USER_MENU;
     }
 
     /**
