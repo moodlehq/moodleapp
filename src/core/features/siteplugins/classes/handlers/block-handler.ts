@@ -14,7 +14,7 @@
 
 import { Type } from '@angular/core';
 import { CoreError } from '@classes/errors/error';
-import type { ICoreBlockComponent } from '@features/block/classes/base-block-component';
+import type { ReloadableComponent } from '@coretypes/reloadable-component';
 import { CoreBlockDelegate, CoreBlockHandler, CoreBlockHandlerData } from '@features/block/services/block-delegate';
 import { CoreCourseBlock } from '@features/course/services/course';
 import { CoreSitePluginsBlockHandlerData, CoreSitePluginsContent } from '@features/siteplugins/services/siteplugins';
@@ -50,7 +50,7 @@ export class CoreSitePluginsBlockHandler extends CoreSitePluginsBaseHandler impl
         instanceId: number,
     ): Promise<CoreBlockHandlerData> {
         const className = this.handlerSchema.displaydata?.class || `block_${block.name}`;
-        let component: Type<ICoreBlockComponent> | undefined;
+        let component: Type<ReloadableComponent> | undefined;
 
         if (this.handlerSchema.displaydata?.type === 'title') {
             const { CoreSitePluginsOnlyTitleBlockComponent } =

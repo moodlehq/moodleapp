@@ -22,7 +22,7 @@ import { Params } from '@angular/router';
 import { makeSingleton } from '@singletons';
 import { CoreBlockDefaultHandler } from './handlers/default-block';
 import { CoreNavigationOptions } from '@services/navigator';
-import type { ICoreBlockComponent } from '@features/block/classes/base-block-component';
+import type { ReloadableComponent } from '@coretypes/reloadable-component';
 import { ContextLevel } from '@/core/constants';
 import { CORE_BLOCKS_DASHBOARD_FALLBACK_MYOVERVIEW_BLOCK } from '../constants';
 
@@ -68,7 +68,7 @@ export interface CoreBlockHandlerData {
      * The component to render the contents of the block.
      * It's recommended to return the class of the component, but you can also return an instance of the component.
      */
-    component: Type<ICoreBlockComponent>;
+    component: Type<ReloadableComponent>;
 
     /**
      * Data to pass to the component. All the properties in this object will be passed to the component as inputs.

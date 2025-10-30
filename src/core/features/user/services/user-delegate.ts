@@ -23,6 +23,7 @@ import { makeSingleton } from '@singletons';
 import { CoreCourses, CoreCourseUserAdminOrNavOptionIndexed } from '@features/courses/services/courses';
 import { CoreSites } from '@services/sites';
 import { CORE_USER_PROFILE_REFRESHED } from '../constants';
+import type { ReloadableComponent } from '@coretypes/reloadable-component';
 
 export enum CoreUserProfileHandlerType {
     LIST_ITEM = 'listitem', // User profile handler type to be shown as a list item.
@@ -180,7 +181,7 @@ export type CoreUserProfileListComponentHandlerData =  {
     /**
      * Component to render.
      */
-    component: Type<CoreUserProfileHandlerComponent>;
+    component: Type<ReloadableComponent>;
 
     /**
      * Data to pass to the component. The app will also provide some default data.
@@ -221,21 +222,6 @@ export interface CoreUserProfileHandlerToDisplay {
      * The type of the handler.
      */
     type: CoreUserProfileHandlerType;
-}
-
-/**
- * Interface for user profile handler components.
- */
-export interface CoreUserProfileHandlerComponent {
-    /**
-     * Invalidate the component content.
-     */
-    invalidateContent(): Promise<void>;
-
-    /**
-     * Reload the component content.
-     */
-    reloadContent(): Promise<void>;
 }
 
 /**

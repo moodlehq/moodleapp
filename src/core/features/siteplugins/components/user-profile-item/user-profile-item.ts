@@ -16,7 +16,8 @@ import { CoreSharedModule } from '@/core/shared.module';
 import { Component, computed, input, viewChild } from '@angular/core';
 import { CoreSitePluginsPluginContentComponent } from '../plugin-content/plugin-content';
 import { CoreUserProfile } from '@features/user/services/user';
-import { CoreUserDelegateContext, CoreUserProfileHandlerComponent } from '@features/user/services/user-delegate';
+import { CoreUserDelegateContext } from '@features/user/services/user-delegate';
+import type { ReloadableComponent } from '@coretypes/reloadable-component';
 
 /**
  * Component to render a site plugin user profile item.
@@ -29,7 +30,7 @@ import { CoreUserDelegateContext, CoreUserProfileHandlerComponent } from '@featu
         CoreSitePluginsPluginContentComponent,
     ],
 })
-export class CoreSitePluginsUserProfileItemComponent implements CoreUserProfileHandlerComponent {
+export class CoreSitePluginsUserProfileItemComponent implements ReloadableComponent {
 
     readonly pluginContent = viewChild(CoreSitePluginsPluginContentComponent);
 

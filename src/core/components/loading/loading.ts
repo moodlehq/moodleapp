@@ -24,7 +24,7 @@ import { CoreUtils } from '@singletons/utils';
 import { Translate } from '@singletons';
 import { CoreDirectivesRegistry } from '@singletons/directives-registry';
 import { CorePromisedValue } from '@classes/promised-value';
-import { AsyncDirective } from '@classes/async-directive';
+import type { AsyncDirective } from '@coretypes/async-directive';
 import { CorePlatform } from '@services/platform';
 import { CoreWait } from '@singletons/wait';
 import { toBoolean } from '@/core/transforms/boolean';

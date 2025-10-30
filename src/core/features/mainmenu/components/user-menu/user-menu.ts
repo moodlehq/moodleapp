@@ -26,7 +26,6 @@ import {
     CoreUserProfileHandlerType,
     CoreUserDelegateContext,
     CoreUserProfileListHandlerData,
-    CoreUserProfileHandlerComponent,
 } from '@features/user/services/user-delegate';
 import { CoreModals } from '@services/overlays/modals';
 import { CoreNavigator } from '@services/navigator';
@@ -38,6 +37,7 @@ import { CoreSiteLogoComponent } from '@/core/components/site-logo/site-logo';
 import { CoreAlerts } from '@services/overlays/alerts';
 import { CoreDynamicComponent } from '@components/dynamic-component/dynamic-component';
 import { CorePromiseUtils } from '@singletons/promise-utils';
+import type { ReloadableComponent } from '@coretypes/reloadable-component';
 
 /**
  * Component to display a user menu.
@@ -53,7 +53,7 @@ import { CorePromiseUtils } from '@singletons/promise-utils';
 })
 export class CoreMainMenuUserMenuComponent implements OnInit, OnDestroy {
 
-    readonly dynamicComponents = viewChildren<CoreDynamicComponent<CoreUserProfileHandlerComponent>>(CoreDynamicComponent);
+    readonly dynamicComponents = viewChildren<CoreDynamicComponent<ReloadableComponent>>(CoreDynamicComponent);
 
     siteInfo?: CoreSiteInfo;
     siteUrl?: string;

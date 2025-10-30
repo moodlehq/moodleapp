@@ -28,7 +28,6 @@ import {
     CoreUserProfileListActionHandlerData,
     CoreUserProfileListHandlerData,
     CoreUserProfileButtonHandlerData,
-    CoreUserProfileHandlerComponent,
 } from '@features/user/services/user-delegate';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreNavigator } from '@services/navigator';
@@ -43,6 +42,7 @@ import { CoreAlerts } from '@services/overlays/alerts';
 import { CoreSharedModule } from '@/core/shared.module';
 import { CORE_USER_PROFILE_REFRESHED } from '@features/user/constants';
 import { CoreDynamicComponent } from '@components/dynamic-component/dynamic-component';
+import type { ReloadableComponent } from '@coretypes/reloadable-component';
 
 @Component({
     selector: 'page-core-user-profile',
@@ -54,7 +54,7 @@ import { CoreDynamicComponent } from '@components/dynamic-component/dynamic-comp
 })
 export default class CoreUserProfilePage implements OnInit, OnDestroy {
 
-    readonly dynamicComponents = viewChildren<CoreDynamicComponent<CoreUserProfileHandlerComponent>>(CoreDynamicComponent);
+    readonly dynamicComponents = viewChildren<CoreDynamicComponent<ReloadableComponent>>(CoreDynamicComponent);
 
     userLoaded = false;
     isLoadingHandlers = false;

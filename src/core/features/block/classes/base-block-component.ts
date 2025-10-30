@@ -20,7 +20,8 @@ import { CoreCourseBlock } from '../../course/services/course';
 import { Params } from '@angular/router';
 import { ContextLevel } from '@/core/constants';
 import { CoreNavigationOptions } from '@services/navigator';
-import { AsyncDirective } from '@classes/async-directive';
+import type { AsyncDirective } from '@coretypes/async-directive';
+import type { ReloadableComponent } from '@coretypes/reloadable-component';
 import { CorePromisedValue } from '@classes/promised-value';
 import { CoreAlerts } from '@services/overlays/alerts';
 import { Translate } from '@singletons';
@@ -31,7 +32,7 @@ import { Translate } from '@singletons';
 @Component({
     template: '',
 })
-export abstract class CoreBlockBaseComponent implements OnInit, OnChanges, ICoreBlockComponent, AsyncDirective {
+export abstract class CoreBlockBaseComponent implements OnInit, OnChanges, ReloadableComponent, AsyncDirective {
 
     @Input({ required: true }) title!: string; // The block title.
     @Input({ required: true }) block!: CoreCourseBlock; // The block to render.
@@ -157,22 +158,5 @@ export abstract class CoreBlockBaseComponent implements OnInit, OnChanges, ICore
     async ready(): Promise<void> {
         return await this.onReadyPromise;
     }
-
-}
-
-/**
- * Interface for block components.
- */
-export interface ICoreBlockComponent {
-
-    /**
-     * Perform the invalidate content function.
-     */
-    invalidateContent(): Promise<void>;
-
-    /**
-     * Perform the reload content function.
-     */
-    reloadContent(): Promise<void>;
 
 }

@@ -43,7 +43,7 @@ import { CoreSubscriptions } from '@singletons/subscriptions';
 import { CoreDirectivesRegistry } from '@singletons/directives-registry';
 import { CoreCollapsibleItemDirective } from './collapsible-item';
 import { CoreCancellablePromise } from '@classes/cancellable-promise';
-import { AsyncDirective } from '@classes/async-directive';
+import type { AsyncDirective } from '@coretypes/async-directive';
 import { CoreDom } from '@singletons/dom';
 import { CoreEvents } from '@singletons/events';
 import { CoreRefreshContext, CORE_REFRESH_CONTEXT } from '@/core/utils/refresh-context';
