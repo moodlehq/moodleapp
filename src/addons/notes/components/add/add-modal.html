@@ -19,7 +19,7 @@
                 <ion-select-option value="site">{{ 'addon.notes.sitenotes' | translate }}</ion-select-option>
             </ion-select>
         </ion-item>
-        <ion-item>
+        <ion-item lines="none">
             <ion-textarea [ariaLabel]="'addon.notes.note' | translate" placeholder="{{ 'addon.notes.note' | translate }}" rows="5"
                 [(ngModel)]="text" name="text" required="required" />
         </ion-item>
