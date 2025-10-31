@@ -37,6 +37,9 @@ export class CoreUnauthenticatedSite {
 
     // List of regular expressions to convert the old nomenclature to new nomenclature for disabled features.
     protected static readonly DISABLED_FEATURES_COMPAT_REGEXPS: { old: RegExp; new: string }[] = [
+        // @deprecatedonmoodle 3.7
+        { old: /remoteAddOn_/g, new: 'sitePlugin_' },
+        // @deprecatedonmoodle 5.2
         { old: /\$mmLoginEmailSignup/g, new: 'CoreLoginEmailSignup' },
         { old: /\$mmSideMenuDelegate/g, new: 'CoreMainMenuDelegate' },
         { old: /\$mmCoursesDelegate/g, new: 'CoreCourseOptionsDelegate' },
@@ -80,7 +83,6 @@ export class CoreUnauthenticatedSite {
         { old: /_mmaModUrl/g, new: '_AddonModUrl' },
         { old: /_mmaModWiki/g, new: '_AddonModWiki' },
         { old: /_mmaModWorkshop/g, new: '_AddonModWorkshop' },
-        { old: /remoteAddOn_/g, new: 'sitePlugin_' },
         { old: /AddonNotes:addNote/g, new: 'AddonNotes:notes' },
         { old: /CoreMainMenuDelegate_AddonCompetency/g, new: 'CoreUserDelegate_AddonCompetency' },
         { old: /CoreMainMenuDelegate_AddonPrivateFiles/g, new: 'CoreUserDelegate_AddonPrivateFiles' },

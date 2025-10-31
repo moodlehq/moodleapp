@@ -25,7 +25,7 @@ import {
 import { CoreUserProfile } from '@features/user/services/user';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSites } from '@services/sites';
-import { ADDON_PRIVATE_FILES_PAGE_NAME } from '@addons/privatefiles/constants';
+import { ADDON_PRIVATE_FILES_COMPONENT_NAME, ADDON_PRIVATE_FILES_PAGE_NAME } from '@addons/privatefiles/constants';
 
 /**
  * Handler to inject an option into user menu.
@@ -34,7 +34,7 @@ import { ADDON_PRIVATE_FILES_PAGE_NAME } from '@addons/privatefiles/constants';
 export class AddonPrivateFilesUserHandlerService implements CoreUserProfileHandler {
 
     readonly type = CoreUserProfileHandlerType.LIST_ITEM;
-    name = 'AddonPrivateFiles';
+    name = ADDON_PRIVATE_FILES_COMPONENT_NAME;
     priority = 400;
     cacheEnabled = true;
 
