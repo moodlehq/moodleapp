@@ -85,7 +85,7 @@
         "@moodlehq/cordova-plugin-qrscanner": "3.0.1-moodle.6",
         "@moodlehq/cordova-plugin-statusbar": "4.0.0-moodle.5",
         "@moodlehq/cordova-plugin-zip": "3.1.0-moodle.1",
-        "@moodlehq/phonegap-plugin-push": "4.0.0-moodle.12",
+        "@moodlehq/phonegap-plugin-push": "4.0.0-moodle.13",
         "@ngx-translate/core": "16.0.4",
         "@ngx-translate/http-loader": "16.0.1",
         "@sqlite.org/sqlite-wasm": "3.45.0-build1",
