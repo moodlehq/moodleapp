@@ -23,6 +23,7 @@ import { CoreNavigator } from '@services/navigator';
 import { CoreSites } from '@services/sites';
 import { makeSingleton } from '@singletons';
 import { AddonBlog } from '../blog';
+import { ADDONS_BLOG_COMPONENT_NAME } from '@addons/blog/constants';
 
 /**
  * Profile item handler.
@@ -30,7 +31,7 @@ import { AddonBlog } from '../blog';
 @Injectable({ providedIn: 'root' })
 export class AddonBlogUserHandlerService implements CoreUserProfileHandler {
 
-    name = 'AddonBlog'; // This name doesn't match any disabled feature, they'll be checked in isEnabledForContext.
+    name = ADDONS_BLOG_COMPONENT_NAME; // This name doesn't match any disabled feature, they'll be checked in isEnabledForContext.
     priority = 200;
     type = CoreUserProfileHandlerType.LIST_ITEM;
 

@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import { MAIN_MENU_FEATURE_PREFIX } from '@features/mainmenu/constants';
 import { CoreViewerReadingModeSettings } from './services/viewer';
 
 export const CORE_READING_MODE_SETTINGS = 'CoreReadingModeSettings';
@@ -31,3 +32,6 @@ export const CORE_READING_MODE_DEFAULT_SETTINGS: CoreViewerReadingModeSettings =
     showMultimedia: false,
     theme: CoreViewerReadingModeThemes.HCM,
 };
+
+export const CORE_QRREADER_COMPONENT_NAME = 'QrReader';
+export const CORE_QRREADER_MENU_FEATURE_NAME = `${MAIN_MENU_FEATURE_PREFIX}${CORE_QRREADER_COMPONENT_NAME}`;

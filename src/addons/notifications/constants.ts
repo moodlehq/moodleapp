@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import { MAIN_MENU_FEATURE_PREFIX } from '@features/mainmenu/constants';
+
 export const ADDONS_NOTIFICATIONS_READ_CHANGED_EVENT = 'addon_notifications_read_changed_event';
 export const ADDONS_NOTIFICATIONS_READ_CRON_EVENT = 'addon_notifications_read_cron_event';
 
@@ -21,3 +23,6 @@ export const ADDONS_NOTIFICATIONS_LIST_LIMIT = 20;
 
 export const ADDONS_NOTICATIONS_MAIN_PAGE_NAME = 'notifications';
 export const ADDONS_NOTICATIONS_SETTINGS_PAGE_NAME = 'notifications';
+
+export const ADDONS_NOTICATIONS_COMPONENT_NAME = 'AddonNotifications';
+export const ADDONS_NOTICATIONS_MENU_FEATURE_NAME = `${MAIN_MENU_FEATURE_PREFIX}${ADDONS_NOTICATIONS_COMPONENT_NAME}`;
