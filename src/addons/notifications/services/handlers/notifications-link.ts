@@ -18,7 +18,7 @@ import { CoreContentLinksHandlerBase } from '@features/contentlinks/classes/base
 import { CoreContentLinksAction } from '@features/contentlinks/services/contentlinks-delegate';
 import { CoreNavigator } from '@services/navigator';
 import { makeSingleton } from '@singletons';
-import { ADDONS_NOTICATIONS_MAIN_PAGE_NAME } from '@addons/notifications/constants';
+import { ADDONS_NOTICATIONS_MAIN_PAGE_NAME, ADDONS_NOTICATIONS_MENU_FEATURE_NAME } from '@addons/notifications/constants';
 
 /**
  * Handler to treat links to notifications.
@@ -28,7 +28,7 @@ export class AddonNotificationsLinkHandlerService extends CoreContentLinksHandle
 
     name = 'AddonNotificationsLinkHandler';
     pattern = /\/message\/output\/popup\/notifications\.php/;
-    featureName = 'CoreMainMenuDelegate_AddonNotifications';
+    featureName =ADDONS_NOTICATIONS_MENU_FEATURE_NAME;
 
     /**
      * @inheritdoc
