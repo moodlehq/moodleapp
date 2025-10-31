@@ -33,7 +33,7 @@
                 </ion-radio-group>
             </ion-list>
             @if (edit) {
-                <ion-item>
+                <ion-item lines="none">
                     <ion-textarea labelPlacement="stacked" [(ngModel)]="selectedValues[n].peercomment" [name]="'peercomment_' + n"
                         [core-auto-rows]="selectedValues[n].peercomment"
                         [label]="'addon.mod_workshop_assessment_numerrors.dimensioncommentfor' | translate : {'$a': field.dimtitle }" />

@@ -38,7 +38,7 @@
                 }
             }
             @if (edit) {
-                <ion-item>
+                <ion-item lines="none">
                     <ion-textarea labelPlacement="stacked" [(ngModel)]="selectedValues[n].peercomment"
                         [core-auto-rows]="selectedValues[n].peercomment"
                         [label]=" 'addon.mod_workshop_assessment_accumulative.dimensioncommentfor' | translate : {'$a': field.dimtitle }" />

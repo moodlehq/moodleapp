@@ -1,0 +1,31 @@
+ion-textarea[class]:not(.core-textarea) {
+    --border-color: var(--stroke);
+    --border-radius: var(--mdl-shape-borderRadius-md);
+    --border-width: 2px;
+    --border-style: solid;
+    --highlight-color: var(--dark) !important;
+
+
+    &.has-focus {
+        --border-width: 2px;
+        .textarea-wrapper .textarea-wrapper-inner {
+            padding: 7px;
+        }
+    }
+
+    .textarea-wrapper {
+        border: 0px;
+
+        .label-text-wrapper {
+            transform: none !important;
+            margin-top: 8px;
+            margin-bottom: 4px;
+        }
+
+        .textarea-wrapper-inner {
+            border: var(--border-width) var(--border-style) var(--border-color);
+            border-radius: var(--border-radius);
+            padding: 8px;
+        }
+    }
+}

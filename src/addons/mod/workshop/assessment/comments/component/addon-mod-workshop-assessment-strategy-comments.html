@@ -9,7 +9,7 @@
                 </ion-label>
             </ion-item>
             @if (edit) {
-                <ion-item>
+                <ion-item lines="none">
                     <ion-textarea labelPlacement="stacked" [(ngModel)]="selectedValues[n].peercomment"
                         [core-auto-rows]="selectedValues[n].peercomment">
                         <div [core-mark-required]="true" slot="label">
