@@ -16,7 +16,7 @@ import { Injectable } from '@angular/core';
 import { CoreContentLinksHandlerBase } from '@features/contentlinks/classes/base-handler';
 import { CoreContentLinksAction } from '@features/contentlinks/services/contentlinks-delegate';
 import { CoreSearchGlobalSearch } from '@features/search/services/global-search';
-import { CORE_SEARCH_PAGE_NAME } from '@features/search/services/handlers/mainmenu';
+import { CORE_SEARCH_PAGE_NAME } from '@features/search/constants';
 import { CoreNavigator } from '@services/navigator';
 import { makeSingleton } from '@singletons';
 

@@ -29,7 +29,7 @@ import { CoreSitePreferencesRoutingModule } from '@features/settings/settings-si
 import { CoreContentLinksDelegate } from '@features/contentlinks/services/contentlinks-delegate';
 import { AddonNotificationsPreferencesLinkHandler } from './services/handlers/preferences-link';
 import { AddonNotificationsLinkHandler } from './services/handlers/notifications-link';
-import { ADDONS_NOTICATIONS_MAIN_PAGE_NAME, ADDONS_NOTICATIONS_SETTINGS_PAGE_NAME } from './constants';
+import { ADDONS_NOTIFICATIONS_MAIN_PAGE_NAME, ADDONS_NOTIFICATIONS_SETTINGS_PAGE_NAME } from './constants';
 
 /**
  * Get notifications services.
@@ -48,13 +48,13 @@ export async function getNotificationsServices(): Promise<Type<unknown>[]> {
 
 const routes: Routes = [
     {
-        path: ADDONS_NOTICATIONS_MAIN_PAGE_NAME,
+        path: ADDONS_NOTIFICATIONS_MAIN_PAGE_NAME,
         loadChildren: () => import('./notifications-lazy.module'),
     },
 ];
 const preferencesRoutes: Routes = [
     {
-        path: ADDONS_NOTICATIONS_SETTINGS_PAGE_NAME,
+        path: ADDONS_NOTIFICATIONS_SETTINGS_PAGE_NAME,
         loadComponent: () => import('@addons/notifications/pages/settings/settings'),
     },
 ];

@@ -18,6 +18,8 @@ export const ADDON_BLOG_AUTO_SYNCED = 'addon_blog_autom_synced';
 export const ADDON_BLOG_MANUAL_SYNCED = 'addon_blog_manual_synced';
 export const ADDON_BLOG_SYNC_ID = 'blog';
 
+export const ADDONS_BLOG_COMPONENT_NAME = 'AddonBlog';
+
 /**
  * Restriction level of user blog visualization.
  */

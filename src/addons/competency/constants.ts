@@ -12,9 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import { CORE_USER_FEATURE_PREFIX } from '@features/user/constants';
+
 export const ADDON_COMPETENCY_LEARNING_PLANS_PAGE = 'learning-plans';
 export const ADDON_COMPETENCY_COMPETENCIES_PAGE = 'competencies';
 export const ADDON_COMPETENCY_SUMMARY_PAGE = 'summary';
+
+export const ADDONS_COMPETENCY_COMPONENT_NAME = 'AddonCompetency';
+export const ADDONS_COMPETENCY_USER_MENU_FEATURE_NAME = `${CORE_USER_FEATURE_PREFIX}${ADDONS_COMPETENCY_COMPONENT_NAME}`;
 
 /**
  * Learning plan status.

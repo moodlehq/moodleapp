@@ -18,7 +18,7 @@ import { CoreContentLinksHandlerBase } from '@features/contentlinks/classes/base
 import { CoreContentLinksAction } from '@features/contentlinks/services/contentlinks-delegate';
 import { CoreNavigator } from '@services/navigator';
 import { makeSingleton } from '@singletons';
-import { CORE_COURSES_MYCOURSES_PAGE_NAME } from '@features/courses/constants';
+import { CORE_COURSES_MENU_FEATURE_NAME, CORE_COURSES_MYCOURSES_PAGE_NAME } from '@features/courses/constants';
 
 /**
  * Handler to treat links to course index (list of courses).
@@ -27,7 +27,7 @@ import { CORE_COURSES_MYCOURSES_PAGE_NAME } from '@features/courses/constants';
 export class CoreCoursesIndexLinkHandlerService extends CoreContentLinksHandlerBase {
 
     name = 'CoreCoursesIndexLinkHandler';
-    featureName = 'CoreMainMenuDelegate_CoreCourses';
+    featureName = CORE_COURSES_MENU_FEATURE_NAME;
     pattern = /\/course\/?(index\.php.*)?$/;
 
     /**

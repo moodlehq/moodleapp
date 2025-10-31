@@ -12,4 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import { MAIN_MENU_FEATURE_PREFIX } from '@features/mainmenu/constants';
+
 export const CORE_SITEHOME_PAGE_NAME = 'site';
+
+export const CORE_SITEHOME_COMPONENT_NAME = 'CoreSiteHome';
+export const CORE_SITEHOME_MENU_FEATURE_NAME = `${MAIN_MENU_FEATURE_PREFIX}${CORE_SITEHOME_COMPONENT_NAME}`;

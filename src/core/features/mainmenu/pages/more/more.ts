@@ -37,6 +37,7 @@ import { ReloadableComponent } from '@coretypes/reloadable-component';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreCustomMenu, CoreCustomMenuItem } from '@features/mainmenu/services/custommenu';
 import { CoreCustomMenuItemComponent } from '@features/mainmenu/components/custom-menu-item/custom-menu-item';
+import { CORE_QRREADER_MENU_FEATURE_NAME } from '@features/viewer/constants';
 
 /**
  * Page that displays the more page of the app.
@@ -77,7 +78,7 @@ export default class CoreMainMenuMorePage implements OnInit, OnDestroy {
         this.loadCustomMenuItems();
 
         this.showScanQR = CoreQRScan.canScanQR() &&
-                !CoreSites.getCurrentSite()?.isFeatureDisabled('CoreMainMenuDelegate_QrReader');
+                !CoreSites.getCurrentSite()?.isFeatureDisabled(CORE_QRREADER_MENU_FEATURE_NAME);
     }
 
     /**

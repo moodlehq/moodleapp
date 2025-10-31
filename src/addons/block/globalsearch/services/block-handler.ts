@@ -17,7 +17,7 @@ import { CoreBlockHandlerData } from '@features/block/services/block-delegate';
 import { CoreBlockBaseHandler } from '@features/block/classes/base-block-handler';
 import { makeSingleton } from '@singletons';
 import { CoreCourseBlock } from '@features/course/services/course';
-import { CORE_SEARCH_PAGE_NAME } from '@features/search/services/handlers/mainmenu';
+import { CORE_SEARCH_PAGE_NAME } from '@features/search/constants';
 import { CoreSearchGlobalSearch } from '@features/search/services/global-search';
 import { ContextLevel } from '@/core/constants';
 

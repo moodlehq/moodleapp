@@ -17,7 +17,8 @@ import { Routes } from '@angular/router';
 import { CoreMainMenuRoutingModule } from '@features/mainmenu/mainmenu-routing.module';
 import { CoreMainMenuTabRoutingModule } from '@features/mainmenu/mainmenu-tab-routing.module';
 import { CoreMainMenuDelegate } from '@features/mainmenu/services/mainmenu-delegate';
-import { CoreSearchMainMenuHandler, CORE_SEARCH_PAGE_NAME } from '@features/search/services/handlers/mainmenu';
+import { CoreSearchMainMenuHandler } from '@features/search/services/handlers/mainmenu';
+import { CORE_SEARCH_PAGE_NAME } from '@features/search/constants';
 
 import { CORE_SITE_SCHEMAS } from '@services/sites';
 
