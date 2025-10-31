@@ -19,6 +19,7 @@ import { CoreContentLinksAction } from '@features/contentlinks/services/contentl
 import { CoreNavigator } from '@services/navigator';
 import { makeSingleton } from '@singletons';
 import { AddonBlog } from '../blog';
+import { ADDONS_BLOG_USER_PROFILE_FEATURE_NAME } from '@addons/blog/constants';
 
 /**
  * Handler to treat links to edit blog entry page.
@@ -27,7 +28,7 @@ import { AddonBlog } from '../blog';
 export class AddonBlogEditEntryLinkHandlerService extends CoreContentLinksHandlerBase {
 
     name = 'AddonBlogEditEntryLinkHandler';
-    featureName = 'CoreUserDelegate_AddonBlog:blogs';
+    featureName = ADDONS_BLOG_USER_PROFILE_FEATURE_NAME;
     pattern = /\/blog\/(add|edit)\.php/;
 
     /**

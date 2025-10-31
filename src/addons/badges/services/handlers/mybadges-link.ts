@@ -18,6 +18,7 @@ import { CoreContentLinksAction } from '@features/contentlinks/services/contentl
 import { CoreNavigator } from '@services/navigator';
 import { makeSingleton } from '@singletons';
 import { AddonBadges } from '../badges';
+import { ADDONS_BADGES_USER_PROFILE_FEATURE_NAME } from '@addons/badges/constants';
 
 /**
  * Handler to treat links to user badges page.
@@ -26,7 +27,7 @@ import { AddonBadges } from '../badges';
 export class AddonBadgesMyBadgesLinkHandlerService extends CoreContentLinksHandlerBase {
 
     name = 'AddonBadgesMyBadgesLinkHandler';
-    featureName = 'CoreUserDelegate_AddonBadges';
+    featureName = ADDONS_BADGES_USER_PROFILE_FEATURE_NAME;
     pattern = /\/badges\/mybadges\.php/;
 
     /**

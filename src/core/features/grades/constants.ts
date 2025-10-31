@@ -12,10 +12,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import { CORE_USER_FEATURE_PREFIX } from '@features/user/constants';
+
 export const GRADES_PAGE_NAME = 'grades';
 export const GRADES_PARTICIPANTS_PAGE_NAME = 'participant-grades';
 
-export const CORE_GRADES_COURSE_OPTION_NAME = 'CoreGrades'; // Tabname.
+export const CORE_GRADES_COMPONENT_NAME = 'CoreGrades';
+export const CORE_GRADES_USER_MENU_FEATURE_NAME = `${CORE_USER_FEATURE_PREFIX}${CORE_GRADES_COMPONENT_NAME}`;
+export const CORE_GRADES_USER_PROFILE_FEATURE_NAME = `${CORE_GRADES_USER_MENU_FEATURE_NAME}:viewGrades`;
+
+export const CORE_GRADES_COURSE_OPTION_NAME = CORE_GRADES_COMPONENT_NAME; // Tabname on course.
 
 export const enum CoreGradeType {
     NONE = 0, // Moodle's GRADE_TYPE_NONE.

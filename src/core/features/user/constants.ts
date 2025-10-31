@@ -19,6 +19,11 @@ export const CORE_PARTICIPANTS_COURSE_OPTION_NAME = 'CoreUserParticipants'; // T
 // Events.
 export const CORE_USER_AUTO_SYNCED = 'core_user_autom_synced';
 
+// Features.
+export const CORE_USER_FEATURE_PREFIX = 'CoreUserDelegate_';
+
+export const CORE_USER_PICTURE_FEATURE_NAME = `${CORE_USER_FEATURE_PREFIX}picture`;
+
 /**
  * Profile picture updated event.
  */

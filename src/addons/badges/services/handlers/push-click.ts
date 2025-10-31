@@ -22,6 +22,7 @@ import { CorePushNotificationsNotificationBasicData } from '@features/pushnotifi
 import { CoreNavigator } from '@services/navigator';
 import { AddonBadgesHelper } from '../badges-helper';
 import { CorePromiseUtils } from '@singletons/promise-utils';
+import { ADDONS_BADGES_USER_PROFILE_FEATURE_NAME } from '@addons/badges/constants';
 
 /**
  * Handler for badges push notifications clicks.
@@ -31,7 +32,7 @@ export class AddonBadgesPushClickHandlerService implements CorePushNotifications
 
     name = 'AddonBadgesPushClickHandler';
     priority = 200;
-    featureName = 'CoreUserDelegate_AddonBadges';
+    featureName = ADDONS_BADGES_USER_PROFILE_FEATURE_NAME;
 
     /**
      * @inheritdoc

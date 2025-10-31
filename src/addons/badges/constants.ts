@@ -12,6 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-export const ADDON_PRIVATE_FILES_PAGE_NAME = 'private';
+import { CORE_USER_FEATURE_PREFIX } from '@features/user/constants';
 
-export const ADDON_PRIVATE_FILES_COMPONENT_NAME = 'AddonPrivateFiles';
+export const ADDONS_BADGES_COMPONENT_NAME = 'AddonBadges';
+
+export const ADDONS_BADGES_USER_PROFILE_FEATURE_NAME = `${CORE_USER_FEATURE_PREFIX}${ADDONS_BADGES_COMPONENT_NAME}`;
+export const ADDONS_BADGES_USER_MENU_FEATURE_NAME = `${ADDONS_BADGES_USER_PROFILE_FEATURE_NAME}:account`;

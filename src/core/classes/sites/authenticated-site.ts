@@ -1514,8 +1514,8 @@ export class CoreAuthenticatedSite extends CoreUnauthenticatedSite {
      *     - Greater or equal than 3.2.3 but lower than 3.3.
      *     - Greater or equal than 3.0.5 but lower than 3.1.
      *
-     * This function only accepts versions from 2.4.0 and above. If any of the versions supplied isn't found, it will assume
-     * it's the last released major version.
+     * This function only accepts versions from MINIMUM_MOODLE_VERSION and above.
+     * If any of the versions supplied isn't found, it will assume it's the last released major version.
      */
     isVersionGreaterEqualThan(versions: string | string[]): boolean {
         const info = this.getInfo();

@@ -15,6 +15,8 @@
 import {
     ADDON_COMPETENCY_COMPETENCIES_PAGE,
     ADDON_COMPETENCY_LEARNING_PLANS_PAGE,
+    ADDONS_COMPETENCY_COMPONENT_NAME,
+    ADDONS_COMPETENCY_USER_PROFILE_FEATURE_NAME,
     ADDONS_COMPETENCY_USER_MENU_FEATURE_NAME,
 } from '@addons/competency/constants';
 import { Injectable } from '@angular/core';
@@ -39,7 +41,8 @@ import { AddonCompetency } from '../competency';
 export class AddonCompetencyUserHandlerService implements CoreUserProfileHandler {
 
     readonly type = CoreUserProfileHandlerType.LIST_ITEM;
-    name = 'AddonCompetency:fakename'; // This name doesn't match any disabled feature, they'll be checked in isEnabledForContext.
+    // This name doesn't match any disabled feature, they'll be checked in isEnabledForContext.
+    name = `${ADDONS_COMPETENCY_COMPONENT_NAME}:fakename`;
     priority = 100;
     cacheEnabled = true;
 
@@ -64,7 +67,7 @@ export class AddonCompetencyUserHandlerService implements CoreUserProfileHandler
             if (currentSite.isFeatureDisabled(ADDONS_COMPETENCY_USER_MENU_FEATURE_NAME)) {
                 return false;
             }
-        } else if (currentSite.isFeatureDisabled('CoreUserDelegate_AddonCompetency:learningPlan')) {
+        } else if (currentSite.isFeatureDisabled(ADDONS_COMPETENCY_USER_PROFILE_FEATURE_NAME)) {
             return false;
         }
 

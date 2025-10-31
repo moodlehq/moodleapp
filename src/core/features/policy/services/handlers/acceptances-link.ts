@@ -18,7 +18,7 @@ import { CoreContentLinksHandlerBase } from '@features/contentlinks/classes/base
 import { CoreContentLinksAction } from '@features/contentlinks/services/contentlinks-delegate';
 import { CoreNavigator } from '@services/navigator';
 import { makeSingleton } from '@singletons';
-import { ACCEPTANCES_PAGE_NAME, POLICY_PAGE_NAME } from '@features/policy/constants';
+import { ACCEPTANCES_PAGE_NAME, CORE_POLICY_FEATURE_NAME, POLICY_PAGE_NAME } from '@features/policy/constants';
 import { CoreSites } from '@services/sites';
 
 /**
@@ -29,7 +29,7 @@ export class CorePolicyAcceptancesLinkHandlerService extends CoreContentLinksHan
 
     name = 'CorePolicyAcceptancesLinkHandler';
     pattern = /\/admin\/tool\/policy\/user\.php/;
-    featureName = 'CoreUserDelegate_CorePolicy';
+    featureName = CORE_POLICY_FEATURE_NAME;
 
     /**
      * @inheritdoc
