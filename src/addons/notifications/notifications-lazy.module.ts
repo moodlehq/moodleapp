@@ -18,7 +18,7 @@ import { ROUTES, Routes } from '@angular/router';
 
 import { buildTabMainRoutes } from '@features/mainmenu/mainmenu-tab-routing.module';
 import { CoreScreen } from '@services/screen';
-import { ADDONS_NOTICATIONS_MAIN_PAGE_NAME } from './constants';
+import { ADDONS_NOTIFICATIONS_MAIN_PAGE_NAME } from './constants';
 
 /**
  * Build module routes.
@@ -30,7 +30,7 @@ function buildRoutes(injector: Injector): Routes {
     return [
         {
             path: 'list',
-            data: { mainMenuTabRoot: ADDONS_NOTICATIONS_MAIN_PAGE_NAME },
+            data: { mainMenuTabRoot: ADDONS_NOTIFICATIONS_MAIN_PAGE_NAME },
             loadComponent: () => import('@addons/notifications/pages/list/list'),
             loadChildren: () => conditionalRoutes([
                 {

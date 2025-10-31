@@ -25,7 +25,7 @@ import { AddonNotificationsHelper } from '../notifications-helper';
 import { CoreViewer } from '@features/viewer/services/viewer';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreOpener } from '@singletons/opener';
-import { ADDONS_NOTICATIONS_MAIN_PAGE_NAME } from '@addons/notifications/constants';
+import { ADDONS_NOTIFICATIONS_MAIN_PAGE_NAME, ADDONS_NOTIFICATIONS_MENU_FEATURE_NAME } from '@addons/notifications/constants';
 
 /**
  * Handler for non-messaging push notifications clicks.
@@ -35,7 +35,7 @@ export class AddonNotificationsPushClickHandlerService implements CorePushNotifi
 
     name = 'AddonNotificationsPushClickHandler';
     priority = 0; // Low priority so it's used as a fallback if no other handler treats the notification.
-    featureName = 'CoreMainMenuDelegate_AddonNotifications';
+    featureName = ADDONS_NOTIFICATIONS_MENU_FEATURE_NAME;
 
     /**
      * Check if a notification click is handled by this handler.
@@ -121,7 +121,7 @@ export class AddonNotificationsPushClickHandlerService implements CorePushNotifi
         await CorePromiseUtils.ignoreErrors(AddonNotifications.invalidateNotificationsList(notification.site));
 
         await CoreNavigator.navigateToSitePath(
-            `${ADDONS_NOTICATIONS_MAIN_PAGE_NAME}/list`,
+            `${ADDONS_NOTIFICATIONS_MAIN_PAGE_NAME}/list`,
             {
                 siteId: notification.site,
                 preferCurrentTab: false,

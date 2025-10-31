@@ -16,8 +16,7 @@ import { Injectable } from '@angular/core';
 import { makeSingleton } from '@singletons';
 import { CoreMainMenuHandler, CoreMainMenuPageNavHandlerData } from '@features/mainmenu/services/mainmenu-delegate';
 import { CoreSearchGlobalSearch } from '@features/search/services/global-search';
-
-export const CORE_SEARCH_PAGE_NAME = 'search';
+import { CORE_SEARCH_COMPONENT_NAME, CORE_SEARCH_PAGE_NAME } from '@features/search/constants';
 
 /**
  * Handler to inject an option into main menu.
@@ -25,7 +24,7 @@ export const CORE_SEARCH_PAGE_NAME = 'search';
 @Injectable({ providedIn: 'root' })
 export class CoreSearchMainMenuHandlerService implements CoreMainMenuHandler {
 
-    name = 'CoreSearch';
+    name = CORE_SEARCH_COMPONENT_NAME;
     priority = 575;
 
     /**

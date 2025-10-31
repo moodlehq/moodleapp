@@ -18,7 +18,7 @@ import { CoreContentLinksHandlerBase } from '@features/contentlinks/classes/base
 import { CoreContentLinksAction } from '@features/contentlinks/services/contentlinks-delegate';
 import { CoreNavigator } from '@services/navigator';
 import { makeSingleton } from '@singletons';
-import { ADDONS_NOTICATIONS_MAIN_PAGE_NAME } from '@addons/notifications/constants';
+import { ADDONS_NOTIFICATIONS_MAIN_PAGE_NAME, ADDONS_NOTIFICATIONS_MENU_FEATURE_NAME } from '@addons/notifications/constants';
 
 /**
  * Handler to treat links to notifications.
@@ -28,7 +28,7 @@ export class AddonNotificationsLinkHandlerService extends CoreContentLinksHandle
 
     name = 'AddonNotificationsLinkHandler';
     pattern = /\/message\/output\/popup\/notifications\.php/;
-    featureName = 'CoreMainMenuDelegate_AddonNotifications';
+    featureName = ADDONS_NOTIFICATIONS_MENU_FEATURE_NAME;
 
     /**
      * @inheritdoc
@@ -36,7 +36,7 @@ export class AddonNotificationsLinkHandlerService extends CoreContentLinksHandle
     getActions(): CoreContentLinksAction[] {
         return [{
             action: async (siteId: string): Promise<void> => {
-                await CoreNavigator.navigateToSitePath(ADDONS_NOTICATIONS_MAIN_PAGE_NAME, {
+                await CoreNavigator.navigateToSitePath(ADDONS_NOTIFICATIONS_MAIN_PAGE_NAME, {
                     preferCurrentTab: false,
                     siteId,
                 });

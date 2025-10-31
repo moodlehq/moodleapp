@@ -35,7 +35,7 @@ import {
     CORE_COURSES_STATE_HIDDEN,
     CORE_COURSES_DOWNLOAD_FEATURE_NAME,
     CORE_COURSE_DOWNLOAD_FEATURE_NAME,
-    CORE_COURSES_MYCOURSES_MENU_FEATURE_NAME,
+    CORE_COURSES_MENU_FEATURE_NAME,
     CORE_COURSES_SEARCH_FEATURE_NAME,
 } from '../constants';
 import { CoreTextFormat } from '@singletons/text';
@@ -296,7 +296,7 @@ export class CoreCoursesProvider {
     isMyCoursesDisabledInSite(site?: CoreSite): boolean {
         site = site || CoreSites.getCurrentSite();
 
-        return !site || site.isFeatureDisabled(CORE_COURSES_MYCOURSES_MENU_FEATURE_NAME);
+        return !site || site.isFeatureDisabled(CORE_COURSES_MENU_FEATURE_NAME);
     }
 
     /**
