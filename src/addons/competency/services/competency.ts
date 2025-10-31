@@ -25,7 +25,7 @@ import { CoreTextFormat } from '@singletons/text';
 import {
     AddonCompetencyLearningPlanStatus,
     AddonCompetencyReviewStatus,
-    ADDONS_COMPETENCY_USER_MENU_FEATURE_NAME,
+    ADDONS_COMPETENCY_ACCOUNT_FEATURE_NAME,
 } from '../constants';
 import { CoreCourseSummaryExporterData } from '@features/courses/services/courses';
 
@@ -51,7 +51,7 @@ export class AddonCompetencyProvider {
         }
 
         return site.canUseAdvancedFeature('enablecompetencies') &&
-            !(site.isFeatureDisabled(ADDONS_COMPETENCY_USER_MENU_FEATURE_NAME) &&
+            !(site.isFeatureDisabled(ADDONS_COMPETENCY_ACCOUNT_FEATURE_NAME) &&
             site.isFeatureDisabled('CoreCourseOptionsDelegate_AddonCompetency'));
     }
 
