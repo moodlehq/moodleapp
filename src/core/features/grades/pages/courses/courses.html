@@ -20,7 +20,8 @@
                 <ion-list>
                     @for (course of courses.items; track course.courseid) {
                         <ion-item [attr.aria-label]="course.courseFullName" [attr.aria-current]="courses.getItemAriaCurrent(course)"
-                            class="ion-text-wrap" button [detail]="true" (click)="courses.select(course)">
+                            [attr.data-course-id]="course.courseid" class="ion-text-wrap" button [detail]="true"
+                            (click)="courses.select(course)">
                             <ion-label>
                                 <p class="item-heading">
                                     <core-format-text [text]="course.courseFullName" [contextInstanceId]="course.courseid"

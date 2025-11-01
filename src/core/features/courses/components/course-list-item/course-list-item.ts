@@ -63,6 +63,7 @@ import { CoreEnrolInfoIcon } from '@features/enrol/services/enrol-delegate';
     ],
     host: {
         '[attr.data-course-id]': 'course.id',
+        '[attr.data-category-id]': 'course.categoryid',
     },
 })
 export class CoreCoursesCourseListItemComponent implements OnInit, OnDestroy, OnChanges {

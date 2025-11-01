@@ -80,6 +80,10 @@ export default class CoreCourseIndexPage implements OnInit, OnDestroy {
         return this.course?.id ?? null;
     }
 
+    @HostBinding('attr.data-category-id') protected get courseCategoryId(): number | null {
+        return this.course?.categoryid ?? null;
+    }
+
     constructor() {
         this.selectTabObserver = CoreEvents.on(CORE_COURSE_SELECT_TAB, (data) => {
             const index = data.selectedTab
