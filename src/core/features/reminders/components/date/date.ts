@@ -43,6 +43,14 @@ export class CoreRemindersDateComponent {
     readonly url = input('');
 
     readonly showReminderButton = computed(() => {
+        // If not set, button won't be shown.
+        const component = this.component();
+        const instanceId = this.instanceId();
+        const type = this.type();
+        if (component === undefined || instanceId === undefined || type === undefined) {
+            return false;
+        }
+
         const remindersEnabled = CoreReminders.isEnabled();
 
         return remindersEnabled && this.time() > CoreTime.timestamp();
@@ -53,15 +61,11 @@ export class CoreRemindersDateComponent {
 
     constructor() {
         effect(async () => {
-            if (!this.showReminderButton()) {
-                return;
-            }
-
-            // If not set, button won't be shown.
             const component = this.component();
             const instanceId = this.instanceId();
             const type = this.type();
-            if (component === undefined || instanceId === undefined || type === undefined) {
+
+            if (!this.showReminderButton() || component === undefined || instanceId === undefined || type === undefined) {
                 return;
             }
 
