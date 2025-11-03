@@ -112,10 +112,12 @@
         z-index: -1;
         width: 100%;
 
-        ion-avatar img {
+        ion-avatar {
             width: 100%;
-            height: 100%;
-            object-fit: cover;
+            height: auto;
+            img {
+                object-fit: cover;
+            }
         }
         ion-icon.course-icon-fallback {
             --padding: 24px;

@@ -117,15 +117,6 @@ a {
     }
 }
 
-// Ionic toolbar on header.
-ion-toolbar {
-    --min-height: var(--core-header-toolbar-height);
-}
-
-ion-tabs.hide-header ion-header {
-    display: none;
-}
-
 // Ionic list.
 ion-list {
     padding: 0 !important;
