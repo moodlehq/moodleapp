@@ -23,6 +23,7 @@ import { CoreDirectivesRegistry } from '@singletons/directives-registry';
 import { CoreEvents } from '@singletons/events';
 import type videojs from 'video.js';
 import type { VideoJSOptions, VideoJSPlayer } from 'video.js';
+import { CoreSites } from '@services/sites';
 
 declare module '@singletons/events' {
 
@@ -113,7 +114,7 @@ export class AddonFilterMediaPluginVideoJSService {
 
         const iframe = document.createElement('iframe');
         iframe.id = video.id;
-        iframe.src = youtubeUrl;
+        iframe.src = CoreSites.getCurrentSite()?.fixRefererForUrl(youtubeUrl) || youtubeUrl;
         iframe.setAttribute('frameborder', '0');
         iframe.setAttribute('allowfullscreen', '1');
         iframe.width = '100%';

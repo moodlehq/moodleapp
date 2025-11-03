@@ -404,6 +404,16 @@ export class CoreUrl {
     }
 
     /**
+     * Check if a URL is a YouTube URL.
+     *
+     * @param url The URL to test.
+     * @returns Whether the URL is a YouTube URL.
+     */
+    static isYoutubeURL(url: string): boolean {
+        return url.match(/^(https?:\/\/|\/\/)?([^/]+\.)?(youtube\.com|youtu\.be|youtube-nocookie\.com|y2u.be)(\/.*)?$/i) !== null;
+    }
+
+    /**
      * Get the URL to use to play a Vimeo video if the URL supplied is a Vimeo video URL.
      * If it's a Vimeo video, the app will use the site's wsplayer script instead to make restricted videos work.
      *

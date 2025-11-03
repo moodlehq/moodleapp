@@ -271,6 +271,8 @@ export class CoreIframeComponent implements OnChanges, OnDestroy {
                 url = CoreUrl.addParamsToUrl(autoLoginUrl, { lang }, {
                     checkAutoLoginUrl: autoLoginUrl !== url,
                 });
+            } else {
+                url = currentSite?.fixRefererForUrl(url) || url;
             }
 
             if (currentSite?.isVersionGreaterEqualThan('3.7') && CoreUrl.isVimeoVideoUrl(url)) {
