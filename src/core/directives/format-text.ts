@@ -991,7 +991,7 @@ export class CoreFormatTextDirective implements OnDestroy, AsyncDirective {
      * @param site Site instance.
      */
     protected async treatIframe(iframe: HTMLIFrameElement, site: CoreSite | undefined): Promise<void> {
-        const src = this.getFrameUrl(iframe, site);
+        let src = this.getFrameUrl(iframe, site);
         const currentSite = CoreSites.getCurrentSite();
 
         this.addMediaAdaptClass(iframe);
@@ -1018,6 +1018,8 @@ export class CoreFormatTextDirective implements OnDestroy, AsyncDirective {
             CoreIframe.treatFrame(iframe, false);
 
             return;
+        } else if (site) {
+            src = site.fixRefererForUrl(src);
         }
 
         await CoreIframe.fixIframeCookies(src);
