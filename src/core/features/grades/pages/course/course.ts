@@ -47,6 +47,9 @@ import { CoreSharedModule } from '@/core/shared.module';
     imports: [
         CoreSharedModule,
     ],
+    host: {
+        '[attr.data-course-id]': 'courseId ?? null',
+    },
 })
 export default class CoreGradesCoursePage implements AfterViewInit, OnDestroy {
 

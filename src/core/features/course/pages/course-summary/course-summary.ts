@@ -91,6 +91,10 @@ export default class CoreCourseSummaryPage implements OnInit, OnDestroy {
         return this.course?.id ?? null;
     }
 
+    @HostBinding('attr.data-category-id') protected get courseCategoryId(): number | null {
+        return this.course?.categoryid ?? null;
+    }
+
     constructor() {
         // Refresh the view when the app is resumed.
         this.appResumeSubscription = CorePlatform.resume.subscribe(() => {
