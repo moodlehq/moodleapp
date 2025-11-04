@@ -752,7 +752,7 @@ export class CoreUrl {
             params.start = parseInt(match[1], 10).toString();
         } else {
             // No start param, but it could have a time param.
-            match = url.match(/[?&]t=(\d+h)?(\d+m)?(\d+s)?/);
+            match = url.match(/[?&]t=(\d+h)?(\d+m)?(\d+s?)?/);
             if (match) {
                 const start = (match[1] ? parseInt(match[1], 10) * 3600 : 0) +
                     (match[2] ? parseInt(match[2], 10) * 60 : 0) +
