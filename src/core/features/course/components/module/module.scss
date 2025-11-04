@@ -209,4 +209,9 @@
             background: var(--gray-800);
         }
     }
+
+    .colored-box-with-icon.core-course-last-module-viewed {
+        background-color: var(--info-shade);
+        color: var(--info-tint);
+    }
 }

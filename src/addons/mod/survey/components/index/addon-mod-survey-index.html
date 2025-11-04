@@ -124,8 +124,8 @@
                                     </ion-col>
                                 </ion-row>
                             } @else {
-                                <ion-item class="ion-text-wrap" [class.even]="isEven">
-                                    <ion-textarea labelPlacement="floating" [(ngModel)]="answers[question.name]" [name]="question.name"
+                                <ion-item class="ion-text-wrap" [class.even]="isEven" lines="none">
+                                    <ion-textarea labelPlacement="stacked" [(ngModel)]="answers[question.name]" [name]="question.name"
                                         [required]="question.required">
                                         <p slot="label" [core-mark-required]="question.required">
                                             <strong>{{question.num}}.</strong> {{ question.text }}
