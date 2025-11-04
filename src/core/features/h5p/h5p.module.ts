@@ -12,11 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { APP_INITIALIZER, NgModule, Type } from '@angular/core';
+import { NgModule, Type, provideAppInitializer } from '@angular/core';
 
 import { CorePluginFileDelegate } from '@services/plugin-file-delegate';
 import { CORE_SITE_SCHEMAS } from '@services/sites';
-import { CoreH5PComponentsModule } from './components/components.module';
 import { SITE_SCHEMA } from './services/database/h5p';
 import { CoreH5PPluginFileHandler } from './services/handlers/pluginfile';
 
@@ -34,22 +33,15 @@ export async function getH5PServices(): Promise<Type<unknown>[]> {
 }
 
 @NgModule({
-    imports: [
-        CoreH5PComponentsModule,
-    ],
     providers: [
         {
             provide: CORE_SITE_SCHEMAS,
             useValue: [SITE_SCHEMA],
             multi: true,
         },
-        {
-            provide: APP_INITIALIZER,
-            multi: true,
-            useValue: () => {
-                CorePluginFileDelegate.registerHandler(CoreH5PPluginFileHandler.instance);
-            },
-        },
+        provideAppInitializer(() => {
+            CorePluginFileDelegate.registerHandler(CoreH5PPluginFileHandler.instance);
+        }),
     ],
 })
 export class CoreH5PModule {}

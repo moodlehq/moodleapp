@@ -83,7 +83,7 @@ import { AddonBlogOfflineEntryDBRecord } from './database/blog';
             return currentSyncPromise;
         }
 
-        this.logger.debug('Try to sync ' + ADDON_BLOG_SYNC_ID + ' in site ' + siteId);
+        this.logger.debug(`Try to sync ${ADDON_BLOG_SYNC_ID} in site ${siteId}`);
 
         return await this.addOngoingSync(ADDON_BLOG_SYNC_ID, this.performEntriesSync(siteId), siteId);
     }
@@ -99,7 +99,7 @@ import { AddonBlogOfflineEntryDBRecord } from './database/blog';
 
         for (const entry of entries) {
             if (CoreSync.isBlocked(AddonBlogProvider.COMPONENT, entry.id ?? entry.created, siteId)) {
-                this.logger.debug('Cannot sync entry ' + entry.created + ' because it is blocked.');
+                this.logger.debug(`Cannot sync entry ${entry.created} because it is blocked.`);
 
                 throw new CoreSyncBlockedError(Translate.instant('core.errorsyncblocked', { $a: this.componentTranslate }));
             }

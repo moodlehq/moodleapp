@@ -12,14 +12,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { APP_INITIALIZER, NgModule, Type } from '@angular/core';
+import { NgModule, Type, provideAppInitializer } from '@angular/core';
 import { Routes } from '@angular/router';
 
 import { CoreSiteHomeIndexLinkHandler } from './services/handlers/index-link';
 import { CoreContentLinksDelegate } from '@features/contentlinks/services/contentlinks-delegate';
-import { CoreSiteHomeHomeHandler, CoreSiteHomeHomeHandlerService } from './services/handlers/sitehome-home';
+import { CoreSiteHomeHomeHandler } from './services/handlers/sitehome-home';
 import { CoreMainMenuHomeDelegate } from '@features/mainmenu/services/home-delegate';
 import { CoreMainMenuHomeRoutingModule } from '@features/mainmenu/mainmenu-home-routing.module';
+import { CORE_SITEHOME_PAGE_NAME } from './constants';
 
 /**
  * Get site home services.
@@ -36,22 +37,18 @@ export async function getSiteHomeServices(): Promise<Type<unknown>[]> {
 
 const mainMenuHomeRoutes: Routes = [
     {
-        path: CoreSiteHomeHomeHandlerService.PAGE_NAME,
-        loadChildren: () => import('./sitehome-lazy.module'),
+        path: CORE_SITEHOME_PAGE_NAME,
+        loadComponent: () => import('@features/sitehome/pages/index/index'),
     },
 ];
 
 @NgModule({
     imports: [CoreMainMenuHomeRoutingModule.forChild({ children: mainMenuHomeRoutes })],
     providers: [
-        {
-            provide: APP_INITIALIZER,
-            multi: true,
-            useValue: () => {
-                CoreContentLinksDelegate.registerHandler(CoreSiteHomeIndexLinkHandler.instance);
-                CoreMainMenuHomeDelegate.registerHandler(CoreSiteHomeHomeHandler.instance);
-            },
-        },
+        provideAppInitializer(() => {
+            CoreContentLinksDelegate.registerHandler(CoreSiteHomeIndexLinkHandler.instance);
+            CoreMainMenuHomeDelegate.registerHandler(CoreSiteHomeHomeHandler.instance);
+        }),
     ],
 })
 export class CoreSiteHomeModule {}

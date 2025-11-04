@@ -38,6 +38,7 @@ import { CoreToasts, ToastDuration } from '@services/overlays/toasts';
 import { CoreLoadings } from '@services/overlays/loadings';
 import { AddonPrivateFilesFileComponent } from '@addons/privatefiles/components/file/file';
 import { CoreAlerts } from '@services/overlays/alerts';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Page that displays the list of files.
@@ -46,8 +47,12 @@ import { CoreAlerts } from '@services/overlays/alerts';
     selector: 'page-addon-privatefiles-index',
     templateUrl: 'index.html',
     styleUrl: './index.scss',
+    imports: [
+        CoreSharedModule,
+        AddonPrivateFilesFileComponent,
+    ],
 })
-export class AddonPrivateFilesIndexPage implements OnInit, OnDestroy {
+export default class AddonPrivateFilesIndexPage implements OnInit, OnDestroy {
 
     title!: string; // Page title.
     root?: 'my' | 'site'; // The root of the files loaded: 'my' or 'site'.
@@ -62,7 +67,7 @@ export class AddonPrivateFilesIndexPage implements OnInit, OnDestroy {
     files?: AddonPrivateFilesFile[]; // List of files.
     component!: string; // Component to link the file downloads to.
     filesLoaded = false; // Whether the files are loaded.
-    selectFilesEnabled = signal(false);
+    readonly selectFilesEnabled = signal(false);
     selectedFiles: AddonPrivateFilesFile[] = [];
     selectAll = false;
     canDeleteFiles = false;
@@ -129,7 +134,7 @@ export class AddonPrivateFilesIndexPage implements OnInit, OnDestroy {
         }
 
         if (this.root) {
-            this.rootChanged(this.root);
+            this.rootChanged();
         } else {
             this.filesLoaded = true;
         }
@@ -159,12 +164,8 @@ export class AddonPrivateFilesIndexPage implements OnInit, OnDestroy {
 
     /**
      * Function called when the root has changed.
-     *
-     * @param root New root.
      */
-    rootChanged(root: 'my' | 'site'): void {
-        this.root = root;
-
+    rootChanged(): void {
         this.filesLoaded = false;
         this.component = this.root == 'my' ? AddonPrivateFilesProvider.PRIVATE_FILES_COMPONENT :
             AddonPrivateFilesProvider.SITE_FILES_COMPONENT;
@@ -337,7 +338,7 @@ export class AddonPrivateFilesIndexPage implements OnInit, OnDestroy {
             {
                 filename: this.selectedFiles.length === 1
                     ? this.selectedFiles[0].filename
-                    : (this.selectedFiles.length + ' ' + Translate.instant('addon.privatefiles.files')),
+                    : (`${this.selectedFiles.length} ${Translate.instant('addon.privatefiles.files')}`),
             },
         );
 

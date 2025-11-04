@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { AfterViewInit, Directive, ElementRef, Input, OnChanges, SimpleChange } from '@angular/core';
+import { AfterViewInit, Directive, ElementRef, Input, OnChanges, SimpleChange, inject } from '@angular/core';
 import { CoreLogger } from '@singletons/logger';
 import { CoreIcons } from '@singletons/icons';
 import { CoreConstants } from '../constants';
@@ -32,12 +32,10 @@ export class CoreFaIconDirective implements AfterViewInit, OnChanges {
 
     @Input() name = '';
 
-    protected element: HTMLElement;
-
+    protected element: HTMLElement = inject(ElementRef).nativeElement;
     protected logger: CoreLogger;
 
-    constructor(el: ElementRef) {
-        this.element = el.nativeElement;
+    constructor() {
         this.logger = CoreLogger.getInstance('CoreFaIconDirective');
     }
 
@@ -58,12 +56,12 @@ export class CoreFaIconDirective implements AfterViewInit, OnChanges {
         if (this.name.match(/^fa[brs]?-/)) {
             // It's a font-awesome icon, check if it's using a deprecated name.
             const iconName = this.name.substring(this.name.indexOf('-') + 1);
-            const { fileName, newLibrary } = await CoreIcons.getFontAwesomeIconFileName(iconName);
+            const { fixedName, newLibrary } = CoreIcons.fixFontAwesomeIconName(iconName);
 
             if (newLibrary) {
-                this.updateName(CoreIcons.prefixIconName('font-awesome', newLibrary, fileName));
-            } else if (fileName !== iconName) {
-                this.updateName(this.name.replace(iconName, fileName));
+                this.updateName(CoreIcons.prefixIconName('font-awesome', newLibrary, fixedName));
+            } else if (fixedName !== iconName) {
+                this.updateName(this.name.replace(iconName, fixedName));
             }
         }
     }
@@ -75,7 +73,7 @@ export class CoreFaIconDirective implements AfterViewInit, OnChanges {
         if (!this.element.getAttribute('aria-label') &&
             !this.element.getAttribute('aria-labelledby') &&
             this.element.getAttribute('aria-hidden') !== 'true') {
-            this.logger.warn('Aria label not set on icon ' + this.name, this.element);
+            this.logger.warn(`Aria label not set on icon ${this.name}`, this.element);
 
             this.element.setAttribute('aria-hidden', 'true');
         }

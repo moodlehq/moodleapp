@@ -12,12 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { APP_INITIALIZER, NgModule, Type } from '@angular/core';
+import { NgModule, Type, provideAppInitializer } from '@angular/core';
 import { Routes } from '@angular/router';
 import { CoreMainMenuTabRoutingModule } from '@features/mainmenu/mainmenu-tab-routing.module';
 import { CoreCronDelegate } from '@services/cron';
 import { CORE_SITE_SCHEMAS } from '@services/sites';
-import { CoreCommentsComponentsModule } from './components/components.module';
 import { CoreComments } from './services/comments';
 import { COMMENTS_OFFLINE_SITE_SCHEMA } from './services/database/comments';
 import { CoreCommentsSyncCronHandler } from './services/handlers/sync-cron';
@@ -41,14 +40,13 @@ export async function getCommentsServices(): Promise<Type<unknown>[]> {
 
 const routes: Routes = [
     {
-        path: 'comments',
-        loadChildren: () => import('@features/comments/comments-lazy.module'),
+        path: 'comments/:contextLevel/:instanceId/:componentName/:itemId',
+        loadComponent: () => import('@features/comments/pages/viewer/viewer'),
     },
 ];
 
 @NgModule({
     imports: [
-        CoreCommentsComponentsModule,
         CoreMainMenuTabRoutingModule.forChild(routes),
     ],
     providers: [
@@ -57,15 +55,11 @@ const routes: Routes = [
             useValue: [COMMENTS_OFFLINE_SITE_SCHEMA],
             multi: true,
         },
-        {
-            provide: APP_INITIALIZER,
-            multi: true,
-            useValue: () => {
-                CoreCronDelegate.register(CoreCommentsSyncCronHandler.instance);
+        provideAppInitializer(() => {
+            CoreCronDelegate.register(CoreCommentsSyncCronHandler.instance);
 
-                CoreComments.initialize();
-            },
-        },
+            CoreComments.initialize();
+        }),
     ],
 })
 export class CoreCommentsModule {}

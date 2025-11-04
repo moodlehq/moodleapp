@@ -134,7 +134,7 @@ export class CoreH5PCore {
         // Use unique identifier for each library version.
         for (const name in dependencies) {
             const dep = dependencies[name];
-            toHash.push(dep.machineName + '-' + dep.majorVersion + '.' + dep.minorVersion + '.' + dep.patchVersion);
+            toHash.push(`${dep.machineName}-${dep.majorVersion}.${dep.minorVersion}.${dep.patchVersion}`);
         }
 
         // Sort in case the same dependencies comes in a different order.
@@ -337,7 +337,7 @@ export class CoreH5PCore {
             }
 
             return paramsStr;
-        } catch (error) {
+        } catch {
             return null;
         }
     }
@@ -367,7 +367,7 @@ export class CoreH5PCore {
 
         for (const i in types) {
             let type = types[i];
-            const property = type + 'Dependencies';
+            const property = `${type}Dependencies`;
 
             if (!library[property]) {
                 continue; // Skip, no such dependencies.
@@ -381,7 +381,7 @@ export class CoreH5PCore {
             for (const j in library[property]) {
                 const dependency: CoreH5PLibraryBasicData = library[property][j];
 
-                const dependencyKey = type + '-' + dependency.machineName;
+                const dependencyKey = `${type}-${dependency.machineName}`;
                 if (dependencies[dependencyKey]) {
                     continue; // Skip, already have this.
                 }
@@ -552,7 +552,7 @@ export class CoreH5PCore {
                 dependency.preloadedCss = (<string> dependency.preloadedCss).split(',');
             }
 
-            dependency.version = '?ver=' + dependency.majorVersion + '.' + dependency.minorVersion + '.' + dependency.patchVersion;
+            dependency.version = `?ver=${dependency.majorVersion}.${dependency.minorVersion}.${dependency.patchVersion}`;
 
             this.getDependencyAssets(dependency, 'preloadedJs', files.scripts, prefix);
             this.getDependencyAssets(dependency, 'preloadedCss', files.styles, prefix);
@@ -622,7 +622,7 @@ export class CoreH5PCore {
             const file = dependency[type][key];
 
             assets.push({
-                path: prefix + '/' + dependency.path + '/' + (typeof file != 'string' ? file.path : file).trim(),
+                path: `${prefix}/${dependency.path}/${(typeof file != 'string' ? file.path : file).trim()}`,
                 version: dependency.version || '',
             });
         }

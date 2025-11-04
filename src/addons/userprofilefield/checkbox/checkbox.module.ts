@@ -12,31 +12,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { APP_INITIALIZER, NgModule } from '@angular/core';
+import { NgModule, provideAppInitializer } from '@angular/core';
 
 import { AddonUserProfileFieldCheckboxHandler } from './services/handlers/checkbox';
 import { CoreUserProfileFieldDelegate } from '@features/user/services/user-profile-field-delegate';
-import { AddonUserProfileFieldCheckboxComponent } from './component/checkbox';
-import { CoreSharedModule } from '@/core/shared.module';
 
 @NgModule({
-    declarations: [
-        AddonUserProfileFieldCheckboxComponent,
-    ],
-    imports: [
-        CoreSharedModule,
-    ],
     providers: [
-        {
-            provide: APP_INITIALIZER,
-            multi: true,
-            useValue: () => {
-                CoreUserProfileFieldDelegate.registerHandler(AddonUserProfileFieldCheckboxHandler.instance);
-            },
-        },
-    ],
-    exports: [
-        AddonUserProfileFieldCheckboxComponent,
+        provideAppInitializer(() => {
+            CoreUserProfileFieldDelegate.registerHandler(AddonUserProfileFieldCheckboxHandler.instance);
+        }),
     ],
 })
 export class AddonUserProfileFieldCheckboxModule {}

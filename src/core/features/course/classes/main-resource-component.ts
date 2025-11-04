@@ -13,8 +13,7 @@
 // limitations under the License.
 
 import { DownloadStatus } from '@/core/constants';
-import { OnInit, OnDestroy, Input, Output, EventEmitter, Component, Optional, Inject } from '@angular/core';
-import { CoreAnyError } from '@classes/errors/error';
+import { OnInit, OnDestroy, Input, Output, EventEmitter, Component, inject } from '@angular/core';
 import { CoreNetwork } from '@services/network';
 import { CoreSites } from '@services/sites';
 import { CoreUtils } from '@singletons/utils';
@@ -22,7 +21,7 @@ import { Translate } from '@singletons';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { CoreLogger } from '@singletons/logger';
 import { CoreCourseModuleSummaryResult } from '../components/module-summary/module-summary';
-import { CoreCourseContentsPage } from '../pages/contents/contents';
+import CoreCourseContentsPage from '../pages/contents/contents';
 import { CoreCourse, CoreCourseModuleContentFile } from '../services/course';
 import { CoreCourseHelper, CoreCourseModuleData } from '../services/course-helper';
 import { CoreCourseModuleDelegate, CoreCourseModuleMainComponent } from '../services/module-delegate';
@@ -35,6 +34,7 @@ import { CoreModals } from '@services/overlays/modals';
 import { CoreErrorHelper, CoreErrorObject } from '@services/error-helper';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreAlerts } from '@services/overlays/alerts';
+import { CoreCourseModuleHelper } from '../services/course-module-helper';
 
 /**
  * Result of a resource download.
@@ -79,12 +79,10 @@ export class CoreCourseModuleMainResourceComponent implements OnInit, OnDestroy,
     protected checkCompletionAfterLog = true; // Whether to check if completion has changed after calling logActivity.
     protected finishSuccessfulFetch: () => void;
 
-    constructor(
-        @Optional() @Inject('') loggerName: string = 'CoreCourseModuleMainResourceComponent',
-        protected courseContentsPage?: CoreCourseContentsPage,
-    ) {
-        this.logger = CoreLogger.getInstance(loggerName);
+    protected courseContentsPage = inject(CoreCourseContentsPage, { optional: true });
 
+    constructor() {
+        this.logger = CoreLogger.getInstance(this.constructor.name);
         this.finishSuccessfulFetch = CoreTime.once(() => this.performFinishSuccessfulFetch());
     }
 
@@ -99,7 +97,8 @@ export class CoreCourseModuleMainResourceComponent implements OnInit, OnDestroy,
         this.showCompletion = !!CoreSites.getRequiredCurrentSite().isVersionGreaterEqualThan('3.11');
 
         if (this.showCompletion) {
-            CoreCourseHelper.loadModuleOfflineCompletion(this.courseId, this.module);
+            this.module.completiondata =
+                await CoreCourseHelper.loadOfflineCompletionData(this.module.id, this.module.completiondata);
 
             this.completionObserver = CoreEvents.on(CoreEvents.COMPLETION_MODULE_VIEWED, async (data) => {
                 if (data && data.cmId == this.module.id) {
@@ -202,7 +201,7 @@ export class CoreCourseModuleMainResourceComponent implements OnInit, OnDestroy,
 
             this.finishSuccessfulFetch();
         } catch (error) {
-            if (!refresh && !CoreSites.getCurrentSite()?.isOfflineDisabled() && this.isNotFoundError(error)) {
+            if (!refresh && !CoreSites.getCurrentSite()?.isOfflineDisabled() && CoreCourseModuleHelper.isNotFoundError(error)) {
                 // Module not found, retry without using cache.
                 return await this.refreshContent();
             }
@@ -211,16 +210,6 @@ export class CoreCourseModuleMainResourceComponent implements OnInit, OnDestroy,
         } finally {
             this.showLoading = false;
         }
-    }
-
-    /**
-     * Check if an error is a "module not found" error.
-     *
-     * @param error Error.
-     * @returns Whether the error is a "module not found" error.
-     */
-    protected isNotFoundError(error: CoreAnyError): boolean {
-        return CoreErrorHelper.getErrorMessageFromError(error) === Translate.instant('core.course.modulenotfound');
     }
 
     /**
@@ -264,7 +253,7 @@ export class CoreCourseModuleMainResourceComponent implements OnInit, OnDestroy,
         } else {
             error = CoreErrorHelper.getErrorMessageFromError(error) || '';
 
-            return Translate.instant('core.errordownloadingsomefiles') + (error ? ' ' + error : '');
+            return Translate.instant('core.errordownloadingsomefiles') + (error ? ` ${error}` : '');
         }
     }
 
@@ -414,7 +403,7 @@ export class CoreCourseModuleMainResourceComponent implements OnInit, OnDestroy,
 
         const module = await CoreCourse.getModule(this.module.id, this.courseId);
 
-        await CoreCourseHelper.loadModuleOfflineCompletion(this.courseId, module);
+        this.module.completiondata = await CoreCourseHelper.loadOfflineCompletionData(this.module.id, this.module.completiondata);
 
         this.module = module;
 
@@ -456,10 +445,10 @@ export class CoreCourseModuleMainResourceComponent implements OnInit, OnDestroy,
         });
 
         if (data) {
-            if (!this.showLoading && (data.action == 'refresh' || data.action == 'sync')) {
+            if (!this.showLoading && (data.action === 'refresh' || data.action === 'sync')) {
                 this.showLoading = true;
                 try {
-                    await this.doRefresh(undefined, data.action == 'sync');
+                    await this.doRefresh(undefined, data.action === 'sync');
                 } finally {
                     this.showLoading = false;
                 }
@@ -493,7 +482,7 @@ export class CoreCourseModuleMainResourceComponent implements OnInit, OnDestroy,
      * @returns Promise resolved when done.
      */
     protected async storeModuleViewed(): Promise<void> {
-        await CoreCourse.storeModuleViewed(this.courseId, this.module.id, { sectionId: this.module.section });
+        await CoreCourseModuleHelper.storeModuleViewed(this.courseId, this.module.id, { sectionId: this.module.section });
     }
 
     /**

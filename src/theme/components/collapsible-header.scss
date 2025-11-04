@@ -1,4 +1,4 @@
-body:not(.core-iframe-fullscreen) .collapsible-header-page {
+body:not(.core-iframe-fullscreen):not(.core-reading-mode-enabled) .collapsible-header-page {
     --collapsible-header-progress: 0;
     --collapsible-header-collapsed-height: 0px;
     --collapsible-header-expanded-y-delta: 0px;
@@ -34,9 +34,9 @@ body:not(.core-iframe-fullscreen) .collapsible-header-page {
     &:not(.collapsible-header-page-is-collapsed) .collapsible-header-collapsed {
         --core-header-toolbar-border-width: 0;
         --core-header-buttons-color: var(--text-color);
-        ion-toolbar {
-            --background: transparent;
-        }
+        --core-header-buttons-background: transparent;
+        --core-header-toolbar-background: transparent;
+        width: var(--collapsible-header-content-width, '100%');
 
         h1 {
             opacity: 0;
@@ -118,4 +118,10 @@ body:not(.core-iframe-fullscreen) .collapsible-header-page {
 
     }
 
+}
+
+body.core-reading-mode-enabled .collapsible-header-page {
+    .collapsible-header-original-title {
+        display: none;
+    }
 }

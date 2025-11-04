@@ -12,9 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, ViewChild } from '@angular/core';
+import { Component, viewChild } from '@angular/core';
 import { CoreCourseModuleMainActivityPage } from '@features/course/classes/main-activity-page';
 import { AddonModSurveyIndexComponent } from '../../components/index';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Page that displays a survey.
@@ -22,9 +23,13 @@ import { AddonModSurveyIndexComponent } from '../../components/index';
 @Component({
     selector: 'page-addon-mod-survey-index',
     templateUrl: 'index.html',
+    imports: [
+        CoreSharedModule,
+        AddonModSurveyIndexComponent,
+    ],
 })
-export class AddonModSurveyIndexPage extends CoreCourseModuleMainActivityPage<AddonModSurveyIndexComponent> {
+export default class AddonModSurveyIndexPage extends CoreCourseModuleMainActivityPage<AddonModSurveyIndexComponent> {
 
-    @ViewChild(AddonModSurveyIndexComponent) activityComponent?: AddonModSurveyIndexComponent;
+    readonly activityComponent = viewChild.required(AddonModSurveyIndexComponent);
 
 }

@@ -19,11 +19,12 @@ import { Component, OnInit } from '@angular/core';
 import { CoreFileUploaderStoreFilesResult } from '@features/fileuploader/services/fileuploader';
 import { CoreFileSession } from '@services/file-session';
 import { CorePromiseUtils } from '@singletons/promise-utils';
-import { AddonModAssignSubmissionFileHandlerService } from '../services/handler';
 import { FileEntry } from '@awesome-cordova-plugins/file/ngx';
 import { AddonModAssignSubmissionPluginBaseComponent } from '@addons/mod/assign/classes/base-submission-plugin-component';
 import { CoreFileEntry } from '@services/file-helper';
-import { ADDON_MOD_ASSIGN_COMPONENT } from '@addons/mod/assign/constants';
+import { ADDON_MOD_ASSIGN_COMPONENT_LEGACY } from '@addons/mod/assign/constants';
+import { CoreSharedModule } from '@/core/shared.module';
+import { ADDON_MOD_ASSIGN_SUBMISSION_FILE_FOLDER_NAME } from '../constants';
 
 /**
  * Component to render a file submission plugin.
@@ -31,10 +32,13 @@ import { ADDON_MOD_ASSIGN_COMPONENT } from '@addons/mod/assign/constants';
 @Component({
     selector: 'addon-mod-assign-submission-file',
     templateUrl: 'addon-mod-assign-submission-file.html',
+    imports: [
+        CoreSharedModule,
+    ],
 })
 export class AddonModAssignSubmissionFileComponent extends AddonModAssignSubmissionPluginBaseComponent implements OnInit {
 
-    component = ADDON_MOD_ASSIGN_COMPONENT;
+    component = ADDON_MOD_ASSIGN_COMPONENT_LEGACY;
     files: CoreFileEntry[] = [];
 
     maxSize?: number;
@@ -60,25 +64,23 @@ export class AddonModAssignSubmissionFileComponent extends AddonModAssignSubmiss
         );
 
         try {
-            if (offlineData) {
-                // Offline submission, get files if submission is not removed.
-                if (offlineData.plugindata.files_filemanager) {
-                    const offlineDataFiles = <CoreFileUploaderStoreFilesResult>offlineData.plugindata.files_filemanager;
-                    // It has offline data.
-                    let offlineFiles: FileEntry[] = [];
-                    if (offlineDataFiles.offline) {
-                        offlineFiles = <FileEntry[]>await CorePromiseUtils.ignoreErrors(
-                            AddonModAssignHelper.getStoredSubmissionFiles(
-                                this.assign.id,
-                                AddonModAssignSubmissionFileHandlerService.FOLDER_NAME,
-                            ),
-                            [],
-                        );
-                    }
-
-                    this.files = offlineDataFiles.online || [];
-                    this.files = this.files.concat(offlineFiles);
+            // Offline submission, get files if submission is not removed.
+            if (offlineData?.plugindata?.files_filemanager) {
+                const offlineDataFiles = <CoreFileUploaderStoreFilesResult>offlineData.plugindata.files_filemanager;
+                // It has offline data.
+                let offlineFiles: FileEntry[] = [];
+                if (offlineDataFiles.offline) {
+                    offlineFiles = <FileEntry[]>await CorePromiseUtils.ignoreErrors(
+                        AddonModAssignHelper.getStoredSubmissionFiles(
+                            this.assign.id,
+                            ADDON_MOD_ASSIGN_SUBMISSION_FILE_FOLDER_NAME,
+                        ),
+                        [],
+                    );
                 }
+
+                this.files = offlineDataFiles.online || [];
+                this.files = this.files.concat(offlineFiles);
             } else {
                 // No offline data, get the online files.
                 this.files = AddonModAssign.getSubmissionPluginAttachments(this.plugin);

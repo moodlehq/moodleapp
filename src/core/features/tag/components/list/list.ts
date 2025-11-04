@@ -16,6 +16,7 @@ import { Component, Input } from '@angular/core';
 import { CoreTagItem } from '@features/tag/services/tag';
 import { Params } from '@angular/router';
 import { CoreNavigator } from '@services/navigator';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Component that displays the list of tags of an item.
@@ -24,6 +25,9 @@ import { CoreNavigator } from '@services/navigator';
     selector: 'core-tag-list',
     templateUrl: 'core-tag-list.html',
     styleUrl: 'list.scss',
+    imports: [
+        CoreSharedModule,
+    ],
 })
 export class CoreTagListComponent {
 

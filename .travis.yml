@@ -1,11 +1,22 @@
 os: linux
-dist: jammy
-node_js: 18
+dist: noble
+language: java
+node_js: 20
 jdk:
   - openjdk17
 
 git:
   depth: 3
+
+if: env(DEPLOY) = 1 OR (env(DEPLOY) = 2 AND tag IS NOT blank)
+
+env:
+  - ANDROID_PLATFORM_VERSION=35 ANDROID_BUILD_TOOLS_VERSION="35.0.0"
+
+addons:
+  apt:
+    packages:
+    - libsecret-1-dev
 
 before_cache:
   - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
@@ -33,27 +44,3 @@ before_script:
 
 script:
   - scripts/build.sh
-
-jobs:
-  include:
-  - name: "Build Android"
-    if: env(DEPLOY) = 1 OR (env(DEPLOY) = 2 AND tag IS NOT blank)
-    language: java
-    env:
-    - ANDROID_PLATFORM_VERSION=34
-    - ANDROID_BUILD_TOOLS_VERSION="34.0.0"
-    addons:
-      apt:
-        packages:
-        - libsecret-1-dev
-  - name: "Build iOS"
-    language: node_js
-    if: env(BUILD_IOS) = 1 AND (env(DEPLOY) = 1 OR (env(DEPLOY) = 2 AND tag IS NOT blank))
-    os: osx
-    osx_image: xcode14.2
-    addons:
-      homebrew:
-        packages:
-        - jq
-    before_cache:
-      - brew cleanup

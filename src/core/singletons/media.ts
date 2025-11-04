@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { CorePlatform } from '@services/platform';
-import { CoreMimetypeUtils } from '@services/utils/mimetype';
+import { CoreMimetype } from '@singletons/mimetype';
 
 /**
  * Singleton with helper functions for media.
@@ -58,9 +58,9 @@ export class CoreMedia {
             return false;
         }
 
-        let extension = source.type ? CoreMimetypeUtils.getExtension(source.type) : undefined;
+        let extension = source.type ? CoreMimetype.getExtension(source.type) : undefined;
         if (!extension) {
-            extension = CoreMimetypeUtils.guessExtensionFromUrl(source.src);
+            extension = CoreMimetype.guessExtensionFromUrl(source.src);
         }
 
         return !!extension && ['ogv', 'webm', 'oga', 'ogg'].includes(extension);

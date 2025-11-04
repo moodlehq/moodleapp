@@ -65,3 +65,5 @@ module.exports = config => {
 
     return config;
 };
+
+module.exports.browserslist = 'browserslist';

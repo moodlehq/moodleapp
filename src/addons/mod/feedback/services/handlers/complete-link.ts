@@ -19,7 +19,7 @@ import { CoreCourse } from '@features/course/services/course';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSitesReadingStrategy } from '@services/sites';
 import { makeSingleton } from '@singletons';
-import { ADDON_MOD_FEEDBACK_PAGE_NAME } from '../../constants';
+import { ADDON_MOD_FEEDBACK_FEATURE_NAME, ADDON_MOD_FEEDBACK_PAGE_NAME } from '../../constants';
 import { CoreLoadings } from '@services/overlays/loadings';
 import { CoreAlerts } from '@services/overlays/alerts';
 
@@ -31,7 +31,7 @@ import { CoreAlerts } from '@services/overlays/alerts';
 export class AddonModFeedbackCompleteLinkHandlerService extends CoreContentLinksHandlerBase {
 
     name = 'AddonModFeedbackCompleteLinkHandler';
-    featureName = 'CoreCourseModuleDelegate_AddonModFeedback';
+    featureName = ADDON_MOD_FEEDBACK_FEATURE_NAME;
     pattern = /\/mod\/feedback\/complete\.php.*([?&](id|gopage)=\d+)/;
 
     /**
@@ -51,7 +51,7 @@ export class AddonModFeedbackCompleteLinkHandlerService extends CoreContentLinks
                     );
 
                     await CoreNavigator.navigateToSitePath(
-                        ADDON_MOD_FEEDBACK_PAGE_NAME + `/${module.course}/${module.id}/form`,
+                        `${ADDON_MOD_FEEDBACK_PAGE_NAME}/${module.course}/${module.id}/form`,
                         {
                             params: {
                                 page: params.gopage !== undefined ? Number(params.gopage) : undefined,

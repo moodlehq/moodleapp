@@ -220,7 +220,7 @@ export class CoreAuthenticatedSite extends CoreUnauthenticatedSite {
 
     /**
      * Check if current user is Admin.
-     * Works properly since v3.8. See more in: {@link https://tracker.moodle.org/browse/MDL-65550}
+     * Works properly since v3.8. See more in: {@link https://moodle.atlassian.net/browse/MDL-65550}
      *
      * @returns Whether the user is Admin.
      */
@@ -312,8 +312,8 @@ export class CoreAuthenticatedSite extends CoreUnauthenticatedSite {
      * @returns Promise resolved with the response, rejected with CoreWSError if it fails.
      */
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    read<T = unknown>(method: string, data: any, preSets?: CoreSiteWSPreSets): Promise<T> {
-        return firstValueFrom(this.readObservable<T>(method, data, preSets));
+    async read<T = unknown>(method: string, data: any, preSets?: CoreSiteWSPreSets): Promise<T> {
+        return await firstValueFrom(this.readObservable<T>(method, data, preSets));
     }
 
     /**
@@ -343,8 +343,8 @@ export class CoreAuthenticatedSite extends CoreUnauthenticatedSite {
      * @returns Promise resolved with the response, rejected with CoreWSError if it fails.
      */
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    write<T = unknown>(method: string, data: any, preSets?: CoreSiteWSPreSets): Promise<T> {
-        return firstValueFrom(this.writeObservable<T>(method, data, preSets));
+    async write<T = unknown>(method: string, data: any, preSets?: CoreSiteWSPreSets): Promise<T> {
+        return await firstValueFrom(this.writeObservable<T>(method, data, preSets));
     }
 
     /**
@@ -375,7 +375,7 @@ export class CoreAuthenticatedSite extends CoreUnauthenticatedSite {
      */
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     async request<T = unknown>(method: string, data: any, preSets: CoreSiteWSPreSets): Promise<T> {
-        return firstValueFrom(this.requestObservable<T>(method, data, preSets));
+        return await firstValueFrom(this.requestObservable<T>(method, data, preSets));
     }
 
     /**
@@ -388,7 +388,7 @@ export class CoreAuthenticatedSite extends CoreUnauthenticatedSite {
      * @description
      *
      * Sends a webservice request to the site. This method will automatically add the
-     * required parameters and pass it on to the low level API in CoreWSProvider.call().
+     * required parameters and pass it on to the low level API in CoreWS.call().
      *
      * Caching is also implemented, when enabled this method will returned a cached version of the request if the
      * data hasn't expired.
@@ -633,8 +633,39 @@ export class CoreAuthenticatedSite extends CoreUnauthenticatedSite {
             throw new CoreError(Translate.instant('core.cannotconnect'));
         }
 
+        // Helper function to fetch original content if needed.
+        const fetchOriginalIfNeeded = async (response: T) => {
+            const fetchOriginalToo = typeof preSets.fetchOriginalToo === 'function' ?
+                await preSets.fetchOriginalToo(response) :
+                preSets.fetchOriginalToo;
+
+            if (!fetchOriginalToo) {
+                return;
+            }
+
+            await CorePromiseUtils.ignoreErrors(this.getFromWS(
+                method,
+                {
+                    ...data,
+                    moodlewssettingfilter: 'false',
+                    moodlewssettingfileurl: 'false',
+                },
+                {
+                    ...preSets,
+                    filter: false,
+                    rewriteurls: false,
+                },
+                wsPreSets,
+            ));
+        };
+
         try {
             const response = await this.callOrEnqueueWS<T>(method, data, preSets, wsPreSets);
+
+            if (preSets.filter !== false && preSets.saveToCache) {
+                // Fetch original data if needed. Don't block the user for this.
+                fetchOriginalIfNeeded(response);
+            }
 
             if (preSets.saveToCache) {
                 this.saveToCache(method, data, response, preSets);
@@ -706,7 +737,11 @@ export class CoreAuthenticatedSite extends CoreUnauthenticatedSite {
 
                 if (preSets.saveToCache) {
                     // Save the error instead of deleting the cache entry so the same content is displayed in offline.
-                    this.saveToCache(method, data, error, preSets);
+                    // Create a new error object when storing, otherwise the message is not stored with CoreWSError.
+                    this.saveToCache(method, data, {
+                        ...error,
+                        message: error.message,
+                    }, preSets);
                 }
 
                 throw new CoreWSError(error);
@@ -916,7 +951,7 @@ export class CoreAuthenticatedSite extends CoreUnauthenticatedSite {
                     const match = /^moodlews(setting.*)$/.exec(key);
                     if (match) {
                         if (match[1] == 'settingfilter' || match[1] == 'settingfileurl') {
-                            // Undo special treatment of these settings in CoreWSProvider.convertValuesToString.
+                            // Undo special treatment of these settings in CoreWS.convertValuesToString.
                             value = (value == 'true' ? '1' : '0');
                         } else if (match[1] == 'settinglang') {
                             // Use the lang globally to avoid exceptions with languages not installed.
@@ -980,7 +1015,7 @@ export class CoreAuthenticatedSite extends CoreUnauthenticatedSite {
                     });
                 } else {
                     let responseData = response.data ? CoreText.parseJSON(response.data) : {};
-                    // Match the behaviour of CoreWSProvider.call when no response is expected.
+                    // Match the behaviour of CoreWS.call when no response is expected.
                     const responseExpected = wsPresets.responseExpected === undefined || wsPresets.responseExpected;
                     if (!responseExpected && (responseData == null || responseData === '')) {
                         responseData = {};
@@ -994,7 +1029,7 @@ export class CoreAuthenticatedSite extends CoreUnauthenticatedSite {
                 CoreErrorLogs.addErrorLog({
                     method: request.method,
                     type: 'CoreSiteError',
-                    message: String(error) ?? '',
+                    message: String(error),
                     time: new Date().getTime(),
                     data: request.data,
                 });
@@ -1022,7 +1057,7 @@ export class CoreAuthenticatedSite extends CoreUnauthenticatedSite {
      */
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     protected getCacheId(method: string, data: any): string {
-        return Md5.hashAsciiStr(method + ':' + CoreObject.sortAndStringify(data));
+        return Md5.hashAsciiStr(`${method}:${CoreObject.sortAndStringify(data)}`);
     }
 
     /**
@@ -1056,7 +1091,7 @@ export class CoreAuthenticatedSite extends CoreUnauthenticatedSite {
             } else {
                 if (entries.length > 1) {
                     // More than one entry found. Search the one with same ID as this call.
-                    entry = entries.find((entry) => entry.id == id);
+                    entry = entries.find((entry) => entry.id === id);
                 }
 
                 if (!entry) {
@@ -1234,7 +1269,7 @@ export class CoreAuthenticatedSite extends CoreUnauthenticatedSite {
             return;
         }
 
-        this.logger.debug('Invalidate cache for key: ' + key);
+        this.logger.debug(`Invalidate cache for key: ${key}`);
 
         const entries = await this.getCacheEntriesByKey(key);
         entries.forEach(entry => {
@@ -1268,7 +1303,7 @@ export class CoreAuthenticatedSite extends CoreUnauthenticatedSite {
             return;
         }
 
-        this.logger.debug('Invalidate cache for key starting with: ' + key);
+        this.logger.debug(`Invalidate cache for key starting with: ${key}`);
         Object.values(this.memoryCache).filter(entry => entry.key?.startsWith(key)).forEach(entry => {
             entry.expirationTime = 0;
         });
@@ -1284,7 +1319,7 @@ export class CoreAuthenticatedSite extends CoreUnauthenticatedSite {
      */
     async getDocsUrl(page?: string): Promise<string> {
         const release = this.infos?.release ? this.infos.release : undefined;
-        let docsUrl = 'https://docs.moodle.org/en/' + page;
+        let docsUrl = `https://docs.moodle.org/en/${page}`;
 
         if (release !== undefined) {
             // Remove this part of the function if this file only uses CoreSites here.
@@ -1293,7 +1328,7 @@ export class CoreAuthenticatedSite extends CoreUnauthenticatedSite {
             // Check is a valid number.
             if (Number(version) >= 24) {
                 // Append release number.
-                docsUrl = docsUrl.replace('https://docs.moodle.org/', 'https://docs.moodle.org/' + version + '/');
+                docsUrl = docsUrl.replace('https://docs.moodle.org/', `https://docs.moodle.org/${version}/`);
             }
         }
 
@@ -1302,7 +1337,7 @@ export class CoreAuthenticatedSite extends CoreUnauthenticatedSite {
             let lang = CoreLang.getCurrentLanguageSync(CoreLangFormat.LMS);
             lang = CoreLang.getParentLanguage() || lang;
 
-            return docsUrl.replace('/en/', '/' + lang + '/');
+            return docsUrl.replace('/en/', `/${lang}/`);
         } catch {
             return docsUrl;
         }
@@ -1312,7 +1347,8 @@ export class CoreAuthenticatedSite extends CoreUnauthenticatedSite {
      * @inheritdoc
      */
     async getPublicConfig(options: { readingStrategy?: CoreSitesReadingStrategy } = {}): Promise<CoreSitePublicConfigResponse> {
-        const ignoreCache = CoreSitesReadingStrategy.ONLY_NETWORK || CoreSitesReadingStrategy.PREFER_NETWORK;
+        const ignoreCache = options.readingStrategy === CoreSitesReadingStrategy.ONLY_NETWORK ||
+            options.readingStrategy ===  CoreSitesReadingStrategy.PREFER_NETWORK;
         if (!ignoreCache && this.publicConfig) {
             return this.publicConfig;
         }
@@ -1334,12 +1370,10 @@ export class CoreAuthenticatedSite extends CoreUnauthenticatedSite {
             cachePreSets.emergencyCache = false;
         }
 
-        // Check for an ongoing identical request if we're not ignoring cache.
-
         // Check for an ongoing identical request.
         const ongoingRequest = this.getOngoingRequest<CoreSitePublicConfigResponse>(cacheId, cachePreSets);
         if (ongoingRequest) {
-            return firstValueFrom(ongoingRequest);
+            return await firstValueFrom(ongoingRequest);
         }
 
         const subject = new Subject<CoreSitePublicConfigResponse>();
@@ -1399,7 +1433,7 @@ export class CoreAuthenticatedSite extends CoreUnauthenticatedSite {
                 subject.error(error);
             });
 
-        return firstValueFrom(observable);
+        return await firstValueFrom(observable);
     }
 
     /**
@@ -1517,7 +1551,7 @@ export class CoreAuthenticatedSite extends CoreUnauthenticatedSite {
         }
 
         return {
-            major: match[1] + '.' + (match[3] || '0'),
+            major: `${match[1]}.${match[3] || '0'}`,
             minor: parseInt(match[5], 10) || 0,
         };
     }
@@ -1558,7 +1592,7 @@ export class CoreAuthenticatedSite extends CoreUnauthenticatedSite {
         let expirationDelay = CoreAuthenticatedSite.UPDATE_FREQUENCIES[updateFrequency] ||
         CoreAuthenticatedSite.UPDATE_FREQUENCIES[CoreCacheUpdateFrequency.USUALLY];
 
-        if (CoreNetwork.isNetworkAccessLimited()) {
+        if (CoreNetwork.isCellular()) {
             // Not WiFi, increase the expiration delay a 50% to decrease the data usage in this case.
             expirationDelay *= 1.5;
         }
@@ -1777,6 +1811,12 @@ export type CoreSiteWSPreSets = {
      * Only enabled if CoreConstants.CONFIG.disableCallWSInBackground isn't true.
      */
     updateInBackground?: boolean;
+
+    /**
+     * Whether to also fetch in background the original content (unfiltered and without rewriting URLs).
+     * Ignored if filter=false or data is not saved to cache.
+     */
+    fetchOriginalToo?: boolean | ((response: unknown) => boolean | Promise<boolean>);
 };
 
 /**

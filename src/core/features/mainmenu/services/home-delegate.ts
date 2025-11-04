@@ -67,6 +67,13 @@ export interface CoreMainMenuHomeHandlerData {
      * Name of the icon to display for the handler.
      */
     icon?: string; // Name of the icon to display in the tab.
+
+    /**
+     * If tab is enabled or not. When disabled, tab will be hidden.
+     * This is necessary to manage swiper when tabs are hidden.
+     * If tab is hidden using CSS, but enabled the lateral buttons won't work properly.
+     */
+    enabled?: boolean;
 }
 
 /**
@@ -82,10 +89,6 @@ export interface CoreMainMenuHomeHandlerToDisplay extends CoreDelegateToDisplay,
 export class CoreMainMenuHomeDelegateService extends CoreSortedDelegate<CoreMainMenuHomeHandlerToDisplay, CoreMainMenuHomeHandler> {
 
     protected featurePrefix = 'CoreMainMenuHomeDelegate_';
-
-    constructor() {
-        super('CoreMainMenuHomeDelegate');
-    }
 
 }
 

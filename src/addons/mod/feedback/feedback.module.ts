@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { APP_INITIALIZER, NgModule } from '@angular/core';
+import { NgModule, provideAppInitializer } from '@angular/core';
 import { Routes } from '@angular/router';
 import { CoreContentLinksDelegate } from '@features/contentlinks/services/contentlinks-delegate';
 import { CoreCourseHelper } from '@features/course/services/course-helper';
@@ -34,12 +34,60 @@ import { AddonModFeedbackPushClickHandler } from './services/handlers/push-click
 import { AddonModFeedbackShowEntriesLinkHandler } from './services/handlers/show-entries-link';
 import { AddonModFeedbackShowNonRespondentsLinkHandler } from './services/handlers/show-non-respondents-link';
 import { AddonModFeedbackSyncCronHandler } from './services/handlers/sync-cron';
-import { ADDON_MOD_FEEDBACK_COMPONENT, ADDON_MOD_FEEDBACK_PAGE_NAME } from './constants';
+import { ADDON_MOD_FEEDBACK_COMPONENT_LEGACY, ADDON_MOD_FEEDBACK_PAGE_NAME } from './constants';
+import { conditionalRoutes } from '@/app/app-routing.module';
+import { canLeaveGuard } from '@guards/can-leave';
+import { CoreScreen } from '@services/screen';
+
+const commonRoutes: Routes = [
+    {
+        path: ':courseId/:cmId',
+        loadComponent: () => import('./pages/index/index'),
+    },
+    {
+        path: ':courseId/:cmId/form',
+        loadComponent: () => import('./pages/form/form'),
+        canDeactivate: [canLeaveGuard],
+    },
+    {
+        path: ':courseId/:cmId/nonrespondents',
+        loadComponent: () => import('./pages/nonrespondents/nonrespondents'),
+    },
+];
+
+const mobileRoutes: Routes = [
+    ...commonRoutes,
+    {
+        path: ':courseId/:cmId/attempts',
+        loadComponent: () => import('./pages/attempts/attempts'),
+    },
+    {
+        path: ':courseId/:cmId/attempts/:attemptId',
+        loadComponent: () => import('./pages/attempt/attempt'),
+    },
+];
+
+const tabletRoutes: Routes = [
+    ...commonRoutes,
+    {
+        path: ':courseId/:cmId/attempts',
+        loadComponent: () => import('./pages/attempts/attempts'),
+        loadChildren: () => [
+            {
+                path: ':attemptId',
+                loadComponent: () => import('./pages/attempt/attempt'),
+            },
+        ],
+    },
+];
 
 const routes: Routes = [
     {
         path: ADDON_MOD_FEEDBACK_PAGE_NAME,
-        loadChildren: () => import('./feedback-lazy.module'),
+        loadChildren: () => [
+            ...conditionalRoutes(mobileRoutes, () => CoreScreen.isMobile),
+            ...conditionalRoutes(tabletRoutes, () => CoreScreen.isTablet),
+        ],
     },
 ];
 
@@ -53,25 +101,21 @@ const routes: Routes = [
             useValue: [OFFLINE_SITE_SCHEMA],
             multi: true,
         },
-        {
-            provide: APP_INITIALIZER,
-            multi: true,
-            useValue: () => {
-                CoreCourseModuleDelegate.registerHandler(AddonModFeedbackModuleHandler.instance);
-                CoreCourseModulePrefetchDelegate.registerHandler(AddonModFeedbackPrefetchHandler.instance);
-                CoreCronDelegate.register(AddonModFeedbackSyncCronHandler.instance);
-                CoreContentLinksDelegate.registerHandler(AddonModFeedbackIndexLinkHandler.instance);
-                CoreContentLinksDelegate.registerHandler(AddonModFeedbackListLinkHandler.instance);
-                CoreContentLinksDelegate.registerHandler(AddonModFeedbackAnalysisLinkHandler.instance);
-                CoreContentLinksDelegate.registerHandler(AddonModFeedbackCompleteLinkHandler.instance);
-                CoreContentLinksDelegate.registerHandler(AddonModFeedbackPrintLinkHandler.instance);
-                CoreContentLinksDelegate.registerHandler(AddonModFeedbackShowEntriesLinkHandler.instance);
-                CoreContentLinksDelegate.registerHandler(AddonModFeedbackShowNonRespondentsLinkHandler.instance);
-                CorePushNotificationsDelegate.registerClickHandler(AddonModFeedbackPushClickHandler.instance);
+        provideAppInitializer(() => {
+            CoreCourseModuleDelegate.registerHandler(AddonModFeedbackModuleHandler.instance);
+            CoreCourseModulePrefetchDelegate.registerHandler(AddonModFeedbackPrefetchHandler.instance);
+            CoreCronDelegate.register(AddonModFeedbackSyncCronHandler.instance);
+            CoreContentLinksDelegate.registerHandler(AddonModFeedbackIndexLinkHandler.instance);
+            CoreContentLinksDelegate.registerHandler(AddonModFeedbackListLinkHandler.instance);
+            CoreContentLinksDelegate.registerHandler(AddonModFeedbackAnalysisLinkHandler.instance);
+            CoreContentLinksDelegate.registerHandler(AddonModFeedbackCompleteLinkHandler.instance);
+            CoreContentLinksDelegate.registerHandler(AddonModFeedbackPrintLinkHandler.instance);
+            CoreContentLinksDelegate.registerHandler(AddonModFeedbackShowEntriesLinkHandler.instance);
+            CoreContentLinksDelegate.registerHandler(AddonModFeedbackShowNonRespondentsLinkHandler.instance);
+            CorePushNotificationsDelegate.registerClickHandler(AddonModFeedbackPushClickHandler.instance);
 
-                CoreCourseHelper.registerModuleReminderClick(ADDON_MOD_FEEDBACK_COMPONENT);
-            },
-        },
+            CoreCourseHelper.registerModuleReminderClick(ADDON_MOD_FEEDBACK_COMPONENT_LEGACY);
+        }),
     ],
 })
 export class AddonModFeedbackModule {}

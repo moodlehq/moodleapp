@@ -1,18 +1,18 @@
-@if (accountsList) {
+@if (accountsList()) {
     <ion-list class="core-sites-list">
-        @if (accountsList.currentSite) {
+        @if (accountsList().currentSite) {
             <ion-card>
-                <ng-container *ngTemplateOutlet="siteCardHeader; context: {site: accountsList.currentSite, isCurrentSite: true}" />
+                <ng-container *ngTemplateOutlet="siteCardHeader; context: {site: accountsList().currentSite, isCurrentSite: true}" />
 
-                <ng-container *ngTemplateOutlet="siteItem; context: {site: accountsList.currentSite, isCurrentSite: true}" />
+                <ng-container *ngTemplateOutlet="siteItem; context: {site: accountsList().currentSite, isCurrentSite: true}" />
 
-                @for (site of accountsList.sameSite; track site.id) {
+                @for (site of accountsList().sameSite; track site.id) {
                     <ng-container *ngTemplateOutlet="siteItem; context: {site: site, isCurrentSite: false}" />
                 }
             </ion-card>
         }
 
-        @for (sites of accountsList.otherSites; track sites[0]?.siteUrl) {
+        @for (sites of accountsList().otherSites; track sites[0]?.siteUrl) {
             <ion-card>
                 <ng-container *ngTemplateOutlet="siteCardHeader; context: {site: sites[0], isCurrentSite: false}" />
 
@@ -31,7 +31,7 @@
         <ion-item-divider sticky="true" class="core-sites-list-sitename ion-text-nowrap">
             <ion-label class="ion-text-nowrap">
                 <h2>
-                    <core-format-text [text]="site.siteName" clean="true" [siteId]="site.id" />
+                    <core-format-text [text]="site.siteName" [clean]="true" [siteId]="site.id" />
                 </h2>
                 @if (displaySiteUrl(site)) {
                     <p>

@@ -14,7 +14,7 @@
 
 import { AddonModGlossaryHelper } from '@addons/mod/glossary/services/glossary-helper';
 import { AddonModGlossaryOffline, AddonModGlossaryOfflineEntry } from '@addons/mod/glossary/services/glossary-offline';
-import { Component, OnDestroy, OnInit, Optional, ViewChild } from '@angular/core';
+import { Component, OnDestroy, OnInit, inject, viewChild } from '@angular/core';
 import { ActivatedRoute, ActivatedRouteSnapshot } from '@angular/router';
 import { CoreRoutedItemsManagerSourcesTracker } from '@classes/items-management/routed-items-manager-sources-tracker';
 import { CoreSwipeNavigationItemsManager } from '@classes/items-management/swipe-navigation-items-manager';
@@ -37,11 +37,19 @@ import {
 } from '../../services/glossary';
 import { CoreTime } from '@singletons/time';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
-import { ADDON_MOD_GLOSSARY_COMPONENT, ADDON_MOD_GLOSSARY_ENTRY_UPDATED, ADDON_MOD_GLOSSARY_PAGE_NAME } from '../../constants';
-import { CoreCourseContentsPage } from '@features/course/pages/contents/contents';
+import {
+    ADDON_MOD_GLOSSARY_COMPONENT_LEGACY,
+    ADDON_MOD_GLOSSARY_ENTRY_UPDATED,
+    ADDON_MOD_GLOSSARY_PAGE_NAME,
+} from '../../constants';
+import CoreCourseContentsPage from '@features/course/pages/contents/contents';
 import { CoreToasts, ToastDuration } from '@services/overlays/toasts';
 import { CoreLoadings } from '@services/overlays/loadings';
 import { CoreAlerts } from '@services/overlays/alerts';
+import { CoreTagListComponent } from '@features/tag/components/list/list';
+import { CoreSharedModule } from '@/core/shared.module';
+import { CoreRatingRateComponent } from '@features/rating/components/rate/rate';
+import { CoreRatingAggregateComponent } from '@features/rating/components/aggregate/aggregate';
 
 /**
  * Page that displays a glossary entry.
@@ -49,12 +57,19 @@ import { CoreAlerts } from '@services/overlays/alerts';
 @Component({
     selector: 'page-addon-mod-glossary-entry',
     templateUrl: 'entry.html',
+    imports: [
+        CoreSharedModule,
+        CoreTagListComponent,
+        CoreCommentsCommentsComponent,
+        CoreRatingRateComponent,
+        CoreRatingAggregateComponent,
+    ],
 })
-export class AddonModGlossaryEntryPage implements OnInit, OnDestroy {
+export default class AddonModGlossaryEntryPage implements OnInit, OnDestroy {
 
-    @ViewChild(CoreCommentsCommentsComponent) comments?: CoreCommentsCommentsComponent;
+    readonly comments = viewChild(CoreCommentsCommentsComponent);
 
-    component = ADDON_MOD_GLOSSARY_COMPONENT;
+    component = ADDON_MOD_GLOSSARY_COMPONENT_LEGACY;
     componentId?: number;
     onlineEntry?: AddonModGlossaryEntry;
     offlineEntry?: AddonModGlossaryOfflineEntry;
@@ -75,12 +90,11 @@ export class AddonModGlossaryEntryPage implements OnInit, OnDestroy {
 
     protected entrySlug!: string;
     protected logView: () => void;
+    protected splitView = inject(CoreSplitViewComponent, { optional: true });
+    protected route = inject(ActivatedRoute);
+    protected courseContentsPage = inject(CoreCourseContentsPage, { optional: true });
 
-    constructor(
-        @Optional() protected splitView: CoreSplitViewComponent,
-        protected route: ActivatedRoute,
-        @Optional() protected courseContentsPage?: CoreCourseContentsPage,
-    ) {
+    constructor() {
         this.logView = CoreTime.once(async () => {
             if (!this.onlineEntry || !this.glossary || !this.componentId) {
                 return;
@@ -237,9 +251,10 @@ export class AddonModGlossaryEntryPage implements OnInit, OnDestroy {
      * @returns Promise resolved when done.
      */
     async doRefresh(refresher?: HTMLIonRefresherElement): Promise<void> {
-        if (this.onlineEntry && this.glossary?.allowcomments && this.onlineEntry.id > 0 && this.commentsEnabled && this.comments) {
+        const comments = this.comments();
+        if (this.onlineEntry && this.glossary?.allowcomments && this.onlineEntry.id > 0 && this.commentsEnabled && comments) {
             // Refresh comments asynchronously (without blocking the current promise).
-            CorePromiseUtils.ignoreErrors(this.comments.doRefresh());
+            CorePromiseUtils.ignoreErrors(comments.doRefresh());
         }
 
         try {
@@ -261,9 +276,10 @@ export class AddonModGlossaryEntryPage implements OnInit, OnDestroy {
      */
     protected async loadOnlineEntry(entryId: number): Promise<void> {
         try {
+            const isOnline = CoreNetwork.isOnline();
             const result = await AddonModGlossary.getEntry(entryId);
-            const canDeleteEntries = CoreNetwork.isOnline() && await AddonModGlossary.canDeleteEntries();
-            const canUpdateEntries = CoreNetwork.isOnline() && await AddonModGlossary.canUpdateEntries();
+            const canDeleteEntries = isOnline && await AddonModGlossary.canDeleteEntries();
+            const canUpdateEntries = isOnline && await AddonModGlossary.canUpdateEntries();
 
             this.onlineEntry = result.entry;
             this.ratingInfo = result.ratinginfo;
@@ -389,7 +405,7 @@ class AddonModGlossaryEntryEntriesSwipeManager
     protected getSelectedItemPathFromRoute(route: ActivatedRouteSnapshot | ActivatedRoute): string | null {
         const params = CoreNavigator.getRouteParams(route);
 
-        return `${this.getSource().GLOSSARY_PATH_PREFIX}entry/${params.entrySlug}`;
+        return `${this.getSource().glossaryPathPrefix}entry/${params.entrySlug}`;
     }
 
 }

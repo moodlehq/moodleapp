@@ -1,4 +1,4 @@
-@import "./globals.scss";
+@import "./globals";
 
 :root.force-safe-area-margins {
     --ion-safe-area-left: 40px;
@@ -8,16 +8,34 @@
 }
 
 :root {
-    --zoom-level: 100%;
-    zoom: var(--zoom-level);
+    --zoom-ratio: 1;
+    --zoom-level: calc(100% * var(--zoom-ratio));  // @deprecated since 5.1.
+    zoom: calc(100% * var(--zoom-ratio));
 
     &.ios {
-        font-size: var(--zoom-level);
+        font-size: calc(100% * var(--zoom-ratio));
+    }
+
+    // Apply zoom ratio to safe area and keyboard height CSS variable.
+    // Also, store safe area variables as --root-safe-area-*.
+    // Contrary to the --ion-safe-area-* variables, these are never overridden.
+    --root-safe-area-left: calc(var(--ion-safe-area-left, 0px) / var(--zoom-ratio));
+    --root-safe-area-right: calc(var(--ion-safe-area-right, 0px) / var(--zoom-ratio));
+    --root-safe-area-top: calc(var(--ion-safe-area-top, 0px) / var(--zoom-ratio));
+    --root-safe-area-bottom: calc(var(--ion-safe-area-bottom, 0px) / var(--zoom-ratio));
+    --root-keyboard-height: calc(var(--keyboard-height, 0px) / var(--zoom-ratio));
+    & > body {
+        --ion-safe-area-left: var(--root-safe-area-left);
+        --ion-safe-area-right: var(--root-safe-area-right);
+        --ion-safe-area-top: var(--root-safe-area-top);
+        --ion-safe-area-bottom: var(--root-safe-area-bottom);
+        --keyboard-height: var(--root-keyboard-height);
     }
 }
 
 a {
     color: var(--core-link-color);
+    text-decoration: var(--core-link-decoration, underline);
     cursor: pointer;
 }
 
@@ -99,53 +117,41 @@ a {
     }
 }
 
-// Ionic toolbar on header.
-ion-toolbar {
-    --min-height: var(--core-header-toolbar-height);
-}
-
-ion-tabs.hide-header ion-header {
-    display: none;
-}
-
-ion-footer {
-    background-color: var(--contrast-background);
-
-    > ion-toolbar:only-child {
-        top: 1px;
-    }
-}
-
 // Ionic list.
 ion-list {
     padding: 0 !important;
 }
 
-// Safe areas
-.safe-area-padding,
-.safe-area-padding-horizontal {
-    @include padding-horizontal(var(--ion-safe-area-left), var(--ion-safe-area-right));
+// Make sure pages do not overlap the bottom system bar.
+ion-app > ion-router-outlet > .ion-page:not(page-core-mainmenu),
+ion-app > ion-router-outlet > page-core-mainmenu > ion-tabs.placement-side > .tabs-inner,
+ion-app > ion-modal > .ion-page {
+    height: calc(100% - var(--ion-safe-area-bottom, 0px));
+    * {
+        --ion-safe-area-bottom: 0px;
+    }
 }
 
-.safe-area-margin,
-.safe-margin-horizontal {
-    @include margin-horizontal(var(--ion-safe-area-left), var(--ion-safe-area-right));
+// On tablets, Ionic unsets the safe area variables in modals.
+ion-app > ion-modal {
+    --ion-safe-area-bottom: inherit;
+}
+ion-app > ion-modal.core-modal-lateral {
+    --ion-safe-area-top: inherit;
 }
 
-.ion-padding.safe-area-padding-horizontal {
-    @include safe-area-padding-horizontal(16px, 16px);
+:root[dir=ltr] body:not(.core-iframe-fullscreen) ion-tabs.placement-side .tabs-inner,
+:root[dir=ltr] body:not(.core-iframe-fullscreen) ion-tabs.placement-side .tabs-inner ion-content {
+    --ion-safe-area-left: 0px !important;
 }
 
-.ion-margin.safe-margin-horizontal {
-    @include safe-area-margin-horizontal(16px, 16px);
-}
-
-ion-tabs.placement-side .tabs-inner {
-    --ion-safe-area-left: 0px;
+:root[dir=rtl] body:not(.core-iframe-fullscreen) ion-tabs.placement-side .tabs-inner,
+:root[dir=rtl] body:not(.core-iframe-fullscreen) ion-tabs.placement-side .tabs-inner ion-content {
+    --ion-safe-area-right: 0px !important;
 }
 
 ion-tabs.placement-bottom .tabs-inner {
-    --ion-safe-area-bottom: 0px;
+    --ion-safe-area-bottom: 0px !important;
 }
 
 core-tabs, core-tabs-outlet {
@@ -157,16 +163,6 @@ core-tabs, core-tabs-outlet {
         --border-color-active: var(--core-tab-border-color-active);
         --color-selected: var(--border-color-active);
         --font-weight-active: var(--core-tab-font-weight-active);
-    }
-}
-
-core-split-view.menu-and-content {
-    .menu {
-        --ion-safe-area-right: 0px;
-    }
-
-    .content-outlet {
-        --ion-safe-area-left: 0px;
     }
 }
 
@@ -189,21 +185,16 @@ core-split-view.menu-and-content {
 // Item styles
 [aria-current="page"],
 .item.item-current {
-    @include safe-area-border-start(var(--selected-item-border-width), solid,  var(--selected-item-color));
+    @include border-start(var(--selected-item-border-width), solid,  var(--selected-item-color));
     --padding-start: calc(16px - var(--selected-item-border-width));
-
-    > * {
-        --ion-safe-area-left: 0px;
-    }
-
-    &::part(native) {
-        --ion-safe-area-left: 0px;
-    }
 }
 
 // Extra text colors.
 .text-gray {
     color: var(--gray-500);
+}
+.text-dimmed {
+    opacity: .7;
 }
 
 // Wait to load before showing the image.
@@ -211,7 +202,7 @@ img[core-external-content]:not([src]) {
     visibility: hidden;
 }
 
-.core-course-module-handler:not(.addon-mod-label-handler) .item-heading .filter_mathjaxloader_equation div {
+.core-course-module-handler:not(.addon-mod-label-handler) .item-heading .filter_mathjaxloader_equation mjx-container {
     display: inline !important;
 }
 
@@ -253,12 +244,6 @@ core-format-text a {
 .core-horizontal-scroll {
     display: block;
     overflow-x: scroll;
-    .safe-area-pseudo-padding-start {
-        @include padding-horizontal(var(--ion-safe-area-left), 0px);
-    }
-    .safe-area-pseudo-padding-end {
-        @include padding-horizontal(0px, var(--ion-safe-area-right));
-    }
 }
 
 // Text formats.
@@ -388,6 +373,9 @@ ion-grid.core-no-grid > ion-row {
     display: block;
     background-color: var(--core-collapsible-footer-background);
 
+    @include padding-horizontal(var(--ion-safe-area-left), var(--ion-safe-area-right));
+
+
     .ion-margin {
         margin-top: 8px;
         margin-bottom: 8px;
@@ -498,6 +486,13 @@ video::-webkit-media-text-track-display {
     white-space: normal !important;
 }
 
+*:fullscreen {
+    padding-top: var(--root-safe-area-top);
+    padding-left: var(--root-safe-area-left);
+    padding-bottom: var(--root-safe-area-bottom);
+    padding-right: var(--root-safe-area-right);
+}
+
 /**
  * https://github.com/ionic-team/ionic-framework/blob/6ffbdbb3b2b69290cf25753d535bc7483bd7c6e8/BREAKING.md#css-utilities
  */
@@ -508,4 +503,24 @@ video::-webkit-media-text-track-display {
 .x-scrollable {
     overflow-x: auto;
     display: block;
+}
+
+
+//
+// Screenreaders
+//
+
+.sr-only, .accesshide {
+    @include sr-only();
+
+    display: block !important;
+}
+
+.sr-only-focusable:active, .sr-only-focusable:focus {
+    position: static;
+    width: auto;
+    height: auto;
+    overflow: visible;
+    clip: auto;
+    white-space: normal;
 }

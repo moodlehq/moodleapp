@@ -20,22 +20,23 @@ import { CoreTagItem } from '@features/tag/services/tag';
 import { CoreUser, CoreUserProfile } from '@features/user/services/user';
 import { CoreFileEntry, CoreFileHelper } from '@services/file-helper';
 import { CoreNetwork } from '@services/network';
-import { CoreSites, CoreSitesCommonWSOptions } from '@services/sites';
-import { CoreTimeUtils } from '@services/utils/time';
+import { CoreSites, CoreSitesWSOptionsWithFilter } from '@services/sites';
+import { CoreTime } from '@singletons/time';
 import { CoreObject } from '@singletons/object';
 import { CoreStatusWithWarningsWSResponse, CoreWSExternalFile, CoreWSExternalWarning } from '@services/ws';
 import { makeSingleton } from '@singletons';
 import { AddonBlogOffline, AddonBlogOfflineEntry } from './blog-offline';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreWSError } from '@classes/errors/wserror';
-
-const ROOT_CACHE_KEY = 'addonBlog:';
+import { CoreTextFormat } from '@singletons/text';
 
 /**
  * Service to handle blog entries.
  */
 @Injectable({ providedIn: 'root' })
 export class AddonBlogProvider {
+
+    protected static readonly ROOT_CACHE_KEY = 'addonBlog:';
 
     static readonly ENTRIES_PER_PAGE = 10;
     static readonly COMPONENT = 'blog';
@@ -63,7 +64,7 @@ export class AddonBlogProvider {
      * @returns Cache key.
      */
     getEntriesCacheKey(filter: AddonBlogFilter = {}): string {
-        return ROOT_CACHE_KEY + CoreObject.sortAndStringify(filter);
+        return AddonBlogProvider.ROOT_CACHE_KEY + CoreObject.sortAndStringify(filter);
     }
 
     /**
@@ -86,6 +87,7 @@ export class AddonBlogProvider {
             cacheKey: this.getEntriesCacheKey(filter),
             updateFrequency: CoreCacheUpdateFrequency.SOMETIMES,
             ...CoreSites.getReadingStrategyPreSets(options?.readingStrategy),
+            ...CoreSites.getFilterPresets(options?.filter),
         };
 
         return site.read('core_blog_get_entries', data, preSets);
@@ -163,7 +165,7 @@ export class AddonBlogProvider {
                 summary: params.summary,
                 summaryformat: params.summaryformat,
                 userid: site.getUserId(),
-                lastmodified: CoreTimeUtils.timestamp(),
+                lastmodified: CoreTime.timestamp(),
                 options: JSON.stringify(params.options),
                 created,
             };
@@ -318,6 +320,9 @@ export class AddonBlogProvider {
         const offlineFiles = await AddonBlogOffline.getOfflineFiles(folder);
         const optionsFiles = this.getAttachmentFilesFromOptions(options);
         const attachmentFiles = [...optionsFiles.online, ...offlineFiles];
+        const summary = entry ?
+            CoreFileHelper.replacePluginfileUrls(offlineEntry.summary, entry.summaryfiles) :
+            offlineEntry.summary;
 
         return {
             ...offlineEntry,
@@ -330,11 +335,12 @@ export class AddonBlogProvider {
             attachmentfiles: attachmentFiles,
             userid: user?.id ?? 0,
             moduleid: moduleId ?? 0,
-            summaryfiles: [],
+            summary,
+            summaryfiles: entry?.summaryfiles ?? [],
             uniquehash: '',
             module: entry?.module,
             groupid: 0,
-            content: offlineEntry.summary,
+            content: summary,
             updatedOffline: true,
         };
     }
@@ -448,11 +454,11 @@ export interface AddonBlogPost {
     coursemoduleid: number; // Course module id where the post was created.
     subject: string; // Post subject.
     summary: string; // Post summary.
-    summaryformat?: number; // Summary format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
+    summaryformat?: CoreTextFormat; // Summary format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
     content: string; // Post content.
     uniquehash: string; // Post unique hash.
     rating: number; // Post rating.
-    format: number; // Post content format.
+    format: CoreTextFormat; // Post content format.
     attachment: string; // Post atachment.
     publishstate: AddonBlogPublishState; // Post publish state.
     lastmodified: number; // When it was last modified.
@@ -498,7 +504,7 @@ export type AddonBlogFilter = {
 export type AddonBlogAddEntryWSParams = {
     subject: string;
     summary: string;
-    summaryformat: number;
+    summaryformat: CoreTextFormat;
     options: AddonBlogAddEntryOption[];
 };
 
@@ -551,7 +557,7 @@ export type AddonBlogDeleteEntryWSResponse = {
     warnings?: CoreWSExternalWarning[];
 };
 
-export type AddonBlogGetEntriesOptions = CoreSitesCommonWSOptions & {
+export type AddonBlogGetEntriesOptions = CoreSitesWSOptionsWithFilter & {
     page?: number;
 };
 

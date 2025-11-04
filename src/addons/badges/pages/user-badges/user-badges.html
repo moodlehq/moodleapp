@@ -10,27 +10,33 @@
 </ion-header>
 <ion-content>
     <core-split-view>
-        <ion-refresher slot="fixed" [disabled]="!badges.loaded" (ionRefresh)="refreshBadges($event.target)">
+        <ion-refresher slot="fixed" [disabled]="!badges().loaded" (ionRefresh)="refreshBadges($event.target)">
             <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}" />
         </ion-refresher>
-        <core-loading [hideUntil]="badges.loaded">
-            <core-empty-box *ngIf="badges.empty" icon="fas-trophy" [message]="'addon.badges.nobadges' | translate" />
-
-            <ion-list *ngIf="!badges.empty" class="ion-no-margin">
-                <ion-item button class="ion-text-wrap" *ngFor="let badge of badges.items" [attr.aria-label]="badge.name"
-                    (click)="badges.select(badge)" [attr.aria-current]="badges.getItemAriaCurrent(badge)" [detail]="true">
-                    <ion-avatar slot="start">
-                        <img [url]="badge.badgeurl" [alt]="badge.name" core-external-content>
-                    </ion-avatar>
-                    <ion-label>
-                        <p class="item-heading">{{ badge.name }}</p>
-                        <p>{{ badge.dateissued * 1000 | coreFormatDate :'strftimedatetimeshort' }}</p>
-                    </ion-label>
-                    <ion-badge slot="end" color="danger" *ngIf="badge.dateexpire && currentTime >= badge.dateexpire">
-                        {{ 'addon.badges.expired' | translate }}
-                    </ion-badge>
-                </ion-item>
-            </ion-list>
+        <core-loading [hideUntil]="badges().loaded" placeholderType="listwithavatar">
+            @if (badges().empty) {
+                <core-empty-box icon="fas-trophy" [message]="'addon.badges.nobadges' | translate" />
+            } @else {
+                <ion-list class="ion-no-margin">
+                    @for (badge of badges().items; track badge.uniquehash) {
+                        <ion-item button class="ion-text-wrap" [attr.aria-label]="badge.name"
+                            (click)="badges().select(badge)" [attr.aria-current]="badges().getItemAriaCurrent(badge)" [detail]="true">
+                            <ion-avatar slot="start">
+                                <img [url]="badge.badgeurl" [alt]="badge.name" core-external-content>
+                            </ion-avatar>
+                            <ion-label>
+                                <p class="item-heading">{{ badge.name }}</p>
+                                <p>{{ badge.dateissued * 1000 | coreFormatDate :'strftimedatetimeshort' }}</p>
+                            </ion-label>
+                            @if (badge.dateexpire && currentTime() >= badge.dateexpire) {
+                                <ion-badge slot="end" color="danger">
+                                    {{ 'addon.badges.expired' | translate }}
+                                </ion-badge>
+                            }
+                        </ion-item>
+                    }
+                </ion-list>
+            }
         </core-loading>
     </core-split-view>
 </ion-content>

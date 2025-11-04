@@ -27,6 +27,10 @@ import {
     CORE_COURSES_DASHBOARD_DOWNLOAD_ENABLED_CHANGED_EVENT,
 } from '@features/courses/constants';
 import { CoreAlerts } from '@services/overlays/alerts';
+import { CoreCoursesCourseListItemComponent } from '../../components/course-list-item/course-list-item';
+import { CoreSearchBoxComponent } from '../../../search/components/search-box/search-box';
+import { CoreMainMenuUserButtonComponent } from '../../../mainmenu/components/user-menu-button/user-menu-button';
+import { CoreSharedModule } from '@/core/shared.module';
 
 type CoreCoursesListMode = 'search' | 'all' | 'my';
 
@@ -36,8 +40,14 @@ type CoreCoursesListMode = 'search' | 'all' | 'my';
 @Component({
     selector: 'page-core-courses-list',
     templateUrl: 'list.html',
+    imports: [
+        CoreSharedModule,
+        CoreMainMenuUserButtonComponent,
+        CoreSearchBoxComponent,
+        CoreCoursesCourseListItemComponent,
+    ],
 })
-export class CoreCoursesListPage implements OnInit, OnDestroy {
+export default class CoreCoursesListPage implements OnInit, OnDestroy {
 
     downloadAllCoursesEnabled = false;
 
@@ -140,11 +150,12 @@ export class CoreCoursesListPage implements OnInit, OnDestroy {
 
         const mode = CoreNavigator.getRouteParam<CoreCoursesListMode>('mode') || 'my';
 
-        if (mode == 'search') {
+        if (mode === 'search') {
             this.searchMode = true;
+            this.searchText = CoreNavigator.getRouteParam('searchText') || '';
         }
 
-        if (mode == 'my') {
+        if (mode === 'my') {
             this.showOnlyEnrolled = true;
         }
 
@@ -250,6 +261,12 @@ export class CoreCoursesListPage implements OnInit, OnDestroy {
      * @param text The text to search.
      */
     async search(text: string): Promise<void> {
+        if (text.trim() === '') {
+            this.clearSearch();
+
+            return;
+        }
+
         this.searchMode = true;
         this.searchText = text;
         this.courses = [];
@@ -267,7 +284,7 @@ export class CoreCoursesListPage implements OnInit, OnDestroy {
     /**
      * Clear search box.
      */
-    clearSearch(): void {
+    protected clearSearch(): void {
         this.searchText = '';
         this.courses = [];
         this.searchPage = 0;
@@ -346,6 +363,7 @@ export class CoreCoursesListPage implements OnInit, OnDestroy {
      */
     toggleEnrolled(): void {
         this.loaded = false;
+        this.searchPage = 0;
         this.fetchCourses();
     }
 

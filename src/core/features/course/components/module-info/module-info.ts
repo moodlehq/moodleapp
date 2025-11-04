@@ -14,10 +14,13 @@
 
 import { toBoolean } from '@/core/transforms/boolean';
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { CoreCourse } from '@features/course/services/course';
+import { CoreCourseModuleHelper } from '@features/course/services/course-module-helper';
 import { CoreCourseModuleCompletionData, CoreCourseModuleData } from '@features/course/services/course-helper';
 import { CoreCourseModuleDelegate } from '@features/course/services/module-delegate';
 import { CoreSites } from '@services/sites';
+import { CoreSharedModule } from '@/core/shared.module';
+import { CoreCourseModuleCompletionComponent } from '../module-completion/module-completion';
+import { CoreRemindersDateComponent } from '../../../reminders/components/date/date';
 
 /**
  * Display info about a module:
@@ -33,6 +36,11 @@ import { CoreSites } from '@services/sites';
     selector: 'core-course-module-info',
     templateUrl: 'core-course-module-info.html',
     styleUrl: 'course-module-info.scss',
+    imports: [
+        CoreSharedModule,
+        CoreCourseModuleCompletionComponent,
+        CoreRemindersDateComponent,
+    ],
 })
 export class CoreCourseModuleInfoComponent implements OnInit {
 
@@ -62,7 +70,7 @@ export class CoreCourseModuleInfoComponent implements OnInit {
     async ngOnInit(): Promise<void> {
         this.modicon = await CoreCourseModuleDelegate.getModuleIconSrc(this.module.modname, this.module.modicon, this.module);
 
-        this.moduleNameTranslated = CoreCourse.translateModuleName(this.module.modname, this.module.modplural);
+        this.moduleNameTranslated = CoreCourseModuleHelper.translateModuleName(this.module.modname, this.module.modplural);
         this.showCompletion = CoreSites.getRequiredCurrentSite().isVersionGreaterEqualThan('3.11');
     }
 

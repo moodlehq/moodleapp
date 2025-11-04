@@ -22,7 +22,8 @@ import {
     OnInit,
     Output,
     SimpleChange,
-    ViewChild,
+    inject,
+    viewChild,
 } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { CoreEvents } from '@singletons/events';
@@ -61,6 +62,11 @@ import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreWSError } from '@classes/errors/wserror';
 import { CoreAlerts } from '@services/overlays/alerts';
 import { AccordionGroupCustomEvent } from '@ionic/angular';
+import { CoreEditorRichTextEditorComponent } from '@features/editor/components/rich-text-editor/rich-text-editor';
+import { CoreTagListComponent } from '@features/tag/components/list/list';
+import { CoreSharedModule } from '@/core/shared.module';
+import { CoreRatingAggregateComponent } from '@features/rating/components/aggregate/aggregate';
+import { CoreRatingRateComponent } from '@features/rating/components/rate/rate';
 
 /**
  * Components that shows a discussion post, its attachments and the action buttons allowed (reply, etc.).
@@ -69,6 +75,13 @@ import { AccordionGroupCustomEvent } from '@ionic/angular';
     selector: 'addon-mod-forum-post',
     templateUrl: 'post.html',
     styleUrl: 'post.scss',
+    imports: [
+        CoreSharedModule,
+        CoreTagListComponent,
+        CoreRatingRateComponent,
+        CoreRatingAggregateComponent,
+        CoreEditorRichTextEditorComponent,
+    ],
 })
 export class AddonModForumPostComponent implements OnInit, OnDestroy, OnChanges {
 
@@ -89,7 +102,7 @@ export class AddonModForumPostComponent implements OnInit, OnDestroy, OnChanges 
     @Input({ transform: toBoolean }) highlight = false;
     @Output() onPostChange: EventEmitter<void> = new EventEmitter<void>(); // Event emitted when a reply is posted or modified.
 
-    @ViewChild('replyFormEl') formElement!: ElementRef;
+    readonly formElement = viewChild<ElementRef>('replyFormEl');
 
     messageControl = new FormControl<string | null>(null);
 
@@ -101,10 +114,7 @@ export class AddonModForumPostComponent implements OnInit, OnDestroy, OnChanges 
     optionsMenuEnabled = false;
 
     protected preparePostData?: AddonModForumPrepareDraftAreaForPostWSResponse;
-
-    constructor(
-        protected elementRef: ElementRef,
-    ) {}
+    protected element: HTMLElement = inject(ElementRef).nativeElement;
 
     get showForm(): boolean {
         return this.post.id > 0
@@ -118,14 +128,17 @@ export class AddonModForumPostComponent implements OnInit, OnDestroy, OnChanges 
      */
     ngOnInit(): void {
         this.tagsEnabled = CoreTag.areTagsAvailableInSite();
-        this.uniqueId = this.post.id > 0 ? 'reply' + this.post.id : 'edit' + this.post.parentid;
+        this.uniqueId = this.post.id > 0 ? `reply${this.post.id}` : `edit${this.post.parentid}`;
 
+        // This re string is deprecated in Moodle from 5.0 (MDL-83230). This means we're not going to add this string anymore.
+        // In the future we should not check "Re: " or it's translation is included in the subject.
         const reTranslated = Translate.instant('addon.mod_forum.re');
+
         this.displaySubject = !this.parentSubject ||
-            (this.post.subject != this.parentSubject && this.post.subject != `Re: ${this.parentSubject}` &&
-                this.post.subject != `${reTranslated} ${this.parentSubject}`);
-        this.defaultReplySubject = this.post.replysubject || ((this.post.subject.startsWith('Re: ') ||
-            this.post.subject.startsWith(reTranslated)) ? this.post.subject : `${reTranslated} ${this.post.subject}`);
+            (this.post.subject !== this.parentSubject && this.post.subject !== `Re: ${this.parentSubject}` &&
+                this.post.subject !== `${reTranslated} ${this.parentSubject}`);
+
+        this.defaultReplySubject = this.post.subject;
 
         if (this.post.id < 0) {
             this.optionsMenuEnabled = true;
@@ -139,12 +152,12 @@ export class AddonModForumPostComponent implements OnInit, OnDestroy, OnChanges 
     }
 
     /**
-     * Detect changes on input properties.
+     * @inheritdoc
      */
     ngOnChanges(changes: {[name: string]: SimpleChange}): void {
         if (changes.leavingPage && this.leavingPage) {
             // Download all courses is enabled now, initialize it.
-            CoreForms.triggerFormCancelledEvent(this.formElement, CoreSites.getCurrentSiteId());
+            CoreForms.triggerFormCancelledEvent(this.formElement(), CoreSites.getCurrentSiteId());
         }
     }
 
@@ -186,7 +199,7 @@ export class AddonModForumPostComponent implements OnInit, OnDestroy, OnChanges 
             } finally {
                 modal.dismiss();
             }
-        } catch (error) {
+        } catch {
             // Do nothing.
         }
     }
@@ -477,7 +490,7 @@ export class AddonModForumPostComponent implements OnInit, OnDestroy, OnChanges 
 
             this.onPostChange.emit();
 
-            CoreForms.triggerFormSubmittedEvent(this.formElement, sent, CoreSites.getCurrentSiteId());
+            CoreForms.triggerFormSubmittedEvent(this.formElement(), sent, CoreSites.getCurrentSiteId());
 
             this.unblockOperation();
         } catch (error) {
@@ -574,10 +587,10 @@ export class AddonModForumPostComponent implements OnInit, OnDestroy, OnChanges 
             // Reset data.
             this.setFormData();
 
-            CoreForms.triggerFormCancelledEvent(this.formElement, CoreSites.getCurrentSiteId());
+            CoreForms.triggerFormCancelledEvent(this.formElement(), CoreSites.getCurrentSiteId());
 
             this.unblockOperation();
-        } catch (error) {
+        } catch {
             // Cancelled.
         }
     }
@@ -586,20 +599,22 @@ export class AddonModForumPostComponent implements OnInit, OnDestroy, OnChanges 
      * Discard offline reply.
      */
     async discardOfflineReply(): Promise<void> {
+        if (this.post.parentid === undefined) {
+            return;
+        }
+
         try {
             await CoreAlerts.confirmDelete(Translate.instant('core.areyousure'));
 
             const promises: Promise<void>[] = [];
 
-            promises.push(AddonModForumOffline.deleteReply(this.post.parentid!));
+            promises.push(AddonModForumOffline.deleteReply(this.post.parentid));
 
             if (this.forum.id) {
-                promises.push(AddonModForumHelper.deleteReplyStoredFiles(this.forum.id, this.post.parentid!).catch(() => {
-                    // Ignore errors, maybe there are no files.
-                }));
+                promises.push(AddonModForumHelper.deleteReplyStoredFiles(this.forum.id, this.post.parentid));
             }
 
-            await CorePromiseUtils.ignoreErrors(Promise.all(promises));
+            await CorePromiseUtils.allPromisesIgnoringErrors(promises);
 
             // Reset data.
             this.setFormData();
@@ -607,7 +622,7 @@ export class AddonModForumPostComponent implements OnInit, OnDestroy, OnChanges 
             this.onPostChange.emit();
 
             this.unblockOperation();
-        } catch (error) {
+        } catch {
             // Cancelled.
         }
     }
@@ -635,8 +650,6 @@ export class AddonModForumPostComponent implements OnInit, OnDestroy, OnChanges 
 
     /**
      * Confirm discard changes if any.
-     *
-     * @returns Promise resolved if the user confirms or data was not changed and rejected otherwise.
      */
     protected async confirmDiscard(): Promise<void> {
         if (AddonModForumHelper.hasPostDataChanged(this.formData, this.originalData)) {
@@ -661,13 +674,11 @@ export class AddonModForumPostComponent implements OnInit, OnDestroy, OnChanges 
 
     /**
      * Scroll to reply/edit form.
-     *
-     * @returns Promise resolved when done.
      */
     protected async scrollToForm(): Promise<void> {
         await CoreDom.scrollToElement(
-            this.elementRef.nativeElement,
-            '#addon-forum-reply-edit-form-' + this.uniqueId,
+            this.element,
+            `#addon-forum-reply-edit-form-${this.uniqueId}`,
         );
     }
 

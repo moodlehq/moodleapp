@@ -13,15 +13,15 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
-import { CoreError } from '@classes/errors/error';
 import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
 import { CoreFilepool } from '@services/filepool';
 import { CoreSites, CoreSitesCommonWSOptions } from '@services/sites';
 import { CorePromiseUtils } from '@singletons/promise-utils';
-import { CoreWSExternalFile, CoreWSExternalWarning } from '@services/ws';
-import { makeSingleton, Translate } from '@singletons';
-import { ADDON_MOD_LABEL_COMPONENT } from '../constants';
+import { CoreWSExternalWarning } from '@services/ws';
+import { makeSingleton } from '@singletons';
+import { ADDON_MOD_LABEL_COMPONENT_LEGACY } from '../constants';
 import { CoreCacheUpdateFrequency } from '@/core/constants';
+import { CoreCourseModuleHelper, CoreCourseModuleStandardElements } from '@features/course/services/course-module-helper';
 
 /**
  * Service that provides some features for labels.
@@ -38,46 +38,7 @@ export class AddonModLabelProvider {
      * @returns Cache key.
      */
     protected getLabelDataCacheKey(courseId: number): string {
-        return AddonModLabelProvider.ROOT_CACHE_KEY + 'label:' + courseId;
-    }
-
-    /**
-     * Get a label with key=value. If more than one is found, only the first will be returned.
-     *
-     * @param courseId Course ID.
-     * @param key Name of the property to check.
-     * @param value Value to search.
-     * @param options Other options.
-     * @returns Promise resolved when the label is retrieved.
-     */
-    protected async getLabelByField(
-        courseId: number,
-        key: string,
-        value: number,
-        options: CoreSitesCommonWSOptions = {},
-    ): Promise<AddonModLabelLabel> {
-        const site = await CoreSites.getSite(options.siteId);
-
-        const params: AddonModLabelGetLabelsByCoursesWSParams = {
-            courseids: [courseId],
-        };
-
-        const preSets: CoreSiteWSPreSets = {
-            cacheKey: this.getLabelDataCacheKey(courseId),
-            updateFrequency: CoreCacheUpdateFrequency.RARELY,
-            component: ADDON_MOD_LABEL_COMPONENT,
-            ...CoreSites.getReadingStrategyPreSets(options.readingStrategy),
-        };
-
-        const response =
-            await site.read<AddonModLabelGetLabelsByCoursesWSResponse>('mod_label_get_labels_by_courses', params, preSets);
-
-        const currentLabel = response.labels.find((label) => label[key] == value);
-        if (currentLabel) {
-            return currentLabel;
-        }
-
-        throw new CoreError(Translate.instant('core.course.modulenotfound'));
+        return `${AddonModLabelProvider.ROOT_CACHE_KEY}label:${courseId}`;
     }
 
     /**
@@ -88,20 +49,24 @@ export class AddonModLabelProvider {
      * @param options Other options.
      * @returns Promise resolved when the label is retrieved.
      */
-    getLabel(courseId: number, cmId: number, options: CoreSitesCommonWSOptions = {}): Promise<AddonModLabelLabel> {
-        return this.getLabelByField(courseId, 'coursemodule', cmId, options);
-    }
+    async getLabel(courseId: number, cmId: number, options: CoreSitesCommonWSOptions = {}): Promise<AddonModLabelLabel> {
+        const site = await CoreSites.getSite(options.siteId);
 
-    /**
-     * Get a label by ID.
-     *
-     * @param courseId Course ID.
-     * @param labelId Label ID.
-     * @param options Other options.
-     * @returns Promise resolved when the label is retrieved.
-     */
-    getLabelById(courseId: number, labelId: number, options: CoreSitesCommonWSOptions = {}): Promise<AddonModLabelLabel> {
-        return this.getLabelByField(courseId, 'id', labelId, options);
+        const params: AddonModLabelGetLabelsByCoursesWSParams = {
+            courseids: [courseId],
+        };
+
+        const preSets: CoreSiteWSPreSets = {
+            cacheKey: this.getLabelDataCacheKey(courseId),
+            updateFrequency: CoreCacheUpdateFrequency.RARELY,
+            component: ADDON_MOD_LABEL_COMPONENT_LEGACY,
+            ...CoreSites.getReadingStrategyPreSets(options.readingStrategy),
+        };
+
+        const response =
+            await site.read<AddonModLabelGetLabelsByCoursesWSResponse>('mod_label_get_labels_by_courses', params, preSets);
+
+        return CoreCourseModuleHelper.getActivityByCmId(response.labels, cmId);
     }
 
     /**
@@ -109,7 +74,6 @@ export class AddonModLabelProvider {
      *
      * @param courseId Course ID.
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateLabelData(courseId: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -131,7 +95,7 @@ export class AddonModLabelProvider {
         const promises: Promise<void>[] = [];
 
         promises.push(this.invalidateLabelData(courseId, siteId));
-        promises.push(CoreFilepool.invalidateFilesByComponent(siteId, ADDON_MOD_LABEL_COMPONENT, moduleId, true));
+        promises.push(CoreFilepool.invalidateFilesByComponent(siteId, ADDON_MOD_LABEL_COMPONENT_LEGACY, moduleId, true));
 
         await CorePromiseUtils.allPromises(promises);
     }
@@ -142,19 +106,8 @@ export const AddonModLabel = makeSingleton(AddonModLabelProvider);
 /**
  * Label returned by mod_label_get_labels_by_courses.
  */
-export type AddonModLabelLabel = {
-    id: number; // Module id.
-    coursemodule: number; // Course module id.
-    course: number; // Course id.
-    name: string; // Label name.
-    intro: string; // Label contents.
-    introformat?: number; // Intro format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
-    introfiles: CoreWSExternalFile[];
+export type AddonModLabelLabel = CoreCourseModuleStandardElements & {
     timemodified: number; // Last time the label was modified.
-    section: number; // Course section id.
-    visible: number; // Module visibility.
-    groupmode: number; // Group mode.
-    groupingid: number; // Grouping id.
 };
 
 /**

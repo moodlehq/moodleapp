@@ -33,6 +33,7 @@ import { CoreToasts, ToastDuration } from '@services/overlays/toasts';
 import { CoreText } from '@singletons/text';
 import { CoreAlerts } from '@services/overlays/alerts';
 import { CoreLoadings } from '@services/overlays/loadings';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Page that displays the developer options.
@@ -40,8 +41,11 @@ import { CoreLoadings } from '@services/overlays/loadings';
 @Component({
     selector: 'page-core-app-settings-dev',
     templateUrl: 'dev.html',
+    imports: [
+        CoreSharedModule,
+    ],
 })
-export class CoreSettingsDevPage implements OnInit {
+export default class CoreSettingsDevPage implements OnInit {
 
     rtl = false;
     forceSafeAreaMargins = false;
@@ -101,9 +105,9 @@ export class CoreSettingsDevPage implements OnInit {
 
         const privateToken = currentSite.getPrivateToken();
         const filesAccessKey = currentSite.getFilesAccessKey();
-        this.token = '...' + currentSite.getToken().slice(-3);
-        this.privateToken = privateToken && ('...' + privateToken.slice(-3));
-        this.filesAccessKey = filesAccessKey && ('...' + filesAccessKey.slice(-3));
+        this.token = `...${currentSite.getToken().slice(-3)}`;
+        this.privateToken = privateToken && (`...${privateToken.slice(-3)}`);
+        this.filesAccessKey = filesAccessKey && (`...${filesAccessKey.slice(-3)}`);
 
         this.autoLoginTimeBetweenRequests = await currentSite.getAutoLoginMinTimeBetweenRequests();
         this.lastAutoLoginTime = currentSite.getLastAutoLoginTime();

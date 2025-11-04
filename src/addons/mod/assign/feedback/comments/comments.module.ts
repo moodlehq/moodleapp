@@ -12,32 +12,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { APP_INITIALIZER, NgModule } from '@angular/core';
+import { NgModule, provideAppInitializer } from '@angular/core';
 import { AddonModAssignFeedbackCommentsHandler } from './services/handler';
-import { AddonModAssignFeedbackCommentsComponent } from './component/comments';
-import { CoreSharedModule } from '@/core/shared.module';
-import { CoreEditorComponentsModule } from '@features/editor/components/components.module';
 import { AddonModAssignFeedbackDelegate } from '../../services/feedback-delegate';
 
 @NgModule({
-    declarations: [
-        AddonModAssignFeedbackCommentsComponent,
-    ],
-    imports: [
-        CoreSharedModule,
-        CoreEditorComponentsModule,
-    ],
     providers: [
-        {
-            provide: APP_INITIALIZER,
-            multi: true,
-            useValue: () => {
-                AddonModAssignFeedbackDelegate.registerHandler(AddonModAssignFeedbackCommentsHandler.instance);
-            },
-        },
-    ],
-    exports: [
-        AddonModAssignFeedbackCommentsComponent,
+        provideAppInitializer(() => {
+            AddonModAssignFeedbackDelegate.registerHandler(AddonModAssignFeedbackCommentsHandler.instance);
+        }),
     ],
 })
 export class AddonModAssignFeedbackCommentsModule {}

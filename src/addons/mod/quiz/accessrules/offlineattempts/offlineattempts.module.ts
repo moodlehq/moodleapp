@@ -12,31 +12,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { APP_INITIALIZER, NgModule } from '@angular/core';
+import { NgModule, provideAppInitializer } from '@angular/core';
 
-import { CoreSharedModule } from '@/core/shared.module';
-import { AddonModQuizAccessOfflineAttemptsComponent } from './component/offlineattempts';
 import { AddonModQuizAccessRuleDelegate } from '../../services/access-rules-delegate';
 import { AddonModQuizAccessOfflineAttemptsHandler } from './services/handlers/offlineattempts';
 
 @NgModule({
-    declarations: [
-        AddonModQuizAccessOfflineAttemptsComponent,
-    ],
-    imports: [
-        CoreSharedModule,
-    ],
     providers: [
-        {
-            provide: APP_INITIALIZER,
-            multi: true,
-            useValue: () => {
-                AddonModQuizAccessRuleDelegate.registerHandler(AddonModQuizAccessOfflineAttemptsHandler.instance);
-            },
-        },
-    ],
-    exports: [
-        AddonModQuizAccessOfflineAttemptsComponent,
+        provideAppInitializer(() => {
+            AddonModQuizAccessRuleDelegate.registerHandler(AddonModQuizAccessOfflineAttemptsHandler.instance);
+        }),
     ],
 })
 export class AddonModQuizAccessOfflineAttemptsModule {}

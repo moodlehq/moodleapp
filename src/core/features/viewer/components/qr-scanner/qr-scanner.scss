@@ -1,0 +1,19 @@
+ion-content {
+    display: block !important;
+
+    &::part(background) {
+        background-color: transparent;
+
+        &::after {
+            content: '';
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            width: 300px;
+            height: 300px;
+            transform: translate(-50%, -50%);
+            background-color: transparent;
+            box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.3);
+        }
+    }
+}

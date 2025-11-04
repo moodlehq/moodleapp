@@ -12,8 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import { CoreBaseModule } from '@/core/base.module';
 import { toBoolean } from '@/core/transforms/boolean';
-import { Component, Input } from '@angular/core';
+import { Component, input } from '@angular/core';
+import { CoreFormatTextDirective } from '../../directives/format-text';
+import { ContextLevel } from '@/core/constants';
 
 /**
  * Component to display a Bootstrap Tooltip in a popover.
@@ -21,10 +24,30 @@ import { Component, Input } from '@angular/core';
 @Component({
     selector: 'core-bs-tooltip',
     templateUrl: 'core-bs-tooltip.html',
+    styleUrl: 'core-bs-tooltip.scss',
+    imports: [
+        CoreBaseModule,
+        CoreFormatTextDirective,
+    ],
 })
 export class CoreBSTooltipComponent {
 
-    @Input() content = '';
-    @Input({ transform: toBoolean }) html = false;
+    readonly title = input<string>();
+    readonly content = input('');
+    readonly formatTextOptions = input<CoreFormatTextOptions>();
+    readonly html = input(false, { transform: toBoolean });
+    readonly item = input(true, { transform: toBoolean });
 
 }
+
+/**
+ * Options that can be passed to format text.
+ */
+export type CoreFormatTextOptions = {
+    siteId?: string; // Site ID to use.
+    component?: string; // Component for CoreExternalContentDirective.
+    componentId?: string | number; // Component ID to use in conjunction with the component.
+    contextLevel?: ContextLevel; // The context level of the text.
+    contextInstanceId?: number; // The instance ID related to the context.
+    courseId?: number; // Course ID the text belongs to. It can be used to improve performance with filters.
+};

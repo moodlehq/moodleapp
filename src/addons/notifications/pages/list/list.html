@@ -16,43 +16,54 @@
         <ion-refresher slot="fixed" [disabled]="!notifications.loaded" (ionRefresh)="refreshNotifications($event.target)">
             <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}" />
         </ion-refresher>
-        <core-loading [hideUntil]="notifications.loaded">
-            <ion-card class="core-warning-card core-card-with-buttons" *ngIf="!hasNotificationsPermission && !permissionWarningHidden">
-                <ion-item class="ion-text-wrap">
-                    <ion-icon name="fas-circle-info" slot="start" aria-hidden="true" />
-                    <ion-label>
-                        <p><strong>{{ 'core.turnonnotifications' | translate }}</strong></p>
-                        <p>{{ 'core.turnonnotificationsmessage' | translate }}</p>
-                    </ion-label>
-                </ion-item>
-                <div class="core-card-buttons">
-                    <ion-button fill="clear" (click)="hidePermissionWarning()">
-                        {{ 'core.dontshowagain' | translate | coreNoPeriod }}
-                    </ion-button>
-                    <ion-button fill="outline" (click)="openSettings()">{{ 'core.turnon' | translate }}</ion-button>
-                </div>
-            </ion-card>
+        <core-loading [hideUntil]="notifications.loaded" placeholderType="listwithicon" placeholderHeight="32px" placeholderWidth="32px">
+            @if (!hasNotificationsPermission && !permissionWarningHidden) {
+                <ion-card class="core-warning-card core-card-with-buttons">
+                    <ion-item class="ion-text-wrap">
+                        <ion-icon name="fas-circle-info" slot="start" aria-hidden="true" />
+                        <ion-label>
+                            <p><strong>{{ 'core.turnonnotifications' | translate }}</strong></p>
+                            <p>{{ 'core.turnonnotificationsmessage' | translate }}</p>
+                        </ion-label>
+                    </ion-item>
+                    <div class="core-card-buttons">
+                        <ion-button fill="clear" (click)="hidePermissionWarning()">
+                            {{ 'core.dontshowagain' | translate | coreNoPeriod }}
+                        </ion-button>
+                        <ion-button fill="outline" (click)="openSettings()">{{ 'core.turnon' | translate }}</ion-button>
+                    </div>
+                </ion-card>
+            }
 
             <ion-item *ngFor="let notification of notifications.items" class="ion-text-wrap addon-notification-item"
                 [attr.aria-current]="notifications.getItemAriaCurrent(notification)" (click)="notifications.select(notification)" button
                 [detail]="false" lines="full">
 
-                <core-user-avatar *ngIf="notification.useridfrom > 0" [user]="notification" slot="start"
-                    [profileUrl]="notification.profileimageurlfrom" [fullname]="notification.userfromfullname"
-                    [userId]="notification.useridfrom">
-                    <div class="core-avatar-extra-img" *ngIf="notification.iconurl">
-                        <img [url]="notification.iconurl" alt="" role="presentation" core-external-content>
-                    </div>
-                </core-user-avatar>
+                @if (notification.useridfrom > 0) {
+                    <core-user-avatar [user]="notification" slot="start" [profileUrl]="notification.profileimageurlfrom"
+                        [fullname]="notification.userfromfullname" [userId]="notification.useridfrom">
+                        @if (notification.iconurl) {
+                            <div class="core-avatar-extra-img">
+                                <img [url]="notification.iconurl" alt="" role="presentation" core-external-content>
+                            </div>
+                        }
+                    </core-user-avatar>
+                } @else {
 
-                <ng-container *ngIf="notification.useridfrom <= 0">
-                    <img *ngIf="notification.imgUrl" class="core-notification-img" [url]="notification.imgUrl" core-external-content alt=""
-                        role="presentation" slot="start">
-                    <div class="core-notification-icon" *ngIf="!notification.imgUrl" slot="start">
-                        <img *ngIf="notification.iconurl" [url]="notification.iconurl" core-external-content alt="" role="presentation">
-                        <ion-icon *ngIf="!notification.iconurl" name="fas-bell" aria-hidden="true" />
-                    </div>
-                </ng-container>
+                    @if (notification.imgUrl) {
+                        <img class="core-notification-img" [url]="notification.imgUrl" core-external-content alt="" role="presentation"
+                            slot="start">
+                    } @else {
+                        <div class="core-notification-icon" slot="start">
+                            @if (notification.iconurl) {
+                                <img [url]="notification.iconurl" core-external-content alt="" role="presentation">
+                            } @else {
+                                <ion-icon name="fas-bell" aria-hidden="true" />
+                            }
+                        </div>
+                    }
+
+                }
 
                 <ion-label>
                     <p class="item-heading" [attr.aria-label]="
@@ -62,29 +73,39 @@
                         <core-format-text [text]="notification.subject" contextLevel="system" [contextInstanceId]="0"
                             [wsNotFiltered]="true" />
                     </p>
-                    <p>{{ notification.timecreated | coreTimeAgo }}<ng-container *ngIf="notification.useridfrom > 0"> · {{
-                            notification.userfromfullname }}</ng-container>
+                    <p>{{ notification.timecreated | coreTimeAgo }}@if (notification.useridfrom > 0) {
+                            · {{
+                            notification.userfromfullname }}
+                        }
                     </p>
                 </ion-label>
-                <ion-note slot="end" *ngIf="!notification.timeread">
-                    <ion-icon name="fas-circle" color="primary" aria-hidden="true" />
-                </ion-note>
+                @if (!notification.timeread) {
+                    <ion-note slot="end">
+                        <ion-icon name="fas-circle" color="primary" aria-hidden="true" />
+                    </ion-note>
+                }
             </ion-item>
 
-            <core-empty-box *ngIf="!notifications || notifications.empty" icon="far-bell"
-                [message]="'addon.notifications.therearentnotificationsyet' | translate" />
+            @if (!notifications || notifications.empty) {
+                <core-empty-box icon="far-bell" [message]="'addon.notifications.therearentnotificationsyet' | translate" />
+            }
             <core-infinite-loading [enabled]="notifications.loaded && !notifications.completed" (action)="fetchMoreNotifications($event)"
                 [error]="fetchMoreNotificationsFailed" />
         </core-loading>
 
 
         <div class="mark-all-as-read" slot="fixed" collapsible-footer appearOnBottom>
-            <ion-chip *ngIf="notifications.loaded && canMarkAllNotificationsAsRead" [disabled]="loadingMarkAllNotificationsAsRead"
-                color="info" class="clickable fab-chip" (click)="markAllNotificationsAsRead()">
-                <ion-icon name="fas-eye" aria-hidden="true" *ngIf="!loadingMarkAllNotificationsAsRead" />
-                <ion-spinner [attr.aria-label]="'core.loading' | translate" *ngIf="loadingMarkAllNotificationsAsRead" />
-                {{ 'addon.notifications.markallread' | translate }}
-            </ion-chip>
+            @if (notifications.loaded && canMarkAllNotificationsAsRead) {
+                <ion-chip [disabled]="loadingMarkAllNotificationsAsRead" color="info" class="clickable fab-chip"
+                    (click)="markAllNotificationsAsRead()">
+                    @if (!loadingMarkAllNotificationsAsRead) {
+                        <ion-icon name="fas-eye" aria-hidden="true" />
+                    } @else {
+                        <ion-spinner [attr.aria-label]="'core.loading' | translate" />
+                    }
+                    {{ 'addon.notifications.markallread' | translate }}
+                </ion-chip>
+            }
         </div>
     </core-split-view>
 </ion-content>

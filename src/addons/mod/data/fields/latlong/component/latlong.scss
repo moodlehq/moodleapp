@@ -1,0 +1,13 @@
+@use "theme/globals" as *;
+
+:host {
+    .addon-data-latlong-coordinates-instructions {
+        ion-note * {
+            line-height: var(--mdl-typography-label-lineHeight-sm);
+            vertical-align: middle;
+        }
+        ion-icon {
+            @include margin-horizontal(0px, 0.25rem);
+        }
+    }
+}

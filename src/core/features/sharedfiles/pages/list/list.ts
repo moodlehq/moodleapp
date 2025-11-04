@@ -17,6 +17,8 @@ import { Component, OnInit } from '@angular/core';
 import { CoreFileUtils } from '@singletons/file-utils';
 import { CoreNavigator } from '@services/navigator';
 import { Translate } from '@singletons';
+import { CoreSharedModule } from '@/core/shared.module';
+import { CoreSharedFilesListComponent } from '../../components/list/list';
 
 /**
  * Page to display the list of shared files.
@@ -24,8 +26,12 @@ import { Translate } from '@singletons';
 @Component({
     selector: 'page-core-shared-files-list',
     templateUrl: 'list.html',
+    imports: [
+        CoreSharedModule,
+        CoreSharedFilesListComponent,
+    ],
 })
-export class CoreSharedFilesListPage implements OnInit {
+export default class CoreSharedFilesListPage implements OnInit {
 
     siteId?: string;
     mimetypes?: string[];

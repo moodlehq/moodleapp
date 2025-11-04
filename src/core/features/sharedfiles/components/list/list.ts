@@ -22,6 +22,7 @@ import { CoreSites } from '@services/sites';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { CorePath } from '@singletons/path';
 import { toBoolean } from '@/core/transforms/boolean';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Component to display the list of shared files, either as a modal or inside a page.
@@ -29,6 +30,9 @@ import { toBoolean } from '@/core/transforms/boolean';
 @Component({
     selector: 'core-shared-files-list',
     templateUrl: 'list.html',
+    imports: [
+        CoreSharedModule,
+    ],
 })
 export class CoreSharedFilesListComponent implements OnInit, OnDestroy {
 

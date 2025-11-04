@@ -17,13 +17,13 @@ import { Injectable } from '@angular/core';
 import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
 import { CoreSite } from '@classes/sites/site';
 import { CoreCommentsArea } from '@features/comments/services/comments';
-import { CoreCourseSummary } from '@features/course/services/course';
 import { CoreUserSummary } from '@features/user/services/user';
 import { CoreSites } from '@services/sites';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { makeSingleton } from '@singletons';
-
-const ROOT_CACHE_KEY = 'mmaCompetency:';
+import { CoreTextFormat } from '@singletons/text';
+import { AddonCompetencyLearningPlanStatus, AddonCompetencyReviewStatus } from '../constants';
+import { CoreCourseSummaryExporterData } from '@features/courses/services/courses';
 
 /**
  * Service to handle caompetency learning plans.
@@ -31,17 +31,7 @@ const ROOT_CACHE_KEY = 'mmaCompetency:';
 @Injectable( { providedIn: 'root' })
 export class AddonCompetencyProvider {
 
-    // Learning plan status.
-    static readonly STATUS_DRAFT = 0;
-    static readonly STATUS_ACTIVE = 1;
-    static readonly STATUS_COMPLETE = 2;
-    static readonly STATUS_WAITING_FOR_REVIEW = 3;
-    static readonly STATUS_IN_REVIEW = 4;
-
-    // Competency status.
-    static readonly REVIEW_STATUS_IDLE = 0;
-    static readonly REVIEW_STATUS_WAITING_FOR_REVIEW = 1;
-    static readonly REVIEW_STATUS_IN_REVIEW = 2;
+    protected static readonly ROOT_CACHE_KEY = 'mmaCompetency:';
 
     /**
      * Check if competencies are enabled in a certain site.
@@ -57,9 +47,8 @@ export class AddonCompetencyProvider {
         }
 
         return site.canUseAdvancedFeature('enablecompetencies') &&
-            !(site.isFeatureDisabled('CoreMainMenuDelegate_AddonCompetency') &&
-            site.isFeatureDisabled('CoreCourseOptionsDelegate_AddonCompetency') &&
-            site.isFeatureDisabled('CoreUserDelegate_AddonCompetency'));
+            !(site.isFeatureDisabled('CoreUserDelegate_AddonCompetency') &&
+            site.isFeatureDisabled('CoreCourseOptionsDelegate_AddonCompetency'));
     }
 
     /**
@@ -120,7 +109,7 @@ export class AddonCompetencyProvider {
      * @returns Cache key.
      */
     protected getLearningPlansCacheKey(userId: number): string {
-        return ROOT_CACHE_KEY + 'userplans:' + userId;
+        return `${AddonCompetencyProvider.ROOT_CACHE_KEY}userplans:${userId}`;
     }
 
     /**
@@ -130,7 +119,7 @@ export class AddonCompetencyProvider {
      * @returns Cache key.
      */
     protected getLearningPlanCacheKey(planId: number): string {
-        return ROOT_CACHE_KEY + 'learningplan:' + planId;
+        return `${AddonCompetencyProvider.ROOT_CACHE_KEY}learningplan:${planId}`;
     }
 
     /**
@@ -141,7 +130,7 @@ export class AddonCompetencyProvider {
      * @returns Cache key.
      */
     protected getCompetencyInPlanCacheKey(planId: number, competencyId: number): string {
-        return ROOT_CACHE_KEY + 'plancompetency:' + planId + ':' + competencyId;
+        return `${AddonCompetencyProvider.ROOT_CACHE_KEY}plancompetency:${planId}:${competencyId}`;
     }
 
     /**
@@ -153,7 +142,7 @@ export class AddonCompetencyProvider {
      * @returns Cache key.
      */
     protected getCompetencyInCourseCacheKey(courseId: number, competencyId: number, userId: number): string {
-        return ROOT_CACHE_KEY + 'coursecompetency:' + userId + ':' + courseId + ':' + competencyId;
+        return `${AddonCompetencyProvider.ROOT_CACHE_KEY}coursecompetency:${userId}:${courseId}:${competencyId}`;
     }
 
     /**
@@ -164,7 +153,7 @@ export class AddonCompetencyProvider {
      * @returns Cache key.
      */
     protected getCompetencySummaryCacheKey(competencyId: number, userId: number): string {
-        return ROOT_CACHE_KEY + 'competencysummary:' + userId + ':' + competencyId;
+        return `${AddonCompetencyProvider.ROOT_CACHE_KEY}competencysummary:${userId}:${competencyId}`;
     }
 
     /**
@@ -174,7 +163,7 @@ export class AddonCompetencyProvider {
      * @returns Cache key.
      */
     protected getCourseCompetenciesCacheKey(courseId: number): string {
-        return ROOT_CACHE_KEY + 'coursecompetencies:' + courseId;
+        return `${AddonCompetencyProvider.ROOT_CACHE_KEY}coursecompetencies:${courseId}`;
     }
 
     /**
@@ -421,7 +410,6 @@ export class AddonCompetencyProvider {
      *
      * @param userId ID of the user. If not defined, current user.
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateLearningPlans(userId?: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -435,7 +423,6 @@ export class AddonCompetencyProvider {
      *
      * @param planId ID of the plan.
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateLearningPlan(planId: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -449,7 +436,6 @@ export class AddonCompetencyProvider {
      * @param planId ID of the plan.
      * @param competencyId ID of the competency.
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateCompetencyInPlan(planId: number, competencyId: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -464,7 +450,6 @@ export class AddonCompetencyProvider {
      * @param competencyId ID of the competency.
      * @param userId ID of the user. If not defined, current user.
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateCompetencyInCourse(courseId: number, competencyId: number, userId?: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -479,7 +464,6 @@ export class AddonCompetencyProvider {
      * @param competencyId ID of the competency.
      * @param userId ID of the user. If not defined, current user.
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateCompetencySummary(competencyId: number, userId?: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -494,7 +478,6 @@ export class AddonCompetencyProvider {
      * @param courseId ID of the course.
      * @param userId ID of the user.
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateCourseCompetencies(courseId: number, userId?: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -525,7 +508,7 @@ export class AddonCompetencyProvider {
     async logCompetencyInPlanView(
         planId: number,
         competencyId: number,
-        planStatus: number,
+        planStatus: AddonCompetencyLearningPlanStatus,
         name?: string,
         userId?: number,
         siteId?: string,
@@ -543,7 +526,7 @@ export class AddonCompetencyProvider {
             typeExpected: 'boolean',
         };
 
-        const wsName = planStatus == AddonCompetencyProvider.STATUS_COMPLETE
+        const wsName = planStatus === AddonCompetencyLearningPlanStatus.COMPLETE
             ? 'core_competency_user_competency_plan_viewed'
             : 'core_competency_user_competency_viewed_in_plan';
 
@@ -614,11 +597,11 @@ export const AddonCompetency = makeSingleton(AddonCompetencyProvider);
 export type AddonCompetencyPlan = {
     name: string; // Name.
     description: string; // Description.
-    descriptionformat?: number; // Description format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
+    descriptionformat?: CoreTextFormat; // Description format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
     userid: number; // Userid.
     templateid: number; // Templateid.
     origtemplateid: number; // Origtemplateid.
-    status: number; // Status.
+    status: AddonCompetencyLearningPlanStatus; // Status.
     duedate: number; // Duedate.
     reviewerid: number; // Reviewerid.
     id: number; // Id.
@@ -658,7 +641,7 @@ export type AddonCompetencyPlan = {
 export type AddonCompetencyTemplate = {
     shortname: string; // Shortname.
     description: string; // Description.
-    descriptionformat?: number; // Description format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
+    descriptionformat?: CoreTextFormat; // Description format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
     duedate: number; // Duedate.
     visible: boolean; // Visible.
     contextid: number; // Contextid.
@@ -682,7 +665,7 @@ export type AddonCompetencyCompetency = {
     shortname: string; // Shortname.
     idnumber: string; // Idnumber.
     description: string; // Description.
-    descriptionformat: number; // Description format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
+    descriptionformat: CoreTextFormat; // Description format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
     sortorder: number; // Sortorder.
     parentid: number; // Parentid.
     path: string; // Path.
@@ -726,7 +709,7 @@ export type AddonCompetencyPathNode = {
 export type AddonCompetencyUserCompetency = {
     userid: number; // Userid.
     competencyid: number; // Competencyid.
-    status: number; // Status.
+    status: AddonCompetencyReviewStatus; // Status.
     reviewerid: number; // Reviewerid.
     proficiency: boolean; // Proficiency.
     grade: number; // Grade.
@@ -811,7 +794,7 @@ export type AddonCompetencyDataForUserCompetencySummaryWSResponse = {
  * Data returned by competency's competency_summary_exporter.
  */
 export type AddonCompetencySummary = {
-    linkedcourses: CoreCourseSummary; // Linkedcourses.
+    linkedcourses: CoreCourseSummaryExporterData[]; // Linkedcourses.
     relatedcompetencies: AddonCompetencyCompetency[]; // Relatedcompetencies.
     competency: AddonCompetencyCompetency;
     framework: AddonCompetencyFramework;
@@ -831,7 +814,7 @@ export type AddonCompetencyFramework = {
     shortname: string; // Shortname.
     idnumber: string; // Idnumber.
     description: string; // Description.
-    descriptionformat: number; // Description format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
+    descriptionformat: CoreTextFormat; // Description format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
     visible: boolean; // Visible.
     scaleid: number; // Scaleid.
     scaleconfiguration: string; // Scaleconfiguration.
@@ -905,7 +888,7 @@ type AddonCompetencyDataForUserCompetencySummaryInCourseWSParams = {
  */
 export type AddonCompetencyDataForUserCompetencySummaryInCourseWSResponse = {
     usercompetencysummary: AddonCompetencyDataForUserCompetencySummaryWSResponse;
-    course: CoreCourseSummary;
+    course: CoreCourseSummaryExporterData;
     coursemodules: AddonCompetencyCourseModuleInfo[]; // Coursemodules.
     plans: AddonCompetencyPlan[]; // @since 3.7. Plans.
     pluginbaseurl: string; // @since 3.7. Pluginbaseurl.

@@ -12,43 +12,33 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { APP_INITIALIZER, NgModule } from '@angular/core';
+import { NgModule, provideAppInitializer } from '@angular/core';
 import { Routes } from '@angular/router';
 
 import { CoreMainMenuTabRoutingModule } from '@features/mainmenu/mainmenu-tab-routing.module';
 import { AddonMessageOutputDelegate } from '@addons/messageoutput/services/messageoutput-delegate';
 import {
     AddonMessageOutputAirnotifierHandler,
-    AddonMessageOutputAirnotifierHandlerService,
 } from './services/handlers/messageoutput';
 import { AddonMessageOutputAirnotifier } from './services/airnotifier';
-import { CoreSharedModule } from '@/core/shared.module';
-import { AddonMessageOutputAirnotifierDevicesPage } from '@addons/messageoutput/airnotifier/pages/devices/devices';
+import { ADDON_MESSAGEOUTPUT_AIRNOTIFIER_PAGE_NAME } from './constants';
 
 const routes: Routes = [
     {
-        path: AddonMessageOutputAirnotifierHandlerService.PAGE_NAME,
-        component: AddonMessageOutputAirnotifierDevicesPage,
+        path: ADDON_MESSAGEOUTPUT_AIRNOTIFIER_PAGE_NAME,
+        loadComponent: () => import('./pages/devices/devices'),
     },
 ];
 
 @NgModule({
-    declarations: [
-        AddonMessageOutputAirnotifierDevicesPage,
-    ],
     imports: [
-        CoreSharedModule,
         CoreMainMenuTabRoutingModule.forChild(routes),
     ],
     providers: [
-        {
-            provide: APP_INITIALIZER,
-            multi: true,
-            useValue: () => {
-                AddonMessageOutputDelegate.registerHandler(AddonMessageOutputAirnotifierHandler.instance);
-                AddonMessageOutputAirnotifier.initialize();
-            },
-        },
+        provideAppInitializer(() => {
+            AddonMessageOutputDelegate.registerHandler(AddonMessageOutputAirnotifierHandler.instance);
+            AddonMessageOutputAirnotifier.initialize();
+        }),
     ],
 })
 export class AddonMessageOutputAirnotifierModule {}

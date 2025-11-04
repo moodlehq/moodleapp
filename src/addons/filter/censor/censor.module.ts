@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { APP_INITIALIZER, NgModule } from '@angular/core';
+import { NgModule, provideAppInitializer } from '@angular/core';
 
 import { CoreFilterDelegate } from '@features/filter/services/filter-delegate';
 import { AddonFilterCensorHandler } from './services/handlers/censor';
@@ -23,11 +23,9 @@ import { AddonFilterCensorHandler } from './services/handlers/censor';
     imports: [
     ],
     providers: [
-        {
-            provide: APP_INITIALIZER,
-            multi: true,
-            useValue: () => CoreFilterDelegate.registerHandler(AddonFilterCensorHandler.instance),
-        },
+        provideAppInitializer(() => {
+            CoreFilterDelegate.registerHandler(AddonFilterCensorHandler.instance);
+        }),
     ],
 })
 export class AddonFilterCensorModule {}

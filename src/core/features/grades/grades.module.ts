@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { APP_INITIALIZER, NgModule, Type } from '@angular/core';
+import { NgModule, Type, provideAppInitializer } from '@angular/core';
 import { Routes } from '@angular/router';
 import { CoreContentLinksDelegate } from '@features/contentlinks/services/contentlinks-delegate';
 import { CoreCourseIndexRoutingModule } from '@features/course/course-routing.module';
@@ -20,7 +20,7 @@ import { CoreCourseOptionsDelegate } from '@features/course/services/course-opti
 import { CoreMainMenuTabRoutingModule } from '@features/mainmenu/mainmenu-tab-routing.module';
 import { CoreUserDelegate } from '@features/user/services/user-delegate';
 import { PARTICIPANTS_PAGE_NAME } from '@features/user/constants';
-import { GRADES_PAGE_NAME, GRADES_PARTICIPANTS_PAGE_NAME } from './services/grades-helper';
+import { GRADES_PAGE_NAME, GRADES_PARTICIPANTS_PAGE_NAME } from './constants';
 import { CoreGradesCourseOptionHandler } from './services/handlers/course-option';
 import { CoreGradesOverviewLinkHandler } from './services/handlers/overview-link';
 import { CoreGradesUserHandler } from './services/handlers/user';
@@ -46,20 +46,47 @@ export async function getGradesServices(): Promise<Type<unknown>[]> {
     ];
 }
 
+const mobileRoutes: Routes = [
+    {
+        path: '',
+        loadComponent: () => import('@features/grades/pages/courses/courses'),
+    },
+    {
+        path: ':courseId',
+        loadComponent: () => import('@features/grades/pages/course/course'),
+    },
+];
+
+const tabletRoutes: Routes = [
+    {
+        path: '',
+        loadComponent: () => import('@features/grades/pages/courses/courses'),
+        loadChildren: () => [
+            {
+                path: ':courseId',
+                loadComponent: () => import('@features/grades/pages/course/course'),
+            },
+        ],
+    },
+];
+
 const mainMenuChildrenRoutes: Routes = [
     {
         path: GRADES_PAGE_NAME,
-        loadChildren: () => import('./grades-courses-lazy.module'),
+        loadChildren: () => [
+            ...conditionalRoutes(mobileRoutes, () => CoreScreen.isMobile),
+            ...conditionalRoutes(tabletRoutes, () => CoreScreen.isTablet),
+        ],
         data: { swipeManagerSource: 'courses' },
     },
     {
         path: `${CORE_COURSE_PAGE_NAME}/:courseId/${PARTICIPANTS_PAGE_NAME}/:userId/${GRADES_PAGE_NAME}`,
-        loadChildren: () => import('./grades-course-lazy.module'),
+        loadComponent: () => import('@features/grades/pages/course/course'),
     },
     ...conditionalRoutes([
         {
             path: `${CORE_COURSE_PAGE_NAME}/${CORE_COURSE_INDEX_PATH}/${GRADES_PARTICIPANTS_PAGE_NAME}/:userId`,
-            loadChildren: () => import('./grades-course-lazy.module'),
+            loadComponent: () => import('@features/grades/pages/course/course'),
             data: { swipeManagerSource: 'participants' },
         },
     ], () => CoreScreen.isMobile),
@@ -68,11 +95,18 @@ const mainMenuChildrenRoutes: Routes = [
 const courseIndexRoutes: Routes = [
     {
         path: GRADES_PAGE_NAME,
-        loadChildren: () => import('./grades-course-lazy.module'),
+        loadComponent: () => import('@features/grades/pages/course/course'),
     },
     {
         path: GRADES_PARTICIPANTS_PAGE_NAME,
-        loadChildren: () => import('./grades-course-participants-lazy.module'),
+        loadComponent: () => import('@features/user/pages/participants/participants'),
+        loadChildren: () => conditionalRoutes([
+            {
+                path: ':userId',
+                loadComponent: () => import('@features/grades/pages/course/course'),
+                data: { swipeManagerSource: 'participants' },
+            },
+        ], () => CoreScreen.isTablet),
     },
 ];
 
@@ -82,18 +116,14 @@ const courseIndexRoutes: Routes = [
         CoreCourseIndexRoutingModule.forChild({ children: courseIndexRoutes }),
     ],
     providers: [
-        {
-            provide: APP_INITIALIZER,
-            multi: true,
-            useValue: () => {
-                CoreUserDelegate.registerHandler(CoreGradesUserHandler.instance);
-                CoreContentLinksDelegate.registerHandler(CoreGradesReportLinkHandler.instance);
-                CoreContentLinksDelegate.registerHandler(CoreGradesUserLinkHandler.instance);
-                CoreContentLinksDelegate.registerHandler(CoreGradesOverviewLinkHandler.instance);
-                CoreCourseOptionsDelegate.registerHandler(CoreGradesCourseOptionHandler.instance);
-                CoreCourseOptionsDelegate.registerHandler(CoreGradesCourseParticipantsOptionHandler.instance);
-            },
-        },
+        provideAppInitializer(() => {
+            CoreUserDelegate.registerHandler(CoreGradesUserHandler.instance);
+            CoreContentLinksDelegate.registerHandler(CoreGradesReportLinkHandler.instance);
+            CoreContentLinksDelegate.registerHandler(CoreGradesUserLinkHandler.instance);
+            CoreContentLinksDelegate.registerHandler(CoreGradesOverviewLinkHandler.instance);
+            CoreCourseOptionsDelegate.registerHandler(CoreGradesCourseOptionHandler.instance);
+            CoreCourseOptionsDelegate.registerHandler(CoreGradesCourseParticipantsOptionHandler.instance);
+        }),
     ],
 })
 export class CoreGradesModule {}

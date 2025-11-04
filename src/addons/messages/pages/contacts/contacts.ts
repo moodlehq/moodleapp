@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Component, OnDestroy, OnInit, viewChild } from '@angular/core';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { CoreSites } from '@services/sites';
 import {
@@ -25,6 +25,7 @@ import { CoreSplitViewComponent } from '@components/split-view/split-view';
 import { ADDON_MESSAGES_CONTACT_REQUESTS_COUNT_EVENT, ADDON_MESSAGES_MEMBER_INFO_CHANGED_EVENT } from '@addons/messages/constants';
 import { CoreAlerts } from '@services/overlays/alerts';
 import { Translate } from '@singletons';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Page that displays contacts and contact requests.
@@ -33,10 +34,13 @@ import { Translate } from '@singletons';
     selector: 'page-addon-messages-contacts',
     templateUrl: 'contacts.html',
     styleUrl: '../../messages-common.scss',
+    imports: [
+        CoreSharedModule,
+    ],
 })
-export class AddonMessagesContactsPage implements OnInit, OnDestroy {
+export default class AddonMessagesContactsPage implements OnInit, OnDestroy {
 
-    @ViewChild(CoreSplitViewComponent) splitView!: CoreSplitViewComponent;
+    readonly splitView = viewChild.required(CoreSplitViewComponent);
 
     selected: 'confirmed' | 'requests' = 'confirmed';
     requestsBadge = '';
@@ -293,8 +297,9 @@ export class AddonMessagesContactsPage implements OnInit, OnDestroy {
         this.selectedUserId = userId;
 
         const path = CoreNavigator.getRelativePathToParent('/messages/contacts') + `discussion/user/${userId}`;
+        const splitView = this.splitView();
         CoreNavigator.navigate(path, {
-            reset: CoreScreen.isTablet && !!this.splitView && !this.splitView.isNested,
+            reset: CoreScreen.isTablet && !!splitView && !splitView.isNested,
         });
     }
 

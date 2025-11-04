@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { APP_INITIALIZER, NgModule } from '@angular/core';
+import { NgModule, provideAppInitializer } from '@angular/core';
 import { Routes } from '@angular/router';
 import { CoreContentLinksDelegate } from '@features/contentlinks/services/contentlinks-delegate';
 import { CoreCourseHelper } from '@features/course/services/course-helper';
@@ -31,12 +31,25 @@ import { AddonModScormPlayerLinkHandler } from './services/handlers/player-link'
 import { AddonModScormPluginFileHandler } from './services/handlers/pluginfile';
 import { AddonModScormPrefetchHandler } from './services/handlers/prefetch';
 import { AddonModScormSyncCronHandler } from './services/handlers/sync-cron';
-import { ADDON_MOD_SCORM_COMPONENT, ADDON_MOD_SCORM_PAGE_NAME } from './constants';
+import { ADDON_MOD_SCORM_COMPONENT_LEGACY, ADDON_MOD_SCORM_PAGE_NAME } from './constants';
 
 const routes: Routes = [
     {
         path: ADDON_MOD_SCORM_PAGE_NAME,
-        loadChildren: () => import('./scorm-lazy.module'),
+        loadChildren: () => [
+            {
+                path: ':courseId/:cmId',
+                loadComponent: () => import('./pages/index/index'),
+            },
+            {
+                path: ':courseId/:cmId/player',
+                loadComponent: () => import('./pages/player/player'),
+            },
+            {
+                path: ':courseId/:cmId/online-player',
+                loadComponent: () => import('./pages/online-player/online-player'),
+            },
+        ],
     },
 ];
 
@@ -50,22 +63,18 @@ const routes: Routes = [
             useValue: [OFFLINE_SITE_SCHEMA],
             multi: true,
         },
-        {
-            provide: APP_INITIALIZER,
-            multi: true,
-            useValue: () => {
-                CoreCourseModuleDelegate.registerHandler(AddonModScormModuleHandler.instance);
-                CoreCourseModulePrefetchDelegate.registerHandler(AddonModScormPrefetchHandler.instance);
-                CoreCronDelegate.register(AddonModScormSyncCronHandler.instance);
-                CoreContentLinksDelegate.registerHandler(AddonModScormGradeLinkHandler.instance);
-                CoreContentLinksDelegate.registerHandler(AddonModScormIndexLinkHandler.instance);
-                CoreContentLinksDelegate.registerHandler(AddonModScormListLinkHandler.instance);
-                CoreContentLinksDelegate.registerHandler(AddonModScormPlayerLinkHandler.instance);
-                CorePluginFileDelegate.registerHandler(AddonModScormPluginFileHandler.instance);
+        provideAppInitializer(() => {
+            CoreCourseModuleDelegate.registerHandler(AddonModScormModuleHandler.instance);
+            CoreCourseModulePrefetchDelegate.registerHandler(AddonModScormPrefetchHandler.instance);
+            CoreCronDelegate.register(AddonModScormSyncCronHandler.instance);
+            CoreContentLinksDelegate.registerHandler(AddonModScormGradeLinkHandler.instance);
+            CoreContentLinksDelegate.registerHandler(AddonModScormIndexLinkHandler.instance);
+            CoreContentLinksDelegate.registerHandler(AddonModScormListLinkHandler.instance);
+            CoreContentLinksDelegate.registerHandler(AddonModScormPlayerLinkHandler.instance);
+            CorePluginFileDelegate.registerHandler(AddonModScormPluginFileHandler.instance);
 
-                CoreCourseHelper.registerModuleReminderClick(ADDON_MOD_SCORM_COMPONENT);
-            },
-        },
+            CoreCourseHelper.registerModuleReminderClick(ADDON_MOD_SCORM_COMPONENT_LEGACY);
+        }),
     ],
 })
 export class AddonModScormModule {}

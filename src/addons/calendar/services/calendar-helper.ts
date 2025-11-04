@@ -26,13 +26,13 @@ import {
 } from './calendar';
 import { CoreConfig } from '@services/config';
 import { CoreObject } from '@singletons/object';
-import { CoreCourse } from '@features/course/services/course';
+import { CoreCourseModuleHelper } from '@features/course/services/course-module-helper';
 import { ContextLevel, CoreConstants } from '@/core/constants';
-import moment from 'moment-timezone';
+import { dayjs, Dayjs } from '@/core/utils/dayjs';
 import { makeSingleton } from '@singletons';
 import { AddonCalendarOfflineEventDBRecord } from './database/calendar-offline';
 import { CoreCategoryData } from '@features/courses/services/courses';
-import { CoreTimeUtils } from '@services/utils/time';
+import { CoreTime } from '@singletons/time';
 import { CoreReminders, CoreRemindersService } from '@features/reminders/services/reminders';
 import { CoreCourseModuleDelegate } from '@features/course/services/module-delegate';
 import {
@@ -44,6 +44,7 @@ import {
 import { AddonCalendarSyncInvalidateEvent } from './calendar-sync';
 import { REMINDERS_DISABLED, REMINDERS_DEFAULT_REMINDER_TIMEBEFORE } from '@features/reminders/constants';
 import { CorePromiseUtils } from '@singletons/promise-utils';
+import { DEFAULT_TEXT_FORMAT } from '@singletons/text';
 
 /**
  * Service that provides some features regarding lists of courses and categories.
@@ -131,8 +132,8 @@ export class AddonCalendarHelperProvider {
         const result = {};
 
         events.forEach((event) => {
-            const treatedDay = moment(event.timestart * 1000);
-            const endDay = moment((event.timestart + event.timeduration) * 1000);
+            let treatedDay = dayjs(event.timestart * 1000);
+            const endDay = dayjs((event.timestart + event.timeduration) * 1000);
 
             // Add the event to all the days it lasts.
             while (!treatedDay.isAfter(endDay, 'day')) {
@@ -147,7 +148,7 @@ export class AddonCalendarHelperProvider {
                 }
                 result[monthId][day].push(event);
 
-                treatedDay.add(1, 'day'); // Treat next day.
+                treatedDay = treatedDay.add(1, 'day'); // Treat next day.
             }
         });
 
@@ -171,7 +172,7 @@ export class AddonCalendarHelperProvider {
             repeatid: event.repeatid || 0,
             eventIcon: this.getEventIcon(event.eventtype),
             formattedType: AddonCalendar.getEventType(event),
-            format: 1,
+            format: DEFAULT_TEXT_FORMAT,
             visible: 1,
             offline: false,
             purpose: 'purpose' in event ? event.purpose : undefined,
@@ -183,7 +184,7 @@ export class AddonCalendarHelperProvider {
                 'icon' in event ? event.icon.iconurl : undefined,
             );
             eventFormatted.moduleIcon = eventFormatted.eventIcon;
-            eventFormatted.iconTitle = CoreCourse.translateModuleName(event.modulename);
+            eventFormatted.iconTitle = CoreCourseModuleHelper.translateModuleName(event.modulename);
         }
 
         eventFormatted.formattedType = AddonCalendar.getEventType(event);
@@ -244,7 +245,7 @@ export class AddonCalendarHelperProvider {
             timemodified: event.timecreated || 0,
             eventIcon: this.getEventIcon(event.eventtype),
             formattedType: event.eventtype,
-            format: 1,
+            format: DEFAULT_TEXT_FORMAT,
             visible: 1,
             offline: true,
             canedit: event.id < 0,
@@ -339,7 +340,7 @@ export class AddonCalendarHelperProvider {
             }
 
             if (formatted.timestamp) {
-                formatted.sublabel = CoreTimeUtils.userDate(formatted.timestamp * 1000, 'core.strftimedatetime');
+                formatted.sublabel = CoreTime.userDate(formatted.timestamp * 1000, 'core.strftimedatetime');
             }
 
             return formatted;
@@ -377,21 +378,21 @@ export class AddonCalendarHelperProvider {
     /**
      * Get the month "id".
      *
-     * @param moment Month moment.
+     * @param dayJS Month dayJS.
      * @returns The "id".
      */
-    getMonthId(moment: moment.Moment): string {
-        return `${moment.year()}#${moment.month() + 1}`;
+    getMonthId(dayJS: Dayjs): string {
+        return `${dayJS.year()}#${dayJS.month() + 1}`;
     }
 
     /**
      * Get the day "id".
      *
-     * @param moment Day moment.
+     * @param dayJS Day dayJS.
      * @returns The "id".
      */
-    getDayId(moment: moment.Moment): string {
-        return `${this.getMonthId(moment)}#${moment.date()}`;
+    getDayId(dayJS: Dayjs): string {
+        return `${this.getMonthId(dayJS)}#${dayJS.date()}`;
     }
 
     /**
@@ -415,13 +416,13 @@ export class AddonCalendarHelperProvider {
         startWeekDayStr = await CoreConfig.get(ADDON_CALENDAR_STARTING_WEEK_DAY, startWeekDayStr);
         const startWeekDay = parseInt(startWeekDayStr, 10);
 
-        const today = moment();
+        const today = dayjs();
         const isCurrentMonth = today.year() == year && today.month() == month - 1;
         const weeks: AddonCalendarWeek[] = [];
 
-        let date = moment({ year, month: month - 1, date: 1 });
+        let date = dayjs({ year, month: month - 1, date: 1 });
         for (let mday = 1; mday <= date.daysInMonth(); mday++) {
-            date = moment({ year, month: month - 1, date: mday });
+            date = dayjs({ year, month: month - 1, date: mday });
 
             // Add new week and calculate prepadding.
             if (!weeks.length || date.day() == startWeekDay) {
@@ -454,9 +455,9 @@ export class AddonCalendarHelperProvider {
                 // Added to match the type. And possibly unused.
                 popovertitle: '',
                 ispast: today.date() > date.date(),
-                seconds: date.seconds(),
-                minutes: date.minutes(),
-                hours: date.hours(),
+                seconds: date.second(),
+                minutes: date.minute(),
+                hours: date.hour(),
                 wday: date.weekday(),
                 year: year,
                 yday: date.dayOfYear(),
@@ -668,7 +669,7 @@ export class AddonCalendarHelperProvider {
 
             // Fetch months and days.
             fetchTimestarts.forEach((fetchTime) => {
-                const day = moment(fetchTime * 1000);
+                const day = dayjs(fetchTime * 1000);
 
                 const monthId = this.getMonthId(day);
                 if (!treatedMonths[monthId]) {
@@ -685,7 +686,7 @@ export class AddonCalendarHelperProvider {
                     ));
                 }
 
-                const dayId = monthId + '#' + day.date();
+                const dayId = `${monthId}#${day.date()}`;
                 if (!treatedDays[dayId]) {
                     // Dat not refetch or invalidated already, do it now.
                     treatedDays[dayId] = true;
@@ -704,7 +705,7 @@ export class AddonCalendarHelperProvider {
 
             // Invalidate months and days.
             invalidateTimestarts.forEach((fetchTime) => {
-                const day = moment(fetchTime * 1000);
+                const day = dayjs(fetchTime * 1000);
 
                 const monthId = this.getMonthId(day);
                 if (!treatedMonths[monthId]) {
@@ -714,7 +715,7 @@ export class AddonCalendarHelperProvider {
                     finalPromises.push(AddonCalendar.invalidateMonthlyEvents(day.year(), day.month() + 1, site.id));
                 }
 
-                const dayId = monthId + '#' + day.date();
+                const dayId = `${monthId}#${day.date()}`;
                 if (!treatedDays[dayId]) {
                     // Dat not refetch or invalidated already, do it now.
                     treatedDays[dayId] = true;

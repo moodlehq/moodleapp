@@ -14,6 +14,7 @@
 
 import { Component } from '@angular/core';
 import { AddonModWorkshopAssessmentStrategyBaseComponent } from '../../../classes/assessment-strategy-component';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Component for numerrors assessment strategy.
@@ -21,5 +22,8 @@ import { AddonModWorkshopAssessmentStrategyBaseComponent } from '../../../classe
 @Component({
     selector: 'addon-mod-workshop-assessment-strategy-numerrors',
     templateUrl: 'addon-mod-workshop-assessment-strategy-numerrors.html',
+    imports: [
+        CoreSharedModule,
+    ],
 })
 export class AddonModWorkshopAssessmentStrategyNumErrorsComponent extends AddonModWorkshopAssessmentStrategyBaseComponent { }

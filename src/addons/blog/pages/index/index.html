@@ -46,14 +46,14 @@
                 <div class="entry-subject flex ion-text-wrap ion-justify-content-between ion-align-items-center">
                     <h3>
                         <core-format-text [text]="entry.subject" [contextLevel]="contextLevel" [contextInstanceId]="contextInstanceId"
-                            [courseId]="entry.courseid" />
+                            [courseId]="entry.courseid" [sanitize]="entryHasOfflineData(entry)" />
                         @if (entry.userid === currentUserId && entry.publishTranslated === 'publishtonoone') {
                             <span class="entry-draft">
                                 <ion-badge color="warning"> {{ 'addon.blog.publishtonoone' | translate }} </ion-badge>
                             </span>
                         }
 
-                        @if (!getEntryId(entry) || entry.updatedOffline) {
+                        @if (entryHasOfflineData(entry)) {
                             <span class="entry-draft">
                                 <ion-badge color="light">
                                     <ion-icon name="fas-clock" [attr.aria-label]="'core.lastmodified' | translate" />
@@ -95,7 +95,8 @@
                 <div class="entry-summary" [collapsible-item]="64">
                     <div class="ion-margin-bottom">
                         <core-format-text [text]="entry.summary" [component]="component" [componentId]="getEntryId(entry)"
-                            [contextLevel]="contextLevel" [contextInstanceId]="contextInstanceId" [courseId]="entry.courseid" />
+                            [contextLevel]="contextLevel" [contextInstanceId]="contextInstanceId" [courseId]="entry.courseid"
+                            [sanitize]="entryHasOfflineData(entry)" />
                     </div>
 
                     @if (tagsEnabled && entry.tags && entry.tags!.length > 0) {
@@ -137,7 +138,7 @@
 
                 @if (getEntryId(entry) && commentsEnabled) {
                     <core-comments [component]="this.component" [itemId]="getEntryId(entry)" area="format_blog" [instanceId]="entry.userid"
-                        contextLevel="user" [showItem]="true" [courseId]="entry.courseid" />
+                        contextLevel="user" [showItem]="true" [courseId]="entry.courseid" [title]="entry.subject" />
                 }
 
             </div>

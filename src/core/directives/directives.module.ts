@@ -33,12 +33,11 @@ import { CoreCollapsibleItemDirective } from './collapsible-item';
 import { CoreCollapsibleFooterDirective } from './collapsible-footer';
 import { CoreContentDirective } from './content';
 import { CoreUpdateNonReactiveAttributesDirective } from './update-non-reactive-attributes';
-import { CoreUserTourDirective } from './user-tour';
 import { CoreIonDatetimeDirective } from './datetime';
 import { CoreReadingModeDirective } from './reading-mode';
 
 @NgModule({
-    declarations: [
+    imports: [
         CoreAutoFocusDirective,
         CoreAutoRowsDirective,
         CoreExternalContentDirective,
@@ -58,7 +57,6 @@ import { CoreReadingModeDirective } from './reading-mode';
         CoreCollapsibleFooterDirective,
         CoreContentDirective,
         CoreUpdateNonReactiveAttributesDirective,
-        CoreUserTourDirective,
         CoreIonDatetimeDirective,
         CoreReadingModeDirective,
     ],
@@ -82,7 +80,6 @@ import { CoreReadingModeDirective } from './reading-mode';
         CoreCollapsibleFooterDirective,
         CoreContentDirective,
         CoreUpdateNonReactiveAttributesDirective,
-        CoreUserTourDirective,
         CoreIonDatetimeDirective,
         CoreReadingModeDirective,
     ],

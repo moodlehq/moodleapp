@@ -16,6 +16,7 @@ import { CorePromisedValue } from '@classes/promised-value';
 import {
     CoreSitePlugins,
     CoreSitePluginsContent,
+    CoreSitePluginsDisplayInUserMenu,
     CoreSitePluginsPlugin,
     CoreSitePluginsUserHandlerData,
 } from '@features/siteplugins/services/siteplugins';
@@ -61,6 +62,14 @@ export class CoreSitePluginsUserProfileHandler extends CoreSitePluginsBaseHandle
      * @inheritdoc
      */
     async isEnabledForContext(context: CoreUserDelegateContext, courseId: number): Promise<boolean> {
+        if (this.handlerSchema.displayinusermenu === CoreSitePluginsDisplayInUserMenu.ONLY) {
+            return context === CoreUserDelegateContext.USER_MENU;
+        }
+
+        if (context === CoreUserDelegateContext.USER_MENU && this.handlerSchema.displayinusermenu !== undefined) {
+            return this.handlerSchema.displayinusermenu === CoreSitePluginsDisplayInUserMenu.YES;
+        }
+
         // Check if it's enabled for the course.
         return CoreSitePlugins.isHandlerEnabledForCourse(
             courseId,
@@ -108,6 +117,8 @@ export class CoreSitePluginsUserProfileHandler extends CoreSitePluginsBaseHandle
                             args,
                             initResult: this.initResult,
                             ptrEnabled: this.handlerSchema.ptrenabled,
+                            contextLevel: 'user',
+                            contextInstanceId: user.id,
                         },
                     },
                 );

@@ -12,16 +12,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { APP_INITIALIZER, NgModule, Type } from '@angular/core';
+import { NgModule, Type, provideAppInitializer } from '@angular/core';
 import { Routes } from '@angular/router';
 import { CoreMainMenuDelegate } from '@features/mainmenu/services/mainmenu-delegate';
 import { CoreMainMenuRoutingModule } from '../mainmenu/mainmenu-routing.module';
 import { CoreContentLinksDelegate } from '@features/contentlinks/services/contentlinks-delegate';
-import { CoreTagMainMenuHandler, CoreTagMainMenuHandlerService } from './services/handlers/mainmenu';
+import { CoreTagMainMenuHandler } from './services/handlers/mainmenu';
 import { CoreTagIndexLinkHandler } from './services/handlers/index-link';
 import { CoreTagSearchLinkHandler } from './services/handlers/search-link';
-import { CoreTagComponentsModule } from './components/components.module';
 import { CoreMainMenuTabRoutingModule } from '@features/mainmenu/mainmenu-tab-routing.module';
+import { CORE_TAG_MAIN_MENU_PAGE_NAME } from './constants';
 
 /**
  * Get tags services.
@@ -42,7 +42,7 @@ export async function getTagServices(): Promise<Type<unknown>[]> {
 
 const routes: Routes = [
     {
-        path: CoreTagMainMenuHandlerService.PAGE_NAME,
+        path: CORE_TAG_MAIN_MENU_PAGE_NAME,
         loadChildren: () => import('./tag-lazy.module'),
     },
 ];
@@ -51,18 +51,13 @@ const routes: Routes = [
     imports: [
         CoreMainMenuTabRoutingModule.forChild(routes),
         CoreMainMenuRoutingModule.forChild({ children: routes }),
-        CoreTagComponentsModule,
     ],
     providers: [
-        {
-            provide: APP_INITIALIZER,
-            multi: true,
-            useValue: () => {
-                CoreMainMenuDelegate.registerHandler(CoreTagMainMenuHandler.instance);
-                CoreContentLinksDelegate.registerHandler(CoreTagIndexLinkHandler.instance);
-                CoreContentLinksDelegate.registerHandler(CoreTagSearchLinkHandler.instance);
-            },
-        },
+        provideAppInitializer(() => {
+            CoreMainMenuDelegate.registerHandler(CoreTagMainMenuHandler.instance);
+            CoreContentLinksDelegate.registerHandler(CoreTagIndexLinkHandler.instance);
+            CoreContentLinksDelegate.registerHandler(CoreTagSearchLinkHandler.instance);
+        }),
     ],
 })
 export class CoreTagModule {}

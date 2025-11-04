@@ -12,9 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, ViewChild } from '@angular/core';
+import { Component, viewChild } from '@angular/core';
 import { CoreCourseModuleMainActivityPage } from '@features/course/classes/main-activity-page';
 import { AddonModGlossaryIndexComponent } from '../../components/index';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Page that displays a glossary.
@@ -22,9 +23,13 @@ import { AddonModGlossaryIndexComponent } from '../../components/index';
 @Component({
     selector: 'page-addon-mod-glossary-index',
     templateUrl: 'index.html',
+    imports: [
+        CoreSharedModule,
+        AddonModGlossaryIndexComponent,
+    ],
 })
-export class AddonModGlossaryIndexPage extends CoreCourseModuleMainActivityPage<AddonModGlossaryIndexComponent> {
+export default class AddonModGlossaryIndexPage extends CoreCourseModuleMainActivityPage<AddonModGlossaryIndexComponent> {
 
-    @ViewChild(AddonModGlossaryIndexComponent) activityComponent?: AddonModGlossaryIndexComponent;
+    readonly activityComponent = viewChild.required(AddonModGlossaryIndexComponent);
 
 }

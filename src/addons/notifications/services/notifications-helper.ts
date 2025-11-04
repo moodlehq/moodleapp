@@ -25,12 +25,12 @@ import {
     AddonNotificationsPreferencesNotification,
     AddonNotificationsPreferencesNotificationProcessor,
     AddonNotificationsPreferencesProcessor,
-    AddonNotificationsProvider,
 } from './notifications';
 import { CoreEvents } from '@singletons/events';
 import { AddonNotificationsPushNotification } from './handlers/push-click';
-import { CoreTimeUtils } from '@services/utils/time';
+import { CoreTime } from '@singletons/time';
 import { CorePromiseUtils } from '@singletons/promise-utils';
+import { ADDONS_NOTIFICATIONS_READ_CHANGED_EVENT } from '../constants';
 
 /**
  * Service that provides some helper functions for notifications.
@@ -113,7 +113,7 @@ export class AddonNotificationsHelperProvider {
             return false;
         }
 
-        const notifId = 'savedmessageid' in notification ? notification.savedmessageid || notification.id : notification.id;
+        const notifId = 'savedmessageid' in notification ? Number(notification.savedmessageid) || notification.id : notification.id;
         if (!notifId) {
             return false;
         }
@@ -122,7 +122,7 @@ export class AddonNotificationsHelperProvider {
 
         await CorePromiseUtils.ignoreErrors(AddonNotifications.markNotificationRead(notifId, siteId));
 
-        const time = CoreTimeUtils.timestamp();
+        const time = CoreTime.timestamp();
         if ('read' in notification) {
             notification.read = true;
             notification.timeread = time;
@@ -130,7 +130,7 @@ export class AddonNotificationsHelperProvider {
 
         await CorePromiseUtils.ignoreErrors(AddonNotifications.invalidateNotificationsList());
 
-        CoreEvents.trigger(AddonNotificationsProvider.READ_CHANGED_EVENT, {
+        CoreEvents.trigger(ADDONS_NOTIFICATIONS_READ_CHANGED_EVENT, {
             id: notifId,
             time,
         }, siteId);

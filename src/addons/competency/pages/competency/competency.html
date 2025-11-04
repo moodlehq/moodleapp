@@ -4,10 +4,12 @@
             <ion-back-button [text]="'core.back' | translate" />
         </ion-buttons>
         <ion-title>
-            <h1 *ngIf="competency">
-                <core-format-text [text]="competency.competency.competency.shortname" [contextLevel]="contextLevel"
-                    [contextInstanceId]="contextInstanceId" /> <small>{{ competency.competency.competency.idnumber }}</small>
-            </h1>
+            @if (competency) {
+                <h1>
+                    <core-format-text [text]="competency.competency.competency.shortname" [contextLevel]="contextLevel"
+                        [contextInstanceId]="contextInstanceId" /> <small>{{ competency.competency.competency.idnumber }}</small>
+                </h1>
+            }
         </ion-title>
     </ion-toolbar>
 </ion-header>
@@ -16,134 +18,167 @@
         <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}" />
     </ion-refresher>
     <core-loading [hideUntil]="competencyLoaded">
-        <ion-card *ngIf="user">
-            <ion-item class="ion-text-wrap">
-                <core-user-avatar [user]="user" slot="start" />
-                <ion-label>
-                    <p class="item-heading">{{ user.fullname }}</p>
-                </ion-label>
-            </ion-item>
-        </ion-card>
-
-        <ion-card *ngIf="competency">
-            <ion-item class="ion-text-wrap" *ngIf="competency.competency.competency.description">
-                <ion-label>
-                    <core-format-text [text]="competency.competency.competency.description" [contextLevel]="contextLevel"
-                        [contextInstanceId]="contextInstanceId" />
-                </ion-label>
-            </ion-item>
-            <ion-item class="ion-text-wrap only-links">
-                <ion-label>
-                    <p class="item-heading">{{ 'addon.competency.path' | translate }}</p>
-                    <p>
-                        <a *ngIf="competency.competency.comppath.showlinks" [href]="competencyFrameworkUrl" core-link>
-                            <core-format-text [text]="competency.competency.comppath.framework.name" [contextLevel]="contextLevel"
-                                [contextInstanceId]="contextInstanceId" />
-                        </a>
-                        <ng-container *ngIf="!competency.competency.comppath.showlinks">
-                            <core-format-text [text]="competency.competency.comppath.framework.name" [contextLevel]="contextLevel"
-                                [contextInstanceId]="contextInstanceId" />
-                        </ng-container>
-                        &nbsp;/&nbsp;
-                        <ng-container *ngFor="let ancestor of competency.competency.comppath.ancestors">
-                            <button *ngIf="competency.competency.comppath.showlinks" (click)="openCompetencySummary(ancestor.id)"
-                                class="as-link">
-                                <core-format-text [text]="ancestor.name" [contextLevel]="contextLevel"
-                                    [contextInstanceId]="contextInstanceId" />
-                            </button>
-                            <ng-container *ngIf="!competency.competency.comppath.showlinks">
-                                <core-format-text [text]="ancestor.name" [contextLevel]="contextLevel"
-                                    [contextInstanceId]="contextInstanceId" />
-                            </ng-container>
-                            <ng-container *ngIf="!ancestor.last">&nbsp;/&nbsp;</ng-container>
-                        </ng-container>
-                    </p>
-                </ion-label>
-            </ion-item>
-            <ion-item class="ion-text-wrap">
-                <ion-label>
-                    <p class="item-heading">{{ 'addon.competency.crossreferencedcompetencies' | translate }}</p>
-                    <p *ngIf="!competency.competency.hasrelatedcompetencies">
-                        {{ 'addon.competency.nocrossreferencedcompetencies' | translate }}
-                    </p>
-                    <ng-container *ngIf="competency.competency.hasrelatedcompetencies">
-                        <p *ngFor="let relatedcomp of competency.competency.relatedcompetencies">
-                            <button (click)="openCompetencySummary(relatedcomp.id)" class="as-link">
-                                <core-format-text [text]="relatedcomp.shortname" [contextLevel]="contextLevel"
-                                    [contextInstanceId]="contextInstanceId" /> - {{ relatedcomp.idnumber }}
-                            </button>
-                        </p>
-                    </ng-container>
-                </ion-label>
-            </ion-item>
-            <ion-item class="ion-text-wrap" *ngIf="coursemodules">
-                <ion-label>
-                    <p class="item-heading">{{ 'addon.competency.activities' | translate }}</p>
-                    <p *ngIf="coursemodules.length === 0">
-                        {{ 'addon.competency.noactivities' | translate }}
-                    </p>
-                    <ion-item class="ion-text-wrap" *ngFor="let activity of coursemodules" [href]="activity.url"
-                        [attr.aria-label]="activity.name" core-link capture="true">
-                        <core-mod-icon slot="start" [modicon]="activity.iconurl" [showAlt]="false" *ngIf="activity.iconurl"
-                            [colorize]="false" />
-                        <ion-label>
-                            <core-format-text [text]="activity.name" contextLevel="module" [contextInstanceId]="activity.id"
-                                [courseId]="courseId" />
-                        </ion-label>
-                    </ion-item>
-                </ion-label>
-            </ion-item>
-            <ng-container *ngIf="userCompetency">
-                <ion-item class="ion-text-wrap" *ngIf="competency.usercompetency && competency.usercompetency!.status">
-                    <ion-label>
-                        <p class="item-heading">{{ 'addon.competency.reviewstatus' | translate }}</p>
-                        <p>{{ competency.usercompetency!.statusname }}</p>
-                    </ion-label>
-                </ion-item>
+        @if (user) {
+            <ion-card>
                 <ion-item class="ion-text-wrap">
+                    <core-user-avatar [user]="user" slot="start" />
                     <ion-label>
-                        <p class="item-heading">{{ 'addon.competency.proficient' | translate }}</p>
-                    </ion-label>
-                    <ion-badge slot="end" color="success" *ngIf="userCompetency.proficiency">
-                        {{ 'core.yes' | translate }}
-                    </ion-badge>
-                    <ion-badge slot="end" color="danger" *ngIf="!userCompetency.proficiency">
-                        {{ 'core.no' | translate }}
-                    </ion-badge>
-                </ion-item>
-                <ion-item class="ion-text-wrap">
-                    <ion-label>
-                        <p class="item-heading">{{ 'addon.competency.rating' | translate }}</p>
-                    </ion-label>
-                    <ion-badge color="dark" slot="end">{{ userCompetency.gradename }}</ion-badge>
-                </ion-item>
-            </ng-container>
-        </ion-card>
-
-        <div *ngIf="competency">
-            <h2 class="ion-margin-horizontal">{{ 'addon.competency.evidence' | translate }}</h2>
-            <p class="ion-margin-horizontal" *ngIf="competency.evidence.length === 0">
-                {{ 'addon.competency.noevidence' | translate }}
-            </p>
-            <ion-card *ngFor="let evidence of competency.evidence">
-                <ion-item class="ion-text-wrap" *ngIf="evidence.actionuser" core-user-link [userId]="evidence.actionuser.id"
-                    [courseId]="courseId">
-                    <core-user-avatar [user]="evidence.actionuser" slot="start" [linkProfile]="false" />
-                    <ion-label>
-                        <p class="item-heading">{{ evidence.actionuser.fullname }}</p>
-                        <p>{{ evidence.timemodified * 1000 | coreFormatDate }}</p>
-                    </ion-label>
-                </ion-item>
-                <ion-item class="ion-text-wrap">
-                    <ion-label>
-                        <p>
-                            <ion-badge color="dark">{{ evidence.gradename }}</ion-badge>
-                        </p>
-                        <p class="ion-margin-top" *ngIf="evidence.description">{{ evidence.description }}</p>
-                        <blockquote *ngIf="evidence.note">{{ evidence.note }}</blockquote>
+                        <p class="item-heading">{{ user.fullname }}</p>
                     </ion-label>
                 </ion-item>
             </ion-card>
-        </div>
+        }
+
+        @if (competency) {
+            <ion-card>
+                @if (competency.competency.competency.description) {
+                    <ion-item class="ion-text-wrap">
+                        <ion-label>
+                            <core-format-text [text]="competency.competency.competency.description" [contextLevel]="contextLevel"
+                                [contextInstanceId]="contextInstanceId" />
+                        </ion-label>
+                    </ion-item>
+                }
+                <ion-item class="ion-text-wrap only-links">
+                    <ion-label>
+                        <p class="item-heading">{{ 'addon.competency.path' | translate }}</p>
+                        <p>
+                            @if (competency.competency.comppath.showlinks) {
+                                <a [href]="competencyFrameworkUrl" core-link>
+                                    <core-format-text [text]="competency.competency.comppath.framework.name" [contextLevel]="contextLevel"
+                                        [contextInstanceId]="contextInstanceId" />
+                                </a>
+                            } @else {
+                                <core-format-text [text]="competency.competency.comppath.framework.name" [contextLevel]="contextLevel"
+                                    [contextInstanceId]="contextInstanceId" />
+
+                            }
+                            &nbsp;/&nbsp;
+                            <ng-container *ngFor="let ancestor of competency.competency.comppath.ancestors">
+                                @if (competency.competency.comppath.showlinks) {
+                                    <button (click)="openCompetencySummary(ancestor.id)" class="as-link">
+                                        <core-format-text [text]="ancestor.name" [contextLevel]="contextLevel"
+                                            [contextInstanceId]="contextInstanceId" />
+                                    </button>
+                                } @else {
+                                    <core-format-text [text]="ancestor.name" [contextLevel]="contextLevel"
+                                        [contextInstanceId]="contextInstanceId" />
+                                }
+                                @if (!ancestor.last) {
+                                    &nbsp;/&nbsp;
+                                }
+                            </ng-container>
+                        </p>
+                    </ion-label>
+                </ion-item>
+                <ion-item class="ion-text-wrap">
+                    <ion-label>
+                        <p class="item-heading">{{ 'addon.competency.crossreferencedcompetencies' | translate }}</p>
+                        @if (!competency.competency.hasrelatedcompetencies) {
+                            <p>
+                                {{ 'addon.competency.nocrossreferencedcompetencies' | translate }}
+                            </p>
+                        } @else {
+                            <p *ngFor="let relatedcomp of competency.competency.relatedcompetencies">
+                                <button (click)="openCompetencySummary(relatedcomp.id)" class="as-link">
+                                    <core-format-text [text]="relatedcomp.shortname" [contextLevel]="contextLevel"
+                                        [contextInstanceId]="contextInstanceId" /> - {{ relatedcomp.idnumber }}
+                                </button>
+                            </p>
+
+                        }
+                    </ion-label>
+                </ion-item>
+                @if (coursemodules) {
+                    <ion-item class="ion-text-wrap">
+                        <ion-label>
+                            <p class="item-heading">{{ 'addon.competency.activities' | translate }}</p>
+                            @if (coursemodules.length === 0) {
+                                <p>
+                                    {{ 'addon.competency.noactivities' | translate }}
+                                </p>
+                            }
+                            <ion-item class="ion-text-wrap" *ngFor="let activity of coursemodules" [href]="activity.url"
+                                [attr.aria-label]="activity.name" core-link [capture]="true">
+                                @if (activity.iconurl) {
+                                    <core-mod-icon slot="start" [modicon]="activity.iconurl" [showAlt]="false" [colorize]="false" />
+                                }
+                                <ion-label>
+                                    <core-format-text [text]="activity.name" contextLevel="module" [contextInstanceId]="activity.id"
+                                        [courseId]="courseId" />
+                                </ion-label>
+                            </ion-item>
+                        </ion-label>
+                    </ion-item>
+                }
+                @if (userCompetency) {
+
+                    @if (competency.usercompetency && competency.usercompetency!.status) {
+                        <ion-item class="ion-text-wrap">
+                            <ion-label>
+                                <p class="item-heading">{{ 'addon.competency.reviewstatus' | translate }}</p>
+                                <p>{{ competency.usercompetency!.statusname }}</p>
+                            </ion-label>
+                        </ion-item>
+                    }
+                    <ion-item class="ion-text-wrap">
+                        <ion-label>
+                            <p class="item-heading">{{ 'addon.competency.proficient' | translate }}</p>
+                        </ion-label>
+                        @if (userCompetency.proficiency) {
+                            <ion-badge slot="end" color="success">
+                                {{ 'core.yes' | translate }}
+                            </ion-badge>
+                        } @else {
+                            <ion-badge slot="end" color="danger">
+                                {{ 'core.no' | translate }}
+                            </ion-badge>
+                        }
+                    </ion-item>
+                    <ion-item class="ion-text-wrap">
+                        <ion-label>
+                            <p class="item-heading">{{ 'addon.competency.rating' | translate }}</p>
+                        </ion-label>
+                        <ion-badge color="dark" slot="end">{{ userCompetency.gradename }}</ion-badge>
+                    </ion-item>
+
+                }
+            </ion-card>
+        }
+
+        @if (competency) {
+            <div>
+                <h2 class="ion-margin-horizontal">{{ 'addon.competency.evidence' | translate }}</h2>
+                @if (competency.evidence.length === 0) {
+                    <p class="ion-margin-horizontal">
+                        {{ 'addon.competency.noevidence' | translate }}
+                    </p>
+                }
+                <ion-card *ngFor="let evidence of competency.evidence">
+                    @if (evidence.actionuser) {
+                        <ion-item class="ion-text-wrap" core-user-link [userId]="evidence.actionuser.id" [courseId]="courseId">
+                            <core-user-avatar [user]="evidence.actionuser" slot="start" [linkProfile]="false" />
+                            <ion-label>
+                                <p class="item-heading">{{ evidence.actionuser.fullname }}</p>
+                                <p>{{ evidence.timemodified * 1000 | coreFormatDate }}</p>
+                            </ion-label>
+                        </ion-item>
+                    }
+                    <ion-item class="ion-text-wrap">
+                        <ion-label>
+                            <p>
+                                <ion-badge color="dark">{{ evidence.gradename }}</ion-badge>
+                            </p>
+                            @if (evidence.description) {
+                                <p class="ion-margin-top">{{ evidence.description }}</p>
+                            }
+                            @if (evidence.note) {
+                                <blockquote>{{ evidence.note }}</blockquote>
+                            }
+                        </ion-label>
+                    </ion-item>
+                </ion-card>
+            </div>
+        }
     </core-loading>
 </ion-content>

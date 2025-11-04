@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnDestroy, ViewChild, ElementRef, OnInit, Optional } from '@angular/core';
+import { Component, OnDestroy, ElementRef, OnInit, inject, viewChild } from '@angular/core';
 import { FileEntry } from '@awesome-cordova-plugins/file/ngx';
 import { FormControl } from '@angular/forms';
 import { CoreEvents, CoreEventObserver } from '@singletons/events';
@@ -48,12 +48,14 @@ import {
     ADDON_MOD_FORUM_ALL_PARTICIPANTS,
     ADDON_MOD_FORUM_AUTO_SYNCED,
     ADDON_MOD_FORUM_COMPONENT,
+    ADDON_MOD_FORUM_COMPONENT_LEGACY,
     ADDON_MOD_FORUM_NEW_DISCUSSION_EVENT,
 } from '../../constants';
-import { CoreCourseContentsPage } from '@features/course/pages/contents/contents';
+import CoreCourseContentsPage from '@features/course/pages/contents/contents';
 import { CoreLoadings } from '@services/overlays/loadings';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreAlerts } from '@services/overlays/alerts';
+import { CoreSharedModule } from '@/core/shared.module';
 
 type NewDiscussionData = {
     subject: string;
@@ -72,13 +74,17 @@ type NewDiscussionData = {
     selector: 'page-addon-mod-forum-new-discussion',
     templateUrl: 'new-discussion.html',
     styleUrl: 'new-discussion.scss',
+    imports: [
+        CoreSharedModule,
+        CoreEditorRichTextEditorComponent,
+    ],
 })
-export class AddonModForumNewDiscussionPage implements OnInit, OnDestroy, CanLeave {
+export default class AddonModForumNewDiscussionPage implements OnInit, OnDestroy, CanLeave {
 
-    @ViewChild('newDiscFormEl') formElement!: ElementRef;
-    @ViewChild(CoreEditorRichTextEditorComponent) messageEditor!: CoreEditorRichTextEditorComponent;
+    readonly formElement = viewChild<ElementRef>('newDiscFormEl');
+    readonly messageEditor = viewChild(CoreEditorRichTextEditorComponent);
 
-    component = ADDON_MOD_FORUM_COMPONENT;
+    component = ADDON_MOD_FORUM_COMPONENT_LEGACY;
     messageControl = new FormControl<string | null>(null);
     groupsLoaded = false;
     showGroups = false;
@@ -116,12 +122,11 @@ export class AddonModForumNewDiscussionPage implements OnInit, OnDestroy, CanLea
     protected forceLeave = false;
     protected initialGroupId?: number;
     protected logView: () => void;
+    protected route = inject(ActivatedRoute);
+    protected splitView = inject(CoreSplitViewComponent, { optional: true });
+    protected courseContentsPage = inject(CoreCourseContentsPage, { optional: true });
 
-    constructor(
-        protected route: ActivatedRoute,
-        @Optional() protected splitView: CoreSplitViewComponent,
-        @Optional() protected courseContentsPage?: CoreCourseContentsPage,
-    ) {
+    constructor() {
         this.logView = CoreTime.once(() => {
             CoreAnalytics.logEvent({
                 type: CoreAnalyticsEventType.VIEW_ITEM,
@@ -357,7 +362,7 @@ export class AddonModForumNewDiscussionPage implements OnInit, OnDestroy, CanLea
         // We first check if the user can post to all the groups.
         try {
             response = await AddonModForum.canAddDiscussionToAll(this.forumId, { cmId: this.cmId });
-        } catch (error) {
+        } catch {
             // The call failed, let's assume he can't.
             response = {
                 status: false,
@@ -513,7 +518,7 @@ export class AddonModForumNewDiscussionPage implements OnInit, OnDestroy, CanLea
             this.newDiscussion.message = null;
             this.newDiscussion.files = [];
             this.newDiscussion.postToAllGroups = false;
-            this.messageEditor.clearText();
+            this.messageEditor()?.clearText();
             this.originalData = CoreUtils.clone(this.newDiscussion);
         } else {
             CoreNavigator.back();
@@ -591,7 +596,7 @@ export class AddonModForumNewDiscussionPage implements OnInit, OnDestroy, CanLea
             }
 
             CoreForms.triggerFormSubmittedEvent(
-                this.formElement,
+                this.formElement(),
                 !!discussionIds,
                 CoreSites.getCurrentSiteId(),
             );
@@ -622,10 +627,10 @@ export class AddonModForumNewDiscussionPage implements OnInit, OnDestroy, CanLea
 
             await Promise.all(promises);
 
-            CoreForms.triggerFormCancelledEvent(this.formElement, CoreSites.getCurrentSiteId());
+            CoreForms.triggerFormCancelledEvent(this.formElement(), CoreSites.getCurrentSiteId());
 
             this.returnToDiscussions();
-        } catch (error) {
+        } catch {
             // Cancelled.
         }
     }
@@ -668,8 +673,9 @@ export class AddonModForumNewDiscussionPage implements OnInit, OnDestroy, CanLea
         // Delete the local files from the tmp folder.
         CoreFileUploader.clearTmpFiles(this.newDiscussion.files);
 
-        if (this.formElement) {
-            CoreForms.triggerFormCancelledEvent(this.formElement, CoreSites.getCurrentSiteId());
+        const formElement = this.formElement();
+        if (formElement) {
+            CoreForms.triggerFormCancelledEvent(formElement, CoreSites.getCurrentSiteId());
         }
 
         return true;
@@ -718,7 +724,7 @@ class AddonModForumNewDiscussionDiscussionsSwipeManager extends AddonModForumDis
     protected getSelectedItemPathFromRoute(route: ActivatedRouteSnapshot | ActivatedRoute): string | null {
         const params = CoreNavigator.getRouteParams(route);
 
-        return `${this.getSource().DISCUSSIONS_PATH_PREFIX}new/${params.timeCreated}`;
+        return `${this.getSource().discussionsPathPrefix}new/${params.timeCreated}`;
     }
 
 }

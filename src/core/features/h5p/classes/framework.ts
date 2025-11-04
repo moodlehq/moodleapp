@@ -58,6 +58,7 @@ import { CoreFilepool } from '@services/filepool';
 import { CoreFileHelper } from '@services/file-helper';
 import { CoreUrl, CoreUrlPartNames } from '@singletons/url';
 import { CorePromiseUtils } from '@singletons/promise-utils';
+import { CoreArray } from '@singletons/array';
 
 /**
  * Equivalent to Moodle's implementation of H5PFrameworkInterface.
@@ -353,7 +354,7 @@ export class CoreH5PFramework {
 
         try {
             return await this.contentTables[siteId].getOne({ foldername: folderName });
-        } catch (error) {
+        } catch {
             // Cannot get folder name, the h5p file was probably deleted. Just use the URL.
             return await this.contentTables[siteId].getOne({ fileurl: fileUrl });
         }
@@ -416,7 +417,7 @@ export class CoreH5PFramework {
             if (records && records[0]) {
                 return this.parseLibDBData(records[0]);
             }
-        } catch (error) {
+        } catch {
             // Library not found.
         }
 
@@ -498,7 +499,7 @@ export class CoreH5PFramework {
             const library = await this.getLibrary(machineName, majorVersion, minorVersion, siteId);
 
             return library.id || undefined;
-        } catch (error) {
+        } catch {
             return undefined;
         }
     }
@@ -648,21 +649,13 @@ export class CoreH5PFramework {
                         'l1.majorversion AS majorVersion, l1.minorversion AS minorVersion, ' +
                         'l1.patchversion AS patchVersion, l1.addto AS addTo, ' +
                         'l1.preloadedjs AS preloadedJs, l1.preloadedcss AS preloadedCss ' +
-                    'FROM ' + LIBRARIES_TABLE_NAME + ' l1 ' +
-                    'LEFT JOIN ' + LIBRARIES_TABLE_NAME + ' l2 ON l1.machinename = l2.machinename AND (' +
+                    `FROM ${LIBRARIES_TABLE_NAME} l1 ` +
+                    `LEFT JOIN ${LIBRARIES_TABLE_NAME} l2 ON l1.machinename = l2.machinename AND (` +
                         'l1.majorversion < l2.majorversion OR (l1.majorversion = l2.majorversion AND ' +
                         'l1.minorversion < l2.minorversion)) ' +
                     'WHERE l1.addto IS NOT NULL AND l2.machinename IS NULL';
 
-        const result = await db.execute(query);
-
-        const addons: CoreH5PLibraryAddonData[] = [];
-
-        for (let i = 0; i < result.rows.length; i++) {
-            addons.push(this.parseLibAddonData(result.rows.item(i)));
-        }
-
-        return addons;
+        return await db.getRecordsSql<CoreH5PLibraryAddonData>(query);
     }
 
     /**
@@ -697,7 +690,7 @@ export class CoreH5PFramework {
             disable: null,
             folderName: contentData.foldername,
             title: libData.title,
-            slug: CoreH5PCore.slugify(libData.title) + '-' + contentData.id,
+            slug: `${CoreH5PCore.slugify(libData.title)}-${contentData.id}`,
             filtered: contentData.filtered,
             libraryId: libData.id,
             libraryName: libData.machinename,
@@ -738,14 +731,19 @@ export class CoreH5PFramework {
 
         const db = await CoreSites.getSiteDb(siteId);
 
-        let query = 'SELECT hl.id AS libraryId, hl.machinename AS machineName, ' +
-                        'hl.majorversion AS majorVersion, hl.minorversion AS minorVersion, ' +
-                        'hl.patchversion AS patchVersion, hl.preloadedcss AS preloadedCss, ' +
-                        'hl.preloadedjs AS preloadedJs, hcl.dropcss AS dropCss, ' +
-                        'hcl.dependencytype as dependencyType ' +
-                    'FROM ' + CONTENTS_LIBRARIES_TABLE_NAME + ' hcl ' +
-                    'JOIN ' + LIBRARIES_TABLE_NAME + ' hl ON hcl.libraryid = hl.id ' +
-                    'WHERE hcl.h5pid = ?';
+        let query = `SELECT
+            hl.id AS libraryId,
+            hl.machinename AS machineName,
+            hl.majorversion AS majorVersion,
+            hl.minorversion AS minorVersion,
+            hl.patchversion AS patchVersion,
+            hl.preloadedcss AS preloadedCss,
+            hl.preloadedjs AS preloadedJs,
+            hcl.dropcss AS dropCss,
+            hcl.dependencytype as dependencyType
+        FROM ${CONTENTS_LIBRARIES_TABLE_NAME} hcl
+        JOIN ${LIBRARIES_TABLE_NAME} hl ON hcl.libraryid = hl.id
+        WHERE hcl.h5pid = ?`;
 
         const queryArgs: (string | number)[] = [];
         queryArgs.push(id);
@@ -757,17 +755,9 @@ export class CoreH5PFramework {
 
         query += ' ORDER BY hcl.weight';
 
-        const result = await db.execute(query, queryArgs);
+        const dependencies = await db.getRecordsSql<CoreH5PContentDependencyData>(query, queryArgs);
 
-        const dependencies: {[machineName: string]: CoreH5PContentDependencyData} = {};
-
-        for (let i = 0; i < result.rows.length; i++) {
-            const dependency = result.rows.item(i);
-
-            dependencies[dependency.machineName] = dependency;
-        }
-
-        return dependencies;
+        return CoreArray.toObject(dependencies, 'machineName');
     }
 
     /**
@@ -809,11 +799,16 @@ export class CoreH5PFramework {
         };
 
         // Now get the dependencies.
-        const sql = 'SELECT hl.id, hl.machinename, hl.majorversion, hl.minorversion, hll.dependencytype ' +
-                'FROM ' + LIBRARY_DEPENDENCIES_TABLE_NAME + ' hll ' +
-                'JOIN ' + LIBRARIES_TABLE_NAME + ' hl ON hll.requiredlibraryid = hl.id ' +
-                'WHERE hll.libraryid = ? ' +
-                'ORDER BY hl.id ASC';
+        const sql = `SELECT
+            hl.id,
+            hl.machinename,
+            hl.majorversion,
+            hl.minorversion,
+            hll.dependencytype
+        FROM ${LIBRARY_DEPENDENCIES_TABLE_NAME} hll
+        JOIN ${LIBRARIES_TABLE_NAME} hl ON hll.requiredlibraryid = hl.id
+        WHERE hll.libraryid = ?
+        ORDER BY hl.id ASC`;
 
         const sqlParams = [
             library.id,
@@ -821,18 +816,17 @@ export class CoreH5PFramework {
 
         const db = await CoreSites.getSiteDb(siteId);
 
-        const result = await db.execute(sql, sqlParams);
+        const dependencies = await db.getRecordsSql<LibraryDependency>(sql, sqlParams);
 
-        for (let i = 0; i < result.rows.length; i++) {
-            const dependency: LibraryDependency = result.rows.item(i);
-            const key = dependency.dependencytype + 'Dependencies';
+        dependencies.forEach((dependency) => {
+            const key = `${dependency.dependencytype}Dependencies`;
 
             libraryData[key].push({
                 machineName: dependency.machinename,
                 majorVersion: dependency.majorversion,
                 minorVersion: dependency.minorversion,
             });
-        }
+        });
 
         return libraryData;
     }

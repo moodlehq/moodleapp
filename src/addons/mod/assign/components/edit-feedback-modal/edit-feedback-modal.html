@@ -1,7 +1,7 @@
 <ion-header>
     <ion-toolbar>
         <ion-title>
-            <h1>{{ plugin.name }}</h1>
+            <h1>{{'core.gradenoun' | translate}}</h1>
         </ion-title>
         <ion-buttons slot="end">
             <ion-button fill="clear" (click)="closeModal()" [ariaLabel]="'core.close' | translate">
@@ -11,8 +11,146 @@
     </ion-toolbar>
 </ion-header>
 <ion-content>
-    <form name="addon-mod_assign-edit-feedback-form" *ngIf="userId && plugin" #editFeedbackForm>
-        <addon-mod-assign-feedback-plugin [assign]="assign" [submission]="submission" [userId]="userId" [plugin]="plugin" [edit]="true" />
-        <ion-button expand="block" (click)="done($event)">{{ 'core.done' | translate }}</ion-button>
-    </form>
+    <core-loading [hideUntil]="loaded">
+        @if (gradeInfo) {
+            <form name="addon-mod_assign-edit-feedback-form" #editFeedbackForm>
+                @if (grade.method === 'simple'){
+                    @if (!grade.scale) {
+                        <!-- Numeric grade.
+                        Use a text input because otherwise we cannot read the value if it has an invalid character. -->
+                        <ion-item class="ion-text-wrap">
+                            @if (!grade.disabled) {
+                                <ion-input name="grade" type="text" [(ngModel)]="grade.grade" min="0" [max]="gradeInfo.grade"
+                                    [lang]="grade.lang" [label]="'addon.mod_assign.gradeoutof' | translate: {$a: gradeInfo.grade}"
+                                    labelPlacement="stacked"
+                                    [helperText]="grade.disabled ? ('addon.mod_assign.gradelocked' | translate) : null" />
+                            }
+                        </ion-item>
+                    } @else {
+                        <!-- Grade using a scale. -->
+                        <ion-item class="ion-text-wrap">
+                            <ion-select name="grade" [(ngModel)]="grade.grade" interface="action-sheet" [disabled]="grade.disabled"
+                                [cancelText]="'core.cancel' | translate" [interfaceOptions]="{header: 'core.gradenoun' | translate}">
+                                <p class="item-heading" slot="label">{{ 'core.gradenoun' | translate }}</p>
+                                <ion-select-option *ngFor="let grade of grade.scale" [value]="grade.value">
+                                    {{grade.label}}
+                                </ion-select-option>
+                            </ion-select>
+                        </ion-item>
+                    }
+                }
+
+                <!-- Outcomes. -->
+                <ion-item class="ion-text-wrap" *ngFor="let outcome of gradeInfo.outcomes">
+                    @if (outcome.itemNumber) {
+                        <ion-select name="outcome" [(ngModel)]="outcome.selectedId" interface="action-sheet"
+                            [disabled]="!!gradeInfo.disabled" [cancelText]="'core.cancel' | translate"
+                            [interfaceOptions]="{header: outcome.name }">
+                            <p class="item-heading" slot="label">{{ outcome.name }}</p>
+                            <ion-select-option *ngFor="let grade of outcome.options" [value]="grade.value">
+                                {{grade.label}}
+                            </ion-select-option>
+                        </ion-select>
+                    } @else {
+                        <p>{{ outcome.selected }}</p>
+                    }
+                </ion-item>
+
+                <!-- Assign grade if it wasn't released to gradebook. -->
+                @if (gradeInfo && grade.unreleasedGrade !== undefined) {
+                    <ion-item class="ion-text-wrap">
+                        <ion-label>
+                            <p class="item-heading">{{ 'addon.mod_assign.currentassigngrade' | translate }}</p>
+                            @if (grade.method !== 'simple' || !grade.scale) {
+                                <p>{{ grade.unreleasedGrade}} / {{ gradeInfo.grade }}</p>
+                            }
+                            @if (grade.method === 'simple' && grade.scale) {
+                                <p>{{ grade.unreleasedGrade }}</p>
+                            }
+                        </ion-label>
+                    </ion-item>
+                }
+
+                <!-- Gradebook grade for simple grading. -->
+                @if (grade.method === 'simple') {
+                    <ion-item class="ion-text-wrap">
+                        <ion-label>
+                            <p class="item-heading">{{ 'addon.mod_assign.currentgrade' | translate }}</p>
+                            <p class="core-grading-summary-grade">
+                                @if (grade.gradebookGrade) {
+                                    @if (grade.penalty) {
+                                        <ion-icon name="fas-triangle-exclamation" color="danger" aria-hidden="true" />
+                                    }
+                                    <span>
+                                        @if (grade.scale) {
+                                            {{ grade.scale[grade.gradebookGrade].label }}
+                                        } @else {
+                                            {{ grade.gradebookGrade }}
+                                        }
+                                    </span>
+                                } @else {
+                                    -
+                                }
+                            </p>
+                            @if (grade.penalty) {
+                                <p class="core-grading-summary-penalty">
+                                    {{ grade.penalty }}
+                                </p>
+                            }
+                        </ion-label>
+                    </ion-item>
+                }
+
+                @if (feedback) {
+                    <addon-mod-assign-feedback-plugin *ngFor="let plugin of feedback.plugins" [assign]="assign"
+                        [submission]="userSubmission" [userId]="submitId" [plugin]="plugin" [canEdit]="true" [edit]="true" />
+                }
+
+                <!--- Apply grade to all team members. -->
+                @if (assign.teamsubmission) {
+                    <ion-item class="ion-text-wrap">
+                        <ion-toggle name="applyToAll" [(ngModel)]="grade.applyToAll">
+                            <p class="item-heading">{{ 'addon.mod_assign.groupsubmissionsettings' | translate }}</p>
+                            <p>{{ 'addon.mod_assign.applytoteam' | translate }}</p>
+                        </ion-toggle>
+                    </ion-item>
+                }
+
+                <!-- Attempt status. -->
+                @if (assign.maxattempts !== 1) {
+                    <ion-item class="ion-text-wrap">
+                        <ion-label>
+                            <p class="item-heading">{{ 'addon.mod_assign.attemptsettings' | translate }}</p>
+                            @if (assign.maxattempts === unlimitedAttempts) {
+                                <p>
+                                    {{ 'addon.mod_assign.outof' | translate :
+                                {'$a': {'current': currentAttemptNumber, 'total': maxAttemptsText} } }}
+                                </p>
+                            } @else {
+                                <p>
+                                    {{ 'addon.mod_assign.outof' | translate :
+                                {'$a': {'current': currentAttemptNumber, 'total': assign.maxattempts} } }}
+                                </p>
+                            }
+                            <p>
+                                {{ 'addon.mod_assign.attemptreopenmethod' | translate }}:
+                                {{ 'addon.mod_assign.attemptreopenmethod_' + assign.attemptreopenmethod | translate }}
+                            </p>
+                        </ion-label>
+                    </ion-item>
+                    @if (allowAddAttempt) {
+                        <ion-item>
+                            <ion-toggle name="addAttempt" [(ngModel)]="grade.addAttempt">
+                                <p>{{ 'addon.mod_assign.addattempt' | translate }}</p>
+                            </ion-toggle>
+                        </ion-item>
+                    }
+                }
+
+                <ion-button expand="block" (click)="submitGrade()" type="submit">
+                    {{ 'core.gradeverb' | translate }}
+                </ion-button>
+            </form>
+        }
+    </core-loading>
 </ion-content>

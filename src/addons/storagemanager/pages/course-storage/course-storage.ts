@@ -13,8 +13,12 @@
 // limitations under the License.
 
 import { CoreConstants, DownloadStatus } from '@/core/constants';
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, OnDestroy, OnInit } from '@angular/core';
-import { CORE_COURSE_ALL_COURSES_CLEARED, CORE_COURSE_ALL_SECTIONS_ID } from '@features/course/constants';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, OnDestroy, OnInit, inject } from '@angular/core';
+import {
+    CORE_COURSE_ALL_COURSES_CLEARED,
+    CORE_COURSE_ALL_SECTIONS_ID,
+    COURSE_STATUS_CHANGED_EVENT,
+} from '@features/course/constants';
 import { CoreCourse, sectionContentIsModule } from '@features/course/services/course';
 import {
     CoreCourseHelper,
@@ -37,6 +41,8 @@ import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreAlerts } from '@services/overlays/alerts';
 import { CoreErrorHelper } from '@services/error-helper';
+import { CoreSharedModule } from '@/core/shared.module';
+import { CoreCourseDownloadStatusHelper } from '@features/course/services/course-download-status-helper';
 
 /**
  * Page that displays the amount of file storage used by each activity on the course, and allows
@@ -47,8 +53,11 @@ import { CoreErrorHelper } from '@services/error-helper';
     templateUrl: 'course-storage.html',
     styleUrl: 'course-storage.scss',
     changeDetection: ChangeDetectionStrategy.OnPush,
+    imports: [
+        CoreSharedModule,
+    ],
 })
-export class AddonStorageManagerCourseStoragePage implements OnInit, OnDestroy {
+export default class AddonStorageManagerCourseStoragePage implements OnInit, OnDestroy {
 
     courseId!: number;
     title = '';
@@ -76,8 +85,10 @@ export class AddonStorageManagerCourseStoragePage implements OnInit, OnDestroy {
     protected moduleStatusObserver?: CoreEventObserver;
     protected isDestroyed = false;
     protected isGuest = false;
+    protected element: HTMLElement = inject(ElementRef).nativeElement;
+    protected changeDetectorRef = inject(ChangeDetectorRef);
 
-    constructor(protected elementRef: ElementRef, protected changeDetectorRef: ChangeDetectorRef) {
+    constructor() {
         // Refresh the enabled flags if site is updated.
         this.siteUpdatedObserver = CoreEvents.on(CoreEvents.SITE_UPDATED, () => {
             this.downloadCourseEnabled = !CoreCourses.isDownloadCourseDisabledInSite();
@@ -135,7 +146,7 @@ export class AddonStorageManagerCourseStoragePage implements OnInit, OnDestroy {
             });
 
             CoreDom.scrollToElement(
-                this.elementRef.nativeElement,
+                this.element,
                 `#addons-course-storage-${initialSectionId}`,
                 { addYAxis: -10 },
             );
@@ -193,7 +204,7 @@ export class AddonStorageManagerCourseStoragePage implements OnInit, OnDestroy {
         }
 
         // Listen for changes in course status.
-        this.courseStatusObserver = CoreEvents.on(CoreEvents.COURSE_STATUS_CHANGED, (data) => {
+        this.courseStatusObserver = CoreEvents.on(COURSE_STATUS_CHANGED_EVENT, (data) => {
             if (data.courseId === this.courseId || data.courseId === CORE_COURSE_ALL_COURSES_CLEARED) {
                 this.updateCourseStatus(data.status);
             }
@@ -217,7 +228,7 @@ export class AddonStorageManagerCourseStoragePage implements OnInit, OnDestroy {
             });
         } else {
             // No download, this probably means that the app was closed while downloading. Set previous status.
-            const status = await CoreCourse.setCoursePreviousStatus(this.courseId);
+            const status = await CoreCourseDownloadStatusHelper.setCoursePreviousStatus(this.courseId);
 
             this.updateCourseStatus(status);
         }
@@ -530,7 +541,7 @@ export class AddonStorageManagerCourseStoragePage implements OnInit, OnDestroy {
         // We are currently marking as not downloaded if size is 0 but we should take into account that
         // resources without files can be downloaded and cached.
 
-        CoreCourse.setCourseStatus(this.courseId, DownloadStatus.DOWNLOADABLE_NOT_DOWNLOADED);
+        CoreCourseDownloadStatusHelper.setCourseStatus(this.courseId, DownloadStatus.DOWNLOADABLE_NOT_DOWNLOADED);
     }
 
     /**
@@ -738,6 +749,8 @@ export class AddonStorageManagerCourseStoragePage implements OnInit, OnDestroy {
             }
 
             CoreAlerts.showError(error, { default: Translate.instant('core.course.errordownloadingcourse') });
+        } finally {
+            this.changeDetectorRef.markForCheck();
         }
     }
 

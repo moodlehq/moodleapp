@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, viewChild } from '@angular/core';
 import { Subscription } from 'rxjs';
 
 import { CoreSites } from '@services/sites';
@@ -20,7 +20,10 @@ import { CoreEventObserver } from '@singletons/events';
 import { CoreTabsOutletComponent, CoreTabsOutletTab } from '@components/tabs-outlet/tabs-outlet';
 import { CoreMainMenuHomeDelegate, CoreMainMenuHomeHandlerToDisplay } from '../../services/home-delegate';
 import { CoreArray } from '@singletons/array';
-import { CoreMainMenuHomeHandlerService } from '@features/mainmenu/services/handlers/mainmenu';
+import { CoreSharedModule } from '@/core/shared.module';
+import { CoreSiteLogoComponent } from '../../../../components/site-logo/site-logo';
+import { CoreMainMenuUserButtonComponent } from '../../components/user-menu-button/user-menu-button';
+import { MAIN_MENU_HOME_PAGE_NAME } from '@features/mainmenu/constants';
 
 /**
  * Page that displays the Home.
@@ -28,10 +31,15 @@ import { CoreMainMenuHomeHandlerService } from '@features/mainmenu/services/hand
 @Component({
     selector: 'page-core-mainmenu-home',
     templateUrl: 'home.html',
+    imports: [
+        CoreSharedModule,
+        CoreSiteLogoComponent,
+        CoreMainMenuUserButtonComponent,
+    ],
 })
-export class CoreMainMenuHomePage implements OnInit {
+export default class CoreMainMenuHomePage implements OnInit {
 
-    @ViewChild(CoreTabsOutletComponent) tabsComponent?: CoreTabsOutletComponent;
+    readonly tabsComponent = viewChild(CoreTabsOutletComponent);
 
     siteName = '';
     tabs: CoreTabsOutletTab[] = [];
@@ -65,12 +73,13 @@ export class CoreMainMenuHomePage implements OnInit {
             }
 
             return {
-                page: `/main/${CoreMainMenuHomeHandlerService.PAGE_NAME}/${handler.page}`,
+                page: `/main/${MAIN_MENU_HOME_PAGE_NAME}/${handler.page}`,
                 pageParams: handler.pageParams,
                 title: handler.title,
                 class: handler.class,
                 icon: handler.icon,
                 badge: handler.badge,
+                enabled: handler.enabled ?? true,
             };
         });
 
@@ -96,14 +105,14 @@ export class CoreMainMenuHomePage implements OnInit {
      * User entered the page.
      */
     ionViewDidEnter(): void {
-        this.tabsComponent?.ionViewDidEnter();
+        this.tabsComponent()?.ionViewDidEnter();
     }
 
     /**
      * User left the page.
      */
     ionViewDidLeave(): void {
-        this.tabsComponent?.ionViewDidLeave();
+        this.tabsComponent()?.ionViewDidLeave();
     }
 
 }

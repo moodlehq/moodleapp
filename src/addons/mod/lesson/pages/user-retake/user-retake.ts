@@ -33,9 +33,10 @@ import {
 import { AddonModLessonAnswerData, AddonModLessonHelper } from '../../services/lesson-helper';
 import { CoreTime } from '@singletons/time';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
-import { ADDON_MOD_LESSON_COMPONENT } from '../../constants';
+import { ADDON_MOD_LESSON_COMPONENT_LEGACY } from '../../constants';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreAlerts } from '@services/overlays/alerts';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Page that displays a retake made by a certain user.
@@ -44,10 +45,13 @@ import { CoreAlerts } from '@services/overlays/alerts';
     selector: 'page-addon-mod-lesson-user-retake',
     templateUrl: 'user-retake.html',
     styleUrl: 'user-retake.scss',
+    imports: [
+        CoreSharedModule,
+    ],
 })
-export class AddonModLessonUserRetakePage implements OnInit {
+export default class AddonModLessonUserRetakePage implements OnInit {
 
-    component = ADDON_MOD_LESSON_COMPONENT;
+    component = ADDON_MOD_LESSON_COMPONENT_LEGACY;
     lesson?: AddonModLessonLessonWSData; // The lesson the retake belongs to.
     courseId!: number; // Course ID the lesson belongs to.
     selectedRetake?: number; // The retake to see.

@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { CoreConstants, ModPurpose } from '@/core/constants';
 import { Injectable, Type } from '@angular/core';
 import { CoreContentLinksHelper } from '@features/contentlinks/services/contentlinks-helper';
 import { CoreModuleHandlerBase } from '@features/course/classes/module-base-handler';
@@ -27,8 +26,11 @@ import { AddonModUrl } from '../url';
 import { AddonModUrlHelper } from '../url-helper';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 import { CoreUrl } from '@singletons/url';
-import { CoreMimetypeUtils } from '@services/utils/mimetype';
-import { ADDON_MOD_URL_ADDON_NAME, ADDON_MOD_URL_MODNAME, ADDON_MOD_URL_PAGE_NAME } from '../../constants';
+import { CoreMimetype } from '@singletons/mimetype';
+import { ADDON_MOD_URL_COMPONENT, ADDON_MOD_URL_MODNAME, ADDON_MOD_URL_PAGE_NAME } from '../../constants';
+import { ModFeature, ModArchetype, ModPurpose, ModResourceDisplay } from '@addons/mod/constants';
+import { CoreCourseModuleHelper } from '@features/course/services/course-module-helper';
+import { CoreSites } from '@services/sites';
 
 /**
  * Handler to support url modules.
@@ -36,21 +38,21 @@ import { ADDON_MOD_URL_ADDON_NAME, ADDON_MOD_URL_MODNAME, ADDON_MOD_URL_PAGE_NAM
 @Injectable({ providedIn: 'root' })
 export class AddonModUrlModuleHandlerService extends CoreModuleHandlerBase implements CoreCourseModuleHandler {
 
-    name = ADDON_MOD_URL_ADDON_NAME;
+    name = ADDON_MOD_URL_COMPONENT;
     modName = ADDON_MOD_URL_MODNAME;
     protected pageName = ADDON_MOD_URL_PAGE_NAME;
 
     supportedFeatures = {
-        [CoreConstants.FEATURE_MOD_ARCHETYPE]: CoreConstants.MOD_ARCHETYPE_RESOURCE,
-        [CoreConstants.FEATURE_GROUPS]: false,
-        [CoreConstants.FEATURE_GROUPINGS]: false,
-        [CoreConstants.FEATURE_MOD_INTRO]: true,
-        [CoreConstants.FEATURE_COMPLETION_TRACKS_VIEWS]: true,
-        [CoreConstants.FEATURE_GRADE_HAS_GRADE]: false,
-        [CoreConstants.FEATURE_GRADE_OUTCOMES]: false,
-        [CoreConstants.FEATURE_BACKUP_MOODLE2]: true,
-        [CoreConstants.FEATURE_SHOW_DESCRIPTION]: true,
-        [CoreConstants.FEATURE_MOD_PURPOSE]: ModPurpose.MOD_PURPOSE_CONTENT,
+        [ModFeature.MOD_ARCHETYPE]: ModArchetype.RESOURCE,
+        [ModFeature.GROUPS]: false,
+        [ModFeature.GROUPINGS]: false,
+        [ModFeature.MOD_INTRO]: true,
+        [ModFeature.COMPLETION_TRACKS_VIEWS]: true,
+        [ModFeature.GRADE_HAS_GRADE]: false,
+        [ModFeature.GRADE_OUTCOMES]: false,
+        [ModFeature.BACKUP_MOODLE2]: true,
+        [ModFeature.SHOW_DESCRIPTION]: true,
+        [ModFeature.MOD_PURPOSE]: ModPurpose.CONTENT,
     };
 
     /**
@@ -66,7 +68,7 @@ export class AddonModUrlModuleHandlerService extends CoreModuleHandlerBase imple
         const openUrl = async (module: CoreCourseModuleData, courseId: number): Promise<void> => {
             await this.logView(module);
 
-            CoreCourse.storeModuleViewed(courseId, module.id);
+            CoreCourseModuleHelper.storeModuleViewed(courseId, module.id);
 
             const mainFile = await this.getModuleMainFile(module);
             if (!mainFile) {
@@ -77,7 +79,7 @@ export class AddonModUrlModuleHandlerService extends CoreModuleHandlerBase imple
         };
 
         const handlerData: CoreCourseModuleHandlerData = {
-            icon: CoreCourse.getModuleIconSrc(module.modname, module.modicon),
+            icon: CoreCourseModuleHelper.getModuleIconSrc(module.modname, module.modicon),
             title: module.name,
             class: 'addon-mod_url-handler',
             showDownloadButton: false,
@@ -135,17 +137,17 @@ export class AddonModUrlModuleHandlerService extends CoreModuleHandlerBase imple
             image = image.substring(2).replace(/-[0-9]+$/, '');
 
             // In case we get an extension, try to get the type.
-            image = CoreMimetypeUtils.getExtensionType(image) ?? image;
+            image = CoreMimetype.getExtensionType(image) ?? image;
 
-            icon = CoreMimetypeUtils.getFileIconForType(image);
+            icon = CoreMimetype.getFileIconForType(image, CoreSites.getCurrentSite());
         } else {
             const mainFile = await this.getModuleMainFile(module);
 
-            icon = mainFile? AddonModUrl.guessIcon(mainFile.fileurl) : undefined;
+            icon = mainFile ? AddonModUrl.guessIcon(mainFile.fileurl) : undefined;
         }
 
         // Calculate the icon to use.
-        return CoreCourse.getModuleIconSrc(module.modname, module.modicon, icon);
+        return CoreCourseModuleHelper.getModuleIconSrc(module.modname, module.modicon, icon);
     }
 
     /**
@@ -169,7 +171,7 @@ export class AddonModUrlModuleHandlerService extends CoreModuleHandlerBase imple
                 module,
                 undefined,
                 undefined,
-                true,
+                false,
                 false,
                 undefined,
                 'url',
@@ -218,8 +220,8 @@ export class AddonModUrlModuleHandlerService extends CoreModuleHandlerBase imple
                 const url = await CorePromiseUtils.ignoreErrors(AddonModUrl.getUrl(module.course, module.id));
                 const displayType = AddonModUrl.getFinalDisplayType(url);
 
-                return displayType === CoreConstants.RESOURCELIB_DISPLAY_OPEN ||
-                    displayType === CoreConstants.RESOURCELIB_DISPLAY_POPUP;
+                return displayType === ModResourceDisplay.OPEN ||
+                    displayType === ModResourceDisplay.POPUP;
             }
         } catch {
             return false;

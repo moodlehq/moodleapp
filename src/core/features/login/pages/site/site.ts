@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
+import { Component, OnInit, ElementRef, inject, viewChild } from '@angular/core';
 import { FormBuilder, FormGroup, ValidatorFn, AbstractControl, ValidationErrors } from '@angular/forms';
 
 import { CoreNetwork } from '@services/network';
@@ -51,6 +51,7 @@ import { CoreLoadings } from '@services/overlays/loadings';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreCountries } from '@singletons/countries';
 import { CoreAlerts } from '@services/overlays/alerts';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Site (url) chooser when adding a new site.
@@ -59,10 +60,13 @@ import { CoreAlerts } from '@services/overlays/alerts';
     selector: 'page-core-login-site',
     templateUrl: 'site.html',
     styleUrls: ['site.scss', '../../login.scss'],
+    imports: [
+        CoreSharedModule,
+    ],
 })
-export class CoreLoginSitePage implements OnInit {
+export default class CoreLoginSitePage implements OnInit {
 
-    @ViewChild('siteFormEl') formElement?: ElementRef;
+    readonly formElement = viewChild<ElementRef>('siteFormEl');
 
     siteForm!: FormGroup;
     fixedSites?: CoreLoginSiteInfoExtended[];
@@ -79,7 +83,7 @@ export class CoreLoginSitePage implements OnInit {
     siteFinderSettings!: CoreLoginSiteFinderSettings;
     appName = CoreConstants.CONFIG.appname;
 
-    constructor(protected formBuilder: FormBuilder) {}
+    protected formBuilder = inject(FormBuilder);
 
     /**
      * @inheritdoc
@@ -222,7 +226,7 @@ export class CoreLoginSitePage implements OnInit {
             const alias = this.siteFinderSettings.displayalias && site.alias ? site.alias : '';
 
             // Set title with parenthesis if both name and alias are present.
-            site.title = name && alias ? name + ' (' + alias + ')' : name + alias;
+            site.title = name && alias ? `${name} (${alias})` : name + alias;
 
             const country = this.siteFinderSettings.displaycountry && site.countrycode ?
                 CoreCountries.getCountryName(site.countrycode) : '';
@@ -230,7 +234,7 @@ export class CoreLoginSitePage implements OnInit {
                 site.city : '';
 
             // Separate location with hiphen if both country and city are present.
-            site.location = city && country ? city + ' - ' + country : city + country;
+            site.location = city && country ? `${city} - ${country}` : city + country;
 
             if (CoreSites.hasDefaultImage(site) && this.siteFinderSettings.defaultimageurl) {
                 site.imageurl = this.siteFinderSettings.defaultimageurl;
@@ -375,7 +379,7 @@ export class CoreLoginSitePage implements OnInit {
 
             await CoreSites.newSite(data.siteUrl, data.token, data.privateToken);
 
-            CoreForms.triggerFormSubmittedEvent(this.formElement, true);
+            CoreForms.triggerFormSubmittedEvent(this.formElement(), true);
 
             await CoreNavigator.navigateToSiteHome();
 
@@ -402,7 +406,7 @@ export class CoreLoginSitePage implements OnInit {
         try {
             await CoreSites.checkApplication(siteCheck.config);
 
-            CoreForms.triggerFormSubmittedEvent(this.formElement, true);
+            CoreForms.triggerFormSubmittedEvent(this.formElement(), true);
 
             CoreNavigator.navigate('/login/credentials', {
                 params: { siteCheck },
@@ -628,7 +632,7 @@ export class CoreLoginSitePage implements OnInit {
         // Now display the error.
         error.error = CoreErrorHelper.addTextToError(
             error.error,
-            '<br><br>' + Translate.instant('core.login.youcanstillconnectwithcredentials'),
+            `<br><br>${Translate.instant('core.login.youcanstillconnectwithcredentials')}`,
         );
 
         CoreCustomURLSchemes.treatHandleCustomURLError(error, customURL, 'CoreLoginSitePage');

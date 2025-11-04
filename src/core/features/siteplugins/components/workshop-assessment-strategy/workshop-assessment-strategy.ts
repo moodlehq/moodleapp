@@ -17,8 +17,9 @@ import { toBoolean } from '@/core/transforms/boolean';
 import { AddonWorkshopAssessmentStrategyDelegate } from '@addons/mod/workshop/services/assessment-strategy-delegate';
 import { AddonModWorkshopGetAssessmentFormFieldsParsedData } from '@addons/mod/workshop/services/workshop';
 import { AddonModWorkshopSubmissionAssessmentWithFormData } from '@addons/mod/workshop/services/workshop-helper';
+import { getModWorkshopComponentModules } from '@addons/mod/workshop/workshop.module';
 import { Component, OnInit, Input } from '@angular/core';
-import { CoreCompileHtmlComponentModule } from '@features/compile/components/compile-html/compile-html.module';
+import { CoreCompileHtmlComponent } from '@features/compile/components/compile-html/compile-html';
 import { CoreSitePluginsCompileInitComponent } from '@features/siteplugins/classes/compile-init-component';
 
 /**
@@ -28,10 +29,9 @@ import { CoreSitePluginsCompileInitComponent } from '@features/siteplugins/class
     selector: 'core-siteplugins-workshop-assessment-strategy',
     templateUrl: 'core-siteplugins-workshop-assessment-strategy.html',
     styles: [':host { display: contents; }'],
-    standalone: true,
     imports: [
         CoreSharedModule,
-        CoreCompileHtmlComponentModule,
+        CoreCompileHtmlComponent,
     ],
 })
 export class CoreSitePluginsWorkshopAssessmentStrategyComponent extends CoreSitePluginsCompileInitComponent implements OnInit {
@@ -48,7 +48,7 @@ export class CoreSitePluginsWorkshopAssessmentStrategyComponent extends CoreSite
     /**
      * @inheritdoc
      */
-    ngOnInit(): void {
+    async ngOnInit(): Promise<void> {
         // Pass the input and output data to the component.
         this.jsData.workshopId = this.workshopId;
         this.jsData.assessment = this.assessment;
@@ -56,6 +56,8 @@ export class CoreSitePluginsWorkshopAssessmentStrategyComponent extends CoreSite
         this.jsData.selectedValues = this.selectedValues;
         this.jsData.fieldErrors = this.fieldErrors;
         this.jsData.strategy = this.strategy;
+
+        this.extraImports = await getModWorkshopComponentModules();
 
         this.getHandlerData(AddonWorkshopAssessmentStrategyDelegate.getHandlerName(this.strategy));
     }

@@ -15,11 +15,12 @@
 import { FormControl, Validators } from '@angular/forms';
 import { Component } from '@angular/core';
 
-import { CoreTimeUtils } from '@services/utils/time';
+import { CoreTime } from '@singletons/time';
 import { CoreUtils } from '@singletons/utils';
 import { AuthEmailSignupProfileField } from '@features/login/services/login-helper';
 import { CoreUserProfileField } from '@features/user/services/user';
 import { CoreUserProfileFieldBaseComponent } from '@features/user/classes/base-profilefield-component';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Directive to render a datetime user profile field.
@@ -27,6 +28,9 @@ import { CoreUserProfileFieldBaseComponent } from '@features/user/classes/base-p
 @Component({
     selector: 'addon-user-profile-field-datetime',
     templateUrl: 'addon-user-profile-field-datetime.html',
+    imports: [
+        CoreSharedModule,
+    ],
 })
 export class AddonUserProfileFieldDatetimeComponent extends CoreUserProfileFieldBaseComponent<string | undefined> {
 
@@ -75,8 +79,8 @@ export class AddonUserProfileFieldDatetimeComponent extends CoreUserProfileField
             this.max = field.param2;
         }
 
-        this.min = this.min || CoreTimeUtils.getDatetimeDefaultMin();
-        this.max = this.max || CoreTimeUtils.getDatetimeDefaultMax();
+        this.min = this.min || CoreTime.getDatetimeDefaultMin();
+        this.max = this.max || CoreTime.getDatetimeDefaultMax();
     }
 
     /**

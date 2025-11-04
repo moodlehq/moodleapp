@@ -12,31 +12,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { APP_INITIALIZER, NgModule } from '@angular/core';
+import { NgModule, provideAppInitializer } from '@angular/core';
 
-import { CoreSharedModule } from '@/core/shared.module';
 import { CoreQuestionDelegate } from '@features/question/services/question-delegate';
-import { AddonQtypeDdwtosComponent } from './component/ddwtos';
 import { AddonQtypeDdwtosHandler } from './services/handlers/ddwtos';
 
 @NgModule({
-    declarations: [
-        AddonQtypeDdwtosComponent,
-    ],
-    imports: [
-        CoreSharedModule,
-    ],
     providers: [
-        {
-            provide: APP_INITIALIZER,
-            multi: true,
-            useValue: () => {
-                CoreQuestionDelegate.registerHandler(AddonQtypeDdwtosHandler.instance);
-            },
-        },
-    ],
-    exports: [
-        AddonQtypeDdwtosComponent,
+        provideAppInitializer(() => {
+            CoreQuestionDelegate.registerHandler(AddonQtypeDdwtosHandler.instance);
+        }),
     ],
 })
 export class AddonQtypeDdwtosModule {}

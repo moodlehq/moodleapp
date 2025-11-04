@@ -1,8 +1,8 @@
 {
     "app_id": "br.edu.ufr.ava",
     "appname": "AVA UFR",
-    "versioncode": 50006,
-    "versionname": "5.0.6",
+    "versioncode": 51000,
+    "versionname": "5.1.0",
     "cache_update_frequency_usually": 420000,
     "cache_update_frequency_often": 1200000,
     "cache_update_frequency_sometimes": 3600000,
@@ -87,5 +87,6 @@
             ]
         }
     },
-    "clearIABSessionWhenAutoLogin": "android"
+    "clearIABSessionWhenAutoLogin": "android",
+    "collapsibleItemsExpanded": false
 }

@@ -18,7 +18,7 @@ import { CoreSites } from '@services/sites';
 import {
     CoreCoursesMyCoursesUpdatedEventData,
     CoreCourses,
-    CoreCourseSummaryData,
+    CoreCourseSummaryExporterData,
 } from '@features/courses/services/courses';
 import {
     CoreCourseSearchedDataWithExtraInfoAndOptions,
@@ -31,7 +31,7 @@ import { CoreBlockBaseComponent } from '@features/block/classes/base-block-compo
 import { CoreUtils } from '@singletons/utils';
 import { CoreSite } from '@classes/sites/site';
 import { CoreSharedModule } from '@/core/shared.module';
-import { CoreCoursesComponentsModule } from '@features/courses/components/components.module';
+import { CoreCoursesCourseListItemComponent } from '@features/courses/components/course-list-item/course-list-item';
 import {
     CORE_COURSES_MY_COURSES_UPDATED_EVENT,
     CoreCoursesMyCoursesUpdatedEventAction,
@@ -45,10 +45,9 @@ import { CorePromiseUtils } from '@singletons/promise-utils';
 @Component({
     selector: 'addon-block-recentlyaccessedcourses',
     templateUrl: 'addon-block-recentlyaccessedcourses.html',
-    standalone: true,
     imports: [
         CoreSharedModule,
-        CoreCoursesComponentsModule,
+        CoreCoursesCourseListItemComponent,
     ],
 })
 export class AddonBlockRecentlyAccessedCoursesComponent extends CoreBlockBaseComponent implements OnInit, OnDestroy {
@@ -63,8 +62,7 @@ export class AddonBlockRecentlyAccessedCoursesComponent extends CoreBlockBaseCom
     protected fetchContentDefaultError = 'Error getting recent courses data.';
 
     constructor() {
-        super('AddonBlockRecentlyAccessedCoursesComponent');
-
+        super();
         this.site = CoreSites.getRequiredCurrentSite();
     }
 
@@ -141,7 +139,7 @@ export class AddonBlockRecentlyAccessedCoursesComponent extends CoreBlockBaseCom
         const showCategories = this.block.configsRecord && this.block.configsRecord.displaycategories &&
             this.block.configsRecord.displaycategories.value == '1';
 
-        let recentCourses: CoreCourseSummaryData[] = [];
+        let recentCourses: CoreCourseSummaryExporterData[] = [];
         try {
             recentCourses = await CoreCourses.getRecentCourses();
         } catch {
@@ -219,7 +217,7 @@ export class AddonBlockRecentlyAccessedCoursesComponent extends CoreBlockBaseCom
 }
 
 type AddonBlockRecentlyAccessedCourse =
-    (Omit<CoreCourseSummaryData, 'visible'> & CoreCourseSearchedDataWithExtraInfoAndOptions) |
+    (Omit<CoreCourseSummaryExporterData, 'visible'> & CoreCourseSearchedDataWithExtraInfoAndOptions) |
     (CoreEnrolledCourseDataWithOptions & {
         categoryname?: string; // Category name,
     });

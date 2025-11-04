@@ -56,10 +56,10 @@ core-user-menu-button {
 }
 
 ion-tab-button {
-    color: var(--ion-text-color-step-400);
+    color: var(--color);
 
     &.tab-selected {
-        color: var(--dark);
+        color: var(--color-selected);
         background: var(--background-selected);
     }
 
@@ -84,91 +84,109 @@ ion-tab-button {
     ion-icon.core-tab-badge {
         color: var(--core-bottom-tabs-badge-color);
         padding: 3px 6px 2px;
-        @include position(8px, null, null, calc(50% + 6px));
         min-width: 12px;
         font-size: #{dynamic-font(8px)};
         font-weight: normal;
         box-sizing: border-box;
         position: absolute;
         z-index: 1;
+        @include position(8px, null, null, calc(50% + 6px));
     }
 }
 
-ion-tabs.placement-bottom {
-    ion-tab-button {
-        border-top: 4px solid transparent;
-        border-bottom: 4px solid transparent;
+ion-tabs {
+    core-loading {
+        --loading-placeholder-gap: 12px;
 
-        &.tab-selected {
-            border-top-color: var(--core-tab-border-color-active);
-        }
+        --loading-placeholder-padding: 4px;
+        --loading-placeholder-margin: 0px;
+        --loading-placeholder-element-radius: 100%;
 
-        ion-icon.core-tab-icon {
-            margin-bottom: var(--network-margin-bottom);
-            transition: margin 500ms ease-in-out, transform 300ms ease-in-out;
-        }
-
-        ion-icon.core-tab-badge,
-        ion-badge.core-tab-badge {
-            top: 8px;
-        }
+        --loading-placeholder-element-width: 44px;
+        --loading-placeholder-element-height: 44px;
+        --loading-placeholder-element-column-width: 44px;
     }
 
-    @if ($core-always-show-main-menu) {
-        ion-tab-bar {
-            height: var(--menutabbar-size) !important;
-            visibility: visible !important;
-            transform: translateY(0) !important;
+    &.placement-bottom {
+        core-loading {
+            --loading-placeholder-align-content: flex-start;
+            --loading-placeholder-justify: space-around;
+            --loading-placeholder-max-height: 52px;
         }
-    } @else {
-        &.tabshidden ion-tab-bar {
-            pointer-events: none;
-
-            ion-tab-button {
-                height: auto;
-            }
-        }
-    }
-}
-
-ion-tabs.placement-side {
-    flex-direction: row;
-
-    ion-tab-bar {
-        order: -1;
-        width: var(--menutabbar-size);
-        height: calc(100% - var(--ion-safe-area-top) - var(--ion-safe-area-bottom));
-        flex-direction: column;
-        @include border-end(var(--border));
-        border-top: 0;
-        justify-content: flex-start;
-
-        @include padding(var(--ion-safe-area-top), 0px, var(--ion-safe-area-bottom), var(--ion-safe-area-left));
 
         ion-tab-button {
-            --padding-start: 0;
-            --padding-end: 0;
-            border-left: 4px solid transparent;
-            border-right: 4px solid transparent;
+            border-top: 4px solid transparent;
+            border-bottom: 4px solid transparent;
 
             &.tab-selected {
-                border-left-color: var(--core-tab-border-color-active);
+                border-top-color: var(--core-bottom-tabs-border-color-active);
             }
 
-            ion-badge.core-tab-badge {
-                @include position(null, 1px, null, auto);
+            ion-icon.core-tab-icon {
+                margin-bottom: var(--network-margin-bottom);
+                transition: margin 500ms ease-in-out, transform 300ms ease-in-out;
             }
-        }
-
-
-        ion-tab-button, core-user-menu-button {
-            width: 100%;
-            min-height: calc(var(--menutabbar-size) - 8px);
-            flex: 0;
 
             ion-icon.core-tab-badge,
             ion-badge.core-tab-badge {
-                top: calc(50% - 20px);
+                top: 8px;
+            }
+        }
+
+        @if ($core-always-show-main-menu) {
+            ion-tab-bar {
+                height: var(--menutabbar-size) !important;
+                visibility: visible !important;
+                transform: translateY(0) !important;
+            }
+        } @else {
+            &.tabshidden ion-tab-bar {
+                pointer-events: none;
+                height: 0px;
+                border: 0px;
+            }
+        }
+    }
+
+    &.placement-side {
+        flex-direction: row;
+
+        ion-tab-bar {
+            order: -1;
+            width: var(--menutabbar-size);
+            height: calc(100% - var(--ion-safe-area-top) - var(--ion-safe-area-bottom));
+            flex-direction: column;
+            @include border-end(var(--border));
+            border-top: 0;
+            justify-content: flex-start;
+
+            @include padding(var(--ion-safe-area-top), 0px, var(--ion-safe-area-bottom), var(--ion-safe-area-left));
+
+            ion-tab-button {
+                --padding-start: 0;
+                --padding-end: 0;
+                border-left: 4px solid transparent;
+                border-right: 4px solid transparent;
+
+                &.tab-selected {
+                    border-left-color: var(--core-tab-border-color-active);
+                }
+
+                ion-badge.core-tab-badge {
+                    @include position(null, 1px, null, auto);
+                }
+            }
+
+
+            ion-tab-button, core-user-menu-button {
+                width: 100%;
+                min-height: calc(var(--menutabbar-size) - 8px);
+                flex: 0;
+
+                ion-icon.core-tab-badge,
+                ion-badge.core-tab-badge {
+                    top: calc(50% - 20px);
+                }
             }
         }
     }

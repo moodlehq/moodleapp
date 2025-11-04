@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { CoreFileEntry } from '@services/file-helper';
-import { FileEntry } from '@awesome-cordova-plugins/file/ngx';
+import { FileEntry, IFile } from '@awesome-cordova-plugins/file/ngx';
 import { Translate } from '@singletons';
 
 /**
@@ -98,6 +98,29 @@ export class CoreFileUtils {
         file.name = path.substring(path.lastIndexOf('/') + 1);
 
         return file;
+    }
+
+    /**
+     * Transform a file object to Blob.
+     *
+     * @param fileEntry File to transform.
+     * @returns Promise resolved with the Blob.
+     */
+    static filetoBlob(fileEntry: IFile): Promise<Blob> {
+        return new Promise((resolve, reject): void => {
+            const reader = new FileReader();
+            reader.onload = () => {
+                if (!reader.result) {
+                    reject(new Error('FileReader returned no result.'));
+
+                    return;
+                }
+                resolve(new Blob([new Uint8Array(reader.result as ArrayBuffer)], { type: fileEntry.type }));
+            };
+            reader.onerror = reject;
+
+            return reader.readAsArrayBuffer(fileEntry);
+        });
     }
 
 }

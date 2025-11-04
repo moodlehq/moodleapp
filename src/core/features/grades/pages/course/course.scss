@@ -78,9 +78,18 @@ table.core-table.core-grades-table {
 
     }
 
-    .core-grades-table-grade {
+    .core-grades-table-grade > div {
+        * {
+            line-height: var(--mdl-typography-label-lineHeight-sm);
+            vertical-align: middle;
+        }
+
         ion-icon {
-            @include padding(null, 4px, null, null);
+            @include padding(null, 4px, 2px, null);
+        }
+
+        ::ng-deep .penalty-indicator-icon {
+            display: none;
         }
     }
 
@@ -111,6 +120,20 @@ table.core-table.core-grades-table {
         opacity: 0;
     }
 
+    .core-grades-expanded-grade {
+        display: flex;
+        align-items: center;
+        gap: 0.25rem;
+
+        ion-icon {
+            flex-shrink: 0;
+        }
+    }
+
+    .core-grades-expanded-grade-penalty {
+        color: var(--danger);
+        font-size: 0.75em;
+    }
 }
 
 @include media-breakpoint-down(md) {

@@ -40,7 +40,7 @@ describe('Singletons', () => {
     });
 
     it('works using magic getters', () => {
-        expect(MilkyWay.MEANING_OF_LIFE).toBe(42);
+        expect(MilkyWay.meaningOfLife).toBe(42);
     });
 
     it('works using magic getters defined dynamically', () => {

@@ -1,7 +1,5 @@
 {
     "blocks": "Blocks",
     "noblocks": "No blocks found!",
-    "opendrawerblocks": "Open block drawer",
-    "tour_navigation_dashboard_content": "This side panel can contain more features.",
-    "tour_navigation_dashboard_title": "Expand to explore"
+    "opendrawerblocks": "Open block drawer"
 }

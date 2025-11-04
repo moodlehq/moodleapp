@@ -13,6 +13,7 @@
 // limitations under the License.
 
 import { DownloadStatus } from '@/core/constants';
+import { CoreCourseModuleCompletionStatus } from '@features/course/constants';
 import { CoreSiteSchema } from '@services/sites';
 
 /**
@@ -21,7 +22,7 @@ import { CoreSiteSchema } from '@services/sites';
 export const COURSE_STATUS_TABLE = 'course_status';
 export const COURSE_VIEWED_MODULES_TABLE = 'course_viewed_modules';
 export const COURSE_VIEWED_MODULES_PRIMARY_KEYS = ['courseId', 'cmId'] as const;
-export const SITE_SCHEMA: CoreSiteSchema = {
+export const COURSE_SITE_SCHEMA: CoreSiteSchema = {
     name: 'CoreCourseProvider',
     version: 2,
     tables: [
@@ -86,7 +87,7 @@ export const SITE_SCHEMA: CoreSiteSchema = {
  * Database variables for CoreCourseOffline service.
  */
 export const MANUAL_COMPLETION_TABLE = 'course_manual_completion';
-export const OFFLINE_SITE_SCHEMA: CoreSiteSchema = {
+export const COURSE_OFFLINE_SITE_SCHEMA: CoreSiteSchema = {
     name: 'CoreCourseOfflineProvider',
     version: 1,
     tables: [
@@ -139,7 +140,7 @@ export type CoreCourseViewedModulesDBPrimaryKeys = typeof COURSE_VIEWED_MODULES_
 
 export type CoreCourseManualCompletionDBRecord = {
     cmid: number;
-    completed: number;
+    completed: CoreCourseModuleCompletionStatus;
     courseid: number;
     timecompleted: number;
 };

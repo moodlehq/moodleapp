@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Injectable, Type } from '@angular/core';
+import { Injectable, Type, inject } from '@angular/core';
 
 import { CoreDelegate, CoreDelegateHandler } from '@classes/delegate';
 import { CoreCourseAnyCourseData } from '@features/courses/services/courses';
@@ -21,6 +21,7 @@ import { makeSingleton } from '@singletons';
 import { CoreCourseWSSection } from './course';
 import { CoreCourseSection } from './course-helper';
 import { CoreCourseFormatDefaultHandler } from './handlers/default-format';
+import { CoreCourseFormatDynamicComponent } from '../classes/base-course-format-component';
 
 /**
  * Interface that all course format handlers must implement.
@@ -116,7 +117,7 @@ export interface CoreCourseFormatHandler extends CoreDelegateHandler {
      * @param course The course to render.
      * @returns Promise resolved with component to use, undefined if not found.
      */
-    getCourseFormatComponent?(course: CoreCourseAnyCourseData): Promise<Type<unknown> | undefined>;
+    getCourseFormatComponent?(course: CoreCourseAnyCourseData): Promise<Type<CoreCourseFormatDynamicComponent> | undefined>;
 
     /**
      * Return the Component to use to display a single section. This component will only be used if the user is viewing a
@@ -126,7 +127,7 @@ export interface CoreCourseFormatHandler extends CoreDelegateHandler {
      * @param course The course to render.
      * @returns Promise resolved with component to use, undefined if not found.
      */
-    getSingleSectionComponent?(course: CoreCourseAnyCourseData): Promise<Type<unknown> | undefined>;
+    getSingleSectionComponent?(course: CoreCourseAnyCourseData): Promise<Type<CoreCourseFormatDynamicComponent> | undefined>;
 
     /**
      * Return the Component to use to display all sections in a course.
@@ -135,14 +136,13 @@ export interface CoreCourseFormatHandler extends CoreDelegateHandler {
      * @param course The course to render.
      * @returns Promise resolved with component to use, undefined if not found.
      */
-    getAllSectionsComponent?(course: CoreCourseAnyCourseData): Promise<Type<unknown> | undefined>;
+    getAllSectionsComponent?(course: CoreCourseAnyCourseData): Promise<Type<CoreCourseFormatDynamicComponent> | undefined>;
 
     /**
      * Invalidate the data required to load the course format.
      *
      * @param course The course to get the title.
      * @param sections List of sections.
-     * @returns Promise resolved when the data is invalidated.
      */
     invalidateData?(course: CoreCourseAnyCourseData, sections: CoreCourseWSSection[]): Promise<void>;
 
@@ -162,12 +162,9 @@ export interface CoreCourseFormatHandler extends CoreDelegateHandler {
 @Injectable({ providedIn: 'root' })
 export class CoreCourseFormatDelegateService extends CoreDelegate<CoreCourseFormatHandler> {
 
+    protected defaultHandler = inject(CoreCourseFormatDefaultHandler);
     protected featurePrefix = 'CoreCourseFormatDelegate_';
     protected handlerNameProperty = 'format';
-
-    constructor(protected defaultHandler: CoreCourseFormatDefaultHandler) {
-        super('CoreCoursesCourseFormatDelegate');
-    }
 
     /**
      * Whether it allows seeing all sections at the same time. Defaults to true.
@@ -224,9 +221,10 @@ export class CoreCourseFormatDelegateService extends CoreDelegate<CoreCourseForm
      * @param course The course to render.
      * @returns Promise resolved with component to use, undefined if not found.
      */
-    async getAllSectionsComponent(course: CoreCourseAnyCourseData): Promise<Type<unknown> | undefined> {
+    async getAllSectionsComponent(course: CoreCourseAnyCourseData): Promise<Type<CoreCourseFormatDynamicComponent> | undefined> {
         try {
-            return await this.executeFunctionOnEnabled<Type<unknown>>(course.format || '', 'getAllSectionsComponent', [course]);
+            return await this.executeFunctionOnEnabled<Type<CoreCourseFormatDynamicComponent>>
+                (course.format || '', 'getAllSectionsComponent', [course]);
         } catch (error) {
             this.logger.error('Error getting all sections component', error);
         }
@@ -238,9 +236,10 @@ export class CoreCourseFormatDelegateService extends CoreDelegate<CoreCourseForm
      * @param course The course to render.
      * @returns Promise resolved with component to use, undefined if not found.
      */
-    async getCourseFormatComponent(course: CoreCourseAnyCourseData): Promise<Type<unknown> | undefined> {
+    async getCourseFormatComponent(course: CoreCourseAnyCourseData): Promise<Type<CoreCourseFormatDynamicComponent> | undefined> {
         try {
-            return await this.executeFunctionOnEnabled<Type<unknown>>(course.format || '', 'getCourseFormatComponent', [course]);
+            return await this.executeFunctionOnEnabled<Type<CoreCourseFormatDynamicComponent>>
+                (course.format || '', 'getCourseFormatComponent', [course]);
         } catch (error) {
             this.logger.error('Error getting course format component', error);
         }
@@ -315,9 +314,10 @@ export class CoreCourseFormatDelegateService extends CoreDelegate<CoreCourseForm
      * @param course The course to render.
      * @returns Promise resolved with component to use, undefined if not found.
      */
-    async getSingleSectionComponent(course: CoreCourseAnyCourseData): Promise<Type<unknown> | undefined> {
+    async getSingleSectionComponent(course: CoreCourseAnyCourseData): Promise<Type<CoreCourseFormatDynamicComponent> | undefined> {
         try {
-            return await this.executeFunctionOnEnabled<Type<unknown>>(course.format || '', 'getSingleSectionComponent', [course]);
+            return await this.executeFunctionOnEnabled<Type<CoreCourseFormatDynamicComponent>>
+                (course.format || '', 'getSingleSectionComponent', [course]);
         } catch (error) {
             this.logger.error('Error getting single section component', error);
         }
@@ -328,7 +328,6 @@ export class CoreCourseFormatDelegateService extends CoreDelegate<CoreCourseForm
      *
      * @param course The course to get the title.
      * @param sections List of sections.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateData(course: CoreCourseAnyCourseData, sections: CoreCourseWSSection[]): Promise<void> {
         await this.executeFunctionOnEnabled(course.format || '', 'invalidateData', [course, sections]);

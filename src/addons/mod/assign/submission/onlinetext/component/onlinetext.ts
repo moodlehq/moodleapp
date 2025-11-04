@@ -15,15 +15,18 @@
 import { AddonModAssignSubmissionPluginBaseComponent } from '@addons/mod/assign/classes/base-submission-plugin-component';
 import { AddonModAssign } from '@addons/mod/assign/services/assign';
 import { AddonModAssignOffline } from '@addons/mod/assign/services/assign-offline';
-import { Component, OnInit, ElementRef } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { FormBuilder, FormControl } from '@angular/forms';
 import { CoreSites } from '@services/sites';
 import { CoreText } from '@singletons/text';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { AddonModAssignSubmissionOnlineTextPluginData } from '../services/handler';
 import { ContextLevel } from '@/core/constants';
-import { ADDON_MOD_ASSIGN_COMPONENT } from '@addons/mod/assign/constants';
+import { ADDON_MOD_ASSIGN_COMPONENT_LEGACY } from '@addons/mod/assign/constants';
 import { CoreViewer } from '@features/viewer/services/viewer';
+import { CoreEditorRichTextEditorComponent } from '@features/editor/components/rich-text-editor/rich-text-editor';
+import { CoreSharedModule } from '@/core/shared.module';
+import { CoreFileHelper } from '@services/file-helper';
 
 /**
  * Component to render an onlinetext submission plugin.
@@ -31,27 +34,28 @@ import { CoreViewer } from '@features/viewer/services/viewer';
 @Component({
     selector: 'addon-mod-assign-submission-online-text',
     templateUrl: 'addon-mod-assign-submission-onlinetext.html',
+    imports: [
+        CoreSharedModule,
+        CoreEditorRichTextEditorComponent,
+    ],
 })
 export class AddonModAssignSubmissionOnlineTextComponent extends AddonModAssignSubmissionPluginBaseComponent implements OnInit {
 
     control?: FormControl<string>;
     words = 0;
-    component = ADDON_MOD_ASSIGN_COMPONENT;
+    component = ADDON_MOD_ASSIGN_COMPONENT_LEGACY;
     text = '';
     loaded = false;
     wordLimitEnabled = false;
     currentUserId: number;
     wordLimit = 0;
+    isSent = false;
 
     protected wordCountTimeout?: number;
-    protected element: HTMLElement;
+    protected fb = inject(FormBuilder);
 
-    constructor(
-        protected fb: FormBuilder,
-        element: ElementRef,
-    ) {
+    constructor() {
         super();
-        this.element = element.nativeElement;
         this.currentUserId = CoreSites.getCurrentSiteUserId();
     }
 
@@ -69,36 +73,20 @@ export class AddonModAssignSubmissionOnlineTextComponent extends AddonModAssignS
         this.wordLimit = parseInt(this.configs?.wordlimit || '0');
 
         try {
-            if (offlineData && offlineData.plugindata) {
+            if (offlineData?.plugindata.onlinetext_editor) {
                 // Offline submission, get text if submission is not removed.
-                if (offlineData.plugindata.onlinetext_editor) {
-                    this.text = (<AddonModAssignSubmissionOnlineTextPluginData>offlineData.plugindata).onlinetext_editor.text;
-                }
+                this.text = CoreFileHelper.replacePluginfileUrls(
+                    (<AddonModAssignSubmissionOnlineTextPluginData> offlineData.plugindata).onlinetext_editor.text,
+                    this.plugin.fileareas?.[0]?.files ?? [],
+                );
+                this.isSent = false;
             } else {
                 // No offline data found, return online text.
                 this.text = AddonModAssign.getSubmissionPluginText(this.plugin);
+                this.isSent = true;
             }
 
-            // Set the text.
-            if (!this.edit) {
-                // Not editing, see full text when clicked.
-                this.element.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-
-                    if (this.text) {
-                        // Open a new state with the interpolated contents.
-                        CoreViewer.viewText(this.plugin.name, this.text, {
-                            component: this.component,
-                            componentId: this.assign.cmid,
-                            filter: true,
-                            contextLevel: ContextLevel.MODULE,
-                            instanceId: this.assign.cmid,
-                            courseId: this.assign.course,
-                        });
-                    }
-                });
-            } else {
+            if (this.edit) {
                 // Create and add the control.
                 this.control = this.fb.control(this.text, { nonNullable: true });
             }
@@ -110,6 +98,27 @@ export class AddonModAssignSubmissionOnlineTextComponent extends AddonModAssignS
         } finally {
             this.loaded = true;
         }
+    }
+
+    /**
+     * Open the text in a modal.
+     *
+     * @param e Event.
+     */
+    open(e: Event): void {
+        // Not editing, see full text when clicked.
+        e.preventDefault();
+        e.stopPropagation();
+
+        // Open a new state with the interpolated contents.
+        CoreViewer.viewText(this.plugin.name, this.text, {
+            component: this.component,
+            componentId: this.assign.cmid,
+            filter: true,
+            contextLevel: ContextLevel.MODULE,
+            instanceId: this.assign.cmid,
+            courseId: this.assign.course,
+        });
     }
 
     /**

@@ -77,6 +77,9 @@ export class CoreUnauthenticatedSite {
         { old: /_mmaModWorkshop/g, new: '_AddonModWorkshop' },
         { old: /remoteAddOn_/g, new: 'sitePlugin_' },
         { old: /AddonNotes:addNote/g, new: 'AddonNotes:notes' },
+        { old: /CoreMainMenuDelegate_AddonCompetency/g, new: 'CoreUserDelegate_AddonCompetency' },
+        { old: /CoreMainMenuDelegate_AddonPrivateFiles/g, new: 'CoreUserDelegate_AddonPrivateFiles' },
+        { old: /CoreMainMenuDelegate_CoreGrades/g, new: 'CoreUserDelegate_CoreGrades' },
     ];
 
     /**
@@ -245,7 +248,7 @@ export class CoreUnauthenticatedSite {
      * Get the public config of this site.
      *
      * @param options Options.
-     * @returns Promise resolved with public config. Rejected with an object if error, see CoreWSProvider.callAjax.
+     * @returns Promise resolved with public config. Rejected with an object if error, see CoreWS.callAjax.
      */
     async getPublicConfig(options: { readingStrategy?: CoreSitesReadingStrategy } = {}): Promise<CoreSitePublicConfigResponse> {
         const ignoreCache = options.readingStrategy === CoreSitesReadingStrategy.ONLY_NETWORK ||
@@ -403,7 +406,7 @@ export class CoreUnauthenticatedSite {
             return false;
         }
 
-        const regEx = new RegExp('(,|^)' + CoreText.escapeForRegex(name) + '(,|$)', 'g');
+        const regEx = new RegExp(`(,|^)${CoreText.escapeForRegex(name)}(,|$)`, 'g');
 
         return !!disabledFeatures.match(regEx);
     }

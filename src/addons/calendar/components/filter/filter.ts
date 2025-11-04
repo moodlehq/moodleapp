@@ -21,6 +21,7 @@ import { AddonCalendarFilter } from '@addons/calendar/services/calendar-helper';
 import { ALL_COURSES_ID } from '@features/courses/services/courses-helper';
 import { CoreSharedModule } from '@/core/shared.module';
 import { ADDON_CALENDAR_FILTER_CHANGED_EVENT, AddonCalendarEventIcons, AddonCalendarEventType } from '@addons/calendar/constants';
+import { CoreSites } from '@services/sites';
 
 /**
  * Component to display the events filter that includes events types and a list of courses.
@@ -29,7 +30,6 @@ import { ADDON_CALENDAR_FILTER_CHANGED_EVENT, AddonCalendarEventIcons, AddonCale
     selector: 'addon-calendar-filter',
     templateUrl: 'filter.html',
     styleUrls: ['../../calendar-common.scss', 'filter.scss'],
-    standalone: true,
     imports: [
         CoreSharedModule,
     ],
@@ -52,6 +52,7 @@ export class AddonCalendarFilterComponent implements OnInit {
     typeIcons: AddonCalendarEventIcons[] = [];
     types: string[] = [];
     sortedCourses: CoreEnrolledCourseData[] = [];
+    showFullName = false;
 
     constructor() {
         CoreObject.enumKeys(AddonCalendarEventType).forEach((name) => {
@@ -66,6 +67,7 @@ export class AddonCalendarFilterComponent implements OnInit {
      * @inheritdoc
      */
     ngOnInit(): void {
+        this.showFullName = !!CoreSites.getCurrentSite()?.isVersionGreaterEqualThan('4.5');
         this.courseId = this.filter.courseId || ALL_COURSES_ID;
         this.sortedCourses = Array.from(this.courses).sort((a, b) => {
             if (a.id === ALL_COURSES_ID) {
@@ -74,6 +76,10 @@ export class AddonCalendarFilterComponent implements OnInit {
 
             if (b.id === ALL_COURSES_ID) {
                 return 1;
+            }
+
+            if (this.showFullName) {
+                return (a.fullname?.toLowerCase() ?? '').localeCompare(b.fullname?.toLowerCase() ?? '');
             }
 
             return (a.shortname?.toLowerCase() ?? '').localeCompare(b.shortname?.toLowerCase() ?? '');

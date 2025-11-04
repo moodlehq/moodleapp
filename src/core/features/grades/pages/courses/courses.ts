@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { AfterViewInit, Component, OnDestroy, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, OnDestroy, viewChild } from '@angular/core';
 import { CoreListItemsManager } from '@classes/items-management/list-items-manager';
 import { CoreRoutedItemsManagerSourcesTracker } from '@classes/items-management/routed-items-manager-sources-tracker';
 
@@ -24,6 +24,8 @@ import { CoreSites } from '@services/sites';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { Translate } from '@singletons';
 import { CoreAlerts } from '@services/overlays/alerts';
+import { CoreSharedModule } from '@/core/shared.module';
+import { CoreGradesGradeOverviewWithCourseData } from '@features/grades/services/grades-helper';
 
 /**
  * Page that displays courses grades (main menu option).
@@ -31,12 +33,15 @@ import { CoreAlerts } from '@services/overlays/alerts';
 @Component({
     selector: 'page-core-grades-courses',
     templateUrl: 'courses.html',
+    imports: [
+        CoreSharedModule,
+    ],
 })
-export class CoreGradesCoursesPage implements OnDestroy, AfterViewInit {
+export default class CoreGradesCoursesPage implements OnDestroy, AfterViewInit {
 
     courses: CoreGradesCoursesManager;
 
-    @ViewChild(CoreSplitViewComponent) splitView!: CoreSplitViewComponent;
+    readonly splitView = viewChild.required(CoreSplitViewComponent);
 
     constructor() {
         const source = CoreRoutedItemsManagerSourcesTracker.getOrCreateSource(CoreGradesCoursesSource, []);
@@ -50,7 +55,7 @@ export class CoreGradesCoursesPage implements OnDestroy, AfterViewInit {
     async ngAfterViewInit(): Promise<void> {
         await this.fetchInitialCourses();
 
-        this.courses.start(this.splitView);
+        this.courses.start(this.splitView());
     }
 
     /**
@@ -88,7 +93,7 @@ export class CoreGradesCoursesPage implements OnDestroy, AfterViewInit {
 /**
  * Helper class to manage courses.
  */
-class CoreGradesCoursesManager extends CoreListItemsManager {
+class CoreGradesCoursesManager extends CoreListItemsManager<CoreGradesGradeOverviewWithCourseData> {
 
     /**
      * @inheritdoc

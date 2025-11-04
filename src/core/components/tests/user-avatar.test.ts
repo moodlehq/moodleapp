@@ -20,7 +20,9 @@ describe('CoreUserAvatarComponent', () => {
 
     it('should render', async () => {
         // Act.
-        const { nativeElement } = await renderComponent(CoreUserAvatarComponent);
+        const { nativeElement } = await renderComponent(
+            CoreUserAvatarComponent,
+        );
 
         // Assert.
         expect(nativeElement.innerHTML.trim()).not.toHaveLength(0);

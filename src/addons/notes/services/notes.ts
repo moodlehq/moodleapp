@@ -23,14 +23,15 @@ import { AddonNotesOffline } from './notes-offline';
 import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
 import { CoreCacheUpdateFrequency } from '@/core/constants';
 import { CorePromiseUtils } from '@singletons/promise-utils';
-
-const ROOT_CACHE_KEY = 'mmaNotes:';
+import { CoreTextFormat, DEFAULT_TEXT_FORMAT } from '@singletons/text';
 
 /**
  * Service to handle notes.
  */
 @Injectable( { providedIn: 'root' } )
 export class AddonNotesProvider {
+
+    protected static readonly ROOT_CACHE_KEY = 'mmaNotes:';
 
     /**
      * Add a note.
@@ -98,7 +99,7 @@ export class AddonNotesProvider {
         const notes: AddonNotesCreateNoteData[] = [
             {
                 courseid: courseId,
-                format: 1,
+                format: DEFAULT_TEXT_FORMAT,
                 publishstate: publishState,
                 text: noteText,
                 userid: userId,
@@ -236,7 +237,7 @@ export class AddonNotesProvider {
                     publishstate: 'personal',
                     courseid: courseId,
                     text: '',
-                    format: 1,
+                    format: DEFAULT_TEXT_FORMAT,
                 },
             ],
         };
@@ -267,7 +268,7 @@ export class AddonNotesProvider {
      * @returns Cache key.
      */
     getNotesPrefixCacheKey(courseId: number): string {
-        return ROOT_CACHE_KEY + 'notes:' + courseId + ':';
+        return `${AddonNotesProvider.ROOT_CACHE_KEY}notes:${courseId}:`;
     }
 
     /**
@@ -323,7 +324,7 @@ export class AddonNotesProvider {
 
         const offlineNotes = await AddonNotesOffline.getNotesForCourseAndUser(courseId, userId, siteId);
         offlineNotes.forEach((note: AddonNotesNote) => {
-            const fieldName = note.publishstate + 'notes';
+            const fieldName = `${note.publishstate}notes`;
             if (!notes[fieldName]) {
                 notes[fieldName] = [];
             }
@@ -444,7 +445,7 @@ export type AddonNotesNote = {
     courseid: number; // Id of the course.
     userid: number; // User id.
     content: string; // The content text formated.
-    format: number; // Content format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
+    format: CoreTextFormat; // Content format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
     created: number; // Time created (timestamp).
     lastmodified: number; // Time of last modification (timestamp).
     usermodified: number; // User id of the creator of this note.
@@ -488,7 +489,7 @@ export type AddonNotesCreateNoteData = {
     courseid: number; // Course id of the note (in Moodle a note can only be created into a course,
     // even for site and personal notes).
     text: string; // The text of the message - text or HTML.
-    format?: number; // Text format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
+    format?: CoreTextFormat; // Text format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
     clientnoteid?: string; // Your own client id for the note. If this id is provided, the fail message id will be returned to you.
 };
 

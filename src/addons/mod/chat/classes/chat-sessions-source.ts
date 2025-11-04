@@ -25,9 +25,9 @@ import { AddonModChat, AddonModChatSession, AddonModChatSessionUser } from '../s
  */
 export class AddonModChatSessionsSource extends CoreRoutedItemsManagerSource<AddonModChatSessionFormatted> {
 
-    readonly COURSE_ID: number;
-    readonly CHAT_ID: number;
-    readonly CM_ID: number;
+    readonly courseId: number;
+    readonly chatId: number;
+    readonly cmId: number;
 
     showAll = false;
     groupId = 0;
@@ -36,9 +36,9 @@ export class AddonModChatSessionsSource extends CoreRoutedItemsManagerSource<Add
     constructor(courseId: number, chatId: number, cmId: number) {
         super();
 
-        this.COURSE_ID = courseId;
-        this.CHAT_ID = chatId;
-        this.CM_ID = cmId;
+        this.courseId = courseId;
+        this.chatId = chatId;
+        this.cmId = cmId;
     }
 
     /**
@@ -46,8 +46,8 @@ export class AddonModChatSessionsSource extends CoreRoutedItemsManagerSource<Add
      */
     async invalidateCache(): Promise<void> {
         await CorePromiseUtils.allPromisesIgnoringErrors([
-            CoreGroups.invalidateActivityGroupInfo(this.CM_ID),
-            AddonModChat.invalidateSessions(this.CHAT_ID, this.groupId, this.showAll),
+            CoreGroups.invalidateActivityGroupInfo(this.cmId),
+            AddonModChat.invalidateSessions(this.chatId, this.groupId, this.showAll),
         ]);
     }
 
@@ -55,11 +55,11 @@ export class AddonModChatSessionsSource extends CoreRoutedItemsManagerSource<Add
      * @inheritdoc
      */
     protected async loadPageItems(): Promise<{ items: AddonModChatSessionFormatted[] }> {
-        this.groupInfo = await CoreGroups.getActivityGroupInfo(this.CM_ID, false);
+        this.groupInfo = await CoreGroups.getActivityGroupInfo(this.cmId, false);
 
         this.groupId = CoreGroups.validateGroupId(this.groupId, this.groupInfo);
 
-        const sessions = await AddonModChat.getSessions(this.CHAT_ID, this.groupId, this.showAll, { cmId: this.CM_ID });
+        const sessions = await AddonModChat.getSessions(this.chatId, this.groupId, this.showAll, { cmId: this.cmId });
 
         // Fetch user profiles.
         const promises: Promise<unknown>[] = [];
@@ -97,7 +97,7 @@ export class AddonModChatSessionsSource extends CoreRoutedItemsManagerSource<Add
      */
     getItemQueryParams(): Params {
         return {
-            chatId: this.CHAT_ID,
+            chatId: this.chatId,
             groupId: this.groupId,
         };
     }
@@ -114,12 +114,12 @@ export class AddonModChatSessionsSource extends CoreRoutedItemsManagerSource<Add
         }
 
         try {
-            const user = await CoreUser.getProfile(sessionUser.userid, this.COURSE_ID, true);
+            const user = await CoreUser.getProfile(sessionUser.userid, this.courseId, true);
 
             sessionUser.userfullname = user.fullname;
         } catch {
             // Error getting profile, most probably the user is deleted.
-            sessionUser.userfullname = Translate.instant('core.deleteduser') + ' ' + sessionUser.userid;
+            sessionUser.userfullname = `${Translate.instant('core.deleteduser')} ${sessionUser.userid}`;
         }
     }
 

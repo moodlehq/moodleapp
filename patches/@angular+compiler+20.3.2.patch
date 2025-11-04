@@ -1,0 +1,46 @@
+diff --git a/node_modules/@angular/compiler/fesm2022/compiler.mjs b/node_modules/@angular/compiler/fesm2022/compiler.mjs
+index 8153bf2..d29a168 100755
+--- a/node_modules/@angular/compiler/fesm2022/compiler.mjs
++++ b/node_modules/@angular/compiler/fesm2022/compiler.mjs
+@@ -7163,13 +7163,41 @@ var R3NgModuleMetadataKind;
+     R3NgModuleMetadataKind[R3NgModuleMetadataKind["Global"] = 0] = "Global";
+     R3NgModuleMetadataKind[R3NgModuleMetadataKind["Local"] = 1] = "Local";
+ })(R3NgModuleMetadataKind || (R3NgModuleMetadataKind = {}));
++
++/**
++ * These are the only modules we're using to compile dynamic templates, we don't need to force JIT anywhere else.
++ *
++ * In particular, they are imported like this:
++ *   - CommonModule
++ *   - FormsModule -> ɵInternalFormsSharedModule -> RadioControlRegistryModule
++ *   - IonicModule -> CommonModule
++ *   - ReactiveFormsModule -> ɵInternalFormsSharedModule -> RadioControlRegistryModule
++ *   - TranslateModule
++ */
++const jitModules = [
++    'CommonModule',
++    'FormsModule',
++    'IonicModule',
++    'ɵInternalFormsSharedModule',
++    'RadioControlRegistryModule',
++    'ReactiveFormsModule',
++    'TranslateModule',
++];
++
+ /**
+  * Construct an `R3NgModuleDef` for the given `R3NgModuleMetadata`.
+  */
+ function compileNgModule(meta) {
+     const statements = [];
+     const definitionMap = new DefinitionMap();
++    const moduleName = meta.type.value?.node.loc?.identifierName;
+     definitionMap.set('type', meta.type.value);
++
++    if (moduleName && jitModules.includes(moduleName)) {
++        // Force JIT compilation.
++        meta.selectorScopeMode = R3SelectorScopeMode.Inline;
++    }
++
+     // Assign bootstrap definition. In local compilation mode (i.e., for
+     // `R3NgModuleMetadataKind.LOCAL`) we assign the bootstrap field using the runtime
+     // `ɵɵsetNgModuleScope`.

@@ -4,14 +4,17 @@
             <ion-back-button [text]="'core.back' | translate" />
         </ion-buttons>
         <ion-title>
-            <h1>{{ title }}</h1>
+            <h1>
+                <core-format-text [text]="title" contextLevel="module" [contextInstanceId]="module?.id" [courseId]="courseId" />
+            </h1>
         </ion-title>
 
         <ion-buttons slot="end" />
     </ion-toolbar>
 </ion-header>
 <ion-content>
-    <ion-refresher slot="fixed" [disabled]="!content || !content.ptrEnabled || !content.content || !content.content.dataLoaded"
+    <ion-refresher slot="fixed" [disabled]="!content() || !content()?.ptrEnabled || !content()?.content() ||
+        !content()?.content()?.dataLoaded"
         (ionRefresh)="refreshData($event.target)">
         <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}" />
     </ion-refresher>

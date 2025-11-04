@@ -9,51 +9,90 @@
     </ion-toolbar>
 </ion-header>
 <ion-content [core-swipe-navigation]="notifications">
-    <core-loading [hideUntil]="loaded">
-        <div class="list-item-limited-width" *ngIf="notification">
-
-            <ion-item class="ion-text-wrap core-notification-title" lines="full">
-                <core-user-avatar *ngIf="notification.useridfrom > 0" slot="start" [userId]="notification.useridfrom"
-                    [profileUrl]="notification.profileimageurlfrom" [fullname]="notification.userfromfullname">
-                    <div class="core-avatar-extra-img" *ngIf="notification.iconurl">
-                        <img [url]="notification.iconurl" alt="" role="presentation" core-external-content>
-                    </div>
-                </core-user-avatar>
-
-                <ng-container *ngIf="notification.useridfrom <= 0">
-                    <img *ngIf="notification.imgUrl" class="core-notification-img" [url]="notification.imgUrl" core-external-content alt=""
-                        role="presentation" slot="start">
-                    <div class="core-notification-icon" *ngIf="!notification.imgUrl" slot="start">
-                        <img *ngIf="notification.iconurl" [url]="notification.iconurl" core-external-content alt="" role="presentation">
-                        <ion-icon *ngIf="!notification.iconurl" name="fas-bell" aria-hidden="true" />
-                    </div>
-                </ng-container>
-
+    <core-loading [hideUntil]="loaded" placeholderType="free">
+        <ion-list loading-placeholder class="ion-padding list-item-limited-width">
+            <ion-item>
+                <ion-avatar slot="start">
+                    <ion-skeleton-text [animated]="true" />
+                </ion-avatar>
                 <ion-label>
-                    <p class="item-heading">
-                        <core-format-text [text]="notification.subject" contextLevel="system" [contextInstanceId]="0"
-                            [wsNotFiltered]="true" />
-                    </p>
-                    <p *ngIf="notification.timecreated > 0">
-                        {{ notification.timecreated | coreTimeAgo }}
-                        <ng-container *ngIf="notification.useridfrom > 0"> · {{ notification.userfromfullname }}</ng-container>
+                    <h3>
+                        <ion-skeleton-text [animated]="true" style="width: 80%;" />
+                    </h3>
+                    <p>
+                        <ion-skeleton-text [animated]="true" style="width: 60%;" />
                     </p>
                 </ion-label>
             </ion-item>
-            <ion-item class="ion-text-wrap core-notification-body">
+            <ion-item>
                 <ion-label>
-                    <core-format-text [text]="notification.mobiletext | coreCreateLinks" contextLevel="system" [contextInstanceId]="0" />
+                    <ion-skeleton-text [animated]="true" style="width: 100%; height: 80px;" />
                 </ion-label>
             </ion-item>
-        </div>
+        </ion-list>
+        @if (notification) {
+            <div class="list-item-limited-width">
 
-        <div collapsible-footer appearOnBottom *ngIf="loaded && actions && actions.length > 0" slot="fixed">
-            <div class="list-item-limited-width adaptable-buttons-row">
-                <ion-button expand="block" (click)="action.action(action.sites[0])" *ngFor="let action of actions">
-                    <ion-icon slot="start" name="{{action.icon}}" aria-hidden="true" />
-                    {{ action.message | translate }}
-                </ion-button>
+                <ion-item class="ion-text-wrap core-notification-title" lines="full">
+                    @if (notification.useridfrom > 0) {
+                        <core-user-avatar slot="start" [userId]="notification.useridfrom" [profileUrl]="notification.profileimageurlfrom"
+                            [fullname]="notification.userfromfullname">
+                            @if (notification.iconurl) {
+                                <div class="core-avatar-extra-img">
+                                    <img [url]="notification.iconurl" alt="" role="presentation" core-external-content>
+                                </div>
+                            }
+                        </core-user-avatar>
+                    } @else {
+
+                        @if (notification.imgUrl) {
+                            <img class="core-notification-img" [url]="notification.imgUrl" core-external-content alt="" role="presentation"
+                                slot="start">
+                        } @else {
+                            <div class="core-notification-icon" slot="start">
+                                @if (notification.iconurl) {
+                                    <img [url]="notification.iconurl" core-external-content alt="" role="presentation">
+                                } @else {
+                                    <ion-icon name="fas-bell" aria-hidden="true" />
+                                }
+                            </div>
+                        }
+
+                    }
+
+                    <ion-label>
+                        <p class="item-heading">
+                            <core-format-text [text]="notification.subject" contextLevel="system" [contextInstanceId]="0"
+                                [wsNotFiltered]="true" />
+                        </p>
+                        @if (notification.timecreated > 0) {
+                            <p>
+                                {{ notification.timecreated | coreTimeAgo }}
+                                @if (notification.useridfrom > 0) {
+                                    · {{ notification.userfromfullname }}
+                                }
+                            </p>
+                        }
+                    </ion-label>
+                </ion-item>
+                <ion-item class="ion-text-wrap core-notification-body">
+                    <ion-label>
+                        <core-format-text [text]="notification.mobiletext | coreCreateLinks" contextLevel="system"
+                            [contextInstanceId]="0" />
+                    </ion-label>
+                </ion-item>
             </div>
-        </div>
+        }
+
+        @if (loaded && actions && actions.length > 0) {
+            <div collapsible-footer appearOnBottom slot="fixed">
+                <div class="list-item-limited-width adaptable-buttons-row">
+                    <ion-button expand="block" (click)="action.action(action.sites[0])" *ngFor="let action of actions">
+                        <ion-icon slot="start" name="{{action.icon}}" aria-hidden="true" />
+                        {{ action.message | translate }}
+                    </ion-button>
+                </div>
+            </div>
+        }
     </core-loading>
 </ion-content>

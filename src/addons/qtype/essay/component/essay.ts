@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, ElementRef } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { FormBuilder, FormControl } from '@angular/forms';
 import { FileEntry } from '@awesome-cordova-plugins/file/ngx';
 
@@ -23,12 +23,19 @@ import { CoreText } from '@singletons/text';
 import { CoreFileSession } from '@services/file-session';
 import { CoreQuestion } from '@features/question/services/question';
 import { CoreFileEntry } from '@services/file-helper';
+import { CoreEditorRichTextEditorComponent } from '@features/editor/components/rich-text-editor/rich-text-editor';
+import { CoreSharedModule } from '@/core/shared.module';
+
 /**
  * Component to render an essay question.
  */
 @Component({
     selector: 'addon-qtype-essay',
     templateUrl: 'addon-qtype-essay.html',
+    imports: [
+        CoreSharedModule,
+        CoreEditorRichTextEditorComponent,
+    ],
 })
 export class AddonQtypeEssayComponent extends CoreQuestionBaseComponent<AddonModQuizEssayQuestion> {
 
@@ -36,9 +43,7 @@ export class AddonQtypeEssayComponent extends CoreQuestionBaseComponent<AddonMod
     attachments?: CoreFileEntry[];
     uploadFilesSupported = false;
 
-    constructor(elementRef: ElementRef, protected fb: FormBuilder) {
-        super('AddonQtypeEssayComponent', elementRef);
-    }
+    protected fb = inject(FormBuilder);
 
     /**
      * @inheritdoc

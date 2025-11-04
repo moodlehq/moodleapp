@@ -14,13 +14,12 @@
 
 import { Injectable } from '@angular/core';
 import { CoreSites } from '@services/sites';
-import { CoreDomUtils } from '@services/utils/dom';
-import { CoreCourse } from '@features/course/services/course';
+import { CoreDom } from '@singletons/dom';
+import { CoreCourseModuleHelper } from '@features/course/services/course-module-helper';
 import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
 import { makeSingleton } from '@singletons';
 import { CoreCourseModuleDelegate } from '@features/course/services/module-delegate';
-
-const ROOT_CACHE_KEY = 'AddonBlockRecentlyAccessedItems:';
+import { ModPurpose } from '@addons/mod/constants';
 
 /**
  * Service that provides some features regarding recently accessed items.
@@ -28,13 +27,15 @@ const ROOT_CACHE_KEY = 'AddonBlockRecentlyAccessedItems:';
 @Injectable( { providedIn: 'root' })
 export class AddonBlockRecentlyAccessedItemsProvider {
 
+    protected static readonly ROOT_CACHE_KEY = 'AddonBlockRecentlyAccessedItems:';
+
     /**
      * Get cache key for get last accessed items value WS call.
      *
      * @returns Cache key.
      */
     protected getRecentItemsCacheKey(): string {
-        return ROOT_CACHE_KEY + ':recentitems';
+        return `${AddonBlockRecentlyAccessedItemsProvider.ROOT_CACHE_KEY}:recentitems`;
     }
 
     /**
@@ -67,17 +68,17 @@ export class AddonBlockRecentlyAccessedItemsProvider {
         const cmIds: number[] = [];
 
         const itemsToDisplay = await Promise.all(items.map(async (item: AddonBlockRecentlyAccessedItemsItemCalculatedData) => {
-            const modicon = item.icon && CoreDomUtils.getHTMLElementAttribute(item.icon, 'src');
+            const iconImgEl = this.getItemIconElement(item);
 
-            item.iconUrl = await CoreCourseModuleDelegate.getModuleIconSrc(item.modname, modicon || undefined);
-            item.iconTitle = item.icon && CoreDomUtils.getHTMLElementAttribute(item.icon, 'title');
+            item.iconUrl = await CoreCourseModuleDelegate.getModuleIconSrc(item.modname, iconImgEl?.src);
+            item.iconTitle = iconImgEl?.title;
             cmIds.push(item.cmid);
 
             return item;
         }));
 
         // Check if the viewed module should be updated for each activity.
-        const lastViewedMap = await CoreCourse.getCertainModulesViewed(cmIds, site.getId());
+        const lastViewedMap = await CoreCourseModuleHelper.getCertainModulesViewed(cmIds, site.getId());
 
         itemsToDisplay.forEach((recentItem) => {
             const timeAccess = recentItem.timeaccess * 1000;
@@ -88,7 +89,7 @@ export class AddonBlockRecentlyAccessedItemsProvider {
             }
 
             // Update access.
-            CoreCourse.storeModuleViewed(recentItem.courseid, recentItem.cmid, {
+            CoreCourseModuleHelper.storeModuleViewed(recentItem.courseid, recentItem.cmid, {
                 timeaccess: recentItem.timeaccess * 1000,
                 sectionId: lastViewed && lastViewed.sectionId,
                 siteId: site.getId(),
@@ -99,10 +100,32 @@ export class AddonBlockRecentlyAccessedItemsProvider {
     }
 
     /**
+     * Given a recently accessed item, return the icon img element if found in the item's icon HTML.
+     *
+     * @param item Item to use.
+     * @returns Icon img element if found.
+     */
+    protected getItemIconElement(item: AddonBlockRecentlyaccesseditemsGetRecentItemsWSResponse): HTMLImageElement | undefined {
+        if (!item.icon) {
+            return;
+        }
+
+        const element: Element | undefined = CoreDom.toDom(item.icon)[0];
+        if (!element) {
+            return;
+        }
+
+        if (element.tagName === 'IMG') {
+            return element as HTMLImageElement;
+        }
+
+        return element.querySelector('img') || undefined;
+    }
+
+    /**
      * Invalidates get last accessed items WS call.
      *
      * @param siteId Site ID to invalidate. If not defined, use current site.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateRecentItems(siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -130,7 +153,7 @@ type AddonBlockRecentlyaccesseditemsGetRecentItemsWSResponse = {
     viewurl: string; // Viewurl.
     courseviewurl: string; // Courseviewurl.
     icon: string; // Icon.
-    purpose?: string; // Purpose. @since 4.0
+    purpose?: ModPurpose; // Purpose. @since 4.0
     branded?: boolean; // Branded. @since 4.4
 };
 

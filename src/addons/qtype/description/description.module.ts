@@ -12,31 +12,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { APP_INITIALIZER, NgModule } from '@angular/core';
+import { NgModule, provideAppInitializer } from '@angular/core';
 
-import { CoreSharedModule } from '@/core/shared.module';
 import { CoreQuestionDelegate } from '@features/question/services/question-delegate';
-import { AddonQtypeDescriptionComponent } from './component/description';
 import { AddonQtypeDescriptionHandler } from './services/handlers/description';
 
 @NgModule({
-    declarations: [
-        AddonQtypeDescriptionComponent,
-    ],
-    imports: [
-        CoreSharedModule,
-    ],
     providers: [
-        {
-            provide: APP_INITIALIZER,
-            multi: true,
-            useValue: () => {
-                CoreQuestionDelegate.registerHandler(AddonQtypeDescriptionHandler.instance);
-            },
-        },
-    ],
-    exports: [
-        AddonQtypeDescriptionComponent,
+        provideAppInitializer(() => {
+            CoreQuestionDelegate.registerHandler(AddonQtypeDescriptionHandler.instance);
+        }),
     ],
 })
 export class AddonQtypeDescriptionModule {}

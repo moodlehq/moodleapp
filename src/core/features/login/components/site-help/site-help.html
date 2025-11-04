@@ -22,12 +22,16 @@
                 </ion-label>
             </ion-item>
             <ion-item [id]="'question-' + question.id + '-answer'"
-                [class]="question.answer.class + ' ion-text-wrap core-login-site-help--answer'" [class.open]="isOpen(question)"
+                [class]="[question.answer.class, 'ion-text-wrap', 'core-login-site-help--answer']" [class.open]="isOpen(question)"
                 [tabindex]="isOpen(question) ? null : -1" [attr.inert]="isOpen(question) ? null : 'true'">
                 <ion-label>
-                    <p *ngIf="question.answer.format === 'text'">{{ question.answer.text }}</p>
-                    <p *ngIf="question.answer.format === 'safe-html'" [innerHTML]="question.answer.text"></p>
-                    <core-format-text *ngIf="question.answer.format === 'unsafe-html'" [text]="question.answer.text" [filter]="false" />
+                    @if (question.answer.format === 'text') {
+                        <p>{{ question.answer.text }}</p>
+                    } @else if (question.answer.format === 'safe-html') {
+                        <p [innerHTML]="question.answer.text"></p>
+                    } @else if (question.answer.format === 'unsafe-html') {
+                        <core-format-text [text]="question.answer.text" [filter]="false" />
+                    }
                 </ion-label>
             </ion-item>
         </ng-container>

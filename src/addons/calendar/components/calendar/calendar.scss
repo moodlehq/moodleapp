@@ -141,13 +141,6 @@
             }
         }
     }
-
-    swiper-slide {
-        display: block;
-        justify-content: start;
-        align-items: start;
-        text-align: start;
-    }
 }
 
 :host-context(:root.dark) {

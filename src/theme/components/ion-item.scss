@@ -258,3 +258,12 @@ ion-item.item.item-file {
         }
     }
 }
+
+:root.dark {
+    ion-item.item.item-file {
+        ion-thumbnail {
+            background-color: var(--white);
+            border-radius: var(--mdl-shape-borderRadius-xs);
+        }
+    }
+}

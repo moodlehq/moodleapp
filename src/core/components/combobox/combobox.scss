@@ -3,7 +3,6 @@
 :host {
     max-width: 100%;
     display: block;
-    @include margin-horizontal(var(--ion-safe-area-left), var(--ion-safe-area-right));
 
     &.no-border {
         --core-combobox-border-width: 0px;
@@ -94,15 +93,15 @@
 
         &::part(container) {
             white-space: normal;
-            @include margin-horizontal(null, 24px);
             font: var(--mdl-typography-label-font-lg);
+            @include margin-horizontal(null, 24px);
         }
 
         &::part(icon) {
             margin: var(--icon-margin);
             position: absolute;
-            @include position(null, 8px, null, null);
             --highlight-color: currentColor;
+            @include position(null, 8px, null, null);
         }
 
         &:hover {
@@ -134,9 +133,9 @@
         --border-radius: var(--core-combobox-radius);
 
         .select-text {
+            font: var(--mdl-typography-label-font-lg);
             @include margin-horizontal(null, auto);
             @include ellipsis();
-            font: var(--mdl-typography-label-font-lg);
         }
 
         .sr-only {

@@ -18,27 +18,26 @@ import {
     Component,
     ElementRef,
     EventEmitter,
-    HostBinding,
-    Input,
+    inject,
     OnDestroy,
     Output,
-    ViewChild,
+    viewChild,
+    input,
+    signal,
 } from '@angular/core';
 import { CorePromisedValue } from '@classes/promised-value';
 import { CoreUserToursFocusLayout } from '@features/usertours/classes/focus-layout';
 import { CoreUserToursPopoverLayout } from '@features/usertours/classes/popover-layout';
 import { CoreUserTours, CoreUserToursAlignment, CoreUserToursSide } from '@features/usertours/services/user-tours';
-import { CoreDomUtils } from '@services/utils/dom';
+import { CoreWait } from '@singletons/wait';
 import { AngularFrameworkDelegate } from '@singletons';
 import { CoreDirectivesRegistry } from '@singletons/directives-registry';
 import { CoreDom } from '@singletons/dom';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { COLLAPSIBLE_HEADER_UPDATED } from '@directives/collapsible-header';
 import { MAIN_MENU_VISIBILITY_UPDATED_EVENT } from '@features/mainmenu/constants';
-
-const ANIMATION_DURATION = 200;
-const USER_TOURS_BACK_BUTTON_PRIORITY = 100;
-const BACKDROP_DISMISS_SAFETY_TRESHOLD = 1000;
+import { CoreSharedModule } from '@/core/shared.module';
+import { BackButtonPriority } from '@/core/constants';
 
 /**
  * User Tour wrapper component.
@@ -49,27 +48,40 @@ const BACKDROP_DISMISS_SAFETY_TRESHOLD = 1000;
     selector: 'core-user-tours-user-tour',
     templateUrl: 'core-user-tours-user-tour.html',
     styleUrl: 'user-tour.scss',
+    imports: [
+        CoreSharedModule,
+    ],
+    host: {
+        '[class.is-active]': 'active()',
+        '[class.is-popover]': 'popover()',
+        '[class.backdrop]': 'true',
+    },
 })
 export class CoreUserToursUserTourComponent implements AfterViewInit, OnDestroy {
 
-    @Input({ required: true }) container!: HTMLElement;
-    @Input({ required: true }) id!: string;
-    @Input({ required: true }) component!: unknown;
-    @Input() componentProps?: Record<string, unknown>;
-    @Input() focus?: HTMLElement;
-    @Input() side?: CoreUserToursSide;
-    @Input() alignment?: CoreUserToursAlignment;
+    readonly container = input.required<HTMLElement>();
+    readonly id = input.required<string>();
+    readonly component = input.required<unknown>();
+    readonly componentProps = input<Record<string, unknown>>();
+    readonly focus = input<HTMLElement>();
+    readonly side = input<CoreUserToursSide>();
+    readonly alignment = input<CoreUserToursAlignment>();
     @Output() beforeDismiss = new EventEmitter<void>();
     @Output() afterDismiss = new EventEmitter<void>();
-    @HostBinding('class.is-active') active = false;
-    @HostBinding('class.is-popover') popover = false;
-    @HostBinding('class.backdrop') backdrop = true;
-    @ViewChild('wrapper') wrapper?: ElementRef<HTMLElement>;
 
-    focusStyles?: string;
-    popoverWrapperStyles?: string;
-    popoverWrapperArrowStyles?: string;
-    private element: HTMLElement;
+    readonly wrapper = viewChild<ElementRef<HTMLElement>>('wrapper');
+
+    readonly focusStyles = signal('');
+    readonly popoverWrapperStyles = signal('');
+    readonly popoverWrapperArrowStyles = signal('');
+
+    readonly popover = signal(false);
+    protected readonly active = signal(false);
+
+    protected static readonly ANIMATION_DURATION = 200;
+    protected static readonly BACKDROP_DISMISS_SAFETY_TRESHOLD = 1000;
+
+    private element: HTMLElement = inject(ElementRef).nativeElement;
     private tour?: HTMLElement;
     private wrapperTransform = '';
     private wrapperElement = new CorePromisedValue<HTMLElement>();
@@ -81,10 +93,8 @@ export class CoreUserToursUserTourComponent implements AfterViewInit, OnDestroy 
     protected content?: HTMLIonContentElement | null;
     protected lastActivatedTime = 0;
 
-    constructor({ nativeElement: element }: ElementRef<HTMLElement>) {
-        this.element = element;
-
-        CoreDirectivesRegistry.register(element, this);
+    constructor() {
+        CoreDirectivesRegistry.register(this.element, this);
 
         this.element.addEventListener('click', (event) =>
             this.dismissOnBackOrBackdrop(event.target as HTMLElement));
@@ -94,11 +104,12 @@ export class CoreUserToursUserTourComponent implements AfterViewInit, OnDestroy 
      * @inheritdoc
      */
     ngAfterViewInit(): void {
-        if (!this.wrapper) {
+        const wrapper = this.wrapper();
+        if (!wrapper) {
             return;
         }
 
-        this.wrapperElement.resolve(this.wrapper.nativeElement);
+        this.wrapperElement.resolve(wrapper.nativeElement);
     }
 
     /**
@@ -107,16 +118,17 @@ export class CoreUserToursUserTourComponent implements AfterViewInit, OnDestroy 
     async show(): Promise<void> {
         // Insert tour component and wait until it's ready.
         const wrapper = await this.wrapperElement;
-        this.tour = await AngularFrameworkDelegate.attachViewToDom(wrapper, this.component, this.componentProps ?? {});
+        this.tour = await AngularFrameworkDelegate.attachViewToDom(wrapper, this.component(), this.componentProps() ?? {});
 
         if (!this.tour) {
             return;
         }
 
-        await CoreDomUtils.waitForImages(this.tour);
+        await CoreWait.waitForImages(this.tour);
 
         // Calculate focus styles or dismiss if the element is gone.
-        if (this.focus && !CoreDom.isElementVisible(this.focus)) {
+        const focus = this.focus();
+        if (focus && !CoreDom.isElementVisible(focus)) {
             await this.dismiss(false);
 
             return;
@@ -149,14 +161,14 @@ export class CoreUserToursUserTourComponent implements AfterViewInit, OnDestroy 
     async dismiss(acknowledge: boolean = true): Promise<void> {
         this.beforeDismiss.emit();
 
-        if (this.active) {
+        if (this.active()) {
             await this.playLeaveAnimation();
         }
 
-        await AngularFrameworkDelegate.removeViewFromDom(this.container, this.element);
+        await AngularFrameworkDelegate.removeViewFromDom(this.container(), this.element);
         this.deactivate();
 
-        acknowledge && await CoreUserTours.acknowledge(this.id);
+        acknowledge && await CoreUserTours.acknowledge(this.id());
 
         this.afterDismiss.emit();
     }
@@ -165,25 +177,28 @@ export class CoreUserToursUserTourComponent implements AfterViewInit, OnDestroy 
      * Calculate inline styles.
      */
     private calculateStyles(): void {
-        if (!this.focus) {
+        const focus = this.focus();
+        if (!focus) {
             return;
         }
 
         // Calculate focus styles.
-        const focusLayout = new CoreUserToursFocusLayout(this.focus);
+        const focusLayout = new CoreUserToursFocusLayout(focus);
 
-        this.focusStyles = focusLayout.inlineStyles;
+        this.focusStyles.set(focusLayout.inlineStyles);
 
         // Calculate popup styles.
-        if (!this.side || !this.alignment) {
+        const side = this.side();
+        const alignment = this.alignment();
+        if (!side || !alignment) {
             throw new Error('Cannot create a focused user tour without side and alignment');
         }
 
-        const popoverLayout = new CoreUserToursPopoverLayout(this.focus, this.side, this.alignment);
+        const popoverLayout = new CoreUserToursPopoverLayout(focus, side, alignment);
 
-        this.popover = true;
-        this.popoverWrapperStyles = popoverLayout.wrapperInlineStyles;
-        this.popoverWrapperArrowStyles = popoverLayout.wrapperArrowInlineStyles;
+        this.popover.set(true);
+        this.popoverWrapperStyles.set(popoverLayout.wrapperInlineStyles);
+        this.popoverWrapperArrowStyles.set(popoverLayout.wrapperArrowInlineStyles);
         this.wrapperTransform = `${popoverLayout.wrapperStyles.transform ?? ''}`;
     }
 
@@ -197,10 +212,10 @@ export class CoreUserToursUserTourComponent implements AfterViewInit, OnDestroy 
         }
 
         const animations = [
-            this.element.animate({ opacity: ['0', '1'] }, { duration: ANIMATION_DURATION }),
+            this.element.animate({ opacity: ['0', '1'] }, { duration: CoreUserToursUserTourComponent.ANIMATION_DURATION }),
             this.wrapperElement.value?.animate(
                 { transform: [`scale(1.2) ${this.wrapperTransform}`, `scale(1) ${this.wrapperTransform}`] },
-                { duration: ANIMATION_DURATION },
+                { duration: CoreUserToursUserTourComponent.ANIMATION_DURATION },
             ),
         ];
 
@@ -217,10 +232,10 @@ export class CoreUserToursUserTourComponent implements AfterViewInit, OnDestroy 
         }
 
         const animations = [
-            this.element.animate({ opacity: ['1', '0'] }, { duration: ANIMATION_DURATION }),
+            this.element.animate({ opacity: ['1', '0'] }, { duration: CoreUserToursUserTourComponent.ANIMATION_DURATION }),
             this.wrapperElement.value?.animate(
                 { transform: [`scale(1) ${this.wrapperTransform}`, `scale(1.2) ${this.wrapperTransform}`] },
-                { duration: ANIMATION_DURATION },
+                { duration: CoreUserToursUserTourComponent.ANIMATION_DURATION },
             ),
         ];
 
@@ -238,18 +253,18 @@ export class CoreUserToursUserTourComponent implements AfterViewInit, OnDestroy 
      * Activate tour.
      */
     protected activate(): void {
-        if (this.active) {
+        if (this.active()) {
             return;
         }
 
-        this.active = true;
+        this.active.set(true);
         this.lastActivatedTime = Date.now();
 
         if (!this.backButtonListener) {
             document.addEventListener(
                 'ionBackButton',
                 this.backButtonListener = ({ detail }) => detail.register(
-                    USER_TOURS_BACK_BUTTON_PRIORITY,
+                    BackButtonPriority.USER_TOURS,
                     () => {
                         this.dismissOnBackOrBackdrop();
                     },
@@ -257,7 +272,8 @@ export class CoreUserToursUserTourComponent implements AfterViewInit, OnDestroy 
             );
         }
 
-        if (!this.focus) {
+        const focus = this.focus();
+        if (!focus) {
             return;
         }
 
@@ -266,7 +282,7 @@ export class CoreUserToursUserTourComponent implements AfterViewInit, OnDestroy 
         this.mainMenuListener = this.mainMenuListener ??
             CoreEvents.on(MAIN_MENU_VISIBILITY_UPDATED_EVENT, () => this.calculateStyles());
         this.resizeListener = this.resizeListener ?? CoreDom.onWindowResize(() => this.calculateStyles());
-        this.content = this.content ?? CoreDom.closest(this.focus, 'ion-content');
+        this.content = this.content ?? CoreDom.closest(focus, 'ion-content');
 
         if (!this.scrollListener && this.content) {
             this.content.scrollEvents = true;
@@ -281,11 +297,11 @@ export class CoreUserToursUserTourComponent implements AfterViewInit, OnDestroy 
      * Deactivate tour.
      */
     protected deactivate(): void {
-        if (!this.active) {
+        if (!this.active()) {
             return;
         }
 
-        this.active = false;
+        this.active.set(false);
 
         this.collapsibleHeaderListener?.off();
         this.mainMenuListener?.off();
@@ -307,7 +323,8 @@ export class CoreUserToursUserTourComponent implements AfterViewInit, OnDestroy 
      * @param target Element clicked (if any).
      */
     protected dismissOnBackOrBackdrop(target?: HTMLElement): void {
-        if (!this.active || Date.now() - this.lastActivatedTime < BACKDROP_DISMISS_SAFETY_TRESHOLD) {
+        if (!this.active() ||
+            Date.now() - this.lastActivatedTime < CoreUserToursUserTourComponent.BACKDROP_DISMISS_SAFETY_TRESHOLD) {
             // Not active or was recently activated, ignore.
             return;
         }

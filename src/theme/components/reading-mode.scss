@@ -12,26 +12,30 @@ body.core-reading-mode-enabled {
     &.core-reading-mode-theme-light {
         --reading-mode-background: #{$background-color};
         --reading-mode-text-color: #{$text-color};
+        --reading-mode-link-color: var(--info);
     }
 
     &.core-reading-mode-theme-dark {
         --reading-mode-background: #{$background-color-dark};
         --reading-mode-text-color: #{$text-color-dark};
+        --reading-mode-link-color: var(--info-tint);
     }
 
     &.core-reading-mode-theme-sepia {
         --reading-mode-background: var(--core-reading-mode-sepia-background);
         --reading-mode-text-color: var(--core-reading-mode-sepia-text-color);
+        --reading-mode-link-color: var(--info);
     }
 
     &.core-reading-mode-theme-hcm {
         --reading-mode-background: #000000;
         --reading-mode-text-color: #ffffff;
+        --reading-mode-link-color: var(--info-tint);
     }
 
     &.core-reading-mode-multimedia-hidden {
         ion-content.core-reading-mode-content {
-            img, video, iframe {
+            img, video, iframe, core-iframe, .core-iframe-help {
                 display: none !important;
             }
         }
@@ -43,18 +47,39 @@ body.core-reading-mode-enabled {
         background: var(--background);
 
         [core-reading-mode] {
-            zoom: var(--reading-mode-zoom, 1);
             &> * {
                 --ion-item-background: var(--reading-mode-background, --ion-background-color);
                 --text-color: var(--reading-mode-text-color, --text-color);
                 --color: var(--reading-mode-text-color, --text-color);
                 --subdued-text-color: var(--text-color);
-                color: var(--text-color);
+                --core-input-text: var(--text-color);
+                --core-link-color: var(--reading-mode-link-color, --core-link-color);
+                color: var(--text-color) !important;
+            }
+
+            core-comments, core-file, core-rating-rate {
+                display: none !important;
             }
         }
 
         .hide-on-reading-mode {
             display: none !important;
+        }
+    }
+
+    ion-content.core-reading-mode-content.md,
+    ion-content.core-reading-mode-content.md core-split-view ion-content {
+        [core-reading-mode] {
+            zoom: var(--reading-mode-zoom, 1);
+        }
+    }
+
+    ion-content.core-reading-mode-content.ios,
+    ion-content.core-reading-mode-content.ios core-split-view ion-content {
+        [core-reading-mode] {
+            transform: scale(var(--reading-mode-zoom, 100%));
+            transform-origin: top left;
+            width: var(--reading-mode-width, 100%);
         }
     }
 }

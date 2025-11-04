@@ -12,7 +12,18 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnDestroy, OnInit, Input, DoCheck, Output, EventEmitter, KeyValueDiffers, KeyValueDiffer } from '@angular/core';
+import {
+    Component,
+    OnDestroy,
+    OnInit,
+    Input,
+    DoCheck,
+    Output,
+    EventEmitter,
+    KeyValueDiffers,
+    KeyValueDiffer,
+    inject,
+} from '@angular/core';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { CoreSites } from '@services/sites';
 import {
@@ -29,6 +40,9 @@ import { CoreTime } from '@singletons/time';
 import { Translate } from '@singletons';
 import { ADDON_CALENDAR_UNDELETED_EVENT_EVENT } from '@addons/calendar/constants';
 import { CoreAlerts } from '@services/overlays/alerts';
+import { CoreSharedModule } from '@/core/shared.module';
+import { CoreUserPreferences } from '@features/user/services/user-preferences';
+import { AddonCalendarEventCardComponent } from '../calendar-event-card/calendar-event-card';
 
 /**
  * Component that displays upcoming events.
@@ -37,6 +51,10 @@ import { CoreAlerts } from '@services/overlays/alerts';
     selector: 'addon-calendar-upcoming-events',
     templateUrl: 'addon-calendar-upcoming-events.html',
     styleUrl: '../../calendar-common.scss',
+    imports: [
+        CoreSharedModule,
+        AddonCalendarEventCardComponent,
+    ],
 })
 export class AddonCalendarUpcomingEventsComponent implements OnInit, DoCheck, OnDestroy {
 
@@ -63,9 +81,9 @@ export class AddonCalendarUpcomingEventsComponent implements OnInit, DoCheck, On
     // Observers.
     protected undeleteEventObserver: CoreEventObserver;
 
-    constructor(
-        differs: KeyValueDiffers,
-    ) {
+    constructor() {
+        const differs = inject(KeyValueDiffers);
+
         this.currentSiteId = CoreSites.getCurrentSiteId();
 
         // Listen for events "undeleted" (offline).
@@ -109,14 +127,14 @@ export class AddonCalendarUpcomingEventsComponent implements OnInit, DoCheck, On
     }
 
     /**
-     * Component loaded.
+     * @inheritdoc
      */
     ngOnInit(): void {
         this.fetchData();
     }
 
     /**
-     * Detect and act upon changes that Angular can’t or won’t detect on its own (objects and arrays).
+     * @inheritdoc
      */
     ngDoCheck(): void {
         // Check if there's any change in the filter object.
@@ -128,8 +146,6 @@ export class AddonCalendarUpcomingEventsComponent implements OnInit, DoCheck, On
 
     /**
      * Fetch data.
-     *
-     * @returns Promise resolved when done.
      */
     async fetchData(): Promise<void> {
         const promises: Promise<void>[] = [];
@@ -161,7 +177,7 @@ export class AddonCalendarUpcomingEventsComponent implements OnInit, DoCheck, On
             return;
         }));
 
-        promises.push(AddonCalendar.getCalendarTimeFormat().then((value) => {
+        promises.push(CoreUserPreferences.getTimeFormat().then((value) => {
             this.timeFormat = value;
 
             return;
@@ -182,8 +198,6 @@ export class AddonCalendarUpcomingEventsComponent implements OnInit, DoCheck, On
 
     /**
      * Fetch upcoming events.
-     *
-     * @returns Promise resolved when done.
      */
     async fetchEvents(): Promise<void> {
         // Don't pass courseId and categoryId, we'll filter them locally.
@@ -207,8 +221,6 @@ export class AddonCalendarUpcomingEventsComponent implements OnInit, DoCheck, On
 
     /**
      * Load categories to be able to filter events.
-     *
-     * @returns Promise resolved when done.
      */
     protected async loadCategories(): Promise<void> {
         if (this.categoriesRetrieved) {
@@ -277,7 +289,7 @@ export class AddonCalendarUpcomingEventsComponent implements OnInit, DoCheck, On
             return this.onlineEvents;
         }
 
-        const start = Date.now() / 1000;
+        const start = CoreTime.timestamp();
         const end = start + (CoreConstants.SECONDS_DAY * this.lookAhead);
         let result: AddonCalendarEventToDisplay[] = this.onlineEvents;
 
@@ -322,10 +334,10 @@ export class AddonCalendarUpcomingEventsComponent implements OnInit, DoCheck, On
     }
 
     /**
-     * Component destroyed.
+     * @inheritdoc
      */
     ngOnDestroy(): void {
-        this.undeleteEventObserver?.off();
+        this.undeleteEventObserver.off();
     }
 
 }

@@ -5,8 +5,9 @@
         </ion-buttons>
         <ion-title>
             <h1>
-                <core-format-text *ngIf="scorm" [text]="scorm.name" contextLevel="module" [contextInstanceId]="cmId"
-                    [courseId]="courseId" />
+                @if (scorm) {
+                    <core-format-text [text]="scorm.name" contextLevel="module" [contextInstanceId]="cmId" [courseId]="courseId" />
+                }
             </h1>
         </ion-title>
         <!-- Add empty ion-buttons to let iframe add the full screen button -->
@@ -15,9 +16,13 @@
 </ion-header>
 <ion-content>
     <core-loading [hideUntil]="loaded">
-        <core-iframe *ngIf="loaded" id="scorm_object" [src]="src" [iframeWidth]="scormWidth" [iframeHeight]="scormHeight"
-            [showFullscreenOnToolbar]="true" [autoFullscreenOnRotate]="enableFullScreenOnRotate" (loaded)="iframeLoaded()" />
+        @if (loaded) {
+            <core-iframe id="scorm_object" [src]="src" [iframeWidth]="scormWidth" [iframeHeight]="scormHeight"
+                [showFullscreenOnToolbar]="true" [autoFullscreenOnRotate]="enableFullScreenOnRotate" (loaded)="iframeLoaded()" />
+        }
 
-        <p *ngIf="!src && errorMessage">{{ errorMessage | translate }}</p>
+        @if (!src && errorMessage) {
+            <p>{{ errorMessage | translate }}</p>
+        }
     </core-loading>
 </ion-content>

@@ -17,7 +17,7 @@ import { CoreSites } from '@services/sites';
 import {
     AddonCalendarEvent,
 } from '@addons/calendar/services/calendar';
-import moment from 'moment-timezone';
+import { dayjs } from '@/core/utils/dayjs';
 import { makeSingleton } from '@singletons';
 import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
 
@@ -47,7 +47,7 @@ export class AddonBlockTimelineProvider {
         afterEventId?: number,
         searchValue = '',
         siteId?: string,
-    ): Promise<{ events: AddonCalendarEvent[]; canLoadMore?: number }> {
+    ): Promise<AddonBlockTimelineActionEvents> {
         const site = await CoreSites.getSite(siteId);
 
         const time = this.getDayStart(-14); // Check two weeks ago.
@@ -86,7 +86,7 @@ export class AddonBlockTimelineProvider {
      * @returns Cache key.
      */
     protected getActionEventsByCourseCacheKey(courseId: number): string {
-        return this.getActionEventsByCoursesCacheKey() + ':' + courseId;
+        return `${this.getActionEventsByCoursesCacheKey()}:${courseId}`;
     }
 
     /**
@@ -101,7 +101,7 @@ export class AddonBlockTimelineProvider {
         courseIds: number[],
         searchValue = '',
         siteId?: string,
-    ): Promise<{[courseId: string]: { events: AddonCalendarEvent[]; canLoadMore?: number } }> {
+    ): Promise<{[courseId: string]: AddonBlockTimelineActionEvents }> {
         if (courseIds.length === 0) {
             return {};
         }
@@ -130,7 +130,7 @@ export class AddonBlockTimelineProvider {
             preSets,
         );
 
-        const courseEvents: {[courseId: string]: { events: AddonCalendarEvent[]; canLoadMore?: number } } = {};
+        const courseEvents: {[courseId: string]: AddonBlockTimelineActionEvents } = {};
 
         events.groupedbycourse.forEach((course) => {
             courseEvents[course.courseid] = this.treatCourseEvents(course, time);
@@ -145,7 +145,7 @@ export class AddonBlockTimelineProvider {
      * @returns Cache key.
      */
     protected getActionEventsByCoursesCacheKey(): string {
-        return AddonBlockTimelineProvider.ROOT_CACHE_KEY + 'bycourse';
+        return `${AddonBlockTimelineProvider.ROOT_CACHE_KEY}bycourse`;
     }
 
     /**
@@ -160,7 +160,7 @@ export class AddonBlockTimelineProvider {
         afterEventId?: number,
         searchValue = '',
         siteId?: string,
-    ): Promise<{ events: AddonCalendarEvent[]; canLoadMore?: number }> {
+    ): Promise<AddonBlockTimelineActionEvents> {
         const site = await CoreSites.getSite(siteId);
 
         const timesortfrom = this.getDayStart(-14); // Check two weeks ago.
@@ -184,7 +184,7 @@ export class AddonBlockTimelineProvider {
         if (searchValue != '') {
             data.searchvalue = searchValue;
             preSets.getFromCache = false;
-            preSets.cacheKey += ':' + searchValue;
+            preSets.cacheKey += `:${searchValue}`;
         }
 
         const result = await site.read<AddonBlockTimelineGetActionEventsByTimesortWSResponse>(
@@ -193,14 +193,15 @@ export class AddonBlockTimelineProvider {
             preSets,
         );
 
-        const canLoadMore = result.events.length >= limitnum ? result.lastid : undefined;
+        const lastEventId = result.events.length >= limitnum ? result.lastid : undefined;
 
         // Filter events by time in case it uses cache.
         const events = result.events.filter((element) => element.timesort >= timesortfrom);
 
         return {
             events,
-            canLoadMore,
+            lastEventId,
+            canLoadMore: lastEventId !== undefined,
         };
     }
 
@@ -210,7 +211,7 @@ export class AddonBlockTimelineProvider {
      * @returns Cache key.
      */
     protected getActionEventsByTimesortPrefixCacheKey(): string {
-        return AddonBlockTimelineProvider.ROOT_CACHE_KEY + 'bytimesort:';
+        return `${AddonBlockTimelineProvider.ROOT_CACHE_KEY}bytimesort:`;
     }
 
     /**
@@ -224,14 +225,13 @@ export class AddonBlockTimelineProvider {
         afterEventId = afterEventId || 0;
         limit = limit || 0;
 
-        return this.getActionEventsByTimesortPrefixCacheKey() + afterEventId + ':' + limit;
+        return `${this.getActionEventsByTimesortPrefixCacheKey() + afterEventId  }:${limit}`;
     }
 
     /**
      * Invalidates get calendar action events for a given list of courses WS call.
      *
      * @param siteId Site ID to invalidate. If not defined, use current site.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateActionEventsByCourses(siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -243,7 +243,6 @@ export class AddonBlockTimelineProvider {
      * Invalidates get calendar action events based on the timesort value WS call.
      *
      * @param siteId Site ID to invalidate. If not defined, use current site.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateActionEventsByTimesort(siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -256,21 +255,20 @@ export class AddonBlockTimelineProvider {
      *
      * @param course Object containing response course events info.
      * @param timeFrom Current time to filter events from.
-     * @returns Object with course events and last loaded event id if more can be loaded.
+     * @returns Object with course events and whether more events can be loaded.
      */
-    protected treatCourseEvents(
-        course: AddonBlockTimelineEvents,
-        timeFrom: number,
-    ): { events: AddonCalendarEvent[]; canLoadMore?: number } {
+    protected treatCourseEvents(course: AddonBlockTimelineEvents, timeFrom: number): AddonBlockTimelineActionEvents {
 
-        const canLoadMore: number | undefined =
+        const lastEventId: number | undefined =
             course.events.length >= AddonBlockTimelineProvider.EVENTS_LIMIT_PER_COURSE ? course.lastid : undefined;
+        const canLoadMore = lastEventId !== undefined;
 
         // Filter events by time in case it uses cache.
         course.events = course.events.filter((element) => element.timesort >= timeFrom);
 
         return {
             events: course.events,
+            lastEventId,
             canLoadMore,
         };
     }
@@ -282,7 +280,7 @@ export class AddonBlockTimelineProvider {
      * @returns timestamp.
      */
     getDayStart(daysOffset = 0): number {
-        return moment().startOf('day').add(daysOffset, 'days').unix();
+        return dayjs().startOf('day').add(daysOffset, 'days').unix();
     }
 
 }
@@ -361,4 +359,10 @@ export type AddonBlockTimelineEvents = {
     events: AddonCalendarEvent[]; // Events.
     firstid: number; // Firstid.
     lastid: number; // Lastid.
+};
+
+export type AddonBlockTimelineActionEvents = {
+    events: AddonCalendarEvent[];
+    lastEventId: number | undefined;
+    canLoadMore: boolean;
 };

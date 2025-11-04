@@ -25,6 +25,6 @@ export default function(): void {
     // Execute callbacks in the Angular zone, so change detection doesn't stop working.
     keyboard.onKeyboardShow().subscribe(data => zone.run(() => CoreKeyboard.onKeyboardShow(data.keyboardHeight)));
     keyboard.onKeyboardHide().subscribe(() => zone.run(() => CoreKeyboard.onKeyboardHide()));
-    keyboard.onKeyboardWillShow().subscribe(() => zone.run(() => CoreKeyboard.onKeyboardWillShow()));
+    keyboard.onKeyboardWillShow().subscribe((data) => zone.run(() => CoreKeyboard.onKeyboardWillShow(data.keyboardHeight)));
     keyboard.onKeyboardWillHide().subscribe(() => zone.run(() => CoreKeyboard.onKeyboardWillHide()));
 }

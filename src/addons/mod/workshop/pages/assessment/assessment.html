@@ -9,99 +9,144 @@
                     [courseId]="courseId" />
             </h1>
         </ion-title>
-        <ion-buttons slot="end" [hidden]="!evaluating">
-            <ion-button fill="clear" (click)="saveEvaluation()">
-                {{ 'core.save' | translate }}
-            </ion-button>
+        <ion-buttons slot="end">
+            @if (evaluating && !loadFeedbackToEditErrorMessage) {
+                <ion-button fill="clear" (click)="saveEvaluation()">
+                    {{ 'core.save' | translate }}
+                </ion-button>
+            }
         </ion-buttons>
     </ion-toolbar>
 </ion-header>
 <ion-content>
-    <ion-refresher slot="fixed" [disabled]="!loaded" (ionRefresh)="refreshAssessment($event.target)" *ngIf="!evaluating">
-        <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}" />
-    </ion-refresher>
+    @if (!evaluating) {
+        <ion-refresher slot="fixed" [disabled]="!loaded" (ionRefresh)="refreshAssessment($event.target)">
+            <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}" />
+        </ion-refresher>
+    }
     <core-loading [hideUntil]="loaded">
 
         <ion-item class="ion-text-wrap">
-            <core-user-avatar *ngIf="profile" [user]="profile" slot="start" [courseId]="courseId" [userId]="profile.id" />
+            @if (profile) {
+                <core-user-avatar [user]="profile" slot="start" [courseId]="courseId" [userId]="profile.id" />
+            }
 
             <ion-label>
-                <h2 *ngIf="profile && profile.fullname">{{profile.fullname}}</h2>
+                @if (profile && profile.fullname) {
+                    <h2>{{profile.fullname}}</h2>
+                }
 
-                <p *ngIf="workshop && assessment && showGrade(assessment.grade)">
-                    {{ 'addon.mod_workshop.submissiongradeof' | translate:{$a: workshop.grade } }}: {{assessment.grade}}
-                </p>
-                <p *ngIf="workshop && access && access.canviewallsubmissions && assessment && showGrade(assessment.gradinggrade)"
-                    [class.core-has-overriden-grade]=" showGrade(assessment.gradinggrade)">
-                    {{ 'addon.mod_workshop.gradinggradeof' | translate:{$a: workshop.gradinggrade } }}: {{assessment.gradinggrade}}
-                </p>
-                <p *ngIf="access && access.canviewallsubmissions && assessment && showGrade(assessment.gradinggradeover)"
-                    class="core-overriden-grade">
-                    {{ 'addon.mod_workshop.gradinggradeover' | translate }}: {{assessment.gradinggradeover}}
-                </p>
-                <p *ngIf="assessment && assessment.weight && assessment.weight !== 1">
-                    {{ 'addon.mod_workshop.weightinfo' | translate:{$a: assessment.weight } }}
-                </p>
-                <ion-badge *ngIf="!assessment || !showGrade(assessment.grade)" color="danger">
-                    {{ 'addon.mod_workshop.notassessed' | translate }}
-                </ion-badge>
+                @if (workshop && assessment && showGrade(assessment.grade)) {
+                    <p>
+                        {{ 'addon.mod_workshop.submissiongradeof' | translate:{$a: workshop.grade } }}: {{assessment.grade}}
+                    </p>
+                }
+                @if (workshop && access && access.canviewallsubmissions && assessment && showGrade(assessment.gradinggrade)) {
+                    <p [class.core-has-overriden-grade]=" showGrade(assessment.gradinggrade)">
+                        {{ 'addon.mod_workshop.gradinggradeof' | translate:{$a: workshop.gradinggrade } }}: {{assessment.gradinggrade}}
+                    </p>
+                }
+                @if (access && access.canviewallsubmissions && assessment && showGrade(assessment.gradinggradeover)) {
+                    <p class="core-overriden-grade">
+                        {{ 'addon.mod_workshop.gradinggradeover' | translate }}: {{assessment.gradinggradeover}}
+                    </p>
+                }
+                @if (assessment && assessment.weight && assessment.weight !== 1) {
+                    <p>
+                        {{ 'addon.mod_workshop.weightinfo' | translate:{$a: assessment.weight } }}
+                    </p>
+                }
+                @if (!assessment || !showGrade(assessment.grade)) {
+                    <ion-badge color="danger">
+                        {{ 'addon.mod_workshop.notassessed' | translate }}
+                    </ion-badge>
+                }
             </ion-label>
         </ion-item>
 
-        <addon-mod-workshop-assessment-strategy *ngIf="assessment && assessmentId && showGrade(assessment.grade) && workshop && access"
-            [workshop]="workshop" [access]="access" [assessmentId]="assessmentId" [userId]="profile && profile.id" [strategy]="strategy" />
+        @if (assessment && assessmentId && showGrade(assessment.grade) && workshop && access) {
+            <addon-mod-workshop-assessment-strategy [workshop]="workshop" [access]="access" [assessmentId]="assessmentId"
+                [userId]="profile && profile.id" [strategy]="strategy" />
+        }
 
-        <form [formGroup]="evaluateForm" *ngIf="evaluating" #evaluateFormEl>
-            <ion-item class="ion-text-wrap">
-                <ion-label>
-                    <h3 class="item-heading">{{ 'addon.mod_workshop.assessmentsettings' | translate }}</h3>
-                </ion-label>
-            </ion-item>
-            <ion-item class="ion-text-wrap" *ngIf="access?.canallocate">
-                <ion-select labelPlacement="stacked" formControlName="weight" required="true" interface="action-sheet"
-                    [cancelText]="'core.cancel' | translate"
-                    [interfaceOptions]="{header: 'addon.mod_workshop.assessmentweight' | translate}">
-                    <div [core-mark-required]="true" slot="label">
-                        {{ 'addon.mod_workshop.assessmentweight' | translate }}
-                    </div>
-                    <ion-select-option *ngFor="let w of weights" [value]="w">{{ w }}</ion-select-option>
-                </ion-select>
-            </ion-item>
-            <ion-item class="ion-text-wrap">
-                <ion-label>
-                    <h3 class="item-heading">{{ 'addon.mod_workshop.gradinggradecalculated' | translate }}</h3>
-                    <p>{{ gradingGrade }}</p>
-                </ion-label>
-            </ion-item>
-            <ion-item class="ion-text-wrap" *ngIf="access?.canoverridegrades">
-                <ion-select labelPlacement="stacked" formControlName="grade" interface="action-sheet"
-                    [cancelText]="'core.cancel' | translate"
-                    [interfaceOptions]="{header: 'addon.mod_workshop.gradinggradeover' | translate}"
-                    [label]="'addon.mod_workshop.gradinggradeover' | translate">
-                    <ion-select-option *ngFor="let grade of evaluationGrades" [value]="grade.value">
-                        {{grade.label}}
-                    </ion-select-option>
-                </ion-select>
-            </ion-item>
-            <ion-item *ngIf="access?.canoverridegrades">
-                <ion-label position="stacked">{{ 'addon.mod_workshop.feedbackreviewer' | translate }}</ion-label>
-                <core-rich-text-editor [control]="evaluateForm.controls['text']" name="text" [autoSave]="true" contextLevel="module"
-                    [contextInstanceId]="workshop?.coursemodule" elementId="feedbackreviewer_editor"
-                    [draftExtraParams]="{asid: assessmentId}" />
-            </ion-item>
-        </form>
-        <ion-list *ngIf="!evaluating && evaluate && evaluate.text">
-            <ion-item class="ion-text-wrap">
-                <core-user-avatar *ngIf="evaluateByProfile" [user]="evaluateByProfile" slot="start" [courseId]="courseId"
-                    [userId]="evaluateByProfile.id" />
-                <ion-label>
-                    <h3 class="item-heading" *ngIf="evaluateByProfile && evaluateByProfile.fullname">
-                        {{ 'addon.mod_workshop.feedbackby' | translate : {$a: evaluateByProfile.fullname} }}
-                    </h3>
-                    <core-format-text [text]="evaluate.text" contextLevel="module" [contextInstanceId]="workshop?.coursemodule"
-                        [courseId]="courseId" />
-                </ion-label>
-            </ion-item>
-        </ion-list>
+        @if (evaluating) {
+            @if (loadFeedbackToEditErrorMessage) {
+                <!-- Error loading the feedback to edit it, display a warning. -->
+                <ion-item class="ion-text-wrap">
+                    <ion-label>
+                        <h3 class="item-heading">{{ 'addon.mod_workshop.assessmentsettings' | translate }}</h3>
+                    </ion-label>
+                </ion-item>
+                <ion-card class="core-warning-card">
+                    <ion-item>
+                        <ion-icon name="fas-triangle-exclamation" slot="start" aria-hidden="true" />
+                        <ion-label>{{ loadFeedbackToEditErrorMessage }}</ion-label>
+                    </ion-item>
+                </ion-card>
+            } @else {
+                <form [formGroup]="evaluateForm" #evaluateFormEl>
+                    <ion-item class="ion-text-wrap">
+                        <ion-label>
+                            <h3 class="item-heading">{{ 'addon.mod_workshop.assessmentsettings' | translate }}</h3>
+                        </ion-label>
+                    </ion-item>
+                    @if (access?.canallocate) {
+                        <ion-item class="ion-text-wrap">
+                            <ion-select labelPlacement="stacked" formControlName="weight" required="true" interface="action-sheet"
+                                [cancelText]="'core.cancel' | translate"
+                                [interfaceOptions]="{header: 'addon.mod_workshop.assessmentweight' | translate}">
+                                <div [core-mark-required]="true" slot="label">
+                                    {{ 'addon.mod_workshop.assessmentweight' | translate }}
+                                </div>
+                                <ion-select-option *ngFor="let w of weights" [value]="w">{{ w }}</ion-select-option>
+                            </ion-select>
+                        </ion-item>
+                    }
+                    <ion-item class="ion-text-wrap">
+                        <ion-label>
+                            <h3 class="item-heading">{{ 'addon.mod_workshop.gradinggradecalculated' | translate }}</h3>
+                            <p>{{ gradingGrade }}</p>
+                        </ion-label>
+                    </ion-item>
+                    @if (access?.canoverridegrades) {
+                        <ion-item class="ion-text-wrap">
+                            <ion-select labelPlacement="stacked" formControlName="grade" interface="action-sheet"
+                                [cancelText]="'core.cancel' | translate"
+                                [interfaceOptions]="{header: 'addon.mod_workshop.gradinggradeover' | translate}"
+                                [label]="'addon.mod_workshop.gradinggradeover' | translate">
+                                <ion-select-option *ngFor="let grade of evaluationGrades" [value]="grade.value">
+                                    {{grade.label}}
+                                </ion-select-option>
+                            </ion-select>
+                        </ion-item>
+                        <ion-item>
+                            <ion-label position="stacked">{{ 'addon.mod_workshop.feedbackreviewer' | translate }}</ion-label>
+                            <core-rich-text-editor [control]="evaluateForm.controls['text']" name="text" [autoSave]="true"
+                                contextLevel="module" [contextInstanceId]="workshop?.coursemodule" elementId="feedbackreviewer_editor"
+                                [draftExtraParams]="{asid: assessmentId}" />
+                        </ion-item>
+                    }
+                </form>
+            }
+        }
+
+        @if (!evaluating && evaluate && evaluate.text) {
+            <ion-list>
+                <ion-item class="ion-text-wrap">
+                    @if (evaluateByProfile) {
+                        <core-user-avatar [user]="evaluateByProfile" slot="start" [courseId]="courseId" [userId]="evaluateByProfile.id" />
+                    }
+                    <ion-label>
+                        @if (evaluateByProfile && evaluateByProfile.fullname) {
+                            <h3 class="item-heading">
+                                {{ 'addon.mod_workshop.feedbackby' | translate : {$a: evaluateByProfile.fullname} }}
+                            </h3>
+                        }
+                        <core-format-text [text]="evaluate.text" contextLevel="module" [contextInstanceId]="workshop?.coursemodule"
+                            [courseId]="courseId" />
+                    </ion-label>
+                </ion-item>
+            </ion-list>
+        }
     </core-loading>
 </ion-content>

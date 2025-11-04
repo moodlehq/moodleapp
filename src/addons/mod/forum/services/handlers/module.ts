@@ -17,13 +17,18 @@ import { AddonModForum, AddonModForumTracking } from '../forum';
 import { makeSingleton, Translate } from '@singletons';
 import { CoreEvents } from '@singletons/events';
 import { CoreSites, CoreSitesReadingStrategy } from '@services/sites';
-import { CoreCourseModuleHandler, CoreCourseModuleHandlerData } from '@features/course/services/module-delegate';
-import { CoreConstants, ModPurpose } from '@/core/constants';
+import {
+    CoreCourseModuleHandler,
+    CoreCourseModuleHandlerData,
+    CoreCourseOverviewItemContent,
+} from '@features/course/services/module-delegate';
 import { CoreModuleHandlerBase } from '@features/course/classes/module-base-handler';
 import { CoreCourseModuleData } from '@features/course/services/course-helper';
 import { CoreText } from '@singletons/text';
 import { CoreUser } from '@features/user/services/user';
-import { ADDON_MOD_FORUM_MARK_READ_EVENT, ADDON_MOD_FORUM_PAGE_NAME } from '../../constants';
+import { ADDON_MOD_FORUM_MARK_READ_EVENT, ADDON_MOD_FORUM_MODNAME, ADDON_MOD_FORUM_PAGE_NAME } from '../../constants';
+import { ModFeature, ModPurpose } from '@addons/mod/constants';
+import { CoreCourseOverviewActivity, CoreCourseOverviewItem } from '@features/course/services/course-overview';
 
 /**
  * Handler to support forum modules.
@@ -32,22 +37,24 @@ import { ADDON_MOD_FORUM_MARK_READ_EVENT, ADDON_MOD_FORUM_PAGE_NAME } from '../.
 export class AddonModForumModuleHandlerService extends CoreModuleHandlerBase implements CoreCourseModuleHandler {
 
     name = 'AddonModForum';
-    modName = 'forum';
+    modName = ADDON_MOD_FORUM_MODNAME;
     protected pageName = ADDON_MOD_FORUM_PAGE_NAME;
 
     supportedFeatures = {
-        [CoreConstants.FEATURE_GROUPS]: true,
-        [CoreConstants.FEATURE_GROUPINGS]: true,
-        [CoreConstants.FEATURE_MOD_INTRO]: true,
-        [CoreConstants.FEATURE_COMPLETION_TRACKS_VIEWS]: true,
-        [CoreConstants.FEATURE_COMPLETION_HAS_RULES]: true,
-        [CoreConstants.FEATURE_GRADE_HAS_GRADE]: true,
-        [CoreConstants.FEATURE_GRADE_OUTCOMES]: true,
-        [CoreConstants.FEATURE_BACKUP_MOODLE2]: true,
-        [CoreConstants.FEATURE_SHOW_DESCRIPTION]: true,
-        [CoreConstants.FEATURE_RATE]: true,
-        [CoreConstants.FEATURE_PLAGIARISM]: true,
-        [CoreConstants.FEATURE_MOD_PURPOSE]: ModPurpose.MOD_PURPOSE_COLLABORATION,
+        [ModFeature.GROUPS]: true,
+        [ModFeature.GROUPINGS]: true,
+        [ModFeature.MOD_INTRO]: true,
+        [ModFeature.COMPLETION_TRACKS_VIEWS]: true,
+        [ModFeature.COMPLETION_HAS_RULES]: true,
+        [ModFeature.GRADE_HAS_GRADE]: true,
+        [ModFeature.GRADE_OUTCOMES]: true,
+        [ModFeature.RATE]: true,
+        [ModFeature.BACKUP_MOODLE2]: true,
+        [ModFeature.SHOW_DESCRIPTION]: true,
+        [ModFeature.PLAGIARISM]: true,
+        [ModFeature.ADVANCED_GRADING]: true,
+        [ModFeature.MOD_PURPOSE]: ModPurpose.COLLABORATION,
+        [ModFeature.CAN_UNINSTALL]: false,
     };
 
     /**
@@ -153,6 +160,24 @@ export class AddonModForumModuleHandlerService extends CoreModuleHandlerBase imp
             // Ignore errors.
             data.extraBadge = '';
         }
+    }
+
+    /**
+     * @inheritdoc
+     */
+    async getOverviewItemContent(
+        item: CoreCourseOverviewItem,
+        activity: CoreCourseOverviewActivity,
+        courseId: number,
+    ): Promise<CoreCourseOverviewItemContent | undefined> {
+        // Hide the columns that are not supported for now.
+        if (item.key === 'submitted' || item.key === 'subscribed' || item.key === 'emaildigest') {
+            return {
+                content: null,
+            };
+        }
+
+        return super.getOverviewItemContent(item, activity, courseId);
     }
 
 }

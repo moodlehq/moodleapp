@@ -13,9 +13,10 @@
 // limitations under the License.
 
 import { Component } from '@angular/core';
-import { CoreTimeUtils } from '@services/utils/time';
-import moment, { Moment } from 'moment-timezone';
+import { CoreTime } from '@singletons/time';
+import { dayjs, Dayjs } from '@/core/utils/dayjs';
 import { AddonModDataFieldPluginBaseComponent } from '../../../classes/base-field-plugin-component';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Component to render data date field.
@@ -23,6 +24,9 @@ import { AddonModDataFieldPluginBaseComponent } from '../../../classes/base-fiel
 @Component({
     selector: 'addon-mod-data-field-date',
     templateUrl: 'addon-mod-data-field-date.html',
+    imports: [
+        CoreSharedModule,
+    ],
 })
 export class AddonModDataFieldDateComponent extends AddonModDataFieldPluginBaseComponent {
 
@@ -42,33 +46,33 @@ export class AddonModDataFieldDateComponent extends AddonModDataFieldPluginBaseC
             return;
         }
 
-        let momentInstance: Moment;
+        let dayJSInstance: Dayjs;
 
-        this.maxDate = CoreTimeUtils.getDatetimeDefaultMax();
-        this.minDate = CoreTimeUtils.getDatetimeDefaultMin();
+        this.maxDate = CoreTime.getDatetimeDefaultMax();
+        this.minDate = CoreTime.getDatetimeDefaultMin();
 
         if (this.searchMode && this.searchFields) {
-            this.addControl('f_' + this.field.id + '_z');
+            this.addControl(`f_${this.field.id}_z`);
 
-            momentInstance = this.searchFields['f_' + this.field.id + '_y']
-                ? moment(this.searchFields['f_' + this.field.id + '_y'] + '-' +
+            dayJSInstance = this.searchFields['f_' + this.field.id + '_y']
+                ? dayjs(this.searchFields['f_' + this.field.id + '_y'] + '-' +
                     this.searchFields['f_' + this.field.id + '_m'] + '-' + this.searchFields['f_' + this.field.id + '_d'])
-                : moment();
+                : dayjs();
 
-            this.searchFields['f_' + this.field.id] = CoreTimeUtils.toDatetimeFormat(momentInstance.unix() * 1000);
+            this.searchFields[`f_${this.field.id}`] = CoreTime.toDatetimeFormat(dayJSInstance.valueOf());
         } else {
-            momentInstance = this.value?.content
-                ? moment(parseInt(this.value.content, 10) * 1000)
-                : moment();
+            dayJSInstance = this.value?.content
+                ? dayjs(parseInt(this.value.content, 10) * 1000)
+                : dayjs();
 
         }
 
-        this.addControl('f_' + this.field.id, CoreTimeUtils.toDatetimeFormat(momentInstance.unix() * 1000));
+        this.addControl(`f_${this.field.id}`, CoreTime.toDatetimeFormat(dayJSInstance.valueOf()));
 
         if (!this.searchMode && !this.value?.content) {
             this.onFieldInit.emit({
                 fieldid: this.field.id,
-                content: String(momentInstance.unix()),
+                content: String(dayJSInstance.unix()),
             });
         }
     }

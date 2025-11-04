@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { APP_INITIALIZER, NgModule, Type } from '@angular/core';
+import { NgModule, Type, provideAppInitializer } from '@angular/core';
 import { Routes } from '@angular/router';
 
 import { CoreCourseIndexRoutingModule } from '@features/course/course-routing.module';
@@ -27,10 +27,18 @@ import { CORE_SITE_PLUGINS_PATH } from './constants';
  *
  * @returns Site plugins exported directives.
  */
-export async function getSitePluginsDirectives(): Promise<unknown[]> {
-    const { CoreSitePluginsDirectivesModule } = await import('./directives/directives.module');
+export async function getSitePluginsExportedDirectives(): Promise<unknown[]> {
+    const { CoreSitePluginsCallWSDirective } = await import('./directives/call-ws');
+    const { CoreSitePluginsCallWSNewContentDirective } = await import('./directives/call-ws-new-content');
+    const { CoreSitePluginsCallWSOnLoadDirective } = await import('./directives/call-ws-on-load');
+    const { CoreSitePluginsNewContentDirective } = await import('./directives/new-content');
 
-    return [CoreSitePluginsDirectivesModule];
+    return [
+        CoreSitePluginsCallWSDirective,
+        CoreSitePluginsCallWSNewContentDirective,
+        CoreSitePluginsCallWSOnLoadDirective,
+        CoreSitePluginsNewContentDirective,
+    ];
 }
 
 /**
@@ -122,15 +130,11 @@ const moduleRoutes: Routes = [
         CoreSitePreferencesRoutingModule.forChild(routes),
     ],
     providers: [
-        {
-            provide: APP_INITIALIZER,
-            multi: true,
-            useValue: async () => {
-                const { CoreSitePluginsInit } = await import('./services/siteplugins-init');
+        provideAppInitializer(async () => {
+            const { CoreSitePluginsInit } = await import('./services/siteplugins-init');
 
-                CoreSitePluginsInit.init();
-            },
-        },
+            CoreSitePluginsInit.init();
+        }),
     ],
 })
 export class CoreSitePluginsModule {}

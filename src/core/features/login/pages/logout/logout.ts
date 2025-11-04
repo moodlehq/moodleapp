@@ -26,7 +26,6 @@ import { CoreRedirects } from '@singletons/redirects';
 @Component({
     selector: 'page-core-login-logout',
     templateUrl: 'logout.html',
-    standalone: true,
     imports: [
         CoreSharedModule,
     ],
@@ -48,7 +47,7 @@ export default class CoreLoginLogoutPage implements OnInit {
             urlToOpen: CoreNavigator.getRouteParam('urlToOpen'),
         };
 
-        if (!CoreSites.isLoggedIn()) {
+        if (!CoreSites.getCurrentSite()) {
             // This page shouldn't open if user isn't logged in, but if that happens just navigate to the right page.
             await this.navigateAfterLogout(siteId, redirectData);
 
@@ -66,6 +65,10 @@ export default class CoreLoginLogoutPage implements OnInit {
         if (shouldReload) {
             // We need to reload the app to unload all the plugins. Leave the logout page first.
             await CoreNavigator.navigate('/login', { reset: true });
+
+            // The ionViewWillLeave callback will also be called in this case because of the navigation, but we call
+            // finishLogoutProcess before the reload just in case, to make sure the promise is resolved before reloading.
+            CoreSites.finishLogoutProcess();
 
             window.location.reload();
 
@@ -99,6 +102,13 @@ export default class CoreLoginLogoutPage implements OnInit {
         }
 
         await CoreNavigator.navigateToSiteHome({ params: redirectData, preferCurrentTab: false, siteId });
+    }
+
+    /**
+     * The page is about to leave and no longer be the active page.
+     */
+    ionViewWillLeave(): void {
+        CoreSites.finishLogoutProcess();
     }
 
 }

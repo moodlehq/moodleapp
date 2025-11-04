@@ -18,6 +18,7 @@ import { CoreCourseFormatHandler } from '@features/course/services/format-delega
 import { CoreSitePluginsCourseFormatHandlerData } from '@features/siteplugins/services/siteplugins';
 import { CoreSitePluginsBaseHandler } from './base-handler';
 import { CoreSitePluginsCourseFormatComponent } from '../../components/course-format/course-format';
+import { CoreCourseFormatDynamicComponent } from '@features/course/classes/base-course-format-component';
 
 /**
  * Handler to support a course format using a site plugin.
@@ -46,7 +47,7 @@ export class CoreSitePluginsCourseFormatHandler extends CoreSitePluginsBaseHandl
     /**
      * @inheritdoc
      */
-    async getCourseFormatComponent(): Promise<Type<unknown> | undefined> {
+    async getCourseFormatComponent(): Promise<Type<CoreCourseFormatDynamicComponent> | undefined> {
         if (this.handlerSchema.method) {
             return CoreSitePluginsCourseFormatComponent;
         }

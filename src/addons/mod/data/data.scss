@@ -23,9 +23,7 @@ $grid-column-paddings: (
     padding: 16px;
 
     ::ng-deep {
-
-        @import "theme/components/moodle.scss";
-        @import "theme/components/bootstrap/bootstrap.scss";
+        @import "theme/components/bootstrap/bootstrap";
 
         table {
             display: block;
@@ -44,8 +42,6 @@ $grid-column-paddings: (
 
         td, th {
             // Imported form ion-col;
-            @include make-breakpoint-padding($grid-column-paddings);
-            @include margin(0);
             box-sizing: border-box;
             position: relative;
             flex-basis: 0;
@@ -53,6 +49,8 @@ $grid-column-paddings: (
             width: 100% !important;
             max-width: 100%;
             min-height: auto;
+            @include make-breakpoint-padding($grid-column-paddings);
+            @include margin(0);
         }
 
         // Do not let block elements to define widths or heights.

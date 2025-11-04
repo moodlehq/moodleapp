@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, Input, Output, EventEmitter, OnInit, OnDestroy, HostBinding } from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnInit, OnDestroy, signal } from '@angular/core';
 
 import { CoreSites } from '@services/sites';
 import {
@@ -29,8 +29,12 @@ import {
 } from '@features/course/services/module-prefetch-delegate';
 import { CoreConstants, DownloadStatus } from '@/core/constants';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
-import { BehaviorSubject } from 'rxjs';
 import { toBoolean } from '@/core/transforms/boolean';
+import { CoreRemindersDateComponent } from '../../../reminders/components/date/date';
+import { CoreCourseModuleCompletionComponent } from '../module-completion/module-completion';
+import { CoreCourseModuleCompletionLegacyComponent } from '../module-completion-legacy/module-completion-legacy';
+import { CoreSharedModule } from '@/core/shared.module';
+import { CoreCourseModuleHelper } from '@features/course/services/course-module-helper';
 
 /**
  * Component to display a module entry in a list of modules.
@@ -43,6 +47,15 @@ import { toBoolean } from '@/core/transforms/boolean';
     selector: 'core-course-module',
     templateUrl: 'core-course-module.html',
     styleUrl: 'module.scss',
+    imports: [
+        CoreSharedModule,
+        CoreCourseModuleCompletionLegacyComponent,
+        CoreCourseModuleCompletionComponent,
+        CoreRemindersDateComponent,
+    ],
+    host: {
+        '[class.indented]': 'indented',
+    },
 })
 export class CoreCourseModuleComponent implements OnInit, OnDestroy {
 
@@ -58,18 +71,18 @@ export class CoreCourseModuleComponent implements OnInit, OnDestroy {
     @Input({ transform: toBoolean }) showIndentation = true; // Whether to show indentation
     @Input({ transform: toBoolean }) isLastViewed = false; // Whether it's the last module viewed in a course.
     @Output() completionChanged = new EventEmitter<CoreCourseModuleCompletionData>(); // Notify when module completion changes.
-    @HostBinding('class.indented') indented = false;
 
     modNameTranslated = '';
     hasCompletion = false; // Whether activity has completion to be shown.
     showManualCompletion = false; // Whether to show manual completion when completion conditions are disabled.
-    prefetchStatusIcon$ = new BehaviorSubject<string>(''); // Module prefetch status icon.
-    prefetchStatusText$ = new BehaviorSubject<string>(''); // Module prefetch status text.
     moduleHasView = true;
+    readonly prefetchStatusIcon = signal<string>(''); // Module prefetch status icon.
+    readonly prefetchStatusText = signal<string>(''); // Module prefetch status text.
 
     protected prefetchHandler?: CoreCourseModulePrefetchHandler;
 
     protected moduleStatusObserver?: CoreEventObserver;
+    protected indented = false; // Whether the module is indented.
 
     /**
      * @inheritdoc
@@ -82,7 +95,7 @@ export class CoreCourseModuleComponent implements OnInit, OnDestroy {
         } else {
             this.indented = false;
         }
-        this.modNameTranslated = CoreCourse.translateModuleName(this.module.modname, this.module.modplural);
+        this.modNameTranslated = CoreCourseModuleHelper.translateModuleName(this.module.modname, this.module.modplural);
         if (this.showCompletion) {
             this.showLegacyCompletion = this.showLegacyCompletion ??
                 CoreConstants.CONFIG.uselegacycompletion ??
@@ -100,7 +113,7 @@ export class CoreCourseModuleComponent implements OnInit, OnDestroy {
         }
 
         this.module.handlerData.a11yTitle = this.module.handlerData.a11yTitle ?? this.module.handlerData.title;
-        this.moduleHasView = CoreCourse.moduleHasView(this.module);
+        this.moduleHasView = CoreCourseModuleHelper.moduleHasView(this.module);
 
         if (this.showDownloadStatus && this.module.handlerData.showDownloadButton) {
             const status = await CoreCourseModulePrefetchDelegate.getDownloadedModuleStatus(this.module, this.module.course);
@@ -141,16 +154,16 @@ export class CoreCourseModuleComponent implements OnInit, OnDestroy {
 
         switch (prefetchStatus) {
             case DownloadStatus.OUTDATED:
-                this.prefetchStatusIcon$.next(CoreConstants.ICON_OUTDATED);
-                this.prefetchStatusText$.next('core.outdated');
+                this.prefetchStatusIcon.set(CoreConstants.ICON_OUTDATED);
+                this.prefetchStatusText.set('core.outdated');
                 break;
             case DownloadStatus.DOWNLOADED:
-                this.prefetchStatusIcon$.next(CoreConstants.ICON_DOWNLOADED);
-                this.prefetchStatusText$.next('core.downloaded');
+                this.prefetchStatusIcon.set(CoreConstants.ICON_DOWNLOADED);
+                this.prefetchStatusText.set('core.downloaded');
                 break;
             default:
-                this.prefetchStatusIcon$.next('');
-                this.prefetchStatusText$.next('');
+                this.prefetchStatusIcon.set('');
+                this.prefetchStatusText.set('');
                 break;
         }
 
@@ -165,7 +178,6 @@ export class CoreCourseModuleComponent implements OnInit, OnDestroy {
             await CoreCourseModuleDelegate.manualCompletionAlwaysShown(this.module);
 
         this.hasCompletion = !!this.module.completiondata && this.module.uservisible &&
-            (!this.module.completiondata.isautomatic || (this.module.completiondata.details?.length || 0) > 0) &&
             (this.showCompletionConditions || this.showManualCompletion);
 
     }
@@ -187,8 +199,7 @@ export class CoreCourseModuleComponent implements OnInit, OnDestroy {
      * @param event Click event.
      */
     buttonClicked(event: Event): void {
-        // eslint-disable-next-line deprecation/deprecation
-        const button = this.module.handlerData?.button ?? this.module.handlerData?.buttons?.[0];
+        const button = this.module.handlerData?.button;
         if (!button || !button.action) {
             return;
         }

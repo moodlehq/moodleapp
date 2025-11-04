@@ -22,6 +22,7 @@ import { CoreCourseModuleCompletionData } from '@features/course/services/course
 import { CoreScreenOrientation } from '@services/screen';
 import { CoreSiteInfoResponse, CoreSitePublicConfigResponse } from '@classes/sites/unauthenticated-site';
 import { DownloadStatus } from '../constants';
+import { COURSE_STATUS_CHANGED_EVENT } from '@features/course/constants';
 
 /**
  * Observer instance to stop listening to an event.
@@ -41,14 +42,12 @@ export interface CoreEventsData {
     [CoreEvents.SITE_ADDED]: CoreEventSiteAddedData;
     [CoreEvents.SITE_DELETED]: CoreSite;
     [CoreEvents.SESSION_EXPIRED]: CoreEventSessionExpiredData;
-    [CoreEvents.COURSE_STATUS_CHANGED]: CoreEventCourseStatusChanged;
     [CoreEvents.PACKAGE_STATUS_CHANGED]: CoreEventPackageStatusChanged;
     [CoreEvents.USER_DELETED]: CoreEventUserDeletedData;
     [CoreEvents.USER_SUSPENDED]: CoreEventUserSuspendedData;
     [CoreEvents.USER_NO_LOGIN]: CoreEventUserNoLoginData;
     [CoreEvents.FORM_ACTION]: CoreEventFormActionData;
     [CoreEvents.NOTIFICATION_SOUND_CHANGED]: CoreEventNotificationSoundChangedData;
-    [CoreEvents.SELECT_COURSE_TAB]: CoreEventSelectCourseTabData;
     [CoreEvents.COMPLETION_MODULE_VIEWED]: CoreEventCompletionModuleViewedData;
     [CoreEvents.MANUAL_COMPLETION_CHANGED]: CoreEventManualCompletionChangedData;
     [CoreEvents.SECTION_STATUS_CHANGED]: CoreEventSectionStatusChangedData;
@@ -63,6 +62,7 @@ export interface CoreEventsData {
     [CoreEvents.COMPONENT_FILE_ACTION]: CoreFilepoolComponentFileEventData;
     [CoreEvents.FILE_SHARED]: CoreEventFileSharedData;
     [CoreEvents.APP_LAUNCHED_URL]: CoreEventAppLaunchedData;
+    // eslint-disable-next-line @typescript-eslint/no-deprecated
     [CoreEvents.ORIENTATION_CHANGE]: CoreEventOrientationData;
     [CoreEvents.COURSE_MODULE_VIEWED]: CoreEventCourseModuleViewed;
     [CoreEvents.COMPLETE_REQUIRED_PROFILE_DATA_FINISHED]: CoreEventCompleteRequiredProfileDataFinished;
@@ -91,7 +91,10 @@ export class CoreEvents {
     static readonly USER_SUSPENDED = 'user_suspended';
     static readonly USER_NO_LOGIN = 'user_no_login';
     static readonly PACKAGE_STATUS_CHANGED = 'package_status_changed';
-    static readonly COURSE_STATUS_CHANGED = 'course_status_changed';
+    /**
+     * @deprecated since 5.0. Use COURSE_STATUS_CHANGED_EVENT instead.
+     */
+    static readonly COURSE_STATUS_CHANGED = COURSE_STATUS_CHANGED_EVENT;
     static readonly SECTION_STATUS_CHANGED = 'section_status_changed';
     static readonly COMPONENT_FILE_ACTION = 'component_file_action';
     static readonly SITE_PLUGINS_LOADED = 'site_plugins_loaded';
@@ -104,9 +107,18 @@ export class CoreEvents {
     static readonly IAB_MESSAGE = 'inappbrowser_message';
     static readonly APP_LAUNCHED_URL = 'app_launched_url'; // App opened with a certain URL (custom URL scheme).
     static readonly FILE_SHARED = 'file_shared';
+    /**
+     * @deprecated since 5.0.0. Use CoreKeyboard.getKeyboardShownSignal signal.
+     */
     static readonly KEYBOARD_CHANGE = 'keyboard_change';
+    /**
+     * @deprecated since 5.1.0. Use CoreScreen.orientationSignal signal.
+     */
     static readonly ORIENTATION_CHANGE = 'orientation_change';
     static readonly SEND_ON_ENTER_CHANGED = 'send_on_enter_changed';
+    /**
+     * @deprecated since 5.1.0. Use CORE_COURSE_SELECT_TAB instead.
+     */
     static readonly SELECT_COURSE_TAB = 'select_course_tab';
     static readonly WS_CACHE_INVALIDATED = 'ws_cache_invalidated';
     static readonly SITE_STORAGE_DELETED = 'site_storage_deleted';
@@ -116,6 +128,9 @@ export class CoreEvents {
     static readonly COURSE_MODULE_VIEWED = 'course_module_viewed';
     static readonly COMPLETE_REQUIRED_PROFILE_DATA_FINISHED = 'complete_required_profile_data_finished';
     static readonly MAIN_HOME_LOADED = 'main_home_loaded';
+    /**
+     * @deprecated since 5.1.0. Not used anymore.
+     */
     static readonly FULL_SCREEN_CHANGED = 'full_screen_changed';
 
     protected static logger = CoreLogger.getInstance('CoreEvents');
@@ -329,14 +344,6 @@ export type CoreEventLoadingChangedData = {
 };
 
 /**
- * Data passed to COURSE_STATUS_CHANGED event.
- */
-export type CoreEventCourseStatusChanged = {
-    courseId: number; // Course Id.
-    status: DownloadStatus;
-};
-
-/**
  * Data passed to PACKAGE_STATUS_CHANGED event.
  */
 export type CoreEventPackageStatusChanged = {
@@ -388,15 +395,6 @@ export type CoreEventFormActionData = {
  */
 export type CoreEventNotificationSoundChangedData = {
     enabled: boolean;
-};
-
-/**
- * Data passed to SELECT_COURSE_TAB event.
- */
-export type CoreEventSelectCourseTabData = {
-    name?: string; // Name of the tab's handler. If not set, load course contents.
-    sectionId?: number;
-    sectionNumber?: number;
 };
 
 /**
@@ -470,6 +468,8 @@ export type CoreEventAppLaunchedData = {
 
 /**
  * Data passed to ORIENTATION_CHANGE event.
+ *
+ * @deprecated since 5.1.0. Use CoreScreen.orientationSignal signal.
  */
 export type CoreEventOrientationData = {
     orientation: CoreScreenOrientation;

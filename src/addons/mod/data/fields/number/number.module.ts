@@ -12,30 +12,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { CoreSharedModule } from '@/core/shared.module';
-import { NgModule, APP_INITIALIZER } from '@angular/core';
+import { NgModule, provideAppInitializer } from '@angular/core';
 import { AddonModDataFieldsDelegate } from '../../services/data-fields-delegate';
-import { AddonModDataFieldNumberComponent } from './component/number';
 import { AddonModDataFieldNumberHandler } from './services/handler';
 
 @NgModule({
-    declarations: [
-        AddonModDataFieldNumberComponent,
-    ],
-    imports: [
-        CoreSharedModule,
-    ],
     providers: [
-        {
-            provide: APP_INITIALIZER,
-            multi: true,
-            useValue: () => {
-                AddonModDataFieldsDelegate.registerHandler(AddonModDataFieldNumberHandler.instance);
-            },
-        },
-    ],
-    exports: [
-        AddonModDataFieldNumberComponent,
+        provideAppInitializer(() => {
+            AddonModDataFieldsDelegate.registerHandler(AddonModDataFieldNumberHandler.instance);
+        }),
     ],
 })
 export class AddonModDataFieldNumberModule {}

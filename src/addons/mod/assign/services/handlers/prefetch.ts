@@ -34,7 +34,7 @@ import { AddonModAssignSync, AddonModAssignSyncResult } from '../assign-sync';
 import { CoreUser } from '@features/user/services/user';
 import { CoreGradesHelper } from '@features/grades/services/grades-helper';
 import { CoreCourses } from '@features/courses/services/courses';
-import { ADDON_MOD_ASSIGN_COMPONENT } from '../../constants';
+import { ADDON_MOD_ASSIGN_COMPONENT, ADDON_MOD_ASSIGN_COMPONENT_LEGACY, ADDON_MOD_ASSIGN_MODNAME } from '../../constants';
 
 /**
  * Handler to prefetch assigns.
@@ -42,9 +42,9 @@ import { ADDON_MOD_ASSIGN_COMPONENT } from '../../constants';
 @Injectable({ providedIn: 'root' })
 export class AddonModAssignPrefetchHandlerService extends CoreCourseActivityPrefetchHandlerBase {
 
-    name = 'AddonModAssign';
-    modName = 'assign';
-    component = ADDON_MOD_ASSIGN_COMPONENT;
+    name = ADDON_MOD_ASSIGN_COMPONENT;
+    modName = ADDON_MOD_ASSIGN_MODNAME;
+    component = ADDON_MOD_ASSIGN_COMPONENT_LEGACY;
     updatesNames = /^configuration$|^.*files$|^submissions$|^grades$|^gradeitems$|^outcomes$|^comments$/;
 
     /**
@@ -67,7 +67,7 @@ export class AddonModAssignPrefetchHandlerService extends CoreCourseActivityPref
             }
 
             // Check if the user can view their own submission.
-            await AddonModAssign.getSubmissionStatus(assign.id, { cmId: module.id });
+            await AddonModAssign.getSubmissionStatus(assign, { cmId: module.id });
 
             return true;
         } catch {
@@ -201,17 +201,13 @@ export class AddonModAssignPrefetchHandlerService extends CoreCourseActivityPref
      *
      * @param moduleId The module ID.
      * @param courseId The course ID the module belongs to.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateContent(moduleId: number, courseId: number): Promise<void> {
         await AddonModAssign.invalidateContent(moduleId, courseId);
     }
 
     /**
-     * Invalidate WS calls needed to determine module status.
-     *
-     * @param module Module.
-     * @returns Promise resolved when invalidated.
+     * @inheritdoc
      */
     async invalidateModule(module: CoreCourseAnyModuleData): Promise<void> {
         return CoreCourse.invalidateModule(module.id);
@@ -258,7 +254,7 @@ export class AddonModAssignPrefetchHandlerService extends CoreCourseActivityPref
 
         promises.push(this.prefetchSubmissions(assign, courseId, module.id, userId, siteId));
 
-        promises.push(CoreCourse.getModuleBasicInfoByInstance(assign.id, 'assign', { siteId }));
+        promises.push(CoreCourse.getModuleBasicInfoByInstance(assign.id, ADDON_MOD_ASSIGN_MODNAME, { siteId }));
         // Get course data, needed to determine upload max size if it's configured to be course limit.
         promises.push(CorePromiseUtils.ignoreErrors(CoreCourses.getCourseByField('id', courseId, siteId)));
 
@@ -409,7 +405,6 @@ export class AddonModAssignPrefetchHandlerService extends CoreCourseActivityPref
      * @param moduleId Module ID.
      * @param options Other options, see getSubmissionStatusWithRetry.
      * @param resolveOnNoPermission If true, will avoid throwing if a nopermission error is raised.
-     * @returns Promise resolved when prefetched, rejected otherwise.
      */
     protected async prefetchSubmission(
         assign: AddonModAssignAssign,

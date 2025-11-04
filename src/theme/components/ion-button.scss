@@ -114,6 +114,20 @@ ion-button {
         outline: var(--a11y-shadow-focus-outline);
         z-index: 1;
     }
+
+    &.enlarge-on-hover::part(native) {
+        transition: transform 0.2s ease-in-out;
+        will-change: transform;
+        &:hover {
+            transform: scale(1.20);
+        }
+    }
+
+    // Restore the primary color for badges since some buttons change it.
+    ion-badge {
+        --ion-color-primary: var(--primary);
+        --color: var(--primary-contrast);
+    }
 }
 
 ion-button,

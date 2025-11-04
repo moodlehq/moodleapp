@@ -27,7 +27,7 @@ import { AddonCompetencyHelper } from '../services/competency-helper';
  */
 export class AddonCompetencyPlanCompetenciesSource extends CoreRoutedItemsManagerSource<AddonCompetencyDataForPlanPageCompetency> {
 
-    readonly PLAN_ID: number;
+    readonly planId: number;
 
     plan?: AddonCompetencyDataForPlanPageWSResponse;
     user?: CoreUserProfile;
@@ -35,7 +35,7 @@ export class AddonCompetencyPlanCompetenciesSource extends CoreRoutedItemsManage
     constructor(planId: number) {
         super();
 
-        this.PLAN_ID = planId;
+        this.planId = planId;
     }
 
     /**
@@ -60,7 +60,7 @@ export class AddonCompetencyPlanCompetenciesSource extends CoreRoutedItemsManage
      * Invalidate plan cache.
      */
     async invalidateCache(): Promise<void> {
-        await CorePromiseUtils.ignoreErrors(AddonCompetency.invalidateLearningPlan(this.PLAN_ID));
+        await CorePromiseUtils.ignoreErrors(AddonCompetency.invalidateLearningPlan(this.planId));
     }
 
     /**
@@ -78,7 +78,7 @@ export class AddonCompetencyPlanCompetenciesSource extends CoreRoutedItemsManage
      * Load learning plan.
      */
     private async loadLearningPlan(): Promise<void> {
-        this.plan = await AddonCompetency.getLearningPlan(this.PLAN_ID);
+        this.plan = await AddonCompetency.getLearningPlan(this.planId);
         this.plan.plan.statusname = AddonCompetencyHelper.getPlanStatusName(this.plan.plan.status);
 
         // Get the user profile image.

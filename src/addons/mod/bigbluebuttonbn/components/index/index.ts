@@ -12,16 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit, Optional } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CoreError } from '@classes/errors/error';
 import { CoreCourseModuleMainActivityComponent } from '@features/course/classes/main-activity-component';
-import { CoreCourseContentsPage } from '@features/course/pages/contents/contents';
-import { IonContent } from '@ionic/angular';
 import { CoreApp } from '@services/app';
 import { CoreGroupInfo, CoreGroups } from '@services/groups';
 import { CoreSites } from '@services/sites';
 import { CoreText } from '@singletons/text';
-import { CoreTimeUtils } from '@services/utils/time';
+import { CoreTime } from '@singletons/time';
 import { CoreArray } from '@singletons/array';
 import { Translate } from '@singletons';
 import {
@@ -30,12 +28,15 @@ import {
     AddonModBBBMeetingInfo,
     AddonModBBBRecordingPlaybackTypes,
 } from '../../services/bigbluebuttonbn';
-import { ADDON_MOD_BBB_COMPONENT } from '../../constants';
+import { ADDON_MOD_BBB_COMPONENT_LEGACY, ADDON_MOD_BBB_MODNAME } from '../../constants';
 import { CoreLoadings } from '@services/overlays/loadings';
 import { convertTextToHTMLElement } from '@/core/utils/create-html-element';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreOpener } from '@singletons/opener';
 import { CoreAlerts } from '@services/overlays/alerts';
+import { CoreSharedModule } from '@/core/shared.module';
+import { CoreCourseModuleInfoComponent } from '@features/course/components/module-info/module-info';
+import { CoreCourseModuleNavigationComponent } from '@features/course/components/module-navigation/module-navigation';
 
 /**
  * Component that displays a Big Blue Button activity.
@@ -44,23 +45,21 @@ import { CoreAlerts } from '@services/overlays/alerts';
     selector: 'addon-mod-bbb-index',
     templateUrl: 'index.html',
     styleUrl: 'index.scss',
+    imports: [
+        CoreSharedModule,
+        CoreCourseModuleInfoComponent,
+        CoreCourseModuleNavigationComponent,
+    ],
 })
 export class AddonModBBBIndexComponent extends CoreCourseModuleMainActivityComponent implements OnInit {
 
-    component = ADDON_MOD_BBB_COMPONENT;
-    pluginName = 'bigbluebuttonbn';
+    component = ADDON_MOD_BBB_COMPONENT_LEGACY;
+    pluginName = ADDON_MOD_BBB_MODNAME;
     bbb?: AddonModBBBData;
     groupInfo?: CoreGroupInfo;
     groupId = 0;
     meetingInfo?: AddonModBBBMeetingInfo;
     recordings?: Recording[];
-
-    constructor(
-        protected content?: IonContent,
-        @Optional() courseContentsPage?: CoreCourseContentsPage,
-    ) {
-        super('AddonModBBBIndexComponent', content, courseContentsPage);
-    }
 
     /**
      * @inheritdoc
@@ -164,7 +163,7 @@ export class AddonModBBBIndexComponent extends CoreCourseModuleMainActivityCompo
                 }
 
                 if (columnData.formatter === 'customDate' && !isNaN(Number(value))) {
-                    value = CoreTimeUtils.userDate(Number(value), 'core.strftimedaydate');
+                    value = CoreTime.userDate(Number(value), 'core.strftimedaydate');
                 } else if (columnData.allowHTML && typeof value === 'string') {
                     // If the HTML is empty, don't display it.
                     const valueElement = convertTextToHTMLElement(value);

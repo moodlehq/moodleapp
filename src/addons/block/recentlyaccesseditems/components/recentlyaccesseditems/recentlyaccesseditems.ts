@@ -13,7 +13,6 @@
 // limitations under the License.
 
 import { Component, OnInit } from '@angular/core';
-import { CoreSites } from '@services/sites';
 import { CoreBlockBaseComponent } from '@features/block/classes/base-block-component';
 import {
     AddonBlockRecentlyAccessedItems,
@@ -23,6 +22,7 @@ import { CoreText } from '@singletons/text';
 import { CoreLoadings } from '@services/overlays/loadings';
 import { CoreUtils } from '@singletons/utils';
 import { CoreSharedModule } from '@/core/shared.module';
+import { CoreContentLinksHelper } from '@features/contentlinks/services/contentlinks-helper';
 
 /**
  * Component to render a recently accessed items block.
@@ -31,7 +31,6 @@ import { CoreSharedModule } from '@/core/shared.module';
     selector: 'addon-block-recentlyaccesseditems',
     templateUrl: 'addon-block-recentlyaccesseditems.html',
     styleUrl: 'recentlyaccesseditems.scss',
-    standalone: true,
     imports: [
         CoreSharedModule,
     ],
@@ -40,13 +39,8 @@ export class AddonBlockRecentlyAccessedItemsComponent extends CoreBlockBaseCompo
 
     items: AddonBlockRecentlyAccessedItemsItemCalculatedData[] = [];
     scrollElementId!: string;
-    colorizeIcons = false;
 
     protected fetchContentDefaultError = 'Error getting recently accessed items data.';
-
-    constructor() {
-        super('AddonBlockRecentlyAccessedItemsComponent');
-    }
 
     /**
      * @inheritdoc
@@ -56,9 +50,6 @@ export class AddonBlockRecentlyAccessedItemsComponent extends CoreBlockBaseCompo
         const scrollId = CoreUtils.getUniqueId('AddonBlockRecentlyAccessedItemsComponent-Scroll');
 
         this.scrollElementId = `addon-block-recentlyaccesseditems-scroll-${scrollId}`;
-
-        // Only colorize icons on 4.0 to 4.3 sites.
-        this.colorizeIcons = !CoreSites.getCurrentSite()?.isVersionGreaterEqualThan('4.4');
 
         super.ngOnInit();
     }
@@ -86,7 +77,6 @@ export class AddonBlockRecentlyAccessedItemsComponent extends CoreBlockBaseCompo
      *
      * @param e Click event.
      * @param item Activity item info.
-     * @returns Promise resolved when done.
      */
     async action(e: Event, item: AddonBlockRecentlyAccessedItemsItemCalculatedData): Promise<void> {
         e.preventDefault();
@@ -96,7 +86,7 @@ export class AddonBlockRecentlyAccessedItemsComponent extends CoreBlockBaseCompo
         const modal = await CoreLoadings.show();
 
         try {
-            await CoreSites.visitLink(url);
+            await CoreContentLinksHelper.visitLink(url);
         } finally {
             modal.dismiss();
         }

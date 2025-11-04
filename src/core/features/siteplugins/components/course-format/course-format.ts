@@ -12,16 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnChanges, Input, ViewChild, HostBinding } from '@angular/core';
+import { Component, OnChanges, viewChild } from '@angular/core';
 
-import { CoreCourseFormatComponent } from '@features/course/components/course-format/course-format';
-import { CoreCourseSection } from '@features/course/services/course-helper';
 import { CoreCourseFormatDelegate } from '@features/course/services/format-delegate';
-import { CoreCourseAnyCourseData } from '@features/courses/services/courses';
 import { CoreSitePlugins, CoreSitePluginsContent } from '@features/siteplugins/services/siteplugins';
 import { CoreSitePluginsPluginContentComponent } from '../plugin-content/plugin-content';
-import { CoreCompileHtmlComponentModule } from '@features/compile/components/compile-html/compile-html.module';
 import { CoreSharedModule } from '@/core/shared.module';
+import { CoreCourseFormatDynamicComponent } from '@features/course/classes/base-course-format-component';
 
 /**
  * Component that displays the index of a course format site plugin.
@@ -30,29 +27,19 @@ import { CoreSharedModule } from '@/core/shared.module';
     selector: 'core-site-plugins-course-format',
     templateUrl: 'core-siteplugins-course-format.html',
     styles: [':host { display: contents; }'],
-    standalone: true,
     imports: [
         CoreSharedModule,
-        CoreCompileHtmlComponentModule,
         CoreSitePluginsPluginContentComponent,
     ],
+    host: {
+        '[class]': 'component',
+    },
 })
-export class CoreSitePluginsCourseFormatComponent implements OnChanges {
+export class CoreSitePluginsCourseFormatComponent extends CoreCourseFormatDynamicComponent implements OnChanges {
 
-    @Input() course?: CoreCourseAnyCourseData; // The course to render.
-    @Input() sections?: CoreCourseSection[]; // List of course sections. The status will be calculated in this component.
-    @Input() initialSectionId?: number; // The section to load first (by ID).
-    @Input() initialSectionNumber?: number; // The section to load first (by number).
-    @Input() moduleId?: number; // The module ID to scroll to. Must be inside the initial selected section.
+    readonly content = viewChild(CoreSitePluginsPluginContentComponent);
 
-    // Special input, allows access to the parent instance properties and methods.
-    // Please notice that all the other inputs/outputs are also accessible through this instance, so they could be removed.
-    // However, we decided to keep them to support ngOnChanges and to make templates easier to read.
-    @Input() coreCourseFormatComponent?: CoreCourseFormatComponent;
-
-    @ViewChild(CoreSitePluginsPluginContentComponent) content?: CoreSitePluginsPluginContentComponent;
-
-    @HostBinding('class') component?: string;
+    component?: string;
     method?: string;
     args?: Record<string, unknown>;
     initResult?: CoreSitePluginsContent | null;
@@ -101,7 +88,7 @@ export class CoreSitePluginsCourseFormatComponent implements OnChanges {
      * @returns Promise resolved when done.
      */
     async doRefresh(refresher?: HTMLIonRefresherElement, done?: () => void, afterCompletionChange?: boolean): Promise<void> {
-        await this.content?.refreshContent(afterCompletionChange);
+        await this.content()?.refreshContent(afterCompletionChange);
     }
 
 }

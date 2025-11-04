@@ -12,9 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, ViewChild } from '@angular/core';
+import { Component, viewChild } from '@angular/core';
 import { CoreCourseModuleMainActivityPage } from '@features/course/classes/main-activity-page';
 import { AddonModBBBIndexComponent } from '../../components/index/index';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Page that displays a Big Blue Button activity.
@@ -22,9 +23,13 @@ import { AddonModBBBIndexComponent } from '../../components/index/index';
 @Component({
     selector: 'page-addon-mod-bbb-index',
     templateUrl: 'index.html',
+    imports: [
+        CoreSharedModule,
+        AddonModBBBIndexComponent,
+    ],
 })
-export class AddonModBBBIndexPage extends CoreCourseModuleMainActivityPage<AddonModBBBIndexComponent> {
+export default class AddonModBBBIndexPage extends CoreCourseModuleMainActivityPage<AddonModBBBIndexComponent> {
 
-    @ViewChild(AddonModBBBIndexComponent) activityComponent?: AddonModBBBIndexComponent;
+    readonly activityComponent = viewChild.required(AddonModBBBIndexComponent);
 
 }

@@ -18,11 +18,15 @@ import {
     AfterViewInit,
     ViewChild,
     ElementRef,
+    CUSTOM_ELEMENTS_SCHEMA,
 } from '@angular/core';
 
 import { CoreTabsBaseComponent } from '@classes/tabs';
 import { CoreTabComponent } from './tab';
 import { toBoolean } from '@/core/transforms/boolean';
+import { CoreBaseModule } from '@/core/base.module';
+import { CoreFaIconDirective } from '@directives/fa-icon';
+import { CoreUpdateNonReactiveAttributesDirective } from '@directives/update-non-reactive-attributes';
 
 /**
  * This component displays some top scrollable tabs that will autohide on vertical scroll.
@@ -31,7 +35,7 @@ import { toBoolean } from '@/core/transforms/boolean';
  * Example usage:
  *
  * <core-tabs selectedIndex="1">
- *     <core-tab [title]="'core.courses.timeline' | translate" (ionSelect)="switchTab('timeline')">
+ *     <core-tab [title]="'core.courses.tabname' | translate" (ionSelect)="switchTab('tabname')">
  *         <ng-template> <!-- This ng-template is required, @see CoreTabComponent. -->
  *             <!-- Tab contents. -->
  *         </ng-template>
@@ -42,14 +46,19 @@ import { toBoolean } from '@/core/transforms/boolean';
     selector: 'core-tabs',
     templateUrl: 'core-tabs.html',
     styleUrl: 'tabs.scss',
+    imports: [
+        CoreBaseModule,
+        CoreUpdateNonReactiveAttributesDirective,
+        CoreFaIconDirective,
+    ],
+    schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
 export class CoreTabsComponent extends CoreTabsBaseComponent<CoreTabComponent> implements AfterViewInit {
 
     @Input({ transform: toBoolean }) parentScrollable = false; // Determine if scroll should be in the parent content or the tab.
     @Input() layout: 'icon-top' | 'icon-start' | 'icon-end' | 'icon-bottom' | 'icon-hide' | 'label-hide' = 'icon-hide';
 
-    @ViewChild('originalTabs')
-    set originalTabs(originalTabs: ElementRef) {
+    @ViewChild('originalTabs') set originalTabs(originalTabs: ElementRef) {
         /**
          * This setTimeout waits for Ionic's async initialization to complete.
          * Otherwise, an outdated swiper reference will be used.
@@ -112,7 +121,7 @@ export class CoreTabsComponent extends CoreTabsBaseComponent<CoreTabComponent> i
     protected async loadTab(tabToSelect: CoreTabComponent): Promise<boolean> {
         const currentTab = this.getSelected();
         currentTab?.unselectTab();
-        tabToSelect.selectTab();
+        await tabToSelect.selectTab();
 
         return true;
     }

@@ -12,31 +12,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { APP_INITIALIZER, NgModule } from '@angular/core';
+import { NgModule, provideAppInitializer } from '@angular/core';
 
-import { CoreSharedModule } from '@/core/shared.module';
 import { CoreQuestionDelegate } from '@features/question/services/question-delegate';
-import { AddonQtypeDdMarkerComponent } from './component/ddmarker';
 import { AddonQtypeDdMarkerHandler } from './services/handlers/ddmarker';
 
 @NgModule({
-    declarations: [
-        AddonQtypeDdMarkerComponent,
-    ],
-    imports: [
-        CoreSharedModule,
-    ],
     providers: [
-        {
-            provide: APP_INITIALIZER,
-            multi: true,
-            useValue: () => {
-                CoreQuestionDelegate.registerHandler(AddonQtypeDdMarkerHandler.instance);
-            },
-        },
-    ],
-    exports: [
-        AddonQtypeDdMarkerComponent,
+        provideAppInitializer(() => {
+            CoreQuestionDelegate.registerHandler(AddonQtypeDdMarkerHandler.instance);
+        }),
     ],
 })
 export class AddonQtypeDdMarkerModule {}

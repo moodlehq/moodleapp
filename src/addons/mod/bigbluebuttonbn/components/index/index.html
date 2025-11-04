@@ -22,74 +22,107 @@
     <core-group-selector [groupInfo]="groupInfo" [(selected)]="groupId" (selectedChange)="groupChanged()"
         [multipleGroupsMessage]="'addon.mod_bigbluebuttonbn.view_groups_selection_warning' | translate" [courseId]="module.course" />
 
-    <ng-container *ngIf="meetingInfo && showRoom">
-        <ion-item class="ion-text-wrap" *ngIf="meetingInfo.openingtime">
-            <ion-label>
-                <p class="item-heading">{{ 'addon.mod_bigbluebuttonbn.mod_form_field_openingtime' | translate }}</p>
-            </ion-label>
-            <p slot="end">{{ meetingInfo.openingtime * 1000 | coreFormatDate }}</p>
-        </ion-item>
-        <ion-item class="ion-text-wrap" *ngIf="meetingInfo.closingtime">
-            <ion-label>
-                <p class="item-heading">{{ 'addon.mod_bigbluebuttonbn.mod_form_field_closingtime' | translate }}</p>
-            </ion-label>
-            <p slot="end">{{ meetingInfo.closingtime * 1000 | coreFormatDate }}</p>
-        </ion-item>
+    @if (meetingInfo && showRoom) {
 
-        <ion-item class="ion-text-wrap" *ngIf="meetingInfo.canjoin && !meetingInfo.statusrunning">
-            <ion-label>
-                <p>{{ 'addon.mod_bigbluebuttonbn.view_message_conference_room_ready' | translate }}</p>
-            </ion-label>
-        </ion-item>
+        @if (meetingInfo.openingtime) {
+            <ion-item class="ion-text-wrap">
+                <ion-label>
+                    <p class="item-heading">{{ 'addon.mod_bigbluebuttonbn.mod_form_field_openingtime' | translate }}</p>
+                </ion-label>
+                <p slot="end">{{ meetingInfo.openingtime * 1000 | coreFormatDate }}</p>
+            </ion-item>
+        }
+        @if (meetingInfo.closingtime) {
+            <ion-item class="ion-text-wrap">
+                <ion-label>
+                    <p class="item-heading">{{ 'addon.mod_bigbluebuttonbn.mod_form_field_closingtime' | translate }}</p>
+                </ion-label>
+                <p slot="end">{{ meetingInfo.closingtime * 1000 | coreFormatDate }}</p>
+            </ion-item>
+        }
 
-        <ng-container *ngIf="meetingInfo.statusrunning">
+        @if (meetingInfo.canjoin && !meetingInfo.statusrunning) {
+            <ion-item class="ion-text-wrap">
+                <ion-label>
+                    <p>{{ 'addon.mod_bigbluebuttonbn.view_message_conference_room_ready' | translate }}</p>
+                </ion-label>
+            </ion-item>
+        }
+
+        @if (meetingInfo.statusrunning) {
+
             <ion-item class="ion-text-wrap">
                 <ion-label>
                     <p>{{ 'addon.mod_bigbluebuttonbn.view_message_conference_in_progress' | translate }}</p>
                 </ion-label>
             </ion-item>
 
-            <ion-item class="ion-text-wrap" *ngIf="meetingInfo.startedat">
-                <ion-label>
-                    <p class="item-heading">{{ 'addon.mod_bigbluebuttonbn.view_message_session_started_at' | translate }}</p>
-                </ion-label>
-                <p slot="end">{{ meetingInfo.startedat * 1000 | coreFormatDate: "strftimetime" }}</p>
-            </ion-item>
+            @if (meetingInfo.startedat) {
+                <ion-item class="ion-text-wrap">
+                    <ion-label>
+                        <p class="item-heading">{{ 'addon.mod_bigbluebuttonbn.view_message_session_started_at' | translate }}</p>
+                    </ion-label>
+                    <p slot="end">{{ meetingInfo.startedat * 1000 | coreFormatDate: "strftimetime" }}</p>
+                </ion-item>
+            }
 
             <ion-item class="ion-text-wrap">
                 <ion-label>
-                    <p class="item-heading" *ngIf="meetingInfo.moderatorplural">
-                        {{ 'addon.mod_bigbluebuttonbn.view_message_moderators' | translate }}
-                    </p>
-                    <p class="item-heading" *ngIf="!meetingInfo.moderatorplural">
-                        {{ 'addon.mod_bigbluebuttonbn.view_message_moderator' | translate }}
-                    </p>
+                    @if (meetingInfo.moderatorplural) {
+                        <p class="item-heading">
+                            {{ 'addon.mod_bigbluebuttonbn.view_message_moderators' | translate }}
+                        </p>
+                    } @else {
+                        <p class="item-heading">
+                            {{ 'addon.mod_bigbluebuttonbn.view_message_moderator' | translate }}
+                        </p>
+                    }
                 </ion-label>
                 <p slot="end">{{ meetingInfo.moderatorcount }}</p>
             </ion-item>
 
             <ion-item class="ion-text-wrap">
                 <ion-label>
-                    <p class="item-heading" *ngIf="meetingInfo.participantplural">
-                        {{ 'addon.mod_bigbluebuttonbn.view_message_viewers' | translate }}
-                    </p>
-                    <p class="item-heading" *ngIf="!meetingInfo.participantplural">
-                        {{ 'addon.mod_bigbluebuttonbn.view_message_viewer' | translate }}
-                    </p>
+                    @if (meetingInfo.participantplural) {
+                        <p class="item-heading">
+                            {{ 'addon.mod_bigbluebuttonbn.view_message_viewers' | translate }}
+                        </p>
+                    } @else {
+                        <p class="item-heading">
+                            {{ 'addon.mod_bigbluebuttonbn.view_message_viewer' | translate }}
+                        </p>
+                    }
                 </ion-label>
                 <p slot="end">{{ meetingInfo.participantcount }}</p>
             </ion-item>
-        </ng-container>
 
-        <ion-card *ngIf="!meetingInfo.canjoin" class="core-warning-card">
+        }
+
+        @if (!meetingInfo.canjoin) {
+            <ion-card class="core-warning-card">
+                <ion-item class="ion-text-wrap">
+                    <ion-icon name="fas-triangle-exclamation" slot="start" aria-hidden="true" />
+                    <ion-label>{{ meetingInfo.statusmessage }}</ion-label>
+                </ion-item>
+            </ion-card>
+        }
+
+        @if (meetingInfo.showpresentations && meetingInfo.presentations.length) {
             <ion-item class="ion-text-wrap">
-                <ion-icon name="fas-triangle-exclamation" slot="start" aria-hidden="true" />
-                <ion-label>{{ meetingInfo.statusmessage }}</ion-label>
+                <ion-label>
+                    <h2>{{ 'addon.mod_bigbluebuttonbn.view_section_title_presentation' | translate }}</h2>
+                    <div>
+                        <core-files [files]="meetingInfo.presentations" [component]="component" [componentId]="module.id"
+                            [alwaysDownload]="true" />
+                    </div>
+                </ion-label>
             </ion-item>
-        </ion-card>
-    </ng-container>
+        }
 
-    <ng-container *ngIf="showRecordings && recordings">
+    }
+
+    @if (showRecordings && recordings) {
+
         <ion-item class="ion-text-wrap">
             <ion-label>
                 <h2>{{ 'addon.mod_bigbluebuttonbn.view_section_title_recordings' | translate }}</h2>
@@ -106,49 +139,62 @@
                 </ion-label>
             </ion-item>
             <div [hidden]="!recording.expanded" class="addon-mod_bbb-recording-details">
-                <div *ngIf="recording.playbacks.length" class="addon-mod_bbb-recording-playbacks">
-                    <ion-item class="ion-text-wrap addon-mod_bbb-recording-playback-title">
-                        <ion-label>
-                            <p class="item-heading">{{ recording.playbackLabel }}</p>
-                        </ion-label>
-                    </ion-item>
-                    <ion-item *ngFor="let playback of recording.playbacks" button (click)="openPlayback($event, playback)" [detail]="false"
-                        class="ion-text-wrap addon-mod_bbb-recording-playback-item">
-                        <ion-label>
-                            <p>{{ playback.name }}</p>
-                        </ion-label>
-                        <ion-icon slot="end" [name]="playback.icon" aria-hidden="true" />
-                    </ion-item>
-                </div>
+                @if (recording.playbacks.length) {
+                    <div class="addon-mod_bbb-recording-playbacks">
+                        <ion-item class="ion-text-wrap addon-mod_bbb-recording-playback-title">
+                            <ion-label>
+                                <p class="item-heading">{{ recording.playbackLabel }}</p>
+                            </ion-label>
+                        </ion-item>
+                        <ion-item *ngFor="let playback of recording.playbacks" button (click)="openPlayback($event, playback)"
+                            [detail]="false" class="ion-text-wrap addon-mod_bbb-recording-playback-item">
+                            <ion-label>
+                                <p>{{ playback.name }}</p>
+                            </ion-label>
+                            <ion-icon slot="end" [name]="playback.icon" aria-hidden="true" />
+                        </ion-item>
+                    </div>
+                }
                 <ion-item *ngFor="let data of recording.details" class="ion-text-wrap">
                     <ion-label>
                         <p class="item-heading">{{ data.label }}</p>
-                        <p *ngIf="data.allowHTML">
-                            <core-format-text [text]="data.value" [component]="component" [componentId]="module.id" contextLevel="module"
-                                [contextInstanceId]="module.id" [courseId]="module.course" />
-                        </p>
-                        <p *ngIf="!data.allowHTML">{{ data.value }}</p>
+                        @if (data.allowHTML) {
+                            <p>
+                                <core-format-text [text]="data.value" [component]="component" [componentId]="module.id"
+                                    contextLevel="module" [contextInstanceId]="module.id" [courseId]="module.course" />
+                            </p>
+                        } @else {
+                            <p>{{ data.value }}</p>
+                        }
                     </ion-label>
                 </ion-item>
             </div>
         </ng-container>
 
-        <core-empty-box *ngIf="recordings && !recordings.length" icon="far-file-video"
-            [message]="'addon.mod_bigbluebuttonbn.view_message_norecordings' | translate" />
-    </ng-container>
+        @if (recordings && !recordings.length) {
+            <core-empty-box icon="far-file-video" [message]="'addon.mod_bigbluebuttonbn.view_message_norecordings' | translate" />
+        }
 
-    <div collapsible-footer *ngIf="!showLoading" slot="fixed">
-        <div class="list-item-limited-width adaptable-buttons-row"
-            *ngIf="meetingInfo && showRoom && (meetingInfo.canjoin || (meetingInfo.statusrunning && meetingInfo.ismoderator))">
-            <ion-button *ngIf="meetingInfo.statusrunning && meetingInfo.ismoderator" fill="outline" class="ion-margin ion-text-wrap"
-                expand="block" (click)="endMeeting()">
-                {{ 'addon.mod_bigbluebuttonbn.view_conference_action_end' | translate }}
-            </ion-button>
-            <ion-button *ngIf="meetingInfo.canjoin" class="ion-margin ion-text-wrap" expand="block" (click)="joinRoom()">
-                {{ 'addon.mod_bigbluebuttonbn.view_conference_action_join' | translate }}
-            </ion-button>
+    }
+
+    @if (!showLoading) {
+        <div collapsible-footer slot="fixed">
+            @if (meetingInfo && showRoom && (meetingInfo.canjoin || (meetingInfo.statusrunning && meetingInfo.ismoderator))) {
+                <div class="list-item-limited-width adaptable-buttons-row">
+                    @if (meetingInfo.statusrunning && meetingInfo.ismoderator) {
+                        <ion-button fill="outline" class="ion-margin ion-text-wrap" expand="block" (click)="endMeeting()">
+                            {{ 'addon.mod_bigbluebuttonbn.view_conference_action_end' | translate }}
+                        </ion-button>
+                    }
+                    @if (meetingInfo.canjoin) {
+                        <ion-button class="ion-margin ion-text-wrap" expand="block" (click)="joinRoom()">
+                            {{ 'addon.mod_bigbluebuttonbn.view_conference_action_join' | translate }}
+                        </ion-button>
+                    }
+                </div>
+            }
+
+            <core-course-module-navigation [courseId]="courseId" [currentModuleId]="module.id" />
         </div>
-
-        <core-course-module-navigation [courseId]="courseId" [currentModuleId]="module.id" />
-    </div>
+    }
 </core-loading>

@@ -13,64 +13,84 @@
     </ion-toolbar>
 </ion-header>
 <ion-content>
-    <core-loading [hideUntil]="handlersLoaded">
+    <core-loading [hideUntil]="handlersLoaded" placeholderType="column" placeholderHeight="48px">
         <ion-list>
-            <!-- Site info with URL and clickable. -->
-            <ion-item button class="core-usermenu-siteinfo ion-text-wrap" *ngIf="siteInfo && displaySiteUrl" lines="full" [detail]="false"
-                [href]="siteUrl" core-link>
-                <ion-label>
-                    <!-- Show site logo. -->
-                    <core-site-logo [hideOnError]="true" siteNameMode="p" />
-                    <a [href]="siteUrl" core-link class="core-usermenu-siteurl">{{ siteUrl }}</a>
-                </ion-label>
-            </ion-item>
-            <!-- Site info without URL and not clickable. -->
-            <ion-item class="core-usermenu-siteinfo ion-text-wrap" *ngIf="siteInfo && !displaySiteUrl" lines="full" detail="false">
-                <ion-label>
-                    <!-- Show site logo. -->
-                    <core-site-logo [hideOnError]="true" siteNameMode="p" />
-                </ion-label>
-            </ion-item>
+            @if (siteInfo) {
+                @if (displaySiteUrl) {
+                    <!-- Site info with URL and clickable. -->
+                    <ion-item button class="core-usermenu-siteinfo ion-text-wrap" lines="full" [detail]="false" [href]="siteUrl" core-link>
+                        <ion-label>
+                            <!-- Show site logo. -->
+                            <core-site-logo [hideOnError]="true" siteNameMode="p" />
+                            <a [href]="siteUrl" core-link class="core-usermenu-siteurl">{{ siteUrl }}</a>
+                        </ion-label>
+                    </ion-item>
+                } @else {
+                    <!-- Site info without URL and not clickable. -->
+                    <ion-item class="core-usermenu-siteinfo ion-text-wrap" lines="full" [detail]="false">
+                        <ion-label>
+                            <!-- Show site logo. -->
+                            <core-site-logo [hideOnError]="true" siteNameMode="p" />
+                        </ion-label>
+                    </ion-item>
+                }
 
-            <ion-item button class="core-usermenu-profile ion-text-wrap" *ngIf="siteInfo" lines="full" (click)="openUserProfile($event)"
-                [detail]="true">
-                <core-user-avatar [site]="siteInfo" [userId]="siteInfo.userid" [linkProfile]="false" slot="start" />
-                <ion-label>
-                    <p class="item-heading">{{ siteInfo.fullname }}</p>
-                </ion-label>
-            </ion-item>
+                <ion-item button class="core-usermenu-profile ion-text-wrap" lines="full" (click)="openUserProfile($event)" [detail]="true">
+                    <core-user-avatar [site]="siteInfo" [userId]="siteInfo.userid" [linkProfile]="false" slot="start" />
+                    <ion-label>
+                        <p class="item-heading">{{ siteInfo.fullname }}</p>
+                    </ion-label>
+                </ion-item>
+            }
 
-            <ion-item button *ngFor="let handler of handlers" class="ion-text-wrap" (click)="handlerClicked($event, handler)"
-                [ngClass]="['core-user-menu-handler', handler.class || '']" [hidden]="handler.hidden"
+            <ion-item button *ngFor="let handler of handlers" (click)="handlerClicked($event, handler)"
+                [class]="['ion-text-wrap', 'core-user-menu-handler', handler.class]" [hidden]="handler.hidden"
                 [attr.aria-label]="handler.title | translate" [detail]="true">
-                <ion-icon *ngIf="handler.icon" [name]="handler.icon" slot="start" aria-hidden="true" />
+                @if (handler.icon) {
+                    <ion-icon [name]="handler.icon" slot="start" aria-hidden="true" />
+                }
                 <ion-label>
                     <p class="item-heading">{{ handler.title | translate }}</p>
                 </ion-label>
-                <ion-badge slot="end" *ngIf="handler.showBadge" [hidden]="handler.loading || !handler.badge" aria-hidden="true">
-                    {{handler.badge}}
-                </ion-badge>
-                <span *ngIf="handler.showBadge && handler.badge && handler.badgeA11yText" class="sr-only">
-                    {{ handler.badgeA11yText | translate: {$a : handler.badge } }}
-                </span>
-                <ion-spinner slot="end" *ngIf="handler.showBadge && handler.loading" [attr.aria-label]="'core.loading' | translate" />
+                @if (handler.showBadge) {
+                    <ion-badge slot="end" [hidden]="handler.loading || !handler.badge" aria-hidden="true">
+                        {{handler.badge}}
+                    </ion-badge>
+                    @if (handler.badge && handler.badgeA11yText) {
+                        <span class="sr-only">
+                            {{ handler.badgeA11yText | translate: {$a : handler.badge } }}
+                        </span>
+                    }
+                    @if (handler.loading) {
+                        <ion-spinner slot="end" [attr.aria-label]="'core.loading' | translate" />
+                    }
+                }
             </ion-item>
 
-            <ion-item button *ngFor="let handler of accountHandlers; let first = first" class="ion-text-wrap"
+            <ion-item button *ngFor="let handler of accountHandlers; let first = first"
                 (click)="handlerClicked($event, handler)"
-                [ngClass]="['core-user-account-menu-handler', handler.class || '', first ? 'core-user-menu-separator' : '']"
+                [class]="['ion-text-wrap', 'core-user-account-menu-handler', handler.class]"
+                [class.core-user-menu-separator]="first"
                 [hidden]="handler.hidden" [attr.aria-label]="handler.title | translate" [detail]="true">
-                <ion-icon *ngIf="handler.icon" [name]="handler.icon" slot="start" aria-hidden="true" />
+                @if (handler.icon) {
+                    <ion-icon [name]="handler.icon" slot="start" aria-hidden="true" />
+                }
                 <ion-label>
                     <p class="item-heading">{{ handler.title | translate }}</p>
                 </ion-label>
-                <ion-badge slot="end" *ngIf="handler.showBadge" [hidden]="handler.loading || !handler.badge" aria-hidden="true">
-                    {{handler.badge}}
-                </ion-badge>
-                <span *ngIf="handler.showBadge && handler.badge && handler.badgeA11yText" class="sr-only">
-                    {{ handler.badgeA11yText | translate: {$a : handler.badge } }}
-                </span>
-                <ion-spinner slot="end" *ngIf="handler.showBadge && handler.loading" [attr.aria-label]="'core.loading' | translate" />
+                @if (handler.showBadge) {
+                    <ion-badge slot="end" [hidden]="handler.loading || !handler.badge" aria-hidden="true">
+                        {{handler.badge}}
+                    </ion-badge>
+                    @if (handler.badge && handler.badgeA11yText) {
+                        <span class="sr-only">
+                            {{ handler.badgeA11yText | translate: {$a : handler.badge } }}
+                        </span>
+                    }
+                    @if (handler.loading) {
+                        <ion-spinner slot="end" [attr.aria-label]="'core.loading' | translate" />
+                    }
+                }
             </ion-item>
 
             <ion-item button (click)="openPreferences($event)" [attr.aria-label]="'core.settings.preferences' | translate" [detail]="true"
@@ -81,35 +101,41 @@
                 </ion-label>
             </ion-item>
 
-            <ion-item *ngIf="displayContactSupport" button (click)="contactSupport($event)"
-                [attr.aria-label]="'core.user.support' | translate" [detail]="true" detailIcon="open-outline"
-                class="core-user-menu-support">
-                <ion-icon name="fas-envelope" slot="start" aria-hidden="true" />
-                <ion-label>
-                    <p class="item-heading">{{ 'core.user.support' | translate }}</p>
-                </ion-label>
-            </ion-item>
+            @if (displayContactSupport) {
+                <ion-item button (click)="contactSupport($event)" [attr.aria-label]="'core.user.support' | translate" [detail]="true"
+                    detailIcon="open-outline" class="core-user-menu-support">
+                    <ion-icon name="fas-envelope" slot="start" aria-hidden="true" />
+                    <ion-label>
+                        <p class="item-heading">{{ 'core.user.support' | translate }}</p>
+                    </ion-label>
+                </ion-item>
+            }
         </ion-list>
     </core-loading>
 </ion-content>
 <ion-footer>
-    <ion-item *ngIf="displaySwitchAccount" button lines="full" (click)="switchAccounts($event)" [detail]="true" class="ion-text-wrap">
-        <ion-icon name="fas-right-left" slot="start" aria-hidden="true" />
-        <ion-label>
-            <p class="item-heading">{{ 'core.mainmenu.switchaccount' | translate }}</p>
-        </ion-label>
-    </ion-item>
+    @if (displaySwitchAccount) {
+        <ion-item button lines="full" (click)="switchAccounts($event)" [detail]="true" class="ion-text-wrap">
+            <ion-icon name="fas-right-left" slot="start" aria-hidden="true" />
+            <ion-label>
+                <p class="item-heading">{{ 'core.mainmenu.switchaccount' | translate }}</p>
+            </ion-label>
+        </ion-item>
+    }
     <div class="ion-padding">
         <ion-button (click)="logout($event)" expand="block" color="danger" [ariaLabel]="'core.mainmenu.logout' | translate"
             class="ion-text-wrap">
-            <ng-container *ngIf="!removeAccountOnLogout">
+            @if (!removeAccountOnLogout) {
+
                 <ion-icon name="fas-right-from-bracket" slot="start" aria-hidden="true" />
                 {{ 'core.mainmenu.logout' | translate }}
-            </ng-container>
-            <ng-container *ngIf="removeAccountOnLogout">
+
+            } @else {
+
                 <ion-icon name="fas-trash" slot="start" aria-hidden="true" />
                 {{ 'core.login.removeaccount' | translate }}
-            </ng-container>
+
+            }
         </ion-button>
     </div>
 </ion-footer>

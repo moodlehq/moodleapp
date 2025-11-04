@@ -13,7 +13,6 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
-import { CoreError } from '@classes/errors/error';
 import { CoreSite } from '@classes/sites/site';
 import { CoreCourseCommonModWSOptions } from '@features/course/services/course';
 import { CoreCourseLogHelper } from '@features/course/services/log-helper';
@@ -40,7 +39,7 @@ import {
     ADDON_MOD_FORUM_ALL_GROUPS,
     ADDON_MOD_FORUM_ALL_PARTICIPANTS,
     ADDON_MOD_FORUM_CHANGE_DISCUSSION_EVENT,
-    ADDON_MOD_FORUM_COMPONENT,
+    ADDON_MOD_FORUM_COMPONENT_LEGACY,
     ADDON_MOD_FORUM_DISCUSSIONS_PER_PAGE,
     ADDON_MOD_FORUM_MARK_READ_EVENT,
     ADDON_MOD_FORUM_NEW_DISCUSSION_EVENT,
@@ -53,6 +52,9 @@ import { CoreCacheUpdateFrequency } from '@/core/constants';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreWSError } from '@classes/errors/wserror';
 import { CoreObject } from '@singletons/object';
+import { CoreTextFormat } from '@singletons/text';
+import { CoreCourseModuleHelper } from '@features/course/services/course-module-helper';
+import { CoreUserPreferences } from '@features/user/services/user-preferences';
 
 declare module '@singletons/events' {
 
@@ -97,7 +99,7 @@ export class AddonModForumProvider {
      * @returns Cache key.
      */
     protected getCommonCanAddDiscussionCacheKey(forumId: number): string {
-        return AddonModForumProvider.ROOT_CACHE_KEY + 'canadddiscussion:' + forumId + ':';
+        return `${AddonModForumProvider.ROOT_CACHE_KEY}canadddiscussion:${forumId}:`;
     }
 
     /**
@@ -119,7 +121,7 @@ export class AddonModForumProvider {
      * @returns Cache key.
      */
     protected getDiscussionPostDataCacheKey(forumId: number, discussionId: number, postId: number): string {
-        return this.getForumDiscussionDataCacheKey(forumId, discussionId) + ':post:' + postId;
+        return `${this.getForumDiscussionDataCacheKey(forumId, discussionId)}:post:${postId}`;
     }
 
     /**
@@ -130,7 +132,7 @@ export class AddonModForumProvider {
      * @returns Cache key.
      */
     protected getForumDiscussionDataCacheKey(forumId: number, discussionId: number): string {
-        return this.getForumDataPrefixCacheKey(forumId) + ':discussion:' + discussionId;
+        return `${this.getForumDataPrefixCacheKey(forumId)}:discussion:${discussionId}`;
     }
 
     /**
@@ -140,7 +142,7 @@ export class AddonModForumProvider {
      * @returns Cache key.
      */
     protected getForumDataCacheKey(courseId: number): string {
-        return AddonModForumProvider.ROOT_CACHE_KEY + 'forum:' + courseId;
+        return `${AddonModForumProvider.ROOT_CACHE_KEY}forum:${courseId}`;
     }
 
     /**
@@ -151,7 +153,7 @@ export class AddonModForumProvider {
      * @returns Cache key.
      */
     protected getAccessInformationCacheKey(forumId: number): string {
-        return AddonModForumProvider.ROOT_CACHE_KEY + 'accessInformation:' + forumId;
+        return `${AddonModForumProvider.ROOT_CACHE_KEY}accessInformation:${forumId}`;
     }
 
     /**
@@ -162,7 +164,7 @@ export class AddonModForumProvider {
      * @returns Cache key.
      */
     protected getDiscussionPostsCacheKey(discussionId: number): string {
-        return AddonModForumProvider.ROOT_CACHE_KEY + 'discussion:' + discussionId;
+        return `${AddonModForumProvider.ROOT_CACHE_KEY}discussion:${discussionId}`;
     }
 
     /**
@@ -172,7 +174,7 @@ export class AddonModForumProvider {
      * @returns Cache key.
      */
     protected getDiscussionsListCommonCacheKey(forumId: number): string {
-        return AddonModForumProvider.ROOT_CACHE_KEY + 'discussions:' + forumId;
+        return `${AddonModForumProvider.ROOT_CACHE_KEY}discussions:${forumId}`;
     }
 
     /**
@@ -187,7 +189,7 @@ export class AddonModForumProvider {
         let key = this.getDiscussionsListCommonCacheKey(forumId);
 
         if (sortOrder !== AddonModForumSortorder.LASTPOST_DESC) {
-            key += ':' + sortOrder;
+            key += `:${sortOrder}`;
         }
         if (groupId) {
             key += `:group${groupId}`;
@@ -261,7 +263,7 @@ export class AddonModForumProvider {
         };
         const preSets = {
             cacheKey: this.getCanAddDiscussionCacheKey(forumId, groupId),
-            component: ADDON_MOD_FORUM_COMPONENT,
+            component: ADDON_MOD_FORUM_COMPONENT_LEGACY,
             componentId: options.cmId,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
         };
@@ -434,7 +436,7 @@ export class AddonModForumProvider {
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getForumDataCacheKey(courseId),
             updateFrequency: CoreCacheUpdateFrequency.RARELY,
-            component: ADDON_MOD_FORUM_COMPONENT,
+            component: ADDON_MOD_FORUM_COMPONENT_LEGACY,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy),
         };
 
@@ -463,7 +465,7 @@ export class AddonModForumProvider {
         const preSets = {
             cacheKey: this.getDiscussionPostDataCacheKey(forumId, discussionId, postId),
             updateFrequency: CoreCacheUpdateFrequency.USUALLY,
-            component: ADDON_MOD_FORUM_COMPONENT,
+            component: ADDON_MOD_FORUM_COMPONENT_LEGACY,
             componentId: options.cmId,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
         };
@@ -491,13 +493,8 @@ export class AddonModForumProvider {
      */
     async getForum(courseId: number, cmId: number, options: CoreSitesCommonWSOptions = {}): Promise<AddonModForumData> {
         const forums = await this.getCourseForums(courseId, options);
-        const forum = forums.find(forum => forum.cmid === cmId);
 
-        if (!forum) {
-            throw new CoreError(Translate.instant('core.course.modulenotfound'));
-        }
-
-        return forum;
+        return CoreCourseModuleHelper.getActivityByField(forums, 'cmid', cmId);
     }
 
     /**
@@ -510,13 +507,8 @@ export class AddonModForumProvider {
      */
     async getForumById(courseId: number, forumId: number, options: CoreSitesCommonWSOptions = {}): Promise<AddonModForumData> {
         const forums = await this.getCourseForums(courseId, options);
-        const forum = forums.find(forum => forum.id === forumId);
 
-        if (!forum) {
-            throw new Error(`Forum with id ${forumId} not found`);
-        }
-
-        return forum;
+        return CoreCourseModuleHelper.getActivityByField(forums, 'id', forumId);
     }
 
     /**
@@ -543,7 +535,7 @@ export class AddonModForumProvider {
         };
         const preSets = {
             cacheKey: this.getAccessInformationCacheKey(forumId),
-            component: ADDON_MOD_FORUM_COMPONENT,
+            component: ADDON_MOD_FORUM_COMPONENT_LEGACY,
             componentId: options.cmId,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
         };
@@ -613,7 +605,7 @@ export class AddonModForumProvider {
         };
         const preSets = {
             cacheKey: this.getDiscussionPostsCacheKey(discussionId),
-            component: ADDON_MOD_FORUM_COMPONENT,
+            component: ADDON_MOD_FORUM_COMPONENT_LEGACY,
             componentId: options.cmId,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
         };
@@ -737,7 +729,7 @@ export class AddonModForumProvider {
 
         if (this.isDiscussionListSortingAvailable()) {
             const preferenceValue = await CorePromiseUtils.ignoreErrors(
-                CoreUser.getUserPreference(ADDON_MOD_FORUM_PREFERENCE_SORTORDER),
+                CoreUserPreferences.getPreference(ADDON_MOD_FORUM_PREFERENCE_SORTORDER),
             );
 
             sortOrderValue = preferenceValue ? parseInt(preferenceValue, 10) : null;
@@ -787,7 +779,7 @@ export class AddonModForumProvider {
 
         const preSets = {
             cacheKey: this.getDiscussionsListCacheKey(forumId, options.sortOrder),
-            component: ADDON_MOD_FORUM_COMPONENT,
+            component: ADDON_MOD_FORUM_COMPONENT_LEGACY,
             componentId: options.cmId,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
         };
@@ -892,7 +884,6 @@ export class AddonModForumProvider {
      *
      * @param forumId Forum ID.
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateCanAddDiscussion(forumId: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -940,7 +931,7 @@ export class AddonModForumProvider {
         });
 
         if (this.isDiscussionListSortingAvailable()) {
-            promises.push(CoreUser.invalidateUserPreference(ADDON_MOD_FORUM_PREFERENCE_SORTORDER));
+            promises.push(CoreUserPreferences.invalidatePreference(ADDON_MOD_FORUM_PREFERENCE_SORTORDER));
         }
 
         return CorePromiseUtils.allPromises(promises);
@@ -951,7 +942,6 @@ export class AddonModForumProvider {
      *
      * @param forumId Forum ID.
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateAccessInformation(forumId: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -965,7 +955,6 @@ export class AddonModForumProvider {
      * @param discussionId Discussion ID.
      * @param forumId Forum ID. If not set, we can't invalidate individual post information.
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateDiscussionPosts(discussionId: number, forumId?: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -983,7 +972,6 @@ export class AddonModForumProvider {
      *
      * @param forumId Forum ID.
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateDiscussionsList(forumId: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -995,7 +983,6 @@ export class AddonModForumProvider {
      * Invalidates forum data.
      *
      * @param courseId Course ID.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateForumData(courseId: number): Promise<void> {
         const site = CoreSites.getCurrentSite();
@@ -1018,7 +1005,7 @@ export class AddonModForumProvider {
         return CoreCourseLogHelper.log(
             'mod_forum_view_forum',
             params,
-            ADDON_MOD_FORUM_COMPONENT,
+            ADDON_MOD_FORUM_COMPONENT_LEGACY,
             id,
             siteId,
         );
@@ -1040,7 +1027,7 @@ export class AddonModForumProvider {
         return CoreCourseLogHelper.log(
             'mod_forum_view_forum_discussion',
             params,
-            ADDON_MOD_FORUM_COMPONENT,
+            ADDON_MOD_FORUM_COMPONENT_LEGACY,
             forumId,
             siteId,
         );
@@ -1395,7 +1382,7 @@ export type AddonModForumData = {
     type: AddonModForumType; // The forum type.
     name: string; // Forum name.
     intro: string; // The forum intro.
-    introformat: number; // Intro format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
+    introformat: CoreTextFormat; // Intro format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
     introfiles?: CoreWSExternalFile[];
     duedate?: number; // Duedate for the user.
     cutoffdate?: number; // Cutoffdate for the user.
@@ -1453,7 +1440,7 @@ export type AddonModForumDiscussion = {
     mailed: number; // Mailed?.
     subject: string; // The post subject.
     message: string; // The post message.
-    messageformat: number; // Message format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
+    messageformat: CoreTextFormat; // Message format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
     messagetrust: number; // Can we trust?.
     messageinlinefiles?: CoreWSExternalFile[];
     attachment: string; // Has attachments?.
@@ -1541,7 +1528,7 @@ export type AddonModForumLegacyPost = {
     mailed: number; // Mailed?.
     subject: string; // The post subject.
     message: string; // The post message.
-    messageformat: number; // Message format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
+    messageformat: CoreTextFormat; // Message format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
     messagetrust: number; // Can we trust?.
     messageinlinefiles?: CoreWSExternalFile[];
     attachment: string; // Has attachments?.
@@ -1653,7 +1640,7 @@ export type AddonModForumWSPost = {
     subject: string; // Subject.
     replysubject: string; // Replysubject.
     message: string; // Message.
-    messageformat: number; // Message format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
+    messageformat: CoreTextFormat; // Message format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
     author: {
         id?: number; // Id.
         fullname?: string; // Fullname.
@@ -1870,7 +1857,7 @@ export type AddonModForumAddDiscussionPostWSParams = {
     subject: string; // New post subject.
     message: string; // New post message (html assumed if messageformat is not provided).
     options?: AddonModForumAddDiscussionPostWSOptionsArray;
-    messageformat?: number; // Message format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
+    messageformat?: CoreTextFormat; // Message format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
 };
 
 /**
@@ -2124,7 +2111,7 @@ export type AddonModForumUpdateDiscussionPostWSParams = {
     postid: number; // Post to be updated. It can be a discussion topic post.
     subject?: string; // Updated post subject.
     message?: string; // Updated post message (HTML assumed if messageformat is not provided).
-    messageformat?: number; // Message format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
+    messageformat?: CoreTextFormat; // Message format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
     options?: AddonModForumUpdateDiscussionPostWSOptionsArray; // Configuration options for the post.
 };
 

@@ -16,17 +16,14 @@
  * Script to copy some files to the www folder.
  */
 const fse = require('fs-extra');
-const path = require('path');
 
 // Assets to copy.
 const ASSETS = {
-    '/node_modules/mathjax/MathJax.js': '/lib/mathjax/MathJax.js',
-    '/node_modules/mathjax/extensions': '/lib/mathjax/extensions',
-    '/node_modules/mathjax/jax/element': '/lib/mathjax/jax/element',
-    '/node_modules/mathjax/jax/input': '/lib/mathjax/jax/input',
-    '/node_modules/mathjax/jax/output/SVG': '/lib/mathjax/jax/output/SVG',
-    '/node_modules/mathjax/jax/output/PreviewHTML': '/lib/mathjax/jax/output/PreviewHTML',
-    '/node_modules/mathjax/localization': '/lib/mathjax/localization',
+    '/node_modules/mathjax/es5/tex-mml-chtml.js': '/lib/mathjax/tex-mml-chtml.js',
+    '/node_modules/mathjax/es5/input/mml/extensions': '/lib/mathjax/input/mml/extensions',
+    '/node_modules/mathjax/es5/input/tex/extensions': '/lib/mathjax/input/tex/extensions',
+    '/node_modules/mathjax/es5/output/chtml/fonts/woff-v2': '/lib/mathjax/output/chtml/fonts/woff-v2',
+    '/node_modules/mathjax/es5/ui/safe.js': '/lib/mathjax/ui/safe.js',
     '/node_modules/mp3-mediarecorder/dist/vmsg.wasm': '/lib/vmsg/vmsg.wasm',
     '/src/core/features/h5p/assets': '/lib/h5p',
     '/node_modules/ogv/dist': '/lib/ogv',

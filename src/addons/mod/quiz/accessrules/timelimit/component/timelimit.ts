@@ -18,6 +18,7 @@ import { FormGroup } from '@angular/forms';
 import { AddonModQuizAttemptWSData, AddonModQuizQuizWSData } from '@addons/mod/quiz/services/quiz';
 import { CoreTime } from '@singletons/time';
 import { toBoolean } from '@/core/transforms/boolean';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Component to render the preflight for time limit.
@@ -25,6 +26,9 @@ import { toBoolean } from '@/core/transforms/boolean';
 @Component({
     selector: 'addon-mod-quiz-access-time-limit',
     templateUrl: 'addon-mod-quiz-access-time-limit.html',
+    imports: [
+        CoreSharedModule,
+    ],
 })
 export class AddonModQuizAccessTimeLimitComponent implements OnInit {
 

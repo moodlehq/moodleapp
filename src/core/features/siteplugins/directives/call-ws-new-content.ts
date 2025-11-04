@@ -12,15 +12,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Directive, Input, ElementRef, Optional } from '@angular/core';
+import { Directive, Input } from '@angular/core';
 import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
 import { CoreNavigator } from '@services/navigator';
 import { Md5 } from 'ts-md5';
 
 import { CoreSitePluginsCallWSOnClickBaseDirective } from '../classes/call-ws-click-directive';
-import { CoreSitePluginsPluginContentComponent } from '../components/plugin-content/plugin-content';
 import { CoreSitePlugins } from '../services/siteplugins';
 import { toBoolean } from '@/core/transforms/boolean';
+import { ContextLevel } from '@/core/constants';
 
 /**
  * Directive to call a WS when the element is clicked and load a new content passing the WS result as args. This new content
@@ -66,14 +66,10 @@ export class CoreSitePluginsCallWSNewContentDirective extends CoreSitePluginsCal
     // If true is supplied instead of an object, all initial variables from current page will be copied.
     @Input() jsData?: Record<string, unknown> | boolean;
     @Input() newContentPreSets?: CoreSiteWSPreSets; // The preSets for the WS call of the new content.
+    @Input() contextLevel?: ContextLevel; // The context level to filter the title in new page. If not set, try to reuse current.
+    @Input() contextInstanceId?: number; // The instance ID related to the context.
+    @Input() courseId?: number; // Course ID the text belongs to. It can be used to improve performance with filters.
     @Input({ transform: toBoolean }) ptrEnabled = true; // Whether PTR should be enabled in the new page.
-
-    constructor(
-        element: ElementRef,
-        @Optional() parentContent: CoreSitePluginsPluginContentComponent,
-    ) {
-        super(element, parentContent);
-    }
 
     /**
      * @inheritdoc
@@ -109,6 +105,9 @@ export class CoreSitePluginsCallWSNewContentDirective extends CoreSitePluginsCal
                     jsData,
                     preSets: this.newContentPreSets,
                     ptrEnabled: this.ptrEnabled,
+                    contextLevel: this.contextLevel ?? this.parentContent?.contextLevel,
+                    contextInstanceId: this.contextInstanceId ?? this.parentContent?.contextInstanceId,
+                    courseId: this.courseId ?? this.parentContent?.courseId ?? args.courseid,
                 },
             });
         }

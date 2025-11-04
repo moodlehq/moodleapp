@@ -42,7 +42,8 @@ Feature: Notifications
 
   Scenario: Mobile navigation
     Given I entered the app as "student1"
-    And I press "Notifications" in the app
+    Then I should find "8" within "Notifications" "ion-tab-button" in the app
+    When I press "Notifications" in the app
     Then I should find "Test 30" in the app
     But I should not find "Test 10" in the app
     When I load more items in the app
@@ -50,13 +51,11 @@ Feature: Notifications
     And I should find "Test 01" in the app
 
     # Receive a push notification
-    And the following "notifications" exist:
-      | subject | userfrom | userto   | timecreated | timeread   |
-      | Test 31 | student2 | student1 | 1649766631  | null       |
     When I click a push notification in the app for:
-      | username | message   | title   | subject | userfrom |
-      | student1 | Test push | Test 31 | Push 01 | student2 |
+      | username | message   | title   |
+      | student1 | Test push | Push 01 |
     Then I should find "Push 01" in the app
+    And I should find "Test push" in the app
 
     # Open notification detail
     When I go back in the app
@@ -66,6 +65,7 @@ Feature: Notifications
     # Go back and open other notification
     When I go back in the app
     Then I should find "Test 10" in the app
+    And I should find "7" within "Notifications" "ion-tab-button" in the app
     When I press "Test 10" in the app
     Then I should find "Test 10 description" in the app
 
@@ -113,10 +113,12 @@ Feature: Notifications
     Then I should not find "Unread notification: Test 01" in the app
     But I should find "Test 01" in the app
     And I should find "Unread notification: Test 26" in the app
+    And I should find "6" within "Notifications" "ion-tab-button" in the app
 
     # Mark all notifications as read
     When I press "Mark all as read" in the app
     Then I should not find "Unread notification" in the app
+    And I should not find "6" within "Notifications" "ion-tab-button" in the app
 
     # Pull to refresh
     When I pull to refresh in the app

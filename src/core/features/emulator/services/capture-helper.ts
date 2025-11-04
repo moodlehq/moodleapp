@@ -16,7 +16,7 @@ import { Injectable } from '@angular/core';
 import { CameraOptions } from '@awesome-cordova-plugins/camera/ngx';
 import { CaptureImageOptions, CaptureVideoOptions, MediaFile } from '@awesome-cordova-plugins/media-capture/ngx';
 
-import { CoreMimetypeUtils } from '@services/utils/mimetype';
+import { CoreMimetype } from '@singletons/mimetype';
 import { makeSingleton, ModalController } from '@singletons';
 import { CaptureMediaComponentInputs, CoreEmulatorCaptureMediaComponent } from '../components/capture-media/capture-media';
 
@@ -56,20 +56,20 @@ export class CoreEmulatorCaptureHelperProvider {
         };
 
         // Initialize some data based on the type of media to capture.
-        if (type == 'video') {
+        if (type === 'video') {
             const mimeAndExt = this.getMimeTypeAndExtension(type, options.mimetypes);
             params.mimetype = mimeAndExt.mimetype;
             params.extension = mimeAndExt.extension;
-        } else if (type == 'image') {
+        } else if (type === 'image') {
             if ('sourceType' in options && options.sourceType !== undefined && options.sourceType != 1) {
                 return Promise.reject('This source type is not supported in browser.');
             }
 
-            if ('cameraDirection' in options && options.cameraDirection == 1) {
+            if ('cameraDirection' in options && options.cameraDirection === 1) {
                 params.facingMode = 'user';
             }
 
-            if ('encodingType' in options && options.encodingType == 1) {
+            if ('encodingType' in options && options.encodingType === 1) {
                 params.mimetype = 'image/png';
                 params.extension = 'png';
             } else {
@@ -81,7 +81,7 @@ export class CoreEmulatorCaptureHelperProvider {
                 params.quality = options.quality / 100;
             }
 
-            if ('destinationType' in options && options.destinationType == 0) {
+            if ('destinationType' in options && options.destinationType === 0) {
                 params.returnDataUrl = true;
             }
         }
@@ -100,7 +100,7 @@ export class CoreEmulatorCaptureHelperProvider {
 
         const result = await modal.onDidDismiss();
 
-        if (result.role == 'success') {
+        if (result.role === 'success') {
             return result.data;
         } else {
             throw result.data;
@@ -120,7 +120,7 @@ export class CoreEmulatorCaptureHelperProvider {
         if (mimetypes?.length) {
             // Search for a supported mimetype.
             result.mimetype = mimetypes.find((mimetype) => {
-                const matches = mimetype.match(new RegExp('^' + type + '/'));
+                const matches = mimetype.match(new RegExp(`^${type}/`));
 
                 return matches?.length && window.MediaRecorder.isTypeSupported(mimetype);
             });
@@ -128,7 +128,7 @@ export class CoreEmulatorCaptureHelperProvider {
 
         if (result.mimetype) {
             // Found a supported mimetype in the mimetypes array, get the extension.
-            result.extension = CoreMimetypeUtils.getExtension(result.mimetype);
+            result.extension = CoreMimetype.getExtension(result.mimetype);
         } else if (type === 'video' && this.videoMimeType) {
             // No mimetype found, use default extension.
             result.mimetype = this.videoMimeType;

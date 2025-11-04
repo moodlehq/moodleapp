@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit, OnDestroy, AfterViewInit, ViewChild } from '@angular/core';
+import { Component, OnInit, OnDestroy, AfterViewInit } from '@angular/core';
 import { CoreSearchGlobalSearchResultsSource } from '@features/search/classes/global-search-results-source';
 import { CoreSites } from '@services/sites';
 import { CoreUtils } from '@singletons/utils';
@@ -31,20 +31,29 @@ import { CoreSearchBoxComponent } from '@features/search/components/search-box/s
 import { CoreModals } from '@services/overlays/modals';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreLoadings } from '@services/overlays/loadings';
+import { CoreSharedModule } from '@/core/shared.module';
+import { CoreMainMenuUserButtonComponent } from '../../../mainmenu/components/user-menu-button/user-menu-button';
+import { CoreSearchGlobalSearchResultComponent } from '../../components/global-search-result/global-search-result';
+import { CoreContentLinksHelper } from '@features/contentlinks/services/contentlinks-helper';
 
 @Component({
     selector: 'page-core-search-global-search',
     templateUrl: 'global-search.html',
+    imports: [
+        CoreSharedModule,
+        CoreMainMenuUserButtonComponent,
+        CoreSearchBoxComponent,
+        CoreSearchGlobalSearchResultComponent,
+    ],
 })
-export class CoreSearchGlobalSearchPage implements OnInit, OnDestroy, AfterViewInit {
+export default class CoreSearchGlobalSearchPage implements OnInit, OnDestroy, AfterViewInit {
 
     courseId: number | null = null;
     loadMoreError = false;
     searchBanner: string | null = null;
     resultsSource = new CoreSearchGlobalSearchResultsSource('', {});
     private filtersObserver?: CoreEventObserver;
-
-    @ViewChild(CoreSearchBoxComponent) searchBox?: CoreSearchBoxComponent;
+    searchText = '';
 
     /**
      * @inheritdoc
@@ -76,9 +85,7 @@ export class CoreSearchGlobalSearchPage implements OnInit, OnDestroy, AfterViewI
         const query = CoreNavigator.getRouteParam('query');
 
         if (query) {
-            if (this.searchBox) {
-                this.searchBox.searchText = query;
-            }
+            this.searchText = query;
 
             this.search(query);
         }
@@ -97,6 +104,12 @@ export class CoreSearchGlobalSearchPage implements OnInit, OnDestroy, AfterViewI
      * @param query Search query.
      */
     async search(query: string): Promise<void> {
+        if (query.trim() === '') {
+            this.clearSearch();
+
+            return;
+        }
+
         this.resultsSource.setQuery(query);
 
         if (this.resultsSource.hasEmptyQuery()) {
@@ -127,7 +140,7 @@ export class CoreSearchGlobalSearchPage implements OnInit, OnDestroy, AfterViewI
     /**
      * Clear search results.
      */
-    clearSearch(): void {
+    protected clearSearch(): void {
         this.loadMoreError = false;
 
         this.resultsSource.setQuery('');
@@ -160,7 +173,7 @@ export class CoreSearchGlobalSearchPage implements OnInit, OnDestroy, AfterViewI
      * @param result Result to visit.
      */
     async visitResult(result: CoreSearchGlobalSearchResult): Promise<void> {
-        await CoreSites.visitLink(result.url);
+        await CoreContentLinksHelper.visitLink(result.url);
     }
 
     /**
@@ -171,7 +184,7 @@ export class CoreSearchGlobalSearchPage implements OnInit, OnDestroy, AfterViewI
     async loadMoreResults(complete: () => void ): Promise<void> {
         try {
             await this.resultsSource?.load();
-        } catch (error) {
+        } catch {
             this.loadMoreError = true;
         } finally {
             complete();

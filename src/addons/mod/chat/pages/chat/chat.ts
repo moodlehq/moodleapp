@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, ViewChild, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, viewChild } from '@angular/core';
 import { CoreSendMessageFormComponent } from '@components/send-message-form/send-message-form';
 import { CanLeave } from '@guards/can-leave';
 import { IonContent } from '@ionic/angular';
@@ -20,9 +20,8 @@ import { CoreNetwork } from '@services/network';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSites } from '@services/sites';
 import { CorePromiseUtils } from '@singletons/promise-utils';
-import { NgZone, Translate } from '@singletons';
+import { Translate } from '@singletons';
 import { CoreEvents } from '@singletons/events';
-import { Subscription } from 'rxjs';
 import { AddonModChatUsersModalResult } from '../../components/users-modal/users-modal';
 import { AddonModChat, AddonModChatUser } from '../../services/chat';
 import { AddonModChatFormattedMessage, AddonModChatHelper } from '../../services/chat-helper';
@@ -33,6 +32,7 @@ import { CoreWait } from '@singletons/wait';
 import { CoreModals } from '@services/overlays/modals';
 import { CoreLoadings } from '@services/overlays/loadings';
 import { CoreAlerts } from '@services/overlays/alerts';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Page that displays a chat session.
@@ -41,20 +41,23 @@ import { CoreAlerts } from '@services/overlays/alerts';
     selector: 'page-addon-mod-chat-chat',
     templateUrl: 'chat.html',
     styleUrls: ['../../../../../theme/components/discussion.scss', 'chat.scss'],
+    imports: [
+        CoreSharedModule,
+    ],
 })
-export class AddonModChatChatPage implements OnInit, OnDestroy, CanLeave {
+export default class AddonModChatChatPage implements OnInit, OnDestroy, CanLeave {
 
     protected static readonly POLL_INTERVAL = 4000;
 
-    @ViewChild(IonContent) content?: IonContent;
-    @ViewChild(CoreSendMessageFormComponent) sendMessageForm?: CoreSendMessageFormComponent;
+    protected readonly content = viewChild.required(IonContent);
+    protected readonly sendMessageForm = viewChild(CoreSendMessageFormComponent);
 
     loaded = false;
     title = '';
     messages: AddonModChatFormattedMessage[] = [];
     newMessage?: string;
     polling?: number;
-    isOnline: boolean;
+    readonly isOnline = CoreNetwork.onlineSignal;
     currentUserId: number;
     sending = false;
     courseId!: number;
@@ -64,7 +67,6 @@ export class AddonModChatChatPage implements OnInit, OnDestroy, CanLeave {
     protected sessionId?: string;
     protected lastTime = 0;
     protected oldContentHeight = 0;
-    protected onlineSubscription: Subscription;
     protected viewDestroyed = false;
     protected pollingRunning = false;
     protected users: AddonModChatUser[] = [];
@@ -72,13 +74,6 @@ export class AddonModChatChatPage implements OnInit, OnDestroy, CanLeave {
 
     constructor() {
         this.currentUserId = CoreSites.getCurrentSiteUserId();
-        this.isOnline = CoreNetwork.isOnline();
-        this.onlineSubscription = CoreNetwork.onChange().subscribe(() => {
-            // Execute the callback in the Angular zone, so change detection doesn't stop working.
-            NgZone.run(() => {
-                this.isOnline = CoreNetwork.isOnline();
-            });
-        });
 
         this.logView = CoreTime.once(() => {
             CoreAnalytics.logEvent({
@@ -201,7 +196,7 @@ export class AddonModChatChatPage implements OnInit, OnDestroy, CanLeave {
 
         if (modalData) {
             if (modalData.talkTo) {
-                this.newMessage = `To ${modalData.talkTo}: ` + (this.sendMessageForm?.message || '');
+                this.newMessage = `To ${modalData.talkTo}: ${this.sendMessageForm()?.message() ?? ''}`;
             }
             if (modalData.beepTo) {
                 this.sendMessage('', modalData.beepTo);
@@ -365,7 +360,7 @@ export class AddonModChatChatPage implements OnInit, OnDestroy, CanLeave {
         // Need a timeout to leave time to the view to be rendered.
         await CoreWait.nextTick();
         if (!this.viewDestroyed) {
-            this.content?.scrollToBottom();
+            this.content().scrollToBottom();
         }
     }
 
@@ -389,7 +384,6 @@ export class AddonModChatChatPage implements OnInit, OnDestroy, CanLeave {
      * @inheritdoc
      */
     ngOnDestroy(): void {
-        this.onlineSubscription && this.onlineSubscription.unsubscribe();
         this.stopPolling();
         this.viewDestroyed = true;
     }

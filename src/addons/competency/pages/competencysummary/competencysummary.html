@@ -4,10 +4,12 @@
             <ion-back-button [text]="'core.back' | translate" />
         </ion-buttons>
         <ion-title>
-            <h1 *ngIf="competency">
-                <core-format-text [text]="competency.competency.shortname" [contextLevel]="contextLevel"
-                    [contextInstanceId]="contextInstanceId" /> <small>{{ competency.competency.idnumber }}</small>
-            </h1>
+            @if (competency) {
+                <h1>
+                    <core-format-text [text]="competency.competency.shortname" [contextLevel]="contextLevel"
+                        [contextInstanceId]="contextInstanceId" /> <small>{{ competency.competency.idnumber }}</small>
+                </h1>
+            }
         </ion-title>
     </ion-toolbar>
 </ion-header>
@@ -16,29 +18,33 @@
         <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}" />
     </ion-refresher>
     <core-loading [hideUntil]="competencyLoaded">
-        <ion-card *ngIf="competency">
-            <ion-item class="ion-text-wrap" *ngIf="competency.competency.description">
-                <ion-label>
-                    <core-format-text [text]="competency.competency.description" [contextLevel]="contextLevel"
-                        [contextInstanceId]="contextInstanceId" />
-                </ion-label>
-            </ion-item>
-            <ion-item class="ion-text-wrap">
-                <ion-label>
-                    <p class="item-heading">{{ 'addon.competency.path' | translate }}</p>
-                    <p>
-                        <core-format-text [text]="competency.comppath.framework.name" [contextLevel]="contextLevel"
-                            [contextInstanceId]="contextInstanceId" />
-                        <ng-container *ngFor="let ancestor of competency.comppath.ancestors">
-                            &nbsp;/&nbsp;
-                            <button class="as-link" (click)="openCompetencySummary(ancestor.id)">
-                                <core-format-text [text]="ancestor.name" [contextLevel]="contextLevel"
-                                    [contextInstanceId]="contextInstanceId" />
-                            </button>
-                        </ng-container>
-                    </p>
-                </ion-label>
-            </ion-item>
-        </ion-card>
+        @if (competency) {
+            <ion-card>
+                @if (competency.competency.description) {
+                    <ion-item class="ion-text-wrap">
+                        <ion-label>
+                            <core-format-text [text]="competency.competency.description" [contextLevel]="contextLevel"
+                                [contextInstanceId]="contextInstanceId" />
+                        </ion-label>
+                    </ion-item>
+                }
+                <ion-item class="ion-text-wrap">
+                    <ion-label>
+                        <p class="item-heading">{{ 'addon.competency.path' | translate }}</p>
+                        <p>
+                            <core-format-text [text]="competency.comppath.framework.name" [contextLevel]="contextLevel"
+                                [contextInstanceId]="contextInstanceId" />
+                            <ng-container *ngFor="let ancestor of competency.comppath.ancestors">
+                                &nbsp;/&nbsp;
+                                <button class="as-link" (click)="openCompetencySummary(ancestor.id)">
+                                    <core-format-text [text]="ancestor.name" [contextLevel]="contextLevel"
+                                        [contextInstanceId]="contextInstanceId" />
+                                </button>
+                            </ng-container>
+                        </p>
+                    </ion-label>
+                </ion-item>
+            </ion-card>
+        }
     </core-loading>
 </ion-content>

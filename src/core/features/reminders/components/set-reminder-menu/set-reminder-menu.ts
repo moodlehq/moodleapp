@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, OnInit, input, signal } from '@angular/core';
 import {
     CoreReminders,
     CoreRemindersService,
@@ -30,24 +30,23 @@ import { CoreRemindersUnits, REMINDERS_DISABLED } from '@features/reminders/cons
 @Component({
     templateUrl: 'set-reminder-menu.html',
     styleUrl: 'set-reminder-menu.scss',
-    standalone: true,
     imports: [
         CoreSharedModule,
     ],
 })
 export class CoreRemindersSetReminderMenuComponent implements OnInit {
 
-    @Input() initialValue?: number;
-    @Input() eventTime?: number;
-    @Input() noReminderLabel = '';
+    readonly initialValue = input<number>();
+    readonly eventTime = input<number>();
+    readonly noReminderLabel = input('');
 
-    currentValue = '0m';
-    customLabel = '';
+    readonly currentValue = signal('0m');
+    readonly customLabel = signal('');
 
     protected customValue = 10;
     protected customUnits = CoreRemindersUnits.MINUTE;
 
-    presetOptions = [
+    readonly presetOptions: readonly CoreReminderPresetOption[] = [
         {
             radioValue: '0m',
             value: 0,
@@ -87,9 +86,9 @@ export class CoreRemindersSetReminderMenuComponent implements OnInit {
             option.enabled = this.isValidTime(option.unit, option.value);
         });
 
-        const initialValue = CoreRemindersService.convertSecondsToValueAndUnit(this.initialValue);
+        const initialValue = CoreRemindersService.convertSecondsToValueAndUnit(this.initialValue());
         if (initialValue.value === REMINDERS_DISABLED) {
-            this.currentValue = 'disabled';
+            this.currentValue.set('disabled');
 
             return;
         }
@@ -99,13 +98,10 @@ export class CoreRemindersSetReminderMenuComponent implements OnInit {
             option.value === initialValue?.value && option.unit === initialValue.unit);
 
         if (option) {
-            this.currentValue = option.radioValue;
+            this.currentValue.set(option.radioValue);
         } else {
             // It's a custom value.
-            this.currentValue = 'custom';
-            this.customValue = initialValue.value;
-            this.customUnits = initialValue.unit;
-            this.customLabel = CoreReminders.getUnitValueLabel(this.customValue, this.customUnits);
+            this.setCurrentCustomValue(initialValue);
         }
     }
 
@@ -141,13 +137,14 @@ export class CoreRemindersSetReminderMenuComponent implements OnInit {
      * @returns Wether is a valid time or not.
      */
     protected isValidTime(unit: number, value: number): boolean {
-        if (!this.eventTime) {
+        const eventTime = this.eventTime();
+        if (!eventTime) {
             return true;
         }
 
         const timebefore = unit * value;
 
-        return (this.eventTime - timebefore) * 1000 > Date.now();
+        return (eventTime - timebefore) * 1000 > Date.now();
     }
 
     /**
@@ -176,10 +173,7 @@ export class CoreRemindersSetReminderMenuComponent implements OnInit {
             return;
         }
 
-        this.currentValue = 'custom';
-        this.customValue = reminderTime.value;
-        this.customUnits = reminderTime.unit;
-        this.customLabel = CoreReminders.getUnitValueLabel(this.customValue, this.customUnits);
+        this.setCurrentCustomValue(reminderTime);
 
         // Let the dimissed popover to be removed.
         await CoreWait.nextTick();
@@ -187,4 +181,24 @@ export class CoreRemindersSetReminderMenuComponent implements OnInit {
         PopoverController.dismiss({ timeBefore: Math.abs(this.customValue) * this.customUnits });
     }
 
+    /**
+     * Set the current custom value.
+     *
+     * @param reminderTime Reminder value and unit.
+     */
+    protected setCurrentCustomValue(reminderTime: CoreReminderValueAndUnit): void {
+        this.currentValue.set('custom');
+        this.customValue = reminderTime.value;
+        this.customUnits = reminderTime.unit;
+        this.customLabel.set(CoreReminders.getUnitValueLabel(this.customValue, this.customUnits));
+    }
+
 }
+
+type CoreReminderPresetOption = {
+    readonly radioValue: string;
+    readonly value: number;
+    readonly unit: CoreRemindersUnits;
+    label: string;
+    enabled: boolean;
+};

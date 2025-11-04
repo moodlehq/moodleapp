@@ -1,11 +1,46 @@
-@if (!hideUntil) {
-    <div class="core-loading-container" role="status" @coreShowHideAnimation>
-        <ion-spinner aria-hidden="true" />
-        @if (message) {
-            <p class="core-loading-message" role="status">{{message}}</p>
+@if (!hideUntil()) {
+    <div class="core-loading-container" role="status" animate.enter="show-animation" animate.leave="hide-animation"
+        [attr.aria-label]="message()">
+        @if (!placeholderType()) {
+            <ion-spinner aria-hidden="true" />
+            @if (message()) {
+                <p class="core-loading-message" role="status">{{message()}}</p>
+            }
+        } @else {
+            <div class="{{placeholderType()}} placeholder" [class.list-item-limited-width]="placeholderType() !== 'free'">
+                @if (placeholderType() === 'free') {
+                    <ng-content select="[loading-placeholder]" />
+                } @else if (placeholderType() === 'listwithicon' || placeholderType() === 'listwithavatar') {
+                    @for (i of placeholderLimit()|coreTimes; track i) {
+                        <ion-item>
+                            <ion-avatar slot="start">
+                                <ion-skeleton-text [animated]="true" />
+                            </ion-avatar>
+                            <ion-label>
+                                <h3>
+                                    <ion-skeleton-text [animated]="true" style="width: 80%;" />
+                                </h3>
+                                <p>
+                                    <ion-skeleton-text [animated]="true" style="width: 60%;" />
+                                </p>
+                            </ion-label>
+                        </ion-item>
+                    }
+                } @else if (placeholderType() === 'imageandboxes') {
+                    <ion-skeleton-text class="large-avatar ion-text-center round" [animated]="true" />
+                    @for (i of placeholderLimit()|coreTimes; track i) {
+                        <ion-skeleton-text class="placeholder-element" [animated]="true"
+                            [style.width]="placeholderWidth()" [style.height]="placeholderHeight()" />
+                    }
+                } @else {
+                    @for (i of placeholderLimit()|coreTimes; track i) {
+                        <ion-skeleton-text class="placeholder-element" [animated]="true"
+                            [style.width]="placeholderWidth()" [style.height]="placeholderHeight()" />
+                    }
+                }
+            </div>
         }
     </div>
-}
-@if (loaded) {
-    <ng-content @coreShowHideAnimation />
+} @else {
+    <ng-content />
 }

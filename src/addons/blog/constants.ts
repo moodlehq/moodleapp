@@ -17,3 +17,14 @@ export const ADDON_BLOG_ENTRY_UPDATED = 'blog_entry_updated';
 export const ADDON_BLOG_AUTO_SYNCED = 'addon_blog_autom_synced';
 export const ADDON_BLOG_MANUAL_SYNCED = 'addon_blog_manual_synced';
 export const ADDON_BLOG_SYNC_ID = 'blog';
+
+/**
+ * Restriction level of user blog visualization.
+ */
+export const enum CoreSiteBlogLevel {
+    BLOG_USER_LEVEL = 1,
+    BLOG_GROUP_LEVEL = 2,
+    BLOG_COURSE_LEVEL = 3,
+    BLOG_SITE_LEVEL = 4,
+    BLOG_GLOBAL_LEVEL = 5,
+}

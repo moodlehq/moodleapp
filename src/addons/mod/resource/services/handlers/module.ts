@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { CoreConstants, DownloadStatus, ModPurpose } from '@/core/constants';
 import { Injectable, Type } from '@angular/core';
 import { CoreModuleHandlerBase } from '@features/course/classes/module-base-handler';
 import { CoreCourse } from '@features/course/services/course';
@@ -20,12 +19,16 @@ import { CoreCourseModuleData } from '@features/course/services/course-helper';
 import { CoreCourseModuleHandler, CoreCourseModuleHandlerData } from '@features/course/services/module-delegate';
 import { CoreCourseModulePrefetchDelegate } from '@features/course/services/module-prefetch-delegate';
 import { CoreFileHelper } from '@services/file-helper';
-import { CoreMimetypeUtils } from '@services/utils/mimetype';
+import { CoreMimetype } from '@singletons/mimetype';
 import { makeSingleton, Translate } from '@singletons';
 import { AddonModResource } from '../resource';
 import { AddonModResourceHelper } from '../resource-helper';
 import { CorePromiseUtils } from '@singletons/promise-utils';
-import { ADDON_MOD_RESOURCE_PAGE_NAME } from '../../constants';
+import { ADDON_MOD_RESOURCE_MODNAME, ADDON_MOD_RESOURCE_PAGE_NAME } from '../../constants';
+import { DownloadStatus } from '@/core/constants';
+import { ModFeature, ModArchetype, ModPurpose } from '@addons/mod/constants';
+import { CoreCourseModuleHelper } from '@features/course/services/course-module-helper';
+import { CoreSites } from '@services/sites';
 
 /**
  * Handler to support resource modules.
@@ -34,20 +37,20 @@ import { ADDON_MOD_RESOURCE_PAGE_NAME } from '../../constants';
 export class AddonModResourceModuleHandlerService extends CoreModuleHandlerBase implements CoreCourseModuleHandler {
 
     name = 'AddonModResource';
-    modName = 'resource';
+    modName = ADDON_MOD_RESOURCE_MODNAME;
     protected pageName = ADDON_MOD_RESOURCE_PAGE_NAME;
 
     supportedFeatures = {
-        [CoreConstants.FEATURE_MOD_ARCHETYPE]: CoreConstants.MOD_ARCHETYPE_RESOURCE,
-        [CoreConstants.FEATURE_GROUPS]: false,
-        [CoreConstants.FEATURE_GROUPINGS]: false,
-        [CoreConstants.FEATURE_MOD_INTRO]: true,
-        [CoreConstants.FEATURE_COMPLETION_TRACKS_VIEWS]: true,
-        [CoreConstants.FEATURE_GRADE_HAS_GRADE]: false,
-        [CoreConstants.FEATURE_GRADE_OUTCOMES]: false,
-        [CoreConstants.FEATURE_BACKUP_MOODLE2]: true,
-        [CoreConstants.FEATURE_SHOW_DESCRIPTION]: true,
-        [CoreConstants.FEATURE_MOD_PURPOSE]: ModPurpose.MOD_PURPOSE_CONTENT,
+        [ModFeature.MOD_ARCHETYPE]: ModArchetype.RESOURCE,
+        [ModFeature.GROUPS]: false,
+        [ModFeature.GROUPINGS]: false,
+        [ModFeature.MOD_INTRO]: true,
+        [ModFeature.COMPLETION_TRACKS_VIEWS]: true,
+        [ModFeature.GRADE_HAS_GRADE]: false,
+        [ModFeature.GRADE_OUTCOMES]: false,
+        [ModFeature.BACKUP_MOODLE2]: true,
+        [ModFeature.SHOW_DESCRIPTION]: true,
+        [ModFeature.MOD_PURPOSE]: ModPurpose.CONTENT,
     };
 
     /**
@@ -86,7 +89,7 @@ export class AddonModResourceModuleHandlerService extends CoreModuleHandlerBase 
                 if (!hide) {
                     AddonModResourceHelper.openModuleFile(module, courseId);
 
-                    CoreCourse.storeModuleViewed(courseId, module.id);
+                    CoreCourseModuleHelper.storeModuleViewed(courseId, module.id);
                 }
             },
         };
@@ -117,7 +120,9 @@ export class AddonModResourceModuleHandlerService extends CoreModuleHandlerBase 
      */
     protected async hideOpenButton(module: CoreCourseModuleData): Promise<boolean> {
         if (!module.contentsinfo) { // Not informed before 3.7.6.
-            await CoreCourse.loadModuleContents(module, undefined, undefined, false, false, undefined, this.modName);
+            await CorePromiseUtils.ignoreErrors(
+                CoreCourse.loadModuleContents(module, undefined, undefined, false, false, undefined, this.modName),
+            );
         }
 
         const status = await CoreCourseModulePrefetchDelegate.getModuleStatus(module, module.course);
@@ -148,17 +153,17 @@ export class AddonModResourceModuleHandlerService extends CoreModuleHandlerBase 
             // No need to use the list of files.
             const mimetype = module.contentsinfo.mimetypes[0];
             if (mimetype) {
-                mimetypeIcon = CoreMimetypeUtils.getMimetypeIcon(mimetype);
+                mimetypeIcon = CoreMimetype.getMimetypeIcon(mimetype, CoreSites.getCurrentSite());
             }
 
         } else if (module.contents && module.contents[0]) {
             const files = module.contents;
             const file = files[0];
 
-            mimetypeIcon = CoreMimetypeUtils.getFileIcon(file.filename || '');
+            mimetypeIcon = CoreMimetype.getFileIcon(file.filename || '', CoreSites.getCurrentSite());
         }
 
-        return CoreCourse.getModuleIconSrc(module.modname, module.modicon, mimetypeIcon);
+        return CoreCourseModuleHelper.getModuleIconSrc(module.modname, module.modicon, mimetypeIcon);
     }
 
     /**

@@ -4,36 +4,34 @@ on:
   workflow_dispatch:
     inputs:
       behat_tags:
-        description: 'Behat tags to execute'
+        description: "Behat tags to execute"
       moodle_branch:
-        description: 'Moodle branch'
+        description: "Moodle branch"
         required: true
-        default: 'main'
+        default: "main"
       moodle_repository:
-        description: 'Moodle repository'
+        description: "Moodle repository"
         required: true
-        default: 'https://github.com/moodle/moodle.git'
+        default: "https://github.com/moodle/moodle.git"
 
 concurrency:
-    group: coverage-${{ github.ref }}
-    cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
+  group: coverage-${{ github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
 
 jobs:
-
   build:
     runs-on: ubuntu-latest
     outputs:
       tags: ${{ steps.set-tags.outputs.tags }}
 
     steps:
-
       - uses: actions/checkout@v4
         with:
           path: app
 
       - uses: actions/setup-node@v4
         with:
-          node-version-file: 'app/.nvmrc'
+          node-version-file: "app/.nvmrc"
 
       - name: Install npm dependencies
         working-directory: app
@@ -98,14 +96,13 @@ jobs:
     needs: build
 
     steps:
-
       - uses: actions/checkout@v4
         with:
           path: app
 
       - uses: actions/setup-node@v4
         with:
-          node-version-file: 'app/.nvmrc'
+          node-version-file: "app/.nvmrc"
 
       - uses: actions/cache/restore@v4
         with:
@@ -139,25 +136,23 @@ jobs:
         tags: ${{ fromJSON(needs.build.outputs.tags) }}
 
     services:
-
       postgres:
-        image: postgres:13
+        image: postgres:15
         env:
-          POSTGRES_USER: 'postgres'
-          POSTGRES_HOST_AUTH_METHOD: 'trust'
+          POSTGRES_USER: "postgres"
+          POSTGRES_HOST_AUTH_METHOD: "trust"
         ports:
           - 5432:5432
         options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 3
 
     steps:
-
       - uses: actions/checkout@v4
         with:
           path: app
 
       - uses: actions/setup-node@v4
         with:
-          node-version-file: 'app/.nvmrc'
+          node-version-file: "app/.nvmrc"
 
       - uses: shivammathur/setup-php@v2
         with:
@@ -209,7 +204,7 @@ jobs:
           MOODLE_REPO: ${{ github.event.inputs.moodle_repository || 'https://github.com/moodle/moodle.git' }}
           MOODLE_BEHAT_IONIC_WWWROOT: https://localhost:8001
           MOODLE_BEHAT_DEFAULT_BROWSER: chrome
-          MOODLE_BEHAT_CHROME_CAPABILITIES: "['extra_capabilities' => ['chromeOptions' => ['args' => ['--ignore-certificate-errors', '--allow-running-insecure-content']]]]"
+          MOODLE_BEHAT_CHROME_CAPABILITIES: "['extra_capabilities' => ['chromeOptions' => ['args' => ['--ignore-certificate-errors', '--allow-running-insecure-content'], 'prefs' => ['credentials_enable_service' => false, 'profile.password_manager_enabled' => false, 'profile.password_manager_leak_detection' => false]]]]"
 
       - name: Update config
         run: |
@@ -221,7 +216,7 @@ jobs:
         run: moodle-plugin-ci behat --auto-rerun 3 --profile chrome --tags="@app&&~@local&&$BEHAT_TAGS"
         env:
           BEHAT_TAGS: ${{ matrix.tags }}
-          MOODLE_BEHAT_SELENIUM_IMAGE: selenium/standalone-chrome:120.0
+          MOODLE_BEHAT_SELENIUM_IMAGE: selenium/standalone-chrome:latest
 
       - name: Merge Coverage jsons
         working-directory: app
@@ -244,7 +239,7 @@ jobs:
         if: ${{ failure() }}
         with:
           name: snapshot_failures-${{ matrix.tags }}
-          path: moodle/local/moodleappbehat/tests/behat/snapshots/failures/*
+          path: moodle/public/local/moodleappbehat/tests/behat/snapshots/failures/*
 
       - name: Upload Behat failures
         uses: actions/upload-artifact@v4
@@ -258,14 +253,13 @@ jobs:
     needs: [behat, jest]
 
     steps:
-
       - uses: actions/checkout@v4
         with:
           path: app
 
       - uses: actions/setup-node@v4
         with:
-          node-version-file: 'app/.nvmrc'
+          node-version-file: "app/.nvmrc"
 
       - uses: actions/cache/restore@v4
         with:

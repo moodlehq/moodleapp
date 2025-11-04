@@ -14,7 +14,6 @@
 
 import { Injectable } from '@angular/core';
 import { CoreBlockHandlerData } from '@features/block/services/block-delegate';
-import { CoreBlockOnlyTitleComponent } from '@features/block/components/only-title-block/only-title-block';
 import { CoreBlockBaseHandler } from '@features/block/classes/base-block-handler';
 import { CoreCourseBlock } from '@features/course/services/course';
 import { makeSingleton } from '@singletons';
@@ -38,19 +37,16 @@ export class AddonBlockCommentsHandlerService extends CoreBlockBaseHandler {
     }
 
     /**
-     * Returns the data needed to render the block.
-     *
-     * @param block The block to render.
-     * @param contextLevel The context where the block will be used.
-     * @param instanceId The instance ID associated with the context level.
-     * @returns Data or promise resolved with the data.
+     * @inheritdoc
      */
-    getDisplayData(block: CoreCourseBlock, contextLevel: ContextLevel, instanceId: number): CoreBlockHandlerData {
+    async getDisplayData(block: CoreCourseBlock, contextLevel: ContextLevel, instanceId: number): Promise<CoreBlockHandlerData> {
+        const { CoreBlockOnlyTitleComponent } = await import('@features/block/components/only-title-block/only-title-block');
+
         return {
             title: 'addon.block_comments.pluginname',
             class: 'addon-block-comments',
             component: CoreBlockOnlyTitleComponent,
-            link: 'comments/' + contextLevel + '/' + instanceId + '/block_comments/0',
+            link: `comments/${contextLevel}/${instanceId}/block_comments/0`,
             linkParams: {
                 area: 'page_comments',
             },

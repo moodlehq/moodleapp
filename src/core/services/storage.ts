@@ -39,7 +39,11 @@ export class CoreStorageService {
 
     table: AsyncInstance<CoreStorageTable>;
 
+    // eslint-disable-next-line @angular-eslint/prefer-inject
     constructor(@Optional() @Inject(NULL_INJECTION_TOKEN) lazyTableConstructor?: () => Promise<CoreStorageTable>) {
+        // @todo: Inject the NullInjectionToken inside the constructor.
+        // This change can make the service fail so we need to be careful and test it properly.
+
         this.table = asyncInstance(lazyTableConstructor);
     }
 
@@ -77,7 +81,7 @@ export class CoreStorageService {
             const { value } = await this.table.getOneByPrimaryKey({ key });
 
             return JSON.parse(value);
-        } catch (error) {
+        } catch {
             return defaultValue;
         }
     }
@@ -97,7 +101,7 @@ export class CoreStorageService {
             const { value } = await db.getRecord<CoreStorageRecord>(TABLE_NAME, { key });
 
             return JSON.parse(value);
-        } catch (error) {
+        } catch {
             return defaultValue;
         }
     }
@@ -216,4 +220,4 @@ function getStorageTable(database: SQLiteDB): Promise<CoreStorageTable> {
 /**
  * Storage table.
  */
-type CoreStorageTable = CoreDatabaseTable<CoreStorageRecord, 'key'>;
+export type CoreStorageTable = CoreDatabaseTable<CoreStorageRecord, 'key'>;

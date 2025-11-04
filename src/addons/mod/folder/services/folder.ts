@@ -13,16 +13,16 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
-import { CoreError } from '@classes/errors/error';
 import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
 import { CoreCourse } from '@features/course/services/course';
 import { CoreCourseLogHelper } from '@features/course/services/log-helper';
 import { CoreSites, CoreSitesCommonWSOptions } from '@services/sites';
 import { CorePromiseUtils } from '@singletons/promise-utils';
-import { CoreWSExternalFile, CoreWSExternalWarning } from '@services/ws';
-import { makeSingleton, Translate } from '@singletons';
-import { ADDON_MOD_FOLDER_COMPONENT } from '../constants';
+import { CoreWSExternalWarning } from '@services/ws';
+import { makeSingleton } from '@singletons';
+import { ADDON_MOD_FOLDER_COMPONENT_LEGACY } from '../constants';
 import { CoreCacheUpdateFrequency } from '@/core/constants';
+import { CoreCourseModuleHelper, CoreCourseModuleStandardElements } from '@features/course/services/course-module-helper';
 
 /**
  * Service that provides some features for folder.
@@ -40,25 +40,7 @@ export class AddonModFolderProvider {
      * @param options Other options.
      * @returns Promise resolved when the book is retrieved.
      */
-    getFolder(courseId: number, cmId: number, options?: CoreSitesCommonWSOptions): Promise<AddonModFolderFolder> {
-        return this.getFolderByKey(courseId, 'coursemodule', cmId, options);
-    }
-
-    /**
-     * Get a folder.
-     *
-     * @param courseId Course ID.
-     * @param key Name of the property to check.
-     * @param value Value to search.
-     * @param options Other options.
-     * @returns Promise resolved when the book is retrieved.
-     */
-    protected async getFolderByKey(
-        courseId: number,
-        key: string,
-        value: number,
-        options: CoreSitesCommonWSOptions = {},
-    ): Promise<AddonModFolderFolder> {
+    async getFolder(courseId: number, cmId: number, options: CoreSitesCommonWSOptions = {}): Promise<AddonModFolderFolder> {
         const site = await CoreSites.getSite(options.siteId);
 
         const params: AddonModFolderGetFoldersByCoursesWSParams = {
@@ -68,19 +50,14 @@ export class AddonModFolderProvider {
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getFolderCacheKey(courseId),
             updateFrequency: CoreCacheUpdateFrequency.RARELY,
-            component: ADDON_MOD_FOLDER_COMPONENT,
+            component: ADDON_MOD_FOLDER_COMPONENT_LEGACY,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy),
         };
 
         const response =
             await site.read<AddonModFolderGetFoldersByCoursesWSResponse>('mod_folder_get_folders_by_courses', params, preSets);
 
-        const currentFolder = response.folders.find((folder) => folder[key] == value);
-        if (currentFolder) {
-            return currentFolder;
-        }
-
-        throw new CoreError(Translate.instant('core.course.modulenotfound'));
+        return CoreCourseModuleHelper.getActivityByCmId(response.folders, cmId);
     }
 
     /**
@@ -90,7 +67,7 @@ export class AddonModFolderProvider {
      * @returns Cache key.
      */
     protected getFolderCacheKey(courseId: number): string {
-        return AddonModFolderProvider.ROOT_CACHE_KEY + 'folder:' + courseId;
+        return `${AddonModFolderProvider.ROOT_CACHE_KEY}folder:${courseId}`;
     }
 
     /**
@@ -114,7 +91,6 @@ export class AddonModFolderProvider {
      *
      * @param courseId Course ID.
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateFolderData(courseId: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -137,7 +113,7 @@ export class AddonModFolderProvider {
         await CoreCourseLogHelper.log(
             'mod_folder_view_folder',
             params,
-            ADDON_MOD_FOLDER_COMPONENT,
+            ADDON_MOD_FOLDER_COMPONENT_LEGACY,
             id,
             siteId,
         );
@@ -149,23 +125,12 @@ export const AddonModFolder = makeSingleton(AddonModFolderProvider);
 /**
  * Folder returned by mod_folder_get_folders_by_courses.
  */
-export type AddonModFolderFolder = {
-    id: number; // Module id.
-    coursemodule: number; // Course module id.
-    course: number; // Course id.
-    name: string; // Page name.
-    intro: string; // Summary.
-    introformat?: number; // Intro format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
-    introfiles: CoreWSExternalFile[];
+export type AddonModFolderFolder = CoreCourseModuleStandardElements & {
     revision: number; // Incremented when after each file changes, to avoid cache.
     timemodified: number; // Last time the folder was modified.
     display: number; // Display type of folder contents on a separate page or inline.
     showexpanded: number; // 1 = expanded, 0 = collapsed for sub-folders.
     showdownloadfolder: number; // Whether to show the download folder button.
-    section: number; // Course section id.
-    visible: number; // Module visibility.
-    groupmode: number; // Group mode.
-    groupingid: number; // Grouping id.
 };
 
 /**

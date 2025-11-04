@@ -27,24 +27,6 @@ import { CoreTime } from '@singletons/time';
 export class CoreUserHelperProvider {
 
     /**
-     * Formats a user address, concatenating address, city and country.
-     *
-     * @param address Address.
-     * @param city City.
-     * @param country Country.
-     * @returns Formatted address.
-     * @deprecated since 4.3. Not used anymore.
-     */
-    formatAddress(address?: string, city?: string, country?: string): string {
-        const separator = Translate.instant('core.listsep');
-        let values = [address, city, country];
-
-        values = values.filter((value) => value && value.length > 0);
-
-        return values.join(separator + ' ');
-    }
-
-    /**
      * Formats a user role list, translating and concatenating them.
      *
      * @param roles List of user roles.
@@ -58,10 +40,10 @@ export class CoreUserHelperProvider {
         const separator = Translate.instant('core.listsep');
 
         return roles.map((value) => {
-            const translation = Translate.instant('core.user.' + value.shortname);
+            const translation = Translate.instant(`core.user.${value.shortname}`);
 
             return translation.indexOf('core.user.') < 0 ? translation : value.shortname;
-        }).join(separator + ' ');
+        }).join(`${separator} `);
     }
 
     /**

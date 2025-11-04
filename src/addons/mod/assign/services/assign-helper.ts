@@ -24,7 +24,6 @@ import {
     AddonModAssign,
     AddonModAssignPlugin,
     AddonModAssignSavePluginData,
-    AddonModAssignSubmissionStatusValues,
 } from './assign';
 import { AddonModAssignOffline } from './assign-offline';
 import { CoreObject } from '@singletons/object';
@@ -36,7 +35,7 @@ import { AddonModAssignFeedbackDelegate } from './feedback-delegate';
 import { makeSingleton } from '@singletons';
 import { CoreFormFields } from '@singletons/form';
 import { CoreFileEntry } from '@services/file-helper';
-import { ADDON_MOD_ASSIGN_COMPONENT } from '../constants';
+import { ADDON_MOD_ASSIGN_COMPONENT_LEGACY, AddonModAssignSubmissionStatusValues } from '../constants';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 
 /**
@@ -62,48 +61,6 @@ export class AddonModAssignHelperProvider {
         }
 
         return timeDue;
-    }
-
-    /**
-     * Check if a submission can be edited in offline.
-     *
-     * @param assign Assignment.
-     * @param submission Submission.
-     * @returns Whether it can be edited offline.
-     */
-    async canEditSubmissionOffline(assign: AddonModAssignAssign, submission?: AddonModAssignSubmission): Promise<boolean> {
-        if (!submission) {
-            return false;
-        }
-
-        if (submission.status == AddonModAssignSubmissionStatusValues.NEW ||
-                submission.status == AddonModAssignSubmissionStatusValues.REOPENED) {
-            // It's a new submission, allow creating it in offline.
-            return true;
-        }
-
-        if (await CorePromiseUtils.promiseWorks(AddonModAssignOffline.getSubmission(assign.id, submission.userid))) {
-            // Submission was saved or deleted offline, allow editing it or creating a new one.
-            return true;
-        }
-
-        // Submission was created online, check if plugins allow editing it.
-        let canEdit = true;
-
-        const promises = submission.plugins
-            ? submission.plugins.map((plugin) =>
-                AddonModAssignSubmissionDelegate.canPluginEditOffline(assign, submission, plugin).then((canEditPlugin) => {
-                    if (!canEditPlugin) {
-                        canEdit = false;
-                    }
-
-                    return;
-                }))
-            : [];
-
-        await Promise.all(promises);
-
-        return canEdit;
     }
 
     /**
@@ -204,6 +161,7 @@ export class AddonModAssignHelperProvider {
      * @param feedback Feedback data.
      * @param siteId Site ID. If not defined, current site.
      * @returns Promise resolved when done.
+     * @deprecated since 5.0. Feedback drafts are not needed if you show form in the grading modal.
      */
     async discardFeedbackPluginData(
         assignId: number,
@@ -214,6 +172,7 @@ export class AddonModAssignHelperProvider {
 
         const promises = feedback.plugins
             ? feedback.plugins.map((plugin) =>
+                // eslint-disable-next-line @typescript-eslint/no-deprecated
                 AddonModAssignFeedbackDelegate.discardPluginFeedbackData(assignId, userId, plugin, siteId))
             : [];
 
@@ -493,7 +452,7 @@ export class AddonModAssignHelperProvider {
                 submission.userfullname = participant.fullname;
                 submission.userprofileimageurl = participant.profileimageurl;
             } else {
-                submission.blindid = participant.id;
+                submission.blindid = participant.recordid ?? participant.id;
             }
 
             submission.manyGroups = !!participant.groups && participant.groups.length > 1;
@@ -515,6 +474,7 @@ export class AddonModAssignHelperProvider {
      * @param submission The submission.
      * @param feedback Feedback data.
      * @param userId The user ID.
+     * @param inputData Data entered in the feedback form.
      * @returns Promise resolved with true if data has changed, resolved with false otherwise.
      */
     async hasFeedbackDataChanged(
@@ -522,6 +482,7 @@ export class AddonModAssignHelperProvider {
         submission: AddonModAssignSubmission | AddonModAssignSubmissionFormatted | undefined,
         feedback: AddonModAssignSubmissionFeedback,
         userId: number,
+        inputData: CoreFormFields,
     ): Promise<boolean> {
         if (!submission || !feedback.plugins) {
             return false;
@@ -530,17 +491,16 @@ export class AddonModAssignHelperProvider {
         let hasChanged = false;
 
         const promises = feedback.plugins.map((plugin) =>
-            this.prepareFeedbackPluginData(assign.id, userId, feedback).then(async (inputData) => {
-                const changed = await CorePromiseUtils.ignoreErrors(
-                    AddonModAssignFeedbackDelegate.hasPluginDataChanged(assign, submission, plugin, inputData, userId),
-                    false,
-                );
-                if (changed) {
-                    hasChanged = true;
-                }
+            AddonModAssignFeedbackDelegate.hasPluginDataChanged(assign, submission, plugin, inputData, userId)
+                .then((changed) => {
+                    if (changed) {
+                        hasChanged = true;
+                    }
 
-                return;
-            }));
+                    return;
+                }).catch(() => {
+                    // Ignore errors.
+                }));
 
         await CorePromiseUtils.allPromises(promises);
 
@@ -560,25 +520,23 @@ export class AddonModAssignHelperProvider {
         submission: AddonModAssignSubmission | undefined,
         inputData: CoreFormFields,
     ): Promise<boolean> {
-        if (!submission) {
+        if (!submission || !submission.plugins) {
             return false;
         }
 
         let hasChanged = false;
 
-        const promises = submission.plugins
-            ? submission.plugins.map((plugin) =>
-                AddonModAssignSubmissionDelegate.hasPluginDataChanged(assign, submission, plugin, inputData)
-                    .then((changed) => {
-                        if (changed) {
-                            hasChanged = true;
-                        }
+        const promises = submission.plugins.map((plugin) =>
+            AddonModAssignSubmissionDelegate.hasPluginDataChanged(assign, submission, plugin, inputData)
+                .then((changed) => {
+                    if (changed) {
+                        hasChanged = true;
+                    }
 
-                        return;
-                    }).catch(() => {
-                        // Ignore errors.
-                    }))
-            : [];
+                    return;
+                }).catch(() => {
+                    // Ignore errors.
+                }));
 
         await CorePromiseUtils.allPromises(promises);
 
@@ -591,6 +549,7 @@ export class AddonModAssignHelperProvider {
      * @param assignId Assignment Id.
      * @param userId User Id.
      * @param feedback Feedback data.
+     * @param inputData Data entered in the feedback form.
      * @param siteId Site ID. If not defined, current site.
      * @returns Promise resolved with plugin data to send to server.
      */
@@ -598,13 +557,14 @@ export class AddonModAssignHelperProvider {
         assignId: number,
         userId: number,
         feedback: AddonModAssignSubmissionFeedback,
+        inputData: CoreFormFields,
         siteId?: string,
     ): Promise<AddonModAssignSavePluginData> {
 
         const pluginData: CoreFormFields = {};
         const promises = feedback.plugins
             ? feedback.plugins.map((plugin) =>
-                AddonModAssignFeedbackDelegate.preparePluginFeedbackData(assignId, userId, plugin, pluginData, siteId))
+                AddonModAssignFeedbackDelegate.preparePluginFeedbackData(assignId, userId, plugin, pluginData, inputData, siteId))
             : [];
 
         await Promise.all(promises);
@@ -649,6 +609,69 @@ export class AddonModAssignHelperProvider {
     }
 
     /**
+     * Check if feedback needs to be fetched unfiltered to edit it.
+     *
+     * @param assign Assignment.
+     * @param submitId The submission ID.
+     * @param feedback Feedback to check.
+     * @returns Whether the app should fetch unfiltered feedback to edit it.
+     */
+    async shouldFetchUnfilteredFeedbackToEdit(
+        assign: AddonModAssignAssign,
+        submitId: number,
+        feedback?: AddonModAssignSubmissionFeedback,
+    ): Promise<boolean> {
+        if (!feedback) {
+            return false;
+        }
+
+        if (await CorePromiseUtils.promiseWorks(AddonModAssignOffline.getSubmissionGrade(assign.id, submitId))) {
+            // There is offline feedback, no need to fetch the feedback from the server.
+            return false;
+        }
+
+        // There is online feedback, check if plugins can contain filters.
+        const canPluginsContainFilters = await Promise.all((feedback.plugins ?? []).map(
+            plugin => AddonModAssignFeedbackDelegate.canPluginContainFiltersWhenEditing(assign, submitId, feedback, plugin),
+        ));
+
+        return canPluginsContainFilters.some(canContainFilters => canContainFilters);
+    }
+
+    /**
+     * Check if submission needs to be fetched unfiltered to edit it.
+     *
+     * @param assign Assignment.
+     * @param submission Submission.
+     * @returns Whether the app should fetch unfiltered submission to edit it.
+     */
+    async shouldFetchUnfilteredSubmissionToEdit(
+        assign: AddonModAssignAssign,
+        submission?: AddonModAssignSubmission,
+    ): Promise<boolean> {
+        if (!submission) {
+            return false;
+        }
+
+        if (AddonModAssign.isNewOrReopenedSubmission(submission.status)) {
+            // It's a new submission, no submission data to fetch.
+            return false;
+        }
+
+        if (await CorePromiseUtils.promiseWorks(AddonModAssignOffline.getSubmission(assign.id, submission.userid))) {
+            // Submission was saved or deleted offline, no need to fetch the submission from the server.
+            return false;
+        }
+
+        // There is an online submission, check if plugins can contain filters.
+        const canPluginsContainFilters = await Promise.all((submission.plugins ?? []).map(
+            plugin => AddonModAssignSubmissionDelegate.canPluginContainFiltersWhenEditing(assign, submission, plugin),
+        ));
+
+        return canPluginsContainFilters.some(canContainFilters => canContainFilters);
+    }
+
+    /**
      * Given a list of files (either online files or local files), store the local files in a local folder
      * to be submitted later.
      *
@@ -682,7 +705,7 @@ export class AddonModAssignHelperProvider {
      * @returns Promise resolved with the itemId.
      */
     uploadFile(assignId: number, file: CoreFileEntry, itemId?: number, siteId?: string): Promise<number> {
-        return CoreFileUploader.uploadOrReuploadFile(file, itemId, ADDON_MOD_ASSIGN_COMPONENT, assignId, siteId);
+        return CoreFileUploader.uploadOrReuploadFile(file, itemId, ADDON_MOD_ASSIGN_COMPONENT_LEGACY, assignId, siteId);
     }
 
     /**
@@ -696,7 +719,7 @@ export class AddonModAssignHelperProvider {
      * @returns Promise resolved with the itemId.
      */
     uploadFiles(assignId: number, files: CoreFileEntry[], siteId?: string): Promise<number> {
-        return CoreFileUploader.uploadOrReuploadFiles(files, ADDON_MOD_ASSIGN_COMPONENT, assignId, siteId);
+        return CoreFileUploader.uploadOrReuploadFiles(files, ADDON_MOD_ASSIGN_COMPONENT_LEGACY, assignId, siteId);
     }
 
     /**

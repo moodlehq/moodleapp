@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit, OnDestroy, ViewChild, ElementRef } from '@angular/core';
+import { Component, OnInit, OnDestroy, ElementRef, inject, viewChild } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Subscription } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
@@ -42,6 +42,10 @@ import { CoreSiteError } from '@classes/errors/siteerror';
 import { CoreKeyboard } from '@singletons/keyboard';
 import { CoreLoadings } from '@services/overlays/loadings';
 import { CoreAlerts } from '@services/overlays/alerts';
+import { CoreLoginMethodsComponent } from '../../components/login-methods/login-methods';
+import { CoreLoginExceededAttemptsComponent } from '../../components/exceeded-attempts/exceeded-attempts';
+import { CoreSiteLogoComponent } from '../../../../components/site-logo/site-logo';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Page to enter the user credentials.
@@ -50,10 +54,16 @@ import { CoreAlerts } from '@services/overlays/alerts';
     selector: 'page-core-login-credentials',
     templateUrl: 'credentials.html',
     styleUrl: '../../login.scss',
+    imports: [
+        CoreSharedModule,
+        CoreSiteLogoComponent,
+        CoreLoginExceededAttemptsComponent,
+        CoreLoginMethodsComponent,
+    ],
 })
-export class CoreLoginCredentialsPage implements OnInit, OnDestroy {
+export default class CoreLoginCredentialsPage implements OnInit, OnDestroy {
 
-    @ViewChild('credentialsForm') formElement?: ElementRef<HTMLFormElement>;
+    readonly formElement = viewChild<ElementRef<HTMLFormElement>>('credentialsForm');
 
     credForm!: FormGroup;
     site!: CoreUnauthenticatedSite;
@@ -78,10 +88,9 @@ export class CoreLoginCredentialsPage implements OnInit, OnDestroy {
     protected valueChangeSubscription?: Subscription;
     protected alwaysShowLoginFormObserver?: CoreEventObserver;
     protected loginObserver?: CoreEventObserver;
+    protected fb = inject(FormBuilder);
 
-    constructor(
-        protected fb: FormBuilder,
-    ) {
+    constructor() {
         // Listen to LOGIN event to determine if login was successful, since the login can be done using QR, SSO, etc.
         this.loginObserver = CoreEvents.on(CoreEvents.LOGIN, ({ siteId }) => {
             this.siteId = siteId;
@@ -128,12 +137,13 @@ export class CoreLoginCredentialsPage implements OnInit, OnDestroy {
             // Make iOS auto-fill work. The field that isn't focused doesn't get updated, do it manually.
             // Debounce it to prevent triggering this function too often when the user is typing.
             this.valueChangeSubscription = this.credForm.valueChanges.pipe(debounceTime(1000)).subscribe((changes) => {
-                if (!this.formElement || !this.formElement.nativeElement) {
+                const formElement = this.formElement();
+                if (!formElement || !formElement.nativeElement) {
                     return;
                 }
 
-                const usernameInput = this.formElement.nativeElement.querySelector<HTMLInputElement>('input[name="username"]');
-                const passwordInput = this.formElement.nativeElement.querySelector<HTMLInputElement>('input[name="password"]');
+                const usernameInput = formElement.nativeElement.querySelector<HTMLInputElement>('input[name="username"]');
+                const passwordInput = formElement.nativeElement.querySelector<HTMLInputElement>('input[name="password"]');
                 const usernameValue = usernameInput?.value;
                 const passwordValue = passwordInput?.value;
 
@@ -316,7 +326,7 @@ export class CoreLoginCredentialsPage implements OnInit, OnDestroy {
         } finally {
             modal.dismiss();
 
-            CoreForms.triggerFormSubmittedEvent(this.formElement, true);
+            CoreForms.triggerFormSubmittedEvent(this.formElement(), true);
         }
     }
 

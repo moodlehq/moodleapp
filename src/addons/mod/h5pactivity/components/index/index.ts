@@ -12,13 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, Optional, OnInit, OnDestroy, Output, EventEmitter } from '@angular/core';
-import { IonContent } from '@ionic/angular';
-
+import { Component, OnInit, OnDestroy, Output, EventEmitter, effect } from '@angular/core';
 import { DownloadStatus } from '@/core/constants';
 import { CoreSite } from '@classes/sites/site';
 import { CoreCourseModuleMainActivityComponent } from '@features/course/classes/main-activity-component';
-import { CoreCourseContentsPage } from '@features/course/pages/contents/contents';
 import { CoreH5PDisplayOptions } from '@features/h5p/classes/core';
 import { CoreH5PHelper } from '@features/h5p/classes/helper';
 import { CoreH5P } from '@features/h5p/services/h5p';
@@ -47,18 +44,21 @@ import { CoreText } from '@singletons/text';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import {
     ADDON_MOD_H5PACTIVITY_AUTO_SYNCED,
-    ADDON_MOD_H5PACTIVITY_COMPONENT,
+    ADDON_MOD_H5PACTIVITY_COMPONENT_LEGACY,
     ADDON_MOD_H5PACTIVITY_PAGE_NAME,
     ADDON_MOD_H5PACTIVITY_STATE_ID,
     ADDON_MOD_H5PACTIVITY_TRACK_COMPONENT,
 } from '../../constants';
 import { CoreH5PMissingDependenciesError } from '@features/h5p/classes/errors/missing-dependencies-error';
 import { CoreToasts, ToastDuration } from '@services/overlays/toasts';
-import { Subscription } from 'rxjs';
-import { NgZone, Translate } from '@singletons';
+import { Translate } from '@singletons';
 import { CoreError } from '@classes/errors/error';
 import { CoreErrorHelper } from '@services/error-helper';
 import { CoreAlerts } from '@services/overlays/alerts';
+import { CoreCourseModuleNavigationComponent } from '@features/course/components/module-navigation/module-navigation';
+import { CoreCourseModuleInfoComponent } from '@features/course/components/module-info/module-info';
+import { CoreSharedModule } from '@/core/shared.module';
+import { CoreH5PIframeComponent } from '@features/h5p/components/h5p-iframe/h5p-iframe';
 
 /**
  * Component that displays an H5P activity entry page.
@@ -66,12 +66,18 @@ import { CoreAlerts } from '@services/overlays/alerts';
 @Component({
     selector: 'addon-mod-h5pactivity-index',
     templateUrl: 'addon-mod-h5pactivity-index.html',
+    imports: [
+        CoreSharedModule,
+        CoreCourseModuleInfoComponent,
+        CoreCourseModuleNavigationComponent,
+        CoreH5PIframeComponent,
+    ],
 })
 export class AddonModH5PActivityIndexComponent extends CoreCourseModuleMainActivityComponent implements OnInit, OnDestroy {
 
     @Output() onActivityFinish = new EventEmitter<boolean>();
 
-    component = ADDON_MOD_H5PACTIVITY_COMPONENT;
+    component = ADDON_MOD_H5PACTIVITY_COMPONENT_LEGACY;
     pluginName = 'h5pactivity';
 
     h5pActivity?: AddonModH5PActivityData; // The H5P activity object.
@@ -98,7 +104,7 @@ export class AddonModH5PActivityIndexComponent extends CoreCourseModuleMainActiv
     hasMissingDependencies = false;
     saveFreq?: number;
     contentState?: string;
-    isOnline: boolean;
+    readonly isOnline = CoreNetwork.onlineSignal;
     triedToPlay = false;
 
     protected fetchContentDefaultError = 'addon.mod_h5pactivity.errorgetactivity';
@@ -107,14 +113,10 @@ export class AddonModH5PActivityIndexComponent extends CoreCourseModuleMainActiv
     protected observer?: CoreEventObserver;
     protected messageListenerFunction: (event: MessageEvent) => Promise<void>;
     protected checkCompletionAfterLog = false; // It's called later, when the user plays the package.
-    protected onlineObserver: Subscription;
     protected offlineErrorAlert: HTMLIonAlertElement | null = null;
 
-    constructor(
-        protected content?: IonContent,
-        @Optional() courseContentsPage?: CoreCourseContentsPage,
-    ) {
-        super('AddonModH5PActivityIndexComponent', content, courseContentsPage);
+    constructor() {
+        super();
 
         this.site = CoreSites.getRequiredCurrentSite();
         this.siteCanDownload = this.site.canDownloadFiles() && !CoreH5P.isOfflineDisabledInSite();
@@ -123,46 +125,32 @@ export class AddonModH5PActivityIndexComponent extends CoreCourseModuleMainActiv
         this.messageListenerFunction = (event) => this.onIframeMessage(event);
         window.addEventListener('message', this.messageListenerFunction);
 
-        this.isOnline = CoreNetwork.isOnline();
-        this.onlineObserver = CoreNetwork.onChange().subscribe(() => {
-            // Execute the callback in the Angular zone, so change detection doesn't stop working.
-            NgZone.run(() => {
-                this.networkChanged();
-            });
+        // React to a network status change.
+        effect(async () => {
+            const online = this.isOnline();
+
+            if (online) {
+                if (this.offlineErrorAlert) {
+                    // Back online, dismiss the offline error alert.
+                    this.offlineErrorAlert.dismiss();
+                    this.offlineErrorAlert = null;
+                }
+
+                if (this.triedToPlay) {
+                    // User couldn't play the package because he was offline, but he reconnected. Try again.
+                    this.triedToPlay = false;
+                    this.play();
+                }
+
+            } else if (this.playing && !this.fileUrl && this.trackComponent) {
+                // User lost connection while playing an online package with tracking. Show an error.
+                this.offlineErrorAlert = await CoreAlerts.showError(
+                    new CoreError(Translate.instant('core.course.changesofflinemaybelost'), {
+                        title: Translate.instant('core.youreoffline'),
+                    }),
+                );
+            }
         });
-    }
-
-    /**
-     * React to a network status change.
-     */
-    protected async networkChanged(): Promise<void> {
-        const wasOnline = this.isOnline;
-        this.isOnline = CoreNetwork.isOnline();
-
-        if (this.isOnline && this.offlineErrorAlert) {
-            // Back online, dismiss the offline error alert.
-            this.offlineErrorAlert.dismiss();
-            this.offlineErrorAlert = null;
-        }
-
-        if (this.playing && !this.fileUrl && !this.isOnline && wasOnline && this.trackComponent) {
-            // User lost connection while playing an online package with tracking. Show an error.
-            this.offlineErrorAlert = await CoreAlerts.showError(
-                new CoreError(Translate.instant('core.course.changesofflinemaybelost'), {
-                    title: Translate.instant('core.youreoffline'),
-                }),
-            );
-
-            return;
-        }
-
-        if (this.isOnline && this.triedToPlay) {
-            // User couldn't play the package because he was offline, but he reconnected. Try again.
-            this.triedToPlay = false;
-            this.play();
-
-            return;
-        }
     }
 
     /**
@@ -202,7 +190,8 @@ export class AddonModH5PActivityIndexComponent extends CoreCourseModuleMainActiv
 
         await this.loadContentState(); // Loading the state requires the access info.
 
-        this.trackComponent = this.accessInfo?.cansubmit ? ADDON_MOD_H5PACTIVITY_TRACK_COMPONENT : '';
+        this.trackComponent = this.h5pActivity.enabletracking && this.accessInfo?.cansubmit ?
+            ADDON_MOD_H5PACTIVITY_TRACK_COMPONENT : '';
         this.canViewAllAttempts = !!this.h5pActivity.enabletracking && !!this.accessInfo?.canreviewattempts &&
                 AddonModH5PActivity.canGetUsersAttemptsInSite();
 
@@ -222,7 +211,7 @@ export class AddonModH5PActivityIndexComponent extends CoreCourseModuleMainActiv
 
         } else if (
             (this.state == DownloadStatus.DOWNLOADABLE_NOT_DOWNLOADED || this.state == DownloadStatus.OUTDATED) &&
-            CoreNetwork.isOnline() &&
+            this.isOnline() &&
             this.deployedFile?.filesize &&
             CoreFilepool.shouldDownload(this.deployedFile.filesize)
         ) {
@@ -315,7 +304,7 @@ export class AddonModH5PActivityIndexComponent extends CoreCourseModuleMainActiv
             this.h5pActivity.context,
             ADDON_MOD_H5PACTIVITY_STATE_ID,
             {
-                appComponent: ADDON_MOD_H5PACTIVITY_COMPONENT,
+                appComponent: ADDON_MOD_H5PACTIVITY_COMPONENT_LEGACY,
                 appComponentId: this.h5pActivity.coursemodule,
                 readingStrategy: CoreSitesReadingStrategy.PREFER_NETWORK,
             },
@@ -397,7 +386,7 @@ export class AddonModH5PActivityIndexComponent extends CoreCourseModuleMainActiv
             return;
         }
 
-        if (!CoreNetwork.isOnline()) {
+        if (!this.isOnline()) {
             CoreAlerts.showError(Translate.instant('core.networkerrormsg'));
 
             return;
@@ -406,7 +395,7 @@ export class AddonModH5PActivityIndexComponent extends CoreCourseModuleMainActiv
         try {
             // Confirm the download if needed.
             await CoreAlerts.confirmDownloadSize({ size: this.deployedFile.filesize || 0, total: true });
-        } catch (error) {
+        } catch {
             return;
         }
 
@@ -512,7 +501,7 @@ export class AddonModH5PActivityIndexComponent extends CoreCourseModuleMainActiv
             return;
         }
 
-        if (!this.fileUrl && !this.isOnline) {
+        if (!this.fileUrl && !this.isOnline()) {
             this.triedToPlay = true;
 
             CoreAlerts.showError(new CoreError(Translate.instant('core.connectandtryagain'), {
@@ -816,7 +805,6 @@ export class AddonModH5PActivityIndexComponent extends CoreCourseModuleMainActiv
         super.ngOnDestroy();
 
         this.observer?.off();
-        this.onlineObserver.unsubscribe();
 
         // Wait a bit to make sure all messages have been received.
         setTimeout(() => {

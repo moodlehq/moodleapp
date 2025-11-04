@@ -60,7 +60,7 @@ export class CoreAppProvider {
      * Returns the forced timezone to use. Timezone is forced for automated tests.
      *
      * @returns Timezone. Undefined to use the user's timezone.
-     * @deprecated since 5.0. Use CoreTime.getForcedTimezone() instead.
+     * @deprecated since 5.0. Not needed anymore, now the dayjs wrapper will automatically set the timezone when testing.
      */
     static getForcedTimezone(): string | undefined {
         // Use the same timezone forced for LMS in tests.
@@ -90,7 +90,7 @@ export class CoreAppProvider {
     /**
      * Closes the keyboard.
      *
-     * @deprecated sinde 4.5.0. Use CoreKeyboard.closeKeyboard instead.
+     * @deprecated since 4.5.0. Use CoreKeyboard.closeKeyboard instead.
      */
     closeKeyboard(): void {
         CoreKeyboard.close();
@@ -104,11 +104,11 @@ export class CoreAppProvider {
      */
     getAppStoreUrl(storesConfig: CoreStoreConfig): string | undefined {
         if (CorePlatform.isIOS() && storesConfig.ios) {
-            return 'itms-apps://itunes.apple.com/app/' + storesConfig.ios;
+            return `itms-apps://itunes.apple.com/app/${storesConfig.ios}`;
         }
 
         if (CorePlatform.isAndroid() && storesConfig.android) {
-            return 'market://details?id=' + storesConfig.android;
+            return `market://details?id=${storesConfig.android}`;
         }
 
         if (CorePlatform.isMobile() && storesConfig.mobile) {

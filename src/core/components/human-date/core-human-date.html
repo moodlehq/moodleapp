@@ -1,0 +1,22 @@
+@if (link()) {
+    <a [href]="link()">
+        <ng-container *ngTemplateOutlet="dateTemplate" />
+    </a>
+} @else {
+    <ng-container *ngTemplateOutlet="dateTemplate" />
+}
+
+
+<ng-template #dateTemplate>
+    <span [class.text-dimmed]="isPast()" [class.text-danger]="isNear()" [attr.title]="needTitle() ? absoluteDate() : null">
+        @if (isNear()) {
+            <ion-icon class="text-warning" name="fas-triangle-exclamation" [attr.aria-label]="'core.warning' | translate" />
+        }
+        @if (date()) {
+            <span>{{ date() }}</span>
+        }
+        @if (time()) {
+            <span>, {{ time() }}</span>
+        }
+    </span>
+</ng-template>

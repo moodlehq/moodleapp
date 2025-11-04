@@ -178,7 +178,7 @@ export class CoreSitePluginsProvider {
      * @returns Cache key.
      */
     getCallWSCacheKey(method: string, data: Record<string, unknown>): string {
-        return this.getCallWSCommonCacheKey(method) + ':' + CoreObject.sortAndStringify(data);
+        return `${this.getCallWSCommonCacheKey(method)}:${CoreObject.sortAndStringify(data)}`;
     }
 
     /**
@@ -188,7 +188,7 @@ export class CoreSitePluginsProvider {
      * @returns Cache key.
      */
     protected getCallWSCommonCacheKey(method: string): string {
-        return CoreSitePluginsProvider.ROOT_CACHE_KEY + 'ws:' + method;
+        return `${CoreSitePluginsProvider.ROOT_CACHE_KEY}ws:${method}`;
     }
 
     /**
@@ -218,8 +218,8 @@ export class CoreSitePluginsProvider {
 
         // Now call the WS.
         const data: CoreSitePluginsGetContentWSParams = {
-            component: component,
-            method: method,
+            component,
+            method,
             args: CoreObject.toArrayOfObjects(argsToSend, 'name', 'value', true),
         };
 
@@ -255,8 +255,7 @@ export class CoreSitePluginsProvider {
      * @returns Cache key.
      */
     protected getContentCacheKey(component: string, method: string, args: Record<string, unknown>): string {
-        return CoreSitePluginsProvider.ROOT_CACHE_KEY + 'content:' + component + ':' + method +
-            ':' + CoreObject.sortAndStringify(args);
+        return `${CoreSitePluginsProvider.ROOT_CACHE_KEY}content:${component}:${method}:${CoreObject.sortAndStringify(args)}`;
     }
 
     /**
@@ -279,7 +278,7 @@ export class CoreSitePluginsProvider {
                 // The WS needs the list of course IDs. Create the list.
                 return [courseId || 0];
 
-            case component + 'id':
+            case `${component}id`:
                 // The WS needs the instance id.
                 return module && module.instance;
 
@@ -296,7 +295,7 @@ export class CoreSitePluginsProvider {
      * @returns Unique name.
      */
     getHandlerUniqueName(plugin: CoreSitePluginsPlugin, handlerName: string): string {
-        return plugin.addon + '_' + handlerName;
+        return `${plugin.addon}_${handlerName}`;
     }
 
     /**
@@ -328,7 +327,7 @@ export class CoreSitePluginsProvider {
      * @returns Cache key.
      */
     protected getPluginsCacheKey(): string {
-        return CoreSitePluginsProvider.ROOT_CACHE_KEY + 'plugins';
+        return `${CoreSitePluginsProvider.ROOT_CACHE_KEY}plugins`;
     }
 
     /**
@@ -355,7 +354,6 @@ export class CoreSitePluginsProvider {
      *
      * @param method WS method to use.
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateAllCallWSForMethod(method: string, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -370,7 +368,6 @@ export class CoreSitePluginsProvider {
      * @param data Data to send to the WS.
      * @param preSets Extra options.
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateCallWS(
         method: string,
@@ -392,7 +389,6 @@ export class CoreSitePluginsProvider {
      * @param callback Method to execute in the class.
      * @param args The params for the method.
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateContent(component: string, callback: string, args?: Record<string, unknown>, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -460,7 +456,7 @@ export class CoreSitePluginsProvider {
      * @returns Whether it's a site plugin and it's enabled.
      */
     isSitePluginEnabled(plugin: CoreSitePluginsPlugin, site: CoreSite): boolean {
-        if (site.isFeatureDisabled('sitePlugin_' + plugin.component + '_' + plugin.addon) || !plugin.handlers) {
+        if (site.isFeatureDisabled(`sitePlugin_${plugin.component}_${plugin.addon}`) || !plugin.handlers) {
             return false;
         }
 
@@ -918,6 +914,16 @@ export type CoreSitePluginsUserHandlerData = CoreSitePluginsHandlerCommonData & 
     type?: CoreUserProfileHandlerType;
     priority?: number;
     ptrenabled?: boolean;
+    displayinusermenu?: CoreSitePluginsDisplayInUserMenu;
+};
+
+/**
+ * Options to configure whether to show a user profile handler in the user menu.
+ */
+export const enum CoreSitePluginsDisplayInUserMenu {
+    NO = 'no', // Don't display in user menu, but it can be displayed in other places.
+    YES = 'yes', // Display in user menu, but it can also be displayed in other places.
+    ONLY = 'only', // Display only in user menu, not in other places.
 };
 
 /**

@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit, OnDestroy, ViewChild, ElementRef } from '@angular/core';
+import { Component, OnInit, OnDestroy, ElementRef, inject, viewChild, effect } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 
 import { CoreNetwork } from '@services/network';
@@ -35,6 +35,10 @@ import { CoreKeyboard } from '@singletons/keyboard';
 import { CoreLoadings } from '@services/overlays/loadings';
 import { CoreLoginMethodsComponent, CoreLoginMethodsCurrentLogin } from '@features/login/components/login-methods/login-methods';
 import { CoreAlerts } from '@services/overlays/alerts';
+import { CoreSharedModule } from '@/core/shared.module';
+import { CoreSiteLogoComponent } from '../../../../components/site-logo/site-logo';
+import { CoreLoginExceededAttemptsComponent } from '../../components/exceeded-attempts/exceeded-attempts';
+import { CoreLoginIdentityProviderComponent } from '../../components/identity-provider/identity-provider';
 
 /**
  * Page to enter the user password to reconnect to a site.
@@ -43,21 +47,18 @@ import { CoreAlerts } from '@services/overlays/alerts';
     selector: 'page-core-login-reconnect',
     templateUrl: 'reconnect.html',
     styleUrl: '../../login.scss',
+    imports: [
+        CoreSharedModule,
+        CoreSiteLogoComponent,
+        CoreLoginExceededAttemptsComponent,
+        CoreLoginIdentityProviderComponent,
+        CoreLoginMethodsComponent,
+    ],
 })
-export class CoreLoginReconnectPage implements OnInit, OnDestroy {
+export default class CoreLoginReconnectPage implements OnInit, OnDestroy {
 
-    @ViewChild('reconnectForm') formElement?: ElementRef;
-    @ViewChild(CoreLoginMethodsComponent) set loginMethods(loginMethods: CoreLoginMethodsComponent) {
-        if (loginMethods && !this.currentLogin) {
-            loginMethods.getCurrentLogin().then(login => {
-                this.currentLogin = login;
-
-                return;
-            }).catch(() => {
-                // Ignore errors.
-            });
-        }
-    }
+    readonly formElement = viewChild<ElementRef>('reconnectForm');
+    readonly loginMethods = viewChild(CoreLoginMethodsComponent);
 
     credForm: FormGroup;
     site!: CoreSite;
@@ -83,20 +84,32 @@ export class CoreLoginReconnectPage implements OnInit, OnDestroy {
     protected username = '';
     protected alwaysShowLoginFormObserver?: CoreEventObserver;
     protected loginObserver?: CoreEventObserver;
+    protected fb = inject(FormBuilder);
 
-    constructor(
-        protected fb: FormBuilder,
-    ) {
+    constructor() {
         const currentSite = CoreSites.getCurrentSite();
 
         this.isLoggedOut = !currentSite || currentSite.isLoggedOut();
-        this.credForm = fb.group({
+        this.credForm = this.fb.group({
             password: ['', Validators.required],
         });
 
         // Listen to LOGIN event to determine if login was successful, since the login can be done using QR, biometric, etc.
         this.loginObserver = CoreEvents.on(CoreEvents.LOGIN, () => {
             this.loginSuccessful = true;
+        });
+
+        const effectRef = effect(async () => {
+            const loginMethods = this.loginMethods();
+            if (!loginMethods) {
+                return;
+            }
+
+            this.currentLogin = await CorePromiseUtils.ignoreErrors(loginMethods.getCurrentLogin());
+
+            if (this.currentLogin) {
+                effectRef.destroy();
+            }
         });
     }
 
@@ -272,7 +285,7 @@ export class CoreLoginReconnectPage implements OnInit, OnDestroy {
 
             await CoreSites.updateSiteToken(url, this.username, data.token, data.privateToken);
 
-            CoreForms.triggerFormSubmittedEvent(this.formElement, true);
+            CoreForms.triggerFormSubmittedEvent(this.formElement(), true);
 
             // Unset oAuthID if it's set.
             await CoreSites.removeSiteOauthId(this.siteId);

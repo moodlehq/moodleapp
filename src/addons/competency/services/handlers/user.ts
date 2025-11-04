@@ -34,7 +34,8 @@ import { AddonCompetency } from '../competency';
 @Injectable( { providedIn: 'root' })
 export class AddonCompetencyUserHandlerService implements CoreUserProfileHandler {
 
-    name = 'AddonCompetency'; // This name doesn't match any disabled feature, they'll be checked in isEnabledForContext.
+    // This name doesn't match any disabled feature, they'll be checked in isEnabledForContext.
+    name = 'AddonCompetency:fakename';
     priority = 100;
     type = CoreUserProfileHandlerType.LIST_ITEM;
     cacheEnabled = true;
@@ -57,8 +58,7 @@ export class AddonCompetencyUserHandlerService implements CoreUserProfileHandler
         }
 
         if (context === CoreUserDelegateContext.USER_MENU) {
-            // This option used to belong to main menu, check the original disabled feature value.
-            if (currentSite.isFeatureDisabled('CoreMainMenuDelegate_AddonCompetency')) {
+            if (currentSite.isFeatureDisabled('CoreUserDelegate_AddonCompetency')) {
                 return false;
             }
         } else if (currentSite.isFeatureDisabled('CoreUserDelegate_AddonCompetency:learningPlan')) {

@@ -2,87 +2,102 @@
     [class.core-course-list-card]="layout === 'card' || layout === 'summarycard'" [class.item-dimmed]="course.hidden" (click)="openCourse()"
     tappable [attr.aria-label]="course.displayname || course.fullname">
 
-    <div *ngIf="layout === 'card' || layout === 'summarycard'" class="core-course-thumb" [class.core-course-color-img]="course.courseimage">
-        <img *ngIf="course.courseimage" [url]="course.courseimage" core-external-content alt="" (error)="loadFallbackCourseIcon()" />
-        <ion-icon *ngIf="!course.courseimage" name="fas-graduation-cap" class="course-icon" aria-hidden="true" />
-    </div>
+    @if (layout === 'card' || layout === 'summarycard') {
+        <core-course-image [course]="course" class="card-top" />
+    }
 
     <ion-item class="ion-text-wrap">
 
-        <ng-container *ngIf="layout === 'list' || layout === 'listwithenrol'">
-            <ion-icon *ngIf="!course.courseimage" name="fas-graduation-cap" slot="start" class="course-icon core-course-thumb"
-                aria-hidden="true" />
-            <ion-avatar *ngIf="course.courseimage" slot="start" class="core-course-thumb">
-                <img [url]="course.courseimage" core-external-content alt="" (error)="loadFallbackCourseIcon()" />
-            </ion-avatar>
-        </ng-container>
+        @if (layout === 'list' || layout === 'listwithenrol') {
+            <core-course-image [course]="course" />
+        }
 
         <ion-label>
             <div class="core-course-maininfo">
-                <p *ngIf="course.displayname && course.shortname && course.fullname !== course.displayname"
-                    class="core-course-shortname core-course-additional-info">
-                    <core-format-text [text]="course.shortname" contextLevel="course" [contextInstanceId]="course.id" />
-                </p>
+                @if (course.displayname && course.shortname && course.fullname !== course.displayname) {
+                    <p class="core-course-shortname core-course-additional-info">
+                        <core-format-text [text]="course.shortname" contextLevel="course" [contextInstanceId]="course.id" />
+                    </p>
+                }
 
                 <p class="item-heading">
-                    <ion-icon name="fas-star" *ngIf="course.isfavourite" [attr.aria-label]="'core.courses.favourite' | translate" />
-                    <span class="sr-only" *ngIf="course.isfavourite">{{ 'core.courses.aria:favourite' | translate }}</span>
+                    @if (course.isfavourite) {
+                        <ion-icon name="fas-star" [attr.aria-label]="'core.courses.favourite' | translate" />
+                        <span class="sr-only">{{ 'core.courses.aria:favourite' | translate }}</span>
+                    }
 
                     <span (ariaButtonClick)="openCourse()">
                         <span class="sr-only">{{ 'core.courses.aria:coursename' | translate }}</span>
                         <core-format-text [text]="course.fullname" contextLevel="course" [contextInstanceId]="course.id" />
                     </span>
 
-                    <span *ngIf="(layout === 'list' || layout === 'listwithenrol') && !isEnrolled" class="core-course-enrol-icons">
-                        <ion-icon *ngFor="let icon of enrolmentIcons" color="medium" [name]="icon.icon" [title]="icon.label | translate"
-                            [attr.aria-label]="icon.label | translate" [ngClass]="[icon.className]" />
-                    </span>
+                    @if ((layout === 'list' || layout === 'listwithenrol') && !isEnrolled) {
+                        <span class="core-course-enrol-icons">
+                            @for (icon of enrolmentIcons; track icon.label) {
+                                <ion-icon color="medium" [name]="icon.icon" [title]="icon.label | translate"
+                                    [attr.aria-label]="icon.label | translate" [class]="icon.className" />
+                            }
+                        </span>
+                    }
 
-                    <ion-icon *ngIf="prefetchCourseData.downloadSucceeded" class="core-icon-downloaded" name="fam-cloud-done"
-                        color="success" role="status" [attr.aria-label]="'core.downloaded' | translate" />
+                    @if (prefetchCourseData.downloadSucceeded) {
+                        <ion-icon class="core-icon-downloaded" name="fam-cloud-done" color="success" role="status"
+                            [attr.aria-label]="'core.downloaded' | translate" />
+                    }
                 </p>
 
-                <ion-chip color="primary" *ngIf="course.categoryname"
-                    class="core-course-category core-course-additional-info ion-text-nowrap">
-                    <span class="sr-only">{{ 'core.courses.aria:coursecategory' | translate }}</span>
-                    <ion-label>
-                        <core-format-text [text]="course.categoryname" contextLevel="coursecat" [contextInstanceId]="course.categoryid" />
-                    </ion-label>
-                </ion-chip>
+                @if (course.categoryname) {
+                    <ion-chip color="primary" class="core-course-category core-course-additional-info ion-text-nowrap">
+                        <span class="sr-only">{{ 'core.courses.aria:coursecategory' | translate }}</span>
+                        <ion-label>
+                            <core-format-text [text]="course.categoryname" contextLevel="coursecat"
+                                [contextInstanceId]="course.categoryid" />
+                        </ion-label>
+                    </ion-chip>
+                }
 
-                <ion-chip color="info" *ngIf="course.visible === 0"
-                    class="core-course-additional-info ion-text-wrap core-course-hidden-message">
-                    <ion-label>
-                        {{ 'core.course.hiddenfromstudents' | translate }}
-                    </ion-label>
-                </ion-chip>
+                @if (course.visible === 0) {
+                    <ion-chip color="info" class="core-course-additional-info ion-text-wrap core-course-hidden-message">
+                        <ion-label>
+                            {{ 'core.course.hiddenfromstudents' | translate }}
+                        </ion-label>
+                    </ion-chip>
+                }
             </div>
 
-            <div *ngIf="layout !== 'summarycard' && isEnrolled && progress >= 0 && completionUserTracked !== false"
-                class="core-course-progress">
-                <core-progress-bar [progress]="progress" a11yText="core.courses.aria:courseprogress" />
-            </div>
+            @if (layout !== 'summarycard' && isEnrolled && progress >= 0 && completionUserTracked !== false) {
+                <div class="core-course-progress">
+                    <core-progress-bar [progress]="progress" a11yText="core.courses.aria:courseprogress" />
+                </div>
+            }
         </ion-label>
     </ion-item>
 
-    <ng-container *ngIf="isEnrolled && layout !== 'summarycard'">
-        <div class="core-button-spinner" *ngIf="!courseOptionMenuEnabled && showDownload">
-            <core-download-refresh [status]="prefetchCourseData.status" [enabled]="showDownload"
-                [statusesTranslatable]="statusesTranslatable" [canTrustDownload]="false" [loading]="prefetchCourseData.loading"
-                (action)="prefetchCourse()" />
-        </div>
+    @if (isEnrolled && layout !== 'summarycard') {
 
-        <div class="core-button-spinner" *ngIf="courseOptionMenuEnabled">
-            <!-- Options menu. -->
-            <ion-button fill="clear" (click)="showCourseOptionsMenu($event)" *ngIf="!showSpinner"
-                [ariaLabel]="('core.displayoptions' | translate)">
-                <ion-icon name="ellipsis-vertical" slot="icon-only" aria-hidden="true" />
-            </ion-button>
+        @if (!courseOptionMenuEnabled && showDownload) {
+            <div class="core-button-spinner">
+                <core-download-refresh [status]="prefetchCourseData.status" [enabled]="showDownload"
+                    [statusesTranslatable]="statusesTranslatable" [canTrustDownload]="false" [loading]="prefetchCourseData.loading"
+                    (action)="prefetchCourse()" />
+            </div>
+        }
 
-            <!-- Loading options course spinner. -->
-            <ion-spinner *ngIf="showSpinner" [attr.aria-label]="'core.loading' | translate" />
-        </div>
-    </ng-container>
+        @if (courseOptionMenuEnabled) {
+            <div class="core-button-spinner">
+                @if (!showSpinner) {
+                    <!-- Options menu. -->
+                    <ion-button fill="clear" (click)="showCourseOptionsMenu($event)" [ariaLabel]="('core.displayoptions' | translate)">
+                        <ion-icon name="ellipsis-vertical" slot="icon-only" aria-hidden="true" />
+                    </ion-button>
+                } @else {
+                    <!-- Loading options course spinner. -->
+                    <ion-spinner [attr.aria-label]="'core.loading' | translate" />
+                }
+            </div>
+        }
+
+    }
 
     <ion-ripple-effect />
 </ion-card>

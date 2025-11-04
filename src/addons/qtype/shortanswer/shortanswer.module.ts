@@ -12,31 +12,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { APP_INITIALIZER, NgModule } from '@angular/core';
+import { NgModule, provideAppInitializer } from '@angular/core';
 
-import { CoreSharedModule } from '@/core/shared.module';
 import { CoreQuestionDelegate } from '@features/question/services/question-delegate';
-import { AddonQtypeShortAnswerComponent } from './component/shortanswer';
 import { AddonQtypeShortAnswerHandler } from './services/handlers/shortanswer';
 
 @NgModule({
-    declarations: [
-        AddonQtypeShortAnswerComponent,
-    ],
-    imports: [
-        CoreSharedModule,
-    ],
     providers: [
-        {
-            provide: APP_INITIALIZER,
-            multi: true,
-            useValue: () => {
-                CoreQuestionDelegate.registerHandler(AddonQtypeShortAnswerHandler.instance);
-            },
-        },
-    ],
-    exports: [
-        AddonQtypeShortAnswerComponent,
+        provideAppInitializer(() => {
+            CoreQuestionDelegate.registerHandler(AddonQtypeShortAnswerHandler.instance);
+        }),
     ],
 })
 export class AddonQtypeShortAnswerModule {}

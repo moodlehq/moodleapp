@@ -17,7 +17,6 @@
     ion-tab-bar {
         position: relative;
         background: var(--tabs-background);
-        @include safe-area-padding-end(null, 0px);
         height: var(--height);
         color: var(--tabs-color);
         border-bottom: 1px solid var(--stroke);
@@ -48,6 +47,10 @@
             text-align: center;
             line-height: 1.6rem;
             flex-grow: 1;
+
+            &::part(container) {
+                touch-action: pan-x pan-y pinch-zoom;
+            }
 
             swiper-slide {
                 border-bottom: 4px solid transparent;

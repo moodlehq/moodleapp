@@ -12,8 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnDestroy, OnInit } from '@angular/core';
-import { CoreTimeUtils } from '@services/utils/time';
+import { Component, OnDestroy, OnInit, computed, inject, signal } from '@angular/core';
 import { CoreSites } from '@services/sites';
 import { CoreUser } from '@features/user/services/user';
 import { AddonBadges, AddonBadgesUserBadge } from '../../services/badges';
@@ -35,28 +34,38 @@ import { CoreAlerts } from '@services/overlays/alerts';
 @Component({
     selector: 'page-addon-badges-issued-badge',
     templateUrl: 'issued-badge.html',
-    standalone: true,
+    styleUrl: 'issued-badge.scss',
     imports: [
         CoreSharedModule,
     ],
 })
-export class AddonBadgesIssuedBadgePage implements OnInit, OnDestroy {
+export default class AddonBadgesIssuedBadgePage implements OnInit, OnDestroy {
 
-    protected badgeHash = '';
-    protected userId!: number;
+    readonly courseId = CoreNavigator.getRouteNumberParam('courseId') || 0; // Use 0 for site badges.
+    protected readonly badgeHash = CoreNavigator.getRouteParam('badgeHash') || '';
+    protected readonly userId = CoreNavigator.getRouteNumberParam('userId') || CoreSites.getRequiredCurrentSite().getUserId();
+
+    protected route = inject(ActivatedRoute);
     protected logView: (badge: AddonBadgesUserBadge) => void;
 
-    courseId = 0;
-    badge?: AddonBadgesUserBadge;
-    badges?: CoreSwipeNavigationItemsManager;
-    badgeLoaded = false;
-    currentTime = 0;
+    readonly badge = signal<AddonBadgesUserBadge | undefined>(undefined);
+    readonly issuerWithMail = computed(() => {
+        const badge = this.badge();
 
-    constructor(protected route: ActivatedRoute) {
-        this.courseId = CoreNavigator.getRouteNumberParam('courseId') || this.courseId; // Use 0 for site badges.
-        this.userId = CoreNavigator.getRouteNumberParam('userId') || CoreSites.getRequiredCurrentSite().getUserId();
-        this.badgeHash = CoreNavigator.getRouteParam('badgeHash') || '';
+        if (!badge?.issuername) {
+            return '';
+        }
 
+        return badge.issuercontact ?
+                '<a href="mailto:' + badge.issuercontact + '">' + badge.issuername + '</a>'
+                : badge.issuername;
+    });
+
+    readonly badges = signal<CoreSwipeNavigationItemsManager | undefined>(undefined);
+    readonly loaded = signal(false);
+    readonly currentTime = signal(0);
+
+    constructor() {
         const routeData = CoreNavigator.getRouteData(this.route);
         if (routeData.usesSwipeNavigation) {
             const source = CoreRoutedItemsManagerSourcesTracker.getOrCreateSource(
@@ -64,7 +73,7 @@ export class AddonBadgesIssuedBadgePage implements OnInit, OnDestroy {
                 [this.courseId, this.userId],
             );
 
-            this.badges = new CoreSwipeNavigationItemsManager(source);
+            this.badges.set(new CoreSwipeNavigationItemsManager(source));
         }
 
         this.logView = CoreTime.once((badge) => {
@@ -79,21 +88,21 @@ export class AddonBadgesIssuedBadgePage implements OnInit, OnDestroy {
     }
 
     /**
-     * View loaded.
+     * @inheritdoc
      */
     ngOnInit(): void {
         this.fetchIssuedBadge().finally(() => {
-            this.badgeLoaded = true;
+            this.loaded.set(true);
         });
 
-        this.badges?.start();
+        this.badges()?.start();
     }
 
     /**
      * @inheritdoc
      */
     ngOnDestroy(): void {
-        this.badges?.destroy();
+        this.badges()?.destroy();
     }
 
     /**
@@ -103,12 +112,12 @@ export class AddonBadgesIssuedBadgePage implements OnInit, OnDestroy {
      */
     async fetchIssuedBadge(): Promise<void> {
         const site = CoreSites.getRequiredCurrentSite();
-        this.currentTime = CoreTimeUtils.timestamp();
+        this.currentTime.set(CoreTime.timestamp());
 
         try {
             // Search the badge in the user badges.
             const badges = await AddonBadges.getUserBadges(this.courseId, this.userId);
-            let badge = badges.find((badge) => this.badgeHash == badge.uniquehash);
+            let badge = badges.find((badge) => this.badgeHash === badge.uniquehash);
 
             if (badge) {
                 if (!site.isVersionGreaterEqualThan('4.5')) {
@@ -137,7 +146,7 @@ export class AddonBadgesIssuedBadgePage implements OnInit, OnDestroy {
                 }
             }
 
-            this.badge = badge;
+            this.badge.set(badge);
 
             this.logView(badge);
         } catch (message) {
@@ -156,9 +165,7 @@ export class AddonBadgesIssuedBadgePage implements OnInit, OnDestroy {
             AddonBadges.invalidateUserBadgeByHash(this.badgeHash),
         ]);
 
-        await CorePromiseUtils.ignoreErrors(Promise.all([
-            this.fetchIssuedBadge(),
-        ]));
+        await CorePromiseUtils.ignoreErrors(this.fetchIssuedBadge());
 
         refresher?.complete();
     }

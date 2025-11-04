@@ -52,8 +52,8 @@ export class CoreErrorAccordionService {
     /**
      * Get component html.
      *
-     * @param errorCode Error code.
      * @param errorDetails Error details.
+     * @param errorCode Error code.
      * @returns HTML.
      */
     private html(errorDetails: string, errorCode?: string): string {

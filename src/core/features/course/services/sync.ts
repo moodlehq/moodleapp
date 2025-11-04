@@ -21,7 +21,7 @@ import { CoreNetwork } from '@services/network';
 import { CoreWSError } from '@classes/errors/wserror';
 import { CoreErrorHelper } from '@services/error-helper';
 import { CoreCourseOffline } from './course-offline';
-import { CoreCourse } from './course';
+import { CoreCourse, CoreCourseCompletionActivityStatus } from './course';
 import { CoreCourseLogHelper } from './log-helper';
 import { CoreWSExternalWarning } from '@services/ws';
 import { CoreCourseManualCompletionDBRecord } from './database/course';
@@ -29,8 +29,9 @@ import { CoreNetworkError } from '@classes/errors/network-error';
 import { makeSingleton, Translate } from '@singletons';
 import { CoreEvents } from '@singletons/events';
 import { CoreCourses } from '@features/courses/services/courses';
-import { CORE_COURSE_AUTO_SYNCED } from '../constants';
+import { CORE_COURSE_AUTO_SYNCED, CoreCourseModuleCompletionStatus, CoreCourseModuleCompletionTracking } from '../constants';
 import { CorePromiseUtils } from '@singletons/promise-utils';
+import { CoreTime } from '@singletons/time';
 
 /**
  * Service to sync course offline data. This only syncs the offline data of the course itself, not the offline data of
@@ -185,7 +186,7 @@ export class CoreCourseSyncProvider extends CoreSyncBaseProvider<CoreCourseSyncR
 
         // Send all the completions.
         await Promise.all(completions.map(async (entry) => {
-            const onlineComp = onlineCompletions[entry.cmid];
+            const onlineComp = onlineCompletions[entry.cmid] as CoreCourseCompletionActivityStatus | undefined;
 
             // Check if the completion was modified in online. If so, discard it.
             if (onlineComp && onlineComp.timecompleted * 1000 > entry.timecompleted) {
@@ -205,8 +206,13 @@ export class CoreCourseSyncProvider extends CoreSyncBaseProvider<CoreCourseSyncR
                 return;
             }
 
+            let newState = onlineComp?.state;
             try {
                 await CoreCourse.markCompletedManuallyOnline(entry.cmid, !!entry.completed, siteId);
+
+                newState = entry.completed
+                    ? CoreCourseModuleCompletionStatus.COMPLETION_COMPLETE
+                    : CoreCourseModuleCompletionStatus.COMPLETION_INCOMPLETE;
 
                 result.updated = true;
 
@@ -230,6 +236,25 @@ export class CoreCourseSyncProvider extends CoreSyncBaseProvider<CoreCourseSyncR
                         error: CoreErrorHelper.getErrorMessageFromError(error),
                     }),
                 });
+            } finally {
+                if (newState !== undefined) {
+                    const completion = onlineComp
+                        ? {
+                            ...onlineComp,
+                            state: newState,
+                            courseId,
+                        }
+                        : {
+                            cmid: entry.cmid,
+                            state: newState,
+                            courseId,
+                            timecompleted: CoreTime.timestamp(),
+                            overrideby: 0,
+                            tracking: CoreCourseModuleCompletionTracking.MANUAL,
+                        };
+
+                    CoreEvents.trigger(CoreEvents.MANUAL_COMPLETION_CHANGED, { completion });
+                }
             }
         }));
 

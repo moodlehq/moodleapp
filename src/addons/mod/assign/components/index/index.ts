@@ -12,22 +12,18 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, Optional, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Component, OnDestroy, OnInit, viewChild } from '@angular/core';
 import { Params } from '@angular/router';
 import { CoreError } from '@classes/errors/error';
 import { CoreSite } from '@classes/sites/site';
 import { CoreCourseModuleMainActivityComponent } from '@features/course/classes/main-activity-component';
-import { CoreCourseContentsPage } from '@features/course/pages/contents/contents';
-import { IonContent } from '@ionic/angular';
 import { CoreGroupInfo, CoreGroups } from '@services/groups';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSites } from '@services/sites';
-import { CoreTimeUtils } from '@services/utils/time';
+import { CoreTime } from '@singletons/time';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { Translate } from '@singletons';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
-import { CoreTime } from '@singletons/time';
-import { AddonModAssignListFilterName } from '../../classes/submissions-source';
 import {
     AddonModAssign,
     AddonModAssignAssign,
@@ -42,8 +38,9 @@ import {
 import { AddonModAssignSubmissionComponent } from '../submission/submission';
 import {
     ADDON_MOD_ASSIGN_AUTO_SYNCED,
-    ADDON_MOD_ASSIGN_COMPONENT,
+    ADDON_MOD_ASSIGN_COMPONENT_LEGACY,
     ADDON_MOD_ASSIGN_GRADED_EVENT,
+    ADDON_MOD_ASSIGN_MODNAME,
     ADDON_MOD_ASSIGN_PAGE_NAME,
     ADDON_MOD_ASSIGN_STARTED_EVENT,
     ADDON_MOD_ASSIGN_SUBMISSION_REMOVED_EVENT,
@@ -51,8 +48,12 @@ import {
     ADDON_MOD_ASSIGN_SUBMITTED_FOR_GRADING_EVENT,
     ADDON_MOD_ASSIGN_WARN_GROUPS_OPTIONAL,
     ADDON_MOD_ASSIGN_WARN_GROUPS_REQUIRED,
+    AddonModAssignListFilterName,
 } from '../../constants';
 import { CoreAlerts } from '@services/overlays/alerts';
+import { CoreSharedModule } from '@/core/shared.module';
+import { CoreCourseModuleInfoComponent } from '@features/course/components/module-info/module-info';
+import { CoreCourseModuleNavigationComponent } from '@features/course/components/module-navigation/module-navigation';
 
 /**
  * Component that displays an assignment.
@@ -60,13 +61,19 @@ import { CoreAlerts } from '@services/overlays/alerts';
 @Component({
     selector: 'addon-mod-assign-index',
     templateUrl: 'addon-mod-assign-index.html',
+    imports: [
+        CoreSharedModule,
+        AddonModAssignSubmissionComponent,
+        CoreCourseModuleInfoComponent,
+        CoreCourseModuleNavigationComponent,
+    ],
 })
 export class AddonModAssignIndexComponent extends CoreCourseModuleMainActivityComponent implements OnInit, OnDestroy {
 
-    @ViewChild(AddonModAssignSubmissionComponent) submissionComponent?: AddonModAssignSubmissionComponent;
+    readonly submissionComponent = viewChild(AddonModAssignSubmissionComponent);
 
-    component = ADDON_MOD_ASSIGN_COMPONENT;
-    pluginName = 'assign';
+    component = ADDON_MOD_ASSIGN_COMPONENT_LEGACY;
+    pluginName = ADDON_MOD_ASSIGN_MODNAME;
 
     assign?: AddonModAssignAssign; // The assign object.
     canViewAllSubmissions = false; // Whether the user can view all submissions.
@@ -99,11 +106,8 @@ export class AddonModAssignIndexComponent extends CoreCourseModuleMainActivityCo
     protected gradedObserver?: CoreEventObserver;
     protected startedObserver?: CoreEventObserver;
 
-    constructor(
-        protected content?: IonContent,
-        @Optional() courseContentsPage?: CoreCourseContentsPage,
-    ) {
-        super('AddonModLessonIndexComponent', content, courseContentsPage);
+    constructor() {
+        super();
 
         this.currentSite = CoreSites.getRequiredCurrentSite();
         this.currentUserId = this.currentSite.getUserId();
@@ -190,7 +194,7 @@ export class AddonModAssignIndexComponent extends CoreCourseModuleMainActivityCo
 
         // Get assignment submissions.
         const submissions = await AddonModAssign.getSubmissions(this.assign.id, { cmId: this.module.id });
-        const time = CoreTimeUtils.timestamp();
+        const time = CoreTime.timestamp();
 
         this.canViewAllSubmissions = submissions.canviewsubmissions;
 
@@ -212,7 +216,7 @@ export class AddonModAssignIndexComponent extends CoreCourseModuleMainActivityCo
                         if (this.assign.cutoffdate > time) {
                             this.lateSubmissions = Translate.instant(
                                 'addon.mod_assign.latesubmissionsaccepted',
-                                { $a: CoreTimeUtils.userDate(this.assign.cutoffdate * 1000) },
+                                { $a: CoreTime.userDate(this.assign.cutoffdate * 1000) },
                             );
                         } else {
                             this.lateSubmissions = Translate.instant('addon.mod_assign.nomoresubmissionsaccepted');
@@ -231,7 +235,7 @@ export class AddonModAssignIndexComponent extends CoreCourseModuleMainActivityCo
 
         try {
             // Check if the user can view their own submission.
-            await AddonModAssign.getSubmissionStatus(this.assign.id, { cmId: this.module.id });
+            await AddonModAssign.getSubmissionStatus(this.assign, { cmId: this.module.id });
             this.canViewOwnSubmission = true;
         } catch (error) {
             this.canViewOwnSubmission = false;
@@ -280,7 +284,7 @@ export class AddonModAssignIndexComponent extends CoreCourseModuleMainActivityCo
             return;
         }
 
-        const submissionStatus = await AddonModAssign.getSubmissionStatus(this.assign.id, {
+        const submissionStatus = await AddonModAssign.getSubmissionStatus(this.assign, {
             groupId: this.group,
             cmId: this.module.id,
         });
@@ -331,7 +335,7 @@ export class AddonModAssignIndexComponent extends CoreCourseModuleMainActivityCo
         }
 
         CoreNavigator.navigateToSitePath(
-            ADDON_MOD_ASSIGN_PAGE_NAME + `/${this.courseId}/${this.module.id}/submission`,
+            `${ADDON_MOD_ASSIGN_PAGE_NAME}/${this.courseId}/${this.module.id}/submission`,
             {
                 params,
             },
@@ -343,7 +347,7 @@ export class AddonModAssignIndexComponent extends CoreCourseModuleMainActivityCo
      */
     protected hasSyncSucceed(result: AddonModAssignSyncResult): boolean {
         if (result.updated) {
-            this.submissionComponent?.invalidateAndRefresh(false);
+            this.submissionComponent()?.invalidateAndRefresh(false);
         }
 
         return result.updated;
@@ -357,7 +361,7 @@ export class AddonModAssignIndexComponent extends CoreCourseModuleMainActivityCo
 
         promises.push(AddonModAssign.invalidateAssignmentData(this.courseId));
         // Invalidate before component becomes null.
-        promises.push(this.submissionComponent?.invalidateAndRefresh(true) || Promise.resolve());
+        promises.push(this.submissionComponent()?.invalidateAndRefresh(true) || Promise.resolve());
 
         if (this.assign) {
             promises.push(AddonModAssign.invalidateAllSubmissionData(this.assign.id));
@@ -368,24 +372,6 @@ export class AddonModAssignIndexComponent extends CoreCourseModuleMainActivityCo
         }
 
         await Promise.all(promises);
-    }
-
-    /**
-     * User entered the page that contains the component.
-     */
-    ionViewDidEnter(): void {
-        super.ionViewDidEnter();
-
-        this.submissionComponent?.ionViewDidEnter();
-    }
-
-    /**
-     * User left the page that contains the component.
-     */
-    ionViewDidLeave(): void {
-        super.ionViewDidLeave();
-
-        this.submissionComponent?.ionViewDidLeave();
     }
 
     /**

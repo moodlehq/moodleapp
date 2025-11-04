@@ -13,13 +13,13 @@
 // limitations under the License.
 
 import { ActivatedRoute, ActivatedRouteSnapshot } from '@angular/router';
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, inject } from '@angular/core';
 import { Subscription } from 'rxjs';
 
 import { CoreSite } from '@classes/sites/site';
 import { CoreSites } from '@services/sites';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
-import { CoreUser, CoreUserProfile, USER_PROFILE_REFRESHED } from '@features/user/services/user';
+import { CoreUser, CoreUserProfile } from '@features/user/services/user';
 import { CoreUserHelper } from '@features/user/services/user-helper';
 import {
     CoreUserDelegate,
@@ -37,20 +37,18 @@ import { CoreTime } from '@singletons/time';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 import { Translate } from '@singletons';
 import { CoreAlerts } from '@services/overlays/alerts';
+import { CoreSharedModule } from '@/core/shared.module';
+import { CORE_USER_PROFILE_REFRESHED } from '@features/user/constants';
 
 @Component({
     selector: 'page-core-user-profile',
     templateUrl: 'profile.html',
     styleUrl: 'profile.scss',
+    imports: [
+        CoreSharedModule,
+    ],
 })
-export class CoreUserProfilePage implements OnInit, OnDestroy {
-
-    protected courseId?: number;
-    protected userId!: number;
-    protected site!: CoreSite;
-    protected obsProfileRefreshed: CoreEventObserver;
-    protected subscription?: Subscription;
-    protected logView: (user: CoreUserProfile) => void;
+export default class CoreUserProfilePage implements OnInit, OnDestroy {
 
     userLoaded = false;
     isLoadingHandlers = false;
@@ -64,8 +62,16 @@ export class CoreUserProfilePage implements OnInit, OnDestroy {
 
     users?: CoreUserSwipeItemsManager;
 
-    constructor(private route: ActivatedRoute) {
-        this.obsProfileRefreshed = CoreEvents.on(USER_PROFILE_REFRESHED, (data) => {
+    protected courseId?: number;
+    protected userId!: number;
+    protected site!: CoreSite;
+    protected obsProfileRefreshed: CoreEventObserver;
+    protected subscription?: Subscription;
+    protected logView: (user: CoreUserProfile) => void;
+    protected route = inject(ActivatedRoute);
+
+    constructor() {
+        this.obsProfileRefreshed = CoreEvents.on(CORE_USER_PROFILE_REFRESHED, (data) => {
             if (!this.user || !data.user) {
                 return;
             }
@@ -197,7 +203,7 @@ export class CoreUserProfilePage implements OnInit, OnDestroy {
         event?.complete();
 
         if (this.user) {
-            CoreEvents.trigger(USER_PROFILE_REFRESHED, {
+            CoreEvents.trigger(CORE_USER_PROFILE_REFRESHED, {
                 courseId: this.courseId,
                 userId: this.userId,
                 user: this.user,

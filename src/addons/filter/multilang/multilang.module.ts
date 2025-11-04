@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { APP_INITIALIZER, NgModule } from '@angular/core';
+import { NgModule, provideAppInitializer } from '@angular/core';
 
 import { CoreFilterDelegate } from '@features/filter/services/filter-delegate';
 import { AddonFilterMultilangHandler } from './services/handlers/multilang';
@@ -23,11 +23,9 @@ import { AddonFilterMultilangHandler } from './services/handlers/multilang';
     imports: [
     ],
     providers: [
-        {
-            provide: APP_INITIALIZER,
-            multi: true,
-            useValue: () => CoreFilterDelegate.registerHandler(AddonFilterMultilangHandler.instance),
-        },
+        provideAppInitializer(() => {
+            CoreFilterDelegate.registerHandler(AddonFilterMultilangHandler.instance);
+        }),
     ],
 })
 export class AddonFilterMultilangModule {}

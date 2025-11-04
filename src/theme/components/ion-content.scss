@@ -1,4 +1,16 @@
+@import "../helpers/helpers";
+
 ion-content {
     --background: var(--ion-background-color);
     --background-alternative: var(--gray-200);
+
+    &::part(scroll) {
+        margin-left: var(--ion-safe-area-left);
+        margin-right: var(--ion-safe-area-right);
+    }
+
+    > *:not([slot]) {
+        --ion-safe-area-left: 0px;
+        --ion-safe-area-right: 0px;
+    }
 }

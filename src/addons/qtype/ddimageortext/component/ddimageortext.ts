@@ -12,11 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnDestroy, ElementRef } from '@angular/core';
+import { Component, OnDestroy } from '@angular/core';
 
 import { AddonModQuizQuestionBasicData, CoreQuestionBaseComponent } from '@features/question/classes/base-question-component';
 import { CoreQuestionHelper } from '@features/question/services/question-helper';
 import { AddonQtypeDdImageOrTextQuestion } from '../classes/ddimageortext';
+import { CoreSharedModule } from '@/core/shared.module';
+import { CoreText } from '@singletons/text';
 
 /**
  * Component to render a drag-and-drop onto image question.
@@ -25,6 +27,9 @@ import { AddonQtypeDdImageOrTextQuestion } from '../classes/ddimageortext';
     selector: 'addon-qtype-ddimageortext',
     templateUrl: 'addon-qtype-ddimageortext.html',
     styleUrls: ['../../../../core/features/question/question.scss', 'ddimageortext.scss'],
+    imports: [
+        CoreSharedModule,
+    ],
 })
 export class AddonQtypeDdImageOrTextComponent
     extends CoreQuestionBaseComponent<AddonModQuizDdImageOrTextQuestionData>
@@ -35,10 +40,6 @@ export class AddonQtypeDdImageOrTextComponent
     protected destroyed = false;
     protected textIsRendered = false;
     protected ddAreaisRendered = false;
-
-    constructor(elementRef: ElementRef) {
-        super('AddonQtypeDdImageOrTextComponent', elementRef);
-    }
 
     /**
      * @inheritdoc
@@ -83,8 +84,14 @@ export class AddonQtypeDdImageOrTextComponent
             if (this.question.amdArgs[1] !== undefined) {
                 this.question.readOnly = !!this.question.amdArgs[1];
             }
-            if (this.question.amdArgs[2] !== undefined) {
-                this.drops = <unknown[]> this.question.amdArgs[2];
+
+            // Try to get drop info from data attribute (Moodle 5.1+). If not found, fallback to old way of retrieving it.
+            const dropZones = ddArea.querySelector<HTMLElement>('.dropzones');
+            const placeInfo = dropZones?.dataset.placeInfo ?
+                CoreText.parseJSON(dropZones.dataset.placeInfo, null) :
+                this.question.amdArgs[2];
+            if (placeInfo) {
+                this.drops = <unknown[]> placeInfo;
             }
         }
 
@@ -117,6 +124,10 @@ export class AddonQtypeDdImageOrTextComponent
      */
     protected questionRendered(): void {
         if (!this.destroyed && this.question) {
+
+            // Should not happen, but just in case we avoid creating duplicated instances.
+            this.questionInstance?.destroy();
+
             // Create the instance.
             this.questionInstance = new AddonQtypeDdImageOrTextQuestion(
                 this.hostElement,

@@ -30,7 +30,7 @@ import { AddonModGlossaryHelper } from './glossary-helper';
 import { AddonModGlossaryOffline, AddonModGlossaryOfflineEntry } from './glossary-offline';
 import { CoreFileUploader } from '@features/fileuploader/services/fileuploader';
 import { CoreFileEntry } from '@services/file-helper';
-import { ADDON_MOD_GLOSSARY_COMPONENT, GLOSSARY_AUTO_SYNCED } from '../constants';
+import { ADDON_MOD_GLOSSARY_COMPONENT, ADDON_MOD_GLOSSARY_COMPONENT_LEGACY, GLOSSARY_AUTO_SYNCED } from '../constants';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 
 /**
@@ -149,12 +149,12 @@ export class AddonModGlossarySyncProvider extends CoreCourseActivitySyncBaseProv
 
         // Verify that glossary isn't blocked.
         if (CoreSync.isBlocked(ADDON_MOD_GLOSSARY_COMPONENT, syncId, siteId)) {
-            this.logger.debug('Cannot sync glossary ' + glossaryId + ' because it is blocked.');
+            this.logger.debug(`Cannot sync glossary ${glossaryId} because it is blocked.`);
 
             throw new CoreSyncBlockedError(Translate.instant('core.errorsyncblocked', { $a: this.componentTranslate }));
         }
 
-        this.logger.debug('Try to sync glossary ' + glossaryId + ' for user ' + userId);
+        this.logger.debug(`Try to sync glossary ${glossaryId} for user ${userId}`);
 
         const syncPromise = this.performSyncGlossaryEntries(glossaryId, userId, siteId);
 
@@ -173,7 +173,9 @@ export class AddonModGlossarySyncProvider extends CoreCourseActivitySyncBaseProv
         const syncId = this.getGlossarySyncId(glossaryId, userId);
 
         // Sync offline logs.
-        await CorePromiseUtils.ignoreErrors(CoreCourseLogHelper.syncActivity(ADDON_MOD_GLOSSARY_COMPONENT, glossaryId, siteId));
+        await CorePromiseUtils.ignoreErrors(
+            CoreCourseLogHelper.syncActivity(ADDON_MOD_GLOSSARY_COMPONENT_LEGACY, glossaryId, siteId),
+        );
 
         // Get offline responses to be sent.
         const entries = await CorePromiseUtils.ignoreErrors(
@@ -317,7 +319,7 @@ export class AddonModGlossarySyncProvider extends CoreCourseActivitySyncBaseProv
             files = files.concat(storedFiles);
         }
 
-        return CoreFileUploader.uploadOrReuploadFiles(files, ADDON_MOD_GLOSSARY_COMPONENT, glossaryId, siteId);
+        return CoreFileUploader.uploadOrReuploadFiles(files, ADDON_MOD_GLOSSARY_COMPONENT_LEGACY, glossaryId, siteId);
     }
 
     /**
@@ -330,7 +332,7 @@ export class AddonModGlossarySyncProvider extends CoreCourseActivitySyncBaseProv
     protected getGlossarySyncId(glossaryId: number, userId?: number): string {
         userId = userId || CoreSites.getCurrentSiteUserId();
 
-        return 'glossary#' + glossaryId + '#' + userId;
+        return `glossary#${glossaryId}#${userId}`;
     }
 
 }

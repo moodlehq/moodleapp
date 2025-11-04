@@ -12,10 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { ChangeDetectorRef, Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, ElementRef, OnDestroy, OnInit, inject, viewChild } from '@angular/core';
 
 import { CoreSites, CoreSitesReadingStrategy } from '@services/sites';
-import { CoreMimetypeUtils } from '@services/utils/mimetype';
+import { CoreMimetype } from '@singletons/mimetype';
 import { CoreSite } from '@classes/sites/site';
 import { CoreNavigator } from '@services/navigator';
 import { CoreEvents } from '@singletons/events';
@@ -33,6 +33,7 @@ import { CoreModals } from '@services/overlays/modals';
 import { CoreLoadings } from '@services/overlays/loadings';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreAlerts } from '@services/overlays/alerts';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Page to accept a site policy.
@@ -41,10 +42,13 @@ import { CoreAlerts } from '@services/overlays/alerts';
     selector: 'page-core-policy-site-policy',
     templateUrl: 'site-policy.html',
     styleUrl: 'site-policy.scss',
+    imports: [
+        CoreSharedModule,
+    ],
 })
-export class CorePolicySitePolicyPage implements OnInit, OnDestroy {
+export default class CorePolicySitePolicyPage implements OnInit, OnDestroy {
 
-    @ViewChild(IonContent) content?: IonContent;
+    readonly content = viewChild.required(IonContent);
 
     siteName?: string;
     isManageAcceptancesAvailable = false;
@@ -72,8 +76,8 @@ export class CorePolicySitePolicyPage implements OnInit, OnDestroy {
     protected siteId?: string;
     protected currentSite!: CoreSite;
     protected layoutSubscription?: Subscription;
-
-    constructor(protected elementRef: ElementRef, protected changeDetector: ChangeDetectorRef) {}
+    protected element: HTMLElement = inject(ElementRef).nativeElement;
+    protected changeDetector = inject(ChangeDetectorRef);
 
     /**
      * @inheritdoc
@@ -140,9 +144,9 @@ export class CorePolicySitePolicyPage implements OnInit, OnDestroy {
 
         // Try to get the mime type.
         try {
-            const mimeType = await CoreMimetypeUtils.getMimeTypeFromUrl(this.sitePoliciesURL);
+            const mimeType = await CoreMimetype.getMimeTypeFromUrl(this.sitePoliciesURL);
 
-            const extension = CoreMimetypeUtils.getExtension(mimeType, this.sitePoliciesURL);
+            const extension = CoreMimetype.getExtension(mimeType, this.sitePoliciesURL);
             this.showInline = extension == 'html' || extension == 'htm';
         } catch {
             // Unable to get mime type, assume it's not supported.
@@ -262,11 +266,11 @@ export class CorePolicySitePolicyPage implements OnInit, OnDestroy {
 
         this.pendingPolicies?.forEach(policy => {
             if (policy.optional) {
-                this.policiesForm?.addControl('agreepolicy' + policy.versionid, new FormControl<number | undefined>(undefined, {
+                this.policiesForm?.addControl(`agreepolicy${policy.versionid}`, new FormControl<number | undefined>(undefined, {
                     validators: Validators.required,
                 }));
             } else {
-                this.policiesForm?.addControl('agreepolicy' + policy.versionid, new FormControl(false, {
+                this.policiesForm?.addControl(`agreepolicy${policy.versionid}`, new FormControl(false, {
                     validators: Validators.requiredTrue,
                     nonNullable: true,
                 }));
@@ -340,7 +344,7 @@ export class CorePolicySitePolicyPage implements OnInit, OnDestroy {
     protected async checkScroll(): Promise<void> {
         await CoreWait.wait(400);
 
-        const scrollElement = await this.content?.getScrollElement();
+        const scrollElement = await this.content().getScrollElement();
 
         this.hasScroll = !!scrollElement && scrollElement.scrollHeight > scrollElement.clientHeight + 2; // Add 2px of error margin.
     }
@@ -363,7 +367,7 @@ export class CorePolicySitePolicyPage implements OnInit, OnDestroy {
 
             // Scroll to the first element with errors.
             const errorFound = await CoreDom.scrollToInputError(
-                this.elementRef.nativeElement,
+                this.element,
             );
 
             if (!errorFound) {
@@ -404,7 +408,7 @@ export class CorePolicySitePolicyPage implements OnInit, OnDestroy {
         const acceptances: Record<number, number> = {};
 
         this.pendingPolicies?.forEach(policy => {
-            const control = this.policiesForm?.controls['agreepolicy' + policy.versionid];
+            const control = this.policiesForm?.controls[`agreepolicy${policy.versionid}`];
             if (!control) {
                 return;
             }
@@ -456,7 +460,7 @@ export class CorePolicySitePolicyPage implements OnInit, OnDestroy {
         event?.preventDefault();
         event?.stopPropagation();
 
-        this.content?.scrollToTop(400);
+        this.content().scrollToTop(400);
     }
 
     /**

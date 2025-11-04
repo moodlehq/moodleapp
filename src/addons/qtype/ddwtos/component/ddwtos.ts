@@ -12,13 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnDestroy, ElementRef, ViewChild } from '@angular/core';
+import { Component, OnDestroy, ElementRef, viewChild } from '@angular/core';
 
 import { AddonModQuizQuestionBasicData, CoreQuestionBaseComponent } from '@features/question/classes/base-question-component';
 import { CoreQuestionHelper } from '@features/question/services/question-helper';
-import { CoreDomUtils } from '@services/utils/dom';
+import { CoreWait } from '@singletons/wait';
 import { AddonQtypeDdwtosQuestion } from '../classes/ddwtos';
 import { CoreText } from '@singletons/text';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Component to render a drag-and-drop words into sentences question.
@@ -27,20 +28,19 @@ import { CoreText } from '@singletons/text';
     selector: 'addon-qtype-ddwtos',
     templateUrl: 'addon-qtype-ddwtos.html',
     styleUrls: ['../../../../core/features/question/question.scss', 'ddwtos.scss'],
+    imports: [
+        CoreSharedModule,
+    ],
 })
 export class AddonQtypeDdwtosComponent extends CoreQuestionBaseComponent<AddonModQuizDdwtosQuestionData> implements OnDestroy {
 
-    @ViewChild('questiontext') questionTextEl?: ElementRef;
+    readonly questionTextEl = viewChild<ElementRef>('questiontext');
 
     protected questionInstance?: AddonQtypeDdwtosQuestion;
     protected inputIds: string[] = []; // Ids of the inputs of the question (where the answers will be stored).
     protected destroyed = false;
     protected textIsRendered = false;
     protected answerAreRendered = false;
-
-    constructor(elementRef: ElementRef) {
-        super('AddonQtypeDdwtosComponent', elementRef);
-    }
 
     /**
      * @inheritdoc
@@ -84,7 +84,7 @@ export class AddonQtypeDdwtosComponent extends CoreQuestionBaseComponent<AddonMo
 
         // Add the drags container inside the answers so it's rendered inside core-format-text,
         // otherwise some styles could be different between the drag homes and the draggables.
-        this.question.answers = answerContainer.outerHTML + '<div class="drags"></div>';
+        this.question.answers = `${answerContainer.outerHTML}<div class="drags"></div>`;
 
         // Get the inputs where the answers will be stored and add them to the question text.
         const inputEls = Array.from(
@@ -134,9 +134,13 @@ export class AddonQtypeDdwtosComponent extends CoreQuestionBaseComponent<AddonMo
             return;
         }
 
-        if (this.questionTextEl) {
-            await CoreDomUtils.waitForImages(this.questionTextEl.nativeElement);
+        const questionTextEl = this.questionTextEl();
+        if (questionTextEl) {
+            await CoreWait.waitForImages(questionTextEl.nativeElement);
         }
+
+        // Should not happen, but just in case we avoid creating duplicated instances.
+        this.questionInstance?.destroy();
 
         // Create the instance.
         this.questionInstance = new AddonQtypeDdwtosQuestion(

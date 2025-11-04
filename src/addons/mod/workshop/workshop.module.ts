@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { APP_INITIALIZER, NgModule, Type } from '@angular/core';
+import { NgModule, Type, provideAppInitializer } from '@angular/core';
 import { Routes } from '@angular/router';
 import { CoreContentLinksDelegate } from '@features/contentlinks/services/contentlinks-delegate';
 import { CoreCourseHelper } from '@features/course/services/course-helper';
@@ -29,6 +29,7 @@ import { AddonModWorkshopModuleHandler } from './services/handlers/module';
 import { ADDON_MOD_WORKSHOP_COMPONENT, ADDON_MOD_WORKSHOP_PAGE_NAME } from '@addons/mod/workshop/constants';
 import { getPrefetchHandlerInstance } from '@addons/mod/workshop/services/handlers/prefetch';
 import { getCronHandlerInstance } from '@addons/mod/workshop/services/handlers/sync-cron';
+import { canLeaveGuard } from '@guards/can-leave';
 
 /**
  * Get modworkshop services.
@@ -57,16 +58,37 @@ export async function getModWorkshopServices(): Promise<Type<unknown>[]> {
  *
  * @returns Workshop component modules.
  */
-export async function getModWorkshopComponentModules(): Promise<unknown[]> {
-    const { AddonModWorkshopComponentsModule } = await import('@addons/mod/workshop/components/components.module');
+export async function getModWorkshopComponentModules(): Promise<Type<unknown>[]> {
+    const { AddonModWorkshopAssessmentStrategyComponent } =
+        await import('@addons/mod/workshop/components/assessment-strategy/assessment-strategy');
 
-    return [AddonModWorkshopComponentsModule];
+    return [AddonModWorkshopAssessmentStrategyComponent];
 }
 
 const routes: Routes = [
     {
         path: ADDON_MOD_WORKSHOP_PAGE_NAME,
-        loadChildren: () => import('./workshop-lazy.module'),
+        loadChildren: () => [
+            {
+                path: ':courseId/:cmId',
+                loadComponent: () => import('./pages/index/index'),
+            },
+            {
+                path: ':courseId/:cmId/:submissionId',
+                loadComponent: () => import('./pages/submission/submission'),
+                canDeactivate: [canLeaveGuard],
+            },
+            {
+                path: ':courseId/:cmId/:submissionId/edit',
+                loadComponent: () => import('./pages/edit-submission/edit-submission'),
+                canDeactivate: [canLeaveGuard],
+            },
+            {
+                path: ':courseId/:cmId/:submissionId/:assessmentId',
+                loadComponent: () => import('./pages/assessment/assessment'),
+                canDeactivate: [canLeaveGuard],
+            },
+        ],
     },
 ];
 
@@ -81,20 +103,16 @@ const routes: Routes = [
             useValue: [ADDON_MOD_WORKSHOP_OFFLINE_SITE_SCHEMA],
             multi: true,
         },
-        {
-            provide: APP_INITIALIZER,
-            multi: true,
-            useValue: () => {
-                CoreCourseModulePrefetchDelegate.registerHandler(getPrefetchHandlerInstance());
-                CoreCronDelegate.register(getCronHandlerInstance());
+        provideAppInitializer(() => {
+            CoreCourseModulePrefetchDelegate.registerHandler(getPrefetchHandlerInstance());
+            CoreCronDelegate.register(getCronHandlerInstance());
 
-                CoreCourseModuleDelegate.registerHandler(AddonModWorkshopModuleHandler.instance);
-                CoreContentLinksDelegate.registerHandler(AddonModWorkshopIndexLinkHandler.instance);
-                CoreContentLinksDelegate.registerHandler(AddonModWorkshopListLinkHandler.instance);
+            CoreCourseModuleDelegate.registerHandler(AddonModWorkshopModuleHandler.instance);
+            CoreContentLinksDelegate.registerHandler(AddonModWorkshopIndexLinkHandler.instance);
+            CoreContentLinksDelegate.registerHandler(AddonModWorkshopListLinkHandler.instance);
 
-                CoreCourseHelper.registerModuleReminderClick(ADDON_MOD_WORKSHOP_COMPONENT);
-            },
-        },
+            CoreCourseHelper.registerModuleReminderClick(ADDON_MOD_WORKSHOP_COMPONENT);
+        }),
     ],
 })
 export class AddonModWorkshopModule {}

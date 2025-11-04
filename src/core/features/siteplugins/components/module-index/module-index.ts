@@ -12,12 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit, OnDestroy, Input, ViewChild, HostBinding, Optional } from '@angular/core';
+import { Component, OnInit, OnDestroy, Input, inject, viewChild } from '@angular/core';
 
 import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
 import { CoreCourseModuleSummaryResult } from '@features/course/components/module-summary/module-summary';
-import { CoreCourseContentsPage } from '@features/course/pages/contents/contents';
-import { CoreCourse } from '@features/course/services/course';
+import CoreCourseContentsPage from '@features/course/pages/contents/contents';
+import { CoreCourseModuleHelper } from '@features/course/services/course-module-helper';
 import { CoreCourseModuleData } from '@features/course/services/course-helper';
 import {
     CoreCourseModuleDelegate,
@@ -31,9 +31,9 @@ import {
 import { CoreModals } from '@services/overlays/modals';
 import { CoreUtils } from '@singletons/utils';
 import { CoreSitePluginsPluginContentComponent, CoreSitePluginsPluginContentLoadedData } from '../plugin-content/plugin-content';
-import { CoreCompileHtmlComponentModule } from '@features/compile/components/compile-html/compile-html.module';
-import { CoreCourseComponentsModule } from '@features/course/components/components.module';
 import { CoreSharedModule } from '@/core/shared.module';
+import { CoreCourseModuleInfoComponent } from '../../../course/components/module-info/module-info';
+import { CoreCourseModuleNavigationComponent } from '@features/course/components/module-navigation/module-navigation';
 
 /**
  * Component that displays the index of a module site plugin.
@@ -42,13 +42,15 @@ import { CoreSharedModule } from '@/core/shared.module';
     selector: 'core-site-plugins-module-index',
     templateUrl: 'core-siteplugins-module-index.html',
     styles: [':host { display: contents; }'],
-    standalone: true,
     imports: [
         CoreSharedModule,
-        CoreCompileHtmlComponentModule,
-        CoreCourseComponentsModule,
         CoreSitePluginsPluginContentComponent,
+        CoreCourseModuleInfoComponent,
+        CoreCourseModuleNavigationComponent,
     ],
+    host: {
+        '[class]': 'component',
+    },
 })
 export class CoreSitePluginsModuleIndexComponent implements OnInit, OnDestroy, CoreCourseModuleMainComponent {
 
@@ -56,9 +58,9 @@ export class CoreSitePluginsModuleIndexComponent implements OnInit, OnDestroy, C
     @Input({ required: true }) courseId!: number; // Course ID the module belongs to.
     @Input() pageTitle?: string; // Current page title. It can be used by the "new-content" directives.
 
-    @ViewChild(CoreSitePluginsPluginContentComponent) content?: CoreSitePluginsPluginContentComponent;
+    readonly content = viewChild(CoreSitePluginsPluginContentComponent);
 
-    @HostBinding('class') component?: string;
+    component?: string;
     method?: string;
     args?: Record<string, unknown>;
     initResult?: CoreSitePluginsContent | null;
@@ -82,7 +84,7 @@ export class CoreSitePluginsModuleIndexComponent implements OnInit, OnDestroy, C
 
     jsData?: Record<string, unknown>; // Data to pass to the component.
 
-    constructor(@Optional() public courseContentsPage?: CoreCourseContentsPage) {}
+    courseContentsPage = inject(CoreCourseContentsPage, { optional: true });
 
     /**
      * @inheritdoc
@@ -134,7 +136,7 @@ export class CoreSitePluginsModuleIndexComponent implements OnInit, OnDestroy, C
      */
     async doRefresh(refresher?: HTMLIonRefresherElement | null): Promise<void> {
         try {
-            await this.content?.refreshContent(false);
+            await this.content()?.refreshContent(false);
         } finally {
             refresher?.complete();
         }
@@ -146,7 +148,7 @@ export class CoreSitePluginsModuleIndexComponent implements OnInit, OnDestroy, C
     contentLoaded(data: CoreSitePluginsPluginContentLoadedData): void {
         this.addDefaultModuleInfo = !data.content.includes('<core-course-module-info');
         if (data.success) {
-            CoreCourse.storeModuleViewed(this.courseId, this.module.id, {
+            CoreCourseModuleHelper.storeModuleViewed(this.courseId, this.module.id, {
                 sectionId: this.module.section,
             });
         }
@@ -189,8 +191,9 @@ export class CoreSitePluginsModuleIndexComponent implements OnInit, OnDestroy, C
             },
         });
 
-        if (data && data.action == 'refresh' && this.content?.dataLoaded) {
-            this.content?.refreshContent(true);
+        const content = this.content();
+        if (data && data.action == 'refresh' && content?.dataLoaded) {
+            content?.refreshContent(true);
         }
     }
 
@@ -209,7 +212,7 @@ export class CoreSitePluginsModuleIndexComponent implements OnInit, OnDestroy, C
      * @returns Result of the call. Undefined if no component instance or the function doesn't exist.
      */
     callComponentFunction(name: string, params?: unknown[]): unknown | undefined {
-        return this.content?.callComponentFunction(name, params);
+        return this.content()?.callComponentFunction(name, params);
     }
 
 }

@@ -15,6 +15,7 @@
 import { AddonModDataEntryField } from '@addons/mod/data/services/data';
 import { Component } from '@angular/core';
 import { AddonModDataFieldPluginBaseComponent } from '../../../classes/base-field-plugin-component';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Component to render data url field.
@@ -22,6 +23,9 @@ import { AddonModDataFieldPluginBaseComponent } from '../../../classes/base-fiel
 @Component({
     selector: 'addon-mod-data-field-url',
     templateUrl: 'addon-mod-data-field-url.html',
+    imports: [
+        CoreSharedModule,
+    ],
 })
 export class AddonModDataFieldUrlComponent extends AddonModDataFieldPluginBaseComponent {
 
@@ -41,7 +45,7 @@ export class AddonModDataFieldUrlComponent extends AddonModDataFieldPluginBaseCo
             value = this.value.content;
         }
 
-        this.addControl('f_' + this.field.id, value);
+        this.addControl(`f_${this.field.id}`, value);
     }
 
     /**

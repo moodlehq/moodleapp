@@ -21,7 +21,6 @@ import {
     OnChanges,
     OnDestroy,
     ViewContainerRef,
-    ViewChild,
     ComponentRef,
     SimpleChange,
     ChangeDetectorRef,
@@ -38,15 +37,18 @@ import {
     EffectRef,
     EffectCleanupRegisterFn,
     CreateEffectOptions,
+    inject,
+    viewChild,
 } from '@angular/core';
 import { CorePromisedValue } from '@classes/promised-value';
 
 import { CoreCompile } from '@features/compile/services/compile';
-import { CoreDomUtils } from '@services/utils/dom';
+import { CoreAngular } from '@singletons/angular';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreWS } from '@services/ws';
 import { CoreDom } from '@singletons/dom';
 import { CoreAlerts } from '@services/overlays/alerts';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * This component has a behaviour similar to $compile for AngularJS. Given an HTML code, it will compile it so all its
@@ -56,7 +58,7 @@ import { CoreAlerts } from '@services/overlays/alerts';
  * component is used, so it can slow down the app.
  *
  * This component has its own module to prevent circular dependencies. If you want to use it,
- * you need to import CoreCompileHtmlComponentModule.
+ * you need to import CoreCompileHtmlComponent.
  *
  * You can provide some Javascript code (as text) to be executed inside the component. The context of the javascript code (this)
  * will be the component instance created to compile the template. This means your javascript code can interact with the template.
@@ -67,6 +69,7 @@ import { CoreAlerts } from '@services/overlays/alerts';
     selector: 'core-compile-html',
     template: '<core-loading [hideUntil]="loaded"><ng-container #dynamicComponent /></core-loading>',
     styles: [':host { display: contents; }'],
+    imports: [CoreSharedModule],
 })
 export class CoreCompileHtmlComponent implements OnChanges, OnDestroy, DoCheck {
 
@@ -85,22 +88,19 @@ export class CoreCompileHtmlComponent implements OnChanges, OnDestroy, DoCheck {
     componentInstance?: any; // eslint-disable-line @typescript-eslint/no-explicit-any
 
     // Get the container where to put the content.
-    @ViewChild('dynamicComponent', { read: ViewContainerRef }) container?: ViewContainerRef;
+    readonly container = viewChild('dynamicComponent', { read: ViewContainerRef });
 
     protected componentRef?: ComponentRef<unknown>;
-    protected element: HTMLElement;
+    protected element: HTMLElement = inject(ElementRef).nativeElement;
     protected differ: KeyValueDiffer<unknown, unknown>; // To detect changes in the jsData input.
     protected creatingComponent = false;
     protected pendingCalls = {};
     protected componentStyles = '';
+    protected changeDetector = inject(ChangeDetectorRef);
+    protected injector = inject(Injector);
 
-    constructor(
-        protected changeDetector: ChangeDetectorRef,
-        protected injector: Injector,
-        element: ElementRef,
-        differs: KeyValueDiffers,
-    ) {
-        this.element = element.nativeElement;
+    constructor() {
+        const differs = inject(KeyValueDiffers);
         this.differ = differs.find([]).create();
     }
 
@@ -120,7 +120,7 @@ export class CoreCompileHtmlComponent implements OnChanges, OnDestroy, DoCheck {
         this.setInputData();
 
         if (this.componentInstance.ngOnChanges) {
-            this.componentInstance.ngOnChanges(CoreDomUtils.createChangesFromKeyValueDiff(changes));
+            this.componentInstance.ngOnChanges(CoreAngular.createChangesFromKeyValueDiff(changes));
         }
     }
 
@@ -146,13 +146,14 @@ export class CoreCompileHtmlComponent implements OnChanges, OnDestroy, DoCheck {
             this.componentRef?.destroy();
 
             // Create the component.
-            if (this.container) {
+            const container = this.container();
+            if (container) {
                 await this.loadCSSCode();
 
                 this.componentRef = await CoreCompile.createAndCompileComponent(
                     this.text,
                     componentClass,
-                    this.container,
+                    container,
                     this.extraImports,
                     this.componentStyles,
                 );

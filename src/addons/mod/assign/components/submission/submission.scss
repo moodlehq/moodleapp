@@ -1,3 +1,6 @@
+@use "theme/globals" as *;
+
+
 :host ::ng-deep {
     ion-item.latesubmission,
     ion-item.overdue {
@@ -22,6 +25,25 @@
         display: none;
     }
 
+    .core-grading-summary-grade {
+        display: flex;
+        align-items: center;
+        gap: 0.25rem;
+
+        ion-icon {
+            flex-shrink: 0;
+        }
+
+        .penalty-indicator-icon {
+            display: none;
+        }
+    }
+
+    .core-grading-summary-penalty {
+        color: var(--danger);
+        font-size: 0.75em;
+    }
+
     ion-badge {
         margin-left: 2px;
         margin-right: 2px;
@@ -38,6 +60,39 @@
             --timer-text-color: var(--warning-shade);
         }
     }
+
+    ion-accordion-group {
+        h3 {
+            font: var(--mdl-typography-subtitle-font-md);
+        }
+        h4 {
+            font: var(--mdl-typography-subtitle-font-sm);
+        }
+    }
+
+    .grader {
+        --core-avatar-size: 32px;
+    }
+
+    p.collapse-content {
+        --gradient-size: 20px;
+
+        overflow: hidden;
+        min-height: 32px;
+        max-height: 120px;
+        position: relative;
+
+        &:before {
+            content: '';
+            height: 100%;
+            position: absolute;
+            @include position(null, 0, 0, 0);
+            background: linear-gradient(to bottom, rgba(var(--background-gradient-rgb), 0) calc(100% - var(--gradient-size)), rgba(var(--background-gradient-rgb), 1) calc(100% - 4px));
+            z-index: 6;
+        }
+    }
+
+
 }
 
 :host-context(:root.dark) ::ng-deep {

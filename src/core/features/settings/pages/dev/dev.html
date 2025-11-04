@@ -8,11 +8,13 @@
             <h1>{{ 'core.settings.developeroptions' | translate }}</h1>
         </ion-title>
 
-        <ion-buttons slot="end" *ngIf="siteId">
-            <ion-button fill="clear" (click)="copyInfo()" [ariaLabel]="'core.settings.copyinfo' | translate">
-                <ion-icon slot="icon-only" name="fas-clipboard" aria-hidden="true" />
-            </ion-button>
-        </ion-buttons>
+        @if (siteId) {
+            <ion-buttons slot="end">
+                <ion-button fill="clear" (click)="copyInfo()" [ariaLabel]="'core.settings.copyinfo' | translate">
+                    <ion-icon slot="icon-only" name="fas-clipboard" aria-hidden="true" />
+                </ion-button>
+            </ion-buttons>
+        }
     </ion-toolbar>
 </ion-header>
 <ion-content>
@@ -28,17 +30,20 @@
                 <p class="item-heading">Force safe area margins</p>
             </ion-toggle>
         </ion-item>
-        <ion-item class="ion-text-wrap" *ngIf="stagingSitesCount && enableStagingSites !== undefined">
-            <ion-toggle [(ngModel)]="enableStagingSites" (ionChange)="setEnabledStagingSites($event.detail.checked)">
-                <p class="item-heading">Enable staging sites <ion-badge>{{stagingSitesCount}}</ion-badge></p>
-            </ion-toggle>
-        </ion-item>
+        @if (stagingSitesCount && enableStagingSites !== undefined) {
+            <ion-item class="ion-text-wrap">
+                <ion-toggle [(ngModel)]="enableStagingSites" (ionChange)="setEnabledStagingSites($event.detail.checked)">
+                    <p class="item-heading">Enable staging sites <ion-badge>{{stagingSitesCount}}</ion-badge></p>
+                </ion-toggle>
+            </ion-item>
+        }
         <ion-item class="ion-text-wrap">
             <ion-toggle [(ngModel)]="alwaysShowLoginForm" (ionChange)="alwaysShowLoginFormChanged()">
                 <p class="item-heading">Always show login form</p>
             </ion-toggle>
         </ion-item>
-        <ng-container *ngIf="siteId">
+        @if (siteId) {
+
             <ion-item class="ion-text-wrap">
                 <ion-toggle [(ngModel)]="remoteStyles" (ionChange)="remoteStylesChanged()">
                     <p class="item-heading">Enable remote styles <ion-badge>{{remoteStylesCount}}</ion-badge>
@@ -51,16 +56,19 @@
                     </p>
                 </ion-toggle>
             </ion-item>
-        </ng-container>
 
-        <ion-item class="ion-text-wrap" *ngIf="userToursEnabled">
-            <ion-label>
-                <p class="item-heading">Reset user tours</p>
-            </ion-label>
-            <ion-button (click)="resetUserTours()" aria-label="Reset user tours" fill="clear" slot="end">
-                <ion-icon slot="icon-only" aria-hidden="true" name="fas-repeat" />
-            </ion-button>
-        </ion-item>
+        }
+
+        @if (userToursEnabled) {
+            <ion-item class="ion-text-wrap">
+                <ion-label>
+                    <p class="item-heading">Reset user tours</p>
+                </ion-label>
+                <ion-button (click)="resetUserTours()" aria-label="Reset user tours" fill="clear" slot="end">
+                    <ion-icon slot="icon-only" aria-hidden="true" name="fas-repeat" />
+                </ion-button>
+            </ion-item>
+        }
 
         <ion-item class="ion-text-wrap">
             <ion-label>
@@ -87,7 +95,8 @@
             </ion-button>
         </ion-item>
 
-        <ng-container *ngIf="siteId">
+        @if (siteId) {
+
             <ion-item class="ion-text-wrap">
                 <ion-label>
                     <p class="item-heading">WebService token</p>
@@ -116,12 +125,14 @@
             </ion-item>
 
             @if (privateToken) {
-                <ion-item class="ion-text-wrap" *ngIf="autoLoginTimeBetweenRequests">
-                    <ion-label>
-                        <p class="item-heading">Minimum time between auto-login requests</p>
-                        <p>{{ autoLoginTimeBetweenRequests | coreDuration }}</p>
-                    </ion-label>
-                </ion-item>
+                @if (autoLoginTimeBetweenRequests) {
+                    <ion-item class="ion-text-wrap">
+                        <ion-label>
+                            <p class="item-heading">Minimum time between auto-login requests</p>
+                            <p>{{ autoLoginTimeBetweenRequests | coreDuration }}</p>
+                        </ion-label>
+                    </ion-item>
+                }
                 <ion-item class="ion-text-wrap">
                     <ion-label>
                         <p class="item-heading">Last auto login in this device</p>
@@ -140,9 +151,11 @@
                     <h2>Disabled features</h2>
                 </ion-label>
             </ion-item-divider>
-            <ion-item *ngIf="disabledFeatures.length === 0">
-                <ion-label>There are no features disabled</ion-label>
-            </ion-item>
+            @if (disabledFeatures.length === 0) {
+                <ion-item>
+                    <ion-label>There are no features disabled</ion-label>
+                </ion-item>
+            }
             <ion-item class="ion-text-wrap" *ngFor="let feature of disabledFeatures">
                 <ion-label>
                     <p class="item-heading">{{ feature }}</p>
@@ -154,15 +167,18 @@
                     <h2>Site plugins</h2>
                 </ion-label>
             </ion-item-divider>
-            <ion-item *ngIf="sitePlugins.length === 0">
-                <ion-label>There are no site plugins installed</ion-label>
-            </ion-item>
+            @if (sitePlugins.length === 0) {
+                <ion-item>
+                    <ion-label>There are no site plugins installed</ion-label>
+                </ion-item>
+            }
             <ion-item class="ion-text-wrap" *ngFor="let plugin of sitePlugins">
                 <ion-label>
                     <p class="item-heading">{{ plugin.addon }} ({{plugin.component}})</p>
                     <p>{{plugin.version}}</p>
                 </ion-label>
             </ion-item>
-        </ng-container>
+
+            }
     </ion-list>
 </ion-content>

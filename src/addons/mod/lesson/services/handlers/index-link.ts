@@ -23,6 +23,7 @@ import { CoreLoadings } from '@services/overlays/loadings';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { makeSingleton } from '@singletons';
 import { AddonModLesson } from '../lesson';
+import { ADDON_MOD_LESSON_COMPONENT, ADDON_MOD_LESSON_MODNAME } from '../../constants';
 
 /**
  * Handler to treat links to lesson index.
@@ -33,17 +34,11 @@ export class AddonModLessonIndexLinkHandlerService extends CoreContentLinksModul
     name = 'AddonModLessonIndexLinkHandler';
 
     constructor() {
-        super('AddonModLesson', 'lesson');
+        super(ADDON_MOD_LESSON_COMPONENT, ADDON_MOD_LESSON_MODNAME);
     }
 
     /**
-     * Get the list of actions for a link (url).
-     *
-     * @param siteIds List of sites the URL belongs to.
-     * @param url The URL to treat.
-     * @param params The params of the URL. E.g. 'mysite.com?id=1' -> {id: 1}
-     * @param courseId Course ID related to the URL. Optional but recommended.
-     * @returns List of (or promise resolved with list of) actions.
+     * @inheritdoc
      */
     getActions(
         siteIds: string[],
@@ -99,7 +94,6 @@ export class AddonModLessonIndexLinkHandlerService extends CoreContentLinksModul
 
             await CoreCourseHelper.navigateToModule(moduleId, {
                 courseId: module.course,
-                sectionId: module.section,
                 siteId,
             });
         } catch {

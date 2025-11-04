@@ -1,33 +1,34 @@
-@if (enabled && !loading) {
+@if (enabled() && !loading()) {
 
     <!-- Download button. -->
-    @if (status === statusNotDownloaded) {
-        <ion-button fill="clear" (click)="download($event, false)" @coreShowHideAnimation
-            [ariaLabel]="(statusTranslatable || translates.notdownloaded) | translate: { name : statusSubject }">
+    @if (status() === statusNotDownloaded) {
+        <ion-button fill="clear" (click)="download($event, false)" animate.enter="show-animation" animate.leave="hide-animation"
+            [ariaLabel]="(statusTranslatable() || translates().notdownloaded) | translate: { name : statusSubject() }">
             <ion-icon slot="icon-only" name="fas-cloud-arrow-down" aria-hidden="true" />
         </ion-button>
     }
 
     <!-- Refresh button. -->
-    @if (status === statusOutdated || (status === statusDownloaded && !canTrustDownload)) {
-        <ion-button fill="clear" (click)="download($event, true)" @coreShowHideAnimation
-            [ariaLabel]="(statusTranslatable || translates.outdated) | translate: { name : statusSubject }">
+    @if (status() === statusOutdated || (status() === statusDownloaded && !canTrustDownload())) {
+        <ion-button fill="clear" (click)="download($event, true)" animate.enter="show-animation" animate.leave="hide-animation"
+            [ariaLabel]="(statusTranslatable() || translates().outdated) | translate: { name : statusSubject() }">
             <ion-icon slot="icon-only" name="fam-cloud-refresh" aria-hidden="true" />
         </ion-button>
     }
 
     <!-- Downloaded status icon. -->
-    @if (status === statusDownloaded && canTrustDownload) {
+    @if (status() === statusDownloaded && canTrustDownload()) {
         <ion-icon class="core-icon-downloaded ion-padding-horizontal" color="success" name="fam-cloud-done"
-            [attr.aria-label]="(statusTranslatable || translates.downloaded) | translate: { name : statusSubject }" role="status" />
-    } @else if (status === statusDownloading) {
-        <ion-spinner @coreShowHideAnimation
-            [attr.aria-label]="(statusTranslatable || translates.downloading) | translate: { name : statusSubject }" />
+            [attr.aria-label]="(statusTranslatable() || translates().downloaded) | translate: { name : statusSubject() }" role="status" />
+    } @else if (status() === statusDownloading) {
+        <ion-spinner animate.enter="show-animation" animate.leave="hide-animation"
+            [attr.aria-label]="(statusTranslatable() || translates().downloading) | translate: { name : statusSubject() }" />
     }
 
 }
 
 <!-- Spinner. -->
-@if (loading) {
-    <ion-spinner @coreShowHideAnimation [attr.aria-label]="translates.loading | translate: { name : statusSubject }" />
+@if (loading()) {
+    <ion-spinner animate.enter="show-animation" animate.leave="hide-animation"
+        [attr.aria-label]="translates().loading | translate: { name : statusSubject() }" />
 }

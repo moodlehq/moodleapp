@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { APP_INITIALIZER, NgModule, Type } from '@angular/core';
+import { NgModule, Type, provideAppInitializer } from '@angular/core';
 import { Routes } from '@angular/router';
 import { CoreContentLinksDelegate } from '@features/contentlinks/services/contentlinks-delegate';
 import { CoreCourseHelper } from '@features/course/services/course-helper';
@@ -29,16 +29,14 @@ import { ApplicationInit } from '@singletons';
 import { CoreCoursesCourseLinkHandler } from './services/handlers/course-link';
 import { CoreCoursesIndexLinkHandler } from './services/handlers/courses-index-link';
 
-import { CoreDashboardHomeHandler, CoreDashboardHomeHandlerService } from './services/handlers/dashboard-home';
+import { CoreDashboardHomeHandler } from './services/handlers/dashboard-home';
 import { CoreCoursesDashboardLinkHandler } from './services/handlers/dashboard-link';
 import { CoreCoursesEnrolPushClickHandler } from './services/handlers/enrol-push-click';
-import {
-    CoreCoursesMyCoursesHomeHandler,
-    CoreCoursesMyCoursesMainMenuHandlerService,
-} from './services/handlers/my-courses-mainmenu';
+import { CoreCoursesMyCoursesHomeHandler } from './services/handlers/my-courses-mainmenu';
 import { CoreCoursesRequestPushClickHandler } from './services/handlers/request-push-click';
 import { CoreCoursesMyCoursesLinkHandler } from './services/handlers/my-courses-link';
 import { CoreCoursesSectionLinkHandler } from '@features/courses/services/handlers/section-link';
+import { CORE_COURSES_DASHBOARD_PAGE_NAME, CORE_COURSES_MYCOURSES_PAGE_NAME } from '@features/courses/constants';
 
 /**
  * Get courses services.
@@ -88,16 +86,29 @@ export async function getCoursesExportedObjects(): Promise<Record<string, unknow
     /* eslint-enable @typescript-eslint/naming-convention */
 }
 
+/**
+ * Get directives and components for site plugins.
+ *
+ * @returns Returns directives and components.
+ */
+export async function getCoursesExportedDirectives(): Promise<Type<unknown>[]> {
+    const { CoreCoursesCourseListItemComponent } = await import('@features/courses/components/course-list-item/course-list-item');
+
+    return [
+        CoreCoursesCourseListItemComponent,
+    ];
+}
+
 const mainMenuHomeChildrenRoutes: Routes = [
     {
-        path: CoreDashboardHomeHandlerService.PAGE_NAME,
-        loadChildren: () => import('./courses-dashboard-lazy.module'),
+        path: CORE_COURSES_DASHBOARD_PAGE_NAME,
+        loadComponent: () => import('@features/courses/pages/dashboard/dashboard'),
     },
 ];
 
 const routes: Routes = [
     {
-        path: CoreCoursesMyCoursesMainMenuHandlerService.PAGE_NAME,
+        path: CORE_COURSES_MYCOURSES_PAGE_NAME,
         loadChildren: () => import('./courses-lazy.module'),
     },
 ];
@@ -111,30 +122,26 @@ const routes: Routes = [
         CoreMainMenuTabRoutingModule.forChild(routes),
     ],
     providers: [
-        {
-            provide: APP_INITIALIZER,
-            multi: true,
-            useValue: () => {
-                CoreMainMenuHomeDelegate.registerHandler(CoreDashboardHomeHandler.instance);
-                CoreMainMenuDelegate.registerHandler(CoreCoursesMyCoursesHomeHandler.instance);
-                CoreContentLinksDelegate.registerHandler(CoreCoursesCourseLinkHandler.instance);
-                CoreContentLinksDelegate.registerHandler(CoreCoursesIndexLinkHandler.instance);
-                CoreContentLinksDelegate.registerHandler(CoreCoursesMyCoursesLinkHandler.instance);
-                CoreContentLinksDelegate.registerHandler(CoreCoursesDashboardLinkHandler.instance);
-                CoreContentLinksDelegate.registerHandler(CoreCoursesSectionLinkHandler.instance);
-                CorePushNotificationsDelegate.registerClickHandler(CoreCoursesEnrolPushClickHandler.instance);
-                CorePushNotificationsDelegate.registerClickHandler(CoreCoursesRequestPushClickHandler.instance);
+        provideAppInitializer(() => {
+            CoreMainMenuHomeDelegate.registerHandler(CoreDashboardHomeHandler.instance);
+            CoreMainMenuDelegate.registerHandler(CoreCoursesMyCoursesHomeHandler.instance);
+            CoreContentLinksDelegate.registerHandler(CoreCoursesCourseLinkHandler.instance);
+            CoreContentLinksDelegate.registerHandler(CoreCoursesIndexLinkHandler.instance);
+            CoreContentLinksDelegate.registerHandler(CoreCoursesMyCoursesLinkHandler.instance);
+            CoreContentLinksDelegate.registerHandler(CoreCoursesDashboardLinkHandler.instance);
+            CoreContentLinksDelegate.registerHandler(CoreCoursesSectionLinkHandler.instance);
+            CorePushNotificationsDelegate.registerClickHandler(CoreCoursesEnrolPushClickHandler.instance);
+            CorePushNotificationsDelegate.registerClickHandler(CoreCoursesRequestPushClickHandler.instance);
 
-                CoreLocalNotifications.registerClick<CoreRemindersPushNotificationData>(
-                    'course',
-                    async (notification) => {
-                        await ApplicationInit.donePromise;
+            CoreLocalNotifications.registerClick<CoreRemindersPushNotificationData>(
+                'course',
+                async (notification) => {
+                    await ApplicationInit.donePromise;
 
-                        CoreCourseHelper.getAndOpenCourse(notification.instanceId, {}, notification.siteId);
-                    },
-                );
-            },
-        },
+                    CoreCourseHelper.getAndOpenCourse(notification.instanceId, {}, notification.siteId);
+                },
+            );
+        }),
     ],
 })
 export class CoreCoursesModule {}

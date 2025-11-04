@@ -21,7 +21,7 @@ import {
 import { AddonModDataFieldHandler } from '@addons/mod/data/services/data-fields-delegate';
 import { Injectable, Type } from '@angular/core';
 import { CoreFormFields } from '@singletons/form';
-import { CoreTimeUtils } from '@services/utils/time';
+import { CoreTime } from '@singletons/time';
 import { makeSingleton, Translate } from '@singletons';
 import type { AddonModDataFieldPluginBaseComponent } from '@addons/mod/data/classes/base-field-plugin-component';
 
@@ -50,23 +50,23 @@ export class AddonModDataFieldDateHandlerService implements AddonModDataFieldHan
         field: AddonModDataField,
         inputData: CoreFormFields<string>,
     ): AddonModDataSearchEntriesAdvancedFieldFormatted[] {
-        const fieldName = 'f_' + field.id;
-        const enabledName = 'f_' + field.id + '_z';
+        const fieldName = `f_${field.id}`;
+        const enabledName = `f_${field.id}_z`;
 
         if (inputData[enabledName] && typeof inputData[fieldName] == 'string') {
             const date = inputData[fieldName].substring(0, 10).split('-');
 
             return [
                 {
-                    name: fieldName + '_y',
+                    name: `${fieldName}_y`,
                     value: date[0],
                 },
                 {
-                    name: fieldName + '_m',
+                    name: `${fieldName}_m`,
                     value: date[1],
                 },
                 {
-                    name: fieldName + '_d',
+                    name: `${fieldName}_d`,
                     value: date[2],
                 },
                 {
@@ -83,7 +83,7 @@ export class AddonModDataFieldDateHandlerService implements AddonModDataFieldHan
      * @inheritdoc
      */
     getFieldEditData(field: AddonModDataField, inputData: CoreFormFields<string>): AddonModDataSubfieldData[] {
-        const fieldName = 'f_' + field.id;
+        const fieldName = `f_${field.id}`;
 
         if (typeof inputData[fieldName] != 'string') {
             return [];
@@ -118,11 +118,11 @@ export class AddonModDataFieldDateHandlerService implements AddonModDataFieldHan
         inputData: CoreFormFields<string>,
         originalFieldData: AddonModDataEntryField,
     ): boolean {
-        const fieldName = 'f_' + field.id;
+        const fieldName = `f_${field.id}`;
         const input = inputData[fieldName] && inputData[fieldName].substring(0, 10) || '';
 
         const content = (originalFieldData && originalFieldData?.content &&
-                CoreTimeUtils.toDatetimeFormat(parseInt(originalFieldData.content, 10) * 1000).substring(0, 10)) || '';
+                CoreTime.toDatetimeFormat(parseInt(originalFieldData.content, 10) * 1000).substring(0, 10)) || '';
 
         return input != content;
     }

@@ -15,12 +15,17 @@
 import { AddonLegacyNotificationsNotificationsSource } from '@addons/notifications/classes/legacy-notifications-source';
 import { AddonNotificationsNotificationsSource } from '@addons/notifications/classes/notifications-source';
 import { AddonNotificationsPushNotification } from '@addons/notifications/services/handlers/push-click';
-import { AddonNotifications, AddonNotificationsNotificationMessageFormatted } from '@addons/notifications/services/notifications';
+import {
+    AddonNotifications,
+    AddonNotificationsNotificationMessage,
+    AddonNotificationsNotificationMessageFormatted,
+} from '@addons/notifications/services/notifications';
 import {
     AddonNotificationsHelper,
 } from '@addons/notifications/services/notifications-helper';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, ActivatedRouteSnapshot } from '@angular/router';
+import { CoreError } from '@classes/errors/error';
 import { CoreRoutedItemsManagerSourcesTracker } from '@classes/items-management/routed-items-manager-sources-tracker';
 import { CoreSwipeNavigationItemsManager } from '@classes/items-management/swipe-navigation-items-manager';
 import { CoreContentLinksAction, CoreContentLinksDelegate } from '@features/contentlinks/services/contentlinks-delegate';
@@ -29,6 +34,7 @@ import { CoreNavigator } from '@services/navigator';
 import { CoreAlerts } from '@services/overlays/alerts';
 import { CoreSites } from '@services/sites';
 import { Translate } from '@singletons';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Page to render a notification.
@@ -37,8 +43,11 @@ import { Translate } from '@singletons';
     selector: 'page-addon-notifications-notification',
     templateUrl: 'notification.html',
     styleUrls: ['../../notifications.scss', 'notification.scss'],
+    imports: [
+        CoreSharedModule,
+    ],
 })
-export class AddonNotificationsNotificationPage implements OnInit, OnDestroy {
+export default class AddonNotificationsNotificationPage implements OnInit, OnDestroy {
 
     notifications?: AddonNotificationSwipeItemsManager;
     notification?: AddonNotificationsNotificationMessageFormatted;
@@ -58,7 +67,7 @@ export class AddonNotificationsNotificationPage implements OnInit, OnDestroy {
         let notification: AddonNotificationsNotification;
 
         try {
-            notification = this.getNotification();
+            notification = await this.getNotification();
         } catch (error) {
             CoreAlerts.showError(error);
             CoreNavigator.back();
@@ -66,12 +75,20 @@ export class AddonNotificationsNotificationPage implements OnInit, OnDestroy {
             return;
         }
 
-        this.notification = 'subject' in notification ?
-            notification :
-            await AddonNotifications.convertPushToMessage(notification);
+        if ('mobiletext' in notification) {
+            // Notification from WS and already formatted, just use it.
+            this.notification = notification;
+        } else if ('fullmessage' in notification) {
+            // It's a notification from WS but it isn't formatted for some reason. Format it now.
+            const notifications = await AddonNotifications.formatNotificationsData([notification]);
+            this.notification = notifications[0];
+        } else {
+            // Push notification, convert it to the right format.
+            this.notification = await AddonNotifications.convertPushToMessage(notification);
+        }
 
         await this.loadActions(this.notification);
-        AddonNotificationsHelper.markNotificationAsRead(notification);
+        AddonNotificationsHelper.markNotificationAsRead(this.notification);
 
         this.loaded = true;
 
@@ -91,11 +108,18 @@ export class AddonNotificationsNotificationPage implements OnInit, OnDestroy {
      *
      * @returns notification.
      */
-    getNotification(): AddonNotificationsNotification {
-        const id = CoreNavigator.getRouteNumberParam('id');
-        const notification = id ? this.getNotificationById(id) : undefined;
+    async getNotification(): Promise<AddonNotificationsNotification> {
+        const paramNotification = CoreNavigator.getRouteParam<AddonNotificationsNotification>('notification');
+        const id = CoreNavigator.getRouteNumberParam('id') ??
+            (paramNotification && 'savedmessageid' in paramNotification ? Number(paramNotification.savedmessageid) : undefined);
 
-        return notification ?? CoreNavigator.getRequiredRouteParam('notification');
+        const notification = (id ? await this.getNotificationById(id) : undefined) ?? paramNotification;
+
+        if (!notification) {
+            throw new CoreError('Required param \'notification\' not found.');
+        }
+
+        return notification;
     }
 
     /**
@@ -104,13 +128,16 @@ export class AddonNotificationsNotificationPage implements OnInit, OnDestroy {
      * @param notificationId Notification id.
      * @returns Found notification.
      */
-    getNotificationById(notificationId: number): AddonNotificationsNotification | undefined {
+    async getNotificationById(notificationId: number): Promise<AddonNotificationsNotification | undefined> {
         const source = CoreRoutedItemsManagerSourcesTracker.getOrCreateSource(
             CoreSites.getRequiredCurrentSite().isVersionGreaterEqualThan('4.0')
                 ? AddonNotificationsNotificationsSource
                 : AddonLegacyNotificationsNotificationsSource,
             [],
         );
+
+        await source.waitForLoaded();
+
         const notification = source.getItems()?.find(({ id }) => id === notificationId);
 
         if (!notification) {
@@ -217,4 +244,5 @@ class AddonNotificationSwipeItemsManager extends CoreSwipeNavigationItemsManager
 
 }
 
-type AddonNotificationsNotification = AddonNotificationsNotificationMessageFormatted | AddonNotificationsPushNotification;
+type AddonNotificationsNotification = AddonNotificationsNotificationMessageFormatted | AddonNotificationsPushNotification |
+    AddonNotificationsNotificationMessage;

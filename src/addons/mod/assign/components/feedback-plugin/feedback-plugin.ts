@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import type { IAddonModAssignFeedbackPluginComponent } from '@addons/mod/assign/classes/base-feedback-plugin-component';
-import { Component, Input, OnInit, ViewChild, Type } from '@angular/core';
+import { Component, Input, OnInit, Type, viewChild } from '@angular/core';
 import { CoreDynamicComponent } from '@components/dynamic-component/dynamic-component';
 import { CoreWSFile } from '@services/ws';
 import {
@@ -24,8 +24,9 @@ import {
 } from '../../services/assign';
 import { AddonModAssignHelper, AddonModAssignPluginConfig } from '../../services/assign-helper';
 import { AddonModAssignFeedbackDelegate } from '../../services/feedback-delegate';
-import { ADDON_MOD_ASSIGN_COMPONENT } from '../../constants';
+import { ADDON_MOD_ASSIGN_COMPONENT_LEGACY } from '../../constants';
 import { toBoolean } from '@/core/transforms/boolean';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Component that displays an assignment feedback plugin.
@@ -33,10 +34,13 @@ import { toBoolean } from '@/core/transforms/boolean';
 @Component({
     selector: 'addon-mod-assign-feedback-plugin',
     templateUrl: 'addon-mod-assign-feedback-plugin.html',
+    imports: [
+        CoreSharedModule,
+    ],
 })
 export class AddonModAssignFeedbackPluginComponent implements OnInit {
 
-    @ViewChild(CoreDynamicComponent) dynamicComponent!: CoreDynamicComponent<IAddonModAssignFeedbackPluginComponent>;
+    readonly dynamicComponent = viewChild.required(CoreDynamicComponent<IAddonModAssignFeedbackPluginComponent>);
 
     @Input({ required: true }) assign!: AddonModAssignAssign; // The assignment.
     @Input({ required: true }) submission!: AddonModAssignSubmission; // The submission.
@@ -49,7 +53,7 @@ export class AddonModAssignFeedbackPluginComponent implements OnInit {
     data?: AddonModAssignFeedbackPluginData; // Data to pass to the component.
 
     // Data to render the plugin if it isn't supported.
-    component = ADDON_MOD_ASSIGN_COMPONENT;
+    component = ADDON_MOD_ASSIGN_COMPONENT_LEGACY;
     text = '';
     files: CoreWSFile[] = [];
     notSupported = false;
@@ -103,7 +107,7 @@ export class AddonModAssignFeedbackPluginComponent implements OnInit {
      * @returns Promise resolved when done.
      */
     async invalidate(): Promise<void> {
-        await this.dynamicComponent.callComponentMethod('invalidate');
+        await this.dynamicComponent().callComponentMethod('invalidate');
     }
 
 }

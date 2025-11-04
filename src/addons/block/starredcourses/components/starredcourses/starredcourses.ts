@@ -27,7 +27,7 @@ import { CoreUtils } from '@singletons/utils';
 import { CoreSite } from '@classes/sites/site';
 import { AddonBlockStarredCourse, AddonBlockStarredCourses } from '../../services/starredcourses';
 import { CoreSharedModule } from '@/core/shared.module';
-import { CoreCoursesComponentsModule } from '@features/courses/components/components.module';
+import { CoreCoursesCourseListItemComponent } from '@features/courses/components/course-list-item/course-list-item';
 import {
     CORE_COURSES_MY_COURSES_UPDATED_EVENT,
     CoreCoursesMyCoursesUpdatedEventAction,
@@ -41,10 +41,9 @@ import { CorePromiseUtils } from '@singletons/promise-utils';
 @Component({
     selector: 'addon-block-starredcourses',
     templateUrl: 'addon-block-starredcourses.html',
-    standalone: true,
     imports: [
         CoreSharedModule,
-        CoreCoursesComponentsModule,
+        CoreCoursesCourseListItemComponent,
     ],
 })
 export class AddonBlockStarredCoursesComponent extends CoreBlockBaseComponent implements OnInit, OnDestroy {
@@ -59,8 +58,7 @@ export class AddonBlockStarredCoursesComponent extends CoreBlockBaseComponent im
     protected fetchContentDefaultError = 'Error getting starred courses data.';
 
     constructor() {
-        super('AddonBlockStarredCoursesComponent');
-
+        super();
         this.site = CoreSites.getRequiredCurrentSite();
     }
 

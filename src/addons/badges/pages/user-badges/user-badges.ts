@@ -12,9 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { AfterViewInit, Component, OnDestroy, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, OnDestroy, signal, viewChild, WritableSignal } from '@angular/core';
 import { AddonBadges, AddonBadgesUserBadge } from '../../services/badges';
-import { CoreTimeUtils } from '@services/utils/time';
 import { CoreSites } from '@services/sites';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreSplitViewComponent } from '@components/split-view/split-view';
@@ -26,6 +25,7 @@ import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 import { CoreTime } from '@singletons/time';
 import { Translate } from '@singletons';
 import { CoreAlerts } from '@services/overlays/alerts';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Page that displays the list of calendar events.
@@ -33,36 +33,41 @@ import { CoreAlerts } from '@services/overlays/alerts';
 @Component({
     selector: 'page-addon-badges-user-badges',
     templateUrl: 'user-badges.html',
+    imports: [
+        CoreSharedModule,
+    ],
 })
-export class AddonBadgesUserBadgesPage implements AfterViewInit, OnDestroy {
+export default class AddonBadgesUserBadgesPage implements AfterViewInit, OnDestroy {
 
-    currentTime = 0;
-    badges: CoreListItemsManager<AddonBadgesUserBadge, AddonBadgesUserBadgesSource>;
+    readonly currentTime = signal(0);
+    readonly badges: WritableSignal<CoreListItemsManager<AddonBadgesUserBadge, AddonBadgesUserBadgesSource>>;
 
-    @ViewChild(CoreSplitViewComponent) splitView!: CoreSplitViewComponent;
+    readonly splitView = viewChild.required(CoreSplitViewComponent);
 
     protected logView: () => void;
+    protected courseId: number;
+    protected userId: number;
 
     constructor() {
-        let courseId = CoreNavigator.getRouteNumberParam('courseId') ?? 0; // Use 0 for site badges.
-        const userId = CoreNavigator.getRouteNumberParam('userId') ?? CoreSites.getCurrentSiteUserId();
+        this.courseId = CoreNavigator.getRouteNumberParam('courseId') ?? 0; // Use 0 for site badges.
+        this.userId = CoreNavigator.getRouteNumberParam('userId') ?? CoreSites.getCurrentSiteUserId();
 
-        if (courseId === CoreSites.getCurrentSiteHomeId()) {
+        if (this.courseId === CoreSites.getCurrentSiteHomeId()) {
             // Use courseId 0 for site home, otherwise the site doesn't return site badges.
-            courseId = 0;
+            this.courseId = 0;
         }
 
-        this.badges = new CoreListItemsManager(
-            CoreRoutedItemsManagerSourcesTracker.getOrCreateSource(AddonBadgesUserBadgesSource, [courseId, userId]),
+        this.badges = signal(new CoreListItemsManager(
+            CoreRoutedItemsManagerSourcesTracker.getOrCreateSource(AddonBadgesUserBadgesSource, [this.courseId, this.   userId]),
             AddonBadgesUserBadgesPage,
-        );
+        ));
 
         this.logView = CoreTime.once(() => {
             CoreAnalytics.logEvent({
                 type: CoreAnalyticsEventType.VIEW_ITEM_LIST,
                 ws: 'core_badges_view_user_badges',
                 name: Translate.instant('addon.badges.badges'),
-                data: { courseId: this.badges.getSource().COURSE_ID, category: 'badges' },
+                data: { courseId: this.courseId, category: 'badges' },
                 url: '/badges/mybadges.php',
             });
         });
@@ -74,14 +79,14 @@ export class AddonBadgesUserBadgesPage implements AfterViewInit, OnDestroy {
     async ngAfterViewInit(): Promise<void> {
         await this.fetchInitialBadges();
 
-        this.badges.start(this.splitView);
+        this.badges().start(this.splitView());
     }
 
     /**
      * @inheritdoc
      */
     ngOnDestroy(): void {
-        this.badges.destroy();
+        this.badges().destroy();
     }
 
     /**
@@ -91,12 +96,9 @@ export class AddonBadgesUserBadgesPage implements AfterViewInit, OnDestroy {
      */
     async refreshBadges(refresher?: HTMLIonRefresherElement): Promise<void> {
         await CorePromiseUtils.ignoreErrors(
-            AddonBadges.invalidateUserBadges(
-                this.badges.getSource().COURSE_ID,
-                this.badges.getSource().USER_ID,
-            ),
+            AddonBadges.invalidateUserBadges(this.courseId, this.userId),
         );
-        await CorePromiseUtils.ignoreErrors(this.badges.reload());
+        await CorePromiseUtils.ignoreErrors(this.badges().reload());
 
         refresher?.complete();
     }
@@ -105,16 +107,16 @@ export class AddonBadgesUserBadgesPage implements AfterViewInit, OnDestroy {
      * Obtain the initial list of badges.
      */
     private async fetchInitialBadges(): Promise<void> {
-        this.currentTime = CoreTimeUtils.timestamp();
+        this.currentTime.set(CoreTime.timestamp());
 
         try {
-            await this.badges.reload();
+            await this.badges().reload();
 
             this.logView();
         } catch (message) {
             CoreAlerts.showError(message, { default: 'Error loading badges' });
 
-            this.badges.reset();
+            this.badges().reset();
         }
     }
 

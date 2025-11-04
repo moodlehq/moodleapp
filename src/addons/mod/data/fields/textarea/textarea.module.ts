@@ -12,32 +12,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { CoreSharedModule } from '@/core/shared.module';
-import { NgModule, APP_INITIALIZER } from '@angular/core';
-import { CoreEditorComponentsModule } from '@features/editor/components/components.module';
+import { NgModule, provideAppInitializer } from '@angular/core';
 import { AddonModDataFieldsDelegate } from '../../services/data-fields-delegate';
-import { AddonModDataFieldTextareaComponent } from './component/textarea';
 import { AddonModDataFieldTextareaHandler } from './services/handler';
 
 @NgModule({
-    declarations: [
-        AddonModDataFieldTextareaComponent,
-    ],
-    imports: [
-        CoreSharedModule,
-        CoreEditorComponentsModule,
-    ],
     providers: [
-        {
-            provide: APP_INITIALIZER,
-            multi: true,
-            useValue: () => {
-                AddonModDataFieldsDelegate.registerHandler(AddonModDataFieldTextareaHandler.instance);
-            },
-        },
-    ],
-    exports: [
-        AddonModDataFieldTextareaComponent,
+        provideAppInitializer(() => {
+            AddonModDataFieldsDelegate.registerHandler(AddonModDataFieldTextareaHandler.instance);
+        }),
     ],
 })
 export class AddonModDataFieldTextareaModule {}

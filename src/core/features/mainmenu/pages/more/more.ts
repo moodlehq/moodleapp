@@ -24,6 +24,10 @@ import { CoreNavigator } from '@services/navigator';
 import { Translate } from '@singletons';
 import { CoreDom } from '@singletons/dom';
 import { CoreViewer } from '@features/viewer/services/viewer';
+import { CoreSharedModule } from '@/core/shared.module';
+import { CoreMainMenuUserButtonComponent } from '../../components/user-menu-button/user-menu-button';
+import { CoreContentLinksHelper } from '@features/contentlinks/services/contentlinks-helper';
+import { CoreUrl } from '@singletons/url';
 
 /**
  * Page that displays the more page of the app.
@@ -32,8 +36,12 @@ import { CoreViewer } from '@features/viewer/services/viewer';
     selector: 'page-core-mainmenu-more',
     templateUrl: 'more.html',
     styleUrl: 'more.scss',
+    imports: [
+        CoreSharedModule,
+        CoreMainMenuUserButtonComponent,
+    ],
 })
-export class CoreMainMenuMorePage implements OnInit, OnDestroy {
+export default class CoreMainMenuMorePage implements OnInit, OnDestroy {
 
     handlers?: CoreMainMenuHandlerData[];
     handlersLoaded = false;
@@ -153,7 +161,7 @@ export class CoreMainMenuMorePage implements OnInit, OnDestroy {
 
         // Check if it's a URL.
         if (/^[^:]{2,}:\/\/[^ ]+$/i.test(text)) {
-            await CoreSites.visitLink(text, {
+            await CoreContentLinksHelper.visitLink(CoreUrl.decodeURI(text), {
                 checkRoot: true,
                 openBrowserRoot: true,
             });

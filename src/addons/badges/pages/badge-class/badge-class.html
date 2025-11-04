@@ -4,67 +4,84 @@
             <ion-back-button [text]="'core.back' | translate" />
         </ion-buttons>
         <ion-title>
-            <h1 *ngIf="badge">{{ badge.name }}</h1>
-            <h1 *ngIf="!badge">{{ 'addon.badges.badgedetails' | translate }}</h1>
+            @if (badge(); as badgeToShow) {
+                <h1>{{ badgeToShow.name }}</h1>
+            } @else {
+                <h1>{{ 'addon.badges.badgedetails' | translate }}</h1>
+            }
         </ion-title>
     </ion-toolbar>
 </ion-header>
 <ion-content class="limited-width">
-    <ion-refresher slot="fixed" [disabled]="!badgeLoaded" (ionRefresh)="refreshBadgeClass($event.target)">
+    <ion-refresher slot="fixed" [disabled]="!loaded()" (ionRefresh)="refreshBadgeClass($event.target)">
         <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}" />
     </ion-refresher>
-    <core-loading [hideUntil]="badgeLoaded">
-        <ng-container *ngIf="badge">
+    <core-loading [hideUntil]="loaded()" placeholderType="imageandboxes">
+        @if (badge(); as badgeToShow) {
             <ion-item-group>
                 <ion-item class="ion-text-wrap ion-text-center">
                     <ion-label>
-                        <img *ngIf="badge.image" class="large-avatar" [url]="badge.image" core-external-content [alt]="badge.name" />
+                        @if (badgeToShow.image) {
+                            <img class="large-avatar" [url]="badgeToShow.image" core-external-content [alt]="badgeToShow.name" />
+                        }
                     </ion-label>
                 </ion-item>
-                <ion-item class="ion-text-wrap" *ngIf="badge.name">
-                    <ion-label>
-                        <p class="item-heading">{{ 'core.name' | translate}}</p>
-                        <p>{{ badge.name }}</p>
-                    </ion-label>
-                </ion-item>
-                <ion-item class="ion-text-wrap" *ngIf="badge.issuer">
-                    <ion-label>
-                        <p class="item-heading">{{ 'addon.badges.issuername' | translate}}</p>
-                        <p>
-                            <core-format-text [text]="badge.issuer" contextLevel="system" [contextInstanceId]="0" [wsNotFiltered]="true" />
-                        </p>
-                    </ion-label>
-                </ion-item>
-                <ion-item class="ion-text-wrap" *ngIf="badge.coursefullname">
-                    <ion-label>
-                        <p class="item-heading">{{ 'core.course' | translate}}</p>
-                        <p>
-                            <core-format-text [text]="badge.coursefullname" contextLevel="course" [contextInstanceId]="badge.courseid" />
-                        </p>
-                    </ion-label>
-                </ion-item>
-                <ion-item class="ion-text-wrap" *ngIf="badge.description">
-                    <ion-label>
-                        <p class="item-heading">{{ 'core.description' | translate}}</p>
-                        <p>{{ badge.description }}</p>
-                    </ion-label>
-                </ion-item>
+                @if (badgeToShow.name) {
+                    <ion-item class="ion-text-wrap">
+                        <ion-label>
+                            <p class="item-heading">{{ 'core.name' | translate}}</p>
+                            <p>{{ badgeToShow.name }}</p>
+                        </ion-label>
+                    </ion-item>
+                }
+                @if (badgeToShow.issuer) {
+                    <ion-item class="ion-text-wrap">
+                        <ion-label>
+                            <p class="item-heading">{{ 'addon.badges.issuername' | translate}}</p>
+                            <p>
+                                <core-format-text [text]="badgeToShow.issuer" contextLevel="system" [contextInstanceId]="0"
+                                    [wsNotFiltered]="true" />
+                            </p>
+                        </ion-label>
+                    </ion-item>
+                }
+                @if (badgeToShow.coursefullname) {
+                    <ion-item class="ion-text-wrap">
+                        <ion-label>
+                            <p class="item-heading">{{ 'core.course' | translate}}</p>
+                            <p>
+                                <core-format-text [text]="badgeToShow.coursefullname" contextLevel="course"
+                                    [contextInstanceId]="badgeToShow.courseid" />
+                            </p>
+                        </ion-label>
+                    </ion-item>
+                }
+                @if (badgeToShow.description) {
+                    <ion-item class="ion-text-wrap">
+                        <ion-label>
+                            <p class="item-heading">{{ 'core.description' | translate}}</p>
+                            <p>{{ badgeToShow.description }}</p>
+                        </ion-label>
+                    </ion-item>
+                }
             </ion-item-group>
 
             <!-- Competencies alignment -->
-            <ion-item-group *ngIf="badge.alignment?.length">
-                <ion-item-divider>
-                    <ion-label>
-                        <h2>{{ 'addon.badges.alignment' | translate}}</h2>
-                    </ion-label>
-                </ion-item-divider>
-                <ion-item class="ion-text-wrap" *ngFor="let alignment of badge.alignment" [href]="alignment.targetUrl" core-link
-                    [autoLogin]="false">
-                    <ion-label>
-                        <p class="item-heading">{{ alignment.targetName }}</p>
-                    </ion-label>
-                </ion-item>
-            </ion-item-group>
-        </ng-container>
+            @if (badgeToShow.alignment?.length) {
+                <ion-item-group>
+                    <ion-item-divider>
+                        <ion-label>
+                            <h2>{{ 'addon.badges.alignment' | translate}}</h2>
+                        </ion-label>
+                    </ion-item-divider>
+                    <ion-item class="ion-text-wrap" *ngFor="let alignment of badgeToShow.alignment" [href]="alignment.targetUrl" core-link
+                        [autoLogin]="false">
+                        <ion-label>
+                            <p class="item-heading">{{ alignment.targetName }}</p>
+                        </ion-label>
+                    </ion-item>
+                </ion-item-group>
+            }
+        }
     </core-loading>
 </ion-content>

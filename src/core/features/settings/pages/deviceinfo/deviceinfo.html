@@ -18,12 +18,14 @@
 
 <ion-content>
     <ion-list class="list-item-limited-width">
-        <ion-item *ngIf="showDevOptions" [detail]="true" (click)="gotoDevOptions()" button>
-            <ion-icon name="fas-terminal" slot="start" aria-hidden="true" />
-            <ion-label class="ion-text-wrap">
-                <p class="item-heading">{{ 'core.settings.developeroptions' | translate }}</p>
-            </ion-label>
-        </ion-item>
+        @if (showDevOptions) {
+            <ion-item [detail]="true" (click)="gotoDevOptions()" button>
+                <ion-icon name="fas-terminal" slot="start" aria-hidden="true" />
+                <ion-label class="ion-text-wrap">
+                    <p class="item-heading">{{ 'core.settings.developeroptions' | translate }}</p>
+                </ion-label>
+            </ion-item>
+        }
         <ion-item (longPress)="copyItemInfo($event)">
             <ion-label class="ion-text-wrap">
                 <p class="item-heading">{{ 'core.settings.appversion' | translate}}</p>
@@ -33,77 +35,111 @@
         <ion-item (longPress)="copyItemInfo($event)" (click)="enableDevOptions()">
             <ion-label class="ion-text-wrap">
                 <p class="item-heading">{{ 'core.settings.compilationinfo' | translate }}</p>
-                <p *ngIf="deviceInfo.compilationTime">{{ deviceInfo.compilationTime | coreFormatDate: "LLL Z": false }}</p>
-                <p *ngIf="deviceInfo.lastCommit">{{ deviceInfo.lastCommit }}</p>
+                @if (deviceInfo.compilationTime) {
+                    <p>{{ deviceInfo.compilationTime | coreFormatDate: "LLL Z": false }}</p>
+                }
+                @if (deviceInfo.lastCommit) {
+                    <p>{{ deviceInfo.lastCommit }}</p>
+                }
             </ion-label>
         </ion-item>
-        <ion-item *ngIf="deviceInfo.siteUrl" (longPress)="copyItemInfo($event)">
-            <ion-label class="ion-text-wrap">
-                <p class="item-heading">{{ 'core.settings.siteinfo' | translate }}<ng-container *ngIf="deviceInfo.isPrefixedUrl">
-                        *</ng-container>
-                </p>
-                <p *ngIf="displaySiteUrl"><a [href]="deviceInfo.siteUrl" core-link>{{ deviceInfo.siteUrl }}</a></p>
-                <p *ngIf="deviceInfo.siteVersion">{{ deviceInfo.siteVersion }}</p>
-                <p *ngIf="deviceInfo.siteId">{{ deviceInfo.siteId }}</p>
-            </ion-label>
-        </ion-item>
-        <ion-item *ngIf="deviceInfo.fileSystemRoot" (longPress)="copyItemInfo($event)">
-            <ion-label class="ion-text-wrap">
-                <p class="item-heading">{{ 'core.settings.filesystemroot' | translate }}</p>
-                <p>
-                    <a *ngIf="fsClickable" [href]="deviceInfo.fileSystemRoot" core-link [autoLogin]="false">
-                        {{ deviceInfo.fileSystemRoot }}
-                    </a>
-                </p>
-                <p *ngIf="!fsClickable">{{ deviceInfo.fileSystemRoot }}</p>
-            </ion-label>
-        </ion-item>
-        <ion-item *ngIf="deviceInfo.userAgent" (longPress)="copyItemInfo($event)">
-            <ion-label class="ion-text-wrap">
-                <p class="item-heading">{{ 'core.settings.navigatoruseragent' | translate }}</p>
-                <p>{{ deviceInfo.userAgent }}</p>
-            </ion-label>
-        </ion-item>
-        <ion-item *ngIf="deviceInfo.browserLanguage" (longPress)="copyItemInfo($event)">
-            <ion-label class="ion-text-wrap">
-                <p class="item-heading">{{ 'core.settings.navigatorlanguage' | translate }}</p>
-                <p>{{ deviceInfo.browserLanguage }}</p>
-            </ion-label>
-        </ion-item>
-        <ion-item *ngIf="deviceInfo.currentLanguage" (longPress)="copyItemInfo($event)">
-            <ion-label class="ion-text-wrap">
-                <p class="item-heading">{{ 'core.settings.currentlanguage' | translate }}</p>
-                <p>{{ currentLangName }} ({{ deviceInfo.currentLanguage }})</p>
-            </ion-label>
-        </ion-item>
-        <ion-item *ngIf="deviceInfo.locationHref" (longPress)="copyItemInfo($event)">
-            <ion-label class="ion-text-wrap">
-                <p class="item-heading">{{ 'core.settings.locationhref' | translate }}</p>
-                <p>{{ deviceInfo.locationHref }}</p>
-            </ion-label>
-        </ion-item>
-        <ion-item *ngIf="deviceInfo.deviceType" (longPress)="copyItemInfo($event)">
-            <ion-label class="ion-text-wrap">
-                <p class="item-heading">{{ 'core.settings.displayformat' | translate }}</p>
-                <p>{{ 'core.' + deviceInfo.deviceType | translate }}</p>
-            </ion-label>
-        </ion-item>
-        <ion-item *ngIf="deviceInfo.deviceOs && deviceOsTranslated" (longPress)="copyItemInfo($event)">
-            <ion-label class="ion-text-wrap">
-                <p class="item-heading">{{ 'core.settings.deviceos' | translate}}</p>
-                <p>{{ deviceOsTranslated }}</p>
-            </ion-label>
-        </ion-item>
-        <ion-item *ngIf="deviceInfo.screen" (longPress)="copyItemInfo($event)">
-            <ion-label class="ion-text-wrap">
-                <p class="item-heading">{{ 'core.settings.screen' | translate }}</p>
-                <p>{{ deviceInfo.screen }}</p>
-            </ion-label>
-        </ion-item>
+        @if (deviceInfo.siteUrl) {
+            <ion-item (longPress)="copyItemInfo($event)">
+                <ion-label class="ion-text-wrap">
+                    <p class="item-heading">{{ 'core.settings.siteinfo' | translate }}@if (deviceInfo.isPrefixedUrl) {
+
+                            *
+                        }
+                    </p>
+                    @if (displaySiteUrl) {
+                        <p><a [href]="deviceInfo.siteUrl" core-link>{{ deviceInfo.siteUrl }}</a></p>
+                    }
+                    @if (deviceInfo.siteVersion) {
+                        <p>{{ deviceInfo.siteVersion }}</p>
+                    }
+                    @if (deviceInfo.siteId) {
+                        <p>{{ deviceInfo.siteId }}</p>
+                    }
+                </ion-label>
+            </ion-item>
+        }
+        @if (deviceInfo.fileSystemRoot) {
+            <ion-item (longPress)="copyItemInfo($event)">
+                <ion-label class="ion-text-wrap">
+                    <p class="item-heading">{{ 'core.settings.filesystemroot' | translate }}</p>
+                    @if (fsClickable) {
+                        <p>
+                            <a [href]="deviceInfo.fileSystemRoot" core-link [autoLogin]="false">
+                                {{ deviceInfo.fileSystemRoot }}
+                            </a>
+                        </p>
+                    } @else {
+                        <p>{{ deviceInfo.fileSystemRoot }}</p>
+                    }
+                </ion-label>
+            </ion-item>
+        }
+        @if (deviceInfo.userAgent) {
+            <ion-item (longPress)="copyItemInfo($event)">
+                <ion-label class="ion-text-wrap">
+                    <p class="item-heading">{{ 'core.settings.navigatoruseragent' | translate }}</p>
+                    <p>{{ deviceInfo.userAgent }}</p>
+                </ion-label>
+            </ion-item>
+        }
+        @if (deviceInfo.browserLanguage) {
+            <ion-item (longPress)="copyItemInfo($event)">
+                <ion-label class="ion-text-wrap">
+                    <p class="item-heading">{{ 'core.settings.navigatorlanguage' | translate }}</p>
+                    <p>{{ deviceInfo.browserLanguage }}</p>
+                </ion-label>
+            </ion-item>
+        }
+        @if (deviceInfo.currentLanguage) {
+            <ion-item (longPress)="copyItemInfo($event)">
+                <ion-label class="ion-text-wrap">
+                    <p class="item-heading">{{ 'core.settings.currentlanguage' | translate }}</p>
+                    <p>{{ currentLangName }} ( {{ deviceInfo.currentLanguage }} )</p>
+                </ion-label>
+            </ion-item>
+        }
+
+        @if (deviceInfo.locationHref) {
+            <ion-item (longPress)="copyItemInfo($event)">
+                <ion-label class="ion-text-wrap">
+                    <p class="item-heading">{{ 'core.settings.locationhref' | translate }}</p>
+                    <p>{{ deviceInfo.locationHref }}</p>
+                </ion-label>
+            </ion-item>
+        }
+        @if (deviceInfo.deviceType) {
+            <ion-item (longPress)="copyItemInfo($event)">
+                <ion-label class="ion-text-wrap">
+                    <p class="item-heading">{{ 'core.settings.displayformat' | translate }}</p>
+                    <p>{{ 'core.' + deviceInfo.deviceType | translate }}</p>
+                </ion-label>
+            </ion-item>
+        }
+        @if (deviceInfo.deviceOs && deviceOsTranslated) {
+            <ion-item (longPress)="copyItemInfo($event)">
+                <ion-label class="ion-text-wrap">
+                    <p class="item-heading">{{ 'core.settings.deviceos' | translate}}</p>
+                    <p>{{ deviceOsTranslated }}</p>
+                </ion-label>
+            </ion-item>
+        }
+        @if (deviceInfo.screen) {
+            <ion-item (longPress)="copyItemInfo($event)">
+                <ion-label class="ion-text-wrap">
+                    <p class="item-heading">{{ 'core.settings.screen' | translate }}</p>
+                    <p>{{ deviceInfo.screen }}</p>
+                </ion-label>
+            </ion-item>
+        }
         <ion-item (longPress)="copyItemInfo($event)">
             <ion-label class="ion-text-wrap">
                 <p class="item-heading">{{ 'core.settings.networkstatus' | translate}}</p>
-                @if (deviceInfo.isOnline) {
+                @if (deviceInfo.isOnline()) {
                     <p>{{ 'core.online' | translate }}</p>
                 } @else {
                     <p>{{ 'core.offline' | translate }}</p>
@@ -113,52 +149,72 @@
         <ion-item (longPress)="copyItemInfo($event)">
             <ion-label class="ion-text-wrap">
                 <p class="item-heading">{{ 'core.settings.wificonnection' | translate}}</p>
-                <p>{{ 'core.' + deviceInfo.wifiConnection | translate }}</p>
+                @if (deviceInfo.wifiConnection()) {
+                    <p>{{ 'core.yes' | translate }}</p>
+                } @else {
+                    <p>{{ 'core.no' | translate }}</p>
+                }
             </ion-label>
         </ion-item>
-        <ion-item *ngIf="deviceInfo.cordovaVersion" (longPress)="copyItemInfo($event)">
-            <ion-label class="ion-text-wrap">
-                <p class="item-heading">{{ 'core.settings.cordovaversion' | translate }}</p>
-                <p>{{ deviceInfo.cordovaVersion }}</p>
-            </ion-label>
-        </ion-item>
-        <ion-item *ngIf="deviceInfo.platform" (longPress)="copyItemInfo($event)">
-            <ion-label class="ion-text-wrap">
-                <p class="item-heading">{{ 'core.settings.cordovadeviceplatform' | translate }}</p>
-                <p>{{ deviceInfo.platform }}</p>
-            </ion-label>
-        </ion-item>
-        <ion-item *ngIf="deviceInfo.osVersion" (longPress)="copyItemInfo($event)">
-            <ion-label class="ion-text-wrap">
-                <p class="item-heading">{{ 'core.settings.cordovadeviceosversion' | translate }}</p>
-                <p>{{ deviceInfo.osVersion }}</p>
-            </ion-label>
-        </ion-item>
-        <ion-item *ngIf="deviceInfo.model" (longPress)="copyItemInfo($event)">
-            <ion-label class="ion-text-wrap">
-                <p class="item-heading">{{ 'core.settings.cordovadevicemodel' | translate}}</p>
-                <p>{{ deviceInfo.model }}</p>
-            </ion-label>
-        </ion-item>
-        <ion-item *ngIf="deviceInfo.uuid" (longPress)="copyItemInfo($event)">
-            <ion-label class="ion-text-wrap">
-                <p class="item-heading">{{ 'core.settings.cordovadeviceuuid' | translate}}</p>
-                <p>{{ deviceInfo.uuid }}</p>
-            </ion-label>
-        </ion-item>
-        <ion-item *ngIf="deviceInfo.pushId" (longPress)="copyItemInfo($event)">
-            <ion-label class="ion-text-wrap">
-                <p class="item-heading">{{ 'core.settings.pushid' | translate }}</p>
-                <p>{{ deviceInfo.pushId }}</p>
-            </ion-label>
-        </ion-item>
-        <ion-item *ngIf="deviceInfo.pushId" (longPress)="copyItemInfo($event)">
-            <ion-label class="ion-text-wrap">
-                <p class="item-heading">{{ 'core.settings.encryptedpushsupported' | translate }}</p>
-                <p *ngIf="!deviceInfo.encryptedPushSupported">{{ 'core.no' | translate }}</p>
-                <p *ngIf="deviceInfo.encryptedPushSupported">{{ 'core.yes' | translate }}</p>
-            </ion-label>
-        </ion-item>
+        @if (deviceInfo.cordovaVersion) {
+            <ion-item (longPress)="copyItemInfo($event)">
+                <ion-label class="ion-text-wrap">
+                    <p class="item-heading">{{ 'core.settings.cordovaversion' | translate }}</p>
+                    <p>{{ deviceInfo.cordovaVersion }}</p>
+                </ion-label>
+            </ion-item>
+        }
+        @if (deviceInfo.platform) {
+            <ion-item (longPress)="copyItemInfo($event)">
+                <ion-label class="ion-text-wrap">
+                    <p class="item-heading">{{ 'core.settings.cordovadeviceplatform' | translate }}</p>
+                    <p>{{ deviceInfo.platform }}</p>
+                </ion-label>
+            </ion-item>
+        }
+        @if (deviceInfo.osVersion) {
+            <ion-item (longPress)="copyItemInfo($event)">
+                <ion-label class="ion-text-wrap">
+                    <p class="item-heading">{{ 'core.settings.cordovadeviceosversion' | translate }}</p>
+                    <p>{{ deviceInfo.osVersion }}</p>
+                </ion-label>
+            </ion-item>
+        }
+        @if (deviceInfo.model) {
+            <ion-item (longPress)="copyItemInfo($event)">
+                <ion-label class="ion-text-wrap">
+                    <p class="item-heading">{{ 'core.settings.cordovadevicemodel' | translate}}</p>
+                    <p>{{ deviceInfo.model }}</p>
+                </ion-label>
+            </ion-item>
+        }
+        @if (deviceInfo.uuid) {
+            <ion-item (longPress)="copyItemInfo($event)">
+                <ion-label class="ion-text-wrap">
+                    <p class="item-heading">{{ 'core.settings.cordovadeviceuuid' | translate}}</p>
+                    <p>{{ deviceInfo.uuid }}</p>
+                </ion-label>
+            </ion-item>
+        }
+        @if (deviceInfo.pushId) {
+            <ion-item (longPress)="copyItemInfo($event)">
+                <ion-label class="ion-text-wrap">
+                    <p class="item-heading">{{ 'core.settings.pushid' | translate }}</p>
+                    <p>{{ deviceInfo.pushId }}</p>
+                </ion-label>
+            </ion-item>
+            <ion-item (longPress)="copyItemInfo($event)">
+                <ion-label class="ion-text-wrap">
+                    <p class="item-heading">{{ 'core.settings.encryptedpushsupported' | translate }}</p>
+                    @if (!deviceInfo.encryptedPushSupported) {
+                        <p>{{ 'core.no' | translate }}</p>
+                    }
+                    @if (deviceInfo.encryptedPushSupported) {
+                        <p>{{ 'core.yes' | translate }}</p>
+                    }
+                </ion-label>
+            </ion-item>
+        }
         <ion-item (longPress)="copyItemInfo($event)">
             <ion-label class="ion-text-wrap">
                 <p class="item-heading">{{ 'core.settings.localnotifavailable' | translate }}</p>

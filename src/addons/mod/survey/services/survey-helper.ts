@@ -26,18 +26,18 @@ export class AddonModSurveyHelperProvider {
      * Turns a string with values separated by commas into an array.
      *
      * @param value Value to convert.
-     * @returns Array.
+     * @returns Array if value is a string.
      */
-    protected commaStringToArray(value: string | string[]): string[] {
-        if (typeof value == 'string') {
-            if (value.length > 0) {
-                return value.split(',');
-            }
-
-            return [];
+    protected commaStringToArray(value: string | null): string[] | undefined {
+        if (typeof value !== 'string') {
+            return;
         }
 
-        return value;
+        if (value.length > 0) {
+            return value.split(',');
+        }
+
+        return [];
     }
 
     /**
@@ -76,32 +76,35 @@ export class AddonModSurveyHelperProvider {
 
         questions.forEach((question) => {
             // Copy the object to prevent modifying the original.
-            const q1: AddonModSurveyQuestionFormatted = Object.assign({}, question);
+            const q1: AddonModSurveyQuestionFormatted = {
+                ...question,
+                required: false,
+                name: '',
+                num: 0,
+                multiArray: this.commaStringToArray(question.multi), // Convert into array.
+                optionsArray: this.commaStringToArray(question.options),  // Convert into array.
+            };
+
             const parent = parents[q1.parent];
-
-            // Turn multi and options into arrays.
-            q1.multiArray = this.commaStringToArray(q1.multi);
-            q1.optionsArray = this.commaStringToArray(q1.options);
-
             if (parent) {
                 // It's a sub-question.
                 q1.required = true;
 
                 if (parent.type === 1 || parent.type === 2) {
                     // One answer question. Set its name and add it to the returned array.
-                    q1.name = 'q' + (parent.type == 2 ? 'P' : '') + q1.id;
+                    q1.name = `q${parent.type == 2 ? 'P' : ''}${q1.id}`;
                     q1.num = num++;
                 } else {
                     // Two answers per question (COLLES P&A). We'll add two questions.
-                    const q2 = Object.assign({}, q1);
+                    const q2 = { ...q1 };
 
-                    q1.text = strIPreferThat + ' ' + q1.text;
-                    q1.name = 'qP' + q1.id;
+                    q1.text = `${strIPreferThat} ${q1.text}`;
+                    q1.name = `qP${q1.id}`;
                     q1.num = num++;
                     formatted.push(q1);
 
-                    q2.text = strIFoundThat + ' ' + q2.text;
-                    q2.name = 'q' + q1.id;
+                    q2.text = `${strIFoundThat} ${q2.text}`;
+                    q2.name = `q${q1.id}`;
                     q2.num = num++;
                     formatted.push(q2);
 
@@ -109,9 +112,9 @@ export class AddonModSurveyHelperProvider {
                 }
             } else if (q1.multiArray && q1.multiArray.length === 0) {
                 // It's a single question.
-                q1.name = 'q' + q1.id;
+                q1.name = `q${q1.id}`;
                 q1.num = num++;
-            }
+            } // Otherwise, it's a parent question (heading).
 
             formatted.push(q1);
         });
@@ -126,9 +129,9 @@ export const AddonModSurveyHelper = makeSingleton(AddonModSurveyHelperProvider);
  * Survey question with some calculated data.
  */
 export type AddonModSurveyQuestionFormatted = AddonModSurveyQuestion & {
-    required?: boolean; // Calculated in the app. Whether the question is required.
-    name?: string; // Calculated in the app. The name of the question.
-    num?: number; // Calculated in the app. Number of the question.
+    required: boolean; // Calculated in the app. Whether the question is required.
+    name: string; // Calculated in the app. The name of the question.
+    num: number; // Calculated in the app. Number of the question.
     multiArray?: string[]; // Subquestions ids, converted to an array.
     optionsArray?: string[]; // Question options, converted to an array.
 };

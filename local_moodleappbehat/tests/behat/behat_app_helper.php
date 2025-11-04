@@ -181,15 +181,17 @@ class behat_app_helper extends behat_base {
             $service->enabled = 1;
             $webservicemanager->update_external_service($service);
         }
+
+        // The default window size for LMS tests is 1366x768.
+        $this->getSession()->getDriver()->resizeWindow(1366, 768);
     }
 
     /**
      * Goes to the app page and then sets up some initial JavaScript so we can use it.
      *
-     * @param string $url App URL
      * @throws DriverException If the app fails to load properly
      */
-    protected function prepare_browser(array $options = []) {
+    protected function prepare_browser() {
         if ($this->evaluate_script('window.behat') && $this->runtime_js('hasInitialized()')) {
             // Already initialized.
             return;
@@ -214,6 +216,11 @@ class behat_app_helper extends behat_base {
 
         // Wait the application to load.
         $this->spin(function($context) {
+            // Make sure the behat API has been loaded.
+            if (!$this->evaluate_script('window.behat')) {
+                throw new DriverException('Behat API not found in window');
+            }
+
             $title = $context->getSession()->getPage()->find('xpath', '//title');
 
             if ($title) {
@@ -230,7 +237,6 @@ class behat_app_helper extends behat_base {
         try {
             // Init Behat JavaScript runtime.
             $initoptions = json_encode([
-                'skipOnBoarding' => $options['skiponboarding'] ?? true,
                 'configOverrides' => $this->appconfig,
             ]);
 
@@ -324,10 +330,13 @@ class behat_app_helper extends behat_base {
         preg_match_all("/\\$\\{([^:}]+):([^}]+)\\}/", $text, $matches);
 
         foreach ($matches[0] as $index => $match) {
-            if ($matches[2][$index] == 'cmid') {
-                $coursemodule = $DB->get_record('course_modules', ['idnumber' => $matches[1][$index]]);
-                $text = str_replace($match, $coursemodule->id, $text);
+            $coursemodule = (array) $DB->get_record('course_modules', ['idnumber' => $matches[1][$index]]);
+            $property = $matches[2][$index] === 'cmid' ? 'id' : $matches[2][$index];
+            if (!isset($coursemodule[$property])) {
+                throw new DriverException("Property '$matches[2][$index]' not found in activity '$matches[1][$index]'.");
             }
+
+            $text = str_replace($match, $coursemodule[$property], $text);
         }
 
         return $text;
@@ -358,7 +367,7 @@ class behat_app_helper extends behat_base {
      * @return mixed Result.
      */
     protected function runtime_js(string $script) {
-        return $this->evaluate_script("window.behat?.$script");
+        return $this->evaluate_script("window.behat ? await window.behat.$script : 'ERROR - Behat API not loaded'");
     }
 
     /**
@@ -828,5 +837,28 @@ EOF;
         // Ideally, we wouldn't wait a fixed amount of time. But it is not straightforward to wait for animations
         // to finish, so for now we'll just wait 300ms.
         usleep(300000);
+    }
+
+    /**
+     * Get window names, excluding Chrome extensions.
+     * Workaround for bug: https://github.com/SeleniumHQ/selenium/issues/15330
+     *
+     * @return array
+     */
+    protected function get_window_names(): array {
+        $activeWindowName = $this->getSession()->getWindowName();
+
+        $windowNames = [];
+        foreach ($this->getSession()->getWindowNames() as $windowName) {
+            $this->getSession()->switchToWindow($windowName);
+            $windowUrl = $this->getSession()->getCurrentUrl();
+            if (strpos($windowUrl, 'chrome-extension://') !== 0) {
+                $windowNames[] = $windowName;
+            }
+        }
+
+        $this->getSession()->switchToWindow($activeWindowName);
+
+        return $windowNames;
     }
 }

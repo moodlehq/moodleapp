@@ -26,7 +26,7 @@ import { CoreEvents } from '@singletons/events';
 import { CoreLogger } from '@singletons/logger';
 import { CoreSharedFiles } from './sharedfiles';
 import { SHAREDFILES_PAGE_NAME } from '../constants';
-import { CoreSharedFilesChooseSitePage } from '../pages/choose-site/choose-site';
+import CoreSharedFilesChooseSitePage from '../pages/choose-site/choose-site';
 import { CoreError } from '@classes/errors/error';
 import { CorePlatform } from '@services/platform';
 import { CoreModals } from '@services/overlays/modals';

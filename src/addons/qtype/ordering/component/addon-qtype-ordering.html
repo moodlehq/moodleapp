@@ -11,7 +11,7 @@
             <div aria-live="polite" class="sr-only">{{ a11yAnnouncement }}</div>
         }
 
-        <ion-reorder-group class="{{numberingClass}}" [disabled]="dragDisabled" (ionItemReorder)="moveItem($event.detail)">
+        <ion-reorder-group class="{{numberingClass}}" [disabled]="dragDisabled" (ionReorderEnd)="moveItem($event.detail)">
             @for (item of question.items; track item.id) {
                 <ion-card id="{{item.id}}" class="core-question-answer-{{item.correctClass}}">
                     <ion-item class="ion-text-wrap">

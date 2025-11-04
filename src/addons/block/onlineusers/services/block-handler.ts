@@ -15,7 +15,6 @@
 import { Injectable } from '@angular/core';
 import { CoreBlockHandlerData } from '@features/block/services/block-delegate';
 import { CoreBlockBaseHandler } from '@features/block/classes/base-block-handler';
-import { AddonBlockOnlineUsersComponent } from '../components/onlineusers/onlineusers';
 import { makeSingleton } from '@singletons';
 
 /**
@@ -28,11 +27,10 @@ export class AddonBlockOnlineUsersHandlerService extends CoreBlockBaseHandler {
     blockName = 'online_users';
 
     /**
-     * Returns the data needed to render the block.
-     *
-     * @returns Data or promise resolved with the data.
+     * @inheritdoc
      */
-    getDisplayData(): CoreBlockHandlerData {
+    async getDisplayData(): Promise<CoreBlockHandlerData> {
+        const { AddonBlockOnlineUsersComponent } = await import('../components/onlineusers/onlineusers');
 
         return {
             title: 'addon.block_onlineusers.pluginname',

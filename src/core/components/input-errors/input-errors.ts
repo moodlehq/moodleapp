@@ -12,8 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, ElementRef, HostBinding, Input, OnChanges, OnInit, SimpleChange } from '@angular/core';
+import { Component, ElementRef, Input, OnChanges, OnInit, SimpleChange, inject } from '@angular/core';
 import { FormControl } from '@angular/forms';
+import { CoreBaseModule } from '@/core/base.module';
+import { CoreFaIconDirective } from '@directives/fa-icon';
 
 /**
  * Component to show errors if an input isn't valid.
@@ -37,6 +39,14 @@ import { FormControl } from '@angular/forms';
     selector: 'core-input-errors',
     templateUrl: 'core-input-errors.html',
     styleUrl: 'input-errors.scss',
+    imports: [
+        CoreBaseModule,
+        CoreFaIconDirective,
+    ],
+    host: {
+        '[class.has-errors]': '(control && control.dirty && !control.valid) || !!errorText',
+        '[role]': '"alert"',
+    },
 })
 export class CoreInputErrorsComponent implements OnInit, OnChanges {
 
@@ -45,20 +55,7 @@ export class CoreInputErrorsComponent implements OnInit, OnChanges {
     @Input() errorText = ''; // Set other non automatic errors.
     errorKeys: string[] = [];
 
-    protected hostElement: HTMLElement;
-
-    @HostBinding('class.has-errors')
-    get hasErrors(): boolean {
-        return (this.control && this.control.dirty && !this.control.valid) || !!this.errorText;
-    }
-
-    @HostBinding('role') role = 'alert';
-
-    constructor(
-        element: ElementRef,
-    ) {
-        this.hostElement = element.nativeElement;
-    }
+    protected hostElement: HTMLElement = inject(ElementRef).nativeElement;
 
     /**
      * Initialize some common errors if they aren't set.

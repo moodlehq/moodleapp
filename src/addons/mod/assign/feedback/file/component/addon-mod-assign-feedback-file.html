@@ -1,10 +1,10 @@
-<!-- Read only. -->
-<ion-item class="ion-text-wrap" *ngIf="files && files.length">
-    <ion-label>
-        <h2>{{plugin.name}}</h2>
-        <ng-container>
+@if (files && files.length) {
+    <!-- Read only. -->
+    <ion-item class="ion-text-wrap">
+        <ion-label>
+            <p class="item-heading">{{ plugin.name }}</p>
             <core-file *ngFor="let file of files" [file]="file" [component]="component" [componentId]="assign.cmid"
                 [alwaysDownload]="true" />
-        </ng-container>
-    </ion-label>
-</ion-item>
+        </ion-label>
+    </ion-item>
+}

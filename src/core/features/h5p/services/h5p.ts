@@ -182,14 +182,13 @@ export class CoreH5PProvider {
      * @returns Cache key.
      */
     protected getTrustedH5PFilePrefixCacheKey(): string {
-        return CoreH5PProvider.ROOT_CACHE_KEY + 'trustedH5PFile:';
+        return `${CoreH5PProvider.ROOT_CACHE_KEY}trustedH5PFile:`;
     }
 
     /**
      * Invalidates all trusted H5P file WS calls.
      *
      * @param siteId Site ID (empty for current site).
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateAllGetTrustedH5PFile(siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -202,7 +201,6 @@ export class CoreH5PProvider {
      *
      * @param url The URL of the file.
      * @param siteId Site ID (empty for current site).
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateGetTrustedH5PFile(url: string, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);

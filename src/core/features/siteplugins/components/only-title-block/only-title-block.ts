@@ -28,14 +28,9 @@ import { CoreSharedModule } from '@/core/shared.module';
     selector: 'core-siteplugins-only-title-block',
     templateUrl: 'core-siteplugins-only-title-block.html',
     styles: [':host { display: contents; }'],
-    standalone: true,
     imports: [CoreSharedModule],
 })
 export class CoreSitePluginsOnlyTitleBlockComponent extends CoreBlockBaseComponent implements OnInit {
-
-    constructor() {
-        super('CoreSitePluginsOnlyTitleBlockComponent');
-    }
 
     /**
      * @inheritdoc
@@ -43,7 +38,7 @@ export class CoreSitePluginsOnlyTitleBlockComponent extends CoreBlockBaseCompone
     async ngOnInit(): Promise<void> {
         super.ngOnInit();
 
-        this.fetchContentDefaultError = 'Error getting ' + (this.block.contents?.title || 'block') + ' data.';
+        this.fetchContentDefaultError = `Error getting ${this.block.contents?.title || 'block'} data.`;
     }
 
     /**
@@ -71,6 +66,8 @@ export class CoreSitePluginsOnlyTitleBlockComponent extends CoreBlockBaseCompone
                     args,
                     initResult: handler.initResult,
                     ptrEnabled: (<CoreSitePluginsUserHandlerData> handler.handlerSchema).ptrenabled,
+                    contextLevel: 'block',
+                    contextInstanceId: this.instanceId,
                 },
             },
         );

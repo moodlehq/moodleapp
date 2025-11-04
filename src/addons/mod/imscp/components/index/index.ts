@@ -12,14 +12,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit, Optional } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CoreCourseModuleMainResourceComponent } from '@features/course/classes/main-resource-component';
-import { CoreCourseContentsPage } from '@features/course/pages/contents/contents';
 import { CoreCourse } from '@features/course/services/course';
 import { CoreNavigator } from '@services/navigator';
 import { AddonModImscp, AddonModImscpTocItem } from '../../services/imscp';
 import { CorePromiseUtils } from '@singletons/promise-utils';
-import { ADDON_MOD_IMSCP_COMPONENT, ADDON_MOD_IMSCP_PAGE_NAME } from '../../constants';
+import { ADDON_MOD_IMSCP_COMPONENT_LEGACY, ADDON_MOD_IMSCP_PAGE_NAME } from '../../constants';
+import { CoreCourseModuleNavigationComponent } from '@features/course/components/module-navigation/module-navigation';
+import { CoreCourseModuleInfoComponent } from '@features/course/components/module-info/module-info';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Component that displays a IMSCP.
@@ -28,18 +30,19 @@ import { ADDON_MOD_IMSCP_COMPONENT, ADDON_MOD_IMSCP_PAGE_NAME } from '../../cons
     selector: 'addon-mod-imscp-index',
     templateUrl: 'addon-mod-imscp-index.html',
     styleUrl: 'index.scss',
+    imports: [
+        CoreSharedModule,
+        CoreCourseModuleInfoComponent,
+        CoreCourseModuleNavigationComponent,
+    ],
 })
 export class AddonModImscpIndexComponent extends CoreCourseModuleMainResourceComponent implements OnInit {
 
-    component = ADDON_MOD_IMSCP_COMPONENT;
+    component = ADDON_MOD_IMSCP_COMPONENT_LEGACY;
     pluginName = 'imscp';
 
     items: AddonModImscpTocItem[] = [];
     hasStarted = false;
-
-    constructor(@Optional() courseContentsPage?: CoreCourseContentsPage) {
-        super('AddonModImscpIndexComponent', courseContentsPage);
-    }
 
     /**
      * @inheritdoc

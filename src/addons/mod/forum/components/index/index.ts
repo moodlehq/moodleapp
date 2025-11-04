@@ -12,10 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, Optional, OnInit, OnDestroy, ViewChild, AfterViewInit } from '@angular/core';
+import { Component, OnInit, OnDestroy, AfterViewInit, inject, viewChild } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { IonContent } from '@ionic/angular';
-
 import { CoreCourseModuleMainActivityComponent } from '@features/course/classes/main-activity-component';
 import {
     AddonModForum,
@@ -25,9 +23,8 @@ import {
     AddonModForumNewDiscussionData,
     AddonModForumReplyDiscussionData,
 } from '@addons/mod/forum/services/forum';
-import { AddonModForumOffline } from '@addons/mod/forum/services/forum-offline';
+import { AddonModForumOffline, AddonModForumOfflineDiscussion } from '@addons/mod/forum/services/forum-offline';
 import { Translate } from '@singletons';
-import { CoreCourseContentsPage } from '@features/course/pages/contents/contents';
 import { AddonModForumHelper } from '@addons/mod/forum/services/forum-helper';
 import { CoreGroupInfo } from '@services/groups';
 import { CoreEvents, CoreEventObserver } from '@singletons/events';
@@ -37,7 +34,7 @@ import {
     AddonModForumSyncResult,
 } from '@addons/mod/forum/services/forum-sync';
 import { CoreSites } from '@services/sites';
-import { CoreUser } from '@features/user/services/user';
+import { CoreUserPreferences } from '@features/user/services/user-preferences';
 import { CoreCourse } from '@features/course/services/course';
 import { CoreSplitViewComponent } from '@components/split-view/split-view';
 import { CoreScreen } from '@services/screen';
@@ -54,7 +51,7 @@ import { CoreNavigator } from '@services/navigator';
 import {
     ADDON_MOD_FORUM_AUTO_SYNCED,
     ADDON_MOD_FORUM_CHANGE_DISCUSSION_EVENT,
-    ADDON_MOD_FORUM_COMPONENT,
+    ADDON_MOD_FORUM_COMPONENT_LEGACY,
     ADDON_MOD_FORUM_MANUAL_SYNCED,
     ADDON_MOD_FORUM_NEW_DISCUSSION_EVENT,
     ADDON_MOD_FORUM_PAGE_NAME,
@@ -68,6 +65,10 @@ import { CoreToasts } from '@services/overlays/toasts';
 import { CorePopovers } from '@services/overlays/popovers';
 import { CoreLoadings } from '@services/overlays/loadings';
 import { CoreAlerts } from '@services/overlays/alerts';
+import { CoreSharedModule } from '@/core/shared.module';
+import { CoreCourseModuleNavigationComponent } from '@features/course/components/module-navigation/module-navigation';
+import { CoreCourseModuleInfoComponent } from '@features/course/components/module-info/module-info';
+
 /**
  * Component that displays a forum entry page.
  */
@@ -75,16 +76,23 @@ import { CoreAlerts } from '@services/overlays/alerts';
     selector: 'addon-mod-forum-index',
     templateUrl: 'index.html',
     styleUrl: 'index.scss',
+    imports: [
+        CoreSharedModule,
+        CoreCourseModuleInfoComponent,
+        CoreCourseModuleNavigationComponent,
+    ],
 })
 export class AddonModForumIndexComponent extends CoreCourseModuleMainActivityComponent implements OnInit, AfterViewInit, OnDestroy {
 
-    @ViewChild(CoreSplitViewComponent) splitView!: CoreSplitViewComponent;
+    readonly splitView = viewChild.required(CoreSplitViewComponent);
 
-    component = ADDON_MOD_FORUM_COMPONENT;
+    route = inject(ActivatedRoute);
+
+    component = ADDON_MOD_FORUM_COMPONENT_LEGACY;
     pluginName = 'forum';
     descriptionNote?: string;
-    promisedDiscussions: CorePromisedValue<AddonModForumDiscussionsManager>;
-    discussionsItems: AddonModForumDiscussionItem[] = [];
+    promisedDiscussions = new CorePromisedValue<AddonModForumDiscussionsManager>();
+    discussionsItems: (AddonModForumDiscussion | AddonModForumOfflineDiscussion)[] = [];
     fetchFailed = false;
     canAddDiscussion = false;
     addDiscussionText!: string;
@@ -107,16 +115,6 @@ export class AddonModForumIndexComponent extends CoreCourseModuleMainActivityCom
     protected ratingSyncObserver?: CoreEventObserver;
     protected sourceUnsubscribe?: () => void;
     protected checkCompletionAfterLog = false; // Use CoreListItemsManager log system instead.
-
-    constructor(
-        public route: ActivatedRoute,
-        @Optional() protected content?: IonContent,
-        @Optional() courseContentsPage?: CoreCourseContentsPage,
-    ) {
-        super('AddonModForumIndexComponent', content, courseContentsPage);
-
-        this.promisedDiscussions = new CorePromisedValue();
-    }
 
     get discussions(): AddonModForumDiscussionsManager | null {
         return this.promisedDiscussions.value;
@@ -164,13 +162,17 @@ export class AddonModForumIndexComponent extends CoreCourseModuleMainActivityCom
         return !!this.discussions?.getSource().errorLoadingDiscussions;
     }
 
+    get hasBlockingEnabled(): boolean {
+        return !!(this.forum?.blockafter && this.forum.blockperiod);
+    }
+
     /**
      * Check whether a discussion is online.
      *
      * @param discussion Discussion
      * @returns Whether the discussion is online.
      */
-    isOnlineDiscussion(discussion: AddonModForumDiscussionItem): boolean {
+    isOnlineDiscussion(discussion: AddonModForumDiscussionItem): discussion is AddonModForumDiscussion {
         return !!this.discussions?.getSource().isOnlineDiscussion(discussion);
     }
 
@@ -180,7 +182,7 @@ export class AddonModForumIndexComponent extends CoreCourseModuleMainActivityCom
      * @param discussion Discussion
      * @returns Whether the discussion is offline.
      */
-    isOfflineDiscussion(discussion: AddonModForumDiscussionItem): boolean {
+    isOfflineDiscussion(discussion: AddonModForumDiscussionItem): discussion is AddonModForumOfflineDiscussion {
         return !!this.discussions?.getSource().isOfflineDiscussion(discussion);
     }
 
@@ -203,7 +205,8 @@ export class AddonModForumIndexComponent extends CoreCourseModuleMainActivityCom
 
         this.sourceUnsubscribe = source.addListener({
             onItemsUpdated: async discussions => {
-                this.discussionsItems = discussions.filter(discussion => !source.isNewDiscussionForm(discussion));
+                this.discussionsItems = discussions.filter(discussion =>
+                    source.isOnlineDiscussion(discussion) || source.isOfflineDiscussion(discussion));
                 this.hasOffline = discussions.some(discussion => source.isOfflineDiscussion(discussion));
 
                 if (!this.forum) {
@@ -218,7 +221,7 @@ export class AddonModForumIndexComponent extends CoreCourseModuleMainActivityCom
                 if (hasOffline) {
                     // Only update new fetched discussions.
                     const promises = discussions.map(async (discussion) => {
-                        if (!this.discussions?.getSource().isOnlineDiscussion(discussion)) {
+                        if (!source.isOnlineDiscussion(discussion)) {
                             return;
                         }
 
@@ -319,7 +322,7 @@ export class AddonModForumIndexComponent extends CoreCourseModuleMainActivityCom
 
         const discussions = await this.promisedDiscussions;
 
-        discussions.start(this.splitView);
+        discussions.start(this.splitView());
     }
 
     /**
@@ -512,7 +515,7 @@ export class AddonModForumIndexComponent extends CoreCourseModuleMainActivityCom
         }
 
         if (this.sortingAvailable) {
-            promises.push(CoreUser.invalidateUserPreference(ADDON_MOD_FORUM_PREFERENCE_SORTORDER));
+            promises.push(CoreUserPreferences.invalidatePreference(ADDON_MOD_FORUM_PREFERENCE_SORTORDER));
         }
 
         await Promise.all(promises);
@@ -615,7 +618,7 @@ export class AddonModForumIndexComponent extends CoreCourseModuleMainActivityCom
             this.discussions.getSource().setDirty(true);
 
             try {
-                await CoreUser.setUserPreference(ADDON_MOD_FORUM_PREFERENCE_SORTORDER, sortOrder.value.toFixed(0));
+                await CoreUserPreferences.setPreference(ADDON_MOD_FORUM_PREFERENCE_SORTORDER, sortOrder.value.toFixed(0));
                 await this.showLoadingAndFetch();
             } catch (error) {
                 CoreAlerts.showError(error, { default: 'Error updating preference.' });

@@ -14,10 +14,13 @@
 
 import { Type } from '@angular/core';
 
-import { CoreConstants } from '@/core/constants';
-import { CoreCourse } from '@features/course/services/course';
+import { CoreCourseModuleHelper } from '@features/course/services/course-module-helper';
 import { CoreCourseHelper, CoreCourseModuleData } from '@features/course/services/course-helper';
-import { CoreCourseModuleHandler, CoreCourseModuleHandlerData } from '@features/course/services/module-delegate';
+import {
+    CoreCourseModuleHandler,
+    CoreCourseModuleHandlerData,
+    CoreCourseOverviewItemContent,
+} from '@features/course/services/module-delegate';
 import {
     CoreSitePlugins,
     CoreSitePluginsContent,
@@ -26,29 +29,31 @@ import {
 } from '@features/siteplugins/services/siteplugins';
 import { CoreNavigationOptions, CoreNavigator } from '@services/navigator';
 import { CoreLogger } from '@singletons/logger';
-import { CoreSitePluginsBaseHandler } from './base-handler';
 import { CoreEvents } from '@singletons/events';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CORE_SITE_PLUGINS_UPDATE_COURSE_CONTENT } from '@features/siteplugins/constants';
+import { ModFeature } from '@addons/mod/constants';
+import { CoreCourseOverviewActivity, CoreCourseOverviewItem } from '@features/course/services/course-overview';
+import { CoreModuleHandlerBase } from '@features/course/classes/module-base-handler';
 
 /**
  * Handler to support a module using a site plugin.
  */
-export class CoreSitePluginsModuleHandler extends CoreSitePluginsBaseHandler implements CoreCourseModuleHandler {
+export class CoreSitePluginsModuleHandler extends CoreModuleHandlerBase implements CoreCourseModuleHandler {
 
-    supportedFeatures?: Record<string, unknown>;
-    supportsFeature?: (feature: string) => unknown;
+    supportedFeatures?: Record<ModFeature, unknown>;
+    supportsFeature?: (feature: ModFeature) => unknown;
 
     protected logger: CoreLogger;
 
     constructor(
-        name: string,
+        public name: string,
         public modName: string,
         protected plugin: CoreSitePluginsPlugin,
         protected handlerSchema: CoreSitePluginsCourseModuleHandlerData,
         protected initResult: CoreSitePluginsContent | null,
     ) {
-        super(name);
+        super();
 
         this.logger = CoreLogger.getInstance('CoreSitePluginsModuleHandler');
         this.supportedFeatures = handlerSchema.supportedfeatures;
@@ -75,7 +80,7 @@ export class CoreSitePluginsModuleHandler extends CoreSitePluginsBaseHandler imp
             module.description = '';
 
             return {
-                icon: CoreCourse.getModuleIconSrc(module.modname, icon),
+                icon: CoreCourseModuleHelper.getModuleIconSrc(module.modname, icon),
                 title: title || '',
                 a11yTitle: '',
                 class: this.handlerSchema.displaydata?.class,
@@ -86,7 +91,7 @@ export class CoreSitePluginsModuleHandler extends CoreSitePluginsBaseHandler imp
         const showDowloadButton = this.handlerSchema.downloadbutton;
         const handlerData: CoreCourseModuleHandlerData = {
             title: module.name,
-            icon: CoreCourse.getModuleIconSrc(module.modname, icon),
+            icon: CoreCourseModuleHelper.getModuleIconSrc(module.modname, icon),
             class: this.handlerSchema.displaydata?.class,
             showDownloadButton: showDowloadButton !== undefined ? showDowloadButton : hasOffline,
             hasCustomCmListItem: this.handlerSchema.hascustomcmlistitem ?? false,
@@ -154,8 +159,8 @@ export class CoreSitePluginsModuleHandler extends CoreSitePluginsBaseHandler imp
      */
     supportsNoViewLink(): boolean | undefined {
         return <boolean | undefined> (this.supportsFeature ?
-            this.supportsFeature(CoreConstants.FEATURE_NO_VIEW_LINK) :
-            this.supportedFeatures?.[CoreConstants.FEATURE_NO_VIEW_LINK]);
+            this.supportsFeature(ModFeature.NO_VIEW_LINK) :
+            this.supportedFeatures?.[ModFeature.NO_VIEW_LINK]);
     }
 
     /**
@@ -205,7 +210,7 @@ export class CoreSitePluginsModuleHandler extends CoreSitePluginsBaseHandler imp
      */
     async getMainComponent(): Promise<Type<unknown>> {
         const { CoreSitePluginsModuleIndexComponent } =
-         await import('@features/siteplugins/components/module-index/module-index');
+            await import('@features/siteplugins/components/module-index/module-index');
 
         return CoreSitePluginsModuleIndexComponent;
     }
@@ -230,7 +235,7 @@ export class CoreSitePluginsModuleHandler extends CoreSitePluginsBaseHandler imp
      * @inheritdoc
      */
     async openActivityPage(module: CoreCourseModuleData, courseId: number, options?: CoreNavigationOptions): Promise<void> {
-        if (!CoreCourse.moduleHasView(module)) {
+        if (!CoreCourseModuleHelper.moduleHasView(module)) {
             return;
         }
 
@@ -242,6 +247,52 @@ export class CoreSitePluginsModuleHandler extends CoreSitePluginsBaseHandler imp
         });
 
         CoreNavigator.navigateToSitePath(`siteplugins/module/${courseId}/${module.id}`, options);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    async getOverviewItemContent(
+        item: CoreCourseOverviewItem,
+        activity: CoreCourseOverviewActivity,
+        courseId: number,
+    ): Promise<CoreCourseOverviewItemContent | undefined> {
+        const content = await this.getOverviewItemContentFromInitTemplates(item, activity, courseId);
+
+        return content ?? super.getOverviewItemContent(item, activity, courseId);
+    }
+
+    /**
+     * If there is a template in the init result to render the item, use it to render the content.
+     *
+     * @param item Item to render.
+     * @param activity Activity data the item belongs to.
+     * @param courseId Course ID the item belongs to.
+     * @returns Content to render, undefined if no template found.
+     */
+    protected async getOverviewItemContentFromInitTemplates(
+        item: CoreCourseOverviewItem,
+        activity: CoreCourseOverviewActivity,
+        courseId: number,
+    ): Promise<CoreCourseOverviewItemContent | undefined> {
+        const template = this.initResult?.templates?.find(template => template.id === item.key);
+        if (!template) {
+            return;
+        }
+
+        const { CoreSitePluginsOverviewItemComponent } =
+                await import('@features/siteplugins/components/overview-item/overview-item');
+
+        return {
+            component: CoreSitePluginsOverviewItemComponent,
+            componentData: {
+                item,
+                activity,
+                courseId,
+                html: template.html,
+                otherData: this.initResult?.otherdata,
+            },
+        };
     }
 
 }

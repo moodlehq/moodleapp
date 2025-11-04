@@ -17,6 +17,7 @@ import { makeSingleton } from '@singletons';
 import { CoreSites } from '@services/sites';
 import { CoreCourseManualCompletionDBRecord, MANUAL_COMPLETION_TABLE } from './database/course';
 import { CoreStatusWithWarningsWSResponse } from '@services/ws';
+import { CoreCourseModuleCompletionStatus } from '../constants';
 
 /**
  * Service to handle offline data for courses.
@@ -97,7 +98,9 @@ export class CoreCourseOfflineProvider {
         const site = await CoreSites.getSite(siteId);
         const entry: CoreCourseManualCompletionDBRecord = {
             cmid: cmId,
-            completed: completed ? 1 : 0,
+            completed: completed
+                ? CoreCourseModuleCompletionStatus.COMPLETION_COMPLETE
+                : CoreCourseModuleCompletionStatus.COMPLETION_INCOMPLETE,
             courseid: courseId,
             timecompleted: Date.now(),
         };

@@ -36,6 +36,13 @@ export class AddonModAssignFeedbackEditPdfHandlerService implements AddonModAssi
     /**
      * @inheritdoc
      */
+    async canContainFiltersWhenEditing(): Promise<boolean> {
+        return false;
+    }
+
+    /**
+     * @inheritdoc
+     */
     async getComponent(): Promise<Type<IAddonModAssignFeedbackPluginComponent>> {
         const { AddonModAssignFeedbackEditPdfComponent } = await import('../component/editpdf');
 

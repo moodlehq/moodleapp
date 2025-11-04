@@ -12,30 +12,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { APP_INITIALIZER, NgModule } from '@angular/core';
+import { NgModule, provideAppInitializer } from '@angular/core';
 import { AddonModAssignFeedbackFileHandler } from './services/handler';
-import { AddonModAssignFeedbackFileComponent } from './component/file';
-import { CoreSharedModule } from '@/core/shared.module';
 import { AddonModAssignFeedbackDelegate } from '../../services/feedback-delegate';
 
 @NgModule({
-    declarations: [
-        AddonModAssignFeedbackFileComponent,
-    ],
-    imports: [
-        CoreSharedModule,
-    ],
     providers: [
-        {
-            provide: APP_INITIALIZER,
-            multi: true,
-            useValue: () => {
-                AddonModAssignFeedbackDelegate.registerHandler(AddonModAssignFeedbackFileHandler.instance);
-            },
-        },
-    ],
-    exports: [
-        AddonModAssignFeedbackFileComponent,
+        provideAppInitializer(() => {
+            AddonModAssignFeedbackDelegate.registerHandler(AddonModAssignFeedbackFileHandler.instance);
+        }),
     ],
 })
 export class AddonModAssignFeedbackFileModule {}

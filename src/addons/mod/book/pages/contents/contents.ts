@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Component, OnDestroy, OnInit, viewChild } from '@angular/core';
 import { CoreError } from '@classes/errors/error';
 import { CoreSwipeSlidesItemsManager } from '@classes/items-management/swipe-slides-items-manager';
 import { CoreSwipeSlidesItemsManagerSource } from '@classes/items-management/swipe-slides-items-manager-source';
@@ -35,9 +35,11 @@ import {
 } from '../../services/book';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 import { CoreUrl } from '@singletons/url';
-import { ADDON_MOD_BOOK_COMPONENT, AddonModBookNavStyle } from '../../constants';
+import { ADDON_MOD_BOOK_COMPONENT, ADDON_MOD_BOOK_MODNAME, AddonModBookNavStyle } from '../../constants';
 import { CoreModals } from '@services/overlays/modals';
 import { CoreAlerts } from '@services/overlays/alerts';
+import { CoreTagListComponent } from '@features/tag/components/list/list';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Page that displays a book contents.
@@ -46,10 +48,14 @@ import { CoreAlerts } from '@services/overlays/alerts';
     selector: 'page-addon-mod-book-contents',
     templateUrl: 'contents.html',
     styleUrl: 'contents.scss',
+    imports: [
+        CoreSharedModule,
+        CoreTagListComponent,
+    ],
 })
-export class AddonModBookContentsPage implements OnInit, OnDestroy {
+export default class AddonModBookContentsPage implements OnInit, OnDestroy {
 
-    @ViewChild(CoreSwipeSlidesComponent) swipeSlidesComponent?: CoreSwipeSlidesComponent;
+    readonly swipeSlidesComponent = viewChild(CoreSwipeSlidesComponent<LoadedChapter>);
 
     title = '';
     cmId!: number;
@@ -151,7 +157,7 @@ export class AddonModBookContentsPage implements OnInit, OnDestroy {
             return;
         }
 
-        this.swipeSlidesComponent?.slideToItem({ id: chapterId });
+        this.swipeSlidesComponent()?.slideToItem({ id: chapterId });
     }
 
     /**
@@ -224,7 +230,7 @@ export class AddonModBookContentsPage implements OnInit, OnDestroy {
             type: CoreAnalyticsEventType.VIEW_ITEM,
             ws: 'mod_book_view_book',
             name: this.module.name,
-            data: { id: this.module.instance, category: 'book', chapterid: chapterId },
+            data: { id: this.module.instance, category: ADDON_MOD_BOOK_MODNAME, chapterid: chapterId },
             url: CoreUrl.addParamsToUrl(`/mod/book/view.php?id=${this.module.id}`, { chapterid: chapterId }),
         });
 
@@ -275,9 +281,9 @@ type LoadedChapter = {
  */
 class AddonModBookSlidesItemsManagerSource extends CoreSwipeSlidesItemsManagerSource<LoadedChapter> {
 
-    readonly COURSE_ID: number;
-    readonly CM_ID: number;
-    readonly TAGS_ENABLED: boolean;
+    readonly courseId: number;
+    readonly cmId: number;
+    readonly tagsEnabled: boolean;
 
     module?: CoreCourseModuleData;
     book?: AddonModBookBookWSData;
@@ -287,9 +293,9 @@ class AddonModBookSlidesItemsManagerSource extends CoreSwipeSlidesItemsManagerSo
     constructor(courseId: number, cmId: number, tagsEnabled: boolean, initialChapterId?: number) {
         super(initialChapterId ? { id: initialChapterId } : undefined);
 
-        this.COURSE_ID = courseId;
-        this.CM_ID = cmId;
-        this.TAGS_ENABLED = tagsEnabled;
+        this.courseId = courseId;
+        this.cmId = cmId;
+        this.tagsEnabled = tagsEnabled;
     }
 
     /**
@@ -305,8 +311,8 @@ class AddonModBookSlidesItemsManagerSource extends CoreSwipeSlidesItemsManagerSo
      * @returns Promise resolved when done.
      */
     async loadBookData(): Promise<{ module: CoreCourseModuleData; book: AddonModBookBookWSData }> {
-        this.module = await CoreCourse.getModule(this.CM_ID, this.COURSE_ID);
-        this.book = await AddonModBook.getBook(this.COURSE_ID, this.CM_ID);
+        this.module = await CoreCourse.getModule(this.cmId, this.courseId);
+        this.book = await AddonModBook.getBook(this.courseId, this.cmId);
 
         if (!this.initialItem) {
             // No chapter ID specified. Calculate last viewed.
@@ -353,7 +359,7 @@ class AddonModBookSlidesItemsManagerSource extends CoreSwipeSlidesItemsManagerSo
         const ignoreCache = refresh && CoreNetwork.isOnline();
 
         try {
-            return await CoreCourse.getModuleContents(this.module, this.COURSE_ID, undefined, false, ignoreCache);
+            return await CoreCourse.getModuleContents(this.module, this.courseId, undefined, false, ignoreCache);
         } catch (error) {
             // Error loading contents. If we ignored cache, try to get the cached value.
             if (ignoreCache && !this.module.contents) {
@@ -373,12 +379,12 @@ class AddonModBookSlidesItemsManagerSource extends CoreSwipeSlidesItemsManagerSo
     protected async loadItems(): Promise<LoadedChapter[]> {
         try {
             const newChapters = await Promise.all(this.chapters.map(async (chapter) => {
-                const content = await AddonModBook.getChapterContent(this.contentsMap, chapter.id, this.CM_ID);
+                const content = await AddonModBook.getChapterContent(this.contentsMap, chapter.id, this.cmId);
 
                 return {
                     id: chapter.id,
                     content,
-                    tags: this.TAGS_ENABLED ? this.contentsMap[chapter.id].tags : [],
+                    tags: this.tagsEnabled ? this.contentsMap[chapter.id].tags : [],
                 };
             }));
 
@@ -398,7 +404,7 @@ class AddonModBookSlidesItemsManagerSource extends CoreSwipeSlidesItemsManagerSo
      * @returns Resolved when done.
      */
     invalidateContent(): Promise<void> {
-        return AddonModBook.invalidateContent(this.CM_ID, this.COURSE_ID);
+        return AddonModBook.invalidateContent(this.cmId, this.courseId);
     }
 
 }

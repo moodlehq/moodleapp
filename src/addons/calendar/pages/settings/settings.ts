@@ -19,6 +19,7 @@ import {
     CoreRemindersService,
 } from '@features/reminders/services/reminders';
 import { REMINDERS_DISABLED } from '@features/reminders/constants';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Page that displays the calendar settings.
@@ -26,8 +27,11 @@ import { REMINDERS_DISABLED } from '@features/reminders/constants';
 @Component({
     selector: 'page-addon-calendar-settings',
     templateUrl: 'settings.html',
+    imports: [
+        CoreSharedModule,
+    ],
 })
-export class AddonCalendarSettingsPage implements OnInit {
+export default class AddonCalendarSettingsPage implements OnInit {
 
     defaultTimeLabel = '';
 

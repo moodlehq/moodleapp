@@ -15,7 +15,7 @@
 import { CoreFile } from '@services/file';
 import { CoreFilepool } from '@services/filepool';
 import { CoreSites } from '@services/sites';
-import { CoreMimetypeUtils } from '@services/utils/mimetype';
+import { CoreMimetype } from '@singletons/mimetype';
 import { CoreText } from '@singletons/text';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CorePath } from '@singletons/path';
@@ -61,7 +61,7 @@ export class CoreH5PFileStorage {
             }
 
             // Create new file for cached assets.
-            const fileName = key + '.' + (type == 'scripts' ? 'js' : 'css');
+            const fileName = `${key}.${type == 'scripts' ? 'js' : 'css'}`;
             const path = CorePath.concatenatePaths(cachedAssetsPath, fileName);
 
             // Store concatenated content.
@@ -97,7 +97,7 @@ export class CoreH5PFileStorage {
 
             if (type == 'scripts') {
                 // No need to treat scripts, just append the content.
-                content += fileContent + ';\n';
+                content += `${fileContent};\n`;
 
                 continue;
             }
@@ -120,12 +120,12 @@ export class CoreH5PFileStorage {
 
                     fileContent = fileContent.replace(
                         new RegExp(CoreText.escapeForRegex(match), 'g'),
-                        'url("' + CorePath.changeRelativePath(assetPathFolder, url, newFolder) + '")',
+                        `url("${CorePath.changeRelativePath(assetPathFolder, url, newFolder)}")`,
                     );
                 });
             }
 
-            content += fileContent + '\n';
+            content += `${fileContent}\n`;
         }
 
         return content;
@@ -148,7 +148,7 @@ export class CoreH5PFileStorage {
             const cachedAssetsFolder = this.getCachedAssetsFolderPath(entry.foldername, site.getId());
 
             ['js', 'css'].forEach((type) => {
-                const path = CorePath.concatenatePaths(cachedAssetsFolder, entry.hash + '.' + type);
+                const path = CorePath.concatenatePaths(cachedAssetsFolder, `${entry.hash}.${type}`);
 
                 promises.push(CoreFile.removeFile(path));
             });
@@ -195,14 +195,14 @@ export class CoreH5PFileStorage {
 
         // Get the folder names of all the packages that use this library.
         const query = 'SELECT DISTINCT hc.foldername ' +
-                    'FROM ' + CONTENTS_LIBRARIES_TABLE_NAME + ' hcl ' +
-                    'JOIN ' + CONTENT_TABLE_NAME + ' hc ON hcl.h5pid = hc.id ' +
+                    `FROM ${CONTENTS_LIBRARIES_TABLE_NAME} hcl ` +
+                    `JOIN ${CONTENT_TABLE_NAME} hc ON hcl.h5pid = hc.id ` +
                     'WHERE hcl.libraryid = ?';
         const queryArgs = [libraryId];
 
-        const result = await db.execute(query, queryArgs);
+        const entries = await db.getRecordsSql<{foldername: string}>(query, queryArgs);
 
-        await Promise.all(Array.from(result.rows).map(async (entry: {foldername: string}) => {
+        await Promise.all(entries.map(async (entry) => {
             try {
                 // Delete the index.html.
                 await this.deleteContentIndex(entry.foldername, site.getId());
@@ -272,7 +272,7 @@ export class CoreH5PFileStorage {
                     },
                 ];
             }
-        } catch (error) {
+        } catch {
             // Not found, nothing to do.
         }
     }
@@ -303,7 +303,7 @@ export class CoreH5PFileStorage {
 
         const fileAndDir = CoreFileUtils.getFileAndDirectoryFromPath(path);
 
-        return CoreMimetypeUtils.removeExtension(fileAndDir.name);
+        return CoreMimetype.removeExtension(fileAndDir.name);
     }
 
     /**
@@ -316,7 +316,7 @@ export class CoreH5PFileStorage {
     getContentFolderPath(folderName: string, siteId: string): string {
         return CorePath.concatenatePaths(
             this.getExternalH5PFolderPath(siteId),
-            'packages/' + folderName + '/content',
+            `packages/${folderName}/content`,
         );
     }
 
@@ -364,7 +364,7 @@ export class CoreH5PFileStorage {
      * @returns The path to the dependency library
      */
     getDependencyPath(dependency: CoreH5PContentDependencyData): string {
-        return 'libraries/' + CoreH5PCore.libraryToFolderName(dependency);
+        return `libraries/${CoreH5PCore.libraryToFolderName(dependency)}`;
     }
 
     /**
@@ -463,7 +463,7 @@ export class CoreH5PFileStorage {
             const fileNames: string[] = [];
 
             for (const entry of entries) {
-                const name = dirName + '/' + entry.name;
+                const name = `${dirName}/${entry.name}`;
                 if (entry.isDirectory) {
                     fileNames.push(...(await getFileNames(baseDir, name)));
                 } else  {

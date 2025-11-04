@@ -12,12 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { AfterViewInit, Component, ElementRef, HostBinding, OnDestroy } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, OnDestroy, inject } from '@angular/core';
 
 import { CoreQRScan } from '@services/qrscan';
 import { ModalController, Translate } from '@singletons';
 import { FAQ_QRCODE_IMAGE_HTML, FAQ_URL_IMAGE_HTML, GET_STARTED_URL } from '@features/login/constants';
-import { CoreDomUtils } from '@services/utils/dom';
 import { CoreCancellablePromise } from '@classes/cancellable-promise';
 import { SubPartial } from '@/core/utils/types';
 import { CoreSharedModule } from '@/core/shared.module';
@@ -30,20 +29,23 @@ import { CoreWait } from '@singletons/wait';
     selector: 'core-login-site-help',
     templateUrl: 'site-help.html',
     styleUrl: 'site-help.scss',
-    standalone: true,
     imports: [
         CoreSharedModule,
     ],
+    host: {
+        '[class.hydrated]': 'hydrated',
+    },
 })
 export class CoreLoginSiteHelpComponent implements AfterViewInit, OnDestroy {
 
     openQuestion?: number;
     questions: Question[] = [];
-    @HostBinding('class.hydrated') hydrated = false;
+    protected hydrated = false;
 
     private promises: CoreCancellablePromise[] = [];
+    protected el: HTMLElement = inject(ElementRef).nativeElement;
 
-    constructor(protected el: ElementRef<HTMLElement>) {
+    constructor() {
         const getStartedTitle = Translate.instant('core.login.faqsetupsitelinktitle');
         const canScanQR = CoreQRScan.canScanQR();
         const urlImageHtml = FAQ_URL_IMAGE_HTML;
@@ -116,11 +118,11 @@ export class CoreLoginSiteHelpComponent implements AfterViewInit, OnDestroy {
      * @inheritdoc
      */
     async ngAfterViewInit(): Promise<void> {
-        const answers = Array.from(this.el.nativeElement.querySelectorAll<HTMLElement>('.core-login-site-help--answer'));
+        const answers = Array.from(this.el.querySelectorAll<HTMLElement>('.core-login-site-help--answer'));
 
         await Promise.all(answers.map(async answer => {
             await this.track(CoreWait.waitFor(() => answer.clientHeight !== 0));
-            await this.track(CoreDomUtils.waitForImages(answer));
+            await this.track(CoreWait.waitForImages(answer));
 
             answer.style.setProperty('--height', `${answer.clientHeight}px`);
         }));

@@ -13,14 +13,14 @@
 // limitations under the License.
 
 import { AddonBlockMyOverviewComponent } from '@addons/block/myoverview/components/myoverview/myoverview';
-import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Component, effect, OnDestroy, OnInit, viewChild, inject } from '@angular/core';
 import { AsyncDirective } from '@classes/async-directive';
 import { PageLoadsManager } from '@classes/page-loads-manager';
 import { CorePromisedValue } from '@classes/promised-value';
 import { CoreBlockComponent } from '@features/block/components/block/block';
 import { CoreBlockDelegate } from '@features/block/services/block-delegate';
 import { CoreCourseBlock } from '@features/course/services/course';
-import { CoreCoursesDashboard, CoreCoursesDashboardProvider } from '@features/courses/services/dashboard';
+import { CoreCoursesDashboard } from '@features/courses/services/dashboard';
 import { CoreSites } from '@services/sites';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
@@ -31,6 +31,12 @@ import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 import { Translate } from '@singletons';
 import { CoreWait } from '@singletons/wait';
 import { CoreAlerts } from '@services/overlays/alerts';
+import { CoreSharedModule } from '@/core/shared.module';
+import { CoreSiteLogoComponent } from '../../../../components/site-logo/site-logo';
+import { CoreMainMenuUserButtonComponent } from '../../../mainmenu/components/user-menu-button/user-menu-button';
+import { CoreBlockSideBlocksButtonComponent } from '../../../block/components/side-blocks-button/side-blocks-button';
+import { CoreCoursesMyPageName } from '@features/courses/constants';
+import { ADDON_BLOCK_MYOVERVIEW_BLOCK_NAME } from '@addons/block/myoverview/constants';
 
 /**
  * Page that shows a my courses.
@@ -40,28 +46,36 @@ import { CoreAlerts } from '@services/overlays/alerts';
     templateUrl: 'my.html',
     styleUrl: 'my.scss',
     providers: [{
-        provide: PageLoadsManager,
-        useClass: PageLoadsManager,
-    }],
+            provide: PageLoadsManager,
+            useClass: PageLoadsManager,
+        }],
+    imports: [
+        CoreSharedModule,
+        CoreSiteLogoComponent,
+        CoreMainMenuUserButtonComponent,
+        CoreBlockComponent,
+        CoreBlockSideBlocksButtonComponent,
+    ],
 })
-export class CoreCoursesMyPage implements OnInit, OnDestroy, AsyncDirective {
+export default class CoreCoursesMyPage implements OnInit, OnDestroy, AsyncDirective {
 
-    @ViewChild(CoreBlockComponent) block!: CoreBlockComponent;
+    readonly block = viewChild(CoreBlockComponent);
 
     downloadCoursesEnabled = false;
     userId: number;
     loadedBlock?: Partial<CoreCourseBlock>;
     myOverviewBlock?: AddonBlockMyOverviewComponent;
     loaded = false;
-    myPageCourses = CoreCoursesDashboardProvider.MY_PAGE_COURSES;
+    myPageCourses = CoreCoursesMyPageName.COURSES;
     hasSideBlocks = false;
 
     protected updateSiteObserver: CoreEventObserver;
     protected onReadyPromise = new CorePromisedValue<void>();
     protected loadsManagerSubscription: Subscription;
     protected logView: () => void;
+    protected loadsManager = inject(PageLoadsManager);
 
-    constructor(protected loadsManager: PageLoadsManager) {
+    constructor() {
         // Refresh the enabled flags if site is updated.
         this.updateSiteObserver = CoreEvents.on(CoreEvents.SITE_UPDATED, async () => {
             this.downloadCoursesEnabled = !CoreCourses.isDownloadCoursesDisabledInSite();
@@ -72,6 +86,15 @@ export class CoreCoursesMyPage implements OnInit, OnDestroy, AsyncDirective {
         this.loadsManagerSubscription = this.loadsManager.onRefreshPage.subscribe(() => {
             this.loaded = false;
             this.loadContent();
+        });
+
+        effect(async () => {
+            const dynamicComponent = this.block()?.dynamicComponent();
+
+            if (dynamicComponent) {
+                await dynamicComponent.ready();
+                this.myOverviewBlock = dynamicComponent.instance;
+            }
         });
 
         this.logView = CoreTime.once(async () => {
@@ -106,7 +129,7 @@ export class CoreCoursesMyPage implements OnInit, OnDestroy, AsyncDirective {
     protected async loadContent(firstLoad = false): Promise<void> {
         const loadWatcher = this.loadsManager.startPageLoad(this, !!firstLoad);
         const available = await CoreCoursesDashboard.isAvailable();
-        const disabled = await CoreCourses.isMyCoursesDisabled();
+        const disabled = CoreCourses.isMyCoursesDisabledInSite();
 
         const supportsMyParam = !!CoreSites.getCurrentSite()?.isVersionGreaterEqualThan('4.0');
 
@@ -120,12 +143,11 @@ export class CoreCoursesMyPage implements OnInit, OnDestroy, AsyncDirective {
                 );
 
                 // My overview block should always be in main blocks, but check side blocks too just in case.
-                this.loadedBlock = blocks.mainBlocks.concat(blocks.sideBlocks).find((block) => block.name === 'myoverview');
+                this.loadedBlock = blocks.mainBlocks.concat(blocks.sideBlocks).find((block) =>
+                    block.name === ADDON_BLOCK_MYOVERVIEW_BLOCK_NAME);
                 this.hasSideBlocks = supportsMyParam && CoreBlockDelegate.hasSupportedBlock(blocks.sideBlocks);
 
                 await CoreWait.nextTicks(2);
-
-                this.myOverviewBlock = this.block?.dynamicComponent?.instance as AddonBlockMyOverviewComponent;
 
                 if (!this.loadedBlock && !supportsMyParam) {
                     // In old sites, display the block even if not found in Dashboard.
@@ -156,7 +178,7 @@ export class CoreCoursesMyPage implements OnInit, OnDestroy, AsyncDirective {
      */
     protected loadFallbackBlock(): void {
         this.loadedBlock = {
-            name: 'myoverview',
+            name: ADDON_BLOCK_MYOVERVIEW_BLOCK_NAME,
             visible: true,
         };
     }
@@ -170,7 +192,7 @@ export class CoreCoursesMyPage implements OnInit, OnDestroy, AsyncDirective {
 
         const promises: Promise<void>[] = [];
 
-        promises.push(CoreCoursesDashboard.invalidateDashboardBlocks(CoreCoursesDashboardProvider.MY_PAGE_COURSES));
+        promises.push(CoreCoursesDashboard.invalidateDashboardBlocks(CoreCoursesMyPageName.COURSES));
 
         // Invalidate the blocks.
         if (this.myOverviewBlock) {

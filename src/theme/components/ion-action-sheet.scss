@@ -35,6 +35,11 @@ ion-action-sheet {
             box-shadow: var(--drop-shadow-top, none);
         }
     }
+
+    // We need [class] to increase the specificity. See: https://ionicframework.com/docs/api/action-sheet#theming
+    &[class] {
+        touch-action: pinch-zoom;
+    }
 }
 
 // File uploader.
@@ -51,8 +56,8 @@ ion-action-sheet {
 }
 
 // We need [class] to increase the specificity. See: https://ionicframework.com/docs/api/action-sheet#theming
-.action-sheet-button[class] {
-    &, &.ion-focused {
+.action-sheet-button.select-interface-option[class] {
+    &, &.ion-focused, &.ion-activated {
         color: var(--text-color);
     }
 }

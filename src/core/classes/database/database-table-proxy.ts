@@ -32,6 +32,15 @@ import { CoreLazyDatabaseTable } from './lazy-database-table';
 import { SubPartial } from '@/core/utils/types';
 
 /**
+ * Database caching strategies.
+ */
+export enum CoreDatabaseCachingStrategy {
+    Eager = 'eager',
+    Lazy = 'lazy',
+    None = 'none',
+}
+
+/**
  * Database table proxy used to route database interactions through different implementations.
  *
  * This class allows using a database wrapper with different optimization strategies that can be changed at runtime.
@@ -43,7 +52,7 @@ export class CoreDatabaseTableProxy<
     PrimaryKey extends GetDBRecordPrimaryKey<DBRecord, PrimaryKeyColumn> = GetDBRecordPrimaryKey<DBRecord, PrimaryKeyColumn>,
 > extends CoreDatabaseTable<DBRecord, PrimaryKeyColumn, RowIdColumn, PrimaryKey> {
 
-    protected readonly DEFAULT_CACHING_STRATEGY = CoreDatabaseCachingStrategy.None;
+    protected static readonly DEFAULT_CACHING_STRATEGY = CoreDatabaseCachingStrategy.None;
 
     protected target = asyncInstance<CoreDatabaseTable<DBRecord, PrimaryKeyColumn, RowIdColumn>>();
     protected environmentObserver?: CoreEventObserver;
@@ -87,9 +96,9 @@ export class CoreDatabaseTableProxy<
      */
     matchesConfig(config: Partial<CoreDatabaseConfiguration>): boolean {
         const thisDebug = this.config.debug ?? false;
-        const thisCachingStrategy = this.config.cachingStrategy ?? this.DEFAULT_CACHING_STRATEGY;
+        const thisCachingStrategy = this.config.cachingStrategy ?? CoreDatabaseTableProxy.DEFAULT_CACHING_STRATEGY;
         const otherDebug = config.debug ?? false;
-        const otherCachingStrategy = config.cachingStrategy ?? this.DEFAULT_CACHING_STRATEGY;
+        const otherCachingStrategy = config.cachingStrategy ?? CoreDatabaseTableProxy.DEFAULT_CACHING_STRATEGY;
 
         return super.matchesConfig(config) && thisDebug === otherDebug && thisCachingStrategy === otherCachingStrategy;
     }
@@ -244,9 +253,10 @@ export class CoreDatabaseTableProxy<
         const config = await this.getRuntimeConfig();
         const target = await this.target.getInstance();
         const originalTarget = target instanceof CoreDebugDatabaseTable ? target.getTarget() : target;
+        const cachingStrategy = config.cachingStrategy ?? CoreDatabaseTableProxy.DEFAULT_CACHING_STRATEGY;
 
         return (config.debug && target === originalTarget)
-            || originalTarget?.constructor !== this.targetConstructors[config.cachingStrategy ?? this.DEFAULT_CACHING_STRATEGY]
+            || originalTarget?.constructor !== this.targetConstructors[cachingStrategy]
             || !originalTarget.matchesConfig(config);
     }
 
@@ -269,7 +279,7 @@ export class CoreDatabaseTableProxy<
      * @returns Database table.
      */
     protected createTable(config: Partial<CoreDatabaseConfiguration>): CoreDatabaseTable<DBRecord, PrimaryKeyColumn, RowIdColumn> {
-        const DatabaseTable = this.targetConstructors[config.cachingStrategy ?? this.DEFAULT_CACHING_STRATEGY];
+        const DatabaseTable = this.targetConstructors[config.cachingStrategy ?? CoreDatabaseTableProxy.DEFAULT_CACHING_STRATEGY];
 
         return new DatabaseTable(config, this.database, this.tableName, this.primaryKeyColumns);
     }
@@ -288,13 +298,4 @@ declare module '@classes/database/database-table' {
         debug: boolean;
     }
 
-}
-
-/**
- * Database caching strategies.
- */
-export enum CoreDatabaseCachingStrategy {
-    Eager = 'eager',
-    Lazy = 'lazy',
-    None = 'none',
 }

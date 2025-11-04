@@ -12,31 +12,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { APP_INITIALIZER, NgModule } from '@angular/core';
+import { NgModule, provideAppInitializer } from '@angular/core';
 
-import { CoreSharedModule } from '@/core/shared.module';
 import { CoreQuestionBehaviourDelegate } from '@features/question/services/behaviour-delegate';
-import { AddonQbehaviourDeferredCBMComponent } from './component/deferredcbm';
 import { AddonQbehaviourDeferredCBMHandler } from './services/handlers/deferredcbm';
 
 @NgModule({
-    declarations: [
-        AddonQbehaviourDeferredCBMComponent,
-    ],
-    imports: [
-        CoreSharedModule,
-    ],
     providers: [
-        {
-            provide: APP_INITIALIZER,
-            multi: true,
-            useValue: () => {
-                CoreQuestionBehaviourDelegate.registerHandler(AddonQbehaviourDeferredCBMHandler.instance);
-            },
-        },
-    ],
-    exports: [
-        AddonQbehaviourDeferredCBMComponent,
+        provideAppInitializer(() => {
+            CoreQuestionBehaviourDelegate.registerHandler(AddonQbehaviourDeferredCBMHandler.instance);
+        }),
     ],
 })
 export class AddonQbehaviourDeferredCBMModule {}

@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<widget android-versionCode="50006" id="br.edu.ufr.avacev" ios-CFBundleVersion="5.0.0.6" version="5.0.6" versionCode="50006" xmlns="http://www.w3.org/ns/widgets" xmlns:android="http://schemas.android.com/apk/res/android" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+<widget android-versionCode="51000" id="br.edu.ufr.avacev" ios-CFBundleVersion="5.1.0.0" version="5.1.0" versionCode="51000" xmlns="http://www.w3.org/ns/widgets" xmlns:android="http://schemas.android.com/apk/res/android" xmlns:cdv="http://cordova.apache.org/ns/1.0">
     <name>AVA UFR</name>
     <description>AVA da UFR</description>
     <author email="dtev.protic@ufr.edu.br" href="https://ufr.edu.br/cev/">Equipe DTEV/PROTIC/UFR</author>
@@ -28,18 +28,18 @@
     <preference name="UIWebViewBounce" value="false" />
     <preference name="DisallowOverscroll" value="true" />
     <preference name="prerendered-icon" value="true" />
-    <preference name="AppendUserAgent" value="MoodleMobile 5.0.6 (50006)" />
+    <preference name="AppendUserAgent" value="MoodleMobile 5.1.0 (51000)" />
     <preference name="BackupWebStorage" value="none" />
     <preference name="ScrollEnabled" value="true" />
     <preference name="KeyboardDisplayRequiresUserAction" value="false" />
     <preference name="HideKeyboardFormAccessoryBar" value="false" />
-    <preference name="KeyboardResizeMode" value="ionic" />
+    <preference name="KeyboardResizeMode" value="none" />
     <preference name="AllowInlineMediaPlayback" value="true" />
     <preference name="LoadUrlTimeoutValue" value="60000" />
     <preference name="load-url-timeout" value="60000" />
     <preference name="AutoHideSplashScreen" value="false" />
     <preference name="android-minSdkVersion" value="24" />
-    <preference name="android-targetSdkVersion" value="35" />
+    <preference name="android-targetSdkVersion" value="36" />
     <preference name="AndroidPersistentFileLocation" value="Compatibility" />
     <preference name="AndroidInsecureFileModeEnabled" value="true" />
     <preference name="CustomURLSchemePluginClearsAndroidIntent" value="true" />
@@ -50,11 +50,12 @@
     <preference name="WKFullScreenEnabled" value="true" />
     <preference name="AndroidXEnabled" value="true" />
     <preference name="GradlePluginGoogleServicesEnabled" value="true" />
-    <preference name="GradlePluginGoogleServicesVersion" value="4.3.15" />
-    <preference name="GradlePluginKotlinVersion" value="1.7.21" />
+    <preference name="GradlePluginGoogleServicesVersion" value="4.4.2" />
+    <preference name="GradlePluginKotlinVersion" value="1.9.24" />
     <preference name="StatusBarOverlaysWebView" value="false" />
     <preference name="StatusBarBackgroundColor" value="#FFFFFF" />
     <preference name="NavigationBarBackgroundColor" value="#FFFFFF" />
+    <preference name="AndroidEdgeToEdge" value="true" />
     <feature name="StatusBar">
         <param name="ios-package" onload="true" value="CDVStatusBar" />
     </feature>
@@ -71,15 +72,15 @@
         <edit-config file="AndroidManifest.xml" mode="merge" target="/manifest/application">
             <application android:allowBackup="false" android:largeHeap="true" android:networkSecurityConfig="@xml/network_security_config" />
         </edit-config>
+        <edit-config file="AndroidManifest.xml" mode="merge" target="/manifest/application/activity">
+            <activity android:enableOnBackInvokedCallback="false" />
+        </edit-config>
         <config-file parent="/manifest/application" target="AndroidManifest.xml">
             <meta-data android:name="firebase_analytics_collection_deactivated" android:value="true" />
         </config-file>
         <config-file parent="/*" target="AndroidManifest.xml">
             <uses-feature android:name="android.hardware.bluetooth" android:required="false" />
             <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
-        </config-file>
-        <config-file parent="/resources/style" target="app/src/main/res/values/themes.xml">
-            <item name="android:windowOptOutEdgeToEdgeEnforcement">true</item>
         </config-file>
         <icon background="resources/android/icon/ldpi-background.png" density="ldpi" foreground="resources/android/icon/ldpi-foreground.png" />
         <icon background="resources/android/icon/mdpi-background.png" density="mdpi" foreground="resources/android/icon/mdpi-foreground.png" />
@@ -118,7 +119,7 @@
             <true />
         </edit-config>
         <edit-config file="*-Info.plist" mode="merge" target="CFBundleShortVersionString">
-            <string>5.0.6</string>
+            <string>5.1.0</string>
         </edit-config>
         <edit-config file="*-Info.plist" mode="overwrite" target="CFBundleLocalizations">
             <array>

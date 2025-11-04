@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Directive, Input, OnInit, ElementRef, Optional } from '@angular/core';
+import { Directive, Input, OnInit, ElementRef, inject } from '@angular/core';
 import { Md5 } from 'ts-md5';
 
 import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
@@ -21,6 +21,7 @@ import { CoreSitePluginsPluginContentComponent } from '../components/plugin-cont
 import { CoreSitePlugins } from '../services/siteplugins';
 import { CoreForms } from '@singletons/form';
 import { toBoolean } from '@/core/transforms/boolean';
+import { ContextLevel } from '@/core/constants';
 
 /**
  * Directive to display a new site plugin content when clicked. This new content can be displayed in a new page or in the
@@ -58,16 +59,13 @@ export class CoreSitePluginsNewContentDirective implements OnInit {
     // If true is supplied instead of an object, all initial variables from current page will be copied.
     @Input() jsData?: Record<string, unknown> | boolean;
     @Input() preSets?: CoreSiteWSPreSets; // The preSets for the WS call of the new content.
+    @Input() contextLevel?: ContextLevel; // The context level to filter the title in new page. If not set, try to reuse current.
+    @Input() contextInstanceId?: number; // The instance ID related to the context.
+    @Input() courseId?: number; // Course ID the text belongs to. It can be used to improve performance with filters.
     @Input({ transform: toBoolean }) ptrEnabled = true; // Whether PTR should be enabled in the new page.
 
-    protected element: HTMLElement;
-
-    constructor(
-        element: ElementRef,
-        @Optional() protected parentContent: CoreSitePluginsPluginContentComponent,
-    ) {
-        this.element = element.nativeElement || element;
-    }
+    protected element: HTMLElement = inject(ElementRef).nativeElement;
+    protected parentContent = inject(CoreSitePluginsPluginContentComponent, { optional: true });
 
     /**
      * @inheritdoc
@@ -108,6 +106,9 @@ export class CoreSitePluginsNewContentDirective implements OnInit {
                         jsData,
                         preSets: this.preSets,
                         ptrEnabled: this.ptrEnabled,
+                        contextLevel: this.contextLevel ?? this.parentContent?.contextLevel,
+                        contextInstanceId: this.contextInstanceId ?? this.parentContent?.contextInstanceId,
+                        courseId: this.courseId ?? this.parentContent?.courseId ?? args.courseid,
                     },
                 });
             }

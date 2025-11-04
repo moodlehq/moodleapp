@@ -17,8 +17,7 @@ import { AddonNotesAddModalReturn } from '@addons/notes/components/add/add-modal
 import { AddonNotes, AddonNotesNoteFormatted, AddonNotesPublishState } from '@addons/notes/services/notes';
 import { AddonNotesOffline } from '@addons/notes/services/notes-offline';
 import { AddonNotesSync } from '@addons/notes/services/notes-sync';
-import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { CoreAnimations } from '@components/animations';
+import { Component, OnDestroy, OnInit, viewChild } from '@angular/core';
 import { CoreUser, CoreUserProfile } from '@features/user/services/user';
 import { IonContent } from '@ionic/angular';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
@@ -34,6 +33,7 @@ import { CoreToasts, ToastDuration } from '@services/overlays/toasts';
 import { CoreModals } from '@services/overlays/modals';
 import { ADDON_NOTES_AUTO_SYNCED } from '@addons/notes/services/constants';
 import { CoreAlerts } from '@services/overlays/alerts';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Page that displays a list of notes.
@@ -41,11 +41,13 @@ import { CoreAlerts } from '@services/overlays/alerts';
 @Component({
     selector: 'page-addon-notes-list-page',
     templateUrl: 'list.html',
-    animations: [CoreAnimations.SLIDE_IN_OUT],
+    imports: [
+        CoreSharedModule,
+    ],
 })
-export class AddonNotesListPage implements OnInit, OnDestroy {
+export default class AddonNotesListPage implements OnInit, OnDestroy {
 
-    @ViewChild(IonContent) content?: IonContent;
+    readonly content = viewChild.required(IonContent);
 
     courseId!: number;
     userId?: number;
@@ -88,7 +90,7 @@ export class AddonNotesListPage implements OnInit, OnDestroy {
                 this.refreshIcon = CoreConstants.ICON_LOADING;
                 this.syncIcon = CoreConstants.ICON_LOADING;
 
-                this.content?.scrollToTop();
+                this.content().scrollToTop();
                 this.fetchNotes(false);
             }
         }, CoreSites.getCurrentSiteId());
@@ -118,7 +120,7 @@ export class AddonNotesListPage implements OnInit, OnDestroy {
         try {
             const allNotes = await AddonNotes.getNotes(this.courseId, this.userId);
 
-            const notesList: AddonNotesNoteFormatted[] = allNotes[this.type + 'notes'] || [];
+            const notesList: AddonNotesNoteFormatted[] = allNotes[`${this.type}notes`] || [];
 
             notesList.forEach((note) => {
                 note.content = CoreText.decodeHTML(note.content);
@@ -174,11 +176,8 @@ export class AddonNotesListPage implements OnInit, OnDestroy {
 
     /**
      * Function called when the type has changed.
-     *
-     * @param type New type.
      */
-    async typeChanged(type: AddonNotesPublishState): Promise<void> {
-        this.type = type;
+    async typeChanged(): Promise<void> {
         this.notesLoaded = false;
         this.refreshIcon = CoreConstants.ICON_LOADING;
         this.syncIcon = CoreConstants.ICON_LOADING;
@@ -218,7 +217,8 @@ export class AddonNotesListPage implements OnInit, OnDestroy {
 
                 this.refreshNotes(false);
             } else if (modalData.type && modalData.type != this.type) {
-                this.typeChanged(modalData.type);
+                this.type = modalData.type;
+                this.typeChanged();
             }
         }
     }

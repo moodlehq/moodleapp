@@ -14,11 +14,12 @@
 
 import { CoreSharedModule } from '@/core/shared.module';
 import { toBoolean } from '@/core/transforms/boolean';
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, ElementRef, Input, OnInit, inject } from '@angular/core';
 
 import { CoreQuestionQuestionParsed } from '@features/question/services/question';
 import { CoreQuestionHelper } from '@features/question/services/question-helper';
 import { ModalController } from '@singletons';
+import { CoreDom } from '@singletons/dom';
 
 /**
  * Modal that renders the quiz navigation.
@@ -27,7 +28,6 @@ import { ModalController } from '@singletons';
     selector: 'addon-mod-quiz-navigation-modal',
     templateUrl: 'navigation-modal.html',
     styleUrl: 'navigation-modal.scss',
-    standalone: true,
     imports: [
         CoreSharedModule,
     ],
@@ -45,13 +45,20 @@ export class AddonModQuizNavigationModalComponent implements OnInit {
     incorrectIcon = '';
     partialCorrectIcon = '';
 
+    protected element: HTMLElement = inject(ElementRef).nativeElement;
+
     /**
      * @inheritdoc
      */
-    ngOnInit(): void {
+    async ngOnInit(): Promise<void> {
         this.correctIcon = CoreQuestionHelper.getCorrectIcon().fullName;
         this.incorrectIcon = CoreQuestionHelper.getIncorrectIcon().fullName;
         this.partialCorrectIcon = CoreQuestionHelper.getPartiallyCorrectIcon().fullName;
+
+        await CoreDom.scrollToElement(
+            this.element,
+            'ion-item[aria-current="page"]',
+        );
     }
 
     /**

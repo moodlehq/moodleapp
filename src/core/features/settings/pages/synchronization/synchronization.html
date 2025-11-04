@@ -8,7 +8,7 @@
         </ion-title>
         <ion-buttons slot="end">
             <core-navbar-buttons>
-                <ion-button (click)="showInfo()" [ariaLabel]="'core.info' | translate">
+                <ion-button fill="clear" (click)="showInfo()" [ariaLabel]="'core.info' | translate">
                     <ion-icon name="fas-circle-info" slot="icon-only" aria-hidden="true" />
                 </ion-button>
             </core-navbar-buttons>
@@ -16,7 +16,7 @@
     </ion-toolbar>
 </ion-header>
 <ion-content class="limited-width">
-    <core-loading [hideUntil]="sitesLoaded">
+    <core-loading [hideUntil]="sitesLoaded" placeholderType="column" placeholderHeight="128px" [placeholderLimit]="8">
         <ion-list class="limited-width">
             <ion-item-divider>
                 <ion-label>
@@ -29,18 +29,23 @@
                 </ion-toggle>
             </ion-item>
 
-            <ion-card class="core-warning-card" *ngIf="!isOnline || (dataSaver && limitedConnection)">
-                <ion-item class="ion-text-wrap">
-                    <ion-icon name="fas-triangle-exclamation" slot="start" aria-hidden="true" />
-                    <ion-label>
-                        <ng-container *ngIf="isOnline && dataSaver && limitedConnection">
-                            {{ 'core.settings.connectwifitosync' | translate }}</ng-container>
-                        <ng-container *ngIf="!isOnline">{{ 'core.settings.connecttosync' | translate }}</ng-container>
-                    </ion-label>
-                </ion-item>
-            </ion-card>
+            @if (!isOnline() || (dataSaver && limitedConnection())) {
+                <ion-card class="core-warning-card">
+                    <ion-item class="ion-text-wrap">
+                        <ion-icon name="fas-triangle-exclamation" slot="start" aria-hidden="true" />
+                        <ion-label>
+                            @if (isOnline() && dataSaver && limitedConnection()) {
 
-            <ng-container *ngIf="isOnline && (!dataSaver || !limitedConnection)">
+                                {{ 'core.settings.connectwifitosync' | translate }}
+                            }
+                            @if (!isOnline()) {
+                                {{ 'core.settings.connecttosync' | translate }}
+                            }
+                        </ion-label>
+                    </ion-item>
+                </ion-card>
+            } @else {
+
                 <ion-item-divider>
                     <ion-label>
                         <h2>{{ 'core.accounts' | translate }}</h2>
@@ -49,23 +54,28 @@
 
                 <core-sites-list [accountsList]="accountsList">
                     <ng-template #siteLabel let-site="site">
-                        <p class="text-danger" *ngIf="site.loggedOut">{{ 'core.settings.logintosync' | translate }}</p>
+                        @if (site.loggedOut) {
+                            <p class="text-danger">{{ 'core.settings.logintosync' | translate }}</p>
+                        }
                     </ng-template>
 
                     <ng-template #siteItem let-site="site">
-                        <core-button-with-spinner [loading]="isSynchronizing(site.id)" slot="end" *ngIf="!site.loggedOut">
-                            <ion-button fill="clear" (click)="synchronize(site.id)"
-                                [ariaLabel]="'core.settings.synchronizenow' | translate">
-                                <ion-icon name="fas-rotate" slot="icon-only" aria-hidden="true" />
+                        @if (!site.loggedOut) {
+                            <core-button-with-spinner [loading]="isSynchronizing(site.id)" slot="end">
+                                <ion-button fill="clear" (click)="synchronize(site.id)"
+                                    [ariaLabel]="'core.settings.synchronizenow' | translate">
+                                    <ion-icon name="fas-rotate" slot="icon-only" aria-hidden="true" />
+                                </ion-button>
+                            </core-button-with-spinner>
+                        } @else {
+                            <ion-button fill="clear" (click)="login(site.id)" [ariaLabel]="'core.login.login' | translate" slot="end">
+                                <ion-icon name="fas-right-to-bracket" slot="icon-only" aria-hidden="true" />
                             </ion-button>
-                        </core-button-with-spinner>
-                        <ion-button fill="clear" (click)="login(site.id)" [ariaLabel]="'core.login.login' | translate"
-                            *ngIf="site.loggedOut" slot="end">
-                            <ion-icon name="fas-right-to-bracket" slot="icon-only" aria-hidden="true" />
-                        </ion-button>
+                        }
                     </ng-template>
                 </core-sites-list>
-            </ng-container>
+
+            }
         </ion-list>
     </core-loading>
 </ion-content>

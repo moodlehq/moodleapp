@@ -27,6 +27,7 @@ import {
 import { AddonModWorkshopOffline } from '../../services/workshop-offline';
 import { CoreLoadings } from '@services/overlays/loadings';
 import { CoreAlerts } from '@services/overlays/alerts';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Component that displays workshop assessment.
@@ -34,6 +35,9 @@ import { CoreAlerts } from '@services/overlays/alerts';
 @Component({
     selector: 'addon-mod-workshop-assessment',
     templateUrl: 'addon-mod-workshop-assessment.html',
+    imports: [
+        CoreSharedModule,
+    ],
 })
 export class AddonModWorkshopAssessmentComponent implements OnInit {
 
@@ -130,7 +134,10 @@ export class AddonModWorkshopAssessmentComponent implements OnInit {
                     params.submission = await AddonModWorkshopHelper.getSubmissionById(
                         this.workshop.id,
                         this.assessment.submissionid,
-                        { cmId: this.workshop.coursemodule },
+                        {
+                            cmId: this.workshop.coursemodule,
+                            canEdit: this.assessment.reviewerid === this.currentUserId && this.access.modifyingsubmissionallowed,
+                        },
                     );
 
                     CoreNavigator.navigate(String(this.assessmentId), { params });

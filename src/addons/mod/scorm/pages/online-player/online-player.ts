@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
+import { Component, OnInit, OnDestroy, viewChild, effect } from '@angular/core';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSitesReadingStrategy } from '@services/sites';
 import { CoreEvents } from '@singletons/events';
@@ -26,9 +26,8 @@ import {
 import { AddonModScormHelper } from '../../services/scorm-helper';
 import { AddonModScormMode } from '../../constants';
 import { CoreSharedModule } from '@/core/shared.module';
-import { Subscription } from 'rxjs';
 import { CoreNetwork } from '@services/network';
-import { NgZone, Translate } from '@singletons';
+import { Translate } from '@singletons';
 import { CoreError } from '@classes/errors/error';
 import { CoreWait } from '@singletons/wait';
 import { CoreIframeComponent } from '@components/iframe/iframe';
@@ -40,14 +39,13 @@ import { CoreAlerts } from '@services/overlays/alerts';
 @Component({
     selector: 'page-addon-mod-scorm-online-player',
     templateUrl: 'online-player.html',
-    standalone: true,
     imports: [
         CoreSharedModule,
     ],
 })
 export default class AddonModScormOnlinePlayerPage implements OnInit, OnDestroy {
 
-    @ViewChild(CoreIframeComponent) iframe?: CoreIframeComponent;
+    readonly iframe = viewChild(CoreIframeComponent);
 
     scorm!: AddonModScormScorm; // The SCORM object.
     loaded = false; // Whether the data has been loaded.
@@ -65,26 +63,19 @@ export default class AddonModScormOnlinePlayerPage implements OnInit, OnDestroy 
     protected organizationId?: string; // Organization ID to load.
     protected attempt = 0; // The attempt number.
     protected initialScoId?: number; // Initial SCO ID to load.
-    protected onlineObserver: Subscription;
     protected isDestroyed = false;
 
     constructor() {
-        let isOnline = CoreNetwork.isOnline();
-        this.onlineObserver = CoreNetwork.onChange().subscribe(() => {
-            // Execute the callback in the Angular zone, so change detection doesn't stop working.
-            NgZone.run(() => {
-                const wasOnline = isOnline;
-                isOnline = CoreNetwork.isOnline();
+        const isOnlineOnEnter = CoreNetwork.isOnline();
 
-                if (!isOnline && wasOnline) {
-                    // User lost connection while playing an online package. Show an error.
-                    CoreAlerts.showError(new CoreError(Translate.instant('core.course.changesofflinemaybelost'), {
-                        title: Translate.instant('core.youreoffline'),
-                    }));
-
-                    return;
-                }
-            });
+        effect(() => {
+            const isOnline = CoreNetwork.isOnline();
+            if (!isOnline && isOnlineOnEnter) {
+                // User lost connection while playing an online package. Show an error.
+                CoreAlerts.showError(new CoreError(Translate.instant('core.course.changesofflinemaybelost'), {
+                    title: Translate.instant('core.youreoffline'),
+                }));
+            }
         });
     }
 
@@ -272,7 +263,6 @@ export default class AddonModScormOnlinePlayerPage implements OnInit, OnDestroy 
      */
     ngOnDestroy(): void {
         this.isDestroyed = true;
-        this.onlineObserver.unsubscribe();
 
         // Empty src when leaving the state so unload event is triggered in the iframe.
         this.src = '';
@@ -292,7 +282,7 @@ export default class AddonModScormOnlinePlayerPage implements OnInit, OnDestroy 
             return;
         }
 
-        this.iframe?.toggleFullscreen(true);
+        this.iframe()?.toggleFullscreen(true);
         this.enableFullScreenOnRotate = true;
     }
 

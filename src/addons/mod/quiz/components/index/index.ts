@@ -14,12 +14,10 @@
 
 import { DownloadStatus } from '@/core/constants';
 import { isSafeNumber, safeNumber, SafeNumber } from '@/core/utils/types';
-import { Component, OnDestroy, OnInit, Optional } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 
 import { CoreCourseModuleMainActivityComponent } from '@features/course/classes/main-activity-component';
-import { CoreCourseContentsPage } from '@features/course/pages/contents/contents';
 import { CoreQuestionBehaviourDelegate } from '@features/question/services/behaviour-delegate';
-import { IonContent } from '@ionic/angular';
 import { CoreNavigator } from '@services/navigator';
 import { CoreText } from '@singletons/text';
 import { CorePromiseUtils } from '@singletons/promise-utils';
@@ -45,12 +43,17 @@ import {
 import {
     ADDON_MOD_QUIZ_ATTEMPT_FINISHED_EVENT,
     ADDON_MOD_QUIZ_AUTO_SYNCED,
-    ADDON_MOD_QUIZ_COMPONENT,
+    ADDON_MOD_QUIZ_COMPONENT_LEGACY,
     ADDON_MOD_QUIZ_PAGE_NAME,
     AddonModQuizAttemptStates,
 } from '../../constants';
 import { QuestionDisplayOptionsMarks } from '@features/question/constants';
 import { CoreAlerts } from '@services/overlays/alerts';
+import { AddonModQuizAttemptInfoComponent } from '../attempt-info/attempt-info';
+import { AddonModQuizAttemptStateComponent } from '../attempt-state/attempt-state';
+import { CoreCourseModuleNavigationComponent } from '@features/course/components/module-navigation/module-navigation';
+import { CoreCourseModuleInfoComponent } from '@features/course/components/module-info/module-info';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Component that displays a quiz entry page.
@@ -59,10 +62,17 @@ import { CoreAlerts } from '@services/overlays/alerts';
     selector: 'addon-mod-quiz-index',
     templateUrl: 'addon-mod-quiz-index.html',
     styleUrl: 'index.scss',
+    imports: [
+        CoreSharedModule,
+        CoreCourseModuleInfoComponent,
+        CoreCourseModuleNavigationComponent,
+        AddonModQuizAttemptStateComponent,
+        AddonModQuizAttemptInfoComponent,
+    ],
 })
 export class AddonModQuizIndexComponent extends CoreCourseModuleMainActivityComponent implements OnInit, OnDestroy {
 
-    component = ADDON_MOD_QUIZ_COMPONENT;
+    component = ADDON_MOD_QUIZ_COMPONENT_LEGACY;
     pluginName = 'quiz';
     quiz?: AddonModQuizQuizData; // The quiz.
     now?: number; // Current time.
@@ -80,11 +90,13 @@ export class AddonModQuizIndexComponent extends CoreCourseModuleMainActivityComp
     overallFeedback?: string; // The feedback for the grade.
     buttonText?: string; // Text to display in the start/continue button.
     preventMessages: string[] = []; // List of messages explaining why the quiz cannot be attempted.
+    preventMessagesColor = 'danger'; // Color for the prevent messages.
     showStatusSpinner = true; // Whether to show a spinner due to quiz status.
     gradeMethodReadable?: string; // Grade method in a readable format.
     showReviewColumn = false; // Whether to show the review column.
     attempts: QuizAttempt[] = []; // List of attempts the user has made.
     bestGrade?: AddonModQuizGetUserBestGradeWSResponse; // Best grade data.
+    hasQuestions = false; // Whether the quiz has questions.
 
     protected fetchContentDefaultError = 'addon.mod_quiz.errorgetquiz'; // Default error to show when loading contents.
     protected syncEventName = ADDON_MOD_QUIZ_AUTO_SYNCED;
@@ -99,13 +111,6 @@ export class AddonModQuizIndexComponent extends CoreCourseModuleMainActivityComp
     protected finishedObserver?: CoreEventObserver; // It will observe attempt finished events.
     protected hasPlayed = false; // Whether the user has gone to the quiz player (attempted).
     protected candidateQuiz?: AddonModQuizQuizData;
-
-    constructor(
-        protected content?: IonContent,
-        @Optional() courseContentsPage?: CoreCourseContentsPage,
-    ) {
-        super('AddonModQuizIndexComponent', content, courseContentsPage);
-    }
 
     /**
      * @inheritdoc
@@ -231,6 +236,8 @@ export class AddonModQuizIndexComponent extends CoreCourseModuleMainActivityComp
         // Get question types in the quiz.
         const types = await AddonModQuiz.getQuizRequiredQtypes(quiz.id, { cmId: this.module.id });
 
+        // For closed quizzes we don't receive the hasquestions value (to be fixed in MDL-84360), so we need to check the types.
+        this.hasQuestions = quiz.hasquestions !== undefined ? quiz.hasquestions !== 0 : types.length > 0;
         this.unsupportedQuestions = AddonModQuiz.getUnsupportedQuestions(types);
         this.hasSupportedQuestions = !!types.find((type) => type != 'random' && this.unsupportedQuestions.indexOf(type) == -1);
 
@@ -268,20 +275,20 @@ export class AddonModQuizIndexComponent extends CoreCourseModuleMainActivityComp
             this.moreAttempts = !this.attemptAccessInfo.isfinished;
         }
 
-        this.getButtonText(quiz);
+        this.getButtonText();
 
         await this.getResultInfo(quiz);
     }
 
     /**
      * Get the text to show in the button. It also sets restriction messages if needed.
-     *
-     * @param quiz Quiz.
      */
-    protected getButtonText(quiz: AddonModQuizQuizData): void {
+    protected getButtonText(): void {
+        const canOnlyPreview = !!this.quizAccessInfo?.canpreview && !this.quizAccessInfo?.canattempt;
         this.buttonText = '';
+        this.preventMessagesColor = canOnlyPreview ? 'warning' : 'danger';
 
-        if (quiz.hasquestions !== 0) {
+        if (this.hasQuestions) {
             if (this.attempts.length && !AddonModQuiz.isAttemptCompleted(this.attempts[0].state)) {
                 // Last attempt is unfinished.
                 if (this.quizAccessInfo?.canattempt) {
@@ -314,7 +321,7 @@ export class AddonModQuizIndexComponent extends CoreCourseModuleMainActivityComp
         // So far we think a button should be printed, check if they will be allowed to access it.
         this.preventMessages = this.quizAccessInfo?.preventaccessreasons || [];
 
-        if (!this.moreAttempts) {
+        if (!this.moreAttempts && !canOnlyPreview) {
             this.buttonText = '';
         } else if (this.quizAccessInfo?.canattempt && this.preventMessages.length) {
             this.buttonText = '';

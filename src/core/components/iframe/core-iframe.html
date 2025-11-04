@@ -4,7 +4,7 @@
 <!--The iframe needs to be outside of core-loading, otherwise the request is canceled while loading. -->
 <!-- Don't add the iframe until safeUrl is set, adding an iframe with null as src causes the iframe to load the whole app. -->
 @if (safeUrl && !launchExternalLabel) {
-    <div [ngStyle]="{'min-width': 'min(' +iframeWidth+', 100%)', 'min-height': 'min(' +iframeHeight+', 100%)'}"
+    <div [style.min-width]="'min('+iframeWidth+', 100%)'" [style.min-height]="'min('+iframeHeight+', 100%)'"
         class="core-iframe-container">
         @if (initialized && showFullscreenOnToolbar && !loading) {
             <core-navbar-buttons slot="end" prepend>
@@ -17,11 +17,11 @@
 
         <!-- allowfullscreen cannot be set dynamically using attribute binding, define 2 iframe elements. -->
         @if (allowFullscreen) {
-            <iframe #iframe class="core-iframe" [attr.id]="id" [ngStyle]="{'width': iframeWidth, 'height': iframeHeight}" [src]="safeUrl"
+            <iframe #iframe class="core-iframe" [attr.id]="id" [style.width]="iframeWidth" [style.height]="iframeHeight" [src]="safeUrl"
                 allowfullscreen="true" [class.core-iframe-loading]="loading">
             </iframe>
         } @else {
-            <iframe #iframe class="core-iframe" [attr.id]="id" [ngStyle]="{'width': iframeWidth, 'height': iframeHeight}" [src]="safeUrl"
+            <iframe #iframe class="core-iframe" [attr.id]="id" [style.width]="iframeWidth" [style.height]="iframeHeight" [src]="safeUrl"
                 [class.core-iframe-loading]="loading">
             </iframe>
         }

@@ -21,7 +21,7 @@ import { CoreConfig } from '@services/config';
 import { CoreEvents, CoreEventSessionExpiredData, CoreEventSiteData } from '@singletons/events';
 import { CoreSites, CoreLoginSiteInfo, CoreSiteBasicInfo } from '@services/sites';
 import { CoreWS, CoreWSExternalWarning } from '@services/ws';
-import { CoreText } from '@singletons/text';
+import { CoreText, CoreTextFormat } from '@singletons/text';
 import { CoreObject } from '@singletons/object';
 import { CoreConstants } from '@/core/constants';
 import { CoreSite } from '@classes/sites/site';
@@ -55,7 +55,7 @@ import {
     IDENTITY_PROVIDERS_FEATURE_NAME,
     IDENTITY_PROVIDER_FEATURE_NAME_PREFIX,
 } from '../constants';
-import { LazyRoutesModule } from '@/app/app-routing.module';
+import { LazyDefaultStandaloneComponent } from '@/app/app-routing.module';
 import { CoreSiteError } from '@classes/errors/siteerror';
 import { CoreQRScan } from '@services/qrscan';
 import { CoreLoadings } from '@services/overlays/loadings';
@@ -142,26 +142,6 @@ export class CoreLoginHelperProvider {
             // User must reauthenticate but he closed the InAppBrowser without doing so, logout him.
             CoreSites.logout();
         }
-    }
-
-    /**
-     * Open a browser to perform SSO login.
-     *
-     * @param siteUrl URL of the site where the SSO login will be performed.
-     * @param typeOfLogin TypeOfLogin.BROWSER or TypeOfLogin.EMBEDDED.
-     * @param service The service to use. If not defined, core service will be used.
-     * @param launchUrl The URL to open for SSO. If not defined, default tool mobile launch URL will be used.
-     * @param redirectData Data of the path/url to open once authenticated. If not defined, site initial page.
-     * @deprecated since 4.3. Use openBrowserForSSOLogin instead.
-     */
-    async confirmAndOpenBrowserForSSOLogin(
-        siteUrl: string,
-        typeOfLogin: TypeOfLogin,
-        service?: string,
-        launchUrl?: string,
-        redirectData?: CoreRedirectPayload,
-    ): Promise<void> {
-        this.openBrowserForSSOLogin(siteUrl, typeOfLogin, service, launchUrl, redirectData);
     }
 
     /**
@@ -271,7 +251,7 @@ export class CoreLoginHelperProvider {
         site = site || CoreSites.getCurrentSite();
         const config = site?.getStoredConfig();
 
-        return 'core.mainmenu.' + (config && config.tool_mobile_forcelogout == '1' ? 'logout' : 'switchaccount');
+        return `core.mainmenu.${config && config.tool_mobile_forcelogout == '1' ? 'logout' : 'switchaccount'}`;
     }
 
     /**
@@ -338,7 +318,7 @@ export class CoreLoginHelperProvider {
         if (!siteConfig) {
             return [];
         }
-        // eslint-disable-next-line deprecation/deprecation
+        // eslint-disable-next-line @typescript-eslint/no-deprecated
         if (this.isFeatureDisabled(IDENTITY_PROVIDERS_FEATURE_NAME, siteConfig)) {
             // Identity providers are disabled, return an empty list.
             return [];
@@ -355,7 +335,7 @@ export class CoreLoginHelperProvider {
                 if (
                     provider.url &&
                     (provider.url.indexOf(httpsUrl) != -1 || provider.url.indexOf(httpUrl) != -1) &&
-                    !this.isFeatureDisabled( // eslint-disable-line deprecation/deprecation
+                    !this.isFeatureDisabled( // eslint-disable-line @typescript-eslint/no-deprecated
                         IDENTITY_PROVIDER_FEATURE_NAME_PREFIX + urlParams.id,
                         siteConfig,
                     )
@@ -491,7 +471,7 @@ export class CoreLoginHelperProvider {
      * @deprecated since 4.4. Please use isFeatureDisabled in a site instance.
      */
     isEmailSignupDisabled(config?: CoreSitePublicConfigResponse): boolean {
-        // eslint-disable-next-line deprecation/deprecation
+        // eslint-disable-next-line @typescript-eslint/no-deprecated
         return this.isFeatureDisabled(EMAIL_SIGNUP_FEATURE_NAME, config);
     }
 
@@ -504,10 +484,10 @@ export class CoreLoginHelperProvider {
      * @deprecated since 4.4. Please use isFeatureDisabled in a site instance.
      */
     isFeatureDisabled(feature: string, config?: CoreSitePublicConfigResponse): boolean {
-       // eslint-disable-next-line deprecation/deprecation
+       // eslint-disable-next-line @typescript-eslint/no-deprecated
        const disabledFeatures = this.getDisabledFeatures(config);
 
-        const regEx = new RegExp('(,|^)' + feature + '(,|$)', 'g');
+        const regEx = new RegExp(`(,|^)${feature}(,|$)`, 'g');
 
         return !!disabledFeatures.match(regEx);
     }
@@ -531,7 +511,7 @@ export class CoreLoginHelperProvider {
      * @deprecated since 4.4. Please use isFeatureDisabled in a site instance.
      */
     isForgottenPasswordDisabled(config?: CoreSitePublicConfigResponse): boolean {
-        // eslint-disable-next-line deprecation/deprecation
+        // eslint-disable-next-line @typescript-eslint/no-deprecated
         return this.isFeatureDisabled(FORGOTTEN_PASSWORD_FEATURE_NAME, config);
     }
 
@@ -618,7 +598,7 @@ export class CoreLoginHelperProvider {
         launchUrl?: string,
         redirectData?: CoreRedirectPayload,
     ): Promise<boolean> {
-        launchUrl = launchUrl || siteUrl + '/admin/tool/mobile/launch.php';
+        launchUrl = launchUrl || `${siteUrl}/admin/tool/mobile/launch.php`;
 
         this.logger.debug('openBrowserForOAuthLogin launchUrl:', launchUrl);
 
@@ -707,7 +687,7 @@ export class CoreLoginHelperProvider {
 
         await alert.onDidDismiss();
 
-        CoreOpener.openInApp(siteUrl + '/login/change_password.php');
+        CoreOpener.openInApp(`${siteUrl}/login/change_password.php`);
     }
 
     /**
@@ -716,7 +696,7 @@ export class CoreLoginHelperProvider {
      * @param siteUrl URL of the site.
      */
     openForgottenPassword(siteUrl: string): void {
-        CoreOpener.openInApp(siteUrl + '/login/forgot_password.php');
+        CoreOpener.openInApp(`${siteUrl}/login/forgot_password.php`);
     }
 
     /**
@@ -749,8 +729,8 @@ export class CoreLoginHelperProvider {
 
             // Open change password.
             if (alertMessage) {
-                alertMessage = Translate.instant(alertMessage) + '<br>' +
-                    Translate.instant('core.redirectingtosite');
+                alertMessage = `${Translate.instant(alertMessage)}<br>${
+                    Translate.instant('core.redirectingtosite')}`;
             }
 
             try {
@@ -807,7 +787,7 @@ export class CoreLoginHelperProvider {
     ): Promise<string> {
 
         service = service || CoreConstants.CONFIG.wsservice;
-        launchUrl = launchUrl || siteUrl + '/admin/tool/mobile/launch.php';
+        launchUrl = launchUrl || `${siteUrl}/admin/tool/mobile/launch.php`;
 
         const passport = Math.random() * 1000;
 
@@ -843,11 +823,11 @@ export class CoreLoginHelperProvider {
         const params: Record<string, string> = {};
 
         if (username) {
-            params.username = username.trim();
+            params.username = username.trim().toLowerCase();
         }
 
         if (email) {
-            params.email = email.trim();
+            params.email = email.trim().toLowerCase();
         }
 
         return CoreWS.callAjax('core_auth_request_password_reset', params, { siteUrl });
@@ -923,17 +903,6 @@ export class CoreLoginHelperProvider {
         }
 
         return true;
-    }
-
-    /**
-     * Check if a confirm should be shown to open a SSO authentication.
-     *
-     * @param typeOfLogin TypeOfLogin.BROWSER or TypeOfLogin.EMBEDDED.
-     * @returns True if confirm modal should be shown, false otherwise.
-     * @deprecated since 4.3. Not used anymore. See shouldSkipCredentialsScreenOnSSO.
-     */
-    shouldShowSSOConfirm(typeOfLogin: TypeOfLogin): boolean {
-        return !this.isSSOEmbeddedBrowser(typeOfLogin) && !this.shouldSkipCredentialsScreenOnSSO();
     }
 
     /**
@@ -1068,7 +1037,7 @@ export class CoreLoginHelperProvider {
 
             // Call the WS to resend the confirmation email.
             const modal = await CoreLoadings.show('core.sending', true);
-            const data = { username, password };
+            const data = { username: username?.toLowerCase(), password };
             const preSets = { siteUrl };
 
             try {
@@ -1213,8 +1182,8 @@ export class CoreLoginHelperProvider {
                 ssoUrlParams: data.ssoUrlParams,
             };
         } else {
-            this.logger.debug('Invalid signature in the URL request yours: ' + params[0] + ' mine: '
-                + signature + ' for passport ' + passport);
+            this.logger.debug(`Invalid signature in the URL request yours: ${params[0]} mine: ${
+                 signature } for passport ${passport}`);
 
             throw new CoreError(Translate.instant('core.unexpectederror'));
         }
@@ -1292,7 +1261,7 @@ export class CoreLoginHelperProvider {
 
         const message = Translate.instant(
             'core.login.faqwhereisqrcodeanswer',
-            { $image: '<div class="text-center">'+ FAQ_QRCODE_IMAGE_HTML + '</div>' },
+            { $image: `<div class="text-center">${FAQ_QRCODE_IMAGE_HTML}</div>` },
         );
         const header = Translate.instant('core.login.faqwhereisqrcode');
 
@@ -1300,7 +1269,7 @@ export class CoreLoginHelperProvider {
             const dontShowAgain = await CorePrompts.show(message, 'checkbox', {
                 header,
                 placeholderOrLabel: Translate.instant('core.dontshowagain'),
-                buttons: { okText: Translate.instant('core.next'), cancelText: Translate.instant('core.cancel') },
+                buttons: [{ text: Translate.instant('core.ok') }],
             });
 
             if (dontShowAgain) {
@@ -1425,8 +1394,8 @@ export class CoreLoginHelperProvider {
      *
      * @returns Reconnect page route module.
      */
-    getReconnectRouteModule(): LazyRoutesModule {
-        return import('@features/login/login-reconnect-lazy.module');
+    getReconnectPage(): LazyDefaultStandaloneComponent {
+        return import('@features/login/pages/reconnect/reconnect');
     }
 
     /**
@@ -1434,8 +1403,8 @@ export class CoreLoginHelperProvider {
      *
      * @returns Credentials page route module.
      */
-    getCredentialsRouteModule(): LazyRoutesModule {
-        return import('@features/login/login-credentials-lazy.module');
+    getCredentialsPage(): LazyDefaultStandaloneComponent {
+        return import('@features/login/pages/credentials/credentials');
     }
 
     /**
@@ -1601,7 +1570,7 @@ export type AuthEmailSignupProfileField = {
     name?: string; // Profield field name.
     datatype?: string; // Profield field datatype.
     description?: string; // Profield field description.
-    descriptionformat: number; // Description format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
+    descriptionformat: CoreTextFormat; // Description format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
     categoryid?: number; // Profield field category id.
     categoryname?: string; // Profield field category name.
     sortorder?: number; // Profield field sort order.
@@ -1611,7 +1580,7 @@ export type AuthEmailSignupProfileField = {
     forceunique?: number; // Profield field unique.
     signup?: number; // Profield field in signup form.
     defaultdata?: string; // Profield field default data.
-    defaultdataformat: number; // Defaultdata format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
+    defaultdataformat: CoreTextFormat; // Defaultdata format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
     param1?: string; // Profield field settings.
     param2?: string; // Profield field settings.
     param3?: string; // Profield field settings.

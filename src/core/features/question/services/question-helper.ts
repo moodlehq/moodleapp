@@ -19,7 +19,7 @@ import { CoreFile } from '@services/file';
 import { CoreFileHelper } from '@services/file-helper';
 import { CoreFilepool } from '@services/filepool';
 import { CoreSites } from '@services/sites';
-import { CoreDomUtils } from '@services/utils/dom';
+import { CoreDom } from '@singletons/dom';
 import { CoreText } from '@singletons/text';
 import { CoreUtils } from '@singletons/utils';
 import { CoreWSFile } from '@services/ws';
@@ -35,6 +35,7 @@ import { convertTextToHTMLElement } from '@/core/utils/create-html-element';
 import { AddonModQuizNavigationQuestion } from '@addons/mod/quiz/components/navigation-modal/navigation-modal';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreAlerts } from '@services/overlays/alerts';
+import { ADDON_MOD_QUIZ_COMPONENT_LEGACY } from '@addons/mod/quiz/constants';
 
 /**
  * Service with some common functions to handle questions.
@@ -196,7 +197,7 @@ export class CoreQuestionHelperProvider {
         const redoSelector = '[type="submit"][name*=redoslot], [type="submit"][name*=tryagain]';
 
         // Search redo button in feedback.
-        if (!this.searchBehaviourButton(question, 'html', '.outcome ' + redoSelector)) {
+        if (!this.searchBehaviourButton(question, 'html', `.outcome ${redoSelector}`)) {
             // Not found in question HTML.
             if (question.feedbackHtml) {
                 // We extracted the feedback already, search it in there.
@@ -327,13 +328,13 @@ export class CoreQuestionHelperProvider {
             question.html = question.html.replace(scriptCode, '');
 
             // Search init_question functions for this type.
-            const initMatches = scriptCode.match(new RegExp('M.qtype_' + question.type + '.init_question\\(.*?}\\);', 'mg'));
+            const initMatches = scriptCode.match(new RegExp(`M.qtype_${question.type}.init_question\\(.*?}\\);`, 'mg'));
             if (initMatches) {
                 let initMatch = initMatches.pop();
 
                 if (initMatch) {
                     // Remove start and end of the match, we only want the object.
-                    initMatch = initMatch.replace('M.qtype_' + question.type + '.init_question(', '');
+                    initMatch = initMatch.replace(`M.qtype_${question.type}.init_question(`, '');
                     initMatch = initMatch.substring(0, initMatch.length - 2);
 
                     // Try to convert it to an object and add it to the question.
@@ -362,7 +363,7 @@ export class CoreQuestionHelperProvider {
      * @returns Object where the keys are the names.
      */
     getAllInputNamesFromHtml(html: string): Record<string, boolean> {
-        const element = convertTextToHTMLElement('<form>' + html + '</form>');
+        const element = convertTextToHTMLElement(`<form>${html}</form>`);
         const form = <HTMLFormElement> element.children[0];
         const answers: Record<string, boolean> = {};
 
@@ -431,7 +432,7 @@ export class CoreQuestionHelperProvider {
         const element = convertTextToHTMLElement(html);
 
         // Remove the filemanager (area to attach files to a question).
-        CoreDomUtils.removeElement(element, 'div[id*=filemanager]');
+        CoreDom.removeElement(element, 'div[id*=filemanager]');
 
         // Search the anchors.
         const anchors = Array.from(element.querySelectorAll('a'));
@@ -490,7 +491,7 @@ export class CoreQuestionHelperProvider {
             question.stateclass = state.stateclass;
         }
 
-        question.stateClass = 'core-question-' + (question.stateclass ?? 'unknown');
+        question.stateClass = `core-question-${question.stateclass ?? 'unknown'}`;
     }
 
     /**
@@ -540,7 +541,7 @@ export class CoreQuestionHelperProvider {
     getValidationErrorFromHtml(html: string): string | undefined {
         const element = convertTextToHTMLElement(html);
 
-        return CoreDomUtils.getContentsOfElement(element, '.validationerror');
+        return CoreDom.getContentsOfElement(element, '.validationerror');
     }
 
     /**
@@ -590,14 +591,14 @@ export class CoreQuestionHelperProvider {
      * @param question Question.
      */
     loadLocalAnswersInHtml(question: CoreQuestionQuestion): void {
-        const element = convertTextToHTMLElement('<form>' + question.html + '</form>');
+        const element = convertTextToHTMLElement(`<form>${question.html}</form>`);
         const form = <HTMLFormElement> element.children[0];
 
         // Search all input elements.
         Array.from(form.elements).forEach((element: HTMLInputElement | HTMLButtonElement) => {
             let name = element.name || '';
             // Ignore flag and submit inputs.
-            if (!name || name.match(/_:flagged$/) || element.type == 'submit' || element.tagName == 'BUTTON' ||
+            if (!name || name.match(/_:flagged$/) || element.type === 'submit' || element.tagName === 'BUTTON' ||
                     !question.localAnswers) {
                 return;
             }
@@ -605,7 +606,7 @@ export class CoreQuestionHelperProvider {
             // Search if there's a local answer.
             name = CoreQuestion.removeQuestionPrefix(name);
             if (question.localAnswers[name] === undefined) {
-                if (Object.keys(question.localAnswers).length && element.type == 'radio') {
+                if (Object.keys(question.localAnswers).length && element.type === 'radio') {
                     // No answer stored, but there is a sequencecheck or similar. This means the user cleared his choice.
                     element.removeAttribute('checked');
                 }
@@ -613,23 +614,27 @@ export class CoreQuestionHelperProvider {
                 return;
             }
 
-            if (element.tagName == 'TEXTAREA') {
+            if (element.tagName === 'TEXTAREA') {
                 // Just put the answer inside the textarea.
                 element.innerHTML = question.localAnswers[name];
-            } else if (element.tagName == 'SELECT') {
+            } else if (element.tagName === 'SELECT') {
                 // Search the selected option and select it.
-                const selected = element.querySelector('option[value="' + question.localAnswers[name] + '"]');
+                const selected = element.querySelector(`option[value="${question.localAnswers[name]}"]`);
                 if (selected) {
+                    element.querySelectorAll('option').forEach((option) => {
+                        option.removeAttribute('selected');
+                    });
+
                     selected.setAttribute('selected', 'selected');
                 }
-            } else if (element.type == 'radio') {
+            } else if (element.type === 'radio') {
                 // Check if this radio is selected.
-                if (element.value == question.localAnswers[name]) {
+                if (element.value === question.localAnswers[name]) {
                     element.setAttribute('checked', 'checked');
                 } else {
                     element.removeAttribute('checked');
                 }
-            } else if (element.type == 'checkbox') {
+            } else if (element.type === 'checkbox') {
                 // Check if this checkbox is checked.
                 if (CoreUtils.isTrueOrOne(question.localAnswers[name])) {
                     element.setAttribute('checked', 'checked');
@@ -737,7 +742,7 @@ export class CoreQuestionHelperProvider {
      * @param element DOM element.
      */
     replaceCorrectnessClasses(element: HTMLElement): void {
-        CoreDomUtils.replaceClassesInElement(element, {
+        CoreDom.replaceClassesInElement(element, {
             correct: 'core-question-answer-correct',
             incorrect: 'core-question-answer-incorrect',
             partiallycorrect: 'core-question-answer-partiallycorrect',
@@ -750,7 +755,7 @@ export class CoreQuestionHelperProvider {
      * @param element DOM element.
      */
     replaceFeedbackClasses(element: HTMLElement): void {
-        CoreDomUtils.replaceClassesInElement(element, {
+        CoreDom.replaceClassesInElement(element, {
             outcome: 'core-question-feedback-container core-question-feedback-padding',
             specificfeedback: 'core-question-feedback-container core-question-feedback-inline',
         });
@@ -976,53 +981,70 @@ export class CoreQuestionHelperProvider {
         contextInstanceId?: number,
         courseId?: number,
     ): void {
-        const icons = <HTMLElement[]> Array.from(element.querySelectorAll('ion-icon.questioncorrectnessicon'));
-        const title = Translate.instant('core.question.feedback');
+        const icons = <HTMLElement[]> Array.from(element.querySelectorAll('ion-icon.questioncorrectnessicon[tappable]'));
+
         const getClickableFeedback = (icon: HTMLElement) => {
             const parentElement = icon.parentElement;
-            const parentIsClickable = parentElement instanceof HTMLButtonElement || parentElement instanceof HTMLAnchorElement;
-
-            if (parentElement && parentIsClickable && parentElement.dataset.toggle === 'popover') {
-                return {
-                    element: parentElement,
-                    html: parentElement?.dataset.content,
-                };
-            }
 
             // Support legacy icons used before MDL-77856 (4.2).
-            if (icon.hasAttribute('tappable')) {
-                return {
-                    element: icon,
-                    html: parentElement?.querySelector('.feedbackspan.accesshide')?.innerHTML,
-                };
-            }
-
-            return null;
+            return parentElement?.querySelector('.feedbackspan.accesshide')?.innerHTML;
         };
 
         icons.forEach(icon => {
-            const target = getClickableFeedback(icon);
+            const content = getClickableFeedback(icon);
 
-            if (!target || !target.html) {
+            if (!content) {
                 return;
             }
 
             // There's a hidden feedback, show it when the icon is clicked.
-            target.element.dataset.disabledA11yClicks = 'true';
-            target.element.addEventListener('click', event => {
+            icon.dataset.disabledA11yClicks = 'true';
+            icon.addEventListener('click', event => {
                 event.preventDefault();
                 event.stopPropagation();
+                const title = Translate.instant('core.question.feedback');
 
-                CoreViewer.viewText(title, target.html ?? '', {
-                    component: component,
-                    componentId: componentId,
-                    filter: true,
-                    contextLevel: contextLevel,
-                    instanceId: contextInstanceId,
-                    courseId: courseId,
-                });
+                CoreViewer.viewText(
+                    title,
+                    content ?? '',
+                    {
+                        component: component,
+                        componentId: componentId,
+                        filter: true,
+                        contextLevel: contextLevel,
+                        instanceId: contextInstanceId,
+                        courseId: courseId,
+                    },
+                );
             });
         });
+    }
+
+    /**
+     * Load local state in the questions.
+     *
+     * @param question Question.
+     * @param attemptId Attempt ID.
+     * @param siteId Site ID. If not defined, current site.
+     */
+    async loadLocalQuestionState(
+        question: CoreQuestionQuestionParsed,
+        attemptId: number,
+        siteId?: string,
+    ): Promise<void> {
+        const dbQuestion = await CorePromiseUtils.ignoreErrors(
+            CoreQuestion.getQuestion(ADDON_MOD_QUIZ_COMPONENT_LEGACY, attemptId, question.slot, siteId),
+        );
+
+        if (!dbQuestion) {
+            // Question not found.
+            return;
+        }
+
+        const state = CoreQuestion.getState(dbQuestion.state);
+        question.state = dbQuestion.state;
+        question.status = Translate.instant(`core.question.${state.status}`);
+        question.stateclass = state.stateclass;
     }
 
 }

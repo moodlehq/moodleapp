@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { APP_INITIALIZER, NgModule, Type } from '@angular/core';
+import { NgModule, Type, provideAppInitializer } from '@angular/core';
 import { CoreCronDelegate } from '@services/cron';
 import { CoreCourseOptionsDelegate } from '@features/course/services/course-options-delegate';
 import { CoreUserDelegate } from '@features/user/services/user-delegate';
@@ -45,7 +45,7 @@ export async function getNotesServices(): Promise<Type<unknown>[]> {
 const routes: Routes = [
     {
         path: 'notes',
-        loadChildren: () => import('@addons/notes/notes-lazy.module'),
+        loadComponent: () => import('./pages/list/list'),
     },
 ];
 
@@ -60,15 +60,11 @@ const routes: Routes = [
             useValue: [NOTES_OFFLINE_SITE_SCHEMA],
             multi: true,
         },
-        {
-            provide: APP_INITIALIZER,
-            multi: true,
-            useValue: () => {
-                CoreUserDelegate.registerHandler(AddonNotesUserHandler.instance);
-                CoreCourseOptionsDelegate.registerHandler(AddonNotesCourseOptionHandler.instance);
-                CoreCronDelegate.register(AddonNotesSyncCronHandler.instance);
-            },
-        },
+        provideAppInitializer(() => {
+            CoreUserDelegate.registerHandler(AddonNotesUserHandler.instance);
+            CoreCourseOptionsDelegate.registerHandler(AddonNotesCourseOptionHandler.instance);
+            CoreCronDelegate.register(AddonNotesSyncCronHandler.instance);
+        }),
     ],
 })
 export class AddonNotesModule {}

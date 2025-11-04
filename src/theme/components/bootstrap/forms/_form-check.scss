@@ -1,0 +1,67 @@
+// Some Bootstrap support on this file has been removed in favour of the app styles.
+
+//
+// Check/radio
+//
+
+.form-check {
+  display: block;
+  min-height: $form-check-min-height;
+  padding-left: $form-check-padding-start;
+  margin-bottom: $form-check-margin-bottom;
+
+  .form-check-input {
+    float: left;
+    margin-left: $form-check-padding-start * -1;
+  }
+}
+
+.form-check-reverse {
+  padding-right: $form-check-padding-start;
+  padding-left: 0;
+  text-align: right;
+
+  .form-check-input {
+    float: right;
+    margin-right: $form-check-padding-start * -1;
+    margin-left: 0;
+  }
+}
+
+//
+// Switch
+//
+
+.form-switch {
+  padding-left: $form-switch-padding-start;
+
+  &.form-check-reverse {
+    padding-right: $form-switch-padding-start;
+    padding-left: 0;
+
+    .form-check-input {
+      margin-right: $form-switch-padding-start * -1;
+      margin-left: 0;
+    }
+  }
+}
+
+.form-check-inline {
+  display: inline-block;
+  margin-right: $form-check-inline-margin-end;
+}
+
+.btn-check {
+  position: absolute;
+  clip: rect(0, 0, 0, 0);
+  pointer-events: none;
+
+  &[disabled],
+  &:disabled {
+    + .btn {
+      pointer-events: none;
+      filter: none;
+      opacity: $form-check-btn-check-disabled-opacity;
+    }
+  }
+}

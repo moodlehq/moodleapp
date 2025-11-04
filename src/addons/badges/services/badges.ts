@@ -19,13 +19,13 @@ import { makeSingleton } from '@singletons';
 import { CoreError } from '@classes/errors/error';
 import { CoreCacheUpdateFrequency } from '@/core/constants';
 
-const ROOT_CACHE_KEY = 'mmaBadges:';
-
 /**
  * Service to handle badges.
  */
 @Injectable({ providedIn: 'root' })
 export class AddonBadgesProvider {
+
+    protected static readonly ROOT_CACHE_KEY = 'mmaBadges:';
 
     /**
      * Returns whether or not the badge plugin is enabled for a certain site.
@@ -50,7 +50,7 @@ export class AddonBadgesProvider {
      * @returns Cache key.
      */
     protected getBadgesCacheKey(courseId: number, userId: number): string {
-        return ROOT_CACHE_KEY + 'badges:' + courseId + ':' + userId;
+        return `${AddonBadgesProvider.ROOT_CACHE_KEY}badges:${courseId}:${userId}`;
     }
 
     /**
@@ -101,7 +101,6 @@ export class AddonBadgesProvider {
      * @param courseId Course ID.
      * @param userId ID of the user to get the badges from.
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved when data is invalidated.
      */
     async invalidateUserBadges(courseId: number, userId: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -116,7 +115,7 @@ export class AddonBadgesProvider {
      * @returns Cache key.
      */
     protected getUserBadgeByHashCacheKey(hash: string): string {
-        return ROOT_CACHE_KEY + 'badge:' + hash;
+        return `${AddonBadgesProvider.ROOT_CACHE_KEY}badge:${hash}`;
     }
 
     /**
@@ -157,7 +156,6 @@ export class AddonBadgesProvider {
      *
      * @param hash Badge issued hash.
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved when data is invalidated.
      */
     async invalidateUserBadgeByHash(hash: string, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -172,7 +170,7 @@ export class AddonBadgesProvider {
      * @returns Cache key.
      */
     protected getBadgeClassCacheKey(id: number): string {
-        return ROOT_CACHE_KEY + 'badgeclass:' + id;
+        return `${AddonBadgesProvider.ROOT_CACHE_KEY}badgeclass:${id}`;
     }
 
     /**
@@ -214,7 +212,6 @@ export class AddonBadgesProvider {
      *
      * @param id Badge ID.
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved when data is invalidated.ç
      * @since 4.5
      */
     async invalidateBadgeClass(id: number, siteId?: string): Promise<void> {

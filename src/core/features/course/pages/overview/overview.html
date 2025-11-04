@@ -1,0 +1,174 @@
+<ion-header>
+    <ion-toolbar>
+        <ion-buttons slot="start">
+            <ion-back-button [text]="'core.back' | translate" />
+        </ion-buttons>
+        <ion-title>
+            <h1>{{ 'core.activities' | translate }}</h1>
+        </ion-title>
+    </ion-toolbar>
+</ion-header>
+<ion-content>
+    <ion-refresher slot="fixed" [disabled]="!loaded()" (ionRefresh)="refreshData($event.target)">
+        <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}" />
+    </ion-refresher>
+    <core-loading [hideUntil]="loaded()">
+        <ion-item class="ion-text-wrap">
+            <ion-label>
+                {{ 'core.course.overview_info' | translate }}
+            </ion-label>
+        </ion-item>
+
+        @if (modTypes().length) {
+            <ion-accordion-group [multiple]="true" #modTypesAccordion (ionChange)="modTypeAccordionChanged($event.detail.value)">
+                @for (modType of modTypes(); track modType.modName) {
+                    <ion-accordion [value]="modType.modName" toggleIconSlot="start" id="{{modType.modName}}_overview_collapsible">
+                        <ion-item class="ion-text-wrap divider" slot="header">
+                            <ion-label>
+                                <core-mod-icon [modicon]="modType.icon" [modname]="modType.iconModName" [showAlt]="false"
+                                    [colorize]="true" [isBranded]="modType.branded" [purpose]="modType.purpose" />
+                                {{ modType.name }}
+                            </ion-label>
+                        </ion-item>
+                        <div slot="content">
+                            <core-loading [hideUntil]="modType.loaded()" [fullscreen]="false">
+                                @if (isTablet()) {
+                                    <ng-container *ngTemplateOutlet="tabletOverviewTemplate; context: { modType }" />
+                                } @else {
+                                    <ng-container *ngTemplateOutlet="mobileOverviewTemplate; context: { modType }" />
+                                }
+                            </core-loading>
+                        </div>
+                    </ion-accordion>
+                }
+            </ion-accordion-group>
+        } @else {
+            <core-empty-box icon="fas-box-open" [message]="'core.course.nocontentavailable' | translate" />
+        }
+
+    </core-loading>
+</ion-content>
+
+<ng-template #tabletOverviewTemplate let-modTypeUntyped="modType">
+    @let modType = toModType(modTypeUntyped);
+
+    @if (modType.overview(); as overview) {
+        @if (!overview.hasintegration || !overview.isSupportedInApp) {
+            <ion-card class="core-info-card">
+                <ion-item class="ion-text-wrap">
+                    <ion-icon name="fas-circle-info" slot="start" aria-hidden="true" />
+                    <ion-label>
+                        <p>{{ 'core.course.overview_missing_title' | translate:{ $a: modType.modNameTranslated } }}</p>
+                    </ion-label>
+                </ion-item>
+            </ion-card>
+        }
+
+        <table class="core-table">
+            <thead>
+                <tr>
+                    @for (header of overview.headers; track header.key) {
+                        <th [class]="['core-course-overview-header-'+header.key, header.classes]">{{ header.name }}</th>
+                    }
+                </tr>
+            </thead>
+
+            <tbody class="auto-striped">
+                @for (activity of overview.activities; track activity.cmid) {
+                    <tr [class.core-course-overview-activity-has-error]="activity.haserror">
+                        @for (item of activity.itemsToRender; track item.key) {
+                            <td [class]="['core-course-overview-item-'+ item.key, item.classes]">
+                                @if (item.component) {
+                                    <core-dynamic-component [component]="item.component" [data]="item.componentData" />
+                                } @else if (item.content !== null) {
+                                    <core-format-text [text]="item.content" contextLevel="module" [contextInstanceId]="activity.cmid"
+                                        [courseId]="courseId" />
+                                } @else {
+                                    -
+                                }
+                            </td>
+                        }
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+</ng-template>
+
+<ng-template #mobileOverviewTemplate let-modTypeUntyped="modType">
+    @let modType = toModType(modTypeUntyped);
+
+    @if (modType.overview(); as overview) {
+        @if (!overview.hasintegration || !overview.isSupportedInApp) {
+            <ion-card class="core-info-card">
+                <ion-item class="ion-text-wrap">
+                    <ion-icon name="fas-circle-info" slot="start" aria-hidden="true" />
+                    <ion-label>
+                        <p>{{ 'core.course.overview_missing_title' | translate:{ $a: modType.modNameTranslated } }}</p>
+                    </ion-label>
+                </ion-item>
+            </ion-card>
+        }
+
+        @for (activity of overview.activities; track activity.cmid) {
+            <ion-card>
+                @if (activity.haserror || !activity.hasItemsBesidesName) {
+                    <!-- If activity has an error, display just the header without being expandable. -->
+                    <ion-item class="ion-text-wrap" [class.core-course-overview-activity-has-error]="activity.haserror">
+                        <ion-label>
+                            @if (activity.nameItemToRender) {
+                                <core-dynamic-component [component]="activity.nameItemToRender.component"
+                                    [data]="activity.nameItemToRender.componentData" />
+                            } @else {
+                                <core-format-text [text]="activity.name" contextLevel="module" [contextInstanceId]="activity.cmid"
+                                    [courseId]="courseId" />
+                            }
+                        </ion-label>
+                    </ion-item>
+                } @else {
+                    <ion-item class="ion-text-wrap" lines="inset" [detail]="false" [attr.tappable]="!activity.haserror"
+                        (ariaButtonClick)="toggleActivity(overview, activity)" [attr.aria-expanded]="activity.isExpanded()"
+                        [attr.aria-controls]="'core-course-overview-activity-' + activity.cmid"
+                        [attr.aria-label]="((activity.isExpanded() ? 'core.collapse' : 'core.expand') | translate) + ' ' + activity.name">
+                        <ion-label>
+                            @if (activity.nameItemToRender) {
+                                <core-dynamic-component [component]="activity.nameItemToRender.component"
+                                    [data]="activity.nameItemToRender.componentData" />
+                            } @else {
+                                <core-format-text [text]="activity.name" contextLevel="module" [contextInstanceId]="activity.cmid"
+                                    [courseId]="courseId" />
+                            }
+                        </ion-label>
+
+                        <ion-icon [class.expandable-status-icon-expanded]="!activity.isExpanded()" aria-hidden="true" slot="end"
+                            name="fas-chevron-up" class="expandable-status-icon" flip-rtl />
+                    </ion-item>
+
+                    <div id="core-course-overview-activity-{{activity.cmid}}" class="core-course-overview-activity-content"
+                        [hidden]="!activity.isExpanded()">
+                        @for (item of activity.itemsToRender; track item.key) {
+                            @if (item !== activity.nameItemToRender) {
+                                <ion-item class="ion-text-wrap core-course-overview-item-{{ item.key }}">
+                                    <ion-label>
+                                        <p class="item-heading core-course-overview-item-header">{{ item.name }} </p>
+                                        @if (item.component) {
+                                            <core-dynamic-component [component]="item.component" [data]="item.componentData" />
+                                        } @else if (item.content !== null) {
+                                            <p>
+                                                <core-format-text [text]="item.content" contextLevel="module"
+                                                    [contextInstanceId]="activity.cmid" [courseId]="courseId" />
+                                            </p>
+                                        } @else {
+                                            <p>-</p>
+                                        }
+                                    </ion-label>
+                                </ion-item>
+                            }
+
+                        }
+                    </div>
+                }
+            </ion-card>
+        }
+    }
+</ng-template>

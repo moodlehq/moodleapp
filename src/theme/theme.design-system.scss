@@ -1,6 +1,6 @@
-@import "./globals.scss";
-@import "theme.light.scss";
-@import "theme.dark.scss";
+@import "globals";
+@import "theme.light";
+@import "theme.dark";
 
 :root {
     // Add serif fallback font for km language in some devices.
@@ -232,16 +232,10 @@
     --rotate-expandable: rotate(90deg);
 
     --core-mainpage-headerlogo-maxheight: calc(var(--core-header-toolbar-height) - 16px);
-}
 
-/** @deprecated since 4.3 **/
-:root {
-    --small-radius: var(--mdl-shape-borderRadius-xs);
-    --medium-radius: var(--mdl-shape-borderRadius-sm);
-    --big-radius: var(--mdl-shape-borderRadius-lg);
-    --huge-radius: var(--mdl-shape-borderRadius-xl);
+    // ***** LINKS ***** //
+    --core-link-decoration: underline;
 }
-
 /** @deprecated since 4.4 **/
 :root {
     --font-size-normal: var(--mdl-typography-fontSize-md);

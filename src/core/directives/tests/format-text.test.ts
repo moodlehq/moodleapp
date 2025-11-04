@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { IonContent } from '@ionic/angular';
-import Faker from 'faker';
+import { faker } from '@faker-js/faker';
 
 import { CoreConfig } from '@services/config';
 import { CoreContentLinksHelper } from '@features/contentlinks/services/contentlinks-helper';
@@ -55,7 +55,7 @@ describe('CoreFormatTextDirective', () => {
 
     it('should render', async () => {
         // Arrange
-        const sentence = Faker.lorem.sentence();
+        const sentence = faker.lorem.sentence();
 
         // Act
         const fixture = await renderWrapperComponent(
@@ -91,7 +91,7 @@ describe('CoreFormatTextDirective', () => {
             'Lorem ipsum dolor',
             expect.anything(),
             expect.anything(),
-            undefined,
+            '',
         );
     });
 
@@ -116,13 +116,14 @@ describe('CoreFormatTextDirective', () => {
         });
 
         // Act
-        const { nativeElement } = await renderTemplate(CoreFormatTextDirective, `
-            <core-format-text
+        const { nativeElement } = await renderTemplate(
+            CoreFormatTextDirective,
+            `<core-format-text
                 text="Lorem ipsum dolor"
                 contextLevel="course"
                 [contextInstanceId]="42"
-            ></core-format-text>
-        `);
+            ></core-format-text>`,
+        );
 
         // Assert
         const text = nativeElement.querySelector('core-format-text');

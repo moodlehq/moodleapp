@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { APP_INITIALIZER, NgModule, Type } from '@angular/core';
+import { NgModule, Type, provideAppInitializer } from '@angular/core';
 import { Routes } from '@angular/router';
 
 import { AppRoutingModule } from '@/app/app-routing.module';
@@ -21,6 +21,7 @@ import { redirectGuard } from '@guards/redirect';
 import { CoreLoginCronHandler } from './services/handlers/cron';
 import { CoreCronDelegate } from '@services/cron';
 import { CoreEvents } from '@singletons/events';
+import { hasSitesGuard } from './guards/has-sites';
 
 /**
  * Get login services.
@@ -38,7 +39,42 @@ export async function getLoginServices(): Promise<Type<unknown>[]> {
 const appRoutes: Routes = [
     {
         path: 'login',
-        loadChildren: () => import('./login-lazy.module'),
+        loadChildren: () => [
+            {
+                path: '',
+                pathMatch: 'full',
+                redirectTo: 'sites',
+            },
+            {
+                path: 'site',
+                loadComponent: () => import('@features/login/pages/site/site'),
+            },
+            {
+                path: 'credentials',
+                loadComponent: () => CoreLoginHelper.getCredentialsPage(),
+            },
+            {
+                path: 'sites',
+                loadComponent: () => import('@features/login/pages/sites/sites'),
+                canActivate: [hasSitesGuard],
+            },
+            {
+                path: 'forgottenpassword',
+                loadComponent: () => import('@features/login/pages/forgotten-password/forgotten-password'),
+            },
+            {
+                path: 'changepassword',
+                loadComponent: () => import('@features/login/pages/change-password/change-password'),
+            },
+            {
+                path: 'emailsignup',
+                loadComponent: () => import('@features/login/pages/email-signup/email-signup'),
+            },
+            {
+                path: 'reconnect',
+                loadComponent: () => CoreLoginHelper.getReconnectPage(),
+            },
+        ],
         canActivate: [redirectGuard],
     },
     {
@@ -52,23 +88,19 @@ const appRoutes: Routes = [
         AppRoutingModule.forChild(appRoutes),
     ],
     providers: [
-        {
-            provide: APP_INITIALIZER,
-            multi: true,
-            useValue: async () => {
-                CoreCronDelegate.register(CoreLoginCronHandler.instance);
+        provideAppInitializer(async () => {
+            CoreCronDelegate.register(CoreLoginCronHandler.instance);
 
-                CoreEvents.on(CoreEvents.SESSION_EXPIRED, (data) => {
-                    CoreLoginHelper.sessionExpired(data);
-                });
+            CoreEvents.on(CoreEvents.SESSION_EXPIRED, (data) => {
+                CoreLoginHelper.sessionExpired(data);
+            });
 
-                CoreEvents.on(CoreEvents.PASSWORD_CHANGE_FORCED, (data) => {
-                    CoreLoginHelper.passwordChangeForced(data.siteId);
-                });
+            CoreEvents.on(CoreEvents.PASSWORD_CHANGE_FORCED, (data) => {
+                CoreLoginHelper.passwordChangeForced(data.siteId);
+            });
 
-                await CoreLoginHelper.initialize();
-            },
-        },
+            await CoreLoginHelper.initialize();
+        }),
     ],
 })
 export class CoreLoginModule {}

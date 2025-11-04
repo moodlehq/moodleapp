@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { InjectionToken, Injector, ModuleWithProviders, NgModule, NgModuleFactory, Type } from '@angular/core';
+import { InjectionToken, Injector, ModuleWithProviders, NgModule, Type } from '@angular/core';
 import {
     RouterModule,
     Route,
@@ -100,17 +100,23 @@ function buildConditionalUrlMatcher(pathOrMatcher: string | UrlMatcher, conditio
 
 /**
  * Type to declare lazy route modules. Extracted from Angular's LoadChildrenCallback type.
+ *
+ * @deprecated since 5.0. Now pages are loaded using the loadComponent property. You can use LazyDefaultStandaloneComponent instead.
  */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type LazyRoutesModule = Type<any> |
-    NgModuleFactory<any> | // eslint-disable-line deprecation/deprecation, @typescript-eslint/no-explicit-any
     Routes |
     Observable<Type<any> | // eslint-disable-line @typescript-eslint/no-explicit-any
     Routes |
     DefaultExport<Type<any>> | // eslint-disable-line @typescript-eslint/no-explicit-any
     DefaultExport<Routes>> |
-    // eslint-disable-next-line deprecation/deprecation, @typescript-eslint/no-explicit-any
-    Promise<NgModuleFactory<any> | Type<any> | Routes | DefaultExport<Type<any>> |DefaultExport<Routes>>;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    Promise<Type<any> | Routes | DefaultExport<Type<any>> |DefaultExport<Routes>>;
+
+/**
+ * Type to declare lazy standalone component. Extracted from Angular's LoadComponent type with default class.
+ */
+export type LazyDefaultStandaloneComponent = Promise<DefaultExport<Type<unknown>>>;
 
 /**
  * Build url matcher using a regular expression.

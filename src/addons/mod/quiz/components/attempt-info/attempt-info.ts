@@ -15,11 +15,13 @@
 import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
 import { AddonModQuizAttempt, AddonModQuizQuizData } from '../../services/quiz-helper';
 import { AddonModQuiz, AddonModQuizWSAdditionalData } from '../../services/quiz';
-import { ADDON_MOD_QUIZ_COMPONENT, AddonModQuizAttemptStates } from '../../constants';
+import { ADDON_MOD_QUIZ_COMPONENT_LEGACY, AddonModQuizAttemptStates } from '../../constants';
 import { CoreTime } from '@singletons/time';
 import { Translate } from '@singletons';
-import { CoreDomUtils } from '@services/utils/dom';
+import { CoreDom } from '@singletons/dom';
 import { isSafeNumber } from '@/core/utils/types';
+import { AddonModQuizAttemptStateComponent } from '../attempt-state/attempt-state';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Component that displays an attempt info.
@@ -27,6 +29,10 @@ import { isSafeNumber } from '@/core/utils/types';
 @Component({
     selector: 'addon-mod-quiz-attempt-info',
     templateUrl: 'attempt-info.html',
+    imports: [
+        CoreSharedModule,
+        AddonModQuizAttemptStateComponent,
+    ],
 })
 export class AddonModQuizAttemptInfoComponent implements OnChanges {
 
@@ -40,7 +46,7 @@ export class AddonModQuizAttemptInfoComponent implements OnChanges {
     timeTaken?: string;
     overTime?: string;
     gradeItemMarks: { name: string; grade: string }[] = [];
-    component = ADDON_MOD_QUIZ_COMPONENT;
+    component = ADDON_MOD_QUIZ_COMPONENT_LEGACY;
 
     /**
      * @inheritdoc
@@ -49,7 +55,7 @@ export class AddonModQuizAttemptInfoComponent implements OnChanges {
         if (changes.additionalData) {
             this.additionalData?.forEach((data) => {
                 // Remove help links from additional data.
-                data.content = CoreDomUtils.removeElementFromHtml(data.content, '.helptooltip, [data-toggle="popover"]');
+                data.content = CoreDom.removeElementFromHtml(data.content, '.helptooltip');
             });
         }
 
@@ -82,7 +88,7 @@ export class AddonModQuizAttemptInfoComponent implements OnChanges {
             this.gradeItemMarks = this.attempt.gradeitemmarks.map((gradeItemMark) => ({
                 name: gradeItemMark.name,
                 grade: Translate.instant('addon.mod_quiz.outof', { $a: {
-                    grade: '<strong>' + AddonModQuiz.formatGrade(gradeItemMark.grade, this.quiz?.decimalpoints) + '</strong>',
+                    grade: `<strong>${AddonModQuiz.formatGrade(gradeItemMark.grade, this.quiz?.decimalpoints)}</strong>`,
                     maxgrade: AddonModQuiz.formatGrade(gradeItemMark.maxgrade, this.quiz?.decimalpoints),
                 } }),
             }));
@@ -107,13 +113,13 @@ export class AddonModQuizAttemptInfoComponent implements OnChanges {
         }
 
         const gradeObject: Record<string, unknown> = {
-            grade: '<strong>' + AddonModQuiz.formatGrade(this.attempt.rescaledGrade, this.quiz.decimalpoints) + '</strong>',
+            grade: `<strong>${AddonModQuiz.formatGrade(this.attempt.rescaledGrade, this.quiz.decimalpoints)}</strong>`,
             maxgrade: AddonModQuiz.formatGrade(this.quiz.grade, this.quiz.decimalpoints),
         };
 
         if (this.quiz.grade != 100) {
             const percentage = (this.attempt.sumgrades ?? 0) * 100 / (this.quiz.sumgrades ?? 1);
-            gradeObject.percent = '<strong>' + AddonModQuiz.formatGrade(percentage, this.quiz.decimalpoints) + '</strong>';
+            gradeObject.percent = `<strong>${AddonModQuiz.formatGrade(percentage, this.quiz.decimalpoints)}</strong>`;
             this.readableGrade = Translate.instant('addon.mod_quiz.outofpercent', { $a: gradeObject });
         } else {
             this.readableGrade = Translate.instant('addon.mod_quiz.outof', { $a: gradeObject });

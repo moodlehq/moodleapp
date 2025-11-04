@@ -12,13 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { APP_INITIALIZER, NgModule, Type } from '@angular/core';
+import { NgModule, Type, provideAppInitializer } from '@angular/core';
 import { Routes } from '@angular/router';
 
 import { CoreMainMenuTabRoutingModule } from '@features/mainmenu/mainmenu-tab-routing.module';
 import { CORE_SITE_SCHEMAS } from '@services/sites';
-import { SITE_SCHEMA, OFFLINE_SITE_SCHEMA } from './services/database/user';
-import { CoreUserComponentsModule } from './components/components.module';
+import { CORE_USER_OFFLINE_SITE_SCHEMA, CORE_USER_CACHE_SITE_SCHEMA } from './services/database/user';
 import { CoreUserDelegate } from './services/user-delegate';
 import { CoreUserProfileMailHandler } from './services/handlers/profile-mail';
 import { CoreContentLinksDelegate } from '@features/contentlinks/services/contentlinks-delegate';
@@ -36,6 +35,7 @@ import { CoreScreen } from '@services/screen';
 import { CoreEvents } from '@singletons/events';
 import { CORE_COURSE_PAGE_NAME, CORE_COURSE_INDEX_PATH } from '@features/course/constants';
 import { PARTICIPANTS_PAGE_NAME } from './constants';
+import { CoreUserParticipantsLinkHandler } from './services/handlers/participants-link';
 
 /**
  * Get user services.
@@ -47,7 +47,7 @@ export async function getUsersServices(): Promise<Type<unknown>[]> {
     const { CoreUserHelperProvider } = await import('@features/user/services/user-helper');
     const { CoreUserDelegateService } = await import('@features/user/services/user-delegate');
     const { CoreUserProfileFieldDelegateService } = await import('@features/user/services/user-profile-field-delegate');
-    const { CoreUserOfflineProvider } = await import('@features/user/services/user-offline');
+    const { CoreUserPreferencesService } = await import('@features/user/services/user-preferences');
     const { CoreUserSyncProvider } = await import('@features/user/services/user-sync');
 
     return [
@@ -55,27 +55,54 @@ export async function getUsersServices(): Promise<Type<unknown>[]> {
         CoreUserHelperProvider,
         CoreUserDelegateService,
         CoreUserProfileFieldDelegateService,
-        CoreUserOfflineProvider,
+        CoreUserPreferencesService,
         CoreUserSyncProvider,
+    ];
+}
+
+/**
+ * Get directives and components for site plugins.
+ *
+ * @returns Returns directives and components.
+ */
+export async function getUsersExportedDirectives(): Promise<Type<unknown>[]> {
+    const { CoreUserProfileFieldComponent } = await import('@features/user/components/user-profile-field/user-profile-field');
+
+    return [
+        CoreUserProfileFieldComponent,
     ];
 }
 
 const appRoutes: Routes = [
     {
-        path: 'user',
-        loadChildren: () => import('@features/user/user-app-lazy.module'),
+        path: 'user/completeprofile',
+        loadComponent: () => import('@features/user/pages/complete-profile/complete-profile'),
     },
 ];
 
 const routes: Routes = [
     {
         path: 'user',
-        loadChildren: () => import('@features/user/user-lazy.module'),
+        loadChildren: () => [
+            {
+                path: '',
+                redirectTo: 'profile',
+                pathMatch: 'full',
+            },
+            {
+                path: 'profile',
+                loadComponent: () => import('@features/user/pages/profile/profile'),
+            },
+            {
+                path: 'about',
+                loadComponent: () => import('@features/user/pages/about/about'),
+            },
+        ],
     },
     ...conditionalRoutes([
         {
             path: `${CORE_COURSE_PAGE_NAME}/${CORE_COURSE_INDEX_PATH}/${PARTICIPANTS_PAGE_NAME}/:userId`,
-            loadChildren: () => import('@features/user/user-profile-lazy.module'),
+            loadComponent: () => import('@features/user/pages/profile/profile'),
             data: {
                 swipeManagerSource: 'participants',
             },
@@ -86,7 +113,14 @@ const routes: Routes = [
 const courseIndexRoutes: Routes = [
     {
         path: PARTICIPANTS_PAGE_NAME,
-        loadChildren: () => import('@features/user/user-course-lazy.module'),
+        loadComponent: () => import('@features/user/pages/participants/participants'),
+        loadChildren: () => conditionalRoutes([
+            {
+                path: ':userId',
+                loadComponent: () => import('@features/user/pages/profile/profile'),
+                data: { swipeManagerSource: 'participants' },
+            },
+        ], () => CoreScreen.isTablet),
     },
 ];
 
@@ -95,32 +129,28 @@ const courseIndexRoutes: Routes = [
         AppRoutingModule.forChild(appRoutes),
         CoreMainMenuTabRoutingModule.forChild(routes),
         CoreCourseIndexRoutingModule.forChild({ children: courseIndexRoutes }),
-        CoreUserComponentsModule,
     ],
     providers: [
         {
             provide: CORE_SITE_SCHEMAS,
             useValue: [
-                SITE_SCHEMA,
-                OFFLINE_SITE_SCHEMA,
+                CORE_USER_CACHE_SITE_SCHEMA,
+                CORE_USER_OFFLINE_SITE_SCHEMA,
             ],
             multi: true,
         },
-        {
-            provide: APP_INITIALIZER,
-            multi: true,
-            useValue: () => {
-                CoreUserDelegate.registerHandler(CoreUserProfileMailHandler.instance);
-                CoreContentLinksDelegate.registerHandler(CoreUserProfileLinkHandler.instance);
-                CoreCronDelegate.register(CoreUserSyncCronHandler.instance);
-                CoreTagAreaDelegate.registerHandler(CoreUserTagAreaHandler.instance);
-                CoreCourseOptionsDelegate.registerHandler(CoreUserCourseOptionHandler.instance);
+        provideAppInitializer(() => {
+            CoreUserDelegate.registerHandler(CoreUserProfileMailHandler.instance);
+            CoreContentLinksDelegate.registerHandler(CoreUserProfileLinkHandler.instance);
+            CoreContentLinksDelegate.registerHandler(CoreUserParticipantsLinkHandler.instance);
+            CoreCronDelegate.register(CoreUserSyncCronHandler.instance);
+            CoreTagAreaDelegate.registerHandler(CoreUserTagAreaHandler.instance);
+            CoreCourseOptionsDelegate.registerHandler(CoreUserCourseOptionHandler.instance);
 
-                CoreEvents.on(CoreEvents.USER_NOT_FULLY_SETUP, (data) => {
-                    CoreUserHelper.openCompleteProfile(data.siteId);
-                });
-            },
-        },
+            CoreEvents.on(CoreEvents.USER_NOT_FULLY_SETUP, (data) => {
+                CoreUserHelper.openCompleteProfile(data.siteId);
+            });
+        }),
     ],
 })
 export class CoreUserModule {}

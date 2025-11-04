@@ -28,7 +28,6 @@ import { CoreAlerts } from '@services/overlays/alerts';
     selector: 'addon-forum-post-options-menu',
     templateUrl: 'post-options-menu.html',
     styleUrl: 'post-options-menu.scss',
-    standalone: true,
     imports: [
         CoreSharedModule,
     ],
@@ -95,7 +94,7 @@ export class AddonModForumPostOptionsMenuComponent implements OnInit {
             return;
         }
 
-        this.url = site.createSiteUrl('/mod/forum/discuss.php', { d: this.post.discussionid.toString() }, 'p' + this.post.id);
+        this.url = site.createSiteUrl('/mod/forum/discuss.php', { d: this.post.discussionid.toString() }, `p${this.post.id}`);
     }
 
     /**

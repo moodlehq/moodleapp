@@ -27,9 +27,10 @@ import {
 import { AddonModFeedbackAttempt, AddonModFeedbackFormItem, AddonModFeedbackHelper } from '../../services/feedback-helper';
 import { CoreTime } from '@singletons/time';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
-import { ADDON_MOD_FEEDBACK_COMPONENT } from '../../constants';
+import { ADDON_MOD_FEEDBACK_COMPONENT_LEGACY, AddonModFeedbackQuestionType } from '../../constants';
 import { CoreAlerts } from '@services/overlays/alerts';
 import { Translate } from '@singletons';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Page that displays a feedback attempt review.
@@ -37,8 +38,12 @@ import { Translate } from '@singletons';
 @Component({
     selector: 'page-addon-mod-feedback-attempt',
     templateUrl: 'attempt.html',
+    styleUrl: '../../feedback.scss',
+    imports: [
+        CoreSharedModule,
+    ],
 })
-export class AddonModFeedbackAttemptPage implements OnInit, OnDestroy {
+export default class AddonModFeedbackAttemptPage implements OnInit, OnDestroy {
 
     cmId: number;
     courseId: number;
@@ -47,7 +52,7 @@ export class AddonModFeedbackAttemptPage implements OnInit, OnDestroy {
     attempts: AddonModFeedbackAttemptsSwipeManager;
     anonAttempt?: AddonModFeedbackWSAnonAttempt;
     items: AddonModFeedbackAttemptItem[] = [];
-    component = ADDON_MOD_FEEDBACK_COMPONENT;
+    component = ADDON_MOD_FEEDBACK_COMPONENT_LEGACY;
     loaded = false;
 
     protected attemptId: number;
@@ -139,7 +144,7 @@ export class AddonModFeedbackAttemptPage implements OnInit, OnDestroy {
 
                 const attemptItem = <AddonModFeedbackAttemptItem> formItem;
 
-                if (item.typ == 'label') {
+                if (item.typ === AddonModFeedbackQuestionType.LABEL) {
                     attemptItem.submittedValue = CoreFileHelper.replacePluginfileUrls(item.presentation, item.itemfiles);
                 } else {
                     for (const x in attempt.responses) {

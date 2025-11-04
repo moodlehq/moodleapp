@@ -34,7 +34,8 @@ import {
     AddonModH5PActivityData,
 } from '../h5pactivity';
 import {
-    ADDON_MOD_H5PACTIVITY_COMPONENT,
+    ADDON_MOD_H5PACTIVITY_COMPONENT_LEGACY,
+    ADDON_MOD_H5PACTIVITY_MODNAME,
     ADDON_MOD_H5PACTIVITY_STATE_ID,
     ADDON_MOD_H5PACTIVITY_TRACK_COMPONENT,
 } from '../../constants';
@@ -46,8 +47,8 @@ import {
 export class AddonModH5PActivityPrefetchHandlerService extends CoreCourseActivityPrefetchHandlerBase {
 
     name = 'AddonModH5PActivity';
-    modName = 'h5pactivity';
-    component = ADDON_MOD_H5PACTIVITY_COMPONENT;
+    modName = ADDON_MOD_H5PACTIVITY_MODNAME;
+    component = ADDON_MOD_H5PACTIVITY_COMPONENT_LEGACY;
     updatesNames = /^configuration$|^.*files$|^tracks$|^usertracks$/;
 
     /**
@@ -116,7 +117,7 @@ export class AddonModH5PActivityPrefetchHandlerService extends CoreCourseActivit
 
         await Promise.all([
             this.prefetchWSData(h5pActivity, siteId),
-            CoreFilepool.addFilesToQueue(siteId, introFiles, ADDON_MOD_H5PACTIVITY_COMPONENT, module.id),
+            CoreFilepool.addFilesToQueue(siteId, introFiles, ADDON_MOD_H5PACTIVITY_COMPONENT_LEGACY, module.id),
             this.prefetchMainFile(module, h5pActivity, siteId),
             CoreH5P.getCustomCssSrc(siteId),
         ]);
@@ -162,7 +163,7 @@ export class AddonModH5PActivityPrefetchHandlerService extends CoreCourseActivit
             }
         }
 
-        await CoreFilepool.addFilesToQueue(siteId, [deployedFile], ADDON_MOD_H5PACTIVITY_COMPONENT, module.id);
+        await CoreFilepool.addFilesToQueue(siteId, [deployedFile], ADDON_MOD_H5PACTIVITY_COMPONENT_LEGACY, module.id);
     }
 
     /**
@@ -252,7 +253,7 @@ export class AddonModH5PActivityPrefetchHandlerService extends CoreCourseActivit
             h5pActivity.context,
             ADDON_MOD_H5PACTIVITY_STATE_ID,
             {
-                appComponent: ADDON_MOD_H5PACTIVITY_COMPONENT,
+                appComponent: ADDON_MOD_H5PACTIVITY_COMPONENT_LEGACY,
                 appComponentId: h5pActivity.coursemodule,
                 readingStrategy: CoreSitesReadingStrategy.ONLY_NETWORK,
                 siteId,
@@ -268,7 +269,7 @@ export class AddonModH5PActivityPrefetchHandlerService extends CoreCourseActivit
         await Promise.all([
             super.removeFiles(module, courseId),
             CorePromiseUtils.ignoreErrors(
-                CoreH5P.h5pFramework.deleteMissingDependenciesForComponent(ADDON_MOD_H5PACTIVITY_COMPONENT, module.id),
+                CoreH5P.h5pFramework.deleteMissingDependenciesForComponent(ADDON_MOD_H5PACTIVITY_COMPONENT_LEGACY, module.id),
             ),
         ]);
     }

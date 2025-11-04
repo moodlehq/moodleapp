@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { AddonNotes, AddonNotesPublishState } from '@addons/notes/services/notes';
-import { Component, ViewChild, ElementRef, Input } from '@angular/core';
+import { Component, ElementRef, Input, viewChild } from '@angular/core';
 import { CoreSites } from '@services/sites';
 import { CoreForms } from '@singletons/form';
 import { ModalController } from '@singletons';
@@ -28,14 +28,13 @@ import { CoreAlerts } from '@services/overlays/alerts';
  */
 @Component({
     templateUrl: 'add-modal.html',
-    standalone: true,
     imports: [
         CoreSharedModule,
     ],
 })
 export class AddonNotesAddComponent {
 
-    @ViewChild('itemEdit') formElement?: ElementRef;
+    readonly formElement = viewChild<ElementRef>('itemEdit');
 
     @Input({ required: true }) courseId!: number;
     @Input() userId?: number;
@@ -61,7 +60,7 @@ export class AddonNotesAddComponent {
             this.userId = this.userId || CoreSites.getCurrentSiteUserId();
             const sent = await AddonNotes.addNote(this.userId, this.courseId, this.type, this.text);
 
-            CoreForms.triggerFormSubmittedEvent(this.formElement, sent, CoreSites.getCurrentSiteId());
+            CoreForms.triggerFormSubmittedEvent(this.formElement(), sent, CoreSites.getCurrentSiteId());
 
             ModalController.dismiss(<AddonNotesAddModalReturn>{ type: this.type, sent: true }).finally(() => {
                 CoreToasts.show({
@@ -82,7 +81,7 @@ export class AddonNotesAddComponent {
      * Close modal.
      */
     closeModal(): void {
-        CoreForms.triggerFormCancelledEvent(this.formElement, CoreSites.getCurrentSiteId());
+        CoreForms.triggerFormCancelledEvent(this.formElement(), CoreSites.getCurrentSiteId());
 
         ModalController.dismiss(<AddonNotesAddModalReturn>{ type: this.type });
     }

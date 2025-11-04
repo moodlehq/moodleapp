@@ -1,7 +1,7 @@
 ion-accordion {
     > [slot="header"] .ion-accordion-toggle-icon[slot="start"] {
         @include margin-horizontal(null, var(--mdl-spacing-2));
-        background-color: var(--gray-100);
+        background-color: var(--core-accordion-toggle-background);
         border-radius: 50%;
         padding: var(--mdl-spacing-1);
     }
@@ -21,12 +21,29 @@ ion-accordion {
             transform: rotate(90deg);
         }
     }
+
+    &.accordion-expanded .hide_on_expand,
+    &.accordion-expanding .hide_on_expand {
+        visibility: hidden;
+    }
 }
 
-:root.dark {
-    ion-accordion {
-        > [slot="header"] .ion-accordion-toggle-icon[slot="start"] {
-            background-color: var(--gray-800);
-        }
+ion-accordion-group.striped {
+    ion-accordion:nth-child(odd) {
+        --ion-item-background: var(--core-table-odd-cell-background);
+    }
+
+    ion-accordion:nth-child(even) {
+        --ion-item-background: var(--core-table-even-cell-background);
+    }
+
+    ion-item.divider {
+        --background: var(--ion-item-background);
+    }
+
+    hr {
+        background-color: var(--stroke);
+        height: 1px;
+        margin: 0px var(-mdl-spacing-4);
     }
 }

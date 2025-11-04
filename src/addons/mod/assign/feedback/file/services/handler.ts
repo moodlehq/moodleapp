@@ -36,6 +36,13 @@ export class AddonModAssignFeedbackFileHandlerService implements AddonModAssignF
     /**
      * @inheritdoc
      */
+    async canContainFiltersWhenEditing(): Promise<boolean> {
+        return false;
+    }
+
+    /**
+     * @inheritdoc
+     */
     async getComponent(): Promise<Type<IAddonModAssignFeedbackPluginComponent>> {
         const { AddonModAssignFeedbackFileComponent } = await import('../component/file');
 

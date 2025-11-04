@@ -13,15 +13,25 @@
 // limitations under the License.
 
 import {
-    Component, Input, Output, ViewChild, ElementRef, EventEmitter, OnChanges, SimpleChange, OnDestroy,
+    Component,
+    Input,
+    Output,
+    ElementRef,
+    EventEmitter,
+    OnChanges,
+    SimpleChange,
+    OnDestroy,
+    inject,
+    viewChild,
+    computed,
+    effect,
 } from '@angular/core';
 import { SafeResourceUrl } from '@angular/platform-browser';
 
 import { CoreFile } from '@services/file';
 import { CoreUrl } from '@singletons/url';
-import { CoreIframeUtils } from '@services/utils/iframe';
+import { CoreIframe } from '@singletons/iframe';
 import { DomSanitizer, Router, StatusBar, Translate } from '@singletons';
-import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { CoreScreen, CoreScreenOrientation } from '@services/screen';
 import { Subscription } from 'rxjs';
 import { filter } from 'rxjs/operators';
@@ -31,21 +41,32 @@ import { toBoolean } from '@/core/transforms/boolean';
 import { CoreDom } from '@singletons/dom';
 import { CoreAlerts } from '@services/overlays/alerts';
 import { CoreLang, CoreLangFormat } from '@services/lang';
+import { CoreBaseModule } from '@/core/base.module';
+import { CoreLoadingComponent } from '@components/loading/loading';
+import { CoreNavBarButtonsComponent } from '@components/navbar-buttons/navbar-buttons';
+import { CoreFaIconDirective } from '@directives/fa-icon';
+import { CoreUpdateNonReactiveAttributesDirective } from '@directives/update-non-reactive-attributes';
+import { BackButtonEvent } from '@ionic/angular';
+import { BackButtonPriority } from '@/core/constants';
 
 @Component({
     selector: 'core-iframe',
     templateUrl: 'core-iframe.html',
     styleUrl: 'iframe.scss',
+    imports: [
+        CoreBaseModule,
+        CoreLoadingComponent,
+        CoreNavBarButtonsComponent,
+        CoreUpdateNonReactiveAttributesDirective,
+        CoreFaIconDirective,
+    ],
 })
 export class CoreIframeComponent implements OnChanges, OnDestroy {
 
     static loadingTimeout = 15000;
 
-    @ViewChild('iframe') set iframeElement(iframeRef: ElementRef | undefined) {
-        this.iframe = iframeRef?.nativeElement;
-
-        this.initIframeElement();
-    }
+    readonly iframeRef = viewChild<ElementRef<HTMLIFrameElement>>('iframe');
+    readonly iframe = computed(() => this.iframeRef()?.nativeElement);
 
     @Input() src?: string;
     @Input() id: string | null = null;
@@ -55,7 +76,7 @@ export class CoreIframeComponent implements OnChanges, OnDestroy {
     @Input({ transform: toBoolean }) showFullscreenOnToolbar = false;
     @Input({ transform: toBoolean }) autoFullscreenOnRotate = false;
     @Input({ transform: toBoolean }) allowAutoLogin = true;
-    @Output() loaded: EventEmitter<HTMLIFrameElement> = new EventEmitter<HTMLIFrameElement>();
+    @Output() loaded = new EventEmitter<HTMLIFrameElement>();
 
     loading?: boolean;
     safeUrl?: SafeResourceUrl;
@@ -66,17 +87,28 @@ export class CoreIframeComponent implements OnChanges, OnDestroy {
     initialized = false;
 
     protected fullScreenInitialized = false;
-    protected iframe?: HTMLIFrameElement;
     protected style?: HTMLStyleElement;
-    protected orientationObs?: CoreEventObserver;
     protected navSubscription?: Subscription;
     protected messageListenerFunction: (event: MessageEvent) => Promise<void>;
+    protected backButtonListener?: (event: BackButtonEvent) => void;
+    protected element: HTMLElement = inject(ElementRef).nativeElement;
 
-    constructor(protected elementRef: ElementRef<HTMLElement>) {
-        this.loaded = new EventEmitter<HTMLIFrameElement>();
-
+    constructor() {
         // Listen for messages from the iframe.
         window.addEventListener('message', this.messageListenerFunction = (event) => this.onIframeMessage(event));
+
+        effect(() => {
+            this.initIframeElement(this.iframe());
+        });
+
+        effect(() => {
+            const orientation = CoreScreen.orientationSignal();
+            if (!this.autoFullscreenOnRotate || this.isInHiddenPage()) {
+                return;
+            }
+
+            this.toggleFullscreen(orientation === CoreScreenOrientation.LANDSCAPE);
+        });
     }
 
     /**
@@ -106,11 +138,11 @@ export class CoreIframeComponent implements OnChanges, OnDestroy {
         if (!this.showFullscreenOnToolbar && !this.autoFullscreenOnRotate) {
             // Full screen disabled, stop watchers if enabled.
             this.navSubscription?.unsubscribe();
-            this.orientationObs?.off();
             this.style?.remove();
+            this.backButtonListener && document.removeEventListener('ionBackButton', this.backButtonListener);
             this.navSubscription = undefined;
-            this.orientationObs = undefined;
             this.style = undefined;
+            this.backButtonListener = undefined;
             this.fullScreenInitialized = true;
 
             return;
@@ -127,60 +159,54 @@ export class CoreIframeComponent implements OnChanges, OnDestroy {
                 });
         }
 
+        if (!this.backButtonListener) {
+            // Exit fullscreen when back button is clicked.
+            document.addEventListener('ionBackButton', this.backButtonListener = ({ detail }) => detail.register(
+                BackButtonPriority.IFRAME_FULLSCREEN,
+                (processNextHandler) => {
+                    if (this.fullscreen) {
+                        this.toggleFullscreen(false);
+                    } else {
+                        processNextHandler();
+                    }
+                },
+            ));
+        }
+
         if (!this.style) {
-            const shadow = this.elementRef.nativeElement.closest('.ion-page')?.querySelector('ion-header ion-toolbar')?.shadowRoot;
+            const shadow = this.element.closest('.ion-page')?.querySelector('ion-header ion-toolbar')?.shadowRoot;
             if (shadow) {
                 this.style = document.createElement('style');
                 shadow.appendChild(this.style);
             }
         }
 
-        if (!this.autoFullscreenOnRotate) {
-            this.orientationObs?.off();
-            this.orientationObs = undefined;
-            this.fullScreenInitialized = true;
-
-            return;
-        }
-
-        if (this.orientationObs) {
-            this.fullScreenInitialized = true;
-
-            return;
-        }
-
-        if (!this.fullScreenInitialized) {
+        if (!this.fullScreenInitialized && this.autoFullscreenOnRotate) {
             // Only change full screen value if it's being initialized.
             this.toggleFullscreen(CoreScreen.isLandscape);
         }
-
-        this.orientationObs = CoreEvents.on(CoreEvents.ORIENTATION_CHANGE, (data) => {
-            if (this.isInHiddenPage()) {
-                return;
-            }
-
-            this.toggleFullscreen(data.orientation == CoreScreenOrientation.LANDSCAPE);
-        });
 
         this.fullScreenInitialized = true;
     }
 
     /**
      * Initialize things related to the iframe element.
+     *
+     * @param iframe Iframe element.
      */
-    protected initIframeElement(): void {
-        if (!this.iframe) {
+    protected initIframeElement(iframe?: HTMLIFrameElement): void {
+        if (!iframe) {
             return;
         }
 
-        CoreIframeUtils.treatFrame(this.iframe, false);
+        CoreIframe.treatFrame(iframe, false);
 
-        this.iframe.addEventListener('load', () => {
+        iframe.addEventListener('load', () => {
             this.loading = false;
-            this.loaded.emit(this.iframe); // Notify iframe was loaded.
+            this.loaded.emit(iframe); // Notify iframe was loaded.
         });
 
-        this.iframe.addEventListener('error', () => {
+        iframe.addEventListener('error', () => {
             this.loading = false;
             CoreAlerts.showError(Translate.instant('core.errorloadingcontent'));
         });
@@ -193,7 +219,7 @@ export class CoreIframeComponent implements OnChanges, OnDestroy {
      */
     protected isInHiddenPage(): boolean {
         // If we can't find the parent ion-page, consider it to be hidden too.
-        return !this.elementRef.nativeElement.closest('.ion-page') || !!this.elementRef.nativeElement.closest('.ion-page-hidden');
+        return !this.element.closest('.ion-page') || !!this.element.closest('.ion-page-hidden');
     }
 
     /**
@@ -218,7 +244,7 @@ export class CoreIframeComponent implements OnChanges, OnDestroy {
         let url = this.src;
 
         if (url) {
-            const { launchExternal, label } = CoreIframeUtils.frameShouldLaunchExternal(url);
+            const { launchExternal, label } = CoreIframe.frameShouldLaunchExternal(url);
 
             if (launchExternal) {
                 this.launchExternalLabel = label;
@@ -232,7 +258,7 @@ export class CoreIframeComponent implements OnChanges, OnDestroy {
 
         if (url && !CoreUrl.isLocalFileUrl(url)) {
             url = CoreUrl.getYoutubeEmbedUrl(url) || url;
-            this.displayHelp = CoreIframeUtils.shouldDisplayHelpForUrl(url);
+            this.displayHelp = CoreIframe.shouldDisplayHelpForUrl(url);
 
             const currentSite = CoreSites.getCurrentSite();
             if (currentSite?.containsUrl(url)) {
@@ -253,7 +279,7 @@ export class CoreIframeComponent implements OnChanges, OnDestroy {
                 url = CoreUrl.getVimeoPlayerUrl(url, currentSite) ?? url;
             }
 
-            await CoreIframeUtils.fixIframeCookies(url);
+            await CoreIframe.fixIframeCookies(url);
         }
 
         this.safeUrl = url ? DomSanitizer.bypassSecurityTrustResourceUrl(CoreFile.convertFileSrc(url)) : undefined;
@@ -271,14 +297,13 @@ export class CoreIframeComponent implements OnChanges, OnDestroy {
      * Open help modal for iframes.
      */
     openIframeHelpModal(): void {
-        CoreIframeUtils.openIframeHelpModal();
+        CoreIframe.openIframeHelpModal();
     }
 
     /**
      * @inheritdoc
      */
     ngOnDestroy(): void {
-        this.orientationObs?.off();
         this.navSubscription?.unsubscribe();
         window.removeEventListener('message', this.messageListenerFunction);
 
@@ -291,6 +316,9 @@ export class CoreIframeComponent implements OnChanges, OnDestroy {
 
     /**
      * Toggle fullscreen mode.
+     *
+     * @param enable Whether to enable or disable fullscreen mode. If not set, it will toggle the current state.
+     * @param notifyIframe Whether to notify the iframe about the change. Defaults to true.
      */
     toggleFullscreen(enable?: boolean, notifyIframe = true): void {
         if (enable !== undefined) {
@@ -311,8 +339,9 @@ export class CoreIframeComponent implements OnChanges, OnDestroy {
 
         document.body.classList.toggle('core-iframe-fullscreen', this.fullscreen);
 
-        if (notifyIframe && this.iframe) {
-            this.iframe.contentWindow?.postMessage(
+        const iframe = this.iframe();
+        if (notifyIframe && iframe) {
+            iframe.contentWindow?.postMessage(
                 this.fullscreen ? 'enterFullScreen' : 'exitFullScreen',
                 '*',
             );
@@ -323,7 +352,6 @@ export class CoreIframeComponent implements OnChanges, OnDestroy {
      * Treat an iframe message event.
      *
      * @param event Event.
-     * @returns Promise resolved when done.
      */
     protected async onIframeMessage(event: MessageEvent): Promise<void> {
         if (event.data == 'enterFullScreen' && this.showFullscreenOnToolbar && !this.fullscreen) {
@@ -341,7 +369,7 @@ export class CoreIframeComponent implements OnChanges, OnDestroy {
             return;
         }
 
-        CoreIframeUtils.frameLaunchExternal(this.src, {
+        CoreIframe.frameLaunchExternal(this.src, {
             site: CoreSites.getCurrentSite(),
         });
     }

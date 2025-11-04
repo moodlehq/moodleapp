@@ -12,13 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, Input, ViewChild, OnDestroy, Type, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, OnDestroy, Type, viewChild, effect, input, signal } from '@angular/core';
 import { CoreBlockDelegate } from '../../services/block-delegate';
 import { CoreDynamicComponent } from '@components/dynamic-component/dynamic-component';
 import { Subscription } from 'rxjs';
-import { CoreCourseBlock } from '@/core/features/course/services/course';
+import { CoreCourseBlock } from '@features/course/services/course';
 import type { ICoreBlockComponent } from '@features/block/classes/base-block-component';
 import { ContextLevel } from '@/core/constants';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Component to render a block.
@@ -27,34 +28,36 @@ import { ContextLevel } from '@/core/constants';
     selector: 'core-block',
     templateUrl: 'core-block.html',
     styleUrl: 'block.scss',
+    imports: [
+        CoreSharedModule,
+    ],
 })
-export class CoreBlockComponent implements OnChanges, OnDestroy {
+export class CoreBlockComponent implements OnDestroy {
 
-    @ViewChild(CoreDynamicComponent) dynamicComponent?: CoreDynamicComponent<ICoreBlockComponent>;
+    readonly dynamicComponent = viewChild<CoreDynamicComponent<ICoreBlockComponent>>(CoreDynamicComponent);
 
-    @Input({ required: true }) block!: CoreCourseBlock; // The block to render.
-    @Input({ required: true }) contextLevel!: ContextLevel; // The context where the block will be used.
-    @Input({ required: true }) instanceId!: number; // The instance ID associated with the context level.
-    @Input() extraData?: Record<string, unknown>; // Any extra data to be passed to the block.
-    @Input() labelledBy?: string;
-
-    componentClass?: Type<ICoreBlockComponent>; // The class of the component to render.
-    data: Record<string, unknown> = {}; // Data to pass to the component.
-    class?: string; // CSS class to apply to the block.
-    loaded = false;
-    blockSubscription?: Subscription;
+    readonly block = input.required<CoreCourseBlock>(); // The block to render.
+    readonly contextLevel = input.required<ContextLevel>(); // The context where the block will be used.
+    readonly instanceId = input.required<number>(); // The instance ID associated with the context level.
+    readonly labelledBy = input<string>();
 
     /**
-     * @inheritdoc
+     * @deprecated since 5.1. Not used anymore.
      */
-    ngOnChanges(changes: SimpleChanges): void {
-        if (changes.block && this.block?.visible) {
-            this.updateBlock();
-        }
+    readonly extraData = input<unknown>(); // Any extra data to be passed to the block.
 
-        if (this.data && changes.extraData) {
-            this.data = Object.assign(this.data, this.extraData || {});
-        }
+    readonly componentClass = signal<Type<ICoreBlockComponent> | undefined>(undefined); // The class of the component to render.
+    readonly data = signal<Record<string, unknown>>({}); // Data to pass to the component.
+    readonly class = signal<string>(''); // CSS class to apply to the block.
+    readonly loaded = signal(false);
+    protected blockSubscription?: Subscription;
+
+    constructor() {
+        effect(() => {
+            if (this.block()?.visible) {
+                this.updateBlock();
+            }
+        });
     }
 
     /**
@@ -62,8 +65,12 @@ export class CoreBlockComponent implements OnChanges, OnDestroy {
      * available blocks are updated (because it comes from a site plugin).
      */
     async updateBlock(): Promise<void> {
+        const block = this.block();
+        const contextLevel = this.contextLevel();
+        const instanceId = this.instanceId();
+
         try {
-            const data = await CoreBlockDelegate.getBlockDisplayData(this.block, this.contextLevel, this.instanceId);
+            const data = await CoreBlockDelegate.getBlockDisplayData(block, contextLevel, instanceId);
 
             if (!data) {
                 // Block not supported, don't render it. But, site plugins might not have finished loading.
@@ -72,7 +79,6 @@ export class CoreBlockComponent implements OnChanges, OnDestroy {
                 this.blockSubscription = CoreBlockDelegate.blocksUpdateObservable.subscribe(
                     (): void => {
                         this.blockSubscription?.unsubscribe();
-                        delete this.blockSubscription;
                         this.updateBlock();
                     },
                 );
@@ -80,24 +86,27 @@ export class CoreBlockComponent implements OnChanges, OnDestroy {
                 return;
             }
 
-            this.class = data.class;
-            this.componentClass = data.component;
+            this.class.set(data.class ?? '');
+            this.componentClass.set(data.component);
 
             // Set up the data needed by the block component.
-            this.data = Object.assign({
-                title: data.title,
-                block: this.block,
-                contextLevel: this.contextLevel,
-                instanceId: this.instanceId,
-                link: data.link || null,
-                linkParams: data.linkParams || null,
-                navOptions: data.navOptions || null,
-            }, this.extraData || {}, data.componentData || {});
+            this.data.update(() => Object.assign(
+                {
+                    title: data.title,
+                    block,
+                    contextLevel,
+                    instanceId,
+                    link: data.link || null,
+                    linkParams: data.linkParams || null,
+                    navOptions: data.navOptions || null,
+                },
+                data.componentData ?? {},
+            ));
         } catch {
             // Ignore errors.
         }
 
-        this.loaded = true;
+        this.loaded.set(true);
     }
 
     /**
@@ -105,18 +114,20 @@ export class CoreBlockComponent implements OnChanges, OnDestroy {
      */
     ngOnDestroy(): void {
         this.blockSubscription?.unsubscribe();
-        delete this.blockSubscription;
     }
 
     /**
-     * Invalidate some data.
-     *
-     * @returns Promise resolved when done.
+     * Invalidate block data.
      */
     async invalidate(): Promise<void> {
-        if (this.dynamicComponent) {
-            await this.dynamicComponent.callComponentMethod('invalidateContent');
-        }
+        await this.dynamicComponent()?.callComponentMethod('invalidateContent');
+    }
+
+    /**
+     * Fetch block data.
+     */
+    async reload(): Promise<void> {
+        await this.dynamicComponent()?.callComponentMethod('reloadContent');
     }
 
 }

@@ -23,6 +23,7 @@ import { CoreText } from '@singletons/text';
 import { CoreScreen } from '@services/screen';
 import { CorePlatform } from '@services/platform';
 import {
+    CoreMainMenuPlacement,
     MAIN_MENU_HANDLER_BADGE_UPDATED_EVENT,
     MAIN_MENU_ITEM_MIN_WIDTH,
     MAIN_MENU_MORE_PAGE_NAME,
@@ -132,7 +133,7 @@ export class CoreMainMenuProvider {
                 return;
             }
 
-            const id = url + '#' + type;
+            const id = `${url}#${type}`;
             if (!icon) {
                 // Icon not defined, use default one.
                 icon = type == 'embedded' ? 'fas-expand' : 'fas-link'; // @todo Find a better icon for embedded.
@@ -169,8 +170,8 @@ export class CoreMainMenuProvider {
             const entry = map[id];
             let data = entry.labels[currentLangApp]
                 ?? entry.labels[currentLangLMS]
-                ?? entry.labels[currentLangApp + '_only']
-                ?? entry.labels[currentLangLMS + '_only']
+                ?? entry.labels[`${currentLangApp}_only`]
+                ?? entry.labels[`${currentLangLMS}_only`]
                 ?? entry.labels.none
                 ?? entry.labels[fallbackLang];
 
@@ -271,8 +272,8 @@ export class CoreMainMenuProvider {
      *
      * @returns Tabs placement including side value.
      */
-    getTabPlacement(): 'bottom' | 'side' {
-        return CoreScreen.isTablet ? 'side' : 'bottom';
+    getTabPlacement(): CoreMainMenuPlacement {
+        return CoreScreen.isTablet ? CoreMainMenuPlacement.SIDE : CoreMainMenuPlacement.BOTTOM;
     }
 
     /**

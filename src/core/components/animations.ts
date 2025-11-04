@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+/* eslint-disable @typescript-eslint/no-deprecated */
 import { trigger, style, transition, animate, keyframes } from '@angular/animations';
 
 /**
@@ -19,6 +20,9 @@ import { trigger, style, transition, animate, keyframes } from '@angular/animati
  */
 export class CoreAnimations {
 
+    /**
+     * @deprecated since 5.1. Use animate.enter="show-animation" animate.leave="hide-animation" instead.
+     */
     static readonly SHOW_HIDE = trigger('coreShowHideAnimation', [
         transition(':enter', [
             style({ opacity: 0 }),
@@ -30,6 +34,9 @@ export class CoreAnimations {
         ]),
     ]);
 
+     /**
+      * @deprecated since 5.1. Use animate.enter="slide-in-left/right" animate.leave="slide-out-left/right" instead.
+      */
     static readonly SLIDE_IN_OUT = trigger('coreSlideInOut', [
         // Enter animation.
         transition('void => fromLeft', [

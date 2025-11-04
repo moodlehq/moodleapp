@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, Input, Output, ElementRef, OnChanges, SimpleChange, EventEmitter, OnDestroy } from '@angular/core';
+import { Component, Input, Output, OnChanges, SimpleChange, EventEmitter, OnDestroy, inject } from '@angular/core';
 import { NavigationEnd, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { filter } from 'rxjs/operators';
@@ -31,6 +31,7 @@ import { CoreH5PHelper } from '../../classes/helper';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 import { toBoolean } from '@/core/transforms/boolean';
 import { CoreAlerts } from '@services/overlays/alerts';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Component to render an iframe with an H5P package.
@@ -38,6 +39,9 @@ import { CoreAlerts } from '@services/overlays/alerts';
 @Component({
     selector: 'core-h5p-iframe',
     templateUrl: 'core-h5p-iframe.html',
+    imports: [
+        CoreSharedModule,
+    ],
 })
 export class CoreH5PIframeComponent implements OnChanges, OnDestroy {
 
@@ -65,10 +69,9 @@ export class CoreH5PIframeComponent implements OnChanges, OnDestroy {
     protected subscription: Subscription;
     protected iframeLoadedOnce = false;
 
-    constructor(
-        public elementRef: ElementRef,
-        router: Router,
-    ) {
+    constructor() {
+        const router = inject(Router);
+
         this.logger = CoreLogger.getInstance('CoreH5PIframeComponent');
         this.site = CoreSites.getRequiredCurrentSite();
         this.siteId = this.site.getId();
@@ -88,7 +91,7 @@ export class CoreH5PIframeComponent implements OnChanges, OnDestroy {
     }
 
     /**
-     * Detect changes on input properties.
+     * @inheritdoc
      */
     ngOnChanges(changes: {[name: string]: SimpleChange}): void {
         // If it's already playing don't change it.
@@ -139,8 +142,8 @@ export class CoreH5PIframeComponent implements OnChanges, OnDestroy {
             } else {
                 // Never allow downloading in the app. This will only work if the user is allowed to change the params.
                 const src = this.onlinePlayerUrl.replace(
-                    CoreH5PCore.DISPLAY_OPTION_DOWNLOAD + '=1',
-                    CoreH5PCore.DISPLAY_OPTION_DOWNLOAD + '=0',
+                    `${CoreH5PCore.DISPLAY_OPTION_DOWNLOAD}=1`,
+                    `${CoreH5PCore.DISPLAY_OPTION_DOWNLOAD}=0`,
                 );
 
                 // Add the preventredirect param so the user can authenticate.
@@ -176,7 +179,7 @@ export class CoreH5PIframeComponent implements OnChanges, OnDestroy {
             );
 
             return url;
-        } catch (error) {
+        } catch {
             // Index file doesn't exist, probably deleted because a lib was updated. Try to create it again.
             try {
                 const path = await CoreFilepool.getInternalUrlByUrl(this.siteId, this.fileUrl!);

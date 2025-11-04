@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { AbstractType, Component, CUSTOM_ELEMENTS_SCHEMA, EventEmitter, Type, ViewChild } from '@angular/core';
+import { Component, CUSTOM_ELEMENTS_SCHEMA, EventEmitter, ProviderToken, Signal, Type, viewChild } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { Observable, of, Subject } from 'rxjs';
@@ -32,16 +32,15 @@ import { TranslateModule, TranslateService, TranslateStore } from '@ngx-translat
 import { CoreIonLoadingElement } from '@classes/ion-loading';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { DefaultUrlSerializer, UrlSerializer } from '@angular/router';
-import { CoreUtils, CoreUtilsProvider } from '@services/utils/utils';
 import { Equal } from '@/core/utils/types';
 
 abstract class WrapperComponent<U> {
 
-    child!: U;
+    readonly child!: Signal<U>;
 
 }
 
-type ServiceInjectionToken = AbstractType<unknown> | Type<unknown> | string;
+type ServiceInjectionToken<Service = unknown> = ProviderToken<Service>;
 
 let testBedInitialized = false;
 const DEFAULT_SERVICE_SINGLETON_MOCKS: [CoreSingletonProxy, unknown][] = [
@@ -73,9 +72,6 @@ const DEFAULT_SERVICE_SINGLETON_MOCKS: [CoreSingletonProxy, unknown][] = [
     [CoreLoadings, mock({
         show: () => Promise.resolve(mock<CoreIonLoadingElement>({ dismiss: jest.fn() })),
     })],
-    [CoreUtils, mock(new CoreUtilsProvider(), {
-        nextTick: () => Promise.resolve(),
-    })],
 ];
 
 /**
@@ -86,25 +82,44 @@ const DEFAULT_SERVICE_SINGLETON_MOCKS: [CoreSingletonProxy, unknown][] = [
  * @returns A promise that resolves to the testing component fixture.
  */
 async function renderAngularComponent<T>(component: Type<T>, config: RenderConfig): Promise<TestingComponentFixture<T>> {
-    config.declarations.push(component);
+    config.standalone = config.standalone ?? true;
 
-    TestBed.configureTestingModule({
-        declarations: [
-            ...getDefaultDeclarations(),
-            ...config.declarations,
-        ],
-        providers: [
-            ...getDefaultProviders(config),
-            ...config.providers,
-        ],
-        schemas: [CUSTOM_ELEMENTS_SCHEMA],
-        imports: [
-            BrowserModule,
-            NoopAnimationsModule,
-            TranslateModule.forChild(),
-            ...config.imports,
-        ],
-    });
+    if (!config.standalone) {
+        config.declarations.push(component);
+
+        TestBed.configureTestingModule({
+            declarations: [
+                ...config.declarations,
+            ],
+            providers: [
+                ...getDefaultProviders(config),
+                ...config.providers,
+            ],
+            schemas: [CUSTOM_ELEMENTS_SCHEMA],
+            imports: [
+                BrowserModule,
+                // eslint-disable-next-line @typescript-eslint/no-deprecated
+                NoopAnimationsModule,
+                TranslateModule.forChild(),
+                CoreExternalContentDirectiveStub,
+                ...config.imports,
+            ],
+        });
+    } else {
+        TestBed.configureTestingModule({
+            providers: [
+                ...getDefaultProviders(config),
+                ...config.providers,
+            ],
+            imports: [
+                component,
+                // eslint-disable-next-line @typescript-eslint/no-deprecated
+                NoopAnimationsModule,
+                CoreExternalContentDirectiveStub,
+                ...config.imports,
+            ],
+        });
+    }
 
     testBedInitialized = true;
 
@@ -112,7 +127,7 @@ async function renderAngularComponent<T>(component: Type<T>, config: RenderConfi
 
     const fixture = TestBed.createComponent(component);
 
-    fixture.autoDetectChanges(true);
+    fixture.autoDetectChanges();
 
     await fixture.whenRenderingDone();
     await fixture.whenStable();
@@ -128,25 +143,19 @@ async function renderAngularComponent<T>(component: Type<T>, config: RenderConfi
  * @returns The wrapper component class.
  */
 function createWrapperComponent<U>(template: string, componentClass: Type<U>): Type<WrapperComponent<U>> {
-    @Component({ template })
+    @Component({
+        template,
+        imports: [
+            componentClass,
+        ],
+    })
     class HostComponent extends WrapperComponent<U> {
 
-        @ViewChild(componentClass) child!: U;
+        readonly child = viewChild.required<U>(componentClass);
 
     }
 
     return HostComponent;
-}
-
-/**
- * Gets the default declarations for testing.
- *
- * @returns An array of default declarations.
- */
-function getDefaultDeclarations(): unknown[] {
-    return [
-        CoreExternalContentDirectiveStub,
-    ];
 }
 
 /**
@@ -188,12 +197,13 @@ function getDefaultProviders(config: RenderConfig): unknown[] {
  * @param injectionToken The injection token for the service.
  * @returns The service instance or null if not found.
  */
-function resolveServiceInstanceFromTestBed(injectionToken: Exclude<ServiceInjectionToken, string>): Record<string, unknown> | null {
+function resolveServiceInstanceFromTestBed<Service = unknown>
+    (injectionToken: Exclude<ServiceInjectionToken<Service>, string>): Service | null {
     if (!testBedInitialized) {
         return null;
     }
 
-    return TestBed.inject(injectionToken) as Record<string, unknown> | null;
+    return TestBed.inject<Service>(injectionToken);
 }
 
 /**
@@ -202,12 +212,16 @@ function resolveServiceInstanceFromTestBed(injectionToken: Exclude<ServiceInject
  * @param injectionToken The injection token for the service.
  * @returns The new service instance or null if an error occurs.
  */
-function createNewServiceInstance(injectionToken: Exclude<ServiceInjectionToken, string>): Record<string, unknown> | null {
+function createNewServiceInstance<Service = unknown>
+    (injectionToken: Exclude<ServiceInjectionToken<Service>, string>): Service | null {
     try {
-        const constructor = injectionToken as { new (): Record<string, unknown> };
+        const constructor = injectionToken as { new (): Service };
 
         return new constructor();
-    } catch (e) {
+    } catch (error){
+        // eslint-disable-next-line no-console
+        console.log(error);
+
         return null;
     }
 }
@@ -217,6 +231,7 @@ export interface RenderConfig {
     providers: unknown[];
     imports: unknown[];
     translations?: Record<string, string>;
+    standalone?: boolean;
 }
 
 export interface RenderPageConfig extends RenderConfig {
@@ -287,10 +302,10 @@ export function requireElement<E = HTMLElement>(
  * @param overrides Object with the properties or methods to override, or a list of methods to override with an empty function.
  * @returns Mock instance.
  */
-export function mock<T>(
-    instance: T | Partial<T> = {},
+export function mock<Service>(
+    instance: Service | Partial<Service> = {},
     overrides: string[] | Record<string, unknown> = {},
-): T {
+): Service {
     // If overrides is an object, apply them to the instance.
     if (!Array.isArray(overrides)) {
         Object.assign(instance as Record<string, unknown>, overrides);
@@ -314,15 +329,16 @@ export function mock<T>(
         }
     }
 
-    return instance as T;
+    return instance as Service;
 }
 
-export function mockSingleton<T>(singletonClass: CoreSingletonProxy<T>, instance: T | Partial<T>): T;
-export function mockSingleton<T>(
-    singletonClass: CoreSingletonProxy<unknown>,
+export function mockSingleton<Service =
+    Record<string, unknown>>(singletonClass: CoreSingletonProxy<Service>, instance: Service | Partial<Service>): Service;
+export function mockSingleton<Service>(
+    singletonClass: CoreSingletonProxy<Service>,
     methods: string[],
     instance?: Record<string, unknown>,
-): T;
+): Service;
 
 /**
  * Mocks a singleton instance for testing purposes.
@@ -332,15 +348,15 @@ export function mockSingleton<T>(
  * @param properties If `methodsOrProperties` is an array, this object contains the properties to mock.
  * @returns The mocked singleton instance.
  */
-export function mockSingleton<T>(
-    singleton: CoreSingletonProxy<T>,
+export function mockSingleton<Service>(
+    singleton: CoreSingletonProxy<Service>,
     methodsOrProperties: string[] | Record<string, unknown> = [],
     properties: Record<string, unknown> = {},
-): T {
+): Service {
     properties = Array.isArray(methodsOrProperties) ? properties : methodsOrProperties;
 
     const methods = Array.isArray(methodsOrProperties) ? methodsOrProperties : [];
-    const instance = getServiceInstance(singleton.injectionToken) as T;
+    const instance = getServiceInstance(singleton.injectionToken) as Service;
     const mockInstance = mock(instance, methods);
     const mockInstancePrototype = Object.getPrototypeOf(mockInstance);
 
@@ -380,13 +396,10 @@ export function resetTestingEnvironment(): void {
  * @param injectionToken The injection token for the desired service.
  * @returns The service instance or an empty object.
  */
-export function getServiceInstance(injectionToken: ServiceInjectionToken): Record<string, unknown> {
-    if (typeof injectionToken === 'string') {
-        return {};
-    }
-
-    return resolveServiceInstanceFromTestBed(injectionToken)
-        ?? createNewServiceInstance(injectionToken)
+export function getServiceInstance<Service = unknown>
+    (injectionToken: ServiceInjectionToken<Service>): Record<string, unknown> {
+    return resolveServiceInstanceFromTestBed<Service>(injectionToken)
+        ?? createNewServiceInstance<Service>(injectionToken)
         ?? {};
 }
 
@@ -447,8 +460,12 @@ export async function renderTemplate<T>(
     template: string,
     config: Partial<RenderConfig> = {},
 ): Promise<WrapperComponentFixture<T>> {
-    config.declarations = config.declarations ?? [];
-    config.declarations.push(component);
+    config.standalone = config.standalone ?? true;
+
+    if (!config.standalone) {
+        config.declarations = config.declarations ?? [];
+        config.declarations.push(component);
+    }
 
     return renderAngularComponent(
         createWrapperComponent(template, component),

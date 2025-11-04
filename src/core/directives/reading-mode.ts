@@ -12,18 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import {
-    AfterViewInit,
-    Directive,
-    ElementRef,
-    OnDestroy,
-} from '@angular/core';
+import { AfterViewInit, Directive, ElementRef, OnDestroy, inject } from '@angular/core';
 
 import { Translate } from '@singletons';
 import { CoreIcons } from '@singletons/icons';
 import { CoreDom } from '@singletons/dom';
 import { CoreWait } from '@singletons/wait';
-import { CoreCancellablePromise } from '@classes/cancellable-promise';
 import { CoreModals } from '@services/overlays/modals';
 import { CoreViewer } from '@features/viewer/services/viewer';
 import { CoreDirectivesRegistry } from '@singletons/directives-registry';
@@ -41,21 +35,14 @@ import { CoreLogger } from '@singletons/logger';
 })
 export class CoreReadingModeDirective implements AfterViewInit, OnDestroy {
 
-    protected element: HTMLElement;
-    protected viewportPromise?: CoreCancellablePromise<void>;
+    protected element: HTMLElement = inject(ElementRef).nativeElement;
+    protected viewportPromise = CoreDom.waitToBeInViewport(this.element);
     protected disabledStyles: HTMLStyleElement[] = [];
     protected hiddenElements: HTMLElement[] = [];
     protected renamedStyles: HTMLElement[] = [];
     protected enabled = false;
     protected header?: CoreCollapsibleHeaderDirective;
     protected logger = CoreLogger.getInstance('CoreReadingModeDirective');
-
-    constructor(
-        element: ElementRef,
-    ) {
-        this.element = element.nativeElement;
-        this.viewportPromise = CoreDom.waitToBeInViewport(this.element);
-    }
 
     /**
      * @inheritdoc
@@ -64,8 +51,10 @@ export class CoreReadingModeDirective implements AfterViewInit, OnDestroy {
         await this.viewportPromise;
         await CoreWait.nextTick();
         await this.addTextViewerButton();
+        this.element.classList.add('core-reading-mode-ready');
 
-        this.enabled = document.body.classList.contains('core-reading-mode-enabled');
+        this.enabled = CoreViewer.isReadingModeEnabledOnEnter();
+        CoreViewer.increaseReadingModeCounter();
         if (this.enabled) {
             await this.enterReadingMode();
         }
@@ -96,6 +85,7 @@ export class CoreReadingModeDirective implements AfterViewInit, OnDestroy {
         const collapsibleHeader = CoreDirectivesRegistry.resolve(header, CoreCollapsibleHeaderDirective);
         if (collapsibleHeader) {
             this.header = collapsibleHeader;
+            await this.header.ready();
         }
 
         const label = Translate.instant('core.viewer.enterreadingmode');
@@ -109,13 +99,9 @@ export class CoreReadingModeDirective implements AfterViewInit, OnDestroy {
         const src = CoreIcons.getIconSrc('font-awesome', 'solid', iconName);
         // Add an ion-icon item to apply the right styles, but the ion-icon component won't be executed.
         button.innerHTML = `<ion-icon name="fas-${iconName}" aria-hidden="true" src="${src}"></ion-icon>`;
-        buttonsContainer.appendChild(button);
+        buttonsContainer.prepend(button);
 
         button.addEventListener('click', (e: Event) => {
-            if (!this.element.innerHTML) {
-                return;
-            }
-
             e.preventDefault();
             e.stopPropagation();
 
@@ -137,35 +123,43 @@ export class CoreReadingModeDirective implements AfterViewInit, OnDestroy {
         await this.header?.setEnabled(false);
 
         document.body.classList.add('core-reading-mode-enabled');
+        CoreViewer.setReadingModeEnabledOnEnter(true);
 
-        // Disable all styles in element.
-        this.disabledStyles = Array.from(this.element.querySelectorAll('style:not(disabled)'));
-        this.disabledStyles.forEach((style) => {
-            style.disabled = true;
-        });
+        const elements = document.body.querySelectorAll('[core-reading-mode].core-reading-mode-ready');
 
-        // Rename style attributes on DOM elements.
-        this.renamedStyles = Array.from(this.element.querySelectorAll('*[style]'));
-        this.renamedStyles.forEach((element: HTMLElement) => {
-            this.renamedStyles.push(element);
-            element.setAttribute('data-original-style', element.getAttribute('style') || '');
-            element.removeAttribute('style');
-        });
-
-        // Navigate to parent hidding all other elements.
-        let currentChild = this.element;
-        let parent = currentChild.parentElement;
-        while (parent && parent.tagName.toLowerCase() !== 'ion-content') {
-            Array.from(parent.children).forEach((child: HTMLElement) => {
-                if (child !== currentChild && child.tagName.toLowerCase() !== 'swiper-slide') {
-                    this.hiddenElements.push(child);
-                    child.classList.add('hide-on-reading-mode');
-                }
+        elements.forEach((element: HTMLElement) => {
+            // Disable all styles in element.
+            const disabledStyles: HTMLStyleElement[] = Array.from(element.querySelectorAll('style:not(disabled)'));
+            disabledStyles.forEach((style) => {
+                style.disabled = true;
             });
 
-            currentChild = parent;
-            parent = currentChild.parentElement;
-        }
+            this.disabledStyles = this.disabledStyles.concat(disabledStyles);
+
+            // Rename style attributes on DOM elements.
+            this.renamedStyles = Array.from(element.querySelectorAll('*[style]'));
+            this.renamedStyles.forEach((element: HTMLElement) => {
+                element.setAttribute('data-original-style', element.getAttribute('style') || '');
+                element.removeAttribute('style');
+            });
+
+            // Navigate to parent hidding all other elements.
+            let currentChild = element;
+            let parent = currentChild.parentElement;
+            while (parent && parent.tagName.toLowerCase() !== 'ion-content') {
+                Array.from(parent.children).forEach((child: HTMLElement) => {
+                    if (child !== currentChild && child.tagName.toLowerCase() !== 'swiper-slide') {
+                        this.hiddenElements.push(child);
+                        child.classList.add('hide-on-reading-mode');
+                    }
+                });
+
+                currentChild = parent;
+                parent = currentChild.parentElement;
+            }
+
+            element.classList.remove('core-reading-mode-ready');
+        });
     }
 
     /**
@@ -176,6 +170,7 @@ export class CoreReadingModeDirective implements AfterViewInit, OnDestroy {
 
         this.enabled = false;
         document.body.classList.remove('core-reading-mode-enabled');
+        CoreViewer.setReadingModeEnabledOnEnter(false);
 
         // Enable all styles in element.
         this.disabledStyles.forEach((style) => {
@@ -194,6 +189,11 @@ export class CoreReadingModeDirective implements AfterViewInit, OnDestroy {
             element.classList.remove('hide-on-reading-mode');
         });
         this.hiddenElements = [];
+
+        const elements = document.body.querySelectorAll('[core-reading-mode]');
+        elements.forEach((element: HTMLElement) => {
+            element.classList.add('core-reading-mode-ready');
+        });
     }
 
     /**
@@ -219,14 +219,11 @@ export class CoreReadingModeDirective implements AfterViewInit, OnDestroy {
      * @inheritdoc
      */
     ngOnDestroy(): void {
-        this.viewportPromise?.cancel();
+        this.viewportPromise.cancel();
 
-        if (this.enabled && document.body.querySelectorAll('[core-reading-mode]')) {
-            // Do not disable if there are more instances of the directive in the DOM.
-
-            return;
-        }
-        this.disableReadingMode();
+        // Disable reading mode should be done by the user.
+        CoreViewer.decreaseReadingModeCounter();
+        document.body.classList.toggle('core-reading-mode-enabled', CoreViewer.isReadingModeEnabled());
     }
 
 }

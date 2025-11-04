@@ -209,14 +209,12 @@ export class CoreStylesService {
      *
      * @param siteId Site Id.
      * @param handler Style handler.
-     * @param disabled Whether the element should be disabled.
      * @param config Site public config.
      * @returns New element.
      */
     protected async setStyle(
         siteId: string,
         handler: CoreStyleHandler,
-        disabled: boolean,
         config?: CoreSitePublicConfigResponse,
     ): Promise<void> {
         let contents = '';
@@ -243,11 +241,12 @@ export class CoreStylesService {
             return;
         }
 
+        const isDisabled = this.isStylElementDisabled(styleEl);
         styleEl.innerHTML = contents;
         this.stylesEls[siteId][handler.name] = hash;
 
         // Adding styles to a style element automatically enables it. Disable it again if needed.
-        this.disableStyleElement(styleEl, disabled);
+        this.disableStyleElement(styleEl, isDisabled);
     }
 
     /**
@@ -336,6 +335,17 @@ export class CoreStylesService {
     }
 
     /**
+     * Check if a style element is disabled.
+     *
+     * @param element Element to check.
+     * @returns True if it's disabled.
+     */
+    protected isStylElementDisabled(element: HTMLStyleElement): boolean {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        return (<any> element).disabled ?? element.getAttribute('media') === 'disabled';
+    }
+
+    /**
      * Enable the styles of a certain site.
      *
      * @param siteId Site ID. If not defined, current site.
@@ -374,7 +384,7 @@ export class CoreStylesService {
         }
 
         await CorePromiseUtils.allPromises(this.styleHandlers.map(async (handler) => {
-            await this.setStyle(siteIdentifier, handler, disabled);
+            await this.setStyle(siteIdentifier, handler);
         }));
 
         if (!disabled) {
@@ -393,7 +403,7 @@ export class CoreStylesService {
         this.createStyleElements(CoreStylesService.TMP_SITE_ID, true);
 
         await CorePromiseUtils.allPromises(this.styleHandlers.map(async (handler) => {
-            await this.setStyle(CoreStylesService.TMP_SITE_ID, handler, false, config);
+            await this.setStyle(CoreStylesService.TMP_SITE_ID, handler, config);
         }));
 
         CoreApp.setSystemUIColors();

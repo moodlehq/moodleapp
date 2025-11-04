@@ -24,7 +24,7 @@ import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreConstants } from '@/core/constants';
 import { CoreConfig } from '@services/config';
 import { CoreFilter } from '@features/filter/services/filter';
-import { CoreCourse } from '@features/course/services/course';
+import { CoreCourseDownloadStatusHelper } from '@features/course/services/course-download-status-helper';
 import { makeSingleton, Translate } from '@singletons';
 import { CoreError } from '@classes/errors/error';
 import { Observable, Subject } from 'rxjs';
@@ -139,7 +139,7 @@ export class CoreSettingsHelperProvider {
         promises.push(site.deleteFolder().then(() => {
             CoreFilepool.clearAllPackagesStatus(siteId);
             CoreFilepool.clearFilepool(siteId);
-            CoreCourse.clearAllCoursesStatus(siteId);
+            CoreCourseDownloadStatusHelper.clearAllCoursesStatus(siteId);
 
             siteInfo.spaceUsage = 0;
 
@@ -183,8 +183,8 @@ export class CoreSettingsHelperProvider {
             spaceUsage: 0,
         };
 
-        siteInfo.cacheEntries = await this.calcSiteClearRows(site);
-        siteInfo.spaceUsage = await site.getTotalUsage();
+        siteInfo.cacheEntries = await CorePromiseUtils.ignoreErrors(this.calcSiteClearRows(site), 0);
+        siteInfo.spaceUsage = await CorePromiseUtils.ignoreErrors(site.getTotalUsage(), 0);
 
         return siteInfo;
     }
@@ -241,7 +241,7 @@ export class CoreSettingsHelperProvider {
         } else if (hasSyncHandlers && !CoreNetwork.isOnline()) {
             // We need connection to execute sync.
             throw new CoreError(Translate.instant('core.settings.cannotsyncoffline'));
-        } else if (hasSyncHandlers && syncOnlyOnWifi && CoreNetwork.isNetworkAccessLimited()) {
+        } else if (hasSyncHandlers && syncOnlyOnWifi && CoreNetwork.isCellular()) {
             throw new CoreError(Translate.instant('core.settings.cannotsyncwithoutwifi'));
         }
 
@@ -385,7 +385,7 @@ export class CoreSettingsHelperProvider {
     applyZoomLevel(zoomLevel: CoreZoomLevel): void {
         const zoom = CoreConstants.CONFIG.zoomlevels[zoomLevel];
 
-        document.documentElement.style.setProperty('--zoom-level', zoom + '%');
+        document.documentElement.style.setProperty('--zoom-ratio', `${zoom / 100}`);
     }
 
     /**
@@ -403,7 +403,7 @@ export class CoreSettingsHelperProvider {
             return;
         }
 
-        element.setAttribute('content', content.replace(/maximum-scale=\d\.\d/, `maximum-scale=${pinchToZoom ? '4.0' : '1.0'}`));
+        element.setAttribute('content', content.replace(/maximum-scale=\d\.\d/, `maximum-scale=${pinchToZoom ? '2.0' : '1.0'}`));
 
         // Force layout reflow.
         document.body.style.width = '99.9999%';
@@ -462,12 +462,21 @@ export class CoreSettingsHelperProvider {
     }
 
     /**
+     * Check if the dark mode is enabled.
+     *
+     * @returns True if the dark mode is enabled, false otherwise.
+     */
+    isDarkModeEnabled(): boolean {
+        return CoreHTMLClasses.hasModeClass('dark');
+    }
+
+    /**
      * Toggles dark mode based on enabled boolean.
      *
      * @param enable True to enable dark mode, false to disable.
      */
     protected toggleDarkMode(enable: boolean = false): void {
-        const isDark = CoreHTMLClasses.hasModeClass('dark');
+        const isDark = this.isDarkModeEnabled();
 
         if (isDark !== enable) {
             CoreHTMLClasses.toggleModeClass('dark', enable);

@@ -28,7 +28,7 @@ import { CoreNavigator } from '@services/navigator';
 import { CoreSites } from '@services/sites';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { makeSingleton } from '@singletons';
-import { GRADES_PAGE_NAME } from '../grades-helper';
+import { GRADES_PAGE_NAME } from '../../constants';
 
 /**
  * Profile grades handler.
@@ -36,7 +36,8 @@ import { GRADES_PAGE_NAME } from '../grades-helper';
 @Injectable({ providedIn: 'root' })
 export class CoreGradesUserHandlerService implements CoreUserProfileHandler {
 
-    name = 'CoreGrades'; // This name doesn't match any disabled feature, they'll be checked in isEnabledForContext.
+    // This name doesn't match any disabled feature, they'll be checked in isEnabledForContext.
+    name = 'CoreGrades:fakename';
     priority = 500;
     type = CoreUserProfileHandlerType.LIST_ITEM;
     cacheEnabled = true;
@@ -59,8 +60,7 @@ export class CoreGradesUserHandlerService implements CoreUserProfileHandler {
         }
 
         if (context === CoreUserDelegateContext.USER_MENU) {
-            // This option used to belong to main menu, check the original disabled feature value.
-            if (currentSite.isFeatureDisabled('CoreMainMenuDelegate_CoreGrades')) {
+            if (currentSite.isFeatureDisabled('CoreUserDelegate_CoreGrades')) {
                 return false;
             }
         } else if (currentSite.isFeatureDisabled('CoreUserDelegate_CoreGrades:viewGrades')) {
@@ -83,7 +83,7 @@ export class CoreGradesUserHandlerService implements CoreUserProfileHandler {
         }
 
         // All course grades only available for the current user.
-        return user.id == CoreSites.getCurrentSiteUserId();
+        return user.id === CoreSites.getCurrentSiteUserId();
     }
 
     /**

@@ -34,6 +34,9 @@ import { CoreAlerts } from '@services/overlays/alerts';
  */
 @Directive({
     selector: '[core-link]',
+    host: {
+        href: 'href', // Make sure href is in the DOM for a11y.
+    },
 })
 export class CoreLinkDirective implements OnInit {
 
@@ -50,9 +53,10 @@ export class CoreLinkDirective implements OnInit {
     protected element: HTMLElement | HTMLIonFabButtonElement | HTMLIonButtonElement | HTMLIonItemElement;
 
     constructor(
+        // eslint-disable-next-line @angular-eslint/prefer-inject
         element: ElementRef,
     ) {
-        this.element = element.nativeElement;
+        this.element = element.nativeElement;  // This is done that way to let format text create a directive.
     }
 
     /**
@@ -126,7 +130,7 @@ export class CoreLinkDirective implements OnInit {
             // Look for id or name.
             href = href.substring(1);
             const container = this.element.closest<HTMLIonContentElement>('ion-content');
-            if (container) {
+            if (container && href.length > 0) {
                 CoreDom.scrollToElement(
                     container,
                     `#${href}, [name='${href}']`,
@@ -161,7 +165,7 @@ export class CoreLinkDirective implements OnInit {
         if (!CoreFileHelper.isOpenableInApp({ filename })) {
             try {
                 await CoreFileHelper.showConfirmOpenUnsupportedFile(false, { filename });
-            } catch (error) {
+            } catch {
                 return; // Cancelled, stop.
             }
         }

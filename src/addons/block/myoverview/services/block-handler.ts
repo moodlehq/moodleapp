@@ -16,9 +16,9 @@ import { Injectable } from '@angular/core';
 import { CoreSites } from '@services/sites';
 import { CoreBlockHandlerData } from '@features/block/services/block-delegate';
 import { CoreCourses } from '@features/courses/services/courses';
-import { AddonBlockMyOverviewComponent } from '../components/myoverview/myoverview';
 import { CoreBlockBaseHandler } from '@features/block/classes/base-block-handler';
 import { makeSingleton } from '@singletons';
+import { ADDON_BLOCK_MYOVERVIEW_BLOCK_NAME } from '../constants';
 
 /**
  * Block handler.
@@ -27,12 +27,10 @@ import { makeSingleton } from '@singletons';
 export class AddonBlockMyOverviewHandlerService extends CoreBlockBaseHandler {
 
     name = 'AddonBlockMyOverview';
-    blockName = 'myoverview';
+    blockName = ADDON_BLOCK_MYOVERVIEW_BLOCK_NAME;
 
     /**
-     * Check if the handler is enabled on a site level.
-     *
-     * @returns Whether or not the handler is enabled on a site level.
+     * @inheritdoc
      */
     async isEnabled(): Promise<boolean> {
         return (CoreSites.getCurrentSite()?.isVersionGreaterEqualThan('3.6')) ||
@@ -40,11 +38,10 @@ export class AddonBlockMyOverviewHandlerService extends CoreBlockBaseHandler {
     }
 
     /**
-     * Returns the data needed to render the block.
-     *
-     * @returns Data or promise resolved with the data.
+     * @inheritdoc
      */
-    getDisplayData(): CoreBlockHandlerData {
+    async getDisplayData(): Promise<CoreBlockHandlerData> {
+        const { AddonBlockMyOverviewComponent } = await import('../components/myoverview/myoverview');
 
         return {
             title: 'addon.block_myoverview.pluginname',

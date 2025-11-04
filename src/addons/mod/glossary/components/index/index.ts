@@ -13,19 +13,17 @@
 // limitations under the License.
 
 import { ContextLevel } from '@/core/constants';
-import { AfterViewInit, Component, OnDestroy, OnInit, Optional, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, OnDestroy, OnInit, viewChild, inject } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { CoreListItemsManager } from '@classes/items-management/list-items-manager';
 import { CoreRoutedItemsManagerSourcesTracker } from '@classes/items-management/routed-items-manager-sources-tracker';
 import { CorePromisedValue } from '@classes/promised-value';
 import { CoreSplitViewComponent } from '@components/split-view/split-view';
 import { CoreCourseModuleMainActivityComponent } from '@features/course/classes/main-activity-component';
-import { CoreCourseContentsPage } from '@features/course/pages/contents/contents';
 import { CoreCourse } from '@features/course/services/course';
 import { CoreRatingProvider } from '@features/rating/services/rating';
 import { CoreRatingOffline } from '@features/rating/services/rating-offline';
 import { CoreRatingSyncProvider } from '@features/rating/services/rating-sync';
-import { IonContent } from '@ionic/angular';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSites } from '@services/sites';
 import { CoreText } from '@singletons/text';
@@ -50,7 +48,7 @@ import {
 import { AddonModGlossaryPrefetchHandler } from '../../services/handlers/prefetch';
 import { CoreTime } from '@singletons/time';
 import {
-    ADDON_MOD_GLOSSARY_COMPONENT,
+    ADDON_MOD_GLOSSARY_COMPONENT_LEGACY,
     ADDON_MOD_GLOSSARY_ENTRY_ADDED,
     ADDON_MOD_GLOSSARY_ENTRY_DELETED,
     ADDON_MOD_GLOSSARY_ENTRY_UPDATED,
@@ -59,6 +57,10 @@ import {
 } from '../../constants';
 import { CorePopovers } from '@services/overlays/popovers';
 import { CoreAlerts } from '@services/overlays/alerts';
+import { CoreCourseModuleNavigationComponent } from '@features/course/components/module-navigation/module-navigation';
+import { CoreCourseModuleInfoComponent } from '@features/course/components/module-info/module-info';
+import { CoreSearchBoxComponent } from '@features/search/components/search-box/search-box';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Component that displays a glossary entry page.
@@ -67,19 +69,27 @@ import { CoreAlerts } from '@services/overlays/alerts';
     selector: 'addon-mod-glossary-index',
     templateUrl: 'addon-mod-glossary-index.html',
     styleUrl: 'index.scss',
+    imports: [
+        CoreSharedModule,
+        CoreSearchBoxComponent,
+        CoreCourseModuleInfoComponent,
+        CoreCourseModuleNavigationComponent,
+    ],
 })
 export class AddonModGlossaryIndexComponent extends CoreCourseModuleMainActivityComponent
     implements OnInit, AfterViewInit, OnDestroy {
 
-    @ViewChild(CoreSplitViewComponent) splitView!: CoreSplitViewComponent;
+    readonly splitView = viewChild.required(CoreSplitViewComponent);
 
-    component = ADDON_MOD_GLOSSARY_COMPONENT;
+    component = ADDON_MOD_GLOSSARY_COMPONENT_LEGACY;
     pluginName = 'glossary';
 
     canAdd = false;
     loadMoreError = false;
     loadingMessage: string;
     promisedEntries: CorePromisedValue<AddonModGlossaryEntriesManager>;
+
+    route = inject(ActivatedRoute);
 
     protected hasOfflineEntries = false;
     protected hasOfflineRatings = false;
@@ -94,12 +104,8 @@ export class AddonModGlossaryIndexComponent extends CoreCourseModuleMainActivity
     getDivider?: (entry: AddonModGlossaryEntry) => string;
     showDivider: (entry: AddonModGlossaryEntry, previous?: AddonModGlossaryEntry) => boolean = () => false;
 
-    constructor(
-        public route: ActivatedRoute,
-        protected content?: IonContent,
-        @Optional() protected courseContentsPage?: CoreCourseContentsPage,
-    ) {
-        super('AddonModGlossaryIndexComponent', content, courseContentsPage);
+    constructor() {
+        super();
 
         this.loadingMessage = Translate.instant('core.loading');
         this.promisedEntries = new CorePromisedValue();
@@ -204,7 +210,7 @@ export class AddonModGlossaryIndexComponent extends CoreCourseModuleMainActivity
         const entries = await this.promisedEntries;
 
         await this.loadContent(false, true);
-        await entries.start(this.splitView);
+        await entries.start(this.splitView());
     }
 
     /**
@@ -437,6 +443,12 @@ export class AddonModGlossaryIndexComponent extends CoreCourseModuleMainActivity
      * @param query Text entered on the search box.
      */
     search(query: string): void {
+        if (query.trim() === '') {
+            this.toggleSearch();
+
+            return;
+        }
+
         this.loadingMessage = Translate.instant('core.searching');
         this.showLoading = true;
         this.logSearch = CoreTime.once(() => this.performLogSearch(query));

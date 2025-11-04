@@ -12,17 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit, Optional } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CoreError } from '@classes/errors/error';
 import { CoreIonLoadingElement } from '@classes/ion-loading';
 import { CoreCourseModuleMainActivityComponent } from '@features/course/classes/main-activity-component';
-import { CoreCourseContentsPage } from '@features/course/pages/contents/contents';
-import { IonContent } from '@ionic/angular';
 import { CoreSites } from '@services/sites';
 import { CoreText } from '@singletons/text';
 import { Translate } from '@singletons';
 import { CoreEvents } from '@singletons/events';
-import { getPrefetchHandlerInstance } from '../../services/handlers/prefetch';
 import {
     AddonModSurveySurvey,
     AddonModSurvey,
@@ -36,9 +33,12 @@ import {
     AddonModSurveySyncResult,
 } from '../../services/survey-sync';
 import { CorePromiseUtils } from '@singletons/promise-utils';
-import { ADDON_MOD_SURVEY_AUTO_SYNCED, ADDON_MOD_SURVEY_COMPONENT } from '../../constants';
+import { ADDON_MOD_SURVEY_AUTO_SYNCED, ADDON_MOD_SURVEY_COMPONENT_LEGACY } from '../../constants';
 import { CoreLoadings } from '@services/overlays/loadings';
 import { CoreAlerts } from '@services/overlays/alerts';
+import { CoreCourseModuleNavigationComponent } from '@features/course/components/module-navigation/module-navigation';
+import { CoreCourseModuleInfoComponent } from '@features/course/components/module-info/module-info';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Component that displays a survey.
@@ -47,10 +47,15 @@ import { CoreAlerts } from '@services/overlays/alerts';
     selector: 'addon-mod-survey-index',
     templateUrl: 'addon-mod-survey-index.html',
     styleUrl: 'index.scss',
+    imports: [
+        CoreSharedModule,
+        CoreCourseModuleInfoComponent,
+        CoreCourseModuleNavigationComponent,
+    ],
 })
 export class AddonModSurveyIndexComponent extends CoreCourseModuleMainActivityComponent implements OnInit {
 
-    component = ADDON_MOD_SURVEY_COMPONENT;
+    component = ADDON_MOD_SURVEY_COMPONENT_LEGACY;
     pluginName = 'survey';
 
     survey?: AddonModSurveySurvey;
@@ -59,13 +64,6 @@ export class AddonModSurveyIndexComponent extends CoreCourseModuleMainActivityCo
 
     protected currentUserId?: number;
     protected syncEventName = ADDON_MOD_SURVEY_AUTO_SYNCED;
-
-    constructor(
-        protected content?: IonContent,
-        @Optional() courseContentsPage?: CoreCourseContentsPage,
-    ) {
-        super('AddonModSurveyIndexComponent', content, courseContentsPage);
-    }
 
     /**
      * @inheritdoc
@@ -214,8 +212,7 @@ export class AddonModSurveyIndexComponent extends CoreCourseModuleMainActivityCo
             if (online && this.isPrefetched()) {
                 // The survey is downloaded, update the data.
                 try {
-                    const prefetched = await AddonModSurveySync.prefetchAfterUpdate(
-                        getPrefetchHandlerInstance(),
+                    const prefetched = await AddonModSurveySync.prefetchModuleAfterUpdate(
                         this.module,
                         this.courseId,
                     );

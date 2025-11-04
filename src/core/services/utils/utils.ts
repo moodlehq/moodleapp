@@ -17,7 +17,7 @@ import { InAppBrowserObject } from '@awesome-cordova-plugins/in-app-browser';
 import { FileEntry } from '@awesome-cordova-plugins/file/ngx';
 import { CoreFileUtils } from '@singletons/file-utils';
 import { CoreRedirects } from '@singletons/redirects';
-import { CoreMimetypeUtils } from '@services/utils/mimetype';
+import { CoreMimetype } from '@singletons/mimetype';
 import { makeSingleton } from '@singletons';
 import { CoreFileEntry } from '@services/file-helper';
 import { CoreCancellablePromise } from '@classes/cancellable-promise';
@@ -34,8 +34,10 @@ import { CoreSites } from '@services/sites';
 import { CoreMenuItem, CoreUtils as CoreUtilsSingleton, TreeNode } from '@singletons/utils';
 import { CoreWSError } from '@classes/errors/wserror';
 
-/*
+/**
  * "Utils" service with helper functions.
+ *
+ * @deprecated since 5.0. See deprecation notice of each for help.
  */
 @Injectable({ providedIn: 'root' })
 export class CoreUtilsProvider {
@@ -379,10 +381,10 @@ export class CoreUtilsProvider {
      *
      * @param url The URL of the file.
      * @returns Promise resolved with the mimetype.
-     * @deprecated since 5.0. Use CoreMimetypeUtils.getMimeTypeFromUrl instead.
+     * @deprecated since 5.0. Use CoreMimetype.getMimeTypeFromUrl instead.
      */
     async getMimeTypeFromUrl(url: string): Promise<string> {
-        return CoreMimetypeUtils.getMimeTypeFromUrl(url);
+        return CoreMimetype.getMimeTypeFromUrl(url);
     }
 
     /**
@@ -538,7 +540,7 @@ export class CoreUtilsProvider {
      *
      * @param value Value to check.
      * @returns True if not null and not undefined.
-     * @deprecated since 5.0. Use ?? instead.
+     * @deprecated since 5.0. Will be removed in future versions.
      */
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     notNullOrUndefined(value: any): boolean {
@@ -944,12 +946,8 @@ export class CoreUtilsProvider {
     }
 
 }
-
-export const CoreUtils = makeSingleton(CoreUtilsProvider);
-
 /**
- * Options for waiting.
- *
- * @deprecated since 4.5. Use CoreWaitOptions instead.
+ * @deprecated since 5.0. Use CoreUtils on singleton instead.
  */
-export type CoreUtilsWaitOptions = CoreWaitOptions;
+// eslint-disable-next-line @typescript-eslint/no-deprecated
+export const CoreUtils = makeSingleton(CoreUtilsProvider);

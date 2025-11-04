@@ -1,4 +1,7 @@
-@use "sass:math" as math;
+@use "sass:math";
+@use "sass:color";
+@use "sass:map";
+@use "sass:list";
 
 /**
  * App custom mixins for SCSS
@@ -10,14 +13,14 @@
 // Default to bootstrap level 6.
 // --------------------------------------------------------------------------------------------
 @function get-color-shade-percent($color, $percent: 48%) {
-    @return mix(#000, $color, $percent);
+    @return color.mix(#000, $color, $percent);
 }
 
 // Mixes a color with white to create its tint.
 // Default to bootstrap level -10.
 // --------------------------------------------------------------------------------------------
 @function get-color-tint-percent($color, $percent: 80%) {
-    @return mix(#fff, $color, $percent);
+    @return color.mix(#fff, $color, $percent);
 }
 
 // Ionic Colors
@@ -26,11 +29,11 @@
 // colors map
 
 @mixin generate-color($color-name, $colors, $theme) {
-    $color-themes: map-get($colors, $color-name);
-    $base: map-get($color-themes, $theme);
+    $color-themes: map.get($colors, $color-name);
+    $base: map.get($color-themes, $theme);
 
     @if $theme == 'dark' {
-        $base: mix(map-get($color-themes, 'light'), white, 80%) !default;
+        $base: color.mix(map.get($color-themes, 'light'), white, 80%) !default;
     }
 
     @include generate-color-variants($color-name, $base);
@@ -164,7 +167,7 @@
 @mixin core-transition($properties: all, $duration: 500ms, $timing-function: ease-in-out) {
     $transitions: ();
     @each $property in $properties {
-      $transitions: append($transitions, $property $duration $timing-function, comma);
+      $transitions: list.append($transitions, $property $duration $timing-function, comma);
     }
 
     -webkit-transition: $transitions;
@@ -232,75 +235,29 @@
     @include property-horizontal(border, null, $px $type $color);
 }
 
-@mixin safe-area-border-start($px, $type, $color) {
-    $safe-area-position: calc(var(--ion-safe-area-left) + #{$px});
-
-    @include border-start($safe-area-position, $type, $color);
-}
-
-@mixin safe-area-border-end($px, $type, $color) {
-    $safe-area-position: calc(var(--ion-safe-area-right) + #{$px});
-
-    @include border-end($safe-area-position, $type, $color);
-}
-
-@mixin safe-area-margin-horizontal($start, $end: $start) {
-    $safe-area-end: null;
-    $safe-area-start: null;
-
-    @if ($end) {
-        $safe-area-end: calc(var(--ion-safe-area-right) + #{$end});
+@mixin safe-area-padding-start() {
+    padding-left: var(--ion-safe-area-left);
+    @include rtl() {
+        padding-left: 0px;
+        padding-right: var(--ion-safe-area-right);
     }
-    @if ($start) {
-        $safe-area-start: calc(var(--ion-safe-area-left) + #{$start});
+}
+
+@mixin safe-area-padding-end() {
+    padding-right: var(--ion-safe-area-right);
+    @include rtl() {
+        padding-right: 0px;
+        padding-left: var(--ion-safe-area-left);
     }
-
-    @include margin-horizontal($safe-area-start, $safe-area-end);
 }
 
-@mixin safe-area-margin-start($start, $end) {
-    $safe-area-start: calc(var(--ion-safe-area-left) + #{$start});
-
-    @include margin-horizontal($safe-area-start, $end);
-}
-
-@mixin safe-area-margin-end($start, $end) {
-    $safe-area-end: calc(var(--ion-safe-area-right) + #{$end});
-
-    @include margin-horizontal($start, $safe-area-end);
-}
-
-@mixin safe-area-padding-horizontal($start, $end: $start) {
-    $safe-area-end: null;
-    $safe-area-start: null;
-
-    @if ($end) {
-        $safe-area-end: calc(var(--ion-safe-area-right) + #{$end});
+@mixin safe-area-padding-horizontal() {
+    padding-left: var(--ion-safe-area-left);
+    padding-right: var(--ion-safe-area-right);
+    @include rtl() {
+        padding-left: var(--ion-safe-area-right);
+        padding-right: var(--ion-safe-area-left);
     }
-    @if ($start) {
-        $safe-area-start: calc(var(--ion-safe-area-left) + #{$start});
-    }
-
-    @include padding-horizontal($safe-area-start, $safe-area-end);
-}
-
-@mixin safe-area-padding-start($start, $end) {
-    $safe-area-start: calc(var(--ion-safe-area-left) + #{$start});
-
-    @include padding-horizontal($safe-area-start, $end);
-}
-
-@mixin safe-area-padding-end($start, $end) {
-    $safe-area-end: calc(var(--ion-safe-area-right) + #{$end});
-
-    @include padding-horizontal($start, $safe-area-end);
-}
-
-@mixin safe-area-position($top: null, $end: null, $bottom: null, $start: null) {
-    $safe-area-start: calc(var(--ion-safe-area-left) + #{$start});
-    $safe-area-end: calc(var(--ion-safe-area-right) + #{$end});
-
-    @include position($top, $safe-area-end, $bottom, $safe-area-start);
 }
 
 @mixin core-headings() {
@@ -372,9 +329,9 @@
 
 // Color contrast using yiq aproximation with 150 threshold.
 @function get_contrast_color_yiq($color, $dark: black, $light: white) {
-    $r: red($color);
-    $g: green($color);
-    $b: blue($color);
+    $r: color.channel($color, "red");
+    $g: color.channel($color, "green");
+    $b: color.channel($color, "blue");
 
     $yiq: math.div(($r * 299) + ($g * 587) + ($b * 114), 1000);
 
@@ -394,9 +351,9 @@
 }
 
 @function luminance($color) {
-    $r: red($color);
-    $g: green($color);
-    $b: blue($color);
+    $r: color.channel($color, "red");
+    $g: color.channel($color, "green");
+    $b: color.channel($color, "blue");
 
     $r: component-luminance($r);
     $g: component-luminance($g);

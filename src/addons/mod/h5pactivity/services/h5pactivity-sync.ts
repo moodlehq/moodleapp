@@ -30,17 +30,17 @@ import {
     AddonModH5PActivityData,
 } from './h5pactivity';
 import { CoreXAPIStateDBRecord, CoreXAPIStatementDBRecord } from '@features/xapi/services/database/xapi';
-import { CoreErrorHelper } from '@services/error-helper';
 import { CoreXAPIIRI } from '@features/xapi/classes/iri';
 import { CoreXAPIItemAgent } from '@features/xapi/classes/item-agent';
 import { CoreWSError } from '@classes/errors/wserror';
 import { CoreArray } from '@singletons/array';
 import {
     ADDON_MOD_H5PACTIVITY_AUTO_SYNCED,
-    ADDON_MOD_H5PACTIVITY_COMPONENT,
+    ADDON_MOD_H5PACTIVITY_COMPONENT_LEGACY,
     ADDON_MOD_H5PACTIVITY_TRACK_COMPONENT,
 } from '../constants';
 import { CorePromiseUtils } from '@singletons/promise-utils';
+import { CoreCourseModuleHelper } from '@features/course/services/course-module-helper';
 
 /**
  * Service to sync H5P activities.
@@ -196,7 +196,7 @@ export class AddonModH5PActivitySyncProvider extends CoreCourseActivitySyncBaseP
         } catch (error) {
             if (
                 CoreWSError.isWebServiceError(error) ||
-                CoreErrorHelper.getErrorMessageFromError(error) === Translate.instant('core.course.modulenotfound')
+                CoreCourseModuleHelper.isNotFoundError(error)
             ) {
                 // Activity no longer accessible. Delete the data and finish the sync.
                 await deleteOfflineData();
@@ -209,7 +209,7 @@ export class AddonModH5PActivitySyncProvider extends CoreCourseActivitySyncBaseP
 
         // Sync offline logs.
         await CorePromiseUtils.ignoreErrors(
-            CoreCourseLogHelper.syncActivity(ADDON_MOD_H5PACTIVITY_COMPONENT, h5pActivity.id, siteId),
+            CoreCourseLogHelper.syncActivity(ADDON_MOD_H5PACTIVITY_COMPONENT_LEGACY, h5pActivity.id, siteId),
         );
 
         const results = await Promise.all([

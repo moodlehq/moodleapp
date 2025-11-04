@@ -14,13 +14,25 @@
 
 import { ContextLevel } from '@/core/constants';
 import { toBoolean } from '@/core/transforms/boolean';
-import { Component, Input, Output, OnInit, EventEmitter, ChangeDetectorRef, Type, ElementRef, ViewChild } from '@angular/core';
+import {
+    Component,
+    Input,
+    Output,
+    OnInit,
+    EventEmitter,
+    ChangeDetectorRef,
+    Type,
+    ElementRef,
+    inject,
+    viewChild,
+    effect,
+} from '@angular/core';
 import { CorePromisedValue } from '@classes/promised-value';
 import { CoreQuestionBehaviourDelegate } from '@features/question/services/behaviour-delegate';
 import { CoreQuestionDelegate } from '@features/question/services/question-delegate';
 
 import { CoreQuestionBehaviourButton, CoreQuestionHelper, CoreQuestionQuestion } from '@features/question/services/question-helper';
-import { CoreDomUtils } from '@services/utils/dom';
+import { CoreDom } from '@singletons/dom';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { Translate } from '@singletons';
 import { CoreDirectivesRegistry } from '@singletons/directives-registry';
@@ -29,6 +41,7 @@ import { CoreObject } from '@singletons/object';
 import { CoreDynamicComponent } from '@components/dynamic-component/dynamic-component';
 import { CoreQuestionBaseComponent } from '@features/question/classes/base-question-component';
 import { AsyncDirective } from '@classes/async-directive';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Component to render a question.
@@ -37,6 +50,9 @@ import { AsyncDirective } from '@classes/async-directive';
     selector: 'core-question',
     templateUrl: 'core-question.html',
     styleUrl: '../../question.scss',
+    imports: [
+        CoreSharedModule,
+    ],
 })
 export class CoreQuestionComponent implements OnInit, AsyncDirective {
 
@@ -54,14 +70,7 @@ export class CoreQuestionComponent implements OnInit, AsyncDirective {
     @Output() buttonClicked = new EventEmitter<CoreQuestionBehaviourButton>(); // Will emit when a behaviour button is clicked.
     @Output() onAbort= new EventEmitter<void>(); // Will emit an event if the question should be aborted.
 
-    @ViewChild(CoreDynamicComponent)
-        set dynComponent(el: CoreDynamicComponent<CoreQuestionBaseComponent>) {
-            if (!el) {
-                return;
-            }
-
-            this.promisedDynamicComponent.resolve(el);
-        }
+    readonly dynComponent = viewChild(CoreDynamicComponent<CoreQuestionBaseComponent>);
 
     componentClass?: Type<unknown>; // The class of the component to render.
     data: Record<string, unknown> = {}; // Data to pass to the component.
@@ -74,6 +83,9 @@ export class CoreQuestionComponent implements OnInit, AsyncDirective {
     protected showQuestionPromise = new CorePromisedValue<void>();
 
     protected logger: CoreLogger;
+
+    protected changeDetector = inject(ChangeDetectorRef);
+    protected element: HTMLElement = inject(ElementRef).nativeElement;
 
     get showQuestion(): boolean {
         return this.showQuestionPromise.isResolved();
@@ -89,9 +101,19 @@ export class CoreQuestionComponent implements OnInit, AsyncDirective {
         return dynamicComponent.ready();
     }
 
-    constructor(protected changeDetector: ChangeDetectorRef, private element: ElementRef) {
+    constructor() {
         this.logger = CoreLogger.getInstance('CoreQuestionComponent');
-        CoreDirectivesRegistry.register(this.element.nativeElement, this);
+        CoreDirectivesRegistry.register(this.element, this);
+
+        effect(() => {
+            const el = this.dynComponent();
+            if (!el) {
+                return;
+            }
+
+            this.promisedDynamicComponent.resolve(el);
+        });
+
     }
 
     /**
@@ -145,7 +167,7 @@ export class CoreQuestionComponent implements OnInit, AsyncDirective {
             this.logger.warn('Aborting question because the behaviour is not supported.', this.question.slot);
             CoreQuestionHelper.showComponentError(
                 this.onAbort,
-                Translate.instant('addon.mod_quiz.errorbehaviournotsupported') + ' ' + behaviour,
+                `${Translate.instant('addon.mod_quiz.errorbehaviournotsupported')} ${behaviour}`,
             );
 
             return;
@@ -165,6 +187,7 @@ export class CoreQuestionComponent implements OnInit, AsyncDirective {
         // Load local answers if offline is enabled.
         if (this.offlineEnabled && this.component && this.attemptId) {
             await CoreQuestionHelper.loadLocalAnswers(this.question, this.component, this.attemptId);
+            await CoreQuestionHelper.loadLocalQuestionState(this.question,this.attemptId);
         } else {
             this.question.localAnswers = {};
         }
@@ -183,7 +206,7 @@ export class CoreQuestionComponent implements OnInit, AsyncDirective {
                 this.question,
             );
         } finally {
-            this.question.html = CoreDomUtils.removeElementFromHtml(this.question.html, '.im-controls');
+            this.question.html = CoreDom.removeElementFromHtml(this.question.html, '.im-controls');
             this.showQuestionPromise.resolve();
             await this.loadValidationError();
         }
@@ -206,13 +229,15 @@ export class CoreQuestionComponent implements OnInit, AsyncDirective {
         // Load local answers if offline is enabled.
         if (this.offlineEnabled && this.component && this.attemptId) {
             if (this.question.localAnswers && !CoreObject.isEmpty(this.question.localAnswers)) {
-                this.validationError = CoreQuestionDelegate.getValidationError(
-                    this.question,
-                    this.question.localAnswers,
-                    this.validationError,
-                    this.component,
-                    this.attemptId,
-                );
+                this.validationError = this.question.state === 'invalid'
+                    ? CoreQuestionDelegate.getValidationError(
+                        this.question,
+                        this.question.localAnswers,
+                        this.validationError,
+                        this.component,
+                        this.attemptId,
+                    )
+                    : '';
             }
         }
     }

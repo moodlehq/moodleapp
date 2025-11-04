@@ -13,13 +13,13 @@
 // limitations under the License.
 
 import { ContextLevel } from '@/core/constants';
-import { Injectable } from '@angular/core';
+import { Injectable, Type } from '@angular/core';
 import { CoreCourse } from '@features/course/services/course';
 import { CoreFileUploader, CoreFileUploaderStoreFilesResult } from '@features/fileuploader/services/fileuploader';
 import { CoreRatingOffline } from '@features/rating/services/rating-offline';
 import { FileEntry } from '@awesome-cordova-plugins/file/ngx';
 import { CoreSites, CoreSitesReadingStrategy } from '@services/sites';
-import { CoreDomUtils } from '@services/utils/dom';
+import { CoreDom } from '@singletons/dom';
 import { CoreFormFields } from '@singletons/form';
 import { CoreText } from '@singletons/text';
 import { CorePromiseUtils } from '@singletons/promise-utils';
@@ -41,11 +41,12 @@ import { AddonModDataFieldsDelegate } from './data-fields-delegate';
 import { AddonModDataOffline, AddonModDataOfflineAction } from './data-offline';
 import { CoreFileEntry } from '@services/file-helper';
 import {
-    ADDON_MOD_DATA_COMPONENT,
+    ADDON_MOD_DATA_COMPONENT_LEGACY,
     ADDON_MOD_DATA_ENTRY_CHANGED,
     AddonModDataAction,
     AddonModDataTemplateType,
     AddonModDataTemplateMode,
+    ADDON_MOD_DATA_MODNAME,
 } from '../constants';
 import { CoreToasts, ToastDuration } from '@services/overlays/toasts';
 import { CoreLoadings } from '@services/overlays/loadings';
@@ -73,7 +74,7 @@ export class AddonModDataHelperProvider {
         const promises: Promise<void>[] = [];
 
         offlineActions.forEach((action) => {
-            record.timemodified = action.timemodified;
+            record.timemodified = Math.max(record.timemodified, action.timemodified);
             record.hasOffline = true;
             const offlineContents: Record<number, CoreFormFields> = {};
 
@@ -216,36 +217,57 @@ export class AddonModDataHelperProvider {
             return '';
         }
 
-        // Replace the fields found on template.
-        fields.forEach((field) => {
-            let replace = '[[' + field.name + ']]';
-            replace = replace.replace(/[-[\]/{}()*+?.\\^$|]/g, '\\$&');
-            let replaceRegex = new RegExp(replace, 'gi');
+        const replaceAll = (text: string, pattern: string, replacement: string): string => {
+            const escapedPattern = pattern.replace(/[-[\]/{}()*+?.\\^$|]/g, '\\$&');
 
-            // Replace field by a generic directive.
-            const render = '<addon-mod-data-field-plugin [field]="fields[' + field.id + ']" [value]="entries[' + entry.id +
-                    '].contents[' + field.id + ']" mode="' + mode + '" [database]="database" (gotoEntry)="gotoEntry($event)">' +
-                    '</addon-mod-data-field-plugin>';
+            return text.replace(new RegExp(escapedPattern, 'gi'), replacement);
+        };
 
-            template = template.replace(replaceRegex, render);
+        const replaceFields = (template: string, useRawContent: boolean): string => {
+            fields.forEach((field) => {
+                if (useRawContent) {
+                    // Replace field with unprocessed content.
+                    template = replaceAll(template, `[[${field.name}]]`, entry.contents[field.id]?.content ?? '');
+                } else {
+                    // Replace field by a generic directive.
+                    const render = `<addon-mod-data-field-plugin [field]="fields[${field.id}]" mode="${mode}" \
+                         [database]="database" [value]="entries[${entry.id}].contents[${field.id}]" \
+                         [recordHasOffline]="${entry.hasOffline ? 'true' : 'false'}" \
+                         (gotoEntry)="gotoEntry($event)"></addon-mod-data-field-plugin>`;
+                    template = replaceAll(template, `[[${field.name}]]`, render);
+                }
 
-            // Replace the field name tag.
-            replace = '[[' + field.name + '#name]]';
-            replace = replace.replace(/[-[\]/{}()*+?.\\^$|]/g, '\\$&');
-            replaceRegex = new RegExp(replace, 'gi');
+                // Replace the field name tag.
+                template = replaceAll(template, `[[${field.name}#name]]`, field.name);
 
-            template = template.replace(replaceRegex, field.name);
+                // Replace the field description tag.
+                template = replaceAll(template, `[[${field.name}#description]]`, field.description);
+            });
 
-            // Replace the field description tag.
-            replace = '[[' + field.name + '#description]]';
-            replace = replace.replace(/[-[\]/{}()*+?.\\^$|]/g, '\\$&');
-            replaceRegex = new RegExp(replace, 'gi');
+            return template;
+        };
 
-            template = template.replace(replaceRegex, field.description);
+        // First, replace fields inside attributes.
+        // We can't use convertTextToHTMLElement because it removes elements that
+        // are not allowed as a child of <div>, like <li> or <tr>.
+        const templateElement = document.createElement('template');
+        templateElement.innerHTML = template;
+        templateElement.content.querySelectorAll('*').forEach((element) => {
+           for (const name of element.getAttributeNames()) {
+                const value = element.getAttribute(name) ?? '';
+                if (value.match(/\[\[.*\]\]/)) {
+                    element.setAttribute(name, replaceFields(value, true));
+                }
+           }
         });
+        template = templateElement.innerHTML;
 
+        // Replace fields inside elements.
+        template = replaceFields(template, false);
+
+        // Replace actions.
         for (const action in actions) {
-            const replaceRegex = new RegExp('##' + action + '##', 'gi');
+            const replaceRegex = new RegExp(`##${action}##`, 'gi');
             // Is enabled?
             if (!actions[action]) {
                 template = template.replace(replaceRegex, '');
@@ -257,7 +279,7 @@ export class AddonModDataHelperProvider {
                 // Render more url directly because it can be part of an HTML attribute.
                 template = template.replace(
                     replaceRegex,
-                    CoreSites.getRequiredCurrentSite().getURL() + '/mod/data/view.php?d={{database.id}}&rid=' + entry.id,
+                    CoreSites.getRequiredCurrentSite().getURL() + `/mod/data/view.php?d={{database.id}}&rid=${entry.id}`,
                 );
 
                 continue;
@@ -334,8 +356,8 @@ export class AddonModDataHelperProvider {
         const result: AddonModDataEntries = {
             entries: [],
             totalcount: 0,
-            offlineEntries: [],
         };
+        const offlineEntries: AddonModDataEntry[] = [];
         options.siteId = site.id;
 
         const offlinePromise = AddonModDataOffline.getDatabaseEntries(database.id, site.id).then((actions) => {
@@ -348,16 +370,16 @@ export class AddonModDataHelperProvider {
                 offlineActions[action.entryid].push(action);
 
                 // We only display new entries in the first page when not searching.
-                if (action.action == AddonModDataAction.ADD && options.page == 0 && !options.search && !options.advSearch &&
-                    (!action.groupid || !options.groupId || action.groupid == options.groupId)) {
-                    result.offlineEntries!.push({
+                if (action.action === AddonModDataAction.ADD && options.page === 0 && !options.search && !options.advSearch &&
+                    (!action.groupid || !options.groupId || action.groupid === options.groupId)) {
+                    offlineEntries.push({
                         id: action.entryid,
                         canmanageentry: true,
                         approved: !database.approval || database.manageapproved,
                         dataid: database.id,
                         groupid: action.groupid,
-                        timecreated: -action.entryid,
-                        timemodified: -action.entryid,
+                        timecreated: action.timemodified,
+                        timemodified: action.timemodified,
                         userid: site.getUserId(),
                         fullname: site.getInfo()?.fullname,
                         contents: {},
@@ -367,7 +389,7 @@ export class AddonModDataHelperProvider {
             });
 
             // Sort offline entries by creation time.
-            result.offlineEntries!.sort((a, b) => b.timecreated - a.timecreated);
+            offlineEntries.sort((a, b) => b.timecreated - a.timecreated);
 
             return;
         });
@@ -404,9 +426,11 @@ export class AddonModDataHelperProvider {
             promises.push(this.applyOfflineActions(entry, offlineActions[entry.id] || [], fields));
         });
 
-        result.offlineEntries!.forEach((entry) => {
+        offlineEntries.forEach((entry) => {
             promises.push(this.applyOfflineActions(entry, offlineActions[entry.id] || [], fields));
         });
+
+        result.offlineEntries = offlineEntries;
 
         await Promise.all(promises);
 
@@ -518,7 +542,7 @@ export class AddonModDataHelperProvider {
 
         const module = await CoreCourse.getModuleBasicInfoByInstance(
             dataId,
-            'data',
+            ADDON_MOD_DATA_MODNAME,
             { siteId, readingStrategy: CoreSitesReadingStrategy.PREFER_CACHE },
         );
 
@@ -816,14 +840,18 @@ export class AddonModDataHelperProvider {
 
         if (type != AddonModDataTemplateType.LIST_HEADER && type != AddonModDataTemplateType.LIST_FOOTER) {
             // Try to fix syntax errors so the template can be parsed by Angular.
-            template = CoreDomUtils.fixHtml(template);
+            template = CoreDom.fixHtml(template);
         }
 
         // Add core-link directive to links.
         template = template.replace(
             /<a ([^>]*href="[^>]*)>/ig,
-            (match, attributes) => '<a core-link capture="true" ' + attributes + '>',
+            (match, attributes) => `<a core-link capture="true" ${attributes}>`,
         );
+
+        // Escape { and } so Angular doesn't treat them as expressions.
+        // They're converted to {{ '{' }} or similar, as suggested by the Angular error message.
+        template = template.replace(/([{}]+)/g, '{{ \'$1\' }}');
 
         return template;
     }
@@ -979,7 +1007,22 @@ export class AddonModDataHelperProvider {
             return 0;
         }
 
-        return CoreFileUploader.uploadOrReuploadFiles(files, ADDON_MOD_DATA_COMPONENT, itemId, siteId);
+        return CoreFileUploader.uploadOrReuploadFiles(files, ADDON_MOD_DATA_COMPONENT_LEGACY, itemId, siteId);
+    }
+
+    /**
+     * Get data components to compile.
+     *
+     * @returns Database components to compile.
+     */
+    async getComponentsToCompile(): Promise<Type<unknown>[]> {
+        const { AddonModDataFieldPluginComponent } = await import('@addons/mod/data/components/field-plugin/field-plugin');
+        const { AddonModDataActionComponent } = await import('@addons/mod/data/components/action/action');
+
+        return [
+            AddonModDataFieldPluginComponent,
+            AddonModDataActionComponent,
+        ];
     }
 
 }

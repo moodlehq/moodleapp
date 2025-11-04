@@ -27,6 +27,16 @@ import {
 import { filter } from 'rxjs';
 import { CoreNavigator } from '@services/navigator';
 
+enum BehatBlocking {
+    DOM_MUTATION = 'dom-mutation',
+    BLOCKED = 'blocked',
+    FORCED_DELAY = 'forced-delay',
+    DELAY = 'DELAY', // Special entry to indicate there are pending entries.
+    HTTP_REQUEST = 'httprequest-', // Prefix for HTTP requests.
+    GENERATED = 'generated-', // Prefix for generated keys.
+    NAVIGATION = 'navigation-', // Prefix for navigation keys.
+}
+
 /**
  * Behat block JS manager.
  */
@@ -136,15 +146,15 @@ export class TestingBehatBlockingService {
     block(key = ''): string {
         // Add a special DELAY entry whenever another entry is added.
         if (this.pendingList.length === 0) {
-            this.pendingList.push('DELAY');
+            this.pendingList.push(BehatBlocking.DELAY);
         }
         if (!key) {
-            key = 'generated-' + this.keyIndex;
+            key = `${BehatBlocking.GENERATED}${this.keyIndex}`;
             this.keyIndex++;
         }
         this.pendingList.push(key);
 
-        TestingBehatRuntime.log('PENDING+: ' + this.pendingList);
+        TestingBehatRuntime.log(`PENDING+: ${this.pendingList}`);
 
         return key;
     }
@@ -159,7 +169,7 @@ export class TestingBehatBlockingService {
         // Remove the key immediately.
         this.pendingList = this.pendingList.filter((x) => x !== key);
 
-        TestingBehatRuntime.log('PENDING-: ' + this.pendingList);
+        TestingBehatRuntime.log(`PENDING-: ${this.pendingList}`);
 
         // If the only thing left is DELAY, then remove that as well, later...
         if (this.pendingList.length === 1) {
@@ -178,7 +188,7 @@ export class TestingBehatBlockingService {
             // Only remove it if the pending array is STILL empty after all that.
             if (this.pendingList.length === 1) {
                 this.pendingList = [];
-                TestingBehatRuntime.log('PENDING-: ' + this.pendingList);
+                TestingBehatRuntime.log(`PENDING-: ${this.pendingList}`);
             }
         }
     }
@@ -187,8 +197,8 @@ export class TestingBehatBlockingService {
      * Adds a pending key to the array, but removes it after some ticks.
      */
     async delay(): Promise<void> {
-        const key = this.block('forced-delay');
-        this.unblock(key);
+        const key = this.block(BehatBlocking.FORCED_DELAY);
+        await this.unblock(key);
     }
 
     /**
@@ -200,7 +210,7 @@ export class TestingBehatBlockingService {
     async wait(milliseconds: number): Promise<void> {
         const key = this.block();
         await CoreWait.wait(milliseconds);
-        this.unblock(key);
+        await this.unblock(key);
     }
 
     /**
@@ -218,7 +228,7 @@ export class TestingBehatBlockingService {
 
             if (!this.recentMutation) {
                 this.recentMutation = true;
-                this.block('dom-mutation');
+                this.block(BehatBlocking.DOM_MUTATION);
 
                 setTimeout(() => {
                     this.pollRecentMutation();
@@ -230,6 +240,10 @@ export class TestingBehatBlockingService {
         });
 
         observer.observe(document, { attributes: true, childList: true, subtree: true });
+
+        document.addEventListener('visibilitychange', async () => {
+            this.checkUIBlocked();
+        });
     }
 
     /**
@@ -242,7 +256,7 @@ export class TestingBehatBlockingService {
     protected pollRecentMutation(): void {
         if (Date.now() - this.lastMutation > 500) {
             this.recentMutation = false;
-            this.unblock('dom-mutation');
+            this.unblock(BehatBlocking.DOM_MUTATION);
 
             return;
         }
@@ -263,7 +277,7 @@ export class TestingBehatBlockingService {
             document.querySelectorAll<HTMLElement>('div.core-loading-container, ion-loading'),
         );
 
-        const isBlocked = blockingElements.some(element => {
+        const isBlocked = !document.hidden && blockingElements.some(element => {
             // @TODO Fix ion-loading present check with CoreDom.isElementVisible.
             // ion-loading never has offsetParent since position is fixed.
             // Using isElementVisible solve the problem but will block behats (like BBB).
@@ -281,12 +295,12 @@ export class TestingBehatBlockingService {
 
         if (isBlocked) {
             if (!this.waitingBlocked) {
-                this.block('blocked');
+                this.block(BehatBlocking.BLOCKED);
                 this.waitingBlocked = true;
             }
         } else {
             if (this.waitingBlocked) {
-                this.unblock('blocked');
+                this.unblock(BehatBlocking.BLOCKED);
                 this.waitingBlocked = false;
             }
         }
@@ -302,7 +316,7 @@ export class TestingBehatBlockingService {
         XMLHttpRequest.prototype.open = function(...args) {
             NgZone.run(() => {
                 const index = requestIndex++;
-                const key = 'httprequest-' + index;
+                const key = `${BehatBlocking.HTTP_REQUEST}${index}`;
                 const isAsync = args[2] !== false;
 
                 try {

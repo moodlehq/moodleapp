@@ -25,7 +25,7 @@ import { AddonModAssignSubmissionHandler } from '@addons/mod/assign/services/sub
 import { Injectable, Type } from '@angular/core';
 import { CoreError } from '@classes/errors/error';
 import { CoreFileHelper } from '@services/file-helper';
-import { CoreText } from '@singletons/text';
+import { CoreText, CoreTextFormat, DEFAULT_TEXT_FORMAT } from '@singletons/text';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreWSFile } from '@services/ws';
 import { makeSingleton, Translate } from '@singletons';
@@ -42,9 +42,8 @@ export class AddonModAssignSubmissionOnlineTextHandlerService implements AddonMo
     /**
      * @inheritdoc
      */
-    canEditOffline(): boolean {
-        // This plugin uses Moodle filters, it cannot be edited in offline.
-        return false;
+    async canContainFiltersWhenEditing(): Promise<boolean> {
+        return true;
     }
 
     /**
@@ -102,7 +101,7 @@ export class AddonModAssignSubmissionOnlineTextHandlerService implements AddonMo
 
         pluginData.onlinetext_editor = {
             text: text,
-            format: 1,
+            format: DEFAULT_TEXT_FORMAT,
             itemid: itemId,
         };
     }
@@ -181,7 +180,7 @@ export class AddonModAssignSubmissionOnlineTextHandlerService implements AddonMo
             await CorePromiseUtils.ignoreErrors(AddonModAssignOffline.getSubmission(assign.id, submission.userid));
 
         let initialText = '';
-        if (offlineData && offlineData.plugindata && offlineData.plugindata.onlinetext_editor) {
+        if (offlineData?.plugindata?.onlinetext_editor) {
             initialText = (<AddonModAssignSubmissionOnlineTextPluginData>offlineData.plugindata).onlinetext_editor.text;
         } else {
             // No offline data found, get text from plugin.
@@ -237,7 +236,7 @@ export class AddonModAssignSubmissionOnlineTextHandlerService implements AddonMo
 
         pluginData.onlinetext_editor = {
             text: text,
-            format: 1,
+            format: DEFAULT_TEXT_FORMAT,
             itemid: 0, // Can't add new files yet, so we use a fake itemid.
         };
     }
@@ -273,7 +272,7 @@ export type AddonModAssignSubmissionOnlineTextPluginData = {
     // Editor structure.
     onlinetext_editor: { // eslint-disable-line @typescript-eslint/naming-convention
         text: string; // The text for this submission.
-        format: number; // The format for this submission.
+        format: CoreTextFormat; // The format for this submission.
         itemid: number; // The draft area id for files attached to the submission.
     };
 };

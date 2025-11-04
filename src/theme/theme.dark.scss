@@ -6,6 +6,8 @@
  */
 
 @mixin dark-palette() {
+    color-scheme: dark;
+
     & {
         // Ionic shades, defined for ionic internal use.
         --ion-background-color-step-0:    var(--black);
@@ -60,6 +62,7 @@
         --ion-background-color-rgb: #{$background-color-dark-rgb};
 
         --text-color:               #{$text-color-dark};
+        --background-color:         #{$background-color-dark};
         --ion-text-color:           var(--text-color);
         --ion-text-color-rgb:       #{$text-color-dark-rgb};
         --subdued-text-color:       var(--medium);
@@ -110,6 +113,9 @@
         --core-header-toolbar-background:   var(--gray-900);
         --core-header-toolbar-color:        var(--text-color);
         --core-header-toolbar-border-color: var(--stroke);
+
+        --core-footer-gray-background: var(--gray-700);
+        --core-footer-gray-border: var(--gray-600);
 
         --core-tabs-background: var(--gray-900);
         --core-tab-background: var(--core-tabs-background);
@@ -194,6 +200,7 @@
         --core-table-even-cell-background: var(--gray-900);
         --core-table-even-cell-hover: var(--gray-700);
 
+        --core-accordion-toggle-background: var(--gray-800);
     }
 }
 

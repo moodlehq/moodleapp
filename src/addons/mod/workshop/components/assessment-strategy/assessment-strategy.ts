@@ -12,14 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, Input, OnInit, ViewChild, ElementRef, Type, OnDestroy } from '@angular/core';
+import { Component, Input, OnInit, ElementRef, Type, OnDestroy, viewChild } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { CoreError } from '@classes/errors/error';
 import { CoreFileUploader, CoreFileUploaderStoreFilesResult } from '@features/fileuploader/services/fileuploader';
 import { CoreFile } from '@services/file';
 import { CoreFileEntry, CoreFileHelper } from '@services/file-helper';
 import { CoreFileSession } from '@services/file-session';
-import { CoreSites } from '@services/sites';
+import { CoreSites, CoreSitesReadingStrategy } from '@services/sites';
 import { CoreSync } from '@services/sync';
 import { CoreUtils } from '@singletons/utils';
 import { Translate } from '@singletons';
@@ -46,6 +46,8 @@ import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreWSError } from '@classes/errors/wserror';
 import { CoreObject } from '@singletons/object';
 import { CoreAlerts } from '@services/overlays/alerts';
+import { CoreEditorRichTextEditorComponent } from '@features/editor/components/rich-text-editor/rich-text-editor';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Component that displays workshop assessment strategy form.
@@ -53,6 +55,10 @@ import { CoreAlerts } from '@services/overlays/alerts';
 @Component({
     selector: 'addon-mod-workshop-assessment-strategy',
     templateUrl: 'addon-mod-workshop-assessment-strategy.html',
+    imports: [
+        CoreSharedModule,
+        CoreEditorRichTextEditorComponent,
+    ],
 })
 export class AddonModWorkshopAssessmentStrategyComponent implements OnInit, OnDestroy {
 
@@ -63,7 +69,7 @@ export class AddonModWorkshopAssessmentStrategyComponent implements OnInit, OnDe
     @Input({ required: true }) strategy!: string;
     @Input({ transform: toBoolean }) edit = false;
 
-    @ViewChild('assessmentForm') formElement!: ElementRef;
+    readonly formElement = viewChild.required<ElementRef>('assessmentForm');
 
     componentClass?: Type<unknown>;
     data: AddonModWorkshopAssessmentStrategyData = {
@@ -161,13 +167,13 @@ export class AddonModWorkshopAssessmentStrategyComponent implements OnInit, OnDe
 
     /**
      * Convenience function to load the assessment data.
-     *
-     * @returns Promised resvoled when data is loaded.
      */
     protected async load(): Promise<void> {
         this.data.assessment = await AddonModWorkshopHelper.getReviewerAssessmentById(this.workshop.id, this.assessmentId, {
             userId: this.userId,
             cmId: this.workshop.coursemodule,
+            filter: this.edit ? false : undefined,
+            readingStrategy: this.edit ? CoreSitesReadingStrategy.PREFER_NETWORK : undefined,
         });
 
         if (!this.data.assessment.form) {
@@ -205,7 +211,10 @@ export class AddonModWorkshopAssessmentStrategyComponent implements OnInit, OnDe
                 this.hasOffline = false;
                 // Ignore errors.
             } finally {
-                this.feedbackText = this.data.assessment.feedbackauthor;
+                this.feedbackText = CoreFileHelper.replacePluginfileUrls(
+                    this.data.assessment.feedbackauthor,
+                    this.data.assessment.feedbackcontentfiles,
+                );
                 this.feedbackControl.setValue(this.feedbackText);
 
                 this.originalData.text = this.data.assessment.feedbackauthor;
@@ -241,7 +250,7 @@ export class AddonModWorkshopAssessmentStrategyComponent implements OnInit, OnDe
             if (this.edit) {
                 CoreFileSession.setFiles(
                     ADDON_MOD_WORKSHOP_COMPONENT,
-                    this.workshop.id + '_' + this.assessmentId,
+                    `${this.workshop.id}_${this.assessmentId}`,
                     this.data.assessment.feedbackattachmentfiles,
                 );
                 if (this.access.canallocate) {
@@ -256,7 +265,7 @@ export class AddonModWorkshopAssessmentStrategyComponent implements OnInit, OnDe
      *
      * @returns True if data has changed.
      */
-    hasDataChanged(): boolean {
+    async hasDataChanged(): Promise<boolean> {
         if (!this.assessmentStrategyLoaded || !this.workshop.strategy || !this.edit) {
             return false;
         }
@@ -274,13 +283,13 @@ export class AddonModWorkshopAssessmentStrategyComponent implements OnInit, OnDe
         // Compare feedback files.
         const files = CoreFileSession.getFiles(
             ADDON_MOD_WORKSHOP_COMPONENT,
-            this.workshop.id + '_' + this.assessmentId,
+            `${this.workshop.id}_${this.assessmentId}`,
         ) || [];
         if (CoreFileUploader.areFileListDifferent(files, this.originalData.files)) {
             return true;
         }
 
-        return AddonWorkshopAssessmentStrategyDelegate.hasDataChanged(
+        return await AddonWorkshopAssessmentStrategyDelegate.hasDataChanged(
             this.workshop.strategy,
             this.originalData.selectedValues,
             this.data.selectedValues,
@@ -299,7 +308,7 @@ export class AddonModWorkshopAssessmentStrategyComponent implements OnInit, OnDe
 
         const files = CoreFileSession.getFiles(
             ADDON_MOD_WORKSHOP_COMPONENT,
-            this.workshop.id + '_' + this.assessmentId,
+            `${this.workshop.id}_${this.assessmentId}`,
         ) || [];
 
         let saveOffline = false;
@@ -376,7 +385,7 @@ export class AddonModWorkshopAssessmentStrategyComponent implements OnInit, OnDe
                 );
             }
 
-            CoreForms.triggerFormSubmittedEvent(this.formElement, !!gradeUpdated, CoreSites.getCurrentSiteId());
+            CoreForms.triggerFormSubmittedEvent(this.formElement(), !!gradeUpdated, CoreSites.getCurrentSiteId());
 
             const promises: Promise<void>[] = [];
 
@@ -416,7 +425,7 @@ export class AddonModWorkshopAssessmentStrategyComponent implements OnInit, OnDe
     }
 
     /**
-     * Component destroyed.
+     * @inheritdoc
      */
     ngOnDestroy(): void {
         this.obsInvalidated?.off();

@@ -82,7 +82,7 @@ export class CoreEnrolService {
      * @returns Cache key.
      */
     protected getCourseEnrolmentMethodsCacheKey(courseId: number): string {
-        return CoreEnrolService.ROOT_CACHE_KEY + 'enrolmentmethods:' + courseId;
+        return `${CoreEnrolService.ROOT_CACHE_KEY}enrolmentmethods:${courseId}`;
     }
 
     /**
@@ -90,7 +90,6 @@ export class CoreEnrolService {
      *
      * @param courseId Course ID.
      * @param siteId Site Id. If not defined, use current site.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateCourseEnrolmentMethods(courseId: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);

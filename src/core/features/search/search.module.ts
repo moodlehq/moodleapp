@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { APP_INITIALIZER, NgModule, Type } from '@angular/core';
+import { NgModule, provideAppInitializer, Type } from '@angular/core';
 import { Routes } from '@angular/router';
 import { CoreMainMenuRoutingModule } from '@features/mainmenu/mainmenu-routing.module';
 import { CoreMainMenuTabRoutingModule } from '@features/mainmenu/mainmenu-tab-routing.module';
@@ -21,7 +21,6 @@ import { CoreSearchMainMenuHandler, CORE_SEARCH_PAGE_NAME } from '@features/sear
 
 import { CORE_SITE_SCHEMAS } from '@services/sites';
 
-import { CoreSearchComponentsModule } from './components/components.module';
 import { SITE_SCHEMA } from './services/search-history-db';
 import { CoreContentLinksDelegate } from '@features/contentlinks/services/contentlinks-delegate';
 import { CoreSearchGlobalSearchLinkHandler } from '@features/search/services/handlers/global-search-link';
@@ -41,6 +40,22 @@ export async function getSearchServices(): Promise<Type<unknown>[]> {
     ];
 }
 
+/**
+ * Get directives and components for site plugins.
+ *
+ * @returns Returns directives and components.
+ */
+export async function getSearchExportedDirectives(): Promise<Type<unknown>[]> {
+    const { CoreSearchBoxComponent } = await import('@features/search/components/search-box/search-box');
+    const { CoreSearchGlobalSearchResultComponent } =
+        await import('@features/search/components/global-search-result/global-search-result');
+
+    return [
+        CoreSearchBoxComponent,
+        CoreSearchGlobalSearchResultComponent,
+    ];
+}
+
 const mainMenuChildrenRoutes: Routes = [
     {
         path: CORE_SEARCH_PAGE_NAME,
@@ -50,20 +65,15 @@ const mainMenuChildrenRoutes: Routes = [
 
 @NgModule({
     imports: [
-        CoreSearchComponentsModule,
         CoreMainMenuTabRoutingModule.forChild(mainMenuChildrenRoutes),
         CoreMainMenuRoutingModule.forChild({ children: mainMenuChildrenRoutes }),
     ],
     providers: [
         { provide: CORE_SITE_SCHEMAS, useValue: [SITE_SCHEMA], multi: true },
-        {
-            provide: APP_INITIALIZER,
-            multi: true,
-            useValue() {
-                CoreMainMenuDelegate.registerHandler(CoreSearchMainMenuHandler.instance);
-                CoreContentLinksDelegate.registerHandler(CoreSearchGlobalSearchLinkHandler.instance);
-            },
-        },
+        provideAppInitializer(() => {
+            CoreMainMenuDelegate.registerHandler(CoreSearchMainMenuHandler.instance);
+            CoreContentLinksDelegate.registerHandler(CoreSearchGlobalSearchLinkHandler.instance);
+         }),
     ],
 })
 export class CoreSearchModule {}

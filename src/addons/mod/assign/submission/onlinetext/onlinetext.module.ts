@@ -12,32 +12,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { APP_INITIALIZER, NgModule } from '@angular/core';
+import { NgModule, provideAppInitializer } from '@angular/core';
 import { AddonModAssignSubmissionOnlineTextHandler } from './services/handler';
-import { AddonModAssignSubmissionOnlineTextComponent } from './component/onlinetext';
-import { CoreEditorComponentsModule } from '@features/editor/components/components.module';
-import { CoreSharedModule } from '@/core/shared.module';
 import { AddonModAssignSubmissionDelegate } from '../../services/submission-delegate';
 
 @NgModule({
-    declarations: [
-        AddonModAssignSubmissionOnlineTextComponent,
-    ],
-    imports: [
-        CoreSharedModule,
-        CoreEditorComponentsModule,
-    ],
     providers: [
-        {
-            provide: APP_INITIALIZER,
-            multi: true,
-            useValue: () => {
-                AddonModAssignSubmissionDelegate.registerHandler(AddonModAssignSubmissionOnlineTextHandler.instance);
-            },
-        },
-    ],
-    exports: [
-        AddonModAssignSubmissionOnlineTextComponent,
+        provideAppInitializer(() => {
+            AddonModAssignSubmissionDelegate.registerHandler(AddonModAssignSubmissionOnlineTextHandler.instance);
+        }),
     ],
 })
 export class AddonModAssignSubmissionOnlineTextModule {}

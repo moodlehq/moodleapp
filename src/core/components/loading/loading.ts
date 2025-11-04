@@ -12,10 +12,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, Input, OnInit, OnChanges, SimpleChange, ElementRef, AfterViewInit, OnDestroy } from '@angular/core';
-
+import {
+    Component,
+    ElementRef,
+    OnDestroy,
+    inject,
+    input,
+    effect,
+} from '@angular/core';
 import { CoreUtils } from '@singletons/utils';
-import { CoreAnimations } from '@components/animations';
 import { Translate } from '@singletons';
 import { CoreDirectivesRegistry } from '@singletons/directives-registry';
 import { CorePromisedValue } from '@classes/promised-value';
@@ -23,6 +28,8 @@ import { AsyncDirective } from '@classes/async-directive';
 import { CorePlatform } from '@services/platform';
 import { CoreWait } from '@singletons/wait';
 import { toBoolean } from '@/core/transforms/boolean';
+import { CoreBaseModule } from '@/core/base.module';
+import { CoreTimesPipe } from '@pipes/times';
 
 /**
  * Component to show a loading spinner and message while data is being loaded.
@@ -48,34 +55,45 @@ import { toBoolean } from '@/core/transforms/boolean';
     selector: 'core-loading',
     templateUrl: 'core-loading.html',
     styleUrl: 'loading.scss',
-    animations: [CoreAnimations.SHOW_HIDE],
+    imports: [
+        CoreBaseModule,
+        CoreTimesPipe,
+    ],
+    host: {
+        '[class.core-loading-inline]': '!fullscreen()',
+        '[class.core-loading-loaded]': 'hideUntil()',
+        '[attr.aria-busy]': '!hideUntil()',
+        '[attr.id]': 'uniqueId',
+        '[style.--loading-inline-min-height]': 'placeholderHeight()',
+    },
 })
-export class CoreLoadingComponent implements OnInit, OnChanges, AfterViewInit, AsyncDirective, OnDestroy {
+export class CoreLoadingComponent implements AsyncDirective, OnDestroy {
 
-    @Input({ transform: toBoolean }) hideUntil = false; // Determine when should the contents be shown.
-    @Input() message?: string; // Message to show while loading.
-    @Input({ transform: toBoolean }) fullscreen = true; // Use the whole screen.
+    readonly hideUntil = input(false, { transform: toBoolean }); // Determine when should the contents be shown.
+    readonly message = input<string>(Translate.instant('core.loading')); // Message to show while loading.
+    readonly fullscreen = input(true, { transform: toBoolean }); // Use the whole screen.
 
-    uniqueId: string;
-    loaded = false;
+    readonly placeholderType = input<CoreLoadingPlaceholderTypes>();
+    readonly placeholderWidth = input<string>();
+    readonly placeholderHeight = input<string>();
+    readonly placeholderLimit = input(20);
 
-    protected element: HTMLElement; // Current element.
-    protected lastScrollPosition = Promise.resolve<number | undefined>(undefined);
+    protected element: HTMLElement = inject(ElementRef).nativeElement;
     protected onReadyPromise = new CorePromisedValue<void>();
     protected mutationObserver: MutationObserver;
 
-    constructor(element: ElementRef) {
-        this.element = element.nativeElement;
+    protected uniqueId: string;
+
+    constructor() {
         CoreDirectivesRegistry.register(this.element, this);
 
         // Calculate the unique ID.
-        this.uniqueId = 'core-loading-content-' + CoreUtils.getUniqueId('CoreLoadingComponent');
-        this.element.setAttribute('id', this.uniqueId);
+        this.uniqueId = `core-loading-content-${CoreUtils.getUniqueId('CoreLoadingComponent')}`;
 
         // Throttle 20ms to let mutations resolve.
         const throttleMutation = CoreUtils.throttle(async () => {
             await CoreWait.nextTick();
-            if (!this.loaded) {
+            if (!this.hideUntil()) {
                 return;
             }
 
@@ -92,33 +110,17 @@ export class CoreLoadingComponent implements OnInit, OnChanges, AfterViewInit, A
                 throttleMutation();
             }
         });
-    }
 
-    /**
-     * @inheritdoc
-     */
-    ngOnInit(): void {
-        if (!this.message) {
-            // Default loading message.
-            this.message = Translate.instant('core.loading');
-        }
-        this.element.classList.toggle('core-loading-inline', !this.fullscreen);
-    }
-
-    /**
-     * @inheritdoc
-     */
-    ngAfterViewInit(): void {
-        this.changeState(this.hideUntil);
-    }
-
-    /**
-     * @inheritdoc
-     */
-    ngOnChanges(changes: { [name: string]: SimpleChange }): void {
-        if (changes.hideUntil) {
-            this.changeState(this.hideUntil);
-        }
+        effect(() => {
+            if (this.hideUntil()) {
+                this.onReadyPromise.resolve();
+                if (CorePlatform.isIOS()) {
+                    this.mutationObserver.observe(this.element, { childList: true });
+                }
+            } else {
+                this.mutationObserver.disconnect();
+            }
+        });
     }
 
     /**
@@ -129,59 +131,18 @@ export class CoreLoadingComponent implements OnInit, OnChanges, AfterViewInit, A
     }
 
     /**
-     * Change loaded state.
+     * Gets the scroll element to use.
      *
-     * @param loaded True to load, false otherwise.
-     * @returns Promise resolved when done.
+     * @returns The scroll element or undefined if not found.
      */
-    async changeState(loaded: boolean): Promise<void> {
-        this.element.classList.toggle('core-loading-loaded', loaded);
-        this.element.setAttribute('aria-busy', loaded ?  'false' : 'true');
-
-        if (this.loaded === loaded) {
-            return;
-        }
-
-        this.loaded = loaded;
-
-        if (loaded) {
-            this.onReadyPromise.resolve();
-            this.restoreScrollPosition();
-            if (CorePlatform.isIOS()) {
-                this.mutationObserver.observe(this.element, { childList: true });
-            }
-        } else {
-            this.lastScrollPosition = this.getScrollPosition();
-            this.mutationObserver.disconnect();
-        }
-    }
-
-    /**
-     * Gets current scroll position.
-     *
-     * @returns the scroll position or undefined if scroll not found.
-     */
-    protected async getScrollPosition(): Promise<number | undefined> {
+    protected async getScrollElement(): Promise<HTMLElement | undefined> {
         const content = this.element.closest('ion-content');
-        const scrollElement = await content?.getScrollElement();
 
-        return scrollElement?.scrollTop;
-    }
-
-    /**
-     * Restores last known scroll position.
-     */
-    protected async restoreScrollPosition(): Promise<void> {
-        const scrollPosition = await this.lastScrollPosition;
-
-        if (scrollPosition === undefined) {
-            return;
+        if (!content || 'getScrollElement' in content === false) {
+            return undefined;
         }
 
-        const content = this.element.closest('ion-content');
-        const scrollElement = await content?.getScrollElement();
-
-        scrollElement?.scrollTo({ top: scrollPosition });
+        return await content.getScrollElement();
     }
 
     /**
@@ -192,3 +153,6 @@ export class CoreLoadingComponent implements OnInit, OnChanges, AfterViewInit, A
     }
 
 }
+
+type CoreLoadingPlaceholderTypes =
+    'row' | 'column' | 'rowwrap' | 'columnwrap' | 'listwithicon' | 'listwithavatar' | 'imageandboxes' | 'free';

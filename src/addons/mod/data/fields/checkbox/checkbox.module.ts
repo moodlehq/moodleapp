@@ -12,30 +12,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { APP_INITIALIZER, NgModule } from '@angular/core';
-import { AddonModDataFieldCheckboxComponent } from './component/checkbox';
-import { CoreSharedModule } from '@/core/shared.module';
+import { NgModule, provideAppInitializer } from '@angular/core';
 import { AddonModDataFieldsDelegate } from '../../services/data-fields-delegate';
 import { AddonModDataFieldCheckboxHandler } from './services/handler';
 
 @NgModule({
-    declarations: [
-        AddonModDataFieldCheckboxComponent,
-    ],
-    imports: [
-        CoreSharedModule,
-    ],
     providers: [
-        {
-            provide: APP_INITIALIZER,
-            multi: true,
-            useValue: () => {
-                AddonModDataFieldsDelegate.registerHandler(AddonModDataFieldCheckboxHandler.instance);
-            },
-        },
-    ],
-    exports: [
-        AddonModDataFieldCheckboxComponent,
+        provideAppInitializer(() => {
+            AddonModDataFieldsDelegate.registerHandler(AddonModDataFieldCheckboxHandler.instance);
+        }),
     ],
 })
 export class AddonModDataFieldCheckboxModule {}

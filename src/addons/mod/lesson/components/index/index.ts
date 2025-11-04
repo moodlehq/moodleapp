@@ -13,13 +13,12 @@
 // limitations under the License.
 
 import { DownloadStatus } from '@/core/constants';
-import { Component, Input, ViewChild, ElementRef, OnInit, OnDestroy, Optional } from '@angular/core';
+import { Component, Input, viewChild, ElementRef, OnInit, OnDestroy } from '@angular/core';
 
 import { CoreTabsComponent } from '@components/tabs/tabs';
 import { CoreCourseModuleMainActivityComponent } from '@features/course/classes/main-activity-component';
-import { CoreCourseContentsPage } from '@features/course/pages/contents/contents';
 import { CoreUser } from '@features/user/services/user';
-import { IonContent, IonInput } from '@ionic/angular';
+import { IonInput } from '@ionic/angular';
 import { CoreGroupInfo, CoreGroups } from '@services/groups';
 import { CoreNavigator } from '@services/navigator';
 import { CoreForms } from '@singletons/form';
@@ -47,11 +46,15 @@ import { CoreError } from '@classes/errors/error';
 import { Translate } from '@singletons';
 import {
     ADDON_MOD_LESSON_AUTO_SYNCED,
-    ADDON_MOD_LESSON_COMPONENT,
+    ADDON_MOD_LESSON_COMPONENT_LEGACY,
     ADDON_MOD_LESSON_DATA_SENT_EVENT,
     ADDON_MOD_LESSON_PAGE_NAME,
+    AddonModLessonTab,
 } from '../../constants';
 import { CoreAlerts } from '@services/overlays/alerts';
+import { CoreCourseModuleNavigationComponent } from '@features/course/components/module-navigation/module-navigation';
+import { CoreCourseModuleInfoComponent } from '@features/course/components/module-info/module-info';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Component that displays a lesson entry page.
@@ -59,20 +62,25 @@ import { CoreAlerts } from '@services/overlays/alerts';
 @Component({
     selector: 'addon-mod-lesson-index',
     templateUrl: 'addon-mod-lesson-index.html',
+    imports: [
+        CoreSharedModule,
+        CoreCourseModuleInfoComponent,
+        CoreCourseModuleNavigationComponent,
+    ],
 })
 export class AddonModLessonIndexComponent extends CoreCourseModuleMainActivityComponent implements OnInit, OnDestroy {
 
-    @ViewChild(CoreTabsComponent) tabsComponent?: CoreTabsComponent;
-    @ViewChild('passwordForm') formElement?: ElementRef;
+    readonly tabsComponent = viewChild(CoreTabsComponent);
+    readonly formElement = viewChild<ElementRef>('passwordForm');
 
     @Input() group = 0; // The group to display.
     @Input() action?: string; // The "action" to display first.
 
-    component = ADDON_MOD_LESSON_COMPONENT;
+    component = ADDON_MOD_LESSON_COMPONENT_LEGACY;
     pluginName = 'lesson';
 
     lesson?: AddonModLessonLessonWSData; // The lesson.
-    selectedTab?: number; // The initial selected tab.
+    selectedTab = AddonModLessonTab.ATTEMPT; // The initial selected tab.
     askPassword?: boolean; // Whether to ask the password.
     canManage?: boolean; // Whether the user can manage the lesson.
     canViewReports?: boolean; // Whether the user can view the lesson reports.
@@ -96,20 +104,13 @@ export class AddonModLessonIndexComponent extends CoreCourseModuleMainActivityCo
     protected dataSentObserver?: CoreEventObserver; // To detect data sent to server.
     protected dataSent = false; // Whether some data was sent to server while playing the lesson.
 
-    constructor(
-        protected content?: IonContent,
-        @Optional() courseContentsPage?: CoreCourseContentsPage,
-    ) {
-        super('AddonModLessonIndexComponent', content, courseContentsPage);
-    }
-
     /**
      * @inheritdoc
      */
     async ngOnInit(): Promise<void> {
         super.ngOnInit();
 
-        this.selectedTab = this.action == 'report' ? 1 : 0;
+        this.selectedTab = this.action === 'report' ? AddonModLessonTab.REPORT : AddonModLessonTab.ATTEMPT;
 
         await this.loadContent(false, true);
     }
@@ -193,7 +194,7 @@ export class AddonModLessonIndexComponent extends CoreCourseModuleMainActivityCo
             }
         }
 
-        if (this.selectedTab == 1 && this.canViewReports) {
+        if (this.selectedTab === AddonModLessonTab.REPORT && this.canViewReports) {
             // Only fetch the report data if the tab is selected.
             promises.push(this.fetchReportData());
         }
@@ -294,7 +295,7 @@ export class AddonModLessonIndexComponent extends CoreCourseModuleMainActivityCo
     ionViewDidEnter(): void {
         super.ionViewDidEnter();
 
-        this.tabsComponent?.ionViewDidEnter();
+        this.tabsComponent()?.ionViewDidEnter();
 
         if (!this.hasPlayed) {
             return;
@@ -315,7 +316,7 @@ export class AddonModLessonIndexComponent extends CoreCourseModuleMainActivityCo
     ionViewDidLeave(): void {
         super.ionViewDidLeave();
 
-        this.tabsComponent?.ionViewDidLeave();
+        this.tabsComponent()?.ionViewDidLeave();
     }
 
     /**
@@ -383,7 +384,9 @@ export class AddonModLessonIndexComponent extends CoreCourseModuleMainActivityCo
      */
     protected callAnalyticsLogEvent(): void {
         this.analyticsLogEvent('mod_lesson_view_lesson', {
-            url: this.selectedTab === 1 ? `/mod/lesson/report.php?id=${this.module.id}&action=reportoverview` : undefined,
+            url: this.selectedTab === AddonModLessonTab.REPORT
+                ? `/mod/lesson/report.php?id=${this.module.id}&action=reportoverview`
+                : undefined,
         });
     }
 
@@ -447,8 +450,8 @@ export class AddonModLessonIndexComponent extends CoreCourseModuleMainActivityCo
      * First tab selected.
      */
     indexSelected(): void {
-        const tabHasChanged = this.selectedTab !== 0;
-        this.selectedTab = 0;
+        const tabHasChanged = this.selectedTab !== AddonModLessonTab.ATTEMPT;
+        this.selectedTab = AddonModLessonTab.ATTEMPT;
 
         if (tabHasChanged) {
             this.callAnalyticsLogEvent();
@@ -459,8 +462,8 @@ export class AddonModLessonIndexComponent extends CoreCourseModuleMainActivityCo
      * Reports tab selected.
      */
     reportsSelected(): void {
-        const tabHasChanged = this.selectedTab !== 1;
-        this.selectedTab = 1;
+        const tabHasChanged = this.selectedTab !== AddonModLessonTab.REPORT;
+        this.selectedTab = AddonModLessonTab.REPORT;
 
         if (!this.groupInfo) {
             this.fetchReportData().catch((error) => {
@@ -656,7 +659,7 @@ export class AddonModLessonIndexComponent extends CoreCourseModuleMainActivityCo
         } finally {
             this.showLoading = false;
 
-            CoreForms.triggerFormSubmittedEvent(this.formElement, true, this.siteId);
+            CoreForms.triggerFormSubmittedEvent(this.formElement(), true, this.siteId);
         }
     }
 
@@ -672,8 +675,7 @@ export class AddonModLessonIndexComponent extends CoreCourseModuleMainActivityCo
 
         if (!result.updated && this.dataSent && this.isPrefetched()) {
             // The user sent data to server, but not in the sync process. Check if we need to fetch data.
-            await CorePromiseUtils.ignoreErrors(AddonModLessonSync.prefetchAfterUpdate(
-                AddonModLessonPrefetchHandler.instance,
+            await CorePromiseUtils.ignoreErrors(AddonModLessonSync.prefetchModuleAfterUpdate(
                 this.module,
                 this.courseId,
             ));

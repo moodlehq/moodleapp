@@ -15,7 +15,6 @@
 import { Injectable } from '@angular/core';
 import { CoreSyncBaseProvider } from '@classes/base-sync';
 import { CoreNetworkError } from '@classes/errors/network-error';
-import { CoreCourses } from '@features/courses/services/courses';
 import { CoreNetwork } from '@services/network';
 import { CoreSites } from '@services/sites';
 import { CoreWSError } from '@classes/errors/wserror';
@@ -29,6 +28,7 @@ import { CoreAnyError } from '@classes/errors/error';
 import { CoreErrorHelper } from '@services/error-helper';
 import { ADDON_NOTES_AUTO_SYNCED } from './constants';
 import { CorePromiseUtils } from '@singletons/promise-utils';
+import { DEFAULT_TEXT_FORMAT } from '@singletons/text';
 
 /**
  * Service to sync notes.
@@ -121,7 +121,7 @@ export class AddonNotesSyncProvider extends CoreSyncBaseProvider<AddonNotesSyncR
             return currentSyncPromise;
         }
 
-        this.logger.debug('Try to sync notes for course ' + courseId);
+        this.logger.debug(`Try to sync notes for course ${courseId}`);
 
         const syncPromise = this.performSyncNotes(courseId, siteId);
 
@@ -165,7 +165,7 @@ export class AddonNotesSyncProvider extends CoreSyncBaseProvider<AddonNotesSyncR
             publishstate: note.publishstate,
             courseid: note.courseid,
             text: note.content,
-            format: 1,
+            format: DEFAULT_TEXT_FORMAT,
         }));
 
         // Send the notes.
@@ -229,12 +229,8 @@ export class AddonNotesSyncProvider extends CoreSyncBaseProvider<AddonNotesSyncR
         await CorePromiseUtils.ignoreErrors(AddonNotes.getNotes(courseId, undefined, false, true, siteId));
 
         if (errors && errors.length) {
-            // At least an error occurred, get course name and add errors to warnings array.
-            const course = await CorePromiseUtils.ignoreErrors(CoreCourses.getUserCourse(courseId, true, siteId), {});
-
             result.warnings = errors.map((error) =>
                 Translate.instant('addon.notes.warningnotenotsent', {
-                    course: 'fullname' in course ? course.fullname : courseId, // @deprecated since 4.3.
                     error: CoreErrorHelper.getErrorMessageFromError(error),
                 }));
         }

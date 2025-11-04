@@ -28,6 +28,7 @@ import { Translate } from '@singletons';
 import { AddonModImscp, AddonModImscpImscp, AddonModImscpTocItem } from '../../services/imscp';
 import { CoreModals } from '@services/overlays/modals';
 import { CoreAlerts } from '@services/overlays/alerts';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Page that displays a IMSCP content.
@@ -35,8 +36,11 @@ import { CoreAlerts } from '@services/overlays/alerts';
 @Component({
     selector: 'page-addon-mod-imscp-view',
     templateUrl: 'view.html',
+    imports: [
+        CoreSharedModule,
+    ],
 })
-export class AddonModImscpViewPage implements OnInit {
+export default class AddonModImscpViewPage implements OnInit {
 
     title = '';
     cmId!: number;
@@ -124,7 +128,7 @@ export class AddonModImscpViewPage implements OnInit {
 
             if (downloadResult?.failed) {
                 const error = CoreErrorHelper.getErrorMessageFromError(downloadResult.error) || downloadResult.error;
-                this.warning = Translate.instant('core.errordownloadingsomefiles') + (error ? ' ' + error : '');
+                this.warning = Translate.instant('core.errordownloadingsomefiles') + (error ? ` ${error}` : '');
             } else {
                 this.warning = '';
             }

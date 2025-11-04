@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { APP_INITIALIZER, NgModule } from '@angular/core';
+import { NgModule, provideAppInitializer } from '@angular/core';
 import { Routes } from '@angular/router';
 import { CoreContentLinksDelegate } from '@features/contentlinks/services/contentlinks-delegate';
 import { CoreCourseModuleDelegate } from '@features/course/services/module-delegate';
@@ -25,11 +25,30 @@ import { AddonModH5PActivityPrefetchHandler } from './services/handlers/prefetch
 import { AddonModH5PActivityReportLinkHandler } from './services/handlers/report-link';
 import { AddonModH5PActivitySyncCronHandler } from './services/handlers/sync-cron';
 import { ADDON_MOD_H5PACTIVITY_PAGE_NAME } from './constants';
+import { canLeaveGuard } from '@guards/can-leave';
 
 const routes: Routes = [
     {
         path: ADDON_MOD_H5PACTIVITY_PAGE_NAME,
-        loadChildren: () => import('./h5pactivity-lazy.module'),
+        loadChildren: () => [
+            {
+                path: ':courseId/:cmId',
+                loadComponent: () => import('./pages/index/index'),
+                canDeactivate: [canLeaveGuard],
+            },
+            {
+                path: ':courseId/:cmId/userattempts/:userId',
+                loadComponent: () => import('./pages/user-attempts/user-attempts'),
+            },
+            {
+                path: ':courseId/:cmId/attemptresults/:attemptId',
+                loadComponent: () => import('./pages/attempt-results/attempt-results'),
+            },
+            {
+                path: ':courseId/:cmId/users',
+                loadComponent: () => import('./pages/users-attempts/users-attempts'),
+            },
+        ],
     },
 ];
 
@@ -38,17 +57,13 @@ const routes: Routes = [
         CoreMainMenuTabRoutingModule.forChild(routes),
     ],
     providers: [
-        {
-            provide: APP_INITIALIZER,
-            multi: true,
-            useValue: () => {
-                CoreCourseModuleDelegate.registerHandler(AddonModH5PActivityModuleHandler.instance);
-                CoreContentLinksDelegate.registerHandler(AddonModH5PActivityIndexLinkHandler.instance);
-                CoreContentLinksDelegate.registerHandler(AddonModH5PActivityReportLinkHandler.instance);
-                CoreCourseModulePrefetchDelegate.registerHandler(AddonModH5PActivityPrefetchHandler.instance);
-                CoreCronDelegate.register(AddonModH5PActivitySyncCronHandler.instance);
-            },
-        },
+        provideAppInitializer(() => {
+            CoreCourseModuleDelegate.registerHandler(AddonModH5PActivityModuleHandler.instance);
+            CoreContentLinksDelegate.registerHandler(AddonModH5PActivityIndexLinkHandler.instance);
+            CoreContentLinksDelegate.registerHandler(AddonModH5PActivityReportLinkHandler.instance);
+            CoreCourseModulePrefetchDelegate.registerHandler(AddonModH5PActivityPrefetchHandler.instance);
+            CoreCronDelegate.register(AddonModH5PActivitySyncCronHandler.instance);
+        }),
     ],
 })
 export class AddonModH5PActivityModule {}

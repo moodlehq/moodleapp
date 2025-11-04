@@ -22,6 +22,7 @@ import { CorePromisedValue } from './promised-value';
 /**
  * Superclass to help creating delegates
  */
+
 export class CoreDelegate<HandlerType extends CoreDelegateHandler> {
 
     /**
@@ -79,11 +80,9 @@ export class CoreDelegate<HandlerType extends CoreDelegateHandler> {
 
     /**
      * Constructor of the Delegate.
-     *
-     * @param delegateName Delegate name used for logging purposes.
      */
-    constructor(delegateName: string) {
-        this.logger = CoreLogger.getInstance(delegateName);
+    constructor() {
+        this.logger = CoreLogger.getInstance(this.constructor.name);
 
         // Update handlers on this cases.
         CoreEvents.on(CoreEvents.LOGIN, () => this.updateHandlers());

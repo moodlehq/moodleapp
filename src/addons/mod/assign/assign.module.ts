@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { APP_INITIALIZER, NgModule, Type } from '@angular/core';
+import { NgModule, Type, provideAppInitializer } from '@angular/core';
 import { Routes } from '@angular/router';
 import { CoreContentLinksDelegate } from '@features/contentlinks/services/contentlinks-delegate';
 import { CoreCourseHelper } from '@features/course/services/course-helper';
@@ -23,7 +23,7 @@ import { CorePushNotificationsDelegate } from '@features/pushnotifications/servi
 import { CoreCronDelegate } from '@services/cron';
 import { CORE_SITE_SCHEMAS } from '@services/sites';
 import { AddonModAssignFeedbackModule } from './feedback/feedback.module';
-import { OFFLINE_SITE_SCHEMA } from './services/database/assign';
+import { ADDON_MOD_ASSIGN_OFFLINE_SITE_SCHEMA } from './services/database/assign';
 import { AddonModAssignIndexLinkHandler } from './services/handlers/index-link';
 import { AddonModAssignListLinkHandler } from './services/handlers/list-link';
 import { AddonModAssignModuleHandler } from './services/handlers/module';
@@ -31,7 +31,10 @@ import { AddonModAssignPrefetchHandler } from './services/handlers/prefetch';
 import { AddonModAssignPushClickHandler } from './services/handlers/push-click';
 import { AddonModAssignSyncCronHandler } from './services/handlers/sync-cron';
 import { AddonModAssignSubmissionModule } from './submission/submission.module';
-import { ADDON_MOD_ASSIGN_COMPONENT, ADDON_MOD_ASSIGN_PAGE_NAME } from './constants';
+import { ADDON_MOD_ASSIGN_COMPONENT_LEGACY, ADDON_MOD_ASSIGN_PAGE_NAME } from './constants';
+import { conditionalRoutes } from '@/app/app-routing.module';
+import { canLeaveGuard } from '@guards/can-leave';
+import { CoreScreen } from '@services/screen';
 
 /**
  * Get mod assign services.
@@ -61,16 +64,63 @@ export async function getModAssignServices(): Promise<Type<unknown>[]> {
  *
  * @returns Assign component modules.
  */
-export async function getModAssignComponentModules(): Promise<unknown[]> {
-    const { AddonModAssignComponentsModule } = await import('@addons/mod/assign/components/components.module');
+export async function getModAssignComponentModules(): Promise<Type<unknown>[]> {
+    const { AddonModAssignSubmissionPluginComponent } =
+        await import('@addons/mod/assign/components/submission-plugin/submission-plugin');
+    const { AddonModAssignFeedbackPluginComponent } =
+        await import('@addons/mod/assign/components/feedback-plugin/feedback-plugin');
 
-    return [AddonModAssignComponentsModule];
+    return [
+        AddonModAssignSubmissionPluginComponent,
+        AddonModAssignFeedbackPluginComponent,
+    ];
 }
+
+const commonRoutes: Routes = [
+    {
+        path: ':courseId/:cmId',
+        loadComponent: () => import('./pages/index'),
+    },
+    {
+        path: ':courseId/:cmId/edit',
+        loadComponent: () => import('./pages/edit/edit'),
+        canDeactivate: [canLeaveGuard],
+    },
+];
+
+const mobileRoutes: Routes = [
+    ...commonRoutes,
+    {
+        path: ':courseId/:cmId/submission',
+        loadComponent: () => import('./pages/submission-list/submission-list'),
+    },
+    {
+        path: ':courseId/:cmId/submission/:submitId',
+        loadComponent: () => import('./pages/submission-review/submission-review'),
+    },
+];
+
+const tabletRoutes: Routes = [
+    ...commonRoutes,
+    {
+        path: ':courseId/:cmId/submission',
+        loadComponent: () => import('./pages/submission-list/submission-list'),
+        loadChildren: () => [
+            {
+                path: ':submitId',
+                loadComponent: () => import('./pages/submission-review/submission-review'),
+            },
+        ],
+    },
+];
 
 const routes: Routes = [
     {
         path: ADDON_MOD_ASSIGN_PAGE_NAME,
-        loadChildren: () => import('./assign-lazy.module'),
+        loadChildren: () => [
+            ...conditionalRoutes(mobileRoutes, () => CoreScreen.isMobile),
+            ...conditionalRoutes(tabletRoutes, () => CoreScreen.isTablet),
+        ],
     },
 ];
 
@@ -83,23 +133,19 @@ const routes: Routes = [
     providers: [
         {
             provide: CORE_SITE_SCHEMAS,
-            useValue: [OFFLINE_SITE_SCHEMA],
+            useValue: [ADDON_MOD_ASSIGN_OFFLINE_SITE_SCHEMA],
             multi: true,
         },
-        {
-            provide: APP_INITIALIZER,
-            multi: true,
-            useValue: () => {
-                CoreCourseModuleDelegate.registerHandler(AddonModAssignModuleHandler.instance);
-                CoreContentLinksDelegate.registerHandler(AddonModAssignIndexLinkHandler.instance);
-                CoreContentLinksDelegate.registerHandler(AddonModAssignListLinkHandler.instance);
-                CoreCourseModulePrefetchDelegate.registerHandler(AddonModAssignPrefetchHandler.instance);
-                CoreCronDelegate.register(AddonModAssignSyncCronHandler.instance);
-                CorePushNotificationsDelegate.registerClickHandler(AddonModAssignPushClickHandler.instance);
+        provideAppInitializer(() => {
+            CoreCourseModuleDelegate.registerHandler(AddonModAssignModuleHandler.instance);
+            CoreContentLinksDelegate.registerHandler(AddonModAssignIndexLinkHandler.instance);
+            CoreContentLinksDelegate.registerHandler(AddonModAssignListLinkHandler.instance);
+            CoreCourseModulePrefetchDelegate.registerHandler(AddonModAssignPrefetchHandler.instance);
+            CoreCronDelegate.register(AddonModAssignSyncCronHandler.instance);
+            CorePushNotificationsDelegate.registerClickHandler(AddonModAssignPushClickHandler.instance);
 
-                CoreCourseHelper.registerModuleReminderClick(ADDON_MOD_ASSIGN_COMPONENT);
-            },
-        },
+            CoreCourseHelper.registerModuleReminderClick(ADDON_MOD_ASSIGN_COMPONENT_LEGACY);
+        }),
     ],
 })
 export class AddonModAssignModule {}

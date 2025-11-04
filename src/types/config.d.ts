@@ -79,4 +79,5 @@ export interface EnvironmentConfig {
     iconsPrefixes?: Record<string, Record<string, string[]>>; // Prefixes for custom font icons (located in src/assets/fonts).
     clearIABSessionWhenAutoLogin?: 'android' | 'ios' | 'all'; // Clear the session every time a new IAB is opened with auto-login.
     disabledFeatures?: string; // Disabled features for the whole app, using the same format as tool_mobile_disabledfeatures.
+    collapsibleItemsExpanded: boolean; // Expand or collapse the collapsible items by default.
 }

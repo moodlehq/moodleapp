@@ -26,7 +26,7 @@ ion-item.item {
     }
 
     &.item-hightlighted {
-        @include safe-area-border-start(var(--selected-item-border-width), solid,  var(--selected-item-color));
+        @include border-start(var(--selected-item-border-width), solid,  var(--selected-item-color));
     }
 
     &.divider.section {
@@ -104,5 +104,25 @@ div.core-course-index-subsection {
     position: relative;
     ion-ripple-effect {
         z-index: 1;
+    }
+}
+
+:host-context(:root.dark) {
+    ion-item.item {
+        &.item-current {
+            --background: var(--primary-shade);
+            --color: var(--white);
+        }
+
+        &.divider.section {
+            ion-icon.expandable-status-icon {
+                color: var(--white);
+
+                &:hover {
+                    background: var(--primary-tint);
+                    color: var(--gray-900);
+                }
+            }
+        }
     }
 }

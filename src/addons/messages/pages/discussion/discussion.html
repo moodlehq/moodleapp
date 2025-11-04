@@ -5,16 +5,21 @@
         </ion-buttons>
         <ion-title>
             <h1>
-                <img *ngIf="loaded && !otherMember && conversationImage" class="core-bar-button-image" [url]="conversationImage" alt=""
-                    onError="this.src='assets/img/group-avatar.svg'" core-external-content role="presentation" [siteId]="siteId">
-                <core-user-avatar *ngIf="loaded && otherMember" class="core-bar-button-image" [user]="otherMember" [linkProfile]="false"
-                    [checkOnline]="otherMember.showonlinestatus" />
+                @if (loaded && !otherMember && conversationImage) {
+                    <img class="core-bar-button-image" [url]="conversationImage" alt="" onError="this.src='assets/img/group-avatar.svg'"
+                        core-external-content role="presentation" [siteId]="siteId">
+                } @else if (loaded && otherMember) {
+                    <core-user-avatar class="core-bar-button-image" [user]="otherMember" [linkProfile]="false"
+                        [checkOnline]="otherMember.showonlinestatus" />
+                }
                 <!-- WS didn't filter the conversation name, see MDL-81815. -->
                 <core-format-text [text]="title" contextLevel="system" [contextInstanceId]="0" [wsNotFiltered]="true" />
-                <ion-icon *ngIf="conversation && conversation.isfavourite" name="fas-star"
-                    [attr.aria-label]="'core.favourites' | translate" />
-                <ion-icon *ngIf="conversation && conversation.ismuted" name="fas-bell-slash"
-                    [attr.aria-label]="'addon.messages.mutedconversation' | translate" />
+                @if (conversation?.isfavourite) {
+                    <ion-icon name="fas-star" [attr.aria-label]="'core.favourites' | translate" />
+                }
+                @if (conversation?.ismuted) {
+                    <ion-icon name="fas-bell-slash" [attr.aria-label]="'addon.messages.mutedconversation' | translate" />
+                }
             </h1>
         </ion-title>
         <ion-buttons slot="end" />
@@ -26,10 +31,10 @@
             <core-context-menu-item [hidden]="isSelf || !showInfo || !isGroup" [priority]="1000"
                 [content]="'addon.messages.groupinfo' | translate" (action)="viewInfo()" iconAction="fas-circle-info" />
 
-            <core-context-menu-item [hidden]="!groupMessagingEnabled || !conversation || conversation.isfavourite" [priority]="800"
+            <core-context-menu-item [hidden]="!conversation || conversation.isfavourite" [priority]="800"
                 (action)="changeFavourite($event)" [closeOnClick]="false" [content]="'addon.messages.addtofavourites' | translate"
                 [iconAction]="favouriteIcon" />
-            <core-context-menu-item [hidden]="!groupMessagingEnabled || !conversation || !conversation.isfavourite" [priority]="800"
+            <core-context-menu-item [hidden]="!conversation || !conversation.isfavourite" [priority]="800"
                 (action)="changeFavourite($event)" [closeOnClick]="false" [content]="'addon.messages.removefromfavourites' | translate"
                 [iconAction]="favouriteIcon" [iconSlash]="true" />
 
@@ -47,7 +52,7 @@
 
             <core-context-menu-item [hidden]="!canDelete || !messages || !messages.length" [priority]="400"
                 [content]="'addon.messages.showdeletemessages' | translate" iconAction="toggle" [(toggle)]="showDelete" />
-            <core-context-menu-item [hidden]="!groupMessagingEnabled || !conversationId || isGroup || !messages || !messages.length"
+            <core-context-menu-item [hidden]="!conversationId || isGroup || !messages || !messages.length"
                 [priority]="200" [content]="'addon.messages.deleteconversation' | translate" (action)="deleteConversation($event)"
                 [closeOnClick]="false" [iconAction]="deleteIcon" />
             <core-context-menu-item
@@ -60,27 +65,33 @@
     </core-navbar-buttons>
 </ion-header>
 <ion-content (ionScroll)="scrollFunction()">
-    <core-loading [hideUntil]="loaded">
+    <core-loading [hideUntil]="loaded" placeholderType="column" placeholderHeight="36px">
         <!-- Load previous messages. -->
         <core-infinite-loading [enabled]="canLoadMore" (action)="loadPrevious($event)" position="top" [error]="loadMoreError" />
 
-        <ng-container *ngIf="isSelf && !canLoadMore">
+        @if (isSelf && !canLoadMore) {
+
             <p class="ion-text-center">{{ 'addon.messages.selfconversation' | translate }}</p>
             <p class="ion-text-center"><em>{{ 'addon.messages.selfconversationdefaultmessage' | translate }}</em></p>
-        </ng-container>
+
+        }
 
         <h2 class="sr-only">{{ title }}</h2>
 
         <ion-list class="addon-messages-discussion-container" [class.addon-messages-discussion-group]="isGroup" [attr.aria-live]="'polite'">
             <ng-container *ngFor="let message of messages; index as index; last as last">
-                <h3 class="ion-text-center addon-messages-date" *ngIf="message.showDate">
-                    {{ message.timecreated | coreFormatDate: "strftimedayshort" }}
-                </h3>
+                @if (message.showDate) {
+                    <h3 class="ion-text-center addon-messages-date">
+                        {{ message.timecreated | coreFormatDate: "strftimedayshort" }}
+                    </h3>
+                }
 
-                <ion-chip class="addon-messages-unreadfrom" *ngIf="unreadMessageFrom > 0 && message.id === unreadMessageFrom">
-                    <ion-label>{{ 'addon.messages.newmessages' | translate }}</ion-label>
-                    <ion-icon name="fas-arrow-down" aria-hidden="true" />
-                </ion-chip>
+                @if (unreadMessageFrom > 0 && message.id === unreadMessageFrom) {
+                    <ion-chip class="addon-messages-unreadfrom">
+                        <ion-label>{{ 'addon.messages.newmessages' | translate }}</ion-label>
+                        <ion-icon name="fas-arrow-down" aria-hidden="true" />
+                    </ion-chip>
+                }
 
                 <core-message [message]="message" [user]="members[message.useridfrom]" (afterRender)="last && scrollToBottom()"
                     [text]="message.text" (onDeleteMessage)="deleteMessage(message, index)" [showDelete]="showDelete"
@@ -88,55 +99,74 @@
             </ng-container>
         </ion-list>
 
-        <core-empty-box *ngIf="!messages || messages.length <= 0" icon="far-comments"
-            [message]="'addon.messages.nomessagesfound' | translate" />
+        @if (!messages || messages.length <= 0) {
+            <core-empty-box icon="far-comments" [message]="'addon.messages.nomessagesfound' | translate" />
+        }
     </core-loading>
     <!-- Scroll bottom. -->
-    <ion-fab slot="fixed" core-fab vertical="bottom" horizontal="end" *ngIf="loaded && newMessages > 0">
-        <ion-fab-button size="small" (click)="scrollToFirstUnreadMessage()" color="light"
-            [attr.aria-label]="'addon.messages.newmessages' | translate">
-            <ion-icon name="fas-arrow-down" aria-hidden="true" />
-            <span class="sr-only">{{ 'addon.messages.newmessages' | translate }}</span>
-        </ion-fab-button>
-        <ion-badge class="core-discussion-messages-badge">{{ newMessages }}</ion-badge>
-    </ion-fab>
+    @if (loaded && newMessages > 0) {
+        <ion-fab slot="fixed" core-fab vertical="bottom" horizontal="end">
+            <ion-fab-button size="small" (click)="scrollToFirstUnreadMessage()" color="light"
+                [attr.aria-label]="'addon.messages.newmessages' | translate">
+                <ion-icon name="fas-arrow-down" aria-hidden="true" />
+                <span class="sr-only">{{ 'addon.messages.newmessages' | translate }}</span>
+            </ion-fab-button>
+            <ion-badge class="core-discussion-messages-badge">{{ newMessages }}</ion-badge>
+        </ion-fab>
+    }
 </ion-content>
-<ion-footer class="footer-adjustable" *ngIf="loaded && (!conversationId || conversation)">
-    <ion-toolbar [color]="footerType === 'message' ? null : 'light'">
-        <p *ngIf="footerType === 'unable'" class="ion-text-center ion-margin-horizontal">
-            {{ 'addon.messages.unabletomessage' | translate }}
-        </p>
-        <div *ngIf="footerType === 'blocked'" class="ion-padding-horizontal">
-            <p class="ion-text-center">{{ 'addon.messages.youhaveblockeduser' | translate }}</p>
-            <ion-button expand="block" class="ion-text-wrap ion-margin-bottom" (click)="unblockUser()">
-                {{ 'addon.messages.unblockuser' | translate }}
-            </ion-button>
-        </div>
-        <div *ngIf="footerType === 'requiresContact' && otherMember" class="ion-padding-horizontal">
-            <p class="ion-text-center">
-                <strong>{{ 'addon.messages.isnotinyourcontacts' | translate: {$a: otherMember.fullname} }}</strong>
-            </p>
-            <p class="ion-text-center">{{ 'addon.messages.requirecontacttomessage' | translate: {$a: otherMember.fullname} }}</p>
-            <ion-button expand="block" class="ion-text-wrap ion-margin-bottom" (click)="createContactRequest()">
-                {{ 'addon.messages.sendcontactrequest' | translate }}
-            </ion-button>
-        </div>
-        <div *ngIf="footerType === 'requestReceived' && otherMember" class="ion-padding-horizontal">
-            <p class="ion-text-center">{{ 'addon.messages.userwouldliketocontactyou' | translate: {$a: otherMember.fullname} }}</p>
-            <ion-button expand="block" class="ion-text-wrap ion-margin-bottom" (click)="confirmContactRequest()">
-                {{ 'addon.messages.acceptandaddcontact' | translate }}
-            </ion-button>
-            <ion-button expand="block" class="ion-text-wrap ion-margin-bottom" fill="outline" (click)="declineContactRequest()">
-                {{ 'addon.messages.decline' | translate }}
-            </ion-button>
-        </div>
-        <div *ngIf="footerType === 'requestSent' || (footerType === 'message' && requestContactSent)" class="ion-padding-horizontal">
-            <p class="ion-text-center"><strong>{{ 'addon.messages.contactrequestsent' | translate }}</strong></p>
-            <p class="ion-text-center" *ngIf="otherMember">
-                {{ 'addon.messages.yourcontactrequestpending' | translate: {$a: otherMember.fullname} }}
-            </p>
-        </div>
-        <core-send-message-form *ngIf="footerType === 'message'" (onSubmit)="sendMessage($event)" [showKeyboard]="showKeyboard"
-            [placeholder]="'addon.messages.newmessage' | translate" />
-    </ion-toolbar>
-</ion-footer>
+@if (loaded && (!conversationId || conversation)) {
+    <ion-footer class="footer-adjustable">
+        <ion-toolbar [color]="footerType === 'message' ? null : 'light'">
+            @if (footerType === 'unable') {
+                <p class="ion-text-center ion-margin-horizontal">
+                    {{ 'addon.messages.unabletomessage' | translate }}
+                </p>
+            }
+            @if (footerType === 'blocked') {
+                <div class="ion-padding-horizontal">
+                    <p class="ion-text-center">{{ 'addon.messages.youhaveblockeduser' | translate }}</p>
+                    <ion-button expand="block" class="ion-text-wrap ion-margin-bottom" (click)="unblockUser()">
+                        {{ 'addon.messages.unblockuser' | translate }}
+                    </ion-button>
+                </div>
+            }
+            @if (footerType === 'requiresContact' && otherMember) {
+                <div class="ion-padding-horizontal">
+                    <p class="ion-text-center">
+                        <strong>{{ 'addon.messages.isnotinyourcontacts' | translate: {$a: otherMember.fullname} }}</strong>
+                    </p>
+                    <p class="ion-text-center">{{ 'addon.messages.requirecontacttomessage' | translate: {$a: otherMember.fullname} }}</p>
+                    <ion-button expand="block" class="ion-text-wrap ion-margin-bottom" (click)="createContactRequest()">
+                        {{ 'addon.messages.sendcontactrequest' | translate }}
+                    </ion-button>
+                </div>
+            }
+            @if (footerType === 'requestReceived' && otherMember) {
+                <div class="ion-padding-horizontal">
+                    <p class="ion-text-center">{{ 'addon.messages.userwouldliketocontactyou' | translate: {$a: otherMember.fullname} }}</p>
+                    <ion-button expand="block" class="ion-text-wrap ion-margin-bottom" (click)="confirmContactRequest()">
+                        {{ 'addon.messages.acceptandaddcontact' | translate }}
+                    </ion-button>
+                    <ion-button expand="block" class="ion-text-wrap ion-margin-bottom" fill="outline" (click)="declineContactRequest()">
+                        {{ 'addon.messages.decline' | translate }}
+                    </ion-button>
+                </div>
+            }
+            @if (footerType === 'requestSent' || (footerType === 'message' && requestContactSent)) {
+                <div class="ion-padding-horizontal">
+                    <p class="ion-text-center"><strong>{{ 'addon.messages.contactrequestsent' | translate }}</strong></p>
+                    @if (otherMember) {
+                        <p class="ion-text-center">
+                            {{ 'addon.messages.yourcontactrequestpending' | translate: {$a: otherMember.fullname} }}
+                        </p>
+                    }
+                </div>
+            }
+            @if (footerType === 'message') {
+                <core-send-message-form (onSubmit)="sendMessage($event)" [showKeyboard]="showKeyboard"
+                    [placeholder]="'addon.messages.newmessage' | translate" />
+            }
+        </ion-toolbar>
+    </ion-footer>
+}

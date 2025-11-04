@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { CoreConstants, DownloadStatus } from '@/core/constants';
+import { DownloadStatus } from '@/core/constants';
 import { AddonBlog } from '@addons/blog/services/blog';
 import { ADDON_BLOG_MAINMENU_PAGE_NAME } from '@addons/blog/constants';
 import { Component, Input, OnDestroy, OnInit } from '@angular/core';
@@ -22,20 +22,21 @@ import { CoreCourseHelper, CoreCourseModuleData } from '@features/course/service
 import { CoreCourseModuleDelegate } from '@features/course/services/module-delegate';
 import { CoreCourseModulePrefetchDelegate } from '@features/course/services/module-prefetch-delegate';
 import { CoreCourseAnyCourseData } from '@features/courses/services/courses';
-import { CoreGradesFormattedRow, CoreGradesFormattedTableRow, CoreGradesHelper } from '@features/grades/services/grades-helper';
+import { CoreGradesFormattedTableRow, CoreGradesHelper } from '@features/grades/services/grades-helper';
 import { CoreNetwork } from '@services/network';
 import { CoreFilepool } from '@services/filepool';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSites } from '@services/sites';
 import { CoreText } from '@singletons/text';
 import { CoreUtils } from '@singletons/utils';
-import { ModalController, NgZone, Translate } from '@singletons';
+import { ModalController, Translate } from '@singletons';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
-import { Subscription } from 'rxjs';
 import { CoreSharedModule } from '@/core/shared.module';
 import { toBoolean } from '@/core/transforms/boolean';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreAlerts } from '@services/overlays/alerts';
+import { ModFeature } from '@addons/mod/constants';
+import { CoreCourseModuleHelper } from '@features/course/services/course-module-helper';
 
 /**
  * Component to display a module summary modal.
@@ -44,7 +45,6 @@ import { CoreAlerts } from '@services/overlays/alerts';
     selector: 'core-course-module-summary',
     templateUrl: 'module-summary.html',
     styleUrl: 'module-summary.scss',
-    standalone: true,
     imports: [
         CoreSharedModule,
     ],
@@ -68,18 +68,18 @@ export class CoreCourseModuleSummaryComponent implements OnInit, OnDestroy {
     removeFilesLoading = false;
     prefetchLoading = false;
     canPrefetch = false;
+    isOfflineUseDisabled = false;
     prefetchDisabled = false;
     size?: number; // Size in bytes
     downloadTimeReadable = ''; // Last download time in a readable format.
-    grades?: CoreGradesFormattedRow[];
+    grades?: CoreGradesFormattedTableRow[];
     blog = false; // If blog is available.
-    isOnline = false; // If the app is online or not.
+    readonly isOnline = CoreNetwork.onlineSignal;
     course?: CoreCourseAnyCourseData;
     modicon = '';
     moduleNameTranslated = '';
     isTeacher = false;
 
-    protected onlineSubscription: Subscription; // It will observe the status of the network connection.
     protected packageStatusObserver?: CoreEventObserver; // Observer of package status.
     protected fileStatusObserver?: CoreEventObserver; // Observer of file status.
     protected siteId: string;
@@ -87,15 +87,6 @@ export class CoreCourseModuleSummaryComponent implements OnInit, OnDestroy {
 
     constructor() {
         this.siteId = CoreSites.getCurrentSiteId();
-        this.isOnline = CoreNetwork.isOnline();
-
-        // Refresh online status when changes.
-        this.onlineSubscription = CoreNetwork.onChange().subscribe(() => {
-            // Execute the callback in the Angular zone, so change detection doesn't stop working.
-            NgZone.run(() => {
-                this.isOnline = CoreNetwork.isOnline();
-            });
-        });
     }
 
     /**
@@ -119,10 +110,10 @@ export class CoreCourseModuleSummaryComponent implements OnInit, OnDestroy {
         }, this.displayOptions);
 
         this.displayOptions.displayGrades = this.displayOptions.displayGrades &&
-            CoreCourseModuleDelegate.supportsFeature(this.module.modname, CoreConstants.FEATURE_GRADE_HAS_GRADE, true);
+            CoreCourseModuleDelegate.supportsFeature(this.module.modname, ModFeature.GRADE_HAS_GRADE, true);
 
         this.displayOptions.displayDescription = this.displayOptions.displayDescription &&
-            CoreCourseModuleDelegate.supportsFeature(this.module.modname, CoreConstants.FEATURE_SHOW_DESCRIPTION, true);
+            CoreCourseModuleDelegate.supportsFeature(this.module.modname, ModFeature.SHOW_DESCRIPTION, true);
 
         this.fetchContent();
 
@@ -178,7 +169,7 @@ export class CoreCourseModuleSummaryComponent implements OnInit, OnDestroy {
         this.componentId = this.module.id;
         this.externalUrl = this.module.url;
         this.courseId = this.courseId || this.module.course;
-        this.moduleNameTranslated = CoreCourse.translateModuleName(this.module.modname, this.module.modplural);
+        this.moduleNameTranslated = CoreCourseModuleHelper.translateModuleName(this.module.modname, this.module.modplural);
 
         this.blog = !CoreSites.getCurrentSite()?.isFeatureDisabled('CoreCourseOptionsDelegate_AddonBlog') &&
             await AddonBlog.isPluginEnabled();
@@ -221,6 +212,8 @@ export class CoreCourseModuleSummaryComponent implements OnInit, OnDestroy {
         const moduleInfo =
             await CoreCourseHelper.getModulePrefetchInfo(this.module, this.courseId, refresh, this.component);
 
+        const site = CoreSites.getRequiredCurrentSite();
+        this.isOfflineUseDisabled = site.isFeatureDisabled('NoDelegate_CoreOffline');
         this.canPrefetch = moduleInfo.status !== DownloadStatus.NOT_DOWNLOADABLE;
         this.downloadTimeReadable = '';
 
@@ -399,7 +392,6 @@ export class CoreCourseModuleSummaryComponent implements OnInit, OnDestroy {
         this.isDestroyed = true;
         this.packageStatusObserver?.off();
         this.fileStatusObserver?.off();
-        this.onlineSubscription.unsubscribe();
     }
 
 }

@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit, OnDestroy, ViewChild, ElementRef } from '@angular/core';
+import { Component, OnInit, OnDestroy, ElementRef, inject, viewChild } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { CoreError } from '@classes/errors/error';
 import { CoreCourseModuleData } from '@features/course/services/course-helper';
@@ -21,7 +21,7 @@ import { CanLeave } from '@guards/can-leave';
 import { CoreFile } from '@services/file';
 import { CoreFileEntry, CoreFileHelper } from '@services/file-helper';
 import { CoreNavigator } from '@services/navigator';
-import { CoreSites } from '@services/sites';
+import { CoreSites, CoreSitesReadingStrategy } from '@services/sites';
 import { CoreSync } from '@services/sync';
 import { CoreText } from '@singletons/text';
 import { CoreWSError } from '@classes/errors/wserror';
@@ -46,6 +46,9 @@ import {
 import { CoreLoadings } from '@services/overlays/loadings';
 import { CoreDom } from '@singletons/dom';
 import { CoreAlerts } from '@services/overlays/alerts';
+import { CoreEditorRichTextEditorComponent } from '@features/editor/components/rich-text-editor/rich-text-editor';
+import { CoreSharedModule } from '@/core/shared.module';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 
 /**
  * Page that displays the workshop edit submission.
@@ -53,10 +56,14 @@ import { CoreAlerts } from '@services/overlays/alerts';
 @Component({
     selector: 'page-addon-mod-workshop-edit-submission',
     templateUrl: 'edit-submission.html',
+    imports: [
+        CoreSharedModule,
+        CoreEditorRichTextEditorComponent,
+    ],
 })
-export class AddonModWorkshopEditSubmissionPage implements OnInit, OnDestroy, CanLeave {
+export default class AddonModWorkshopEditSubmissionPage implements OnInit, OnDestroy, CanLeave {
 
-    @ViewChild('editFormEl') formElement!: ElementRef;
+    readonly formElement = viewChild<ElementRef>('editFormEl');
 
     module!: CoreCourseModuleData;
     courseId!: number;
@@ -89,11 +96,9 @@ export class AddonModWorkshopEditSubmissionPage implements OnInit, OnDestroy, Ca
     protected forceLeave = false;
     protected siteId: string;
     protected isDestroyed = false;
+    protected fb = inject(FormBuilder);
 
-    constructor(
-        protected fb: FormBuilder,
-    ) {
-
+    constructor() {
         this.userId = CoreSites.getCurrentSiteUserId();
         this.siteId = CoreSites.getCurrentSiteId();
 
@@ -128,7 +133,7 @@ export class AddonModWorkshopEditSubmissionPage implements OnInit, OnDestroy, Ca
 
         if (!this.isDestroyed) {
             // Block the workshop.
-            CoreSync.blockOperation(this.component, this.workshopId);
+            CoreSync.blockOperation(ADDON_MOD_WORKSHOP_COMPONENT, this.workshopId);
         }
 
         this.fetchSubmissionData();
@@ -155,7 +160,7 @@ export class AddonModWorkshopEditSubmissionPage implements OnInit, OnDestroy, Ca
             CoreFileUploader.clearTmpFiles(this.submission.attachmentfiles);
         }
 
-        CoreForms.triggerFormCancelledEvent(this.formElement, this.siteId);
+        CoreForms.triggerFormCancelledEvent(this.formElement(), this.siteId);
 
         return true;
     }
@@ -168,18 +173,21 @@ export class AddonModWorkshopEditSubmissionPage implements OnInit, OnDestroy, Ca
     protected async fetchSubmissionData(): Promise<void> {
         try {
             this.workshop = await AddonModWorkshop.getWorkshop(this.courseId, this.module.id);
-            this.textAvailable = (this.workshop.submissiontypetext != AddonModWorkshopSubmissionType.SUBMISSION_TYPE_DISABLED);
-            this.textRequired = (this.workshop.submissiontypetext == AddonModWorkshopSubmissionType.SUBMISSION_TYPE_REQUIRED);
-            this.fileAvailable = (this.workshop.submissiontypefile != AddonModWorkshopSubmissionType.SUBMISSION_TYPE_DISABLED);
-            this.fileRequired = (this.workshop.submissiontypefile == AddonModWorkshopSubmissionType.SUBMISSION_TYPE_REQUIRED);
+            this.textAvailable = (this.workshop.submissiontypetext !== AddonModWorkshopSubmissionType.SUBMISSION_TYPE_DISABLED);
+            this.textRequired = (this.workshop.submissiontypetext === AddonModWorkshopSubmissionType.SUBMISSION_TYPE_REQUIRED);
+            this.fileAvailable = (this.workshop.submissiontypefile !== AddonModWorkshopSubmissionType.SUBMISSION_TYPE_DISABLED);
+            this.fileRequired = (this.workshop.submissiontypefile === AddonModWorkshopSubmissionType.SUBMISSION_TYPE_REQUIRED);
 
             this.editForm.controls.content.setValidators(this.textRequired ? Validators.required : null);
 
             if (this.submissionId > 0) {
                 this.editing = true;
 
-                this.submission =
-                    await AddonModWorkshopHelper.getSubmissionById(this.workshopId, this.submissionId, { cmId: this.module.id });
+                this.submission = await AddonModWorkshopHelper.getSubmissionById(this.workshopId, this.submissionId, {
+                    cmId: this.module.id,
+                    filter: false,
+                    readingStrategy: CoreSitesReadingStrategy.PREFER_NETWORK,
+                });
 
                 const canEdit = this.userId == this.submission.authorid &&
                     this.access.cansubmit &&
@@ -207,8 +215,15 @@ export class AddonModWorkshopEditSubmissionPage implements OnInit, OnDestroy, Ca
             }
 
             if (this.submission) {
-                this.originalData.title = this.submission.title || '';
-                this.originalData.content = this.submission.content || '';
+                this.editForm.controls['title'].setValue(this.submission.title);
+                this.editForm.controls['content'].setValue(CoreFileHelper.replacePluginfileUrls(
+                    this.submission.content,
+                    this.submission.contentfiles || [],
+                ));
+                this.attachments = this.submission.attachmentfiles || [];
+
+                this.originalData.title = this.editForm.controls['title'].value;
+                this.originalData.content = this.editForm.controls['content'].value;
                 this.originalData.attachmentfiles = [];
 
                 (this.submission.attachmentfiles || []).forEach((file) => {
@@ -223,10 +238,6 @@ export class AddonModWorkshopEditSubmissionPage implements OnInit, OnDestroy, Ca
                         fileurl: 'fileurl' in file ? file.fileurl : '',
                     });
                 });
-
-                this.editForm.controls['title'].setValue(this.submission.title);
-                this.editForm.controls['content'].setValue(this.submission.content);
-                this.attachments = this.submission.attachmentfiles || [];
             }
 
             this.loaded = true;
@@ -363,6 +374,7 @@ export class AddonModWorkshopEditSubmissionPage implements OnInit, OnDestroy, Ca
 
         const modal = await CoreLoadings.show('core.sending', true);
         const submissionId = this.submission?.id;
+        inputData.content = CoreFileHelper.restorePluginfileUrls(inputData.content, this.submission?.contentfiles || []);
 
         // Add some HTML to the message if needed.
         if (this.textAvailable) {
@@ -460,7 +472,7 @@ export class AddonModWorkshopEditSubmissionPage implements OnInit, OnDestroy, Ca
                 }
             }
 
-            CoreForms.triggerFormSubmittedEvent(this.formElement, !!newSubmissionId, this.siteId);
+            CoreForms.triggerFormSubmittedEvent(this.formElement(), !!newSubmissionId, this.siteId);
 
             const data: AddonModWorkshopSubmissionChangedEventData = {
                 workshopId: this.workshopId,
@@ -479,15 +491,14 @@ export class AddonModWorkshopEditSubmissionPage implements OnInit, OnDestroy, Ca
 
             CoreEvents.trigger(CoreEvents.ACTIVITY_DATA_SENT, { module: 'workshop' });
 
-            const promise = newSubmissionId ? AddonModWorkshop.invalidateSubmissionData(this.workshopId, newSubmissionId) :
-                Promise.resolve();
+            if (newSubmissionId) {
+                await CorePromiseUtils.ignoreErrors(AddonModWorkshop.invalidateSubmissionData(this.workshopId, newSubmissionId));
+            }
 
-            await promise.finally(() => {
-                CoreEvents.trigger(ADDON_MOD_WORKSHOP_SUBMISSION_CHANGED, data, this.siteId);
+            CoreEvents.trigger(ADDON_MOD_WORKSHOP_SUBMISSION_CHANGED, data, this.siteId);
 
-                // Delete the local files from the tmp folder.
-                CoreFileUploader.clearTmpFiles(inputData.attachmentfiles);
-            });
+            // Delete the local files from the tmp folder.
+            CoreFileUploader.clearTmpFiles(inputData.attachmentfiles);
         } catch (error) {
             CoreAlerts.showError(error, { default: 'Cannot save submission' });
         } finally {
@@ -500,7 +511,7 @@ export class AddonModWorkshopEditSubmissionPage implements OnInit, OnDestroy, Ca
             ? this.submissionId
             : 'newsub';
 
-        return this.workshopId + '_' + id;
+        return `${this.workshopId}_${id}`;
     }
 
     /**
@@ -508,7 +519,7 @@ export class AddonModWorkshopEditSubmissionPage implements OnInit, OnDestroy, Ca
      */
     ngOnDestroy(): void {
         this.isDestroyed = true;
-        CoreSync.unblockOperation(this.component, this.workshopId);
+        CoreSync.unblockOperation(ADDON_MOD_WORKSHOP_COMPONENT, this.workshopId);
     }
 
 }

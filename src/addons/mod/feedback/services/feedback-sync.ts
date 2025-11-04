@@ -26,8 +26,12 @@ import { makeSingleton, Translate } from '@singletons';
 import { CoreEvents } from '@singletons/events';
 import { AddonModFeedback, AddonModFeedbackWSFeedback } from './feedback';
 import { AddonModFeedbackOffline, AddonModFeedbackOfflineResponse } from './feedback-offline';
-import { AddonModFeedbackPrefetchHandler, AddonModFeedbackPrefetchHandlerService } from './handlers/prefetch';
-import { ADDON_MOD_FEEDBACK_AUTO_SYNCED, ADDON_MOD_FEEDBACK_COMPONENT } from '../constants';
+import {
+    ADDON_MOD_FEEDBACK_AUTO_SYNCED,
+    ADDON_MOD_FEEDBACK_COMPONENT,
+    ADDON_MOD_FEEDBACK_COMPONENT_LEGACY,
+    ADDON_MOD_FEEDBACK_MODNAME,
+} from '../constants';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 
 /**
@@ -45,8 +49,7 @@ export class AddonModFeedbackSyncProvider extends CoreCourseActivitySyncBaseProv
     /**
      * @inheritdoc
      */
-    prefetchAfterUpdate(
-        prefetchHandler: AddonModFeedbackPrefetchHandlerService,
+    prefetchModuleAfterUpdate(
         module: CoreCourseAnyModuleData,
         courseId: number,
         regex?: RegExp,
@@ -54,7 +57,7 @@ export class AddonModFeedbackSyncProvider extends CoreCourseActivitySyncBaseProv
     ): Promise<boolean> {
         regex = regex || /^.*files$|^timers/;
 
-        return super.prefetchAfterUpdate(prefetchHandler, module, courseId, regex, siteId);
+        return super.prefetchModuleAfterUpdate(module, courseId, regex, siteId);
     }
 
     /**
@@ -162,7 +165,9 @@ export class AddonModFeedbackSyncProvider extends CoreCourseActivitySyncBaseProv
         };
 
         // Sync offline logs.
-        await CorePromiseUtils.ignoreErrors(CoreCourseLogHelper.syncActivity(ADDON_MOD_FEEDBACK_COMPONENT, feedbackId, siteId));
+        await CorePromiseUtils.ignoreErrors(
+            CoreCourseLogHelper.syncActivity(ADDON_MOD_FEEDBACK_COMPONENT_LEGACY, feedbackId, siteId),
+        );
 
         // Get offline responses to be sent.
         const responses = await CorePromiseUtils.ignoreErrors(AddonModFeedbackOffline.getFeedbackResponses(feedbackId, siteId));
@@ -223,9 +228,9 @@ export class AddonModFeedbackSyncProvider extends CoreCourseActivitySyncBaseProv
         if (result.updated) {
             // Data has been sent to server, update data.
             try {
-                const module = await CoreCourse.getModuleBasicInfoByInstance(feedbackId, 'feedback', { siteId });
+                const module = await CoreCourse.getModuleBasicInfoByInstance(feedbackId, ADDON_MOD_FEEDBACK_MODNAME, { siteId });
 
-                await this.prefetchAfterUpdate(AddonModFeedbackPrefetchHandler.instance, module, courseId, undefined, siteId);
+                await this.prefetchModuleAfterUpdate(module, courseId, undefined, siteId);
             } catch {
                 // Ignore errors.
             }

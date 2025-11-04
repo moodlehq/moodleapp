@@ -18,7 +18,6 @@ import { PopoverController } from '@singletons';
 @Component({
     selector: 'addon-blog-entry-options-menu',
     templateUrl: 'entry-options-menu.html',
-    standalone: true,
     imports: [
         CoreSharedModule,
     ],

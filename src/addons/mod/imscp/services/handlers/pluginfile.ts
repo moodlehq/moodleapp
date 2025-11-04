@@ -48,7 +48,7 @@ export class AddonModImscpPluginFileHandlerService implements CorePluginFileHand
      */
     getComponentRevisionReplace(args: string[]): string {
         // Component + Filearea + Revision
-        return '/mod_imscp/' + args[2] + '/0/';
+        return `/mod_imscp/${args[2]}/0/`;
     }
 
     /**

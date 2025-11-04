@@ -12,9 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, Input, OnChanges, SimpleChange, ChangeDetectionStrategy, ElementRef } from '@angular/core';
-import { SafeStyle } from '@angular/platform-browser';
-import { DomSanitizer, Translate } from '@singletons';
+import { Component, ChangeDetectionStrategy, input, computed } from '@angular/core';
+import { Translate } from '@singletons';
+import { CoreBaseModule } from '@/core/base.module';
 
 /**
  * Component to show a progress bar and its value.
@@ -27,75 +27,29 @@ import { DomSanitizer, Translate } from '@singletons';
     templateUrl: 'core-progress-bar.html',
     styleUrl: 'progress-bar.scss',
     changeDetection: ChangeDetectionStrategy.OnPush,
+    imports: [CoreBaseModule],
+    host: {
+        '[class]': 'color() ? `ion-color ion-color-${color()}` : ""',
+    },
 })
-export class CoreProgressBarComponent implements OnChanges {
+export class CoreProgressBarComponent {
 
-    @Input({ required: true }) progress!: number | string; // Percentage (0 to 100). Negative number will show an indeterminate bar.
-    @Input() text?: string; // Percentage in text to be shown at the right. If not defined, progress will be used.
-    @Input() a11yText?: string; // Accessibility text to read before the percentage.
-    @Input() ariaDescribedBy?: string; // ID of the element that described the progress, if any.
-    @Input() color = '';
+    readonly progress = input.required<number | string>(); // Percentage (0 to 100). Negative number will show an indeterminate bar.
+    readonly text = input<string>(); // Percentage in text to be shown at the right. If not defined, progress will be used.
+    readonly a11yText = input<string>(); // Accessibility text to read before the percentage.
+    readonly ariaDescribedBy = input<string>(); // ID of the element that described the progress, if any.
+    readonly color = input('');
 
-    width?: SafeStyle;
-    progressBarValueText?: string;
-    progressNumber = 0;
+    readonly progressNumber = computed(() => {
+        const progress = Number(this.progress());
 
-    protected textSupplied = false;
-    protected element: HTMLElement;
+        return progress < 0 || isNaN(progress) ? -1 : Math.floor(progress); // Remove decimals if progress is valid.
+    });
 
-    constructor(elementRef: ElementRef) {
-        this.element = elementRef.nativeElement;
-    }
+    readonly textToDisplay = computed(() => this.text() ??
+        (this.progressNumber() !== -1 ? Translate.instant('core.percentagenumber', { $a: this.progressNumber() }) : ''));
 
-    /**
-     * @inheritdoc
-     */
-    ngOnChanges(changes: { [name: string]: SimpleChange }): void {
-        if (changes.color) {
-            if (changes.color.previousValue) {
-                this.element.classList.remove('ion-color', 'ion-color-' + changes.color.previousValue);
-            }
-            if (changes.color.currentValue) {
-                this.element.classList.add('ion-color', 'ion-color-' + changes.color.currentValue);
-            }
-        }
-
-        if (changes.text && changes.text.currentValue !== undefined) {
-            // User provided a custom text, don't use default.
-            this.textSupplied = true;
-        }
-
-        if (changes.progress) {
-            // Progress has changed.
-            this.updateProgress();
-        }
-
-        if (changes.text || changes.progress || changes.a11yText) {
-            this.progressBarValueText = (this.a11yText ? Translate.instant(this.a11yText) + ' ' : '') + this.text;
-        }
-    }
-
-    /**
-     * Update progress because it has changed.
-     */
-    protected updateProgress(): void {
-        // Progress has changed.
-        this.progressNumber = Number(this.progress);
-
-        if (this.progressNumber < 0 || isNaN(this.progressNumber)) {
-            this.progressNumber = -1;
-
-            return;
-        }
-
-        // Remove decimals.
-        this.progressNumber = Math.floor(this.progressNumber);
-
-        if (!this.textSupplied) {
-            this.text = Translate.instant('core.percentagenumber', { $a: this.progressNumber });
-        }
-
-        this.width = DomSanitizer.bypassSecurityTrustStyle(this.progressNumber + '%');
-    }
+    readonly progressBarValueText = computed(() =>
+        (this.a11yText() ? Translate.instant(this.a11yText() ?? '') + ' ' : '') + this.textToDisplay());
 
 }

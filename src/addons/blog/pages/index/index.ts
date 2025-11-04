@@ -41,9 +41,12 @@ import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { CoreTime } from '@singletons/time';
 import { CorePopovers } from '@services/overlays/popovers';
 import { CoreLoadings } from '@services/overlays/loadings';
-import { Subscription } from 'rxjs';
 import { CoreAlerts } from '@services/overlays/alerts';
 import { Translate } from '@singletons';
+import { CoreCommentsCommentsComponent } from '@features/comments/components/comments/comments';
+import { CoreTagListComponent } from '@features/tag/components/list/list';
+import { CoreSharedModule } from '@/core/shared.module';
+import { CoreMainMenuUserButtonComponent } from '@features/mainmenu/components/user-menu-button/user-menu-button';
 
 /**
  * Page that displays the list of blog entries.
@@ -52,8 +55,14 @@ import { Translate } from '@singletons';
     selector: 'page-addon-blog-index',
     templateUrl: 'index.html',
     styleUrl: './index.scss',
+    imports: [
+        CoreSharedModule,
+        CoreCommentsCommentsComponent,
+        CoreMainMenuUserButtonComponent,
+        CoreTagListComponent,
+    ],
 })
-export class AddonBlogIndexPage implements OnInit, OnDestroy {
+export default class AddonBlogIndexPage implements OnInit, OnDestroy {
 
     title = '';
 
@@ -62,7 +71,7 @@ export class AddonBlogIndexPage implements OnInit, OnDestroy {
     protected siteHomeId: number;
     protected logView: () => void;
 
-    loaded = signal(false);
+    readonly loaded = signal(false);
     canLoadMore = false;
     loadMoreError = false;
     entries: (AddonBlogOfflinePostFormatted | AddonBlogPostFormatted)[] = [];
@@ -79,19 +88,17 @@ export class AddonBlogIndexPage implements OnInit, OnDestroy {
     contextInstanceId = 0;
     entryUpdateObserver: CoreEventObserver;
     syncObserver: CoreEventObserver;
-    onlineObserver: Subscription;
     optionsAvailable = false;
-    hasOfflineDataToSync = signal(false);
-    isOnline = signal(false);
+    readonly hasOfflineDataToSync = signal(false);
+    readonly isOnline = CoreNetwork.onlineSignal;
     siteId: string;
     syncIcon = CoreConstants.ICON_SYNC;
-    syncHidden = computed(() => !this.loaded() || !this.isOnline() || !this.hasOfflineDataToSync());
+    readonly syncHidden = computed(() => !this.loaded() || !this.isOnline() || !this.hasOfflineDataToSync());
 
     constructor() {
         this.currentUserId = CoreSites.getCurrentSiteUserId();
         this.siteHomeId = CoreSites.getCurrentSiteHomeId();
         this.siteId = CoreSites.getCurrentSiteId();
-        this.isOnline.set(CoreNetwork.isOnline());
 
         this.logView = CoreTime.once(async () => {
             await CorePromiseUtils.ignoreErrors(AddonBlog.logView(this.filter));
@@ -126,11 +133,6 @@ export class AddonBlogIndexPage implements OnInit, OnDestroy {
             this.loaded.set(false);
             await CorePromiseUtils.ignoreErrors(this.refresh(false));
             this.loaded.set(true);
-        });
-
-        // Refresh online status when changes.
-        this.onlineObserver = CoreNetwork.onChange().subscribe(async () => {
-            this.isOnline.set(CoreNetwork.isOnline());
         });
     }
 
@@ -216,6 +218,16 @@ export class AddonBlogIndexPage implements OnInit, OnDestroy {
      */
     getEntryId(entry: AddonBlogPostFormatted | AddonBlogOfflinePostFormatted): number | undefined {
         return this.isOnlineEntry(entry) ? entry.id : undefined;
+    }
+
+    /**
+     * Whether an entry has offline data.
+     *
+     * @param entry Entry.
+     * @returns Whether it has offline data.
+     */
+    entryHasOfflineData(entry: AddonBlogPostFormatted | AddonBlogOfflinePostFormatted): boolean {
+        return !this.isOnlineEntry(entry) || !!entry.updatedOffline;
     }
 
     /**
@@ -465,7 +477,7 @@ export class AddonBlogIndexPage implements OnInit, OnDestroy {
             case 'edit': {
                 await CoreNavigator.navigateToSitePath(`blog/edit/${this.isOnlineEntry(entry) && entry.id
                     ? entry.id
-                    : 'new-' + entry.created}`, {
+                    : `new-${entry.created}`}`, {
                         params: this.filter.cmid
                             ? { cmId: this.filter.cmid, filters: this.filter, lastModified: entry.lastmodified }
                             : { filters: this.filter, lastModified: entry.lastmodified },
@@ -496,7 +508,6 @@ export class AddonBlogIndexPage implements OnInit, OnDestroy {
     ngOnDestroy(): void {
         this.entryUpdateObserver.off();
         this.syncObserver.off();
-        this.onlineObserver.unsubscribe();
     }
 
 }

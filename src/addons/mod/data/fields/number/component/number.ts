@@ -14,6 +14,7 @@
 
 import { Component } from '@angular/core';
 import { AddonModDataFieldPluginBaseComponent } from '../../../classes/base-field-plugin-component';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Component to render data number field.
@@ -21,6 +22,9 @@ import { AddonModDataFieldPluginBaseComponent } from '../../../classes/base-fiel
 @Component({
     selector: 'addon-mod-data-field-number',
     templateUrl: 'addon-mod-data-field-number.html',
+    imports: [
+        CoreSharedModule,
+    ],
 })
 export class AddonModDataFieldNumberComponent extends AddonModDataFieldPluginBaseComponent{
 
@@ -38,7 +42,7 @@ export class AddonModDataFieldNumberComponent extends AddonModDataFieldPluginBas
             value = isNaN(v) ? '' : v;
         }
 
-        this.addControl('f_' + this.field.id, value);
+        this.addControl(`f_${this.field.id}`, value);
     }
 
 }

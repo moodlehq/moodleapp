@@ -13,10 +13,11 @@
 // limitations under the License.
 
 import { CoreReminders } from '@features/reminders/services/reminders';
-import { Component, Input, OnInit } from '@angular/core';
-import { CoreTimeUtils } from '@services/utils/time';
-import { Translate } from '@singletons';
+import { Component, computed, effect, input, signal } from '@angular/core';
 import { CoreTime } from '@singletons/time';
+import { Translate } from '@singletons';
+import { CoreSharedModule } from '@/core/shared.module';
+import { CoreRemindersSetButtonComponent } from '../set-button/set-button';
 
 /**
  * Component that displays a date to remind.
@@ -25,47 +26,57 @@ import { CoreTime } from '@singletons/time';
     selector: 'core-reminders-date',
     templateUrl: 'date.html',
     styleUrl: 'date.scss',
+    imports: [
+        CoreSharedModule,
+        CoreRemindersSetButtonComponent,
+    ],
 })
-export class CoreRemindersDateComponent implements OnInit {
+export class CoreRemindersDateComponent {
 
-    @Input() component?: string;
-    @Input() instanceId?: number;
-    @Input() type?: string;
-    @Input() label = '';
-    @Input() time = 0;
-    @Input() relativeTo = 0;
-    @Input() title = '';
-    @Input() url = '';
+    readonly component = input<string>();
+    readonly instanceId = input<number>();
+    readonly type = input<string>();
+    readonly label = input('');
+    readonly time = input(0);
+    readonly relativeTo = input(0);
+    readonly title = input('');
+    readonly url = input('');
 
-    showReminderButton = false;
-    timebefore?: number; // Undefined means no reminder has been set.
-    readableTime = '';
-
-    /**
-     * @inheritdoc
-     */
-    async ngOnInit(): Promise<void> {
-        this.readableTime = this.getReadableTime(this.time, this.relativeTo);
-
+    readonly showReminderButton = computed(() => {
         // If not set, button won't be shown.
-        if (this.component === undefined || this.instanceId === undefined || this.type === undefined) {
-            return;
+        const component = this.component();
+        const instanceId = this.instanceId();
+        const type = this.type();
+        if (component === undefined || instanceId === undefined || type === undefined) {
+            return false;
         }
 
         const remindersEnabled = CoreReminders.isEnabled();
-        this.showReminderButton = remindersEnabled && this.time > CoreTimeUtils.timestamp();
 
-        if (!this.showReminderButton) {
-            return;
-        }
+        return remindersEnabled && this.time() > CoreTime.timestamp();
+    });
 
-        const reminders = await CoreReminders.getReminders({
-            instanceId: this.instanceId,
-            component: this.component,
-            type: this.type,
+    readonly timebefore = signal<number | undefined>(undefined); // Undefined means no reminder has been set.
+    readonly readableTime = computed(() => this.getReadableTime(this.time(), this.relativeTo()));
+
+    constructor() {
+        effect(async () => {
+            const component = this.component();
+            const instanceId = this.instanceId();
+            const type = this.type();
+
+            if (!this.showReminderButton() || component === undefined || instanceId === undefined || type === undefined) {
+                return;
+            }
+
+            const reminders = await CoreReminders.getReminders({
+                instanceId,
+                component,
+                type,
+            });
+
+            this.timebefore.set(reminders[0]?.timebefore);
         });
-
-        this.timebefore = reminders[0]?.timebefore;
     }
 
     /**
@@ -77,15 +88,15 @@ export class CoreRemindersDateComponent implements OnInit {
      */
     protected getReadableTime(timestamp: number, relativeTo = 0): string {
         if (!relativeTo) {
-            return CoreTimeUtils.userDate(timestamp * 1000, 'core.strftimedatetime', true);
+            return CoreTime.userDate(timestamp * 1000, 'core.strftimedatetime', true);
         }
 
         return Translate.instant(
-            'core.course.relativedatessubmissionduedate' + (timestamp > relativeTo ? 'after' : 'before'),
+            `core.course.relativedatessubmissionduedate${timestamp > relativeTo ? 'after' : 'before'}`,
             {
                 $a: {
                     datediffstr: relativeTo === timestamp ?
-                        '0 ' + Translate.instant('core.secs') :
+                        `0 ${Translate.instant('core.secs')}` :
                         CoreTime.formatTime(relativeTo - timestamp, 3),
                 },
             },

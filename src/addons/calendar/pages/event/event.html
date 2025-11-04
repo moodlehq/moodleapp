@@ -4,17 +4,20 @@
             <ion-back-button [text]="'core.back' | translate" />
         </ion-buttons>
         <ion-title>
-            <h1 *ngIf="event">
-                <core-format-text [text]="event.name" [contextLevel]="event.contextLevel" [contextInstanceId]="event.contextInstanceId" />
-            </h1>
+            @if (event) {
+                <h1>
+                    <core-format-text [text]="event.name" [contextLevel]="event.contextLevel" [contextInstanceId]="event.contextInstanceId"
+                        [sanitize]="event.offline" />
+                </h1>
+            }
         </ion-title>
         <ion-buttons slot="end">
             <core-context-menu>
-                <core-context-menu-item [hidden]="!eventLoaded || (!hasOffline && event && !event.deleted) || !isOnline" [priority]="400"
+                <core-context-menu-item [hidden]="!eventLoaded || (!hasOffline && event && !event.deleted) || !isOnline()" [priority]="400"
                     [content]="'core.settings.synchronizenow' | translate" (action)="doRefresh(undefined, $event, true)"
                     [iconAction]="syncIcon" [closeOnClick]="false" />
-                <core-context-menu-item [hidden]="!event || !event.canedit || event.deleted || (!canEdit && event.id > 0)" [priority]="300"
-                    [content]="'core.edit' | translate" (action)="openEdit()" iconAction="fas-pen" />
+                <core-context-menu-item [hidden]="!event || !event.canedit || event.deleted || (!canEdit && event.id > 0) || !isOnline()"
+                    [priority]="300" [content]="'core.edit' | translate" (action)="openEdit()" iconAction="fas-pen" />
                 <core-context-menu-item [hidden]="!event || !event.candelete || event.deleted" [priority]="200"
                     [content]="'core.delete' | translate" (action)="deleteEvent()" iconAction="fas-trash" />
                 <core-context-menu-item [hidden]="!event || !event.deleted" [priority]="200" [content]="'core.restore' | translate"
@@ -28,143 +31,175 @@
         <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}" />
     </ion-refresher>
     <core-loading [hideUntil]="eventLoaded">
-        <ion-list *ngIf="event">
-            <ion-item class="ion-text-wrap addon-calendar-event" collapsible [ngClass]="['addon-calendar-eventtype-'+event.eventtype]">
-                <core-mod-icon *ngIf="event.moduleIcon" [modicon]="event.moduleIcon" [showAlt]="false" [modname]="event.modulename"
-                    [componentId]="event.instance" slot="start" [purpose]="event.purpose" [isBranded]="event.branded" />
-                <ion-icon *ngIf=" event.eventIcon && !event.moduleIcon" [name]="event.eventIcon" aria-hidden="true" slot="start" />
-                <ion-label>
-                    <!-- Add the icon title so accessibility tools read it. -->
-                    <span class="sr-only">
-                        {{ 'addon.calendar.type' + event.formattedType | translate }}
-                        <span class="sr-only" *ngIf="event.moduleIcon && event.iconTitle">{{ event.iconTitle }}</span>
-                    </span>
-                    <h1>
-                        <core-format-text [text]="event.name" [contextLevel]="event.contextLevel"
-                            [contextInstanceId]="event.contextInstanceId" />
-                    </h1>
-                </ion-label>
-            </ion-item>
-            <!-- There is data to be synchronized -->
-            <ion-card class="core-warning-card" *ngIf="hasOffline || event.deleted">
-                <ion-item>
-                    <ion-icon name="fas-triangle-exclamation" slot="start" aria-hidden="true" />
-                    <ion-label>{{ 'core.hasdatatosync' | translate:{$a: 'addon.calendar.calendarevent' | translate} }}</ion-label>
-                </ion-item>
-            </ion-card>
-            <ion-item class="ion-text-wrap">
-                <ion-label>
-                    <p class="item-heading">{{ 'addon.calendar.when' | translate }}</p>
-                    <core-format-text [text]="event.formattedtime" [filter]="false" />
-                </ion-label>
-                <ion-note slot="end" *ngIf="event.deleted">
-                    <ion-icon name="fas-trash" aria-hidden="true" /> {{ 'core.deletedoffline' | translate }}
-                </ion-note>
-            </ion-item>
-            <ion-item>
-                <ion-label>
-                    <p class="item-heading">{{ 'addon.calendar.eventtype' | translate }}</p>
-                    <p>{{ 'addon.calendar.type' + event.formattedType | translate }}</p>
-                </ion-label>
-            </ion-item>
-            <ion-item class="ion-text-wrap" *ngIf="courseName" [href]="courseUrl" core-link capture="true" [detail]="true">
-                <ion-label>
-                    <p class="item-heading">{{ 'core.course' | translate}}</p>
-                    <p>
-                        <core-format-text [text]="courseName" contextLevel="course" [contextInstanceId]="courseId" />
-                    </p>
-                </ion-label>
-            </ion-item>
-            <ion-item class="ion-text-wrap core-groupname" *ngIf="groupName">
-                <ion-label>
-                    <p class="item-heading">{{ 'core.group' | translate}}</p>
-                    <p>
-                        <core-format-text [text]="groupName" contextLevel="course" [contextInstanceId]="event.courseid" />
-                    </p>
-                </ion-label>
-            </ion-item>
-            <ion-item class="ion-text-wrap" *ngIf="categoryPath">
-                <ion-label>
-                    <p class="item-heading">{{ 'core.category' | translate}}</p>
-                    <p>
-                        <core-format-text [text]="categoryPath" contextLevel="coursecat" [contextInstanceId]="event.categoryid" />
-                    </p>
-                </ion-label>
-            </ion-item>
-            <ion-item class="ion-text-wrap" *ngIf="event.description">
-                <ion-label>
-                    <p class="item-heading">{{ 'core.description' | translate}}</p>
-                    <p>
-                        <core-format-text [text]="event.description" [contextLevel]="event.contextLevel"
-                            [contextInstanceId]="event.contextInstanceId" />
-                    </p>
-                </ion-label>
-            </ion-item>
-            <ion-item class="ion-text-wrap" *ngIf="event.location">
-                <ion-label>
-                    <p class="item-heading">{{ 'core.location' | translate}}</p>
-                    <p>
-                        <a [href]="event.encodedLocation" core-link [autoLogin]="false">
-                            <core-format-text [text]="event.location" [contextLevel]="event.contextLevel"
-                                [contextInstanceId]="event.contextInstanceId" />
-                        </a>
-                    </p>
-                </ion-label>
-            </ion-item>
-            <ion-item *ngIf="moduleUrl">
-                <ion-label>
-                    <ion-button expand="block" [href]="moduleUrl" core-link capture="true">
-                        {{ 'addon.calendar.gotoactivity' | translate }}
-                    </ion-button>
-                </ion-label>
-            </ion-item>
-        </ion-list>
-
-        <ion-card class="core-warning-card core-card-with-buttons"
-            *ngIf="remindersEnabled && event && !canScheduleExactAlarms && !scheduleExactWarningHidden">
-            <ion-item class="ion-text-wrap">
-                <ion-icon name="fas-circle-info" slot="start" aria-hidden="true" />
-                <ion-label>
-                    <p><strong>{{ 'core.exactalarmsturnedoff' | translate }}</strong></p>
-                    <p>{{ 'core.exactalarmsturnedoffmessage' | translate }}</p>
-                </ion-label>
-            </ion-item>
-            <div class="core-card-buttons">
-                <ion-button fill="clear" (click)="hideAlarmWarning()">
-                    {{ 'core.dontshowagain' | translate | coreNoPeriod }}
-                </ion-button>
-                <ion-button fill="outline" (click)="openAlarmSettings()">{{ 'core.turnon' | translate }}</ion-button>
-            </div>
-        </ion-card>
-
-        <ion-card *ngIf="remindersEnabled && event">
-            <ion-item>
-                <ion-label>
-                    <h2>{{ 'addon.calendar.reminders' | translate }}</h2>
-                </ion-label>
-            </ion-item>
-            <ng-container *ngFor="let reminder of reminders">
-                <ion-item *ngIf="reminder.timestamp > 0" class="ion-text-wrap" [class.item-dimmed]="reminder.timestamp <= currentTime">
+        @if (event) {
+            <ion-list>
+                <ion-item collapsible [class]="['ion-text-wrap', 'addon-calendar-event', 'addon-calendar-eventtype-'+event.eventtype]">
+                    @if (event.moduleIcon) {
+                        <core-mod-icon [modicon]="event.moduleIcon" [showAlt]="false" [modname]="event.modulename"
+                            [componentId]="event.instance" slot="start" [purpose]="event.purpose" [isBranded]="event.branded" />
+                    } @else if ( event.eventIcon) {
+                        <ion-icon [name]="event.eventIcon" aria-hidden="true" slot="start" />
+                    }
                     <ion-label>
-                        <p class="item-heading">{{ reminder.label }}</p>
-                        <p *ngIf="reminder.sublabel">{{ reminder.sublabel }}</p>
+                        <!-- Add the icon title so accessibility tools read it. -->
+                        <span class="sr-only">
+                            {{ 'addon.calendar.type' + event.formattedType | translate }}
+                            @if (event.moduleIcon && event.iconTitle) {
+                                <span class="sr-only">{{ event.iconTitle }}</span>
+                            }
+                        </span>
+                        <h1>
+                            <core-format-text [text]="event.name" [contextLevel]="event.contextLevel"
+                                [contextInstanceId]="event.contextInstanceId" [sanitize]="event.offline" />
+                        </h1>
                     </ion-label>
-                    <ion-button fill="clear" (click)="deleteReminder(reminder.id, $event)" [ariaLabel]="'core.delete' | translate"
-                        slot="end">
-                        <ion-icon name="fas-trash" color="danger" slot="icon-only" aria-hidden="true" />
-                    </ion-button>
                 </ion-item>
-            </ng-container>
-
-            <ng-container *ngIf="event.timestart > currentTime">
+                <!-- There is data to be synchronized -->
+                @if (hasOffline || event.deleted) {
+                    <ion-card class="core-warning-card">
+                        <ion-item>
+                            <ion-icon name="fas-triangle-exclamation" slot="start" aria-hidden="true" />
+                            <ion-label>{{ 'core.hasdatatosync' | translate:{$a: 'addon.calendar.calendarevent' | translate} }}</ion-label>
+                        </ion-item>
+                    </ion-card>
+                }
+                <ion-item class="ion-text-wrap">
+                    <ion-label>
+                        <p class="item-heading">{{ 'addon.calendar.when' | translate }}</p>
+                        <core-format-text [text]="event.formattedtime" [filter]="false" />
+                    </ion-label>
+                    @if (event.deleted) {
+                        <ion-note slot="end">
+                            <ion-icon name="fas-trash" aria-hidden="true" /> {{ 'core.deletedoffline' | translate }}
+                        </ion-note>
+                    }
+                </ion-item>
                 <ion-item>
                     <ion-label>
-                        <ion-button expand="block" (click)="addReminder()">
-                            {{ 'addon.calendar.setnewreminder' | translate }}
+                        <p class="item-heading">{{ 'addon.calendar.eventtype' | translate }}</p>
+                        <p>{{ 'addon.calendar.type' + event.formattedType | translate }}</p>
+                    </ion-label>
+                </ion-item>
+                @if (courseName) {
+                    <ion-item class="ion-text-wrap" [href]="courseUrl" core-link [capture]="true" [detail]="true">
+                        <ion-label>
+                            <p class="item-heading">{{ 'core.course' | translate}}</p>
+                            <p>
+                                <core-format-text [text]="courseName" contextLevel="course" [contextInstanceId]="courseId" />
+                            </p>
+                        </ion-label>
+                    </ion-item>
+                }
+                @if (groupName) {
+                    <ion-item class="ion-text-wrap core-groupname">
+                        <ion-label>
+                            <p class="item-heading">{{ 'core.group' | translate}}</p>
+                            <p>
+                                <core-format-text [text]="groupName" contextLevel="course" [contextInstanceId]="event.courseid" />
+                            </p>
+                        </ion-label>
+                    </ion-item>
+                }
+                @if (categoryPath) {
+                    <ion-item class="ion-text-wrap">
+                        <ion-label>
+                            <p class="item-heading">{{ 'core.category' | translate}}</p>
+                            <p>
+                                <core-format-text [text]="categoryPath" contextLevel="coursecat" [contextInstanceId]="event.categoryid" />
+                            </p>
+                        </ion-label>
+                    </ion-item>
+                }
+                @if (event.description) {
+                    <ion-item class="ion-text-wrap">
+                        <ion-label>
+                            <p class="item-heading">{{ 'core.description' | translate}}</p>
+                            <p>
+                                <core-format-text [text]="event.description" [contextLevel]="event.contextLevel"
+                                    [contextInstanceId]="event.contextInstanceId" [sanitize]="event.offline" />
+                            </p>
+                        </ion-label>
+                    </ion-item>
+                }
+                @if (event.location) {
+                    <ion-item class="ion-text-wrap">
+                        <ion-label>
+                            <p class="item-heading">{{ 'core.location' | translate}}</p>
+                            <p>
+                                <a [href]="event.encodedLocation" core-link [autoLogin]="false">
+                                    <core-format-text [text]="event.location" [contextLevel]="event.contextLevel"
+                                        [contextInstanceId]="event.contextInstanceId" [sanitize]="event.offline" />
+                                </a>
+                            </p>
+                        </ion-label>
+                    </ion-item>
+                }
+                @if (moduleUrl) {
+                    <ion-item>
+                        <ion-label>
+                            <ion-button expand="block" [href]="moduleUrl" core-link [capture]="true">
+                                {{ 'addon.calendar.gotoactivity' | translate }}
+                            </ion-button>
+                        </ion-label>
+                    </ion-item>
+                }
+            </ion-list>
+        }
+
+        @if (remindersEnabled && event) {
+            @if (!canScheduleExactAlarms && !scheduleExactWarningHidden) {
+                <ion-card class="core-warning-card core-card-with-buttons">
+                    <ion-item class="ion-text-wrap">
+                        <ion-icon name="fas-circle-info" slot="start" aria-hidden="true" />
+                        <ion-label>
+                            <p><strong>{{ 'core.exactalarmsturnedoff' | translate }}</strong></p>
+                            <p>{{ 'core.exactalarmsturnedoffmessage' | translate }}</p>
+                        </ion-label>
+                    </ion-item>
+                    <div class="core-card-buttons">
+                        <ion-button fill="clear" (click)="hideAlarmWarning()">
+                            {{ 'core.dontshowagain' | translate | coreNoPeriod }}
                         </ion-button>
+                        <ion-button fill="outline" (click)="openAlarmSettings()">{{ 'core.turnon' | translate }}</ion-button>
+                    </div>
+                </ion-card>
+            }
+
+            <ion-card>
+                <ion-item>
+                    <ion-label>
+                        <h2>{{ 'addon.calendar.reminders' | translate }}</h2>
                     </ion-label>
                 </ion-item>
-            </ng-container>
-        </ion-card>
+                <ng-container *ngFor="let reminder of reminders">
+                    @if (reminder.timestamp > 0) {
+                        <ion-item class="ion-text-wrap" [class.item-dimmed]="reminder.timestamp <= currentTime">
+                            <ion-label>
+                                <p class="item-heading">{{ reminder.label }}</p>
+                                @if (reminder.sublabel) {
+                                    <p>{{ reminder.sublabel }}</p>
+                                }
+                            </ion-label>
+                            <ion-button fill="clear" (click)="deleteReminder(reminder.id, $event)" [ariaLabel]="'core.delete' | translate"
+                                slot="end">
+                                <ion-icon name="fas-trash" color="danger" slot="icon-only" aria-hidden="true" />
+                            </ion-button>
+                        </ion-item>
+                    }
+                </ng-container>
+
+                @if (event.timestart > currentTime) {
+
+                    <ion-item>
+                        <ion-label>
+                            <ion-button expand="block" (click)="addReminder()">
+                                {{ 'addon.calendar.setnewreminder' | translate }}
+                            </ion-button>
+                        </ion-label>
+                    </ion-item>
+
+                }
+            </ion-card>
+        }
     </core-loading>
 </ion-content>

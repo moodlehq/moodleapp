@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Directive, Input, OnInit, ElementRef } from '@angular/core';
+import { Directive, Input, OnInit, ElementRef, inject } from '@angular/core';
 import { CoreCourse, CoreCourseModuleContentFile } from '@features/course/services/course';
 import { CoreCourseHelper, CoreCourseModuleData } from '@features/course/services/course-helper';
 import { CoreLoadings } from '@services/overlays/loadings';
@@ -40,11 +40,7 @@ export class CoreCourseDownloadModuleMainFileDirective implements OnInit {
     @Input() files?: CoreCourseModuleContentFile[]; // List of files of the module. If not provided, use module.contents.
     @Input() options?: CoreOpenerOpenFileOptions = {};
 
-    protected element: HTMLElement;
-
-    constructor(element: ElementRef) {
-        this.element = element.nativeElement;
-    }
+    protected element: HTMLElement = inject(ElementRef).nativeElement;
 
     /**
      * @inheritdoc

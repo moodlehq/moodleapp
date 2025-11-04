@@ -27,7 +27,6 @@ import { CoreText } from '@singletons/text';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreWSFile } from '@services/ws';
 import { makeSingleton } from '@singletons';
-import { AddonModQuizAccessRuleDelegate } from '../access-rules-delegate';
 import {
     AddonModQuiz,
     AddonModQuizAttemptWSData,
@@ -36,7 +35,7 @@ import {
 } from '../quiz';
 import { AddonModQuizHelper } from '../quiz-helper';
 import { AddonModQuizSync, AddonModQuizSyncResult } from '../quiz-sync';
-import { AddonModQuizAttemptStates, ADDON_MOD_QUIZ_COMPONENT } from '../../constants';
+import { AddonModQuizAttemptStates, ADDON_MOD_QUIZ_COMPONENT_LEGACY, ADDON_MOD_QUIZ_MODNAME } from '../../constants';
 
 /**
  * Handler to prefetch quizzes.
@@ -45,8 +44,8 @@ import { AddonModQuizAttemptStates, ADDON_MOD_QUIZ_COMPONENT } from '../../const
 export class AddonModQuizPrefetchHandlerService extends CoreCourseActivityPrefetchHandlerBase {
 
     name = 'AddonModQuiz';
-    modName = 'quiz';
-    component = ADDON_MOD_QUIZ_COMPONENT;
+    modName = ADDON_MOD_QUIZ_MODNAME;
+    component = ADDON_MOD_QUIZ_COMPONENT_LEGACY;
     updatesNames = /^configuration$|^.*files$|^grades$|^gradeitems$|^questions$|^attempts$/;
 
     /**
@@ -141,63 +140,13 @@ export class AddonModQuizPrefetchHandlerService extends CoreCourseActivityPrefet
     }
 
     /**
-     * Gather some preflight data for an attempt. This function will start a new attempt if needed.
-     *
-     * @param quiz Quiz.
-     * @param accessInfo Quiz access info returned by AddonModQuizProvider.getQuizAccessInformation.
-     * @param attempt Attempt to continue. Don't pass any value if the user needs to start a new attempt.
-     * @param askPreflight Whether it should ask for preflight data if needed.
-     * @param title Lang key of the title to set to preflight modal (e.g. 'addon.mod_quiz.startattempt').
-     * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved with the preflight data.
-     */
-    async getPreflightData(
-        quiz: AddonModQuizQuizWSData,
-        accessInfo: AddonModQuizGetQuizAccessInformationWSResponse,
-        attempt?: AddonModQuizAttemptWSData,
-        askPreflight?: boolean,
-        title?: string,
-        siteId?: string,
-    ): Promise<Record<string, string>> {
-        const preflightData: Record<string, string> = {};
-
-        if (askPreflight) {
-            // We can ask preflight, check if it's needed and get the data.
-            await AddonModQuizHelper.getAndCheckPreflightData(
-                quiz,
-                accessInfo,
-                preflightData,
-                {
-                    attempt,
-                    prefetch: true,
-                    title,
-                    siteId,
-                },
-            );
-        } else {
-            // Get some fixed preflight data from access rules (data that doesn't require user interaction).
-            const rules = accessInfo?.activerulenames || [];
-
-            await AddonModQuizAccessRuleDelegate.getFixedPreflightData(rules, quiz, preflightData, attempt, true, siteId);
-
-            if (!attempt) {
-                // We need to create a new attempt.
-                await AddonModQuiz.startAttempt(quiz.id, preflightData, false, siteId);
-            }
-        }
-
-        return preflightData;
-    }
-
-    /**
      * Invalidate the prefetched content.
      *
      * @param moduleId The module ID.
      * @param courseId The course ID the module belongs to.
-     * @returns Promise resolved when the data is invalidated.
      */
-    invalidateContent(moduleId: number, courseId: number): Promise<void> {
-        return AddonModQuiz.invalidateContent(moduleId, courseId);
+    async invalidateContent(moduleId: number, courseId: number): Promise<void> {
+        await AddonModQuiz.invalidateContent(moduleId, courseId);
     }
 
     /**
@@ -312,7 +261,7 @@ export class AddonModQuizPrefetchHandlerService extends CoreCourseActivityPrefet
             AddonModQuiz.getUserAttempts(quiz.id, modOptions),
             AddonModQuiz.getAttemptAccessInformation(quiz.id, 0, modOptions),
             AddonModQuiz.getQuizRequiredQtypes(quiz.id, modOptions),
-            CoreFilepool.addFilesToQueue(siteId, introFiles, ADDON_MOD_QUIZ_COMPONENT, module.id),
+            CoreFilepool.addFilesToQueue(siteId, introFiles, ADDON_MOD_QUIZ_COMPONENT_LEGACY, module.id),
         ]);
 
         // Check if we need to start a new attempt.
@@ -332,7 +281,15 @@ export class AddonModQuizPrefetchHandlerService extends CoreCourseActivityPrefet
             }
 
             // Get the preflight data. This function will also start a new attempt if needed.
-            preflightData = await this.getPreflightData(quiz, quizAccessInfo, attempt, single, 'core.download', siteId);
+            preflightData =
+                await AddonModQuizHelper.getPreflightDataToAttemptOffline(
+                    quiz,
+                    quizAccessInfo,
+                    attempt,
+                    single,
+                    'core.download',
+                    siteId,
+                );
         }
 
         const promises: Promise<unknown>[] = [];
@@ -344,17 +301,17 @@ export class AddonModQuizPrefetchHandlerService extends CoreCourseActivityPrefet
 
                 const attemptFiles = await this.getAttemptsFeedbackFiles(quiz, attempts, siteId);
 
-                return CoreFilepool.addFilesToQueue(siteId, attemptFiles, ADDON_MOD_QUIZ_COMPONENT, module.id);
+                return CoreFilepool.addFilesToQueue(siteId, attemptFiles, ADDON_MOD_QUIZ_COMPONENT_LEGACY, module.id);
             }));
 
             // Update the download time to prevent detecting the new attempt as an update.
             promises.push(CorePromiseUtils.ignoreErrors(
-                CoreFilepool.updatePackageDownloadTime(siteId, ADDON_MOD_QUIZ_COMPONENT, module.id),
+                CoreFilepool.updatePackageDownloadTime(siteId, ADDON_MOD_QUIZ_COMPONENT_LEGACY, module.id),
             ));
         } else {
             // Use the already fetched attempts.
             promises.push(this.getAttemptsFeedbackFiles(quiz, attempts, siteId).then((attemptFiles) =>
-                CoreFilepool.addFilesToQueue(siteId, attemptFiles, ADDON_MOD_QUIZ_COMPONENT, module.id)));
+                CoreFilepool.addFilesToQueue(siteId, attemptFiles, ADDON_MOD_QUIZ_COMPONENT_LEGACY, module.id)));
         }
 
         // Fetch attempt related data.
@@ -582,7 +539,14 @@ export class AddonModQuizPrefetchHandlerService extends CoreCourseActivityPrefet
         let preflightData: Record<string, string> = {};
         if (lastAttempt) {
             // Get the preflight data.
-            preflightData = await this.getPreflightData(quiz, quizAccessInfo, lastAttempt, askPreflight, 'core.download', siteId);
+            preflightData = await AddonModQuizHelper.getPreflightDataToAttemptOffline(
+                quiz,
+                quizAccessInfo,
+                lastAttempt,
+                askPreflight,
+                'core.download',
+                siteId,
+            );
 
             // Get data for last attempt.
             await this.prefetchAttempt(quiz, quizAccessInfo, lastAttempt, preflightData, siteId);

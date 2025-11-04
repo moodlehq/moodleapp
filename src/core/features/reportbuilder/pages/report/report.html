@@ -8,12 +8,14 @@
                 <ion-icon slot="icon-only" name="fas-circle-info" aria-hidden="true" />
             </ion-button>
         </ion-buttons>
-        <ion-title *ngIf="reportDetail">
-            <h1>
-                <core-format-text [clean]="true" [text]="reportDetail.name" [filter]="false" />
-            </h1>
-            <p class="subheading"> {{ reportDetail.sourcename }} </p>
-        </ion-title>
+        @if (reportDetail) {
+            <ion-title>
+                <h1>
+                    <core-format-text [clean]="true" [text]="reportDetail.name" [filter]="false" />
+                </h1>
+                <p class="subheading"> {{ reportDetail.sourcename }} </p>
+            </ion-title>
+        }
     </ion-toolbar>
 </ion-header>
 

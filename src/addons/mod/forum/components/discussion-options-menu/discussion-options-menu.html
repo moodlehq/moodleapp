@@ -1,44 +1,55 @@
 <ion-content>
     <ion-list>
-        <ion-item button class="ion-text-wrap" (click)="setLockState(true)" *ngIf="discussion.canlock && !discussion.locked"
-            [detail]="false">
-            <ion-icon name="fas-lock" slot="start" aria-hidden="true" />
-            <ion-label>
-                <p class="item-heading">{{ 'addon.mod_forum.lockdiscussion' | translate }}</p>
-            </ion-label>
-        </ion-item>
-        <ion-item button class="ion-text-wrap" (click)="setLockState(false)" *ngIf="discussion.canlock && discussion.locked"
-            [detail]="false">
-            <ion-icon name="fas-unlock" slot="start" aria-hidden="true" />
-            <ion-label>
-                <p class="item-heading">{{ 'addon.mod_forum.unlockdiscussion' | translate }}</p>
-            </ion-label>
-        </ion-item>
-        <ion-item button class="ion-text-wrap" (click)="setPinState(true)" *ngIf="canPin && !discussion.pinned" [detail]="false">
-            <ion-icon name="fas-map-pin" slot="start" aria-hidden="true" />
-            <ion-label>
-                <p class="item-heading">{{ 'addon.mod_forum.pindiscussion' | translate }}</p>
-            </ion-label>
-        </ion-item>
-        <ion-item button class="ion-text-wrap" (click)="setPinState(false)" *ngIf="canPin && discussion.pinned" [detail]="false">
-            <ion-icon name="fas-map-pin" slot="start" class="icon-slash" aria-hidden="true" />
-            <ion-label>
-                <p class="item-heading">{{ 'addon.mod_forum.unpindiscussion' | translate }}</p>
-            </ion-label>
-        </ion-item>
-        <ion-item button class="ion-text-wrap" (click)="toggleFavouriteState(true)" *ngIf="discussion.canfavourite && !discussion.starred"
-            [detail]="false">
-            <ion-icon name="fas-star" slot="start" aria-hidden="true" />
-            <ion-label>
-                <p class="item-heading">{{ 'addon.mod_forum.addtofavourites' | translate }}</p>
-            </ion-label>
-        </ion-item>
-        <ion-item button class="ion-text-wrap" (click)="toggleFavouriteState(false)" *ngIf="discussion.canfavourite && discussion.starred"
-            [detail]="false">
-            <ion-icon name="fas-star" slot="start" class="icon-slash" aria-hidden="true" />
-            <ion-label>
-                <p class="item-heading">{{ 'addon.mod_forum.removefromfavourites' | translate }}</p>
-            </ion-label>
-        </ion-item>
+        @if (discussion.canlock) {
+            @if (!discussion.locked) {
+                <ion-item button class="ion-text-wrap" (click)="setLockState(true)" [detail]="false">
+                    <ion-icon name="fas-lock" slot="start" aria-hidden="true" />
+                    <ion-label>
+                        <p class="item-heading">{{ 'addon.mod_forum.lockdiscussion' | translate }}</p>
+                    </ion-label>
+                </ion-item>
+            } @else {
+                <ion-item button class="ion-text-wrap" (click)="setLockState(false)" [detail]="false">
+                    <ion-icon name="fas-unlock" slot="start" aria-hidden="true" />
+                    <ion-label>
+                        <p class="item-heading">{{ 'addon.mod_forum.unlockdiscussion' | translate }}</p>
+                    </ion-label>
+                </ion-item>
+            }
+        }
+        @if (canPin) {
+            @if (!discussion.pinned) {
+                <ion-item button class="ion-text-wrap" (click)="setPinState(true)" [detail]="false">
+                    <ion-icon name="fas-map-pin" slot="start" aria-hidden="true" />
+                    <ion-label>
+                        <p class="item-heading">{{ 'addon.mod_forum.pindiscussion' | translate }}</p>
+                    </ion-label>
+                </ion-item>
+            } @else {
+                <ion-item button class="ion-text-wrap" (click)="setPinState(false)" [detail]="false">
+                    <ion-icon name="fas-map-pin" slot="start" class="icon-slash" aria-hidden="true" />
+                    <ion-label>
+                        <p class="item-heading">{{ 'addon.mod_forum.unpindiscussion' | translate }}</p>
+                    </ion-label>
+                </ion-item>
+            }
+        }
+        @if (discussion.canfavourite) {
+            @if (!discussion.starred) {
+                <ion-item button class="ion-text-wrap" (click)="toggleFavouriteState(true)" [detail]="false">
+                    <ion-icon name="fas-star" slot="start" aria-hidden="true" />
+                    <ion-label>
+                        <p class="item-heading">{{ 'addon.mod_forum.addtofavourites' | translate }}</p>
+                    </ion-label>
+                </ion-item>
+            } @else {
+                <ion-item button class="ion-text-wrap" (click)="toggleFavouriteState(false)" [detail]="false">
+                    <ion-icon name="fas-star" slot="start" class="icon-slash" aria-hidden="true" />
+                    <ion-label>
+                        <p class="item-heading">{{ 'addon.mod_forum.removefromfavourites' | translate }}</p>
+                    </ion-label>
+                </ion-item>
+            }
+        }
     </ion-list>
 </ion-content>

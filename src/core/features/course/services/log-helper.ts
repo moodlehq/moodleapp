@@ -17,7 +17,7 @@ import { Injectable } from '@angular/core';
 import { CoreNetwork } from '@services/network';
 import { CoreSites } from '@services/sites';
 import { CoreText } from '@singletons/text';
-import { CoreTimeUtils } from '@services/utils/time';
+import { CoreTime } from '@singletons/time';
 import { CoreObject } from '@singletons/object';
 import { makeSingleton } from '@singletons';
 import { ACTIVITY_LOG_TABLE, CoreCourseActivityLogDBRecord } from './database/log';
@@ -189,58 +189,6 @@ export class CoreCourseLogHelperProvider {
     }
 
     /**
-     * Perform log online. Data will be saved offline for syncing.
-     *
-     * @param ws WS name.
-     * @param data Data to send to the WS.
-     * @param component Component name.
-     * @param componentId Component ID.
-     * @param name Name of the viewed item.
-     * @param category Category of the viewed item.
-     * @param eventData Data to pass to the analytics event.
-     * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved when done.
-     * @deprecated since 4.3. Please use CoreCourseLogHelper.log instead.
-     */
-    logSingle(
-        ws: string,
-        data: Record<string, unknown>,
-        component: string,
-        componentId: number,
-        name?: string,
-        category?: string,
-        eventData?: Record<string, string | number | boolean | undefined>,
-        siteId?: string,
-    ): Promise<void> {
-        return this.log(ws, data, component, componentId, siteId);
-    }
-
-    /**
-     * Perform log online. Data will be saved offline for syncing.
-     *
-     * @param ws WS name.
-     * @param data Data to send to the WS.
-     * @param component Component name.
-     * @param componentId Component ID.
-     * @param category Category of the viewed item.
-     * @param eventData Data to pass to the analytics event.
-     * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved when done.
-     * @deprecated since 4.3. Please use CoreCourseLogHelper.log instead.
-     */
-    logList(
-        ws: string,
-        data: Record<string, unknown>,
-        component: string,
-        componentId: number,
-        category: string,
-        eventData?: Record<string, string | number | boolean | undefined>,
-        siteId?: string,
-    ): Promise<void> {
-        return this.log(ws, data, component, componentId, siteId);
-    }
-
-    /**
      * Save activity log for offline sync.
      *
      * @param ws WS name.
@@ -265,7 +213,7 @@ export class CoreCourseLogHelperProvider {
             componentid: componentId,
             ws,
             data: CoreObject.sortAndStringify(data),
-            time: CoreTimeUtils.timestamp(),
+            time: CoreTime.timestamp(),
         };
 
         await site.getDb().insertRecord(ACTIVITY_LOG_TABLE, log);

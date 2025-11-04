@@ -36,8 +36,6 @@
     "enableanalyticsdescription": "If enabled, the app will collect anonymous data usage.",
     "enabledownloadsection": "Enable download sections",
     "enablepinchtozoom": "Enable pinch-to-zoom",
-    "enablerichtexteditor": "Enable text editor",
-    "enablerichtexteditordescription": "If enabled, a text editor will be available when entering content.",
     "encryptedpushsupported": "Encrypted push notifications supported",
     "entriesincache": "{{$a}} entries in cache",
     "estimatedfreespace": "Estimated free space",

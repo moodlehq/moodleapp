@@ -32,7 +32,7 @@ import {
 import { AddonModWorkshopHelper } from '../workshop-helper';
 import { AddonModWorkshopSync } from '../workshop-sync';
 import { AddonModWorkshopPrefetchHandlerService } from '@addons/mod/workshop/services/handlers/prefetch';
-import { AddonModWorkshopPhase } from '../../constants';
+import { ADDON_MOD_WORKSHOP_MODNAME, AddonModWorkshopPhase } from '../../constants';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 
 /**
@@ -117,6 +117,7 @@ export class AddonModWorkshopPrefetchHandlerLazyService extends AddonModWorkshop
                 promises.push(AddonModWorkshopHelper.getUserSubmission(workshop.id, {
                     userId,
                     cmId: module.id,
+                    canEdit: access.modifyingsubmissionallowed,
                 }).then((submission) => {
                     if (submission) {
                         files = files.concat(submission.contentfiles || []).concat(submission.attachmentfiles || []);
@@ -143,7 +144,10 @@ export class AddonModWorkshopPrefetchHandlerLazyService extends AddonModWorkshop
 
                         if (workshop.phase >= AddonModWorkshopPhase.PHASE_ASSESSMENT && canAssess) {
                             await Promise.all(assessments.map((assessment) =>
-                                AddonModWorkshopHelper.getReviewerAssessmentById(workshop.id, assessment.id)));
+                                AddonModWorkshopHelper.getReviewerAssessmentById(workshop.id, assessment.id, {
+                                    ...modOptions,
+                                    canAssess: access && AddonModWorkshopHelper.canEditAssessments(workshop, access),
+                                })));
                         }
                     }));
 
@@ -153,7 +157,10 @@ export class AddonModWorkshopPrefetchHandlerLazyService extends AddonModWorkshop
 
             // Get assessment files.
             if (workshop.phase >= AddonModWorkshopPhase.PHASE_ASSESSMENT && canAssess) {
-                promises.push(AddonModWorkshopHelper.getReviewerAssessments(workshop.id, modOptions).then((assessments) => {
+                promises.push(AddonModWorkshopHelper.getReviewerAssessments(workshop.id, {
+                    ...modOptions,
+                    canAssess: AddonModWorkshopHelper.canEditAssessments(workshop, access),
+                }).then((assessments) => {
                     assessments.forEach((assessment) => {
                         files = files.concat(<CoreWSExternalFile[]>assessment.feedbackattachmentfiles)
                             .concat(assessment.feedbackcontentfiles);
@@ -296,7 +303,10 @@ export class AddonModWorkshopPrefetchHandlerLazyService extends AddonModWorkshop
             const promises2: Promise<unknown>[] = [];
 
             if (canSubmit) {
-                promises2.push(AddonModWorkshop.getSubmissions(workshop.id, modOptions));
+                promises2.push(AddonModWorkshop.getSubmissions(workshop.id, {
+                    ...modOptions,
+                    canEdit: access.modifyingsubmissionallowed,
+                }));
                 // Add userId to the profiles to prefetch.
                 userIds.push(currentUserId);
             }
@@ -329,6 +339,7 @@ export class AddonModWorkshopPrefetchHandlerLazyService extends AddonModWorkshop
                 reportPromise = reportPromise.finally(async () => {
                     const revAssessments = await AddonModWorkshopHelper.getReviewerAssessments(workshop.id, {
                         userId: currentUserId,
+                        canAssess: AddonModWorkshopHelper.canEditAssessments(workshop, access),
                         cmId: module.id,
                         siteId,
                     });
@@ -340,7 +351,10 @@ export class AddonModWorkshopPrefetchHandlerLazyService extends AddonModWorkshop
                             promises.push(AddonModWorkshop.getAssessment(
                                 workshop.id,
                                 assessment.id,
-                                modOptions,
+                                {
+                                    ...modOptions,
+                                    canAssess: AddonModWorkshopHelper.canEditAssessments(workshop, access),
+                                },
                             ));
                         }
                         userIds.push(assessment.reviewerid);
@@ -376,7 +390,7 @@ export class AddonModWorkshopPrefetchHandlerLazyService extends AddonModWorkshop
         }));
 
         // Add Basic Info to manage links.
-        promises.push(CoreCourse.getModuleBasicInfoByInstance(workshop.id, 'workshop', { siteId }));
+        promises.push(CoreCourse.getModuleBasicInfoByInstance(workshop.id, ADDON_MOD_WORKSHOP_MODNAME, { siteId }));
         promises.push(CoreCourse.getModuleBasicGradeInfo(module.id, siteId));
 
         // Get course data, needed to determine upload max size if it's configured to be course limit.

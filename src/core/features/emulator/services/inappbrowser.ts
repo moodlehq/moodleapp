@@ -32,7 +32,7 @@ export class InAppBrowserMock extends InAppBrowser {
     create(url: string, target?: string, options: string = 'location=yes'): InAppBrowserObject {
         if (options && typeof options !== 'string') {
             // Convert to string.
-            options = Object.keys(options).map((key) => key + '=' + options[key]).join(',');
+            options = Object.keys(options).map((key) => `${key}=${options[key]}`).join(',');
         }
 
         return super.create(url, target, options);

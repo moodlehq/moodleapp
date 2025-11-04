@@ -32,12 +32,20 @@ import { Translate } from '@singletons';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreAlerts } from '@services/overlays/alerts';
 import { CoreLoadings } from '@services/overlays/loadings';
+import { CoreSearchBoxComponent } from '@features/search/components/search-box/search-box';
+import { CoreSharedModule } from '@/core/shared.module';
+import { CoreSearchGlobalSearchResultComponent } from '@features/search/components/global-search-result/global-search-result';
 
 @Component({
     selector: 'page-addon-mod-forum-search',
     templateUrl: 'search.html',
+    imports: [
+        CoreSharedModule,
+        CoreSearchBoxComponent,
+        CoreSearchGlobalSearchResultComponent,
+    ],
 })
-export class AddonModForumSearchPage implements OnInit {
+export default class AddonModForumSearchPage implements OnInit {
 
     loadMoreError = false;
     searchBanner: string | null = null;
@@ -96,6 +104,12 @@ export class AddonModForumSearchPage implements OnInit {
      * @param query Search query.
      */
     async search(query: string): Promise<void> {
+        if(query.trim() === '') {
+            this.clearSearch();
+
+            return;
+        }
+
         await this.ready;
 
         this.resultsSource.setQuery(query);
@@ -128,7 +142,7 @@ export class AddonModForumSearchPage implements OnInit {
     /**
      * Clear search results.
      */
-    clearSearch(): void {
+    protected clearSearch(): void {
         this.loadMoreError = false;
 
         this.resultsSource.setQuery('');
@@ -152,7 +166,7 @@ export class AddonModForumSearchPage implements OnInit {
     async loadMoreResults(complete: () => void ): Promise<void> {
         try {
             await this.resultsSource?.load();
-        } catch (error) {
+        } catch {
             this.loadMoreError = true;
         } finally {
             complete();

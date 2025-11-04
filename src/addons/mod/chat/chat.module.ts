@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { APP_INITIALIZER, NgModule } from '@angular/core';
+import { NgModule, provideAppInitializer } from '@angular/core';
 import { Routes } from '@angular/router';
 import { CoreContentLinksDelegate } from '@features/contentlinks/services/contentlinks-delegate';
 import { CoreCourseHelper } from '@features/course/services/course-helper';
@@ -23,12 +23,56 @@ import { AddonModChatIndexLinkHandler } from './services/handlers/index-link';
 import { AddonModChatListLinkHandler } from './services/handlers/list-link';
 import { AddonModChatModuleHandler } from './services/handlers/module';
 import { getPrefetchHandlerInstance } from './services/handlers/prefetch';
-import { ADDON_MOD_CHAT_COMPONENT, ADDON_MOD_CHAT_PAGE_NAME } from './constants';
+import { ADDON_MOD_CHAT_COMPONENT_LEGACY, ADDON_MOD_CHAT_PAGE_NAME } from './constants';
+import { conditionalRoutes } from '@/app/app-routing.module';
+import { canLeaveGuard } from '@guards/can-leave';
+import { CoreScreen } from '@services/screen';
+
+const commonRoutes: Routes = [
+    {
+        path: ':courseId/:cmId',
+        loadComponent: () => import('./pages/index/index'),
+    },
+    {
+        path: ':courseId/:cmId/chat',
+        loadComponent: () => import('./pages/chat/chat'),
+        canDeactivate: [canLeaveGuard],
+    },
+];
+
+const mobileRoutes: Routes = [
+    ...commonRoutes,
+    {
+        path: ':courseId/:cmId/sessions',
+        loadComponent: () => import('./pages/sessions/sessions'),
+    },
+    {
+        path: ':courseId/:cmId/sessions/:sessionStart/:sessionEnd',
+        loadComponent: () => import('./pages/session-messages/session-messages'),
+    },
+];
+
+const tabletRoutes: Routes = [
+    ...commonRoutes,
+    {
+        path: ':courseId/:cmId/sessions',
+        loadComponent: () => import('./pages/sessions/sessions'),
+        loadChildren: () => [
+            {
+                path: ':sessionStart/:sessionEnd',
+                loadComponent: () => import('./pages/session-messages/session-messages'),
+            },
+        ],
+    },
+];
 
 const routes: Routes = [
     {
         path: ADDON_MOD_CHAT_PAGE_NAME,
-        loadChildren: () => import('./chat-lazy.module'),
+        loadChildren: () => [
+            ...conditionalRoutes(mobileRoutes, () => CoreScreen.isMobile),
+            ...conditionalRoutes(tabletRoutes, () => CoreScreen.isTablet),
+        ],
     },
 ];
 
@@ -37,19 +81,15 @@ const routes: Routes = [
         CoreMainMenuTabRoutingModule.forChild(routes),
     ],
     providers: [
-        {
-            provide: APP_INITIALIZER,
-            multi: true,
-            useValue: () => {
-                CoreCourseModulePrefetchDelegate.registerHandler(getPrefetchHandlerInstance());
+        provideAppInitializer(() => {
+            CoreCourseModulePrefetchDelegate.registerHandler(getPrefetchHandlerInstance());
 
-                CoreCourseModuleDelegate.registerHandler(AddonModChatModuleHandler.instance);
-                CoreContentLinksDelegate.registerHandler(AddonModChatIndexLinkHandler.instance);
-                CoreContentLinksDelegate.registerHandler(AddonModChatListLinkHandler.instance);
+            CoreCourseModuleDelegate.registerHandler(AddonModChatModuleHandler.instance);
+            CoreContentLinksDelegate.registerHandler(AddonModChatIndexLinkHandler.instance);
+            CoreContentLinksDelegate.registerHandler(AddonModChatListLinkHandler.instance);
 
-                CoreCourseHelper.registerModuleReminderClick(ADDON_MOD_CHAT_COMPONENT);
-            },
-        },
+            CoreCourseHelper.registerModuleReminderClick(ADDON_MOD_CHAT_COMPONENT_LEGACY);
+        }),
     ],
 })
 export class AddonModChatModule {}

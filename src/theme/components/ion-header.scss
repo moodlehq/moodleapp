@@ -6,6 +6,7 @@ ion-header.header-md {
     transition: box-shadow 0.5s;
 
     ion-toolbar {
+        --min-height: var(--core-header-toolbar-height);
         --color: var(--core-header-toolbar-color);
         --background: var(--core-header-toolbar-background);
         --border-width: 0 0 var(--core-header-toolbar-border-width) 0;
@@ -65,7 +66,7 @@ ion-header.header-md {
             margin: 0;
         }
 
-        .filter_mathjaxloader_equation div {
+        .filter_mathjaxloader_equation mjx-container {
             display: inline !important;
         }
 
@@ -125,6 +126,10 @@ ion-header.header-md {
         --core-header-toolbar-background: transparent;
         --core-header-shadow: none !important;
         --core-header-buttons-color: var(--text-color);
-        --core-header-buttons-background: var(--background);
+        --core-header-buttons-background: var(--background, var(--background-color));
     }
+}
+
+ion-tabs.hide-header ion-header {
+    display: none;
 }

@@ -12,9 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, ViewChild } from '@angular/core';
+import { Component, viewChild } from '@angular/core';
 import { CoreCourseModuleMainActivityPage } from '@features/course/classes/main-activity-page';
 import { AddonModBookIndexComponent } from '../../components/index/index';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Page that displays a book entry page.
@@ -22,9 +23,13 @@ import { AddonModBookIndexComponent } from '../../components/index/index';
 @Component({
     selector: 'page-addon-mod-book-index',
     templateUrl: 'index.html',
+    imports: [
+        CoreSharedModule,
+        AddonModBookIndexComponent,
+    ],
 })
-export class AddonModBookIndexPage extends CoreCourseModuleMainActivityPage<AddonModBookIndexComponent> {
+export default class AddonModBookIndexPage extends CoreCourseModuleMainActivityPage<AddonModBookIndexComponent> {
 
-    @ViewChild(AddonModBookIndexComponent) activityComponent?: AddonModBookIndexComponent;
+    readonly activityComponent = viewChild.required(AddonModBookIndexComponent);
 
 }

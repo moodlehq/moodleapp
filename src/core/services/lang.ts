@@ -20,7 +20,7 @@ import { CoreConfig } from '@services/config';
 import { CoreSubscriptions } from '@singletons/subscriptions';
 import { makeSingleton, Translate } from '@singletons';
 
-import moment from 'moment-timezone';
+import { dayjs } from '@/core/utils/dayjs';
 import { CoreSite } from '../classes/sites/site';
 import { CorePlatform } from '@services/platform';
 import { CoreLogger } from '@singletons/logger';
@@ -147,7 +147,7 @@ export class CoreLangProvider {
 
         // Use Translate.getTranslation to read the translations from the file and store them in the translations variable.
         return new Promise(resolve => CoreSubscriptions.once(
-            Translate.getTranslation(lang),
+            Translate.currentLoader.getTranslation(lang),
             messages => resolve(messages),
             () => resolve({}),
         ));
@@ -186,8 +186,7 @@ export class CoreLangProvider {
      * @returns Promise resolved when the change is finished.
      */
     async changeCurrentLanguage(language: string): Promise<void> {
-        // Use british english when parent english is loaded.
-        moment.locale(language == 'en' ? 'en-gb' : language);
+        await this.loadDayJSLocale(language);
 
         const previousLanguage = this.currentLanguage ?? this.getDefaultLanguage();
 
@@ -215,6 +214,45 @@ export class CoreLangProvider {
                 // Some lang strings have changed, emit an event to update the pipes.
                 Translate.onLangChange.emit({ lang: language, translations: Translate.translations[language] });
             }
+        }
+    }
+
+    /**
+     * Load the locale for DayJS.
+     *
+     * @param locale Locale to load.
+     */
+    protected async loadDayJSLocale(locale: string): Promise<void> {
+        // Use british english when parent english is loaded.
+        locale = locale === 'en' ? 'en-gb' : locale;
+
+        try {
+            await import('dayjs/locale/' + locale);
+            dayjs.locale(locale);
+
+            if (CorePlatform.isAutomated()) {
+                // Fix short names for automated tests to match the ones used in LMS. E.g. DayJS uses 'Jun' instead of 'June'.
+                dayjs.updateLocale('en-gb', {
+                    monthsShort: [
+                        'Jan', 'Feb', 'Mar', 'Apr', 'May', 'June',
+                        'July', 'Aug', 'Sept', 'Oct', 'Nov', 'Dec',
+                    ],
+                });
+            }
+        } catch {
+            if (locale === 'en' || locale === 'en-gb') {
+                return;
+            }
+            const parentLang = await this.getParentLanguageForLang(locale);
+            const parentLangUsingHyphen = locale.substring(0, locale.indexOf('-'));
+
+            if (parentLangUsingHyphen && (parentLang === 'en' || parentLang === undefined)) {
+                await this.loadDayJSLocale(parentLangUsingHyphen);
+
+                return;
+            }
+
+            await this.loadDayJSLocale(parentLang ?? 'en');
         }
     }
 
@@ -355,7 +393,7 @@ export class CoreLangProvider {
      * @returns Translated month names.
      */
     getMonthNames(): string[] {
-        return moment.months().map(month => this.capitalize(month));
+        return dayjs.months().map(month => this.capitalize(month));
     }
 
     /**
@@ -364,7 +402,7 @@ export class CoreLangProvider {
      * @returns Translated month short names.
      */
     getMonthShortNames(): string[] {
-        return moment.monthsShort().map(month => this.capitalize(month));
+        return dayjs.monthsShort().map(month => this.capitalize(month));
     }
 
     /**
@@ -373,7 +411,7 @@ export class CoreLangProvider {
      * @returns Translated day names.
      */
     getDayNames(): string[] {
-        return moment.weekdays().map(weekDay => this.capitalize(weekDay));
+        return dayjs.weekdays().map(weekDay => this.capitalize(weekDay));
     }
 
     /**
@@ -382,7 +420,7 @@ export class CoreLangProvider {
      * @returns Translated day short names.
      */
     getDayShortNames(): string[] {
-        return moment.weekdaysShort().map(weekDay => this.capitalize(weekDay));
+        return dayjs.weekdaysShort().map(weekDay => this.capitalize(weekDay));
     }
 
     /**
@@ -394,7 +432,7 @@ export class CoreLangProvider {
     getTranslationTable(lang: string): Promise<Record<string, unknown>> {
         // Create a promise to convert the observable into a promise.
         return new Promise((resolve, reject): void => {
-            const observer = Translate.getTranslation(lang).subscribe({
+            const observer = Translate.currentLoader.getTranslation(lang).subscribe({
                 next: (table) => {
                     resolve(table);
                     observer.unsubscribe();

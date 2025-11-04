@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, ViewChild, ElementRef, OnInit, ChangeDetectorRef } from '@angular/core';
+import { Component, ElementRef, OnInit, ChangeDetectorRef, inject, viewChild } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, FormControl } from '@angular/forms';
 import { CoreText } from '@singletons/text';
 import { CoreCountries, CoreCountry } from '@singletons/countries';
@@ -39,6 +39,8 @@ import { CoreLoadings } from '@services/overlays/loadings';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreOpener } from '@singletons/opener';
 import { CoreAlerts } from '@services/overlays/alerts';
+import { CoreSharedModule } from '@/core/shared.module';
+import { CoreUserProfileFieldComponent } from '@features/user/components/user-profile-field/user-profile-field';
 
 /**
  * Page to signup using email.
@@ -47,16 +49,20 @@ import { CoreAlerts } from '@services/overlays/alerts';
     selector: 'page-core-login-email-signup',
     templateUrl: 'email-signup.html',
     styleUrl: '../../login.scss',
+    imports: [
+        CoreSharedModule,
+        CoreUserProfileFieldComponent,
+    ],
 })
-export class CoreLoginEmailSignupPage implements OnInit {
+export default class CoreLoginEmailSignupPage implements OnInit {
 
     // Accept A-Z in strict chars pattern to be able to differentiate it from the lowercase pattern.
     protected static readonly USERNAME_STRICT_CHARS_PATTERN = '^[A-Z-.@_a-z0-9]*$';
     protected static readonly USERNAME_LOWERCASE_PATTERN = '^[^A-Z]*$';
 
-    @ViewChild(CoreRecaptchaComponent) recaptchaComponent?: CoreRecaptchaComponent;
-    @ViewChild('ageForm') ageFormElement?: ElementRef;
-    @ViewChild('signupFormEl') signupFormElement?: ElementRef;
+    readonly recaptchaComponent = viewChild(CoreRecaptchaComponent);
+    readonly ageFormElement = viewChild<ElementRef>('ageForm');
+    readonly signupFormElement = viewChild<ElementRef>('signupFormEl');
 
     signupForm: FormGroup;
     site!: CoreUnauthenticatedSite;
@@ -92,11 +98,11 @@ export class CoreLoginEmailSignupPage implements OnInit {
     policyErrors: CoreInputErrorsMessages;
     namefieldsErrors?: Record<string, CoreInputErrorsMessages>;
 
-    constructor(
-        protected fb: FormBuilder,
-        protected elementRef: ElementRef,
-        protected changeDetector: ChangeDetectorRef,
-    ) {
+    protected fb = inject(FormBuilder);
+    protected element: HTMLElement = inject(ElementRef).nativeElement;
+    protected changeDetector = inject(ChangeDetectorRef);
+
+    constructor() {
         // Create the ageVerificationForm.
         this.ageVerificationForm = this.fb.group({
             age: ['', Validators.required],
@@ -239,7 +245,7 @@ export class CoreLoginEmailSignupPage implements OnInit {
         const namefieldsErrors = {};
         if (this.settings.namefields) {
             this.settings.namefields.forEach((field) => {
-                namefieldsErrors[field] = { required: 'core.login.missing' + field };
+                namefieldsErrors[field] = { required: `core.login.missing${field}` };
             });
         }
         this.namefieldsErrors = namefieldsErrors;
@@ -297,7 +303,7 @@ export class CoreLoginEmailSignupPage implements OnInit {
 
             // Scroll to the first element with errors.
             const errorFound = await CoreDom.scrollToInputError(
-                this.elementRef.nativeElement,
+                this.element,
             );
 
             if (!errorFound) {
@@ -346,14 +352,14 @@ export class CoreLoginEmailSignupPage implements OnInit {
 
             if (result.success) {
 
-                CoreForms.triggerFormSubmittedEvent(this.signupFormElement, true);
+                CoreForms.triggerFormSubmittedEvent(this.signupFormElement(), true);
 
                 // Show alert and ho back.
                 const message = Translate.instant('core.login.emailconfirmsent', { $a: params.email });
                 CoreAlerts.show({ header: Translate.instant('core.success'), message });
                 CoreNavigator.back();
             } else {
-                this.recaptchaComponent?.expireRecaptchaAnswer();
+                this.recaptchaComponent()?.expireRecaptchaAnswer();
 
                 const warning = result.warnings?.[0];
                 if (warning) {
@@ -426,7 +432,7 @@ export class CoreLoginEmailSignupPage implements OnInit {
         try {
             const result = await CoreWS.callAjax<IsMinorWSResult>('core_auth_is_minor', params, { siteUrl: this.site.getURL() });
 
-            CoreForms.triggerFormSubmittedEvent(this.ageFormElement, true);
+            CoreForms.triggerFormSubmittedEvent(this.ageFormElement(), true);
 
             if (!result.status) {
                 if (this.countryControl.value) {

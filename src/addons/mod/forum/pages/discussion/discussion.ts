@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { ContextLevel, CoreConstants } from '@/core/constants';
-import { Component, OnDestroy, ViewChild, OnInit, AfterViewInit, ElementRef, Optional } from '@angular/core';
+import { Component, OnDestroy, OnInit, AfterViewInit, ElementRef, inject, viewChild } from '@angular/core';
 import { ActivatedRoute, ActivatedRouteSnapshot } from '@angular/router';
 import { CoreRoutedItemsManagerSourcesTracker } from '@classes/items-management/routed-items-manager-sources-tracker';
 import { CoreSplitViewComponent } from '@components/split-view/split-view';
@@ -21,7 +21,6 @@ import { CoreFileUploader } from '@features/fileuploader/services/fileuploader';
 import { CoreRatingInfo, CoreRatingProvider } from '@features/rating/services/rating';
 import { CoreRatingOffline } from '@features/rating/services/rating-offline';
 import { CoreRatingSyncProvider } from '@features/rating/services/rating-sync';
-import { CoreUser } from '@features/user/services/user';
 import { CanLeave } from '@guards/can-leave';
 import { IonContent } from '@ionic/angular';
 import { CoreNetwork } from '@services/network';
@@ -29,10 +28,9 @@ import { CoreNavigator } from '@services/navigator';
 import { CoreScreen } from '@services/screen';
 import { CoreSites } from '@services/sites';
 import { CoreUtils } from '@singletons/utils';
-import { NgZone, Translate } from '@singletons';
+import { Translate } from '@singletons';
 import { CoreDom } from '@singletons/dom';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
-import { Subscription } from 'rxjs';
 import { AddonModForumDiscussionsSource } from '../../classes/forum-discussions-source';
 import { AddonModForumDiscussionsSwipeManager } from '../../classes/forum-discussions-swipe-manager';
 import {
@@ -52,18 +50,21 @@ import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 import {
     ADDON_MOD_FORUM_AUTO_SYNCED,
     ADDON_MOD_FORUM_CHANGE_DISCUSSION_EVENT,
-    ADDON_MOD_FORUM_COMPONENT,
+    ADDON_MOD_FORUM_COMPONENT_LEGACY,
     ADDON_MOD_FORUM_MANUAL_SYNCED,
     ADDON_MOD_FORUM_MARK_READ_EVENT,
     ADDON_MOD_FORUM_REPLY_DISCUSSION_EVENT,
     AddonModForumType,
 } from '../../constants';
-import { CoreCourseContentsPage } from '@features/course/pages/contents/contents';
+import CoreCourseContentsPage from '@features/course/pages/contents/contents';
 import { CoreToasts } from '@services/overlays/toasts';
 import { CoreLoadings } from '@services/overlays/loadings';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreObject } from '@singletons/object';
 import { CoreAlerts } from '@services/overlays/alerts';
+import { AddonModForumPostComponent } from '../../components/post/post';
+import { CoreSharedModule } from '@/core/shared.module';
+import { CoreUserPreferences } from '@features/user/services/user-preferences';
 
 type SortType = 'flat-newest' | 'flat-oldest' | 'nested';
 
@@ -76,10 +77,19 @@ type Post = AddonModForumPost & { children?: Post[] };
     selector: 'page-addon-mod-forum-discussion',
     templateUrl: 'discussion.html',
     styleUrl: 'discussion.scss',
+    imports: [
+        CoreSharedModule,
+        AddonModForumPostComponent,
+    ],
 })
-export class AddonModForumDiscussionPage implements OnInit, AfterViewInit, OnDestroy, CanLeave {
+export default class AddonModForumDiscussionPage implements OnInit, AfterViewInit, OnDestroy, CanLeave {
 
-    @ViewChild(IonContent) content!: IonContent;
+    readonly content = viewChild.required(IonContent);
+
+    protected splitView = inject(CoreSplitViewComponent, { optional: true });
+    protected element: HTMLElement = inject(ElementRef).nativeElement;
+    protected route = inject(ActivatedRoute);
+    protected courseContentsPage = inject(CoreCourseContentsPage, { optional: true });
 
     courseId?: number;
     discussionId!: number;
@@ -91,7 +101,7 @@ export class AddonModForumDiscussionPage implements OnInit, AfterViewInit, OnDes
     posts: Post[] = [];
     discussionLoaded = false;
     postSubjects!: { [id: string]: string };
-    isOnline!: boolean;
+    readonly isOnline = CoreNetwork.onlineSignal;
     postHasOffline!: boolean;
     sort: SortType = 'nested';
     trackPosts!: boolean;
@@ -114,7 +124,7 @@ export class AddonModForumDiscussionPage implements OnInit, AfterViewInit, OnDes
     refreshIcon = CoreConstants.ICON_LOADING;
     syncIcon = CoreConstants.ICON_LOADING;
     discussionStr = '';
-    component = ADDON_MOD_FORUM_COMPONENT;
+    component = ADDON_MOD_FORUM_COMPONENT_LEGACY;
     cmId?: number;
     canPin = false;
     availabilityMessage: string | null = null;
@@ -125,7 +135,6 @@ export class AddonModForumDiscussionPage implements OnInit, AfterViewInit, OnDes
     protected forumId?: number;
     protected postId?: number;
     protected parent?: number;
-    protected onlineObserver?: Subscription;
     protected syncObserver?: CoreEventObserver;
     protected syncManualObserver?: CoreEventObserver;
 
@@ -134,13 +143,6 @@ export class AddonModForumDiscussionPage implements OnInit, AfterViewInit, OnDes
     protected ratingOfflineObserver?: CoreEventObserver;
     protected ratingSyncObserver?: CoreEventObserver;
     protected changeDiscObserver?: CoreEventObserver;
-
-    constructor(
-        @Optional() protected splitView: CoreSplitViewComponent,
-        protected elementRef: ElementRef,
-        protected route: ActivatedRoute,
-        @Optional() protected courseContentsPage?: CoreCourseContentsPage,
-    ) {}
 
     get isMobile(): boolean {
         return CoreScreen.isMobile;
@@ -179,16 +181,9 @@ export class AddonModForumDiscussionPage implements OnInit, AfterViewInit, OnDes
         }
 
         const currentSite = CoreSites.getCurrentSite();
-        this.isOnline = CoreNetwork.isOnline();
         this.externalUrl = currentSite && currentSite.shouldDisplayInformativeLinks() ?
             currentSite.createSiteUrl('/mod/forum/discuss.php', { d: this.discussionId.toString() }) :
             undefined;
-        this.onlineObserver = CoreNetwork.onChange().subscribe(() => {
-            // Execute the callback in the Angular zone, so change detection doesn't stop working.
-            NgZone.run(() => {
-                this.isOnline = CoreNetwork.isOnline();
-            });
-        });
 
         this.discussionStr = Translate.instant('addon.mod_forum.discussion');
     }
@@ -207,8 +202,8 @@ export class AddonModForumDiscussionPage implements OnInit, AfterViewInit, OnDes
         if (scrollTo) {
             // Scroll to the post.
             CoreDom.scrollToElement(
-                this.elementRef.nativeElement,
-                '#addon-mod_forum-post-' + scrollTo,
+                this.element,
+                `#addon-mod_forum-post-${scrollTo}`,
             );
         }
     }
@@ -345,7 +340,6 @@ export class AddonModForumDiscussionPage implements OnInit, AfterViewInit, OnDes
      * @inheritdoc
      */
     ngOnDestroy(): void {
-        this.onlineObserver?.unsubscribe();
         this.discussions?.destroy();
     }
 
@@ -359,9 +353,9 @@ export class AddonModForumDiscussionPage implements OnInit, AfterViewInit, OnDes
             const value = await CoreSites.getRequiredCurrentSite().getLocalSiteConfig<SortType>('AddonModForumDiscussionSort');
 
             return value;
-        } catch (error) {
+        } catch {
             try {
-                const value = await CoreUser.getUserPreference('forum_displaymode');
+                const value = await CoreUserPreferences.getPreference('forum_displaymode');
 
                 switch (Number(value)) {
                     case 1:
@@ -561,7 +555,7 @@ export class AddonModForumDiscussionPage implements OnInit, AfterViewInit, OnDes
                     const response = await AddonModForum.canAddDiscussionToAll(this.forumId, { cmId: this.cmId });
 
                     this.canPin = !!response.canpindiscussions;
-                } catch (error) {
+                } catch {
                     this.canPin = false;
                 }
             } else {
@@ -680,7 +674,7 @@ export class AddonModForumDiscussionPage implements OnInit, AfterViewInit, OnDes
      * @returns Promise resolved when done.
      */
     async refreshPosts(sync?: boolean, showErrors?: boolean): Promise<void> {
-        this.content.scrollToTop();
+        this.content().scrollToTop();
         this.refreshIcon = CoreConstants.ICON_LOADING;
         this.syncIcon = CoreConstants.ICON_LOADING;
 
@@ -706,7 +700,7 @@ export class AddonModForumDiscussionPage implements OnInit, AfterViewInit, OnDes
         this.discussionLoaded = false;
         this.sort = type;
         CoreSites.getRequiredCurrentSite().setLocalSiteConfig('AddonModForumDiscussionSort', this.sort);
-        this.content.scrollToTop();
+        this.content().scrollToTop();
 
         return this.fetchPosts();
     }
@@ -918,7 +912,7 @@ class AddonModForumDiscussionDiscussionsSwipeManager extends AddonModForumDiscus
     protected getSelectedItemPathFromRoute(route: ActivatedRouteSnapshot | ActivatedRoute): string | null {
         const params = CoreNavigator.getRouteParams(route);
 
-        return this.getSource().DISCUSSIONS_PATH_PREFIX + params.discussionId;
+        return this.getSource().discussionsPathPrefix + params.discussionId;
     }
 
 }

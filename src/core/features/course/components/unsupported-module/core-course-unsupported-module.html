@@ -1,25 +1,21 @@
 <div class="has-spacer">
-    <ion-card class="core-danger-card">
+    <ion-card class="core-info-card">
         <ion-item>
-            <ion-icon name="fas-triangle-exclamation" slot="start" aria-hidden="true" />
+            <ion-icon name="fas-circle-info" slot="start" aria-hidden="true" />
             <ion-label>
-                <p><strong>{{ 'core.uhoh' | translate }} </strong>
-                    <ng-container *ngIf="isDisabledInSite">{{ 'core.course.activitydisabled' | translate }}</ng-container>
-                    <ng-container *ngIf="!isDisabledInSite">
-                        {{ 'core.course.activitynotyetviewableremoteaddon' | translate }}
-                    </ng-container>
-                </p>
+                <p>{{ 'core.notavailablecontentinapp' | translate }}</p>
             </ion-label>
         </ion-item>
     </ion-card>
     <div class="spacer"></div>
-    <ion-item lines="none" class="ion-text-wrap" *ngIf="module?.url && module?.uservisible">
-        <ion-label>
-            <p>{{ 'core.course.useactivityonbrowser' | translate }}</p>
-            <ion-button expand="block" [href]="module?.url" core-link [showBrowserWarning]="false">
-                {{ 'core.openinbrowser' | translate }}
-                <ion-icon name="fas-up-right-from-square" slot="end" aria-hidden="true" />
-            </ion-button>
-        </ion-label>
-    </ion-item>
+    @if (module?.url && module?.uservisible) {
+        <ion-item lines="none" class="ion-text-wrap">
+            <ion-label>
+                <ion-button expand="block" [href]="module?.url" core-link [showBrowserWarning]="false">
+                    {{ 'core.openinbrowser' | translate }}
+                    <ion-icon name="fas-up-right-from-square" slot="end" aria-hidden="true" />
+                </ion-button>
+            </ion-label>
+        </ion-item>
+    }
 </div>
