@@ -297,6 +297,33 @@ describe('CoreUrl singleton', () => {
         expect(CoreUrl.isVimeoVideoUrl('https://player.vimeo.com/video/123456/654321?foo=bar')).toEqual(true);
     });
 
+    it('checks if it is a Youtube video URL', () => {
+        expect(CoreUrl.isYoutubeURL('')).toEqual(false);
+
+        const acceptedDomains = ['youtube.com', 'youtu.be', 'youtube-nocookie.com', 'y2u.be'];
+
+        for (const domain of acceptedDomains) {
+            expect(CoreUrl.isYoutubeURL(`${domain}`)).toEqual(true);
+            expect(CoreUrl.isYoutubeURL(`//${domain}`)).toEqual(true);
+            expect(CoreUrl.isYoutubeURL(`https://${domain}`)).toEqual(true);
+            expect(CoreUrl.isYoutubeURL(`https://${domain}/`)).toEqual(true);
+            expect(CoreUrl.isYoutubeURL(`https://${domain}/embed/abcdefghijk`)).toEqual(true);
+            expect(CoreUrl.isYoutubeURL(`http://${domain}`)).toEqual(true);
+            expect(CoreUrl.isYoutubeURL(`https://www.${domain}`)).toEqual(true);
+            expect(CoreUrl.isYoutubeURL(`http://www.${domain}`)).toEqual(true);
+            expect(CoreUrl.isYoutubeURL(`https://fakesubdomain.${domain}`)).toEqual(true);
+            expect(CoreUrl.isYoutubeURL(`http://fakesubdomain.${domain}`)).toEqual(true);
+            expect(CoreUrl.isYoutubeURL(`https://www.fakesubdomain.${domain}`)).toEqual(true);
+            expect(CoreUrl.isYoutubeURL(`http://www.fakesubdomain.${domain}`)).toEqual(true);
+        }
+
+        expect(CoreUrl.isYoutubeURL('https://player.vimeo.com')).toEqual(false);
+        expect(CoreUrl.isYoutubeURL('https://youtub.e')).toEqual(false);
+
+        // The following domain is valid, but it redirects to youtube.com so the app doesn't accept it as a "final" URL.
+        expect(CoreUrl.isYoutubeURL('https://youtube.es')).toEqual(false);
+    });
+
     it('gets the Vimeo player URL', () => {
         const siteUrl = 'https://mysite.com';
         const token = 'mytoken';
