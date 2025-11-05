@@ -900,6 +900,17 @@ export class CoreSite extends CoreAuthenticatedSite {
         return this.lastAutoLogin;
     }
 
+    /**
+     * Given a URL, if it requires a referer, fix it to use a redirect script that will add the referer.
+     *
+     * @param url URL to fix.
+     * @returns Fixed URL or original URL if no need to fix it.
+     */
+    fixRefererForUrl(url: string): string {
+        // @todo: This function will be implemented in MOBILE-4924 once this functionality is supported in Moodle LMS.
+        return url;
+    }
+
 }
 
 /**
