@@ -279,7 +279,7 @@ export class CoreWSProvider {
                 // Redirections should have been handled by the platform,
                 // but Android does not follow redirections between HTTP and HTTPS.
                 // See: https://developer.android.com/reference/java/net/HttpURLConnection#response-handling
-                redirectUrl = fileDownloaded.headers?.['location'];
+                redirectUrl = fileDownloaded.headers?.['location'] ?? fileDownloaded.headers?.['Location'];
                 maxRedirects--;
             } while (redirectUrl && maxRedirects >= 0);
 
@@ -1209,7 +1209,7 @@ export class CoreWSProvider {
                     // Redirections should have been handled by the platform,
                     // but Android does not follow redirections between HTTP and HTTPS.
                     // See: https://developer.android.com/reference/java/net/HttpURLConnection#response-handling
-                    redirectUrl = response.headers['location'];
+                    redirectUrl = response.headers['location'] ?? response.headers['Location'];
                     maxRedirects--;
                     if (!redirectUrl || maxRedirects < 0) {
                         throw error;
