@@ -177,6 +177,9 @@ export default class CoreCoursesListPage implements OnInit, OnDestroy {
             if (this.searchMode) {
                 if (this.searchText) {
                     await this.searchCourses();
+                } else {
+                    this.courses = [];
+                    this.canLoadMore = false;
                 }
             } else {
                 await this.loadCourses(true);
@@ -203,7 +206,7 @@ export default class CoreCoursesListPage implements OnInit, OnDestroy {
                     this.loadedCourses = await CoreCourses.getUserCourses();
                 } else {
                     const courses = await CoreCourses.getCoursesByField();
-                    this.loadedCourses = courses.filter((course) => course.id != this.frontpageCourseId);
+                    this.loadedCourses = courses.filter((course) => course.id !== this.frontpageCourseId);
                 }
 
                 this.coursesLoaded = 0;
@@ -289,7 +292,6 @@ export default class CoreCoursesListPage implements OnInit, OnDestroy {
         this.courses = [];
         this.searchPage = 0;
         this.searchTotal = 0;
-        this.searchMode = false;
 
         this.loaded = false;
         this.fetchCourses();
