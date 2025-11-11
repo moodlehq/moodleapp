@@ -19,6 +19,8 @@
     }
 
     .badge-image-container {
+        position: relative;
+
         .badge-image {
             border-radius: 50%;
             width: var(--badge-image-size);
