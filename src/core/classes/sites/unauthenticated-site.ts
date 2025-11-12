@@ -20,13 +20,16 @@ import { CoreText } from '@singletons/text';
 import { CoreUrl, CoreUrlPartNames } from '@singletons/url';
 import { CoreWS, CoreWSAjaxPreSets, CoreWSExternalWarning } from '@services/ws';
 import { CorePath } from '@singletons/path';
-import { CoreJsonPatch } from '@singletons/json-patch';
+import { CoreJsonPatch, JsonPatchOperation } from '@singletons/json-patch';
 import { CoreUtils } from '@singletons/utils';
+import { CoreLogger } from '@singletons/logger';
 
 /**
  * Class that represents a Moodle site where the user still hasn't authenticated.
  */
 export class CoreUnauthenticatedSite {
+
+    protected logger = CoreLogger.getInstance('CoreUnauthenticatedSite');
 
     siteUrl: string;
 
@@ -533,7 +536,36 @@ export class CoreUnauthenticatedSite {
             return data;
         }
 
-        return CoreJsonPatch.applyPatches(data, CoreConstants.CONFIG.wsOverrides[method]);
+        CoreConstants.CONFIG.wsOverrides[method].forEach((patch) => {
+            if (!this.shouldApplyWSOverride(method, data, patch)) {
+                this.logger.warn('Patch ignored, conditions not fulfilled:', method, patch);
+
+                return;
+            }
+
+            try {
+                CoreJsonPatch.applyPatch(data, patch);
+            } catch (error) {
+                this.logger.error('Error applying WS override:', error, patch);
+            }
+        });
+
+        return data;
+    }
+
+    /**
+     * Whether a patch should be applied as a WS override.
+     *
+     * @param method WS method name.
+     * @param data Data returned by the WS.
+     * @param patch Patch to check.
+     * @returns Whether it should be applied.
+     */
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    protected shouldApplyWSOverride(method: string, data: unknown, patch: CoreWSOverride): boolean {
+        // Always apply patches for unauthenticated sites since we don't have user info.
+        // If the patch for an AJAX WebService contains an userid is probably by mistake.
+        return true;
     }
 
 }
@@ -687,3 +719,10 @@ export enum TypeOfLogin {
     BROWSER = 2, // SSO in browser window is required.
     EMBEDDED = 3, // SSO in embedded browser is required.
 }
+
+/**
+ * WebService override patch.
+ */
+export type CoreWSOverride = JsonPatchOperation & {
+    userid?: number; // To apply the patch only if the current user matches this userid.
+};

@@ -37,7 +37,13 @@ import { Observable, ObservableInput, ObservedValueOf, OperatorFunction, Subject
 import { finalize, map, mergeMap } from 'rxjs/operators';
 import { CoreSiteError } from '@classes/errors/siteerror';
 import { CoreUserAuthenticatedSupportConfig } from '@features/user/classes/support/authenticated-support-config';
-import { CoreSiteInfo, CoreSiteInfoResponse, CoreSitePublicConfigResponse, CoreUnauthenticatedSite } from './unauthenticated-site';
+import {
+    CoreSiteInfo,
+    CoreSiteInfoResponse,
+    CoreSitePublicConfigResponse,
+    CoreUnauthenticatedSite,
+    CoreWSOverride,
+} from './unauthenticated-site';
 import { Md5 } from 'ts-md5';
 import { CoreSiteWSCacheRecord } from '@services/database/sites';
 import { CoreErrorLogs } from '@singletons/error-logs';
@@ -101,7 +107,7 @@ export class CoreAuthenticatedSite extends CoreUnauthenticatedSite {
     privateToken?: string;
     infos?: CoreSiteInfo;
 
-    protected logger: CoreLogger;
+    protected logger = CoreLogger.getInstance('CoreAuthenticatedSite');
     protected cleanUnicode = false;
     protected offlineDisabled = false;
     private memoryCache: Record<string, CoreSiteWSCacheRecord> = {};
@@ -125,7 +131,6 @@ export class CoreAuthenticatedSite extends CoreUnauthenticatedSite {
     ) {
         super(siteUrl, otherData.publicConfig);
 
-        this.logger = CoreLogger.getInstance('CoreAuthenticaedSite');
         this.token = token;
         this.privateToken = otherData.privateToken;
     }
@@ -1629,6 +1634,25 @@ export class CoreAuthenticatedSite extends CoreUnauthenticatedSite {
         data?: CoreEventData<Event, Fallback>,
     ): void {
         CoreEvents.trigger(eventName, data);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    protected shouldApplyWSOverride(method: string, data: unknown, patch: CoreWSOverride): boolean {
+        if (!Number(patch.userid)) {
+            return true;
+        }
+
+        const info = this.infos ?? (method === 'core_webservice_get_site_info' ? (data as CoreSiteInfoResponse) : undefined);
+
+        if (!info?.userid) {
+            // Strange case, when doing WS calls the site should always have the userid already.
+            // Apply the patch to match the behaviour of unauthenticated site.
+            return true;
+        }
+
+        return Number(patch.userid) === info.userid;
     }
 
 }
