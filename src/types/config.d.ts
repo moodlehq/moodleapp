@@ -19,7 +19,7 @@ import { OpenFileAction } from '@singletons/opener';
 import { CoreLoginSiteFinderSettings, CoreLoginSiteSelectorListMethod } from '@features/login/services/login-helper';
 import { CoreDatabaseConfiguration } from '@classes/database/database-table';
 import { ToastDuration } from '@services/overlays/toasts';
-import { JsonPatchOperation } from '@singletons/json-patch';
+import { CoreWSOverride } from '@classes/sites/unauthenticated-site';
 
 /* eslint-disable @typescript-eslint/naming-convention */
 
@@ -81,5 +81,5 @@ export interface EnvironmentConfig {
     clearIABSessionWhenAutoLogin?: 'android' | 'ios' | 'all'; // Clear the session every time a new IAB is opened with auto-login.
     disabledFeatures?: string; // Disabled features for the whole app, using the same format as tool_mobile_disabledfeatures.
     collapsibleItemsExpanded: boolean; // Expand or collapse the collapsible items by default.
-    wsOverrides: Record<string, JsonPatchOperation[]>; // Overrides to apply to WS calls.
+    wsOverrides: Record<string, CoreWSOverride[]>; // Overrides to apply to WS calls.
 }
