@@ -387,7 +387,7 @@ export default class AddonModFeedbackFormPage implements OnInit, CanLeave {
                 });
 
                 CoreCourse.checkModuleCompletion(this.courseId, this.module?.completiondata);
-            } else if (typeof response.jumpto != 'number' || response.jumpto == this.currentPage) {
+            } else if (typeof response.jumpto !== 'number' || response.jumpto === this.currentPage) {
                 // Errors on questions, stay in page.
             } else {
                 // Invalidate access information so user will see home page updated (continue form).
