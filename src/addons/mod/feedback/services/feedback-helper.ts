@@ -130,11 +130,14 @@ export class AddonModFeedbackHelperProvider {
                         itemData.typ === AddonModFeedbackQuestionType.MULTICHOICERATED) {
                         value = itemData.value || 0;
                     } else if (this.isNumericItem(itemData)) {
-                        value = itemData.value || itemData.value == 0 ? itemData.value : '';
+                        value = itemData.value;
+                        if (value !== '') {
+                            const valueNumber = Number(value);
+                            const rangeFrom = itemData.rangefrom !== '' ? Number(itemData.rangefrom) : undefined;
+                            const rangeTo = itemData.rangeto !== '' ? Number(itemData.rangeto) : undefined;
 
-                        if (value != '') {
-                            if ((itemData.rangefrom != '' && value < itemData.rangefrom) ||
-                                    (itemData.rangeto != '' && value > itemData.rangeto)) {
+                            if ((rangeFrom !== undefined && valueNumber < rangeFrom) ||
+                                (rangeTo !== undefined && valueNumber > rangeTo)) {
                                 itemData.hasError = true;
                             }
                         }
