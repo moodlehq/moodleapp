@@ -55,22 +55,24 @@
                 *ngIf="isParentView && mentees && mentees.length > 0 && parentDataLoaded"
             >
                 <ng-container *ngIf="hasAnyCourses(); else noCoursesFound">
+                    <!-- Only show mentee group if they have courses with grades -->
                     <ion-item-group *ngFor="let mentee of mentees">
-                        <ion-item-divider>
-                            <ion-label>
-                                <h2>{{ mentee.fullname }}</h2>
-                                <p>{{ mentee.email }}</p>
-                            </ion-label>
-                        </ion-item-divider>
+                        <ng-container *ngIf="getCoursesForMentee(mentee.id).length > 0">
+                            <ion-item-divider>
+                                <ion-label>
+                                    <h2>{{ mentee.fullname }}</h2>
+                                    <p>{{ mentee.email }}</p>
+                                </ion-label>
+                            </ion-item-divider>
 
-                        <ion-item
-                            *ngFor="let course of getCoursesForMentee(mentee.id)"
-                            [attr.aria-label]="course.courseFullName"
-                            class="ion-text-wrap"
-                            button
-                            [detail]="true"
-                            (click)="selectCourseForMentee(course, mentee.id)"
-                        >
+                            <ion-item
+                                *ngFor="let course of getCoursesForMentee(mentee.id)"
+                                [attr.aria-label]="course.courseFullName"
+                                class="ion-text-wrap"
+                                button
+                                [detail]="true"
+                                (click)="selectCourseForMentee(course, mentee.id)"
+                            >
                             <ion-label>
                                 <p class="item-heading">
                                     <core-format-text
@@ -86,7 +88,8 @@
                                 </span>
                                 {{course.grade}}
                             </ion-badge> -->
-                        </ion-item>
+                            </ion-item>
+                        </ng-container>
                     </ion-item-group>
                 </ng-container>
 

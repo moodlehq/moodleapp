@@ -241,15 +241,21 @@ export class CoreGradesCoursesPage implements OnDestroy, AfterViewInit {
                 const hasCustomWS = await site.wsAvailable('local_aspireparent_get_mentee_course_grades');
                 
                 if (hasCustomWS) {
-                    console.log('[Grades] Fetching course grades for mentee:', mentee.id);
+                    console.log('[Grades] ========================================');
+                    console.log('[Grades] Fetching course grades for mentee:', mentee.id, mentee.fullname);
                     console.log('[Grades] Using local_aspireparent_get_mentee_course_grades');
-                    
+                    console.log('[Grades] Request params:', { menteeid: Number(mentee.id) });
+
                     const response = await site.read<{ grades: any[] }>('local_aspireparent_get_mentee_course_grades', {
                         menteeid: Number(mentee.id)
                     });
-                    
-                    console.log('[Grades] Response from WS:', response);
-                    console.log('[Grades] Number of grades received:', response.grades?.length || 0);
+
+                    console.log('[Grades] Response from WS for mentee', mentee.id, ':', response);
+                    console.log('[Grades] Number of grades received for', mentee.fullname, ':', response.grades?.length || 0);
+                    if (response.grades && response.grades.length > 0) {
+                        console.log('[Grades] First grade course ID:', response.grades[0].courseid);
+                        console.log('[Grades] First grade value:', response.grades[0].grade);
+                    }
                     
                     if (response && response.grades && response.grades.length > 0) {
                         // Get course details for each grade
@@ -275,8 +281,9 @@ export class CoreGradesCoursesPage implements OnDestroy, AfterViewInit {
                         });
                         
                         this.menteeCourses[mentee.id] = coursesWithGrades;
-                        console.log(`[Grades] Found ${coursesWithGrades.length} courses with grades for mentee ${mentee.id}`);
-                        console.log('[Grades] First course with grade:', coursesWithGrades[0]);
+                        console.log(`[Grades] ✓ STORED ${coursesWithGrades.length} courses for mentee ID: ${mentee.id} (${mentee.fullname})`);
+                        console.log('[Grades] First course stored:', coursesWithGrades[0]?.fullname, 'with grade:', coursesWithGrades[0]?.grade);
+                        console.log('[Grades] ========================================');
                     } else {
                         console.log('[Grades] No grades returned for mentee:', mentee.id);
                         console.log('[Grades] Full response:', response);
@@ -445,15 +452,27 @@ export class CoreGradesCoursesPage implements OnDestroy, AfterViewInit {
      * @returns List of courses with grades for the mentee.
      */
     getCoursesForMentee(menteeId: number): any[] {
-        const courses = this.menteeCourses[menteeId] || [];
+        const allCourses = this.menteeCourses[menteeId] || [];
+        const mentee = this.mentees.find(m => m.id === menteeId);
+
         if (!this.parentDataLoaded) {
             console.log(`[Grades] getCoursesForMentee(${menteeId}) called but data not loaded yet`);
             return [];
         }
-        console.log(`[Grades] getCoursesForMentee(${menteeId}) returning ${courses.length} courses`);
+
+        console.log(`[Grades] ▶ getCoursesForMentee called for ID: ${menteeId} (${mentee?.fullname || 'Unknown'})`);
+        console.log(`[Grades] Available mentee IDs in menteeCourses:`, Object.keys(this.menteeCourses));
+        console.log(`[Grades] Total courses before filter: ${allCourses.length}`);
+
+        // Filter to only show courses with grades (not "-")
+        const courses = allCourses.filter(course => course.grade && course.grade !== '-');
+        console.log(`[Grades] Courses with grades after filter: ${courses.length}`);
+
         if (courses.length > 0) {
-            console.log('[Grades] First course for mentee:', courses[0]);
+            console.log('[Grades] First course for this mentee:', courses[0]?.fullname, 'grade:', courses[0]?.grade);
+            console.log('[Grades] Last course for this mentee:', courses[courses.length - 1]?.fullname, 'grade:', courses[courses.length - 1]?.grade);
         }
+
         return courses;
     }
 
@@ -490,18 +509,22 @@ export class CoreGradesCoursesPage implements OnDestroy, AfterViewInit {
      */
     protected async groupCoursesByCategory(): Promise<void> {
         console.log('[Grades] Starting hierarchical category grouping');
-        
+
         // Use mentee courses if available (for parent in student view)
-        const coursesToGroup = this.menteeCoursesForStudentView || this.courses.items || [];
-        console.log('[Grades] Number of courses to group:', coursesToGroup.length);
+        const allCourses = this.menteeCoursesForStudentView || this.courses.items || [];
+        console.log('[Grades] Total courses before filtering:', allCourses.length);
         console.log('[Grades] Using mentee courses:', !!this.menteeCoursesForStudentView);
-        
+
+        // Filter to only show courses with grades (not "-")
+        const coursesToGroup = allCourses.filter((course: any) => course.grade && course.grade !== '-');
+        console.log('[Grades] Courses with grades to group:', coursesToGroup.length);
+
         this.coursesGroupedByCategory = {};
         this.categoryIds = [];
         this.categoryTree = [];
-        
+
         if (coursesToGroup.length === 0) {
-            console.log('[Grades] No courses to group, exiting');
+            console.log('[Grades] No courses with grades to group, exiting');
             return;
         }
         
@@ -622,10 +645,17 @@ export class CoreGradesCoursesPage implements OnDestroy, AfterViewInit {
             };
             
             sortCategories(this.categoryTree);
-            
+
+            // Filter out empty categories (no courses and no children with courses)
+            console.log('[Grades] Filtering out empty categories');
+            const beforeFilterCount = this.categoryTree.length;
+            this.categoryTree = this.filterEmptyCategories(this.categoryTree);
+            const afterFilterCount = this.categoryTree.length;
+            console.log('[Grades] Filtered out', beforeFilterCount - afterFilterCount, 'empty categories');
+
             // Auto-expand categories with courses
             this.autoExpandCategories(this.categoryTree);
-            
+
             console.log('[Grades] Built category tree with', this.categoryTree.length, 'top-level categories');
             console.log('[Grades] Category tree structure:', JSON.stringify(this.categoryTree.map(cat => ({
                 id: cat.id,
@@ -653,6 +683,28 @@ export class CoreGradesCoursesPage implements OnDestroy, AfterViewInit {
     /**
      * Auto-expand categories that contain courses
      */
+    /**
+     * Recursively filter out empty categories (no courses and no non-empty children).
+     */
+    protected filterEmptyCategories(nodes: CategoryNode[]): CategoryNode[] {
+        return nodes.filter(node => {
+            // First, recursively filter children
+            if (node.children.length > 0) {
+                node.children = this.filterEmptyCategories(node.children);
+            }
+
+            // Keep this node if it has courses OR has non-empty children
+            const hasCourses = node.courses.length > 0;
+            const hasNonEmptyChildren = node.children.length > 0;
+
+            if (!hasCourses && !hasNonEmptyChildren) {
+                console.log('[Grades] Filtering out empty category:', node.name, '(id:', node.id, ')');
+            }
+
+            return hasCourses || hasNonEmptyChildren;
+        });
+    }
+
     protected autoExpandCategories(nodes: CategoryNode[]): void {
         nodes.forEach(node => {
             if (node.courses.length > 0 || node.children.some(child => child.courses.length > 0)) {

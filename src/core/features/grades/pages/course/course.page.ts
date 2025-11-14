@@ -624,24 +624,25 @@ export class CoreGradesCoursePage implements AfterViewInit, OnDestroy {
             let hasGrades = false;
             
             category.items.forEach((item: any) => {
+                // Only count items with grades (matching our filter logic)
                 if (item.grade && item.grade !== '-') {
                     const gradeNum = parseFloat(item.grade);
                     if (!isNaN(gradeNum)) {
                         categoryGradeSum += gradeNum;
                         hasGrades = true;
                     }
-                }
-                
-                // Try to extract max grade from range if available
-                if (item.range) {
-                    const maxGrade = this.extractMaxGrade(item.range);
-                    const maxGradeNum = parseFloat(maxGrade);
-                    if (!isNaN(maxGradeNum)) {
-                        categoryMaxGradeSum += maxGradeNum;
+
+                    // Also add max grade for this item (only if it has a grade)
+                    if (item.range) {
+                        const maxGrade = this.extractMaxGrade(item.range);
+                        const maxGradeNum = parseFloat(maxGrade);
+                        if (!isNaN(maxGradeNum)) {
+                            categoryMaxGradeSum += maxGradeNum;
+                        }
+                    } else {
+                        // Default to 100 if no range
+                        categoryMaxGradeSum += 100;
                     }
-                } else {
-                    // Default to 100 if no range
-                    categoryMaxGradeSum += 100;
                 }
             });
             

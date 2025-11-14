@@ -555,11 +555,13 @@ video::-webkit-media-text-track-display {
     display: block;
 }
 
-// Reduce bottom tab bar padding to bring it closer to bottom
+// Dynamic bottom tab bar padding based on device safe area
 ion-tabs.placement-bottom ion-tab-bar {
-    --ion-safe-area-bottom: 3px !important;
+    // Use device's safe area (for notches/home indicators), with 3px minimum
+    --ion-safe-area-bottom: max(env(safe-area-inset-bottom), 3px);
     margin-bottom: 0px !important;
-    padding-bottom: 3px !important;
+    // Add extra padding on top of safe area for better touch target
+    padding-bottom: max(calc(env(safe-area-inset-bottom) - 5px), 3px) !important;
     margin-top: 0px !important;
     padding-top: 1px !important;
 }
