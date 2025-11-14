@@ -52,25 +52,28 @@ ion-card {
             --color-shade: var(--ion-color-#{$color-name}-shade);
             --border-width: 0;
 
-            --border-color: var(--color-tint);
+            --card-color: var(--color-tint);
+            --card-background: var(--color-shade);
+
+            --border-color: var(--card-color);
             --border-radius: var(--mdl-shape-borderRadius-sm);
-            --background: var(--color-tint);
-            --color: var(--color-shade);
+            --background: var(--card-color);
+            --color: var(--card-background);
 
             ion-item.item {
-                --background: var(--color-tint);
-                --color: var(--color-shade);
+                --background: var(--card-color);
+                --color: var(--card-background);
                 --inner-border-width: 0px;
                 --border-width: 0px;
                 font-size: var(--text-size);
 
                 &.item-label > ion-label,
                 &.item-label > ion-label > p {
-                    --color: var(--color-shade);
+                    --color: var(--card-background);
                 }
 
                 > ion-icon[slot] {
-                    color: var(--color-shade);
+                    color: var(--card-background);
                     @include margin-horizontal(null, 16px);
                 }
             }
@@ -78,6 +81,18 @@ ion-card {
             ion-label {
                 white-space: normal !important;
             }
+        }
+    }
+
+}
+
+
+:root.dark ion-card {
+    // Coloured cards.
+    @each $color-name, $unused in $colors {
+        &.core-#{$color-name}-card {
+            --card-color: var(--color-shade);
+            --card-background: var(--color-tint);
         }
     }
 

@@ -35,10 +35,9 @@ export class AddonModDataShowLinkHandlerLazyService extends AddonModDataShowLink
     async handleAction(siteId: string, params: Record<string, string>): Promise<void> {
         const modal = await CoreLoadings.show();
         const dataId = parseInt(params.d, 10);
-        const rId = params.rid || '';
+        const rId = params.rid || '0'; // If no rid, show the first entry.
         const group = parseInt(params.group, 10) || false;
         const page = parseInt(params.page, 10) || false;
-
         try {
             const module = await CoreCourse.getModuleBasicInfoByInstance(
                 dataId,

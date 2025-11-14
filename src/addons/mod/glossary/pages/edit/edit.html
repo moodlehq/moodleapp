@@ -44,7 +44,7 @@
                 }
 
                 @if (showAliases) {
-                    <ion-item>
+                    <ion-item lines="none">
                         <ion-textarea labelPlacement="stacked" [(ngModel)]="data.aliases" rows="1" [core-auto-rows]="data.aliases"
                             name="aliases" [label]="'addon.mod_glossary.aliases' | translate" />
                     </ion-item>
