@@ -7,7 +7,7 @@
             <h1>{{ title }}</h1>
             <p *ngIf="viewingAsMentee && selectedMentee" class="aspire-mentee-indicator">
                 <ion-icon name="people-outline"></ion-icon>
-                {{ 'core.user.viewingas' | translate }}: {{ selectedMentee.fullname }}
+                {{ 'core.user.viewingas' | translate }}: {{ selectedMentee.firstname || selectedMentee.fullname }}
             </p>
         </ion-title>
     </ion-toolbar>
