@@ -363,23 +363,75 @@ export class CoreGradesProvider {
         }
 
         console.log('[Grades Service] Falling back to standard grades endpoint');
-        
-        // REMOVED BROKEN OVERVIEW ROUTE AS REQUESTED
-        // We'll just get courses directly instead of using overview
 
-        // Just get courses and return them with empty grades
+        // Try custom WS first (works even with showgrades disabled)
+        const hasCustomWS = await site.wsAvailable('local_aspireparent_get_all_course_grades');
+
+        if (hasCustomWS) {
+            this.logger.debug('Using custom WS for student course grades');
+            console.log('[Grades Service] Using local_aspireparent_get_all_course_grades for student');
+
+            const preSets: CoreSiteWSPreSets = {
+                cacheKey: this.getCoursesGradesCacheKey(),
+            };
+
+            try {
+                const data = await site.read<CoreGradesGetOverviewCourseGradesWSResponse>(
+                    'local_aspireparent_get_all_course_grades',
+                    { userid: 0 }, // 0 means current user
+                    preSets,
+                );
+
+                this.logger.debug(`Got ${data?.grades?.length || 0} course grades`);
+                console.log('[Grades Service] Student grades response:', data);
+
+                if (!data?.grades) {
+                    console.error('[Grades Service] No grades property in response');
+                    throw new Error('Couldn\'t get course grades');
+                }
+
+                return data.grades;
+            } catch (error) {
+                this.logger.error('Error getting course grades:', error);
+                console.error('[Grades Service] Error details:', error);
+                // Fall through to Moodle standard WS
+            }
+        }
+
+        // Try Moodle standard WS
         try {
-            const courses = await CoreCourses.getUserCourses(true, site.getId());
-            
-            return courses.map(course => ({
-                courseid: course.id,
-                grade: '-',
-                rawgrade: '',
-                rank: undefined
-            }));
+            const data = await site.read<CoreGradesGetOverviewCourseGradesWSResponse>(
+                'gradereport_overview_get_course_grades',
+                { userid: 0 }, // 0 means current user
+                { cacheKey: this.getCoursesGradesCacheKey() },
+            );
+
+            this.logger.debug(`Got ${data?.grades?.length || 0} course grades from standard WS`);
+            console.log('[Grades Service] Standard WS grades response:', data);
+
+            if (!data?.grades) {
+                throw new Error('Couldn\'t get course grades');
+            }
+
+            return data.grades;
         } catch (error) {
-            this.logger.error('Error getting courses', error);
-            return [];
+            this.logger.error('Error getting courses grades from standard WS', error);
+            console.error('[Grades Service] Standard WS error:', error);
+
+            // Last resort: get courses without grades
+            try {
+                const courses = await CoreCourses.getUserCourses(true, site.getId());
+
+                return courses.map(course => ({
+                    courseid: course.id,
+                    grade: '-',
+                    rawgrade: '',
+                    rank: undefined
+                }));
+            } catch (fallbackError) {
+                this.logger.error('Error getting courses', fallbackError);
+                return [];
+            }
         }
     }
 

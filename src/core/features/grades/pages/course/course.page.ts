@@ -364,8 +364,12 @@ export class CoreGradesCoursePage implements AfterViewInit, OnDestroy {
                 // This is a category header without grade - skip it
                 console.log('[Grades] Skipping empty category header:', row.gradeitem);
             } else {
-                // Regular grade item
-                filteredRows.push(row);
+                // Regular grade item - only add if it has a grade
+                if (hasGrade) {
+                    filteredRows.push(row);
+                } else {
+                    console.log('[Grades] Skipping ungraded item:', row.gradeitem);
+                }
             }
         });
         
@@ -411,9 +415,10 @@ export class CoreGradesCoursePage implements AfterViewInit, OnDestroy {
         console.log('[Grades] Filtered rows:', {
             original: rows.length,
             filtered: finalRows.length,
-            regularItems: filteredRows.length,
+            regularItemsWithGrades: filteredRows.length,
             categoryTotals: categoryTotals.length,
-            courseTotal: courseTotal ? 1 : 0
+            courseTotal: courseTotal ? 1 : 0,
+            ungradedItemsSkipped: rows.length - filteredRows.length - categoryTotals.length - (courseTotal ? 1 : 0)
         });
         
         return finalRows;
@@ -536,11 +541,25 @@ export class CoreGradesCoursePage implements AfterViewInit, OnDestroy {
                 percentage: row.percentage,
                 range: row.range
             });
-            
+
             const gradeItemName = row.gradeitem?.toLowerCase() || '';
-            
-            // Skip totals in the item list
-            if (gradeItemName.includes('total')) {
+
+            // Skip totals, category items, and course items
+            if (row.itemtype === 'courseitem' || row.itemtype === 'categoryitem' ||
+                row.itemtype === 'category' || row.itemtype === 'leader') {
+                console.log('[Grades] Skipping total/category/leader item:', row.gradeitem);
+                return;
+            }
+
+            // Skip items without grades (same filter as table view)
+            if (!row.grade || row.grade === '-') {
+                console.log('[Grades] Skipping ungraded item in grouped view:', row.gradeitem);
+                return;
+            }
+
+            // Skip items without a name
+            if (!row.gradeitem || row.gradeitem.trim() === '') {
+                console.log('[Grades] Skipping item with empty name');
                 return;
             }
             
@@ -657,15 +676,27 @@ export class CoreGradesCoursePage implements AfterViewInit, OnDestroy {
         })));
         
         this.rows.forEach((row, index) => {
-            // Skip totals and categories
-            const gradeItemName = row.gradeitem?.toLowerCase() || '';
-            if (gradeItemName.includes('total') || row.itemtype === 'category' || row.itemtype === 'categoryitem' || row.itemtype === 'courseitem') {
+            // Skip totals, categories, and leader items
+            if (row.itemtype === 'courseitem' || row.itemtype === 'categoryitem' ||
+                row.itemtype === 'category' || row.itemtype === 'leader') {
                 console.log(`[Grades] Skipping timeline item: ${row.gradeitem} (type: ${row.itemtype})`);
                 return;
             }
-            
-            // Include all items (both graded and ungraded)
-            if (row.itemtype === 'mod' || row.itemtype === 'manual' || (row.gradeitem && !gradeItemName.includes('total'))) {
+
+            // Skip items without grades (same filter as table and grouped views)
+            if (!row.grade || row.grade === '-') {
+                console.log(`[Grades] Skipping ungraded timeline item: ${row.gradeitem}`);
+                return;
+            }
+
+            // Skip items without a name
+            if (!row.gradeitem || row.gradeitem.trim() === '') {
+                console.log('[Grades] Skipping timeline item with empty name');
+                return;
+            }
+
+            // Include only graded items
+            if (row.itemtype === 'mod' || row.itemtype === 'manual' || row.gradeitem) {
                 // For now, create a date based on row position (newest first)
                 // In real implementation, this would come from the grade data
                 const daysAgo = index * 3; // Space items 3 days apart
@@ -773,75 +804,45 @@ export class CoreGradesCoursePage implements AfterViewInit, OnDestroy {
     
     // Helper methods for template
     getCourseTotal(): string {
-        console.log('[Grades] Looking for course total...');
-        console.log('[Grades] Category/total rows:', this.rows.filter(row => 
-            row.itemtype === 'category' || row.itemtype === 'categoryitem' || row.itemtype === 'courseitem'
-        ).map(row => ({
-            itemtype: row.itemtype,
-            gradeitem: row.gradeitem,
-            grade: row.grade
-        })));
-        const totalRow = this.rows.find(row => {
-            // Look for course total by itemtype or content
-            return row.itemtype === 'courseitem' || 
-                   (row.gradeitem?.toLowerCase().includes('course total'));
-        });
-        console.log('[Grades] Course total row:', totalRow);
-        
-        // If the total is not calculated (shows '-'), calculate it from graded items
-        if (totalRow && (totalRow.grade === '-' || !totalRow.grade)) {
-            const gradedSum = this.calculateGradedItemsSum();
-            console.log('[Grades] Calculated sum from graded items:', gradedSum);
-            return this.formatGradeValue(gradedSum);
-        }
-        
-        // Format the existing grade value
-        const gradeValue = totalRow?.grade || '0';
-        const gradeNum = parseFloat(gradeValue);
-        if (!isNaN(gradeNum)) {
-            return this.formatGradeValue(gradeNum);
-        }
-        
-        return gradeValue;
+        console.log('[Grades] Calculating course total from visible graded items only');
+
+        // Always calculate from visible graded items (not from server's course total)
+        const gradedSum = this.calculateGradedItemsSum();
+        console.log('[Grades] Calculated sum from visible graded items:', gradedSum);
+        return this.formatGradeValue(gradedSum);
     }
     
     getCourseMaxGrade(): string {
-        const totalRow = this.rows.find(row => {
-            return row.itemtype === 'courseitem' || 
-                   (row.gradeitem?.toLowerCase().includes('course total'));
-        });
-        const maxGrade = this.extractMaxGrade(totalRow?.range || '0-100');
-        console.log('[Grades] Course max grade:', maxGrade, 'from range:', totalRow?.range);
-        
+        console.log('[Grades] Calculating max grade from visible graded items only');
+
+        // Calculate max grade as sum of all visible graded items' max grades
+        const maxGrade = this.calculateMaxGradeSum();
+        console.log('[Grades] Calculated max grade from visible items:', maxGrade);
+
         // Format max grade to remove unnecessary decimals
-        const maxGradeNum = parseFloat(maxGrade);
-        if (!isNaN(maxGradeNum)) {
+        if (!isNaN(maxGrade)) {
             // If it's a whole number, show without decimals
             // Otherwise, show up to 2 decimal places
-            return maxGradeNum % 1 === 0 ? maxGradeNum.toString() : maxGradeNum.toFixed(2);
+            return maxGrade % 1 === 0 ? maxGrade.toString() : maxGrade.toFixed(2);
         }
-        return maxGrade;
+        return maxGrade.toString();
     }
     
     getCoursePercentage(): string {
-        const totalRow = this.rows.find(row => {
-            return row.itemtype === 'courseitem' || 
-                   (row.gradeitem?.toLowerCase().includes('course total'));
-        });
-        console.log('[Grades] Course percentage:', totalRow?.percentage);
-        
-        // If percentage is not calculated, calculate it
-        if (totalRow && (totalRow.percentage === '0%' || totalRow.percentage === '-' || !totalRow.percentage)) {
-            const total = parseFloat(this.getCourseTotal());
-            const maxGrade = parseFloat(this.getCourseMaxGrade());
-            if (maxGrade > 0) {
-                const calculatedPercentage = (total / maxGrade) * 100;
-                return calculatedPercentage.toFixed(2) + '%';
-            }
+        console.log('[Grades] Calculating percentage from visible graded items');
+
+        // Always calculate from visible items
+        const total = parseFloat(this.getCourseTotal());
+        const maxGrade = parseFloat(this.getCourseMaxGrade());
+
+        if (maxGrade > 0) {
+            const calculatedPercentage = (total / maxGrade) * 100;
+            console.log('[Grades] Calculated percentage:', calculatedPercentage, '% (', total, '/', maxGrade, ')');
+            return calculatedPercentage.toFixed(2) + '%';
         }
-        
-        // Return the percentage value, which already includes the % sign
-        return totalRow?.percentage || '0%';
+
+        console.log('[Grades] Cannot calculate percentage, max grade is 0');
+        return '0%';
     }
     
     getCoursePercentageNumber(): number {
@@ -851,17 +852,22 @@ export class CoreGradesCoursePage implements AfterViewInit, OnDestroy {
     }
     
     /**
-     * Calculate the sum of all graded items (excluding totals).
+     * Calculate the sum of all visible graded items (excluding totals).
      */
     protected calculateGradedItemsSum(): number {
         let sum = 0;
         this.rows.forEach(row => {
-            const gradeItemName = row.gradeitem?.toLowerCase() || '';
-            // Skip totals and non-graded items
-            if (gradeItemName.includes('total') || !row.grade || row.grade === '-') {
+            // Skip totals, category items, and course items
+            if (row.itemtype === 'courseitem' || row.itemtype === 'categoryitem' ||
+                row.itemtype === 'category' || row.itemtype === 'leader') {
                 return;
             }
-            
+
+            // Only count items with actual grades
+            if (!row.grade || row.grade === '-') {
+                return;
+            }
+
             // Parse the grade value
             const gradeValue = parseFloat(row.grade);
             if (!isNaN(gradeValue)) {
@@ -869,6 +875,38 @@ export class CoreGradesCoursePage implements AfterViewInit, OnDestroy {
                 console.log('[Grades] Adding grade:', row.gradeitem, '=', gradeValue, 'Total so far:', sum);
             }
         });
+        console.log('[Grades] Final sum of visible graded items:', sum);
+        return sum;
+    }
+
+    /**
+     * Calculate the sum of max grades for all visible graded items.
+     */
+    protected calculateMaxGradeSum(): number {
+        let sum = 0;
+        this.rows.forEach(row => {
+            // Skip totals, category items, and course items
+            if (row.itemtype === 'courseitem' || row.itemtype === 'categoryitem' ||
+                row.itemtype === 'category' || row.itemtype === 'leader') {
+                return;
+            }
+
+            // Only count items with actual grades (same filter as calculateGradedItemsSum)
+            if (!row.grade || row.grade === '-') {
+                return;
+            }
+
+            // Extract max grade from range (e.g., "0-100" -> 100)
+            if (row.range) {
+                const maxGrade = this.extractMaxGrade(row.range);
+                const maxGradeNum = parseFloat(maxGrade);
+                if (!isNaN(maxGradeNum)) {
+                    sum += maxGradeNum;
+                    console.log('[Grades] Adding max grade:', row.gradeitem, '=', maxGradeNum, 'Max total so far:', sum);
+                }
+            }
+        });
+        console.log('[Grades] Final sum of max grades for visible items:', sum);
         return sum;
     }
     
@@ -880,8 +918,11 @@ export class CoreGradesCoursePage implements AfterViewInit, OnDestroy {
     }
     
     getTotalGradedItems(): number {
-        return this.rows.filter(row => 
-            row.itemtype === 'mod' || row.itemtype === 'manual'
+        // Since we filter out ungraded items, this returns the count of visible graded items
+        // This will match getCompletedItems() since all visible items have grades
+        return this.rows.filter(row =>
+            (row.itemtype === 'mod' || row.itemtype === 'manual') &&
+            row.grade && row.grade !== '-'
         ).length;
     }
     
