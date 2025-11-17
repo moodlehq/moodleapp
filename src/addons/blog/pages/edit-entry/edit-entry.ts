@@ -76,8 +76,6 @@ export default class AddonBlogEditEntryPage implements CanLeave, OnInit, OnDestr
     maxFiles = 99;
     initialFiles: CoreFileEntry[] = [];
     files: CoreFileEntry[] = [];
-    courseId?: number;
-    modId?: number;
     userId?: number;
     associatedCourse?: CoreCourseBasicData;
     associatedModule?: CoreCourseModuleData;
@@ -90,6 +88,9 @@ export default class AddonBlogEditEntryPage implements CanLeave, OnInit, OnDestr
     siteHomeId?: number;
     forceLeave = false;
     isOfflineEntry = false;
+
+    protected courseId?: number;
+    protected modId?: number;
     readonly blogLevel = signal(CoreSiteBlogLevel.BLOG_SITE_LEVEL);
     readonly isUserLevel = computed(() => this.blogLevel() === CoreSiteBlogLevel.BLOG_USER_LEVEL);
     readonly isGlobalLevel = computed(() => this.blogLevel() === CoreSiteBlogLevel.BLOG_GLOBAL_LEVEL);
