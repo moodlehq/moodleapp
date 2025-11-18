@@ -3089,6 +3089,8 @@ export class CoreFilepoolProvider {
         if (status === DownloadStatus.DOWNLOADING) {
             // Set download time if package is now downloading.
             downloadTime = CoreTime.timestamp();
+        } else if (status === DownloadStatus.DOWNLOADABLE_NOT_DOWNLOADED) {
+            downloadTime = 0;
         }
 
         let previousStatus: DownloadStatus | undefined;
