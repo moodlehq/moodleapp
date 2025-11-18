@@ -25,6 +25,16 @@
         border-bottom: var(--activity-border);
     }
 
+    ion-badge {
+        @include margin-horizontal(null, 4px);
+        font: var(--mdl-typography-body-font-sm);
+        display: inline-flex;
+        align-items: center;
+        ion-icon {
+            @include margin-horizontal(0px, 4px);
+        }
+    }
+
     ion-item {
         --padding-start: 0px;
         --inner-padding-end: 0px;
