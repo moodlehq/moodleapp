@@ -47,21 +47,21 @@ export class AddonModWikiCreateLinkHandlerLazyService extends AddonModWikiCreate
         const params = CoreNavigator.getRouteParams(route);
         const queryParams = CoreNavigator.getRouteQueryParams(route);
 
-        if (queryParams.subwikiId == subwikiId) {
+        if (Number(queryParams.subwikiId) === subwikiId) {
             // Same subwiki, so it's same wiki.
             return true;
         }
 
         const options = {
-            cmId: params.cmId,
+            cmId: Number(params.cmId),
             readingStrategy: CoreSitesReadingStrategy.PREFER_CACHE,
             siteId,
         };
 
-        if (queryParams.pageId) {
+        if (Number(queryParams.pageId)) {
             // Get the page contents to check the subwiki.
             try {
-                const page = await AddonModWiki.getPageContents(queryParams.pageId, options);
+                const page = await AddonModWiki.getPageContents(Number(queryParams.pageId), options);
 
                 return page.subwikiid == subwikiId;
             } catch {
@@ -71,7 +71,7 @@ export class AddonModWikiCreateLinkHandlerLazyService extends AddonModWikiCreate
 
         try {
             // Get the wiki.
-            const wiki = await AddonModWiki.getWiki(params.courseId, params.cmId, options);
+            const wiki = await AddonModWiki.getWiki(Number(params.courseId), Number(params.cmId), options);
 
             // Check if the subwiki belongs to this wiki.
             return await AddonModWiki.wikiHasSubwiki(wiki.id, subwikiId, options);
