@@ -831,6 +831,11 @@ export class AddonModWikiIndexComponent extends CoreCourseModuleMainActivityComp
             return;
         }
 
+        if (editedPageData.wikiId && this.wiki && editedPageData.wikiId !== this.wiki.id) {
+            // Different wiki, ignore.
+            return;
+        }
+
         // User has just edited a page. Check if it's the current page.
         if (this.pageId && editedPageData.pageId === this.pageId) {
             this.showLoadingAndRefresh(true, false);
@@ -853,7 +858,7 @@ export class AddonModWikiIndexComponent extends CoreCourseModuleMainActivityComp
             pageId: editedPageData.pageId,
             pageTitle: editedPageData.pageTitle,
             subwikiId: editedPageData.subwikiId,
-            userId: editedPageData.wikiId,
+            userId: editedPageData.userId,
             groupId: editedPageData.groupId,
         });
 
