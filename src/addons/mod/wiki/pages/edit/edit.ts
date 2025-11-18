@@ -309,10 +309,6 @@ export default class AddonModWikiEditPage implements OnInit, OnDestroy, CanLeave
      * @param title Page title.
      */
     protected goToPage(title: string): void {
-        if (!this.wikiId) {
-            return;
-        }
-
         // Not the firstpage.
         AddonModWiki.setEditedPageData({
             cmId: this.cmId,

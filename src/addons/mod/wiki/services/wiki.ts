@@ -1182,7 +1182,7 @@ export type AddonModWikiPageCreatedOfflineData = {
 export type AddonModWikiEditedPageData = {
     cmId?: number;
     courseId?: number;
-    wikiId: number;
+    wikiId?: number;
     pageTitle: string;
     subwikiId?: number;
     userId?: number;
