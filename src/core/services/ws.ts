@@ -292,7 +292,8 @@ export class CoreWSProvider {
                 if (!extension || ['gdoc', 'gsheet', 'gslides', 'gdraw', 'php'].includes(extension)) {
 
                     // Not valid, get the file's mimetype.
-                    const requestContentType = fileDownloaded.headers?.['Content-Type']?.split(';')[0];
+                    const contentType = fileDownloaded.headers?.['Content-Type'] || fileDownloaded.headers?.['content-type'];
+                    const requestContentType = contentType?.split(';')[0];
                     const mimetype = requestContentType ?? await this.getRemoteFileMimeType(url);
 
                     if (mimetype) {
@@ -359,6 +360,7 @@ export class CoreWSProvider {
         try {
             const response = await this.performHead(url);
 
+            // HttpHeaders get is already case insensitive, no need to check different values.
             let mimeType = response.headers.get('Content-Type');
             if (mimeType) {
                 // Remove "parameters" like charset.
@@ -1203,7 +1205,7 @@ export class CoreWSProvider {
                     // Error is a response object.
                     response = error as NativeHttpResponse;
 
-                    // If it's a SSL error, the response doesn't contain headers. Make sure it always exists, even if it's empty.
+                    // For some errors, the response doesn't contain headers. Make sure it always exists, even if it's empty.
                     response.headers = response.headers || {};
 
                     // Redirections should have been handled by the platform,
