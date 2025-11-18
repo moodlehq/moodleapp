@@ -7,6 +7,11 @@
         ion-badge {
             @include margin-horizontal(null, 4px);
             font: var(--mdl-typography-body-font-sm);
+            display: inline-flex;
+            align-items: center;
+            ion-icon {
+                @include margin-horizontal(0px, 4px);
+            }
         }
 
         h2 ion-icon {
