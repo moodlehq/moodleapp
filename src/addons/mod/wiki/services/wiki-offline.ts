@@ -58,18 +58,12 @@ export class AddonModWikiOfflineProvider {
 
         const site = await CoreSites.getSite(siteId);
 
-        subwikiId = this.convertToPositiveNumber(subwikiId);
-        wikiId = this.convertToPositiveNumber(wikiId);
-        userId = this.convertToPositiveNumber(userId);
-        groupId = this.convertToPositiveNumber(groupId);
+        const conditions: Partial<AddonModWikiPageDBRecord> = {
+            title,
+            ...this.getSubwikiConditions(subwikiId, wikiId, userId, groupId),
+        };
 
-        await site.getDb().deleteRecords(NEW_PAGES_TABLE_NAME, <Partial<AddonModWikiPageDBRecord>> {
-            subwikiid: subwikiId,
-            wikiid: wikiId,
-            userid: userId,
-            groupid: groupId,
-            title: title,
-        });
+        await site.getDb().deleteRecords(NEW_PAGES_TABLE_NAME, conditions);
     }
 
     /**
@@ -105,18 +99,42 @@ export class AddonModWikiOfflineProvider {
     ): Promise<AddonModWikiPageDBRecord> {
         const site = await CoreSites.getSite(siteId);
 
-        subwikiId = this.convertToPositiveNumber(subwikiId);
-        wikiId = this.convertToPositiveNumber(wikiId);
-        userId = this.convertToPositiveNumber(userId);
-        groupId = this.convertToPositiveNumber(groupId);
+        const conditions: Partial<AddonModWikiPageDBRecord> = {
+            title,
+            ...this.getSubwikiConditions(subwikiId, wikiId, userId, groupId),
+        };
 
-        return site.getDb().getRecord(NEW_PAGES_TABLE_NAME, <Partial<AddonModWikiPageDBRecord>> {
-            subwikiid: subwikiId,
-            wikiid: wikiId,
-            userid: userId,
-            groupid: groupId,
-            title: title,
-        });
+        return site.getDb().getRecord(NEW_PAGES_TABLE_NAME, conditions);
+    }
+
+    /**
+     * Get the conditions to identify a subwiki in the database.
+     *
+     * @param subwikiId Subwiki ID.
+     * @param wikiId Wiki ID.
+     * @param userId User ID.
+     * @param groupId Group ID.
+     * @returns The conditions to identify a subwiki in the database.
+     */
+    protected getSubwikiConditions(
+        subwikiId?: number,
+        wikiId?: number,
+        userId?: number,
+        groupId?: number,
+    ): Partial<AddonModWikiPageDBRecord> {
+        const conditions: Partial<AddonModWikiPageDBRecord> = {};
+
+        if (subwikiId) {
+            // Subwiki ID provided, no need to check the other parameters since subwiki ID is unique and offline pages
+            // might not have all the parameters stored.
+            conditions.subwikiid = this.convertToPositiveNumber(subwikiId);
+        } else {
+            conditions.wikiid = this.convertToPositiveNumber(wikiId);
+            conditions.userid = this.convertToPositiveNumber(userId);
+            conditions.groupid = this.convertToPositiveNumber(groupId);
+        }
+
+        return conditions;
     }
 
     /**
@@ -138,17 +156,7 @@ export class AddonModWikiOfflineProvider {
     ): Promise<AddonModWikiPageDBRecord[]> {
         const site = await CoreSites.getSite(siteId);
 
-        subwikiId = this.convertToPositiveNumber(subwikiId);
-        wikiId = this.convertToPositiveNumber(wikiId);
-        userId = this.convertToPositiveNumber(userId);
-        groupId = this.convertToPositiveNumber(groupId);
-
-        return site.getDb().getRecords(NEW_PAGES_TABLE_NAME, <Partial<AddonModWikiPageDBRecord>> {
-            subwikiid: subwikiId,
-            wikiid: wikiId,
-            userid: userId,
-            groupid: groupId,
-        });
+        return site.getDb().getRecords(NEW_PAGES_TABLE_NAME, this.getSubwikiConditions(subwikiId, wikiId, userId, groupId));
     }
 
     /**
