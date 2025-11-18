@@ -74,8 +74,10 @@ Feature: View activity completion information in the Page resource
       | intro      | A lesson learned in life |
       | completion | 1                        |
     When I entered the course "Course 1" as "teacher1" in the app
+    And I press "Completion" within "Music history" "ion-card" in the app
     Then I should find "Mark as done" in the app
-    When I press "Music history" in the app
+    When I close the popup in the app
+    And I press "Music history" in the app
     Then the header should be "Music history" in the app
     And I should find "Mark as done" in the app
     But I should not be able to press "Mark as done" in the app
@@ -110,6 +112,7 @@ Feature: View activity completion information in the Page resource
       | completion | 1                        |
     When I entered the course "Course 2" as "teacher1" in the app
     Then I should not find "Mark as done" in the app
+    Then I should not find "Completion" in the app
     When I press "Music history" in the app
     Then the header should be "Music history" in the app
     And I should find "Mark as done" in the app

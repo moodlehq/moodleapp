@@ -41,19 +41,20 @@
                 </ion-button>
             }
         }
+    <!-- Show a generic completion menu button for non-tracked users when either
+        the activity uses automatic completion or the user is currently viewing
+        the activity in the course context. -->
+    } @else if (completion.isautomatic || inCourse) {
+        <ion-button fill="outline" class="chip ion-text-nowrap" (click)="completionClicked($event)">
+            {{ 'core.course.completionmenuitem' | translate }}
+            <div class="select-icon" role="presentation" aria-hidden="true">
+                <div class="select-icon-inner"></div>
+            </div>
+        </ion-button>
     } @else {
-        @if (completion.isautomatic) {
-            <ion-button fill="outline" class="chip ion-text-nowrap" (click)="completionClicked($event)">
-                {{ 'core.course.completionmenuitem' | translate }}
-                <div class="select-icon" role="presentation" aria-hidden="true">
-                    <div class="select-icon-inner"></div>
-                </div>
-            </ion-button>
-        } @else {
-            <ion-button fill="outline" [ariaLabel]="accessibleDescription" disabled
-                class="completioninfo completion_incomplete chip ion-text-nowrap">
-                {{ 'core.course.completion_manual:markdone' | translate }}
-            </ion-button>
-        }
+        <ion-button fill="outline" [ariaLabel]="accessibleDescription" disabled
+            class="completioninfo completion_incomplete chip ion-text-nowrap">
+            {{ 'core.course.completion_manual:markdone' | translate }}
+        </ion-button>
     }
 }
