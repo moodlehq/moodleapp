@@ -531,7 +531,10 @@ export class CoreUrl {
      * @returns Link.
      */
     static buildLink(url: string, text: string): string {
-        return `<a href="${url}">${text}</a>`;
+        const escapedUrl = CoreText.escapeHTML(url);
+        const escapedText = CoreText.escapeHTML(text);
+
+        return `<a href="${escapedUrl}">${escapedText}</a>`;
     }
 
     /**
@@ -873,7 +876,7 @@ export class CoreUrl {
      * @returns Whether the URL is a gravatar URL.
      */
     static isGravatarUrl(url: string): boolean {
-        return url?.indexOf('gravatar.com/avatar') !== -1;
+        return url != null && url.indexOf('gravatar.com/avatar') !== -1;
     }
 
     /**

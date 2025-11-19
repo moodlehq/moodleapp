@@ -857,12 +857,18 @@ export class CoreWSProvider {
                 details: CoreErrorHelper.getErrorMessageFromError(error) ?? 'Unknown error',
             }));
         }).catch(err => {
+            // Create a sanitized copy of ajaxData without sensitive fields
+            const sanitizedData = { ...ajaxData };
+            delete sanitizedData.wstoken;
+            delete sanitizedData.token;
+            delete sanitizedData.privatetoken;
+
             CoreErrorLogs.addErrorLog({
                 method,
                 type: String(err),
                 message: String(err.exception),
                 time: new Date().getTime(),
-                data: ajaxData,
+                data: sanitizedData,
             });
             throw err;
         });

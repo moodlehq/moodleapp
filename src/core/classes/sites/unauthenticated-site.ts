@@ -159,7 +159,9 @@ export class CoreUnauthenticatedSite {
         if (isSingleFixedSite) {
             const sites = await CoreLoginHelper.getAvailableSites();
 
-            return sites[0].name;
+            if (sites && sites.length > 0) {
+                return sites[0].name;
+            }
         }
 
         return '';

@@ -69,13 +69,18 @@ export class CoreRemindersDateComponent {
                 return;
             }
 
-            const reminders = await CoreReminders.getReminders({
-                instanceId,
-                component,
-                type,
-            });
+            try {
+                const reminders = await CoreReminders.getReminders({
+                    instanceId,
+                    component,
+                    type,
+                });
 
-            this.timebefore.set(reminders[0]?.timebefore);
+                this.timebefore.set(reminders[0]?.timebefore);
+            } catch {
+                // Failed to fetch reminders, set to undefined
+                this.timebefore.set(undefined);
+            }
         });
     }
 

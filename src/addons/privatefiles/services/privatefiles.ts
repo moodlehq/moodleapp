@@ -134,12 +134,14 @@ export class AddonPrivateFilesProvider {
      * @returns Params.
      */
     protected getPrivateFilesRootParams(): AddonPrivateFilesGetFilesWSParams {
+        const site = CoreSites.getCurrentSite();
+
         return {
             contextid: -1,
             component: 'user',
             filearea: 'private',
             contextlevel: ContextLevel.USER,
-            instanceid: CoreSites.getCurrentSite()?.getUserId(),
+            instanceid: site?.getUserId() ?? 0,
             itemid: 0,
             filepath: '',
             filename: '',

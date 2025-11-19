@@ -88,7 +88,7 @@ export class AddonCompetencyProvider {
                 return false;
             }
 
-            if (!userId || userId == CoreSites.getCurrentSiteUserId()) {
+            if (!userId || userId === CoreSites.getCurrentSiteUserId()) {
                 // Current user.
                 return true;
             }
@@ -353,7 +353,7 @@ export class AddonCompetencyProvider {
 
         const courseCompetencies = await this.getCourseCompetenciesPage(courseId, siteId, ignoreCache);
 
-        if (!userId || userId == CoreSites.getCurrentSiteUserId()) {
+        if (!userId || userId === CoreSites.getCurrentSiteUserId()) {
             return courseCompetencies;
         }
 
@@ -483,7 +483,7 @@ export class AddonCompetencyProvider {
         const site = await CoreSites.getSite(siteId);
         await site.invalidateWsCacheForKey(this.getCourseCompetenciesCacheKey(courseId));
 
-        if (!userId || userId == CoreSites.getCurrentSiteUserId()) {
+        if (!userId || userId === CoreSites.getCurrentSiteUserId()) {
             return;
         }
 

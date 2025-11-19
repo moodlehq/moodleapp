@@ -198,7 +198,7 @@ export class CoreSite extends CoreAuthenticatedSite {
      * @deprecated since 5.0. Use getOAuthId instead.
      */
     isOAuth(): boolean {
-        return this.oauthId != null && this.oauthId !== undefined;
+        return this.oauthId != null;
     }
 
     /**

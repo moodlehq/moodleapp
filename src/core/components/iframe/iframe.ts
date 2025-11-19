@@ -308,6 +308,8 @@ export class CoreIframeComponent implements OnChanges, OnDestroy {
     ngOnDestroy(): void {
         this.navSubscription?.unsubscribe();
         window.removeEventListener('message', this.messageListenerFunction);
+        this.backButtonListener && document.removeEventListener('ionBackButton', this.backButtonListener);
+        this.style?.remove();
 
         if (this.fullscreen) {
             // Make sure to leave fullscreen mode when the iframe is destroyed. This can happen if there's a race condition
@@ -343,9 +345,11 @@ export class CoreIframeComponent implements OnChanges, OnDestroy {
 
         const iframe = this.iframe();
         if (notifyIframe && iframe) {
+            // Use iframe's origin for security instead of wildcard
+            const targetOrigin = iframe.src ? new URL(iframe.src).origin : '*';
             iframe.contentWindow?.postMessage(
                 this.fullscreen ? 'enterFullScreen' : 'exitFullScreen',
-                '*',
+                targetOrigin,
             );
         }
     }
@@ -356,6 +360,20 @@ export class CoreIframeComponent implements OnChanges, OnDestroy {
      * @param event Event.
      */
     protected async onIframeMessage(event: MessageEvent): Promise<void> {
+        // Validate origin matches the iframe's source for security
+        const iframe = this.iframe();
+        if (iframe?.src) {
+            try {
+                const expectedOrigin = new URL(iframe.src).origin;
+                if (event.origin !== expectedOrigin) {
+                    return; // Ignore messages from unexpected origins
+                }
+            } catch {
+                // Invalid URL, ignore the message
+                return;
+            }
+        }
+
         if (event.data == 'enterFullScreen' && this.showFullscreenOnToolbar && !this.fullscreen) {
             this.toggleFullscreen(true, false);
         } else if (event.data == 'exitFullScreen' && this.fullscreen) {
