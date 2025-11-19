@@ -463,10 +463,6 @@ export class AddonModFeedbackIndexComponent extends CoreCourseModuleMainActivity
      * Open attempts page.
      */
     openAttempts(): void {
-        if (!this.access || !this.access.canviewreports || this.completedCount <= 0) {
-            return;
-        }
-
         CoreNavigator.navigateToSitePath(
             `${ADDON_MOD_FEEDBACK_PAGE_NAME}/${this.courseId}/${this.module.id}/attempts`,
             {
