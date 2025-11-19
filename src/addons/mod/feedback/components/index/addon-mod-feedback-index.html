@@ -67,11 +67,14 @@
 
 <ng-template #basicInfo>
     @if (access && access.canviewanalysis && !access.isempty) {
+        @let canViewAttempts = access.canviewreports && completedCount > 0;
+        @let canViewNonRespondents = !access.isanonymous && access.canviewreports;
+
         <ion-list>
             <core-group-selector [groupInfo]="groupInfo" [(selected)]="group" (selectedChange)="setGroup(group)" [courseId]="courseId" />
 
-            <ion-item class="ion-text-wrap" (click)="openAttempts()" [class.hide-detail]="!(access.canviewreports && completedCount > 0)"
-                [detail]="true" [button]="access.canviewreports && completedCount > 0">
+            <ion-item class="ion-text-wrap" (click)="canViewAttempts && openAttempts()" [class.hide-detail]="!canViewAttempts"
+                [detail]="canViewAttempts || canViewNonRespondents" [button]="canViewAttempts">
                 <ion-label>
                     <p class="item-heading">{{ 'addon.mod_feedback.completed_feedbacks' | translate }}</p>
                 </ion-label>
@@ -82,14 +85,14 @@
                     </span>
                 </ion-badge>
             </ion-item>
-            @if (!access.isanonymous && access.canviewreports) {
+            @if (canViewNonRespondents) {
                 <ion-item class="ion-text-wrap" (click)="openNonRespondents()" [detail]="true" button>
                     <ion-label>
                         <p class="item-heading">{{ 'addon.mod_feedback.show_nonrespondents' | translate }}</p>
                     </ion-label>
                 </ion-item>
             }
-            <ion-item class="ion-text-wrap">
+            <ion-item class="ion-text-wrap hide-detail" [detail]="canViewAttempts || canViewNonRespondents">
                 <ion-label>
                     <p class="item-heading">{{ 'addon.mod_feedback.questions' | translate }}</p>
                 </ion-label>
