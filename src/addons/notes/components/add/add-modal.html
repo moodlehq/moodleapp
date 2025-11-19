@@ -24,7 +24,7 @@
                 [(ngModel)]="text" name="text" required="required" />
         </ion-item>
         <div class="ion-padding">
-            <ion-button expand="block" type="submit" [disabled]="processing || text.length < 2">
+            <ion-button expand="block" type="submit" [disabled]="processing || (text?.length ?? 0) < 2">
                 {{ 'addon.notes.addnewnote' | translate }}
             </ion-button>
         </div>

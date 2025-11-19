@@ -825,7 +825,8 @@ export class CoreWSProvider {
 
                 // Only process the queue one time.
                 if (this.retryTimeout == 0) {
-                    this.retryTimeout = parseInt(error.headers.get('Retry-After'), 10) || 5;
+                    const retryAfter = error.headers?.get('Retry-After');
+                    this.retryTimeout = (retryAfter ? parseInt(retryAfter, 10) : 0) || 5;
                     this.logger.warn(`${error.statusText}. Retrying in ${this.retryTimeout} seconds. ` +
                         `${this.retryCalls.length} calls left.`);
 

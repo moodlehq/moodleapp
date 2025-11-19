@@ -346,7 +346,15 @@ export class CoreIframeComponent implements OnChanges, OnDestroy {
         const iframe = this.iframe();
         if (notifyIframe && iframe) {
             // Use iframe's origin for security instead of wildcard
-            const targetOrigin = iframe.src ? new URL(iframe.src).origin : '*';
+            let targetOrigin = '*';
+            if (iframe.src) {
+                try {
+                    targetOrigin = new URL(iframe.src).origin;
+                } catch {
+                    // Invalid URL, use wildcard
+                    targetOrigin = '*';
+                }
+            }
             iframe.contentWindow?.postMessage(
                 this.fullscreen ? 'enterFullScreen' : 'exitFullScreen',
                 targetOrigin,

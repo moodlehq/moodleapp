@@ -83,7 +83,7 @@ export class AddonCompetencyProvider {
         try {
             const response = await this.getCourseCompetenciesPage(courseId, siteId);
 
-            if (!response.competencies.length) {
+            if (!response.competencies?.length) {
                 // No competencies.
                 return false;
             }
@@ -94,7 +94,11 @@ export class AddonCompetencyProvider {
             }
 
             // Check if current user can view any competency of the user.
-            await this.getCompetencyInCourse(courseId, response.competencies[0].competency.id, userId, siteId);
+            const firstCompetency = response.competencies[0]?.competency;
+            if (!firstCompetency) {
+                return false;
+            }
+            await this.getCompetencyInCourse(courseId, firstCompetency.id, userId, siteId);
 
             return true;
         } catch {
@@ -354,6 +358,10 @@ export class AddonCompetencyProvider {
         const courseCompetencies = await this.getCourseCompetenciesPage(courseId, siteId, ignoreCache);
 
         if (!userId || userId === CoreSites.getCurrentSiteUserId()) {
+            return courseCompetencies;
+        }
+
+        if (!courseCompetencies.competencies?.length) {
             return courseCompetencies;
         }
 

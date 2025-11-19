@@ -86,6 +86,7 @@ export default class CoreCourseSummaryPage implements OnInit, OnDestroy {
     protected appResumeSubscription: Subscription;
     protected waitingForBrowserEnrol = false;
     protected logView: () => void;
+    protected waitEnrolledTimeout?: ReturnType<typeof setTimeout>;
 
     @HostBinding('attr.data-course-id') protected get currentCourseId(): number | null {
         return this.course?.id ?? null;
@@ -460,7 +461,7 @@ export default class CoreCourseSummaryPage implements OnInit, OnDestroy {
             }
 
             return new Promise((resolve): void => {
-                setTimeout(async () => {
+                this.waitEnrolledTimeout = setTimeout(async () => {
                     if (!this.pageDestroyed) {
                         // Wait again.
                         await this.waitForEnrolled();
@@ -547,6 +548,9 @@ export default class CoreCourseSummaryPage implements OnInit, OnDestroy {
         this.pageDestroyed = true;
         this.courseStatusObserver?.off();
         this.appResumeSubscription.unsubscribe();
+        if (this.waitEnrolledTimeout) {
+            clearTimeout(this.waitEnrolledTimeout);
+        }
     }
 
 }
