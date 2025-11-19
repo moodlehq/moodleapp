@@ -134,6 +134,8 @@ export class CoreNavigatorService {
      *
      * @param path Path, can be a glob pattern.
      * @returns Whether the active route is using the given path.
+     * @deprecated since 5.1 because this function wasn't reliable. To know if split view is active, use CoreSplitViewComponent's
+     * outletActivated property. To construct a path based on whether you're on split view or not, use getRelativePathToParent.
      */
     isCurrentPathInTablet(path: string): boolean {
         if (CoreScreen.isMobile) {
