@@ -56,6 +56,7 @@ import {
 } from '@addons/messages/constants';
 import { CoreAlerts, CoreAlertsConfirmOptions } from '@services/overlays/alerts';
 import { CoreSharedModule } from '@/core/shared.module';
+import { CoreSplitViewComponent } from '@components/split-view/split-view';
 
 /**
  * Page that displays a message discussion page.
@@ -89,6 +90,7 @@ export default class AddonMessagesDiscussionPage implements OnInit, OnDestroy, A
     protected showLoadingModal = false; // Whether to show a loading modal while fetching data.
     protected hostElement: HTMLElement = inject(ElementRef).nativeElement;
     protected route = inject(ActivatedRoute);
+    protected splitView = inject(CoreSplitViewComponent, { optional: true });
 
     conversationId?: number; // Conversation ID. Undefined if it's a new individual conversation.
     conversation?: AddonMessagesConversationFormatted; // The conversation object (if it exists).
@@ -1084,10 +1086,8 @@ export default class AddonMessagesDiscussionPage implements OnInit, OnDestroy, A
             });
 
             if (userId !== undefined) {
-                const splitViewLoaded = CoreNavigator.isCurrentPathInTablet('**/messages/**/discussion/**');
-
                 // Open user conversation.
-                if (splitViewLoaded) {
+                if (this.splitView?.outletActivated) {
                     // Notify the left pane to load it, this way the right conversation will be highlighted.
                     CoreEvents.trigger(
                         ADDON_MESSAGES_OPEN_CONVERSATION_EVENT,
