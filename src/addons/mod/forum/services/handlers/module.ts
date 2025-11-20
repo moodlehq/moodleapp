@@ -180,6 +180,19 @@ export class AddonModForumModuleHandlerService extends CoreModuleHandlerBase imp
         return super.getOverviewItemContent(item, activity, courseId);
     }
 
+    /**
+     * @inheritdoc
+     */
+    async getModuleForcedLang(module: CoreCourseModuleData): Promise<string | undefined> {
+        const mod = await AddonModForum.getForum(
+            module.course,
+            module.id,
+            { readingStrategy: CoreSitesReadingStrategy.PREFER_CACHE },
+        );
+
+        return mod?.lang;
+    }
+
 }
 
 export const AddonModForumModuleHandler = makeSingleton(AddonModForumModuleHandlerService);

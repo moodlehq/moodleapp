@@ -21,6 +21,7 @@ import { CoreMainMenuHomeRoutingModule } from '@features/mainmenu/mainmenu-home-
 import { CoreSitePreferencesRoutingModule } from '@features/settings/settings-site-routing.module';
 import { canLeaveGuard } from '@guards/can-leave';
 import { CORE_SITE_PLUGINS_PATH } from './constants';
+import { CoreCourseForceLanguageSource } from '@features/course/constants';
 
 /**
  * Get site plugins directives modules.
@@ -119,7 +120,7 @@ const moduleRoutes: Routes = [
         path: `${CORE_SITE_PLUGINS_PATH}/module/:courseId/:cmId`,
         loadComponent: () => import('@features/siteplugins/pages/module-index/module-index'),
         canDeactivate: [canLeaveGuard],
-        data: { checkForcedLanguage: 'module' },
+        data: { checkForcedLanguage: CoreCourseForceLanguageSource.MODULE },
     },
 ];
 

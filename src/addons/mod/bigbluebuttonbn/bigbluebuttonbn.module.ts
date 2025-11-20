@@ -21,12 +21,13 @@ import { AddonModBBBIndexLinkHandler } from './services/handlers/index-link';
 import { AddonModBBBListLinkHandler } from './services/handlers/list-link';
 import { AddonModBBBModuleHandler } from './services/handlers/module';
 import { ADDON_MOD_BBB_PAGE_NAME } from './constants';
+import { CoreCourseForceLanguageSource } from '@features/course/constants';
 
 const routes: Routes = [
     {
         path: `${ADDON_MOD_BBB_PAGE_NAME}/:courseId/:cmId`,
         loadComponent: () => import('./pages/index/index'),
-        data: { checkForcedLanguage: 'module' },
+        data: { checkForcedLanguage: CoreCourseForceLanguageSource.MODULE },
     },
 ];
 

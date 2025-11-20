@@ -26,6 +26,7 @@ import { AddonModH5PActivityReportLinkHandler } from './services/handlers/report
 import { AddonModH5PActivitySyncCronHandler } from './services/handlers/sync-cron';
 import { ADDON_MOD_H5PACTIVITY_PAGE_NAME } from './constants';
 import { canLeaveGuard } from '@guards/can-leave';
+import { CoreCourseForceLanguageSource } from '@features/course/constants';
 
 const routes: Routes = [
     {
@@ -49,7 +50,7 @@ const routes: Routes = [
                 loadComponent: () => import('./pages/users-attempts/users-attempts'),
             },
         ],
-        data: { checkForcedLanguage: 'module' },
+        data: { checkForcedLanguage: CoreCourseForceLanguageSource.MODULE },
     },
 ];
 

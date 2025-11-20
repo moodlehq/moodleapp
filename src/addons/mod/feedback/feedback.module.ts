@@ -38,6 +38,7 @@ import { ADDON_MOD_FEEDBACK_COMPONENT_LEGACY, ADDON_MOD_FEEDBACK_PAGE_NAME } fro
 import { conditionalRoutes } from '@/app/app-routing.module';
 import { canLeaveGuard } from '@guards/can-leave';
 import { CoreScreen } from '@services/screen';
+import { CoreCourseForceLanguageSource } from '@features/course/constants';
 
 const commonRoutes: Routes = [
     {
@@ -78,7 +79,7 @@ const tabletRoutes: Routes = [
                 loadComponent: () => import('./pages/attempt/attempt'),
             },
         ],
-        data: { checkForcedLanguage: 'module' },
+        data: { checkForcedLanguage: CoreCourseForceLanguageSource.MODULE },
     },
 ];
 

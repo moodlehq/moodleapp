@@ -27,6 +27,7 @@ import { ADDON_MOD_CHAT_COMPONENT_LEGACY, ADDON_MOD_CHAT_PAGE_NAME } from './con
 import { conditionalRoutes } from '@/app/app-routing.module';
 import { canLeaveGuard } from '@guards/can-leave';
 import { CoreScreen } from '@services/screen';
+import { CoreCourseForceLanguageSource } from '@features/course/constants';
 
 const commonRoutes: Routes = [
     {
@@ -73,7 +74,7 @@ const routes: Routes = [
             ...conditionalRoutes(mobileRoutes, () => CoreScreen.isMobile),
             ...conditionalRoutes(tabletRoutes, () => CoreScreen.isTablet),
         ],
-        data: { checkForcedLanguage: 'module' },
+        data: { checkForcedLanguage: CoreCourseForceLanguageSource.MODULE },
     },
 ];
 

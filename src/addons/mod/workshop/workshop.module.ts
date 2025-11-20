@@ -30,6 +30,7 @@ import { ADDON_MOD_WORKSHOP_COMPONENT, ADDON_MOD_WORKSHOP_PAGE_NAME } from '@add
 import { getPrefetchHandlerInstance } from '@addons/mod/workshop/services/handlers/prefetch';
 import { getCronHandlerInstance } from '@addons/mod/workshop/services/handlers/sync-cron';
 import { canLeaveGuard } from '@guards/can-leave';
+import { CoreCourseForceLanguageSource } from '@features/course/constants';
 
 /**
  * Get modworkshop services.
@@ -89,7 +90,7 @@ const routes: Routes = [
                 canDeactivate: [canLeaveGuard],
             },
         ],
-        data: { checkForcedLanguage: 'module' },
+        data: { checkForcedLanguage: CoreCourseForceLanguageSource.MODULE },
     },
 ];
 

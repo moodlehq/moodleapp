@@ -36,6 +36,7 @@ import { AddonModDataFieldModule } from './fields/field.module';
 import { CoreCourseHelper } from '@features/course/services/course-helper';
 import { ADDON_MOD_DATA_COMPONENT_LEGACY, ADDON_MOD_DATA_PAGE_NAME } from './constants';
 import { canLeaveGuard } from '@guards/can-leave';
+import { CoreCourseForceLanguageSource } from '@features/course/constants';
 
 const routes: Routes = [
     {
@@ -60,7 +61,7 @@ const routes: Routes = [
                 loadComponent: () => import('./pages/entry/entry'),
             },
         ],
-        data: { checkForcedLanguage: 'module' },
+        data: { checkForcedLanguage: CoreCourseForceLanguageSource.MODULE },
     },
 ];
 

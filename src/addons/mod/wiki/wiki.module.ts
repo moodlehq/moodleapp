@@ -34,6 +34,7 @@ import { getCronHandlerInstance } from './services/handlers/sync-cron';
 import { AddonModWikiTagAreaHandler } from './services/handlers/tag-area';
 import { ADDON_MOD_WIKI_COMPONENT_LEGACY, ADDON_MOD_WIKI_PAGE_NAME } from './constants';
 import { canLeaveGuard } from '@guards/can-leave';
+import { CoreCourseForceLanguageSource } from '@features/course/constants';
 
 const routes: Routes = [
     {
@@ -53,7 +54,7 @@ const routes: Routes = [
                 canDeactivate: [canLeaveGuard],
             },
         ],
-        data: { checkForcedLanguage: 'module' },
+        data: { checkForcedLanguage: CoreCourseForceLanguageSource.MODULE },
     },
 ];
 

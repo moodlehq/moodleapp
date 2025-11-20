@@ -19,6 +19,8 @@ import { makeSingleton } from '@singletons';
 import { AddonModImscp } from '../imscp';
 import { ADDON_MOD_IMSCP_MODNAME, ADDON_MOD_IMSCP_PAGE_NAME } from '../../constants';
 import { ModFeature, ModArchetype, ModPurpose } from '@addons/mod/constants';
+import { CoreCourseModuleData } from '@features/course/services/course-helper';
+import { CoreSitesReadingStrategy } from '@services/sites';
 
 /**
  * Handler to support IMSCP modules.
@@ -57,6 +59,19 @@ export class AddonModImscpModuleHandlerService extends CoreModuleHandlerBase imp
         const { AddonModImscpIndexComponent } = await import('../../components/index');
 
         return AddonModImscpIndexComponent;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    async getModuleForcedLang(module: CoreCourseModuleData): Promise<string | undefined> {
+        const mod = await AddonModImscp.getImscp(
+            module.course,
+            module.id,
+            { readingStrategy: CoreSitesReadingStrategy.PREFER_CACHE },
+        );
+
+        return mod?.lang;
     }
 
 }

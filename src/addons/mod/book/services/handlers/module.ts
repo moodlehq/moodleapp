@@ -19,6 +19,8 @@ import { makeSingleton } from '@singletons';
 import { CoreModuleHandlerBase } from '@features/course/classes/module-base-handler';
 import { ADDON_MOD_BOOK_COMPONENT, ADDON_MOD_BOOK_MODNAME, ADDON_MOD_BOOK_PAGE_NAME } from '../../constants';
 import { ModFeature, ModArchetype, ModPurpose } from '@addons/mod/constants';
+import { CoreCourseModuleData } from '@features/course/services/course-helper';
+import { CoreSitesReadingStrategy } from '@services/sites';
 
 /**
  * Handler to support book modules.
@@ -57,6 +59,19 @@ export class AddonModBookModuleHandlerService extends CoreModuleHandlerBase impl
         const { AddonModBookIndexComponent } = await import('../../components/index');
 
         return AddonModBookIndexComponent;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    async getModuleForcedLang(module: CoreCourseModuleData): Promise<string | undefined> {
+        const mod = await AddonModBook.getBook(
+            module.course,
+            module.id,
+            { readingStrategy: CoreSitesReadingStrategy.PREFER_CACHE },
+        );
+
+        return mod?.lang;
     }
 
 }

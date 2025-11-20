@@ -28,7 +28,7 @@ import { ADDON_MOD_RESOURCE_MODNAME, ADDON_MOD_RESOURCE_PAGE_NAME } from '../../
 import { DownloadStatus } from '@/core/constants';
 import { ModFeature, ModArchetype, ModPurpose } from '@addons/mod/constants';
 import { CoreCourseModuleHelper } from '@features/course/services/course-module-helper';
-import { CoreSites } from '@services/sites';
+import { CoreSites, CoreSitesReadingStrategy } from '@services/sites';
 
 /**
  * Handler to support resource modules.
@@ -173,6 +173,19 @@ export class AddonModResourceModuleHandlerService extends CoreModuleHandlerBase 
         const { AddonModResourceIndexComponent } = await import('../../components/index');
 
         return AddonModResourceIndexComponent;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    async getModuleForcedLang(module: CoreCourseModuleData): Promise<string | undefined> {
+        const mod = await AddonModResource.getResourceData(
+            module.course,
+            module.id,
+            { readingStrategy: CoreSitesReadingStrategy.PREFER_CACHE },
+        );
+
+        return mod?.lang;
     }
 
 }

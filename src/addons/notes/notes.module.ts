@@ -24,6 +24,7 @@ import { NOTES_OFFLINE_SITE_SCHEMA } from './services/database/notes';
 import { Routes } from '@angular/router';
 import { CoreMainMenuTabRoutingModule } from '@features/mainmenu/mainmenu-tab-routing.module';
 import { CoreCourseIndexRoutingModule } from '@features/course/course-routing.module';
+import { CoreCourseForceLanguageSource } from '@features/course/constants';
 
 /**
  * Get notes services.
@@ -46,7 +47,7 @@ const routes: Routes = [
     {
         path: 'notes',
         loadComponent: () => import('./pages/list/list'),
-        data: { checkForcedLanguage: 'course' },
+        data: { checkForcedLanguage: CoreCourseForceLanguageSource.COURSE },
     },
 ];
 

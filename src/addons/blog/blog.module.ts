@@ -33,12 +33,13 @@ import { CORE_SITE_SCHEMAS } from '@services/sites';
 import { BLOG_OFFLINE_SITE_SCHEMA } from './services/database/blog';
 import { CoreCronDelegate } from '@services/cron';
 import { AddonBlogSyncCronHandler } from './services/handlers/sync-cron';
+import { CoreCourseForceLanguageSource } from '@features/course/constants';
 
 const routes: Routes = [
     {
         path: ADDON_BLOG_MAINMENU_PAGE_NAME,
         loadChildren: () => import('@addons/blog/blog-lazy.module'),
-        data: { checkForcedLanguage: 'course' },
+        data: { checkForcedLanguage: CoreCourseForceLanguageSource.COURSE },
     },
 ];
 

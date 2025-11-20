@@ -23,12 +23,13 @@ import { AddonModUrlListLinkHandler } from './services/handlers/list-link';
 import { AddonModUrlModuleHandler } from './services/handlers/module';
 import { AddonModUrlPrefetchHandler } from './services/handlers/prefetch';
 import { ADDON_MOD_URL_PAGE_NAME } from './constants';
+import { CoreCourseForceLanguageSource } from '@features/course/constants';
 
 const routes: Routes = [
     {
         path: `${ADDON_MOD_URL_PAGE_NAME}/:courseId/:cmId`,
         loadComponent: () => import('./pages/index/index'),
-        data: { checkForcedLanguage: 'module' },
+        data: { checkForcedLanguage: CoreCourseForceLanguageSource.MODULE },
     },
 ];
 

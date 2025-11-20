@@ -21,6 +21,8 @@ import { convertTextToHTMLElement } from '@/core/utils/create-html-element';
 import { makeSingleton } from '@singletons';
 import { ADDON_MOD_FOLDER_MODNAME, ADDON_MOD_FOLDER_PAGE_NAME } from '../../constants';
 import { ModFeature, ModArchetype, ModPurpose } from '@addons/mod/constants';
+import { AddonModFolder } from '../folder';
+import { CoreSitesReadingStrategy } from '@services/sites';
 
 /**
  * Handler to support folder modules.
@@ -87,6 +89,19 @@ export class AddonModFolderModuleHandlerService extends CoreModuleHandlerBase im
         const { AddonModFolderIndexComponent } = await import('../../components/index');
 
         return AddonModFolderIndexComponent;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    async getModuleForcedLang(module: CoreCourseModuleData): Promise<string | undefined> {
+        const mod = await AddonModFolder.getFolder(
+            module.course,
+            module.id,
+            { readingStrategy: CoreSitesReadingStrategy.PREFER_CACHE },
+        );
+
+        return mod?.lang;
     }
 
 }

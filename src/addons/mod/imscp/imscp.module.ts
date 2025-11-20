@@ -25,6 +25,7 @@ import { AddonModImscpModuleHandler } from './services/handlers/module';
 import { AddonModImscpPluginFileHandler } from './services/handlers/pluginfile';
 import { AddonModImscpPrefetchHandler } from './services/handlers/prefetch';
 import { ADDON_MOD_IMSCP_PAGE_NAME } from './constants';
+import { CoreCourseForceLanguageSource } from '@features/course/constants';
 
 const routes: Routes = [
     {
@@ -39,7 +40,7 @@ const routes: Routes = [
                 loadComponent: () => import('./pages/view/view'),
             },
         ],
-        data: { checkForcedLanguage: 'module' },
+        data: { checkForcedLanguage: CoreCourseForceLanguageSource.MODULE },
     },
 ];
 

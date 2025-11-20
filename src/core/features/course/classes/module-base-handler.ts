@@ -176,4 +176,12 @@ export class CoreModuleHandlerBase implements Partial<CoreCourseModuleHandler> {
         }
     }
 
+    /**
+     * @inheritdoc
+     */
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    async getModuleForcedLang(module: CoreCourseModuleData): Promise<string | undefined> {
+        return;
+    }
+
 }

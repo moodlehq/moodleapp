@@ -22,6 +22,8 @@ import { CoreModuleHandlerBase } from '@features/course/classes/module-base-hand
 import { CoreCourseModuleHelper } from '@features/course/services/course-module-helper';
 import { ADDON_MOD_LTI_MODNAME, ADDON_MOD_LTI_PAGE_NAME } from '../../constants';
 import { ModFeature, ModPurpose } from '@addons/mod/constants';
+import { AddonModLti } from '../lti';
+import { CoreSitesReadingStrategy } from '@services/sites';
 
 /**
  * Handler to support LTI modules.
@@ -84,6 +86,19 @@ export class AddonModLtiModuleHandlerService extends CoreModuleHandlerBase imple
      */
     getIconSrc(module?: CoreCourseModuleData | undefined, modicon?: string | undefined): string | undefined {
         return module?.modicon ?? modicon ?? CoreCourseModuleHelper.getModuleIconSrc(this.modName);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    async getModuleForcedLang(module: CoreCourseModuleData): Promise<string | undefined> {
+        const mod = await AddonModLti.getLti(
+            module.course,
+            module.id,
+            { readingStrategy: CoreSitesReadingStrategy.PREFER_CACHE },
+        );
+
+        return mod?.lang;
     }
 
 }

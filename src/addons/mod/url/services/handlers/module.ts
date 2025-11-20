@@ -30,7 +30,7 @@ import { CoreMimetype } from '@static/mimetype';
 import { ADDON_MOD_URL_COMPONENT, ADDON_MOD_URL_MODNAME, ADDON_MOD_URL_PAGE_NAME } from '../../constants';
 import { ModFeature, ModArchetype, ModPurpose, ModResourceDisplay } from '@addons/mod/constants';
 import { CoreCourseModuleHelper } from '@features/course/services/course-module-helper';
-import { CoreSites } from '@services/sites';
+import { CoreSites, CoreSitesReadingStrategy } from '@services/sites';
 
 /**
  * Handler to support url modules.
@@ -255,6 +255,19 @@ export class AddonModUrlModuleHandlerService extends CoreModuleHandlerBase imple
             data: { id: module.instance, category: 'url' },
             url: `/mod/url/view.php?id=${module.id}`,
         });
+    }
+
+    /**
+     * @inheritdoc
+     */
+    async getModuleForcedLang(module: CoreCourseModuleData): Promise<string | undefined> {
+        const mod = await AddonModUrl.getUrl(
+            module.course,
+            module.id,
+            { readingStrategy: CoreSitesReadingStrategy.PREFER_CACHE },
+        );
+
+        return mod?.lang;
     }
 
 }

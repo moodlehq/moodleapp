@@ -28,7 +28,7 @@ import { Routes } from '@angular/router';
 import { CoreMainMenuTabRoutingModule } from '@features/mainmenu/mainmenu-tab-routing.module';
 import { CoreCourseIndexRoutingModule } from '@features/course/course-routing.module';
 import { PARTICIPANTS_PAGE_NAME } from '@features/user/constants';
-import { CORE_COURSE_PAGE_NAME } from '@features/course/constants';
+import { CORE_COURSE_PAGE_NAME, CoreCourseForceLanguageSource } from '@features/course/constants';
 import {
     ADDON_COMPETENCY_LEARNING_PLANS_PAGE,
     ADDON_COMPETENCY_COMPETENCIES_PAGE,
@@ -155,12 +155,12 @@ const mainMenuChildrenRoutes: Routes = [
     {
         path: `${CORE_COURSE_PAGE_NAME}/:courseId/${ADDON_COMPETENCY_COMPETENCIES_PAGE}`,
         loadChildren: () => getCompetencyCourseDetailsRoutes(),
-        data: { checkForcedLanguage: 'course' },
+        data: { checkForcedLanguage: CoreCourseForceLanguageSource.COURSE },
     },
     {
         path: `${CORE_COURSE_PAGE_NAME}/:courseId/${PARTICIPANTS_PAGE_NAME}/:userId/${ADDON_COMPETENCY_COMPETENCIES_PAGE}`,
         loadChildren: () => getCompetencyCourseDetailsRoutes(),
-        data: { checkForcedLanguage: 'course' },
+        data: { checkForcedLanguage: CoreCourseForceLanguageSource.COURSE },
     },
 ];
 

@@ -27,6 +27,7 @@ import { AddonModBookTagAreaHandler } from './services/handlers/tag-area';
 import { CORE_SITE_SCHEMAS } from '@services/sites';
 import { BOOK_SITE_SCHEMA } from './services/database/book';
 import { ADDON_MOD_BOOK_PAGE_NAME } from './constants';
+import { CoreCourseForceLanguageSource } from '@features/course/constants';
 
 const routes: Routes = [
     {
@@ -41,7 +42,7 @@ const routes: Routes = [
                 loadComponent: () => import('./pages/contents/contents'),
             },
         ],
-        data: { checkForcedLanguage: 'module' },
+        data: { checkForcedLanguage: CoreCourseForceLanguageSource.MODULE },
     },
 ];
 

@@ -19,6 +19,8 @@ import { CoreCourseModuleData } from '@features/course/services/course-helper';
 import { CoreCourseModuleHandler, CoreCourseModuleHandlerData } from '@features/course/services/module-delegate';
 import { makeSingleton } from '@singletons';
 import { ADDON_MOD_LABEL_MODNAME } from '../../constants';
+import { AddonModLabel } from '../label';
+import { CoreSitesReadingStrategy } from '@services/sites';
 
 /**
  * Handler to support label modules.
@@ -80,6 +82,19 @@ export class AddonModLabelModuleHandlerService extends CoreModuleHandlerBase imp
      */
     getIconSrc(): string {
         return '';
+    }
+
+    /**
+     * @inheritdoc
+     */
+    async getModuleForcedLang(module: CoreCourseModuleData): Promise<string | undefined> {
+        const mod = await AddonModLabel.getLabel(
+            module.course,
+            module.id,
+            { readingStrategy: CoreSitesReadingStrategy.PREFER_CACHE },
+        );
+
+        return mod?.lang;
     }
 
 }
