@@ -180,7 +180,7 @@
             <addon-mod-workshop-assessment-strategy [workshop]="workshop" [access]="access" [assessmentId]="assessmentId"
                 [userId]="assessmentUserId" [strategy]="strategy" [edit]="access.assessingallowed" />
 
-            @if (!access.assessingallowed && assessment?.feedbackreviewer) {
+            @if (!access.assessingallowed && assessment?.feedbackreviewer && workshop.phase === phaseClosed) {
                 <ion-list>
                     <ion-item class="ion-text-wrap">
                         @if (evaluateGradingByProfile) {
