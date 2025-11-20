@@ -225,7 +225,7 @@ export class CoreCourseProvider {
             return false;
         }
 
-        const course = await CoreCourses.getCourseByField('id', courseId, site.id);
+        const course = await CoreCourses.getCourseByField('id', courseId, { siteId: site.id });
         const formatOptions = CoreObject.toKeyValueMap(
             course.courseformatoptions ?? [],
             'name',
