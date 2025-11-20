@@ -41,18 +41,22 @@ function buildRoutes(injector: Injector): Routes {
                 },
                 ...indexRoutes.siblings,
             ],
+            data: { checkForcedLanguage: 'course' },
         },
         {
             path: ':courseId/:cmId/module-preview',
             loadComponent: () => import('@features/course/pages/module-preview/module-preview'),
+            data: { checkForcedLanguage: 'course' },
         },
         {
             path: ':courseId/list-mod-type',
             loadComponent: () => import('@features/course/pages/list-mod-type/list-mod-type'),
+            data: { checkForcedLanguage: 'course' },
         },
         {
             path: ':courseId/summary',
             loadComponent: () => CoreCourseHelper.getCourseSummaryPage(),
+            data: { checkForcedLanguage: 'course' },
         },
     ];
 }
