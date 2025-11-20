@@ -119,6 +119,7 @@ const moduleRoutes: Routes = [
         path: `${CORE_SITE_PLUGINS_PATH}/module/:courseId/:cmId`,
         loadComponent: () => import('@features/siteplugins/pages/module-index/module-index'),
         canDeactivate: [canLeaveGuard],
+        data: { checkForcedLanguage: 'module' },
     },
 ];
 
