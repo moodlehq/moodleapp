@@ -215,7 +215,7 @@ export class CoreCourseProvider {
             return false;
         }
 
-        const course = await CoreCourses.getCourseByField('id', courseId, site.id);
+        const course = await CoreCourses.getCourseByField('id', courseId, { siteId: site.id });
         const formatOptions = CoreObject.toKeyValueMap(
             course.courseformatoptions ?? [],
             'name',
@@ -756,6 +756,7 @@ export class CoreCourseProvider {
      *
      * @param moduleName The module name.
      * @param modicon The mod icon string to use in case we are not using a core activity.
+     * @param mimetypeIcon The mimetype icon to use in case is already provided (e.g., for file resources).
      * @returns The IMG src.
      * @deprecated since 5.0. Use CoreCourseModuleHelper.getModuleIconSrc instead.
      */

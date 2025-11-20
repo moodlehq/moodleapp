@@ -36,6 +36,7 @@ import { CoreCourseOptionsDelegate } from '@features/course/services/course-opti
 import { CoreCourseOverviewOptionHandler } from './services/handlers/overview-option';
 import { CoreCourseOverviewLinkHandler } from './services/handlers/overview-link';
 import { CoreContentLinksDelegate } from '@features/contentlinks/services/contentlinks-delegate';
+import { CoreCourseForceLanguage } from './services/course-force-language';
 
 /**
  * Get course services.
@@ -188,6 +189,7 @@ const courseIndexRoutes: Routes = [
             CoreContentLinksDelegate.registerHandler(CoreCourseOverviewLinkHandler.instance);
 
             CoreCourse.initialize();
+            CoreCourseForceLanguage.initialize();
             CoreCourseModulePrefetchDelegate.initialize();
         }),
     ],

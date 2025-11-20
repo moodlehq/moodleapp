@@ -75,7 +75,7 @@ export class CoreCoursesSectionLinkHandlerService extends CoreCoursesLinksHandle
 
         if (site.isVersionGreaterEqualThan('4.5')) {
             try {
-                return CoreCourses.getCourseByField('sectionid', sectionId, siteId);
+                return CoreCourses.getCourseByField('sectionid', sectionId, { siteId });
             } catch {
                 // Fallback to searching courses stored in cache.
             }

@@ -210,6 +210,7 @@ export class CoreCourseModuleHelperService {
      *
      * @param moduleName The module name.
      * @param modicon The mod icon string to use in case we are not using a core activity.
+     * @param mimetypeIcon The mimetype icon to use in case is already provided (e.g., for file resources).
      * @returns The IMG src.
      */
     getModuleIconSrc(moduleName: string, modicon?: string, mimetypeIcon = ''): string {
