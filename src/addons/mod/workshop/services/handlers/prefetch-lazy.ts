@@ -28,6 +28,7 @@ import {
     AddonModWorkshopGradesData,
     AddonModWorkshopData,
     AddonModWorkshopGetWorkshopAccessInformationWSResponse,
+    AddonModWorkshopSubmissionData,
 } from '../workshop';
 import { AddonModWorkshopHelper } from '../workshop-helper';
 import { AddonModWorkshopSync } from '../workshop-sync';
@@ -301,12 +302,15 @@ export class AddonModWorkshopPrefetchHandlerLazyService extends AddonModWorkshop
             const canSubmit = AddonModWorkshopHelper.canSubmit(workshop, access, submissionPhase.tasks);
             const canAssess = AddonModWorkshopHelper.canAssess(workshop, access);
             const promises2: Promise<unknown>[] = [];
+            let submissionsPromise: Promise<AddonModWorkshopSubmissionData[]> | undefined;
 
             if (canSubmit) {
-                promises2.push(AddonModWorkshop.getSubmissions(workshop.id, {
+                submissionsPromise = AddonModWorkshop.getSubmissions(workshop.id, {
                     ...modOptions,
                     canEdit: access.modifyingsubmissionallowed,
-                }));
+                });
+                promises2.push(submissionsPromise);
+
                 // Add userId to the profiles to prefetch.
                 userIds.push(currentUserId);
             }
@@ -377,10 +381,23 @@ export class AddonModWorkshopPrefetchHandlerLazyService extends AddonModWorkshop
             });
             promises2.push(reportPromise);
 
-            if (workshop.phase == AddonModWorkshopPhase.PHASE_CLOSED) {
+            if (workshop.phase === AddonModWorkshopPhase.PHASE_CLOSED) {
                 promises2.push(AddonModWorkshop.getGrades(workshop.id, modOptions));
-                if (access.canviewpublishedsubmissions) {
+                if (access.canviewpublishedsubmissions && !submissionsPromise) {
                     promises2.push(AddonModWorkshop.getSubmissions(workshop.id, modOptions));
+                }
+
+                if (canSubmit && submissionsPromise) {
+                    // Prefetch the assessments of the current user's submission.
+                    // eslint-disable-next-line promise/no-nesting
+                    promises2.push(submissionsPromise.then((submissions) => {
+                        const currentUserSubmission = submissions.find(submission => submission.authorid === currentUserId);
+                        if (!currentUserSubmission) {
+                            return;
+                        }
+
+                        return AddonModWorkshop.getSubmissionAssessments(workshop.id, currentUserSubmission.id, modOptions);
+                    }));
                 }
             }
 
