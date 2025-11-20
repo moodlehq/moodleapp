@@ -12,22 +12,31 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Pipe, PipeTransform } from '@angular/core';
+import { OnDestroy, Pipe, PipeTransform } from '@angular/core';
 import { CoreTime } from '@singletons/time';
 import { CoreLogger } from '@singletons/logger';
+import { Translate } from '@singletons';
+import { Subscription } from 'rxjs';
 
 /**
  * Filter to format a date.
  */
 @Pipe({
     name: 'coreFormatDate',
+    pure: false,
 })
-export class CoreFormatDatePipe implements PipeTransform {
+export class CoreFormatDatePipe implements PipeTransform, OnDestroy {
 
     protected logger: CoreLogger;
+    protected value: string | undefined = undefined;
+    protected subscription: Subscription;
 
     constructor() {
         this.logger = CoreLogger.getInstance('CoreFormatDatePipe');
+
+        this.subscription = Translate.onLangChange.subscribe(() => {
+            this.value = undefined;
+        });
     }
 
     /**
@@ -40,6 +49,23 @@ export class CoreFormatDatePipe implements PipeTransform {
      * @returns Formatted date.
      */
     transform(timestamp: string | number, format?: string, convert?: boolean): string {
+        if (this.value === undefined) {
+            this.value = this.formatDate(timestamp, format, convert);
+        }
+
+        return this.value;
+    }
+
+    /**
+     * Format a date.
+     *
+     * @param timestamp Timestamp to format (in milliseconds). If not defined, use current time.
+     * @param format Format to use. It should be a string code to handle i18n (e.g. core.strftimetime).
+     *               Defaults to strftimedaydatetime.
+     * @param convert If true, convert the format from PHP to DayJS. Set it to false for DayJS formats.
+     * @returns Formatted date.
+     */
+    protected formatDate(timestamp: string | number, format?: string, convert?: boolean): string {
         timestamp = timestamp || Date.now();
         format = format || 'strftimedaydatetime';
 
@@ -55,16 +81,24 @@ export class CoreFormatDatePipe implements PipeTransform {
         }
 
         // Add "core." if needed.
-        if (format.indexOf('strf') === 0 || format.indexOf('df') === 0) {
+        if (format.startsWith('strf') || format.startsWith('df')) {
             format = `core.${format}`;
         }
 
         if (convert === undefined) {
             // Initialize convert param. Set it to false if it's a core.df format, set it to true otherwise.
-            convert = format.indexOf('core.df') != 0;
+            convert = !format.startsWith('core.df');
         }
 
         return CoreTime.userDate(timestamp, format, convert);
+
+    }
+
+    /**
+     * @inheritdoc
+     */
+    ngOnDestroy(): void {
+        this.subscription.unsubscribe();
     }
 
 }
