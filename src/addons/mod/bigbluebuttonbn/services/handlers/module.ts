@@ -21,6 +21,7 @@ import { makeSingleton } from '@singletons';
 import { AddonModBBB } from '../bigbluebuttonbn';
 import { ADDON_MOD_BBB_COMPONENT, ADDON_MOD_BBB_MODNAME, ADDON_MOD_BBB_PAGE_NAME } from '../../constants';
 import { ModFeature, ModPurpose } from '@addons/mod/constants';
+import { CoreSitesReadingStrategy } from '@services/sites';
 
 /**
  * Handler to support Big Blue Button activities.
@@ -101,6 +102,19 @@ export class AddonModBBBModuleHandlerService extends CoreModuleHandlerBase imple
         const { AddonModBBBIndexComponent } = await import('../../components/index');
 
         return AddonModBBBIndexComponent;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    async getModuleForcedLang(module: CoreCourseModuleData): Promise<string | undefined> {
+        const mod = await AddonModBBB.getBBB(
+            module.course,
+            module.id,
+            { readingStrategy: CoreSitesReadingStrategy.PREFER_CACHE },
+        );
+
+        return mod?.lang;
     }
 
 }
