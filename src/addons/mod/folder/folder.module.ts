@@ -40,6 +40,7 @@ const routes: Routes = [
                 pathMatch: 'full',
             },
         ],
+        data: { checkForcedLanguage: 'module' },
     },
 ];
 
