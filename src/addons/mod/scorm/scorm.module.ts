@@ -50,6 +50,7 @@ const routes: Routes = [
                 loadComponent: () => import('./pages/online-player/online-player'),
             },
         ],
+        data: { checkForcedLanguage: 'module' },
     },
 ];
 
