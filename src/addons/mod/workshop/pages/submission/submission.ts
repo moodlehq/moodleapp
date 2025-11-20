@@ -83,6 +83,8 @@ export default class AddonModWorkshopSubmissionPage implements OnInit, OnDestroy
 
     readonly formElement = viewChild<ElementRef>('feedbackFormEl');
 
+    readonly phaseClosed = AddonModWorkshopPhase.PHASE_CLOSED;
+
     module!: CoreCourseModuleData;
     workshop!: AddonModWorkshopData;
     access!: AddonModWorkshopGetWorkshopAccessInformationWSResponse;
