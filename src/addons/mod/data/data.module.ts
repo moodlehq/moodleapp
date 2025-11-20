@@ -60,6 +60,7 @@ const routes: Routes = [
                 loadComponent: () => import('./pages/entry/entry'),
             },
         ],
+        data: { checkForcedLanguage: 'module' },
     },
 ];
 

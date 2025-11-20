@@ -46,6 +46,7 @@ const routes: Routes = [
     {
         path: 'notes',
         loadComponent: () => import('./pages/list/list'),
+        data: { checkForcedLanguage: 'course' },
     },
 ];
 

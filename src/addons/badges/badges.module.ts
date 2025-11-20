@@ -47,11 +47,12 @@ const mobileRoutes: Routes = [
         path: '',
         pathMatch: 'full',
         loadComponent: () => import('./pages/user-badges/user-badges'),
+        data: { checkForcedLanguage: 'course' },
     },
     {
         path: ':badgeHash',
         loadComponent: () => import('./pages/issued-badge/issued-badge'),
-        data: { usesSwipeNavigation: true },
+        data: { usesSwipeNavigation: true, checkForcedLanguage: 'course' },
     },
 ];
 
@@ -66,6 +67,7 @@ const tabletRoutes: Routes = [
                 data: { usesSwipeNavigation: true },
             },
         ],
+        data: { checkForcedLanguage: 'course' },
     },
 ];
 

@@ -32,6 +32,7 @@ const routes: Routes = [
     {
         path: `${ADDON_MOD_SURVEY_PAGE_NAME}/:courseId/:cmId`,
         loadComponent: () => import('./pages/index/index'),
+        data: { checkForcedLanguage: 'module' },
     },
 ];
 

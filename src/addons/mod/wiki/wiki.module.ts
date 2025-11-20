@@ -53,6 +53,7 @@ const routes: Routes = [
                 canDeactivate: [canLeaveGuard],
             },
         ],
+        data: { checkForcedLanguage: 'module' },
     },
 ];
 

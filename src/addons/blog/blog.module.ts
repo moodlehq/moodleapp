@@ -38,6 +38,7 @@ const routes: Routes = [
     {
         path: ADDON_BLOG_MAINMENU_PAGE_NAME,
         loadChildren: () => import('@addons/blog/blog-lazy.module'),
+        data: { checkForcedLanguage: 'course' },
     },
 ];
 

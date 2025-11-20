@@ -78,6 +78,7 @@ const tabletRoutes: Routes = [
                 loadComponent: () => import('./pages/attempt/attempt'),
             },
         ],
+        data: { checkForcedLanguage: 'module' },
     },
 ];
 

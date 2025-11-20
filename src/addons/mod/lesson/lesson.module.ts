@@ -53,6 +53,7 @@ const routes: Routes = [
                 loadComponent: () => import('./pages/user-retake/user-retake'),
             },
         ],
+        data: { checkForcedLanguage: 'module' },
     },
 ];
 

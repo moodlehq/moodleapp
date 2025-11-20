@@ -40,6 +40,7 @@ const routes: Routes = [
     {
         path: 'coursecompletion',
         loadComponent: () => import('./pages/report/report'),
+        data: { checkForcedLanguage: 'course' },
     },
 ];
 

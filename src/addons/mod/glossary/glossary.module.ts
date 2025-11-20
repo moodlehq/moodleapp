@@ -89,6 +89,7 @@ const mainMenuRoutes: Routes = [
             ...conditionalRoutes(mobileRoutes, () => CoreScreen.isMobile),
             ...conditionalRoutes(tabletRoutes, () => CoreScreen.isTablet),
         ],
+        data: { checkForcedLanguage: 'module' },
     },
 
     // Single Activity format navigation.

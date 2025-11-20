@@ -54,6 +54,7 @@ const mobileRoutes: Routes = [
     {
         path: ':courseId',
         loadComponent: () => import('@features/grades/pages/course/course'),
+        data: { checkForcedLanguage: 'course' },
     },
 ];
 
@@ -65,6 +66,7 @@ const tabletRoutes: Routes = [
             {
                 path: ':courseId',
                 loadComponent: () => import('@features/grades/pages/course/course'),
+                data: { checkForcedLanguage: 'course' },
             },
         ],
     },
@@ -82,6 +84,7 @@ const mainMenuChildrenRoutes: Routes = [
     {
         path: `${CORE_COURSE_PAGE_NAME}/:courseId/${PARTICIPANTS_PAGE_NAME}/:userId/${GRADES_PAGE_NAME}`,
         loadComponent: () => import('@features/grades/pages/course/course'),
+        data: { checkForcedLanguage: 'course' },
     },
     ...conditionalRoutes([
         {
