@@ -638,7 +638,6 @@ export class CoreLangProvider {
      * @param lang Language code to force. If not defined, restore the detected language.
      */
     async forceCourseLanguage(lang?: string): Promise<void> {
-        const force = lang ? 'FORCE' : 'RESTORE';
         if (!lang) {
             // Restore the language to the detected one.
             lang = await this.detectLanguage();
@@ -650,7 +649,6 @@ export class CoreLangProvider {
 
         if (this.currentLanguage !== lang) {
             // Force the language.
-            console.error(force, lang);
             await this.changeCurrentLanguage(lang, false);
         }
     }
