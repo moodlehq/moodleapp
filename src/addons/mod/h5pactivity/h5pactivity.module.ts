@@ -49,6 +49,7 @@ const routes: Routes = [
                 loadComponent: () => import('./pages/users-attempts/users-attempts'),
             },
         ],
+        data: { checkForcedLanguage: 'module' },
     },
 ];
 

@@ -26,6 +26,7 @@ const routes: Routes = [
     {
         path: `${ADDON_MOD_BBB_PAGE_NAME}/:courseId/:cmId`,
         loadComponent: () => import('./pages/index/index'),
+        data: { checkForcedLanguage: 'module' },
     },
 ];
 

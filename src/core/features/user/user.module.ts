@@ -98,6 +98,7 @@ const routes: Routes = [
                 loadComponent: () => import('@features/user/pages/about/about'),
             },
         ],
+        data: { checkForcedLanguage: 'course' },
     },
     ...conditionalRoutes([
         {
@@ -105,6 +106,7 @@ const routes: Routes = [
             loadComponent: () => import('@features/user/pages/profile/profile'),
             data: {
                 swipeManagerSource: 'participants',
+                checkForcedLanguage: 'course',
             },
         },
     ], () => CoreScreen.isMobile),
