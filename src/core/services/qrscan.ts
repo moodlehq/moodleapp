@@ -23,6 +23,7 @@ import { Subscription } from 'rxjs';
 import { CoreCustomURLSchemes } from './urlschemes';
 import { QRScannerCamera, QRScannerErrorCode } from '@features/native/plugins/qrscanner';
 import { CoreAlerts } from './overlays/alerts';
+import { CoreHTMLClasses } from '@singletons/html-classes';
 
 /**
  * Handles qr scan services.
@@ -127,7 +128,7 @@ export class CoreQRScanService {
             try {
                 await QRScanner.show();
 
-                document.body.classList.add('core-scanning-qr');
+                CoreHTMLClasses.toggleModeClass('core-scanning-qr', true);
 
                 // Set color-scheme to 'normal', otherwise the camera isn't seen in Android.
                 const colorSchemeMeta = document.querySelector('meta[name="color-scheme"]');
@@ -197,7 +198,7 @@ export class CoreQRScanService {
         }
 
         // Hide camera preview.
-        document.body.classList.remove('core-scanning-qr');
+        CoreHTMLClasses.toggleModeClass('core-scanning-qr', false);
 
         // Set color-scheme to the initial value.
         document.querySelector('meta[name="color-scheme"]')?.setAttribute('content', this.initialColorSchemeContent);

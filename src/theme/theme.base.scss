@@ -259,12 +259,15 @@ mark,
 }
 
 .core-scanning-qr {
+    // Set color-scheme to 'normal', otherwise the camera isn't seen in Android.
+    color-scheme: normal !important;
+
     .ion-page, ion-modal::part(content) {
         background-color: transparent !important;
         --background: transparent;
     }
 
-    ion-content, ion-backdrop, ion-modal:not(.core-modal-fullscreen), ion-tabs {
+    ion-router-outlet, ion-backdrop, ion-modal:not(.core-modal-fullscreen) {
         display: none !important;
     }
 }
