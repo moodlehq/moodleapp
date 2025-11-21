@@ -113,8 +113,8 @@ export class CoreMainMenuUserMenuComponent implements OnInit, OnDestroy {
                     .map((handler) => handler.data);
 
                 // Only update handlers if they have changed, to prevent a blink effect.
-                if (newHandlers.length !== this.handlers.length ||
-                        JSON.stringify(newHandlers) !== JSON.stringify(this.handlers)) {
+                if (newHandlers.length !== this.accountHandlers.length ||
+                        JSON.stringify(newHandlers) !== JSON.stringify(this.accountHandlers)) {
                     this.accountHandlers = newHandlers;
                 }
 
