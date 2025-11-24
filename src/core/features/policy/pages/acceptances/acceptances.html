@@ -83,7 +83,7 @@
                     [class.expandable-status-icon-expanded]="policy.expanded" [attr.aria-expanded]="policy.expanded"
                     [attr.aria-label]="(policy.expanded ? 'core.collapse' : 'core.expand') | translate" />
             } @else {
-                <ion-icon name="moodle-item" color="secondary" class="core-policy-icon-bullet" aria-hidden="true" />
+                <ion-icon name="moodle-item" class="core-policy-icon-bullet" aria-hidden="true" />
             }
 
             <a href="#" (click)="viewFullPolicy($event, policy)">{{ policy.name }}</a>
