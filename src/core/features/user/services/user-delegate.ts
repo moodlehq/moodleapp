@@ -350,12 +350,22 @@ export class CoreUserDelegateService extends CoreDelegate<CoreUserProfileHandler
                 );
 
                 if (enabled) {
-                    handlersData.handlers.push({
-                        name: name,
-                        data: handler.getDisplayData(user, context, courseId),
-                        priority: handler.priority || 0,
-                        type: handler.type || CoreUserProfileHandlerType.LIST_ITEM,
-                    });
+                    // This is a temporary solution to hide multiple handlers with the same name while we refactor the delegates.
+                    // It should be better to reuse the promise
+                    // @todo Remove this once the delegates code is refactored.
+                    const handlerData = handlersData.handlers.find((handler) => handler.name === name);
+                    if (handlerData) {
+                        // Handler already exists, update the data.
+                        handlerData.data = handler.getDisplayData(user, context, courseId);
+                    } else {
+                        // Add the handler.
+                        handlersData.handlers.push({
+                            name,
+                            data: handler.getDisplayData(user, context, courseId),
+                            priority: handler.priority || 0,
+                            type: handler.type || CoreUserProfileHandlerType.LIST_ITEM,
+                        });
+                    }
                 }
             } catch {
                 // Nothing to do here, it is not enabled for this user.
