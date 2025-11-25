@@ -114,6 +114,9 @@ core-format-text {
             pointer-events: none;
         }
 
+        mjx-assistive-mml {
+            @include sr-only();
+        }
     }
 
 }
