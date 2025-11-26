@@ -4,7 +4,7 @@
             <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}" />
         </ion-refresher>
 
-        <core-search-box [disabled]="searchInProgress" [spellcheck]="false" [lengthCheck]="1" autocorrect="off"
+        <core-search-box [disabled]="searchInProgress" [spellcheck]="false" autocorrect="off"
             searchArea="CoreUserParticipants" (searchTextChange)="search($event)"/>
 
         <core-loading [hideUntil]="participants.loaded" placeholderType="listwithavatar" placeholderHeight="44px" placeholderWidth="44px">
