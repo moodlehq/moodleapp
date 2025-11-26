@@ -282,9 +282,7 @@
 }
 
 @mixin darkmode() {
-    $root: #{&};
-
-    @at-root #{add-root-selector($root, ":root.dark")} {
+    @at-root :root.dark & {
         @content;
     }
 }
