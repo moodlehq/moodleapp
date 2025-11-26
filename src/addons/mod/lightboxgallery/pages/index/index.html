@@ -1,0 +1,20 @@
+<ion-header collapsible>
+    <ion-toolbar>
+        <ion-buttons slot="start">
+            <ion-back-button [text]="'core.back' | translate" />
+        </ion-buttons>
+        <ion-title>
+            <h1>
+                <core-format-text [text]="title" contextLevel="module" [contextInstanceId]="module.id" [courseId]="courseId" />
+            </h1>
+        </ion-title>
+        <ion-buttons slot="end" />
+    </ion-toolbar>
+</ion-header>
+<ion-content class="limited-width">
+    <ion-refresher slot="fixed" [disabled]="activityComponent?.showLoading" (ionRefresh)="activityComponent?.doRefresh($event.target)">
+        <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}" />
+    </ion-refresher>
+
+    <addon-mod-lightboxgallery-index [module]="module" [courseId]="courseId" (dataRetrieved)="updateData($event)" />
+</ion-content>

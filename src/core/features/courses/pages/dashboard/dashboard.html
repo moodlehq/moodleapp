@@ -27,12 +27,12 @@
                  [class.selected]="selectedMenteeId === mentee.id">
                 <ion-avatar>
                     <img [src]="mentee.profileimageurl || 'assets/img/user-avatar.png'"
-                         [alt]="mentee.fullname"
+                         [alt]="getFirstWordOfFirstName(mentee)"
                          core-external-content
                          onError="this.src='assets/img/user-avatar.png'">
                 </ion-avatar>
                 <div class="aspire-child-info">
-                    <h3>{{ mentee.fullname }}</h3>
+                    <h3>{{ getFirstWordOfFirstName(mentee) }}</h3>
                     <p class="aspire-child-email">{{ mentee.email }}</p>
                     <ion-badge color="primary" *ngIf="selectedMenteeId === mentee.id">Viewing</ion-badge>
                 </div>

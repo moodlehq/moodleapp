@@ -1,0 +1,22 @@
+<core-navbar-buttons slot="end">
+    <ion-button fill="clear" (click)="openModuleSummary()" aria-haspopup="true" [ariaLabel]="'core.info' | translate">
+        <ion-icon name="fas-circle-info" slot="icon-only" aria-hidden="true" />
+    </ion-button>
+</core-navbar-buttons>
+
+<core-loading [hideUntil]="!showLoading">
+    <core-course-module-info [module]="module" [description]="description" [component]="component"
+        [componentId]="componentId" [courseId]="courseId" />
+
+    <div class="gallery-grid" *ngIf="images.length > 0">
+        <div class="gallery-item" *ngFor="let image of images" (click)="openImage(image)">
+            <img core-external-content [url]="getThumbUrl(image)" [alt]="image.caption || image.filename" />
+            <span class="gallery-caption" *ngIf="image.caption">{{ image.caption }}</span>
+        </div>
+    </div>
+
+    <core-empty-box *ngIf="!showLoading && images.length === 0" icon="fas-images" [message]="'No images in this gallery'" />
+</core-loading>
+
+<core-course-module-navigation collapsible-footer appearOnBottom [hidden]="showLoading" [courseId]="courseId"
+    [currentModuleId]="module.id" (completionChanged)="onCompletionChange()" />

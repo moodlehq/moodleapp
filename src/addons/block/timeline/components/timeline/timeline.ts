@@ -495,7 +495,10 @@ export class AddonBlockTimelineComponent implements OnInit, OnDestroy, ICoreBloc
                 if (selectedMenteeId) {
                     const mentees = await CoreUserParent.getMentees();
                     const selectedMentee = mentees.find(m => m.id === selectedMenteeId);
-                    this.selectedMenteeName = selectedMentee?.fullname || '';
+
+                    // Extract first word of first name
+                    const name = selectedMentee?.firstname || selectedMentee?.fullname || '';
+                    this.selectedMenteeName = name.trim().split(/\s+/)[0] || '';
                 }
             }
         } catch (error) {

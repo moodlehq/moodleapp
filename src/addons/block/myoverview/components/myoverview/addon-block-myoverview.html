@@ -3,7 +3,7 @@
         <h2>{{ 'addon.block_myoverview.pluginname' | translate }}</h2>
         <p *ngIf="viewingMenteeCourses && selectedMentee" class="aspire-mentee-indicator">
             <ion-icon name="people-outline"></ion-icon>
-            {{ 'core.user.viewingas' | translate }}: {{ selectedMentee.fullname }}
+            {{ 'core.user.viewingas' | translate }}: {{ getMenteeFirstWord() }}
         </p>
     </ion-label>
     <div slot="end" class="flex-row">

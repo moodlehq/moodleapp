@@ -1,0 +1,40 @@
+:host {
+    .gallery-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+        gap: 8px;
+        padding: 16px;
+
+        .gallery-item {
+            position: relative;
+            overflow: hidden;
+            border-radius: 8px;
+            cursor: pointer;
+            background: var(--ion-color-light);
+
+            img {
+                width: 100%;
+                aspect-ratio: 1;
+                object-fit: cover;
+                display: block;
+                transition: transform 0.2s;
+            }
+
+            .gallery-caption {
+                display: block;
+                padding: 6px 8px;
+                font-size: 0.75rem;
+                color: var(--ion-text-color);
+                background: var(--ion-background-color);
+                text-align: center;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+
+            &:active img {
+                transform: scale(0.95);
+            }
+        }
+    }
+}

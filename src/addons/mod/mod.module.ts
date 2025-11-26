@@ -28,6 +28,7 @@ import { AddonModH5PActivityModule } from './h5pactivity/h5pactivity.module';
 import { AddonModImscpModule } from './imscp/imscp.module';
 import { AddonModLabelModule } from './label/label.module';
 import { AddonModLessonModule } from './lesson/lesson.module';
+import { AddonModLightboxGalleryModule } from './lightboxgallery/lightboxgallery.module';
 import { AddonModLtiModule } from './lti/lti.module';
 import { AddonModPageModule } from './page/page.module';
 import { AddonModQuizModule } from './quiz/quiz.module';
@@ -55,6 +56,7 @@ import { AddonModWorkshopModule } from './workshop/workshop.module';
         AddonModImscpModule,
         AddonModLabelModule,
         AddonModLessonModule,
+        AddonModLightboxGalleryModule,
         AddonModLtiModule,
         AddonModPageModule,
         AddonModQuizModule,

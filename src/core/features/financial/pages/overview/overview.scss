@@ -146,56 +146,319 @@
         position: relative;
         z-index: 2;
 
-        h1 {
-            font-size: 1.75rem;
-            font-weight: 700;
-            color: var(--text-on-dark-pastel);
-            text-align: center;
-            margin: 0 0 20px 0;
-            letter-spacing: -0.5px;
-            text-shadow: 0 2px 4px rgba(26, 35, 50, 0.08);
-        }
+        .invoice-compact-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow-md);
+            overflow: hidden;
+            border: 1px solid rgba(179, 235, 242, 0.2);
 
-        .financial-summary-stats {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
-            max-width: 480px;
-            margin: 0 auto;
+            .invoice-summary-row {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 12px 16px;
+                background: var(--gradient-card);
+                border-bottom: 1px solid rgba(179, 235, 242, 0.15);
 
-            .stat-item {
-                background: rgba(255, 255, 255, 0.25);
-                backdrop-filter: blur(20px) saturate(150%);
-                border-radius: var(--radius-lg);
-                padding: 16px;
-                text-align: center;
-                border: 1px solid rgba(255, 255, 255, 0.3);
-                box-shadow: var(--shadow-md);
-                transition: var(--transition-base);
-                cursor: pointer;
-
-                &:hover {
-                    transform: translateY(-4px);
-                    background: rgba(255, 255, 255, 0.35);
-                    box-shadow: var(--shadow-xl);
-                    border-color: rgba(255, 255, 255, 0.4);
-                }
-
-                .stat-value {
-                    font-size: 1.75rem;
-                    font-weight: 700;
-                    color: var(--text-on-dark-pastel);
-                    margin: 0 0 4px 0;
-                    letter-spacing: -0.5px;
-                }
-
-                .stat-label {
+                .summary-label {
                     font-size: 0.875rem;
                     font-weight: 600;
-                    color: rgba(26, 78, 82, 0.8);
+                    color: var(--text-secondary);
                     text-transform: uppercase;
-                    letter-spacing: 1.2px;
+                    letter-spacing: 0.3px;
                 }
+
+                .summary-total {
+                    font-size: 1.125rem;
+                    font-weight: 700;
+                    color: var(--text-link);
+                }
+            }
+
+            .invoice-list {
+                .invoice-item {
+                    display: flex;
+                    justify-content: space-between;
+                    padding: 10px 16px;
+                    border-bottom: 1px solid rgba(179, 235, 242, 0.1);
+                    transition: background 0.2s;
+
+                    &:last-child {
+                        border-bottom: none;
+                    }
+
+                    &:hover {
+                        background: rgba(179, 235, 242, 0.05);
+                    }
+
+                    &.overdue {
+                        background: rgba(255, 181, 167, 0.05);
+
+                        .invoice-due {
+                            color: #D64545;
+                            font-weight: 600;
+                        }
+
+                        &:hover {
+                            background: rgba(255, 181, 167, 0.08);
+                        }
+                    }
+
+                    .invoice-info {
+                        display: flex;
+                        flex-direction: column;
+                        gap: 2px;
+
+                        .invoice-student {
+                            font-size: 0.8125rem;
+                            font-weight: 600;
+                            color: var(--text-secondary);
+                        }
+
+                        .invoice-number {
+                            font-size: 0.75rem;
+                            color: var(--text-muted);
+                        }
+                    }
+
+                    .invoice-details {
+                        display: flex;
+                        flex-direction: column;
+                        align-items: flex-end;
+                        gap: 2px;
+
+                        .invoice-due {
+                            font-size: 0.75rem;
+                            color: var(--text-tertiary);
+                        }
+
+                        .invoice-amount {
+                            font-size: 0.875rem;
+                            font-weight: 700;
+                            color: var(--text-secondary);
+                        }
+                    }
+                }
+            }
+
+            .invoice-empty {
+                padding: 16px;
+                text-align: center;
+                font-size: 0.875rem;
+                color: #2D7A4D;
+                font-weight: 500;
+            }
+        }
+    }
+}
+
+
+// Dark mode for compact invoice card
+:host-context(:root.dark) {
+    .financial-header {
+        .invoice-compact-card {
+            background: rgba(26, 31, 42, 0.9);
+            border-color: rgba(179, 235, 242, 0.1);
+
+            .invoice-summary-row {
+                background: linear-gradient(135deg, rgba(42, 74, 82, 0.3), rgba(31, 74, 58, 0.3));
+                border-bottom-color: rgba(179, 235, 242, 0.08);
+
+                .summary-label {
+                    color: var(--text-primary);
+                }
+
+                .summary-total {
+                    color: var(--text-secondary);
+                }
+            }
+
+            .invoice-list {
+                .invoice-item {
+                    border-bottom-color: rgba(179, 235, 242, 0.05);
+
+                    &:hover {
+                        background: rgba(179, 235, 242, 0.03);
+                    }
+
+                    &.overdue {
+                        background: rgba(214, 69, 69, 0.08);
+
+                        &:hover {
+                            background: rgba(214, 69, 69, 0.12);
+                        }
+
+                        .invoice-due {
+                            color: #FF9A8B;
+                        }
+                    }
+
+                    .invoice-info {
+                        .invoice-student {
+                            color: var(--text-primary);
+                        }
+
+                        .invoice-number {
+                            color: var(--text-muted);
+                        }
+                    }
+
+                    .invoice-details {
+                        .invoice-due {
+                            color: var(--text-tertiary);
+                        }
+
+                        .invoice-amount {
+                            color: var(--text-secondary);
+                        }
+                    }
+                }
+            }
+
+            .invoice-empty {
+                color: #80F9BE;
+            }
+        }
+    }
+}
+
+// ====================================
+// UPCOMING DUES BANNER
+// ====================================
+.upcoming-dues-banner {
+    margin: 20px 16px;
+    padding: 20px;
+    background: linear-gradient(135deg, rgba(255, 218, 193, 0.15) 0%, rgba(255, 181, 167, 0.12) 100%);
+    border-radius: var(--radius-lg);
+    border: 1px solid rgba(255, 181, 167, 0.2);
+    box-shadow: var(--shadow-md);
+
+    .banner-header {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 16px;
+
+        .banner-icon {
+            font-size: 24px;
+            color: var(--pastel-coral);
+        }
+
+        h3 {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            margin: 0;
+        }
+    }
+
+    .due-dates-list {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+
+        .due-date-item {
+            background: var(--bg-card);
+            border-radius: var(--radius-md);
+            padding: 14px 16px;
+            border: 1px solid rgba(179, 235, 242, 0.2);
+            box-shadow: var(--shadow-sm);
+            transition: var(--transition-fast);
+
+            &.overdue {
+                background: rgba(255, 181, 167, 0.08);
+                border-color: rgba(255, 181, 167, 0.3);
+
+                .due-date-text {
+                    color: #D64545;
+                    font-weight: 600;
+
+                    ion-icon {
+                        color: #D64545;
+                    }
+                }
+            }
+
+            &:hover {
+                transform: translateY(-1px);
+                box-shadow: var(--shadow-md);
+            }
+
+            .due-item-content {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                gap: 16px;
+
+                .due-item-left {
+                    flex: 1;
+
+                    .student-name-badge {
+                        display: inline-block;
+                        font-size: 0.75rem;
+                        font-weight: 600;
+                        color: var(--text-on-pastel);
+                        background: var(--pastel-mint-blue-light);
+                        padding: 4px 12px;
+                        border-radius: var(--radius-full);
+                        margin: 0 0 8px 0;
+                        text-transform: uppercase;
+                        letter-spacing: 0.5px;
+                    }
+
+                    .due-date-text {
+                        display: flex;
+                        align-items: center;
+                        gap: 6px;
+                        font-size: 0.875rem;
+                        font-weight: 500;
+                        color: var(--text-tertiary);
+                        margin: 0 0 4px 0;
+
+                        ion-icon {
+                            font-size: 16px;
+                            color: var(--pastel-turquoise-dark);
+                        }
+                    }
+
+                    .invoice-number {
+                        font-size: 0.75rem;
+                        color: var(--text-muted);
+                        margin: 0;
+                    }
+                }
+
+                .due-item-right {
+                    text-align: right;
+
+                    .due-amount {
+                        font-size: 1.125rem;
+                        font-weight: 700;
+                        color: var(--text-secondary);
+                        margin: 0;
+                        white-space: nowrap;
+                    }
+                }
+            }
+        }
+    }
+}
+
+// Dark mode adjustments for banner
+:host-context(:root.dark) {
+    .upcoming-dues-banner {
+        background: linear-gradient(135deg, rgba(255, 181, 167, 0.08) 0%, rgba(255, 181, 167, 0.05) 100%);
+        border-color: rgba(255, 181, 167, 0.15);
+
+        .due-date-item {
+            background: rgba(26, 31, 42, 0.8);
+            border-color: rgba(179, 235, 242, 0.1);
+
+            &.overdue {
+                background: rgba(214, 69, 69, 0.1);
+                border-color: rgba(214, 69, 69, 0.3);
             }
         }
     }

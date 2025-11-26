@@ -15,19 +15,53 @@
     </ion-refresher>
 
     <core-loading [hideUntil]="loaded">
-        <!-- Financial Header with Summary -->
+        <!-- Financial Header with Invoice List -->
         <div class="financial-header">
             <div class="financial-header-content">
-                <div class="financial-summary-stats">
-                    <div class="stat-item">
-                        <p class="stat-value">
-                            {{ formatCurrency(totalBalance) }}
-                        </p>
-                        <p class="stat-label">Total Balance</p>
+                <div class="invoice-compact-card">
+                    <div class="invoice-summary-row">
+                        <span class="summary-label">Outstanding Invoices</span>
+                        <span class="summary-total">{{ formatCurrency(totalInvoicesDueAmount + totalOverdueAmount) }}</span>
                     </div>
-                    <div class="stat-item">
-                        <p class="stat-value">{{ formatCurrency(totalDue) }}</p>
-                        <p class="stat-label">Amount Due</p>
+                    <div class="invoice-list" *ngIf="getRecentUnpaidInvoices().length > 0">
+                        <div class="invoice-item" *ngFor="let inv of getRecentUnpaidInvoices()" [ngClass]="{'overdue': inv.isOverdue}">
+                            <div class="invoice-info">
+                                <span class="invoice-student">{{ inv.studentName }}</span>
+                                <span class="invoice-number">{{ inv.number }}</span>
+                            </div>
+                            <div class="invoice-details">
+                                <span class="invoice-due">{{ inv.dueText }}</span>
+                                <span class="invoice-amount">{{ formatCurrency(inv.remaining) }}</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="invoice-empty" *ngIf="getRecentUnpaidInvoices().length === 0">
+                        All invoices paid
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Upcoming Due Dates Banner -->
+        <div class="upcoming-dues-banner" *ngIf="getUpcomingDueDates().length > 0">
+            <div class="banner-header">
+                <ion-icon name="calendar-outline" class="banner-icon"></ion-icon>
+                <h3>Upcoming Payments</h3>
+            </div>
+            <div class="due-dates-list">
+                <div class="due-date-item" *ngFor="let due of getUpcomingDueDates(); let i = index" [class.overdue]="getDueDateText(due.dueDate).includes('Overdue')">
+                    <div class="due-item-content">
+                        <div class="due-item-left">
+                            <p class="student-name-badge">{{ due.studentName }}</p>
+                            <p class="due-date-text">
+                                <ion-icon [name]="getDueDateText(due.dueDate).includes('Overdue') ? 'alert-circle' : 'time-outline'"></ion-icon>
+                                {{ getDueDateText(due.dueDate) }}
+                            </p>
+                            <p class="invoice-number" *ngIf="due.invoiceNumber">Invoice: {{ due.invoiceNumber }}</p>
+                        </div>
+                        <div class="due-item-right">
+                            <p class="due-amount">{{ formatCurrency(due.amount) }}</p>
+                        </div>
                     </div>
                 </div>
             </div>

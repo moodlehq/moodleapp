@@ -276,7 +276,7 @@ export class CoreCoursesDashboardPage implements OnInit, OnDestroy {
             await CoreUtils.ignoreErrors(CoreCoursesDashboard.invalidateDashboardBlocks());
             
             // Show toast
-            CoreDomUtils.showToast(`Now viewing data for ${mentee.fullname}`);
+            CoreDomUtils.showToast(`Now viewing data for ${this.getFirstWordOfFirstName(mentee)}`);
             
             // Reload the dashboard
             await this.loadContent();
@@ -326,17 +326,39 @@ export class CoreCoursesDashboardPage implements OnInit, OnDestroy {
     }
 
     /**
-     * Get the name of the currently selected mentee.
-     * 
-     * @returns The mentee's full name or empty string.
+     * Get the name of the currently selected mentee (first word of first name).
+     *
+     * @returns The mentee's first name (first word) or empty string.
      */
     getSelectedMenteeName(): string {
         if (!this.selectedMenteeId) {
             return '';
         }
-        
+
         const mentee = this.mentees.find(m => m.id === this.selectedMenteeId);
-        return mentee?.fullname || '';
+        if (!mentee) {
+            return '';
+        }
+
+        return this.getFirstWordOfFirstName(mentee);
+    }
+
+    /**
+     * Get the first word of the mentee's first name.
+     *
+     * @param mentee The mentee user.
+     * @returns The first word of the first name.
+     */
+    getFirstWordOfFirstName(mentee: CoreUserProfile): string {
+        if (!mentee) {
+            return '';
+        }
+
+        // Try to get firstname, otherwise fallback to fullname
+        const name = mentee.firstname || mentee.fullname || '';
+
+        // Extract the first word (split by space and take first part)
+        return name.trim().split(/\s+/)[0] || '';
     }
 
     /**

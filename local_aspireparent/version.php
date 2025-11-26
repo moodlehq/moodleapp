@@ -25,8 +25,8 @@
 defined("MOODLE_INTERNAL") || die();
 
 $plugin->component = "local_aspireparent";
-$plugin->version = 2025010602; // YYYYMMDDXX format - Fixed token generation and external_files structure
-$plugin->release = "1.4.2";
+$plugin->version = 2025112604; // YYYYMMDDXX format - Use webservice pluginfile URLs for mobile
+$plugin->release = "1.5.3";
 $plugin->requires = 2022041900; // Moodle 4.0 or later
 $plugin->maturity = MATURITY_STABLE;
 $plugin->cron = 0;

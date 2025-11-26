@@ -49,7 +49,8 @@ $services = array(
             'local_aspireparent_get_mentee_user_report_grades',
             'local_aspireparent_login_as_mentee',
             'local_aspireparent_restore_original_user',
-            'local_aspireparent_get_mentee_token'
+            'local_aspireparent_get_mentee_token',
+            'local_aspireparent_get_lightboxgallery_images'
         ),
         'restrictedusers' => 0,
         'enabled' => 1,
@@ -263,6 +264,15 @@ $functions = array(
         'methodname' => 'execute',
         'description' => 'Get authentication token for a mentee',
         'type' => 'write',
+        'ajax' => true,
+        'capabilities' => '',
+        'services' => array('local_aspireparent_service', MOODLE_OFFICIAL_MOBILE_SERVICE)
+    ),
+    'local_aspireparent_get_lightboxgallery_images' => array(
+        'classname' => 'local_aspireparent\external\get_lightboxgallery_images',
+        'methodname' => 'execute',
+        'description' => 'Get images from a lightboxgallery module',
+        'type' => 'read',
         'ajax' => true,
         'capabilities' => '',
         'services' => array('local_aspireparent_service', MOODLE_OFFICIAL_MOBILE_SERVICE)

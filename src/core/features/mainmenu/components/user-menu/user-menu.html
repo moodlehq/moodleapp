@@ -28,7 +28,7 @@
                     <button class="aspire-mentee-button" (click)="toggleMenteeSelector()">
                         <ion-icon name="people-outline"></ion-icon>
                         <span *ngIf="!selectedMentee">{{ 'core.user.viewingas' | translate }}: {{ 'core.yourself' | translate }}</span>
-                        <span *ngIf="selectedMentee">{{ 'core.user.viewingas' | translate }}: {{ selectedMentee.fullname }}</span>
+                        <span *ngIf="selectedMentee">{{ 'core.user.viewingas' | translate }}: {{ getMenteeFirstWord() }}</span>
                         <ion-icon name="chevron-down-outline" [class.rotated]="showMenteeSelector"></ion-icon>
                     </button>
                     

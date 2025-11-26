@@ -521,6 +521,16 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
                     }
                     
                     console.log('[AddonMessagesGroupConversations] Courses for mentee', mentee.id, ':', childCourses.length);
+
+                    // Filter to only show visible/active courses
+                    const visibleCourses = childCourses.filter(course => {
+                        // Include course if it's visible (1) and not hidden from dashboard
+                        const isVisible = course.visible === undefined || course.visible === 1;
+                        const isNotHidden = !course.hidden;
+                        return isVisible && isNotHidden;
+                    });
+                    console.log('[AddonMessagesGroupConversations] Visible courses for mentee', mentee.id, ':', visibleCourses.length);
+
                     const childTeachers: ChildTeacherConversations = {
                         childId: mentee.id,
                         childName: mentee.fullname || '',
@@ -530,7 +540,7 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
                     };
 
                     // Group teachers by course for this child
-                    for (const course of childCourses) {
+                    for (const course of visibleCourses) {
                         const teachers = await this.getTeachersInCourse(course.id);
                         if (teachers.length > 0) {
                             // Get course image from overviewfiles
@@ -555,9 +565,18 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
                 }
             } else {
                 // For students, get their own courses
-                const courses = await CoreCourses.getUserCourses(true);
+                const allCourses = await CoreCourses.getUserCourses(true);
+
+                // Filter to only show visible/active courses
+                const courses = allCourses.filter(course => {
+                    // Include course if it's visible (1) and not hidden from dashboard
+                    const isVisible = course.visible === undefined || course.visible === 1;
+                    const isNotHidden = !course.hidden;
+                    return isVisible && isNotHidden;
+                });
+
                 this.teacherConversations = [];
-                console.log('[AddonMessagesGroupConversations] Student courses:', courses.length);
+                console.log('[AddonMessagesGroupConversations] All courses:', allCourses.length, 'Visible courses:', courses.length);
 
                 for (const course of courses) {
                     const teachers = await this.getTeachersInCourse(course.id);

@@ -1137,16 +1137,31 @@ export class AddonMessagesDiscussionPage implements OnInit, OnDestroy, AfterView
                 // Check if this is a parent sending to a teacher
                 const isParent = await CoreUserParent.isParentUser();
                 const site = CoreSites.getCurrentSite();
-                
-                if (isParent && this.userId && site && site.wsAvailable('local_aspireparent_send_message_to_teacher') && 
-                    this.otherMember && !this.otherMember.canmessage) {
+                const selectedMenteeId = await CoreUserParent.getSelectedMentee();
+
+                // Use custom WS if:
+                // 1. User is a parent
+                // 2. Custom WS is available
+                // 3. Either: cannot message directly OR has a selected mentee (viewing as child)
+                if (isParent && this.userId && site && site.wsAvailable('local_aspireparent_send_message_to_teacher') &&
+                    (selectedMenteeId || (this.otherMember && !this.otherMember.canmessage))) {
                     // Parent sending to teacher - use custom web service
                     const mentees = await CoreUserParent.getMentees();
-                    if (mentees.length > 0) {
-                        // For now, use the first mentee - in the future we might want to let parent choose
+
+                    // Use selected mentee if available, otherwise use first mentee
+                    let menteeId = mentees[0]?.id;
+                    if (selectedMenteeId) {
+                        const selectedMentee = mentees.find(m => m.id === selectedMenteeId);
+                        if (selectedMentee) {
+                            menteeId = selectedMentee.id;
+                        }
+                    }
+
+                    if (menteeId) {
+                        console.log('[AddonMessagesDiscussion] Using custom WS for parent->teacher message, mentee:', menteeId);
                         const result: any = await site.write('local_aspireparent_send_message_to_teacher', {
                             teacherid: this.userId,
-                            menteeid: mentees[0].id,
+                            menteeid: menteeId,
                             message: text,
                         });
                         

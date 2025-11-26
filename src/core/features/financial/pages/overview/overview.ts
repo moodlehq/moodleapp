@@ -33,6 +33,10 @@ export class CoreFinancialOverviewPage implements OnInit {
     studentsFinancialData: StudentFinancialData[] = [];
     totalBalance = 0;
     totalDue = 0;
+    totalInvoicesDue = 0;
+    totalInvoicesDueAmount = 0;
+    totalOverdueInvoices = 0;
+    totalOverdueAmount = 0;
     loaded = false;
     selectedStudentId?: string;
     selectedStudent?: StudentFinancialData;
@@ -82,10 +86,13 @@ export class CoreFinancialOverviewPage implements OnInit {
     async loadFinancialData(refresh = false): Promise<void> {
         try {
             this.studentsFinancialData = await CoreFinancial.getAllChildrenFinancialData(refresh);
-            
+
             // Calculate totals
             this.totalBalance = CoreFinancial.calculateTotalBalance(this.studentsFinancialData);
             this.totalDue = CoreFinancial.calculateTotalDue(this.studentsFinancialData);
+
+            // Calculate invoice statistics
+            this.calculateInvoiceStats();
 
             // Select first student by default if none selected
             if (!this.selectedStudentId && this.studentsFinancialData.length > 0) {
@@ -97,6 +104,38 @@ export class CoreFinancialOverviewPage implements OnInit {
             CoreDomUtils.showErrorModal(error);
             this.loaded = true;
         }
+    }
+
+    /**
+     * Calculate invoice statistics across all students.
+     */
+    private calculateInvoiceStats(): void {
+        this.totalInvoicesDue = 0;
+        this.totalInvoicesDueAmount = 0;
+        this.totalOverdueInvoices = 0;
+        this.totalOverdueAmount = 0;
+
+        const now = new Date();
+        now.setHours(0, 0, 0, 0);
+
+        this.studentsFinancialData.forEach(student => {
+            student.invoices?.recent_invoices?.forEach(invoice => {
+                if (invoice.state !== 'paid' && invoice.remaining > 0) {
+                    const dueDate = new Date(invoice.due_date);
+                    dueDate.setHours(0, 0, 0, 0);
+
+                    if (dueDate < now) {
+                        // Overdue
+                        this.totalOverdueInvoices++;
+                        this.totalOverdueAmount += invoice.remaining;
+                    } else {
+                        // Due but not overdue yet
+                        this.totalInvoicesDue++;
+                        this.totalInvoicesDueAmount += invoice.remaining;
+                    }
+                }
+            });
+        });
     }
 
     /**
@@ -410,6 +449,120 @@ export class CoreFinancialOverviewPage implements OnInit {
                 return yearData.books_activities?.reduce((total, book) => total + book.paid, 0) || 0;
             default:
                 return 0;
+        }
+    }
+
+    /**
+     * Get recent unpaid invoices across all students.
+     *
+     * @returns Array of unpaid invoices with details.
+     */
+    getRecentUnpaidInvoices(): Array<{
+        studentName: string;
+        number: string;
+        dueText: string;
+        remaining: number;
+        isOverdue: boolean
+    }> {
+        const invoices: Array<{
+            studentName: string;
+            number: string;
+            dueText: string;
+            remaining: number;
+            isOverdue: boolean;
+            dueDate: Date;
+        }> = [];
+        const now = new Date();
+        now.setHours(0, 0, 0, 0);
+
+        this.studentsFinancialData.forEach(student => {
+            student.invoices?.recent_invoices?.forEach(invoice => {
+                if (invoice.state !== 'paid' && invoice.remaining > 0) {
+                    const dueDate = new Date(invoice.due_date);
+                    dueDate.setHours(0, 0, 0, 0);
+                    const isOverdue = dueDate < now;
+
+                    invoices.push({
+                        studentName: student.student_info.name,
+                        number: invoice.number,
+                        dueText: this.getDueDateText(invoice.due_date),
+                        remaining: invoice.remaining,
+                        isOverdue: isOverdue,
+                        dueDate: dueDate,
+                    });
+                }
+            });
+        });
+
+        // Sort by due date (overdue first, then by date)
+        invoices.sort((a, b) => {
+            if (a.isOverdue && !b.isOverdue) return -1;
+            if (!a.isOverdue && b.isOverdue) return 1;
+            return a.dueDate.getTime() - b.dueDate.getTime();
+        });
+
+        // Return top 5
+        return invoices.slice(0, 5);
+    }
+
+    /**
+     * Get upcoming installment due dates across all students.
+     *
+     * @returns Array of upcoming due dates with student info.
+     */
+    getUpcomingDueDates(): Array<{ studentName: string; dueDate: string; amount: number; invoiceNumber?: string }> {
+        const upcomingDates: Array<{ studentName: string; dueDate: string; amount: number; invoiceNumber?: string }> = [];
+        const now = new Date();
+        const thirtyDaysFromNow = new Date();
+        thirtyDaysFromNow.setDate(now.getDate() + 30);
+
+        this.studentsFinancialData.forEach(student => {
+            // Check invoices for upcoming due dates
+            student.invoices?.recent_invoices?.forEach(invoice => {
+                if (invoice.state !== 'paid' && invoice.due_date) {
+                    const dueDate = new Date(invoice.due_date);
+                    // Show invoices due within the next 30 days
+                    if (dueDate >= now && dueDate <= thirtyDaysFromNow) {
+                        upcomingDates.push({
+                            studentName: student.student_info.name,
+                            dueDate: invoice.due_date,
+                            amount: invoice.remaining,
+                            invoiceNumber: invoice.number,
+                        });
+                    }
+                }
+            });
+        });
+
+        // Sort by due date (earliest first)
+        upcomingDates.sort((a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime());
+
+        return upcomingDates;
+    }
+
+    /**
+     * Get formatted due date text with days remaining.
+     *
+     * @param dueDate Due date string.
+     * @returns Formatted string like "Due in 5 days" or "Due tomorrow".
+     */
+    getDueDateText(dueDate: string): string {
+        const now = new Date();
+        now.setHours(0, 0, 0, 0);
+        const due = new Date(dueDate);
+        due.setHours(0, 0, 0, 0);
+
+        const diffTime = due.getTime() - now.getTime();
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+        if (diffDays === 0) {
+            return 'Due today';
+        } else if (diffDays === 1) {
+            return 'Due tomorrow';
+        } else if (diffDays < 0) {
+            return `Overdue by ${Math.abs(diffDays)} day${Math.abs(diffDays) > 1 ? 's' : ''}`;
+        } else {
+            return `Due in ${diffDays} day${diffDays > 1 ? 's' : ''}`;
         }
     }
 

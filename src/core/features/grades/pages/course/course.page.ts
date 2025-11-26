@@ -936,7 +936,24 @@ export class CoreGradesCoursePage implements AfterViewInit, OnDestroy {
         // This would need to be fetched from the API
         return 30; // Placeholder
     }
-    
+
+    /**
+     * Get the first word of the mentee's first name for display.
+     *
+     * @returns The first word of the first name.
+     */
+    getMenteeFirstWord(): string {
+        if (!this.selectedMentee) {
+            return '';
+        }
+
+        // Try to get firstname, otherwise fallback to fullname
+        const name = this.selectedMentee.firstname || this.selectedMentee.fullname || '';
+
+        // Extract the first word (split by space and take first part)
+        return name.trim().split(/\s+/)[0] || '';
+    }
+
     hasGradeDistribution(): boolean {
         const hasData = this.gradeDistributionData.length > 0;
         console.log('[Grades] hasGradeDistribution:', hasData, 'data:', this.gradeDistributionData);

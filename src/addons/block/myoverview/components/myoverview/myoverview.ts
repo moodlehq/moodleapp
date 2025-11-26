@@ -831,6 +831,23 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
     }
 
     /**
+     * Get the first word of the mentee's first name for display.
+     *
+     * @returns The first word of the first name.
+     */
+    getMenteeFirstWord(): string {
+        if (!this.selectedMentee) {
+            return '';
+        }
+
+        // Try to get firstname, otherwise fallback to fullname
+        const name = this.selectedMentee.firstname || this.selectedMentee.fullname || '';
+
+        // Extract the first word (split by space and take first part)
+        return name.trim().split(/\s+/)[0] || '';
+    }
+
+    /**
      * @inheritdoc
      */
     ngOnDestroy(): void {
