@@ -1,6 +1,8 @@
+@use "theme/globals" as *;
+
 :host {
     .core-correct-icon {
-        margin-left: 0;
+        @include margin-horizontal(0px, null);
     }
 
     .addon-qtype-match-correct {
