@@ -407,6 +407,13 @@ export class CoreBootstrap {
                     return;
                 }
 
+                if (componentName === 'alert') {
+                    // Alerts are simple, we can just remove them from the DOM.
+                    target.remove();
+
+                    return;
+                }
+
                 // We cannot access the overlay (Modal and popover) component to dismiss it.
                 const overlay = componentName === 'modal' && (target.closest('ion-modal') || target.closest('ion-popover'));
                 if (overlay) {
