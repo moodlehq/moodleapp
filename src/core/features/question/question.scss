@@ -1,6 +1,11 @@
 @use "theme/globals" as *;
 
 :host ::ng-deep {
+
+    .core-correct-icon {
+        min-width: 1em;
+    }
+
     .core-question-answer-correct {
         color: var(--core-question-correct-color);
     }
