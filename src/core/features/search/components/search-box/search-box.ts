@@ -134,6 +134,13 @@ export class CoreSearchBoxComponent implements OnInit {
         e?.stopPropagation();
 
         const textInput = this.inputValue();
+        if (textInput.length === 0) {
+            // Empty search, treat as a clear.
+            this.clearForm();
+
+            return;
+        }
+
         if (textInput.length < this.lengthCheck()) {
             this.showLengthAlert.set(true);
 

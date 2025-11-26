@@ -15,7 +15,7 @@
 <ion-content>
     <core-split-view>
         <core-search-box (searchTextChange)="search($event)" [disabled]="disableSearch" autocorrect="off"
-            [spellcheck]="false" [autoFocus]="true" [lengthCheck]="1" searchArea="AddonMessagesSearch" />
+            [spellcheck]="false" [autoFocus]="true"  searchArea="AddonMessagesSearch" />
 
         <core-loading [hideUntil]="!displaySearching" [message]="'core.searching' | translate">
             @if (displayResults) {
