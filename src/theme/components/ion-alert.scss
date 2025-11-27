@@ -107,3 +107,88 @@ div.core-iframe-network-error {
     right: unset;
     left: -15%;
 }
+
+// Platinum Parents Program Alert
+ion-alert.platinum-program-alert {
+    --max-width: 90%;
+    --max-height: 80vh;
+
+    @include media-breakpoint-up(md) {
+        --max-width: 500px;
+    }
+
+    .alert-wrapper {
+        background: linear-gradient(180deg, #FFFEF5 0%, #FFF9E6 100%);
+        border: 2px solid #C9A961;
+    }
+
+    .alert-head {
+        background: linear-gradient(135deg, #E8D5B7 0%, #C9A961 50%, #E8D5B7 100%);
+        padding: 16px 20px;
+        border-radius: var(--border-radius) var(--border-radius) 0 0;
+
+        h2 {
+            color: #5D4E37;
+            font-weight: 700;
+            font-size: 1.25rem;
+            text-align: center;
+        }
+    }
+
+    .alert-message {
+        padding: 20px;
+        max-height: 60vh;
+        overflow-y: auto;
+
+        .platinum-content {
+            color: #4A4035;
+            font-size: 0.9375rem;
+            line-height: 1.6;
+
+            p {
+                margin: 0 0 16px 0;
+            }
+
+            h3 {
+                color: #5D4E37;
+                font-size: 1.0625rem;
+                font-weight: 700;
+                margin: 20px 0 12px 0;
+                padding-bottom: 8px;
+                border-bottom: 2px solid #E8D5B7;
+            }
+
+            ul {
+                margin: 0;
+                padding-left: 20px;
+
+                li {
+                    margin-bottom: 10px;
+                    position: relative;
+                    padding-left: 8px;
+
+                    &::marker {
+                        color: #C9A961;
+                        font-size: 1.25em;
+                    }
+                }
+            }
+        }
+    }
+
+    .alert-button-group {
+        padding: 12px 20px 16px;
+
+        .alert-button {
+            background: linear-gradient(135deg, #C9A961 0%, #B8984F 100%);
+            color: #FFFFFF;
+            font-weight: 600;
+            border-radius: 20px;
+            text-transform: none;
+
+            &:hover {
+                background: linear-gradient(135deg, #B8984F 0%, #A78940 100%);
+            }
+        }
+    }
+}

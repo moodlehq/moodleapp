@@ -103,8 +103,13 @@ h6 {
 
 // School-specific UI Elements
 // Hide the entire end buttons section in toolbar (where user avatar was)
-ion-toolbar ion-buttons[slot="end"] {
+// Exception for financial page platinum button
+ion-toolbar ion-buttons[slot="end"]:not(.show-end-buttons) {
     display: none;
+}
+
+page-core-financial-overview ion-toolbar ion-buttons[slot="end"] {
+    display: flex !important;
 }
 
 page-core-mainmenu-home ion-header {

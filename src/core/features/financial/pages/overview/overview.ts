@@ -19,6 +19,7 @@ import { CoreDomUtils } from '@services/utils/dom';
 import { CoreTimeUtils } from '@services/utils/time';
 import { CoreUserParent } from '@features/user/services/parent';
 import { CoreSites } from '@services/sites';
+import { AlertController } from '@ionic/angular';
 
 /**
  * Page that displays financial overview for all children.
@@ -42,6 +43,8 @@ export class CoreFinancialOverviewPage implements OnInit {
     selectedStudent?: StudentFinancialData;
     expandedYears = new Set<string>();
     expandedStudentSections = new Map<string, Set<string>>();
+
+    constructor(private alertController: AlertController) {}
 
     /**
      * @inheritdoc
@@ -575,5 +578,37 @@ export class CoreFinancialOverviewPage implements OnInit {
      */
     trackByAcademicYear(index: number, yearData: AcademicYearData): string {
         return yearData.academic_year;
+    }
+
+    /**
+     * Show Platinum Parent Program information.
+     */
+    async showPlatinumProgram(): Promise<void> {
+        const alert = await this.alertController.create({
+            header: 'Platinum Parents Program',
+            cssClass: 'platinum-program-alert',
+            message: `
+                <div class="platinum-content">
+                    <p>The Platinum Parents Program is a unique initiative to acknowledge parents who consistently meet fee payment deadlines and adhere to our school's policies.</p>
+
+                    <p>Our goal with this program is to recognize your invaluable contribution towards building a successful and thriving learning community. Thank you for your unwavering support and commitment to Aspire International School.</p>
+
+                    <p>Beginning May of the current year and running through June of next year, parents who make timely payments starting from the reservation payment and each following instalment will automatically be eligible for an array of benefits.</p>
+
+                    <h3>Platinum Parents Benefits:</h3>
+                    <ul>
+                        <li>Special Pricing for Resources, Activities Fees, and Bus Fees</li>
+                        <li>10% Discount on Trips</li>
+                        <li>10% Discount at the In-House Sports Academy</li>
+                        <li>A One-Time Payment Postponement Starting from the Third Instalment, for 5 Business Days without being removed from the program</li>
+                    </ul>
+
+                    <p>We eagerly look forward to your participation in the Platinum Parents Program!</p>
+                </div>
+            `,
+            buttons: ['Close'],
+        });
+
+        await alert.present();
     }
 }
