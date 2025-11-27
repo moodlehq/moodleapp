@@ -196,18 +196,26 @@ export class CoreGradesProvider {
 
         this.logger.debug(`Get grades table for course '${courseId}' and user '${userId}'`);
 
-        // Check if viewing as mentee
-        let wsName = 'gradereport_user_get_grades_table';
+        // Always use standard Moodle WS - token switching handles authentication
+        // If a mentee is selected and token switching worked, we're already authenticated as the mentee
+        // If token switching failed, the standard API will fail with permission error (which is expected)
+        const wsName = 'gradereport_user_get_grades_table';
+
         const selectedMenteeId = await CoreUserParent.getSelectedMentee(site.getId());
-        
-        if (selectedMenteeId && selectedMenteeId !== site.getUserId()) {
-            // Parent viewing mentee's grades
-            const hasCustomWS = await site.wsAvailable('local_aspireparent_get_mentee_grades');
-            if (hasCustomWS) {
-                wsName = 'local_aspireparent_get_mentee_grades';
-                userId = selectedMenteeId;
-                this.logger.debug(`Using custom WS for parent viewing mentee grades in course ${courseId}`);
-            }
+        const currentUserId = site.getUserId();
+
+        console.log('[Grades Service] getCourseGradesTable:', {
+            courseId,
+            requestedUserId: userId,
+            selectedMenteeId,
+            currentSiteUserId: currentUserId,
+            tokenSwitchingWorked: selectedMenteeId === currentUserId,
+            usingWS: wsName
+        });
+
+        // If mentee is selected, always request grades for the mentee
+        if (selectedMenteeId) {
+            userId = selectedMenteeId;
         }
 
         const params: CoreGradesGetUserGradesTableWSParams = {
@@ -223,79 +231,54 @@ export class CoreGradesProvider {
             preSets.emergencyCache = false;
         }
 
-        if (wsName === 'local_aspireparent_get_mentee_grades') {
-            // Custom WS returns different format, need to transform it
-            this.logger.debug(`Using custom WS ${wsName} with params:`, params);
-            const response = await site.read<any>(wsName, params, preSets);
-            
-            this.logger.debug(`Custom WS response:`, {
-                hasUsergrades: !!response?.usergrades,
-                usergradesLength: response?.usergrades?.length,
-                firstUsergrade: response?.usergrades?.[0]
-            });
-            
-            if (!response?.usergrades?.[0]) {
-                throw new CoreError('Couldn\'t get course grades table');
-            }
-            
-            // Transform to expected format
-            const usergrade = response.usergrades[0];
-            this.logger.debug(`Grade items count: ${usergrade.gradeitems?.length || 0}`);
-            
-            const tableData: CoreGradesTable = {
-                courseid: usergrade.courseid,
-                userid: usergrade.userid,
-                userfullname: usergrade.userfullname,
-                maxdepth: usergrade.maxdepth || 1,
-                tabledata: usergrade.gradeitems.map((item: any) => ({
-                    itemname: {
-                        class: item.itemtype === 'category' ? 'category' : 'item',
-                        content: item.itemname,
-                        celltype: 'item',
-                        id: String(item.id),
-                        colspan: 1,
-                    },
-                    grade: {
-                        class: '',
-                        content: item.gradeformatted || '-',
-                        celltype: 'grade',
-                    },
-                    range: {
-                        class: '',
-                        content: item.rangeformatted || '',
-                        celltype: 'range',
-                    },
-                    percentage: {
-                        class: '',
-                        content: item.percentageformatted || '',
-                        celltype: 'percentage',
-                    },
-                    feedback: item.feedback ? {
-                        class: '',
-                        content: item.feedback,
-                        celltype: 'feedback',
-                    } : undefined,
-                })),
-            };
-            
-            this.logger.debug('Transformed table data has', tableData.tabledata.length, 'rows');
-            return tableData;
-        } else {
-            this.logger.debug(`Using standard WS ${wsName} with params:`, params);
+        this.logger.debug(`Using WS ${wsName} with params:`, params);
+        console.log('[Grades Service] Calling WS:', wsName, 'with params:', params);
+
+        try {
             const table = await site.read<CoreGradesGetUserGradesTableWSResponse>(wsName, params, preSets);
 
-            this.logger.debug(`Standard WS response:`, {
+            console.log('[Grades Service] WS response:', {
                 hasTables: !!table?.tables,
                 tablesLength: table?.tables?.length,
-                firstTable: table?.tables?.[0]
+                firstTableRowCount: table?.tables?.[0]?.tabledata?.length || 0
             });
 
             if (!table?.tables?.[0]) {
                 throw new CoreError('Couldn\'t get course grades table');
             }
 
-            this.logger.debug('Standard table data has', table.tables[0].tabledata?.length || 0, 'rows');
+            console.log('[Grades Service] Returning table with', table.tables[0].tabledata?.length || 0, 'rows');
             return table.tables[0];
+        } catch (error: any) {
+            // If standard API failed and we have a mentee selected, try the custom WS as fallback
+            // This happens when token switching failed and parent doesn't have direct access
+            if (selectedMenteeId && selectedMenteeId !== currentUserId) {
+                console.log('[Grades Service] Standard API failed, trying custom WS fallback...');
+                const hasCustomWS = await site.wsAvailable('local_aspireparent_get_mentee_grades_table');
+
+                if (hasCustomWS) {
+                    try {
+                        const customParams = { courseid: courseId, userid: selectedMenteeId };
+                        console.log('[Grades Service] Calling custom WS with params:', customParams);
+
+                        const customTable = await site.read<CoreGradesGetUserGradesTableWSResponse>(
+                            'local_aspireparent_get_mentee_grades_table',
+                            customParams,
+                            preSets,
+                        );
+
+                        if (customTable?.tables?.[0]) {
+                            console.log('[Grades Service] Custom WS returned', customTable.tables[0].tabledata?.length || 0, 'rows');
+                            return customTable.tables[0];
+                        }
+                    } catch (customError) {
+                        console.error('[Grades Service] Custom WS also failed:', customError);
+                    }
+                }
+            }
+
+            // Re-throw the original error if fallback didn't work
+            throw error;
         }
     }
 

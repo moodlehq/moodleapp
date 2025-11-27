@@ -70,12 +70,15 @@ export class CoreGradesCoursePage implements AfterViewInit, OnDestroy {
     selectedMentee?: CoreUserProfile;
     
     // New properties for enhanced view
-    viewMode: 'grouped' | 'timeline' | 'table' = 'grouped';
+    viewMode: 'grouped' | 'timeline' | 'table' = 'table';
     gradeDistributionData: number[] = [];
     gradeDistributionLabels: string[] = [];
     groupedCategories: any[] = [];
     timelineData: any[] = [];
     hideHeader = false;
+
+    // Store server's course total for accurate display
+    protected serverCourseTotal: CoreGradesFormattedTableRow | null = null;
 
     protected useLegacyLayout?: boolean; // Whether to use the layout before 4.1.
     protected logView: () => void;
@@ -223,29 +226,48 @@ export class CoreGradesCoursePage implements AfterViewInit, OnDestroy {
      */
     private async checkParentContext(): Promise<void> {
         try {
-            // Check if user is a parent
-            this.isParentUser = await CoreUserParent.isParentUser();
-            
-            if (!this.isParentUser) {
-                return;
-            }
-            
-            // Check if a mentee is selected
+            const currentSiteUserId = CoreSites.getCurrentSiteUserId();
+            console.log('[Grades Course] checkParentContext - Initial state:', {
+                currentSiteUserId,
+                thisUserId: this.userId
+            });
+
+            // Check if a mentee is selected first
             const selectedMenteeId = await CoreUserParent.getSelectedMentee();
-            
-            if (selectedMenteeId && this.userId === CoreSites.getCurrentSiteUserId()) {
-                // Only override userId if we're viewing our own grades (not another user's)
-                const canView = await CoreUserParent.canViewUserData(selectedMenteeId);
-                
-                if (canView) {
-                    this.userId = selectedMenteeId;
-                    this.viewingAsMentee = true;
-                    
-                    // Get mentee details for display
+            console.log('[Grades Course] Selected mentee ID:', selectedMenteeId);
+
+            if (selectedMenteeId) {
+                // A mentee is selected - use their ID for grades
+                this.userId = selectedMenteeId;
+                this.viewingAsMentee = true;
+
+                // Check if token switching worked
+                if (currentSiteUserId === selectedMenteeId) {
+                    console.log('[Grades Course] Token switching worked - authenticated as mentee');
+                } else {
+                    console.log('[Grades Course] Token switching may have failed - current user:', currentSiteUserId, 'mentee:', selectedMenteeId);
+                }
+
+                // Get mentee details for display
+                try {
                     const mentees = await CoreUserParent.getMentees();
                     this.selectedMentee = mentees.find(m => m.id === selectedMenteeId);
+                    console.log('[Grades Course] Found mentee:', this.selectedMentee?.fullname);
+                } catch (e) {
+                    console.error('[Grades Course] Error getting mentees:', e);
                 }
+
+                // Also check if user is a parent (for UI purposes)
+                this.isParentUser = await CoreUserParent.isParentUser();
+            } else {
+                console.log('[Grades Course] No mentee selected, using current user');
             }
+
+            console.log('[Grades Course] Final state:', {
+                userId: this.userId,
+                viewingAsMentee: this.viewingAsMentee,
+                isParentUser: this.isParentUser
+            });
         } catch (error) {
             console.error('Error checking parent context:', error);
         }
@@ -343,85 +365,23 @@ export class CoreGradesCoursePage implements AfterViewInit, OnDestroy {
      * @returns Filtered and reordered rows.
      */
     protected filterAndReorderRows(rows: CoreGradesFormattedTableRow[]): CoreGradesFormattedTableRow[] {
-        const filteredRows: CoreGradesFormattedTableRow[] = [];
-        const categoryTotals: CoreGradesFormattedTableRow[] = [];
-        let courseTotal: CoreGradesFormattedTableRow | null = null;
-        
-        // First pass: categorize rows
+        // Find and store course total for header display
         rows.forEach(row => {
             const gradeItemName = row.gradeitem?.toLowerCase() || '';
-            const hasGrade = row.grade && row.grade !== '-' && row.grade !== '';
-            
             if (row.itemtype === 'courseitem' || gradeItemName.includes('course total')) {
-                // This is the course total
-                courseTotal = row;
-            } else if (row.itemtype === 'categoryitem' || (row.itemtype === 'category' && gradeItemName.includes('total'))) {
-                // This is a category total - only keep if it has a grade
-                if (hasGrade) {
-                    categoryTotals.push(row);
-                }
-            } else if (row.itemtype === 'category' && !gradeItemName.includes('total')) {
-                // This is a category header without grade - skip it
-                console.log('[Grades] Skipping empty category header:', row.gradeitem);
-            } else {
-                // Regular grade item - only add if it has a grade
-                if (hasGrade) {
-                    filteredRows.push(row);
-                } else {
-                    console.log('[Grades] Skipping ungraded item:', row.gradeitem);
-                }
+                this.serverCourseTotal = row;
+                console.log('[Grades] Found server course total:', {
+                    grade: row.grade,
+                    percentage: row.percentage,
+                    range: row.range
+                });
             }
         });
-        
-        // Second pass: build final ordered list
-        const finalRows: CoreGradesFormattedTableRow[] = [];
-        
-        // Add all regular grade items first
-        finalRows.push(...filteredRows);
-        
-        // Add category totals that have grades
-        if (categoryTotals.length > 0) {
-            // Add a separator
-            finalRows.push({
-                itemtype: 'leader',
-                gradeitem: '',
-                grade: '',
-                rowclass: 'leader',
-                id: -1,
-                colspan: 1,
-                rowspan: 1
-            } as CoreGradesFormattedTableRow);
-            
-            // Add category totals
-            finalRows.push(...categoryTotals);
-        }
-        
-        // Add course total at the end if it exists
-        if (courseTotal) {
-            // Add a separator
-            finalRows.push({
-                itemtype: 'leader',
-                gradeitem: '',
-                grade: '',
-                rowclass: 'leader',
-                id: -2,
-                colspan: 1,
-                rowspan: 1
-            } as CoreGradesFormattedTableRow);
-            
-            finalRows.push(courseTotal);
-        }
-        
-        console.log('[Grades] Filtered rows:', {
-            original: rows.length,
-            filtered: finalRows.length,
-            regularItemsWithGrades: filteredRows.length,
-            categoryTotals: categoryTotals.length,
-            courseTotal: courseTotal ? 1 : 0,
-            ungradedItemsSkipped: rows.length - filteredRows.length - categoryTotals.length - (courseTotal ? 1 : 0)
-        });
-        
-        return finalRows;
+
+        console.log('[Grades] Total rows from server:', rows.length);
+
+        // Return all rows without filtering - let the server decide what to show
+        return rows;
     }
 
     /**
@@ -510,92 +470,66 @@ export class CoreGradesCoursePage implements AfterViewInit, OnDestroy {
     }
     
     /**
-     * Group grades by category.
+     * Group grades by category using actual categories from server data.
      */
     protected groupGradesByCategory(): void {
         const categories: { [key: string]: any } = {};
-        
-        console.log('[Grades] Starting category grouping...');
-        
-        // First, create a default category for all items
-        categories['Course Items'] = {
-            name: 'Course Items',
-            type: 'category',
-            items: [],
-            weight: 100,
-            grade: '-',
-            maxGrade: '100',
-            percentage: 0,
-            expanded: true,
-            totalItems: 0,
-            completedItems: 0,
-            completionPercentage: 0,
-        };
-        
-        this.rows.forEach((row, index) => {
-            console.log(`[Grades] Processing row ${index}:`, {
-                itemtype: row.itemtype,
-                gradeitem: row.gradeitem?.substring(0, 50),
-                grade: row.grade,
-                weight: row.weight,
-                percentage: row.percentage,
-                range: row.range
-            });
+        let currentCategory = 'Course';
 
+        console.log('[Grades] Starting category grouping with', this.rows.length, 'rows');
+
+        // Process rows in order - category rows define the current category
+        this.rows.forEach((row, index) => {
             const gradeItemName = row.gradeitem?.toLowerCase() || '';
 
-            // Skip totals, category items, and course items
-            if (row.itemtype === 'courseitem' || row.itemtype === 'categoryitem' ||
-                row.itemtype === 'category' || row.itemtype === 'leader') {
-                console.log('[Grades] Skipping total/category/leader item:', row.gradeitem);
+            // Skip leader/spacer rows
+            if (row.itemtype === 'leader' || !row.gradeitem) {
                 return;
             }
 
-            // Skip items without grades (same filter as table view)
-            if (!row.grade || row.grade === '-') {
-                console.log('[Grades] Skipping ungraded item in grouped view:', row.gradeitem);
+            // Category header - start new category
+            if (row.itemtype === 'category' && !gradeItemName.includes('total')) {
+                currentCategory = CoreText.cleanTags(row.gradeitem || 'Course');
+                console.log('[Grades] Found category:', currentCategory);
+                if (!categories[currentCategory]) {
+                    categories[currentCategory] = {
+                        name: currentCategory,
+                        type: 'category',
+                        items: [],
+                        expanded: true,
+                        totalItems: 0,
+                    };
+                }
                 return;
             }
 
-            // Skip items without a name
-            if (!row.gradeitem || row.gradeitem.trim() === '') {
-                console.log('[Grades] Skipping item with empty name');
+            // Skip category totals and course total for items list
+            if (row.itemtype === 'courseitem' || row.itemtype === 'categoryitem') {
                 return;
             }
-            
-            // This is a grade item - add it to our default category
-            // Format the grade value
-            let formattedGrade = row.grade || '-';
-            if (formattedGrade !== '-') {
-                const gradeNum = parseFloat(formattedGrade);
-                if (!isNaN(gradeNum)) {
-                    formattedGrade = this.formatGradeValue(gradeNum);
-                }
+
+            // Skip items without a grade value (- or empty means ungraded)
+            if (!row.grade || row.grade === '-' || row.grade.trim() === '') {
+                console.log('[Grades] Skipping ungraded:', row.gradeitem);
+                return;
             }
-            
-            // Extract percentage without % sign
-            let percentageValue = row.percentage;
-            if (percentageValue && typeof percentageValue === 'string') {
-                // Remove % sign if present and format to 2 decimal places
-                const percentNum = this.extractPercentage(percentageValue);
-                percentageValue = this.formatGradeValue(percentNum);
+
+            // Ensure current category exists
+            if (!categories[currentCategory]) {
+                categories[currentCategory] = {
+                    name: currentCategory,
+                    type: 'category',
+                    items: [],
+                    expanded: true,
+                    totalItems: 0,
+                };
             }
-            
-            // Format weight value
-            let weightValue = row.weight;
-            if (weightValue && typeof weightValue === 'string') {
-                // Extract numeric weight and format
-                const weightNum = this.extractPercentage(weightValue);
-                if (!isNaN(weightNum)) {
-                    weightValue = this.formatGradeValue(weightNum);
-                }
-            }
-            
+
             const item = {
                 name: CoreText.cleanTags(row.gradeitem || ''),
-                grade: formattedGrade,
-                percentage: percentageValue,
-                weight: weightValue,
+                grade: row.grade,
+                percentage: row.percentage,
+                weight: row.weight,
                 range: row.range,
                 icon: row.icon,
                 image: row.image,
@@ -603,64 +537,21 @@ export class CoreGradesCoursePage implements AfterViewInit, OnDestroy {
                 gradeDate: this.extractGradeDate(row),
                 gradeIcon: row.gradeIcon,
             };
-            
-            categories['Course Items'].items.push(item);
-            categories['Course Items'].totalItems++;
-            if (row.grade && row.grade !== '-' && row.grade !== '0') {
-                categories['Course Items'].completedItems++;
-            }
-        });
-        
-        // Calculate completion percentages and totals
-        Object.values(categories).forEach(category => {
-            category.completionPercentage = category.totalItems > 0 
-                ? Math.round((category.completedItems / category.totalItems) * 100) 
-                : 0;
-            category.itemCount = category.items.length;
-            
-            // Calculate category totals
-            let categoryGradeSum = 0;
-            let categoryMaxGradeSum = 0;
-            let hasGrades = false;
-            
-            category.items.forEach((item: any) => {
-                // Only count items with grades (matching our filter logic)
-                if (item.grade && item.grade !== '-') {
-                    const gradeNum = parseFloat(item.grade);
-                    if (!isNaN(gradeNum)) {
-                        categoryGradeSum += gradeNum;
-                        hasGrades = true;
-                    }
 
-                    // Also add max grade for this item (only if it has a grade)
-                    if (item.range) {
-                        const maxGrade = this.extractMaxGrade(item.range);
-                        const maxGradeNum = parseFloat(maxGrade);
-                        if (!isNaN(maxGradeNum)) {
-                            categoryMaxGradeSum += maxGradeNum;
-                        }
-                    } else {
-                        // Default to 100 if no range
-                        categoryMaxGradeSum += 100;
-                    }
-                }
-            });
-            
-            // Format the totals
-            if (hasGrades) {
-                category.grade = this.formatGradeValue(categoryGradeSum);
-                category.maxGrade = this.formatGradeValue(categoryMaxGradeSum);
-                category.percentage = categoryMaxGradeSum > 0 
-                    ? Math.round((categoryGradeSum / categoryMaxGradeSum) * 100)
-                    : 0;
-            } else {
-                category.grade = '-';
-                category.maxGrade = this.formatGradeValue(categoryMaxGradeSum);
-                category.percentage = 0;
-            }
+            categories[currentCategory].items.push(item);
+            categories[currentCategory].totalItems++;
+            console.log('[Grades] Added item to', currentCategory, ':', item.name, 'grade:', item.grade);
         });
-        
-        this.groupedCategories = Object.values(categories);
+
+        // Update item counts
+        Object.values(categories).forEach(category => {
+            category.itemCount = category.items.length;
+        });
+
+        // Filter out empty categories
+        this.groupedCategories = Object.values(categories).filter(cat => cat.items.length > 0);
+        console.log('[Grades] Grouped into', this.groupedCategories.length, 'categories:',
+            this.groupedCategories.map(c => `${c.name}(${c.items.length})`).join(', '));
     }
     
     /**
@@ -684,8 +575,8 @@ export class CoreGradesCoursePage implements AfterViewInit, OnDestroy {
                 return;
             }
 
-            // Skip items without grades (same filter as table and grouped views)
-            if (!row.grade || row.grade === '-') {
+            // Skip items without grades (but keep 0 grades)
+            if (!row.grade || row.grade === '-' || row.grade === '') {
                 console.log(`[Grades] Skipping ungraded timeline item: ${row.gradeitem}`);
                 return;
             }
@@ -718,7 +609,7 @@ export class CoreGradesCoursePage implements AfterViewInit, OnDestroy {
                 let percentageValue = row.percentage;
                 if (percentageValue && typeof percentageValue === 'string') {
                     const percentNum = this.extractPercentage(percentageValue);
-                    percentageValue = percentNum > 0 ? this.formatGradeValue(percentNum) + '%' : '-';
+                    percentageValue = this.formatGradeValue(percentNum) + '%';
                 }
                 
                 timelineItems.push({
@@ -771,81 +662,99 @@ export class CoreGradesCoursePage implements AfterViewInit, OnDestroy {
     }
     
     /**
-     * Calculate grade distribution for charts.
+     * Calculate grade distribution for charts using school attainment scale.
      */
     protected calculateGradeDistribution(): void {
         const distribution: { [key: string]: number } = {
-            'A (90-100%)': 0,
-            'B (80-89%)': 0,
-            'C (70-79%)': 0,
-            'D (60-69%)': 0,
-            'F (0-59%)': 0,
+            'HA (95-100%)': 0,      // High attainer
+            'MEP (80-94.99%)': 0,   // More than expected progress
+            'EP (60-79.99%)': 0,    // Expected progress
+            'LEP (50-59.99%)': 0,   // Less than expected progress
+            'LA (<50%)': 0,         // Low attainer
         };
-        
+
         this.rows.forEach(row => {
             // Skip totals
             const gradeItemName = row.gradeitem?.toLowerCase() || '';
             if (gradeItemName.includes('total')) {
                 return;
             }
-            
+
             if (row.percentage && row.grade && row.grade !== '-') {
                 const percentage = this.extractPercentage(row.percentage);
-                if (percentage >= 90) distribution['A (90-100%)']++;
-                else if (percentage >= 80) distribution['B (80-89%)']++;
-                else if (percentage >= 70) distribution['C (70-79%)']++;
-                else if (percentage >= 60) distribution['D (60-69%)']++;
-                else if (percentage > 0) distribution['F (0-59%)']++;
+                if (percentage >= 95) distribution['HA (95-100%)']++;
+                else if (percentage >= 80) distribution['MEP (80-94.99%)']++;
+                else if (percentage >= 60) distribution['EP (60-79.99%)']++;
+                else if (percentage >= 50) distribution['LEP (50-59.99%)']++;
+                else if (percentage >= 0) distribution['LA (<50%)']++;
             }
         });
-        
+
         this.gradeDistributionLabels = Object.keys(distribution);
         this.gradeDistributionData = Object.values(distribution);
     }
     
     // Helper methods for template
     getCourseTotal(): string {
-        console.log('[Grades] Calculating course total from visible graded items only');
+        // Use server's calculated course total (respects weights and hidden items)
+        if (this.serverCourseTotal?.grade && this.serverCourseTotal.grade !== '-') {
+            console.log('[Grades] Using server course total:', this.serverCourseTotal.grade);
+            const gradeNum = parseFloat(this.serverCourseTotal.grade);
+            if (!isNaN(gradeNum)) {
+                return this.formatGradeValue(gradeNum);
+            }
+            return this.serverCourseTotal.grade;
+        }
 
-        // Always calculate from visible graded items (not from server's course total)
+        // Fallback to calculating from visible items only if no server total
+        console.log('[Grades] No server course total, calculating from visible items');
         const gradedSum = this.calculateGradedItemsSum();
-        console.log('[Grades] Calculated sum from visible graded items:', gradedSum);
         return this.formatGradeValue(gradedSum);
     }
-    
+
     getCourseMaxGrade(): string {
-        console.log('[Grades] Calculating max grade from visible graded items only');
-
-        // Calculate max grade as sum of all visible graded items' max grades
-        const maxGrade = this.calculateMaxGradeSum();
-        console.log('[Grades] Calculated max grade from visible items:', maxGrade);
-
-        // Format max grade to remove unnecessary decimals
-        if (!isNaN(maxGrade)) {
-            // If it's a whole number, show without decimals
-            // Otherwise, show up to 2 decimal places
-            return maxGrade % 1 === 0 ? maxGrade.toString() : maxGrade.toFixed(2);
+        // Use server's calculated max grade from range (respects weights)
+        if (this.serverCourseTotal?.range) {
+            const maxGrade = this.extractMaxGrade(this.serverCourseTotal.range);
+            console.log('[Grades] Using server max grade:', maxGrade);
+            const maxGradeNum = parseFloat(maxGrade);
+            if (!isNaN(maxGradeNum)) {
+                return maxGradeNum % 1 === 0 ? maxGradeNum.toString() : maxGradeNum.toFixed(2);
+            }
+            return maxGrade;
         }
-        return maxGrade.toString();
-    }
-    
-    getCoursePercentage(): string {
-        console.log('[Grades] Calculating percentage from visible graded items');
 
-        // Always calculate from visible items
+        // Fallback to calculating from visible items only if no server total
+        console.log('[Grades] No server max grade, calculating from visible items');
+        const maxGrade = this.calculateMaxGradeSum();
+        return maxGrade % 1 === 0 ? maxGrade.toString() : maxGrade.toFixed(2);
+    }
+
+    getCoursePercentage(): string {
+        // Use server's calculated percentage (respects weights and hidden items)
+        if (this.serverCourseTotal?.percentage) {
+            console.log('[Grades] Using server percentage:', this.serverCourseTotal.percentage);
+            // Server percentage might have % sign, extract just the number
+            const percentNum = this.extractPercentage(this.serverCourseTotal.percentage);
+            if (percentNum > 0) {
+                return percentNum.toFixed(2) + '%';
+            }
+            return this.serverCourseTotal.percentage;
+        }
+
+        // Fallback to calculating from visible items
+        console.log('[Grades] No server percentage, calculating from totals');
         const total = parseFloat(this.getCourseTotal());
         const maxGrade = parseFloat(this.getCourseMaxGrade());
 
         if (maxGrade > 0) {
             const calculatedPercentage = (total / maxGrade) * 100;
-            console.log('[Grades] Calculated percentage:', calculatedPercentage, '% (', total, '/', maxGrade, ')');
             return calculatedPercentage.toFixed(2) + '%';
         }
 
-        console.log('[Grades] Cannot calculate percentage, max grade is 0');
         return '0%';
     }
-    
+
     getCoursePercentageNumber(): number {
         const percentage = this.extractPercentage(this.getCoursePercentage());
         console.log('[Grades] Course percentage number:', percentage);
@@ -967,11 +876,22 @@ export class CoreGradesCoursePage implements AfterViewInit, OnDestroy {
     }
     
     getGradeDistributionLegend(): any[] {
-        const colors = ['#ADEBB3', '#B3EBF2', '#FFFD96', '#FFDAC1', '#FFB5A7'];
-        return this.gradeDistributionLabels.map((label, index) => ({
-            label,
-            count: this.gradeDistributionData[index],
-            color: colors[index],
+        // School attainment scale with full details
+        const scaleInfo = [
+            { abbrev: 'HA', description: 'High attainer', range: '95-100%', color: '#00B050', textColor: '#FFFFFF' },
+            { abbrev: 'MEP', description: 'More than expected progress', range: '80-94.99%', color: '#92D050', textColor: '#1A4E00' },
+            { abbrev: 'EP', description: 'Expected progress', range: '60-79.99%', color: '#FFFF00', textColor: '#5D5D00' },
+            { abbrev: 'LEP', description: 'Less than expected progress', range: '50-59.99%', color: '#FFC000', textColor: '#5D3000' },
+            { abbrev: 'LA', description: 'Low attainer', range: '<50%', color: '#FF0000', textColor: '#FFFFFF' },
+        ];
+
+        const totalItems = this.gradeDistributionData.reduce((sum, count) => sum + count, 0) || 1;
+
+        return scaleInfo.map((info, index) => ({
+            ...info,
+            label: `${info.abbrev} (${info.range})`,
+            count: this.gradeDistributionData[index] || 0,
+            percentage: ((this.gradeDistributionData[index] || 0) / totalItems) * 100,
         }));
     }
     
@@ -1021,15 +941,21 @@ export class CoreGradesCoursePage implements AfterViewInit, OnDestroy {
     }
     
     getGradeClass(percentage: number): string {
-        if (percentage >= 90) return 'grade-a';
-        if (percentage >= 80) return 'grade-b';
-        if (percentage >= 70) return 'grade-c';
-        if (percentage >= 60) return 'grade-d';
-        return 'grade-f';
+        // Match school attainment scale
+        if (percentage >= 95) return 'grade-ha';   // High attainer
+        if (percentage >= 80) return 'grade-mep';  // More than expected progress
+        if (percentage >= 60) return 'grade-ep';   // Expected progress
+        if (percentage >= 50) return 'grade-lep';  // Less than expected progress
+        return 'grade-la';                         // Low attainer
     }
     
     getGradeBadgeClass(item: any): string {
         const percentage = this.extractPercentage(item.percentage || '0');
+        return this.getGradeClass(percentage);
+    }
+
+    getRowGradeClass(row: any): string {
+        const percentage = this.extractPercentage(row.percentage || '0');
         return this.getGradeClass(percentage);
     }
     

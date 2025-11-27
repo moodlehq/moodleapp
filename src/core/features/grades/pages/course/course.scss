@@ -88,12 +88,19 @@
     --border-medium: 1px solid rgba(141, 220, 220, 0.3);
     --border-focus: 2px solid rgba(152, 251, 203, 0.5);
 
-    // Grade specific colors
-    --grade-a-color: var(--pastel-mint);
-    --grade-b-color: var(--pastel-sky);
-    --grade-c-color: var(--pastel-yellow);
-    --grade-d-color: var(--pastel-peach);
-    --grade-f-color: var(--pastel-coral);
+    // Grade specific colors - School Attainment Scale
+    --grade-ha-color: #00B050;   // High attainer (95-100%)
+    --grade-mep-color: #92D050;  // More than expected progress (80-94.99%)
+    --grade-ep-color: #FFFF00;   // Expected progress (60-79.99%)
+    --grade-lep-color: #FFC000;  // Less than expected progress (50-59.99%)
+    --grade-la-color: #FF0000;   // Low attainer (<50%)
+
+    // Legacy grade colors (kept for backwards compatibility)
+    --grade-a-color: var(--grade-ha-color);
+    --grade-b-color: var(--grade-mep-color);
+    --grade-c-color: var(--grade-ep-color);
+    --grade-d-color: var(--grade-lep-color);
+    --grade-f-color: var(--grade-la-color);
 }
 
 // Dark Mode Adjustments
@@ -391,6 +398,37 @@ ion-header {
                             font-size: 0.875rem;
                             font-weight: 600;
                             color: var(--text-tertiary);
+
+                            // Attainment scale colored badges
+                            &.grade-badge {
+                                padding: 2px 8px;
+                                border-radius: var(--radius-full);
+
+                                &.grade-ha {
+                                    background: var(--grade-ha-color);
+                                    color: #FFFFFF;
+                                }
+
+                                &.grade-mep {
+                                    background: var(--grade-mep-color);
+                                    color: #1A4E00;
+                                }
+
+                                &.grade-ep {
+                                    background: var(--grade-ep-color);
+                                    color: #5D5D00;
+                                }
+
+                                &.grade-lep {
+                                    background: var(--grade-lep-color);
+                                    color: #5D3000;
+                                }
+
+                                &.grade-la {
+                                    background: var(--grade-la-color);
+                                    color: #FFFFFF;
+                                }
+                            }
                         }
                     }
                 }
@@ -926,37 +964,95 @@ core-loading {
             }
         }
         
-        .chart-container {
-            margin-bottom: 20px;
-        }
-        
-        .distribution-legend {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        .distribution-bars {
+            display: flex;
+            flex-direction: column;
             gap: 12px;
-            
-            .legend-item {
+
+            .distribution-row {
                 display: flex;
                 align-items: center;
-                gap: 8px;
-                
-                .legend-color {
-                    width: 16px;
-                    height: 16px;
-                    border-radius: var(--radius-sm);
+                gap: 12px;
+
+                .row-label {
+                    display: flex;
+                    align-items: center;
+                    gap: 8px;
+                    min-width: 200px;
                     flex-shrink: 0;
+
+                    .abbrev {
+                        display: inline-flex;
+                        align-items: center;
+                        justify-content: center;
+                        min-width: 40px;
+                        padding: 4px 8px;
+                        border-radius: var(--radius-sm);
+                        font-size: 0.75rem;
+                        font-weight: 700;
+                        text-transform: uppercase;
+                    }
+
+                    .description {
+                        font-size: 0.875rem;
+                        color: var(--text-tertiary);
+                        white-space: nowrap;
+                    }
                 }
-                
-                .legend-label {
-                    font-size: 0.875rem;
-                    color: var(--text-tertiary);
+
+                .row-bar {
                     flex: 1;
+                    height: 24px;
+                    background: rgba(179, 235, 242, 0.15);
+                    border-radius: var(--radius-sm);
+                    overflow: hidden;
+                    min-width: 60px;
+
+                    .bar-fill {
+                        height: 100%;
+                        border-radius: var(--radius-sm);
+                        transition: width 0.5s ease;
+                        min-width: 2px;
+                    }
                 }
-                
-                .legend-value {
-                    font-size: 0.875rem;
-                    font-weight: 600;
+
+                .row-count {
+                    min-width: 28px;
+                    text-align: right;
+                    font-size: 0.9375rem;
+                    font-weight: 700;
                     color: var(--text-secondary);
+                }
+            }
+        }
+
+        // Mobile responsive
+        @media (max-width: 480px) {
+            .distribution-bars {
+                .distribution-row {
+                    flex-wrap: wrap;
+                    gap: 8px;
+
+                    .row-label {
+                        min-width: 100%;
+                        order: 1;
+
+                        .description {
+                            font-size: 0.8125rem;
+                        }
+                    }
+
+                    .row-bar {
+                        flex: 1;
+                        order: 2;
+                        height: 20px;
+                    }
+
+                    .row-count {
+                        order: 3;
+                        min-width: 24px;
+                        font-size: 0.875rem;
+                    }
                 }
             }
         }
@@ -1177,27 +1273,54 @@ core-loading {
                     font-weight: 700;
                     padding: 8px 16px;
                     border-radius: var(--radius-full);
-                    
+
+                    // School Attainment Scale
+                    &.grade-ha {
+                        background: var(--grade-ha-color);
+                        color: #FFFFFF;
+                    }
+
+                    &.grade-mep {
+                        background: var(--grade-mep-color);
+                        color: #1A4E00;
+                    }
+
+                    &.grade-ep {
+                        background: var(--grade-ep-color);
+                        color: #5D5D00;
+                    }
+
+                    &.grade-lep {
+                        background: var(--grade-lep-color);
+                        color: #5D3000;
+                    }
+
+                    &.grade-la {
+                        background: var(--grade-la-color);
+                        color: #FFFFFF;
+                    }
+
+                    // Legacy classes
                     &.grade-a {
                         background: var(--grade-a-color);
                         color: var(--text-on-pastel);
                     }
-                    
+
                     &.grade-b {
                         background: var(--grade-b-color);
                         color: var(--text-on-dark-pastel);
                     }
-                    
+
                     &.grade-c {
                         background: var(--grade-c-color);
                         color: #8B6F00;
                     }
-                    
+
                     &.grade-d {
                         background: var(--grade-d-color);
                         color: #BF6000;
                     }
-                    
+
                     &.grade-f {
                         background: var(--grade-f-color);
                         color: #C62828;
@@ -1306,24 +1429,56 @@ core-loading {
                             font-weight: 700;
                             margin-bottom: 4px;
                             
+                            // School Attainment Scale grade badges
+                            &.grade-ha {
+                                background: var(--grade-ha-color);
+                                color: #FFFFFF;
+                                box-shadow: 0 2px 6px rgba(0, 176, 80, 0.4);
+                            }
+
+                            &.grade-mep {
+                                background: var(--grade-mep-color);
+                                color: #1A4E00;
+                                box-shadow: 0 2px 6px rgba(146, 208, 80, 0.4);
+                            }
+
+                            &.grade-ep {
+                                background: var(--grade-ep-color);
+                                color: #5D5D00;
+                                box-shadow: 0 2px 6px rgba(255, 255, 0, 0.4);
+                            }
+
+                            &.grade-lep {
+                                background: var(--grade-lep-color);
+                                color: #5D3000;
+                                box-shadow: 0 2px 6px rgba(255, 192, 0, 0.4);
+                            }
+
+                            &.grade-la {
+                                background: var(--grade-la-color);
+                                color: #FFFFFF;
+                                box-shadow: 0 2px 6px rgba(255, 0, 0, 0.4);
+                            }
+
+                            // Legacy grade classes (for backward compatibility)
                             &.grade-a {
                                 background: linear-gradient(135deg, var(--pastel-mint) 0%, var(--pastel-mint-light) 100%);
                                 color: var(--text-on-pastel);
                                 box-shadow: 0 2px 6px rgba(173, 235, 179, 0.3);
                             }
-                            
+
                             &.grade-b {
                                 background: linear-gradient(135deg, var(--pastel-sky) 0%, var(--pastel-sky-light) 100%);
                                 color: var(--text-on-dark-pastel);
                                 box-shadow: 0 2px 6px rgba(179, 235, 242, 0.3);
                             }
-                            
+
                             &.grade-c {
                                 background: linear-gradient(135deg, var(--pastel-yellow) 0%, var(--pastel-peach) 100%);
                                 color: #8B6F00;
                                 box-shadow: 0 2px 6px rgba(255, 253, 150, 0.3);
                             }
-                            
+
                             &.grade-d, &.grade-f {
                                 background: linear-gradient(135deg, var(--pastel-coral) 0%, var(--pastel-peach) 100%);
                                 color: #C62828;
@@ -1516,9 +1671,39 @@ core-loading {
                                 font-size: 0.875rem;
                                 font-weight: 600;
                                 padding: 4px 10px;
-                                background: var(--bg-pastel-overlay);
                                 border-radius: var(--radius-full);
-                                color: var(--text-on-pastel);
+
+                                // Attainment scale colors
+                                &.grade-ha {
+                                    background: var(--grade-ha-color);
+                                    color: #FFFFFF;
+                                }
+
+                                &.grade-mep {
+                                    background: var(--grade-mep-color);
+                                    color: #1A4E00;
+                                }
+
+                                &.grade-ep {
+                                    background: var(--grade-ep-color);
+                                    color: #5D5D00;
+                                }
+
+                                &.grade-lep {
+                                    background: var(--grade-lep-color);
+                                    color: #5D3000;
+                                }
+
+                                &.grade-la {
+                                    background: var(--grade-la-color);
+                                    color: #FFFFFF;
+                                }
+
+                                // Fallback for no class
+                                &:not(.grade-ha):not(.grade-mep):not(.grade-ep):not(.grade-lep):not(.grade-la) {
+                                    background: var(--bg-pastel-overlay);
+                                    color: var(--text-on-pastel);
+                                }
                             }
                         }
                     }

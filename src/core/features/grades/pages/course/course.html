@@ -84,15 +84,16 @@
                         <ion-icon name="bar-chart-outline"></ion-icon>
                         {{ 'core.grades.gradedistribution' | translate }}
                     </h3>
-                    <div class="chart-placeholder">
-                        <!-- Chart temporarily disabled for debugging -->
-                        <p>Distribution data: {{ gradeDistributionData | json }}</p>
-                    </div>
-                    <div class="distribution-legend">
-                        <div class="legend-item" *ngFor="let item of getGradeDistributionLegend()">
-                            <span class="legend-color" [style.background]="item.color"></span>
-                            <span class="legend-label">{{ item.label }}</span>
-                            <span class="legend-value">{{ item.count }}</span>
+                    <div class="distribution-bars">
+                        <div class="distribution-row" *ngFor="let item of getGradeDistributionLegend()">
+                            <div class="row-label">
+                                <span class="abbrev" [style.background]="item.color" [style.color]="item.textColor">{{ item.abbrev }}</span>
+                                <span class="description">{{ item.description }}</span>
+                            </div>
+                            <div class="row-bar">
+                                <div class="bar-fill" [style.background]="item.color" [style.width.%]="item.percentage"></div>
+                            </div>
+                            <span class="row-count">{{ item.count }}</span>
                         </div>
                     </div>
                 </div>
@@ -154,19 +155,10 @@
                             </div>
                             <div class="category-details">
                                 <h3>{{ category.name }}</h3>
-                                <p>{{ category.itemCount }} items • Weight: {{ category.weight }}%</p>
+                                <p>{{ category.itemCount }} items</p>
                             </div>
                         </div>
-                        <div class="category-stats">
-                            <div class="category-grade">
-                                <span class="grade">{{ category.grade }}</span>
-                                <span class="max">/{{ category.maxGrade }}</span>
-                            </div>
-                            <div class="category-percentage" [class]="getGradeClass(category.percentage)">
-                                {{ category.percentage }}%
-                            </div>
-                            <ion-icon name="chevron-down" class="expand-icon" [class.expanded]="category.expanded"></ion-icon>
-                        </div>
+                        <ion-icon name="chevron-down" class="expand-icon" [class.expanded]="category.expanded"></ion-icon>
                     </div>
 
                     <div class="category-content" [class.expanded]="category.expanded">
@@ -190,20 +182,9 @@
                                     </div>
                                     <div class="grade-details">
                                         <span class="percentage" *ngIf="item.percentage">{{ item.percentage }}%</span>
-                                        <span class="weight" *ngIf="item.weight">Weight: {{ item.weight }}</span>
+                                        <span class="weight" *ngIf="item.weight">Weight: {{ item.weight }}%</span>
                                     </div>
                                 </div>
-                            </div>
-                        </div>
-
-                        <!-- Category Progress Bar -->
-                        <div class="category-progress">
-                            <div class="progress-info">
-                                <span>Progress</span>
-                                <span>{{ category.completedItems }}/{{ category.totalItems }} completed</span>
-                            </div>
-                            <div class="progress-bar">
-                                <div class="progress-fill" [style.width.%]="category.completionPercentage"></div>
                             </div>
                         </div>
                     </div>
@@ -228,7 +209,7 @@
                                     </div>
                                     <div class="item-grade">
                                         <span class="grade-value">{{ item.grade }}</span>
-                                        <span class="grade-percentage" *ngIf="item.percentage && item.percentage !== '-'">{{ item.percentage }}</span>
+                                        <span class="grade-percentage" [class]="getGradeBadgeClass(item)" *ngIf="item.percentage && item.percentage !== '-'">{{ item.percentage }}</span>
                                     </div>
                                 </div>
                                 <div class="timeline-connector"></div>
@@ -282,14 +263,14 @@
                                     <div class="grade-section" *ngIf="row.grade">
                                         <div class="grade-main">
                                             <ion-icon *ngIf="row.gradeIcon" [name]="row.gradeIcon" [attr.aria-label]="row.gradeIconAlt"></ion-icon>
-                                            <span class="grade-value {{row.gradeClass}}" [innerHTML]="row.grade"></span>
+                                            <span class="grade-value" [innerHTML]="row.grade"></span>
                                         </div>
                                         <div class="grade-secondary">
                                             <span class="range" *ngIf="row.range">{{ row.range }}</span>
-                                            <span class="percentage" *ngIf="row.percentage">{{ row.percentage }}</span>
+                                            <span class="percentage grade-badge" [class]="getRowGradeClass(row)" *ngIf="row.percentage">{{ row.percentage }}</span>
                                         </div>
                                     </div>
-                                    
+
                                     <!-- Weight if visible -->
                                     <div class="weight-info" *ngIf="row.weight && !row.expandable">
                                         <span class="label">Weight:</span>
