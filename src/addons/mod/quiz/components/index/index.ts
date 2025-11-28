@@ -96,6 +96,7 @@ export class AddonModQuizIndexComponent extends CoreCourseModuleMainActivityComp
     showReviewColumn = false; // Whether to show the review column.
     attempts: QuizAttempt[] = []; // List of attempts the user has made.
     bestGrade?: AddonModQuizGetUserBestGradeWSResponse; // Best grade data.
+    gradeToPass?: string; // Grade to pass.
     hasQuestions = false; // Whether the quiz has questions.
 
     protected fetchContentDefaultError = 'addon.mod_quiz.errorgetquiz'; // Default error to show when loading contents.
@@ -258,6 +259,10 @@ export class AddonModQuizIndexComponent extends CoreCourseModuleMainActivityComp
     ): Promise<void> {
         // Always get the best grade because it includes the grade to pass.
         this.bestGrade = await AddonModQuiz.getUserBestGrade(quiz.id, { cmId: this.module.id });
+
+        if (typeof this.bestGrade.gradetopass === 'number') {
+            this.gradeToPass = AddonModQuiz.formatGrade(this.bestGrade.gradetopass, quiz.decimalpoints);
+        }
 
         // Get access information of last attempt (it also works if no attempts made).
         this.attemptAccessInfo = await AddonModQuiz.getAttemptAccessInformation(quiz.id, 0, { cmId: this.module.id });
