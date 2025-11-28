@@ -405,6 +405,11 @@ export class CoreQuestionHelperProvider {
                 return;
             }
 
+            // @todo: Temporary fix, see MOBILE-4956.
+            if (name.startsWith('ion-textarea-')) {
+                return;
+            }
+
             // Get the value.
             if (element.type == 'checkbox') {
                 answers[name] = !!element.checked;
