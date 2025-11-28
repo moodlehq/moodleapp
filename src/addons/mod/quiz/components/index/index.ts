@@ -83,7 +83,6 @@ export class AddonModQuizIndexComponent extends CoreCourseModuleMainActivityComp
     unsupportedRules: string[] = []; // List of unsupported access rules of the quiz.
     unsupportedQuestions: string[] = []; // List of unsupported question types of the quiz.
     behaviourSupported = false; // Whether the quiz behaviour is supported.
-    showResults = false; // Whether to show the result of the quiz (grade, etc.).
     gradeOverridden = false; // Whether grade has been overridden.
     gradebookFeedback?: string; // The feedback in the gradebook.
     gradeResult?: string; // Message with the grade.
@@ -124,7 +123,7 @@ export class AddonModQuizIndexComponent extends CoreCourseModuleMainActivityComp
             ADDON_MOD_QUIZ_ATTEMPT_FINISHED_EVENT,
             (data) => {
                 // Go to review attempt if an attempt in this quiz was finished and synced.
-                if (this.quiz && data.quizId == this.quiz.id) {
+                if (this.quiz && data.quizId === this.quiz.id) {
                     this.autoReview = data;
                 }
             },
@@ -240,7 +239,7 @@ export class AddonModQuizIndexComponent extends CoreCourseModuleMainActivityComp
         // For closed quizzes we don't receive the hasquestions value (to be fixed in MDL-84360), so we need to check the types.
         this.hasQuestions = quiz.hasquestions !== undefined ? quiz.hasquestions !== 0 : types.length > 0;
         this.unsupportedQuestions = AddonModQuiz.getUnsupportedQuestions(types);
-        this.hasSupportedQuestions = !!types.find((type) => type != 'random' && this.unsupportedQuestions.indexOf(type) == -1);
+        this.hasSupportedQuestions = !!types.find((type) => type !== 'random' && this.unsupportedQuestions.indexOf(type) === -1);
 
         await this.getAttempts(quiz, this.quizAccessInfo);
 
@@ -252,6 +251,7 @@ export class AddonModQuizIndexComponent extends CoreCourseModuleMainActivityComp
      * Get the user attempts in the quiz and the result info.
      *
      * @param quiz Quiz instance.
+     * @param accessInfo Quiz access information.
      */
     protected async getAttempts(
         quiz: AddonModQuizQuizData,
@@ -341,9 +341,17 @@ export class AddonModQuizIndexComponent extends CoreCourseModuleMainActivityComp
      * @param quiz Quiz.
      */
     protected async getResultInfo(quiz: AddonModQuizQuizData): Promise<void> {
-        if (!this.attempts.length || !quiz.showAttemptsGrades || !this.bestGrade?.hasgrade ||
-            this.gradebookData?.grade === undefined) {
-            this.showResults = false;
+        if (!this.attempts.length || !quiz.showAttemptsGrades) {
+            this.gradeResult = undefined;
+
+            return;
+        }
+
+        if (!this.bestGrade?.hasgrade || this.gradebookData?.grade === undefined) {
+            this.gradeResult = Translate.instant('core.grades.gradelong', { $a: {
+                grade: Translate.instant('addon.mod_quiz.notyetgraded'),
+                max: quiz.gradeFormatted,
+            } });
 
             return;
         }
@@ -353,11 +361,10 @@ export class AddonModQuizIndexComponent extends CoreCourseModuleMainActivityComp
         const formattedBestGrade = AddonModQuiz.formatGrade(bestGrade, quiz.decimalpoints);
         let gradeToShow = formattedGradebookGrade; // By default we show the grade in the gradebook.
 
-        this.showResults = true;
-        this.gradeOverridden = formattedGradebookGrade != formattedBestGrade;
+        this.gradeOverridden = formattedGradebookGrade !== formattedBestGrade;
         this.gradebookFeedback = this.gradebookData.feedback;
 
-        if (bestGrade && bestGrade > this.gradebookData.grade && this.gradebookData.grade == quiz.grade) {
+        if (bestGrade && bestGrade > this.gradebookData.grade && this.gradebookData.grade === quiz.grade) {
             // The best grade is higher than the max grade for the quiz.
             // We'll do like Moodle web and show the best grade instead of the gradebook grade.
             this.gradeOverridden = false;
@@ -394,6 +401,8 @@ export class AddonModQuizIndexComponent extends CoreCourseModuleMainActivityComp
 
     /**
      * Go to review an attempt that has just been finished.
+     *
+     * @param attempts The list of attempts.
      */
     protected async goToAutoReview(attempts: AddonModQuizAttemptWSData[]): Promise<void> {
         if (!this.autoReview) {
@@ -503,7 +512,7 @@ export class AddonModQuizIndexComponent extends CoreCourseModuleMainActivityComp
             this.checkCompletion();
         }
 
-        if (this.quiz && syncEventData.quizId == this.quiz.id) {
+        if (this.quiz && syncEventData.quizId === this.quiz.id) {
             this.content?.scrollToTop();
 
             return true;
@@ -664,6 +673,8 @@ export class AddonModQuizIndexComponent extends CoreCourseModuleMainActivityComp
 
     /**
      * Go to page to review the attempt.
+     *
+     * @param attemptId The ID of the attempt to review.
      */
     async reviewAttempt(attemptId: number): Promise<void> {
         await CoreNavigator.navigateToSitePath(
