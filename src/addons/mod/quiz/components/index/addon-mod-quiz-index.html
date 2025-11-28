@@ -36,13 +36,13 @@
                         </ion-label>
                     </ion-item>
                 }
-                @if (bestGrade && bestGrade.gradetopass && quiz && quiz.gradeFormatted) {
+                @if (bestGrade && gradeToPass && quiz && quiz.gradeFormatted) {
                     <ion-item class="ion-text-wrap">
                         <ion-label>
                             <p class="item-heading">{{ 'core.grades.gradepass' | translate }}</p>
                             <p>{{ 'addon.mod_quiz.outof' | translate: { $a: {
-                        grade: bestGrade.gradetopass,
-                        maxgrade: quiz.gradeFormatted
+                                grade: gradeToPass,
+                                maxgrade: quiz.gradeFormatted
                         } } }}</p>
                         </ion-label>
                     </ion-item>
