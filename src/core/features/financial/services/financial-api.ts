@@ -27,6 +27,7 @@ export interface ParentFinancialResponse {
         name: string;
         email: string;
         mobile: string;
+        loyalty_status?: string;
     };
     students?: StudentFinancialData[];
 }
@@ -302,11 +303,11 @@ export class CoreFinancialAPIService {
      * Get financial data for a parent's children.
      *
      * @param parentSequence The parent's sequence number.
-     * @returns Promise with financial data for all children.
+     * @returns Promise with financial data for all children and parent info.
      */
     async getParentFinancialData(
         parentSequence: string,
-    ): Promise<StudentFinancialData[]> {
+    ): Promise<{ students: StudentFinancialData[]; parentLoyaltyStatus?: string }> {
         console.log(
             "[Financial API] Getting parent financial data for sequence:",
             parentSequence,
@@ -323,12 +324,15 @@ export class CoreFinancialAPIService {
         console.log("[Financial API] Parent financial data result:", result);
 
         if (result.success && result.students) {
-            return result.students;
+            return {
+                students: result.students,
+                parentLoyaltyStatus: result.parent?.loyalty_status,
+            };
         } else if (result.error) {
             throw new Error(result.error);
         }
 
-        return [];
+        return { students: [] };
     }
 
     /**

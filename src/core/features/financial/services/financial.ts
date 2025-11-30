@@ -25,8 +25,9 @@ import { CoreUser } from '@features/user/services/user';
 @Injectable({ providedIn: 'root' })
 export class CoreFinancialService {
 
-    protected financialDataCache: Map<string, { data: StudentFinancialData[]; timestamp: number }> = new Map();
+    protected financialDataCache: Map<string, { data: StudentFinancialData[]; timestamp: number; parentLoyaltyStatus?: string }> = new Map();
     protected readonly CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
+    protected parentLoyaltyStatus?: string;
 
     constructor(
         protected financialAPI: CoreFinancialAPIService,
@@ -106,16 +107,23 @@ export class CoreFinancialService {
         // Check cache
         const cacheKey = `${site.getId()}_${parentSequence}`;
         const cached = this.financialDataCache.get(cacheKey);
-        
+
         if (!refresh && cached && Date.now() - cached.timestamp < this.CACHE_DURATION) {
+            this.parentLoyaltyStatus = cached.parentLoyaltyStatus;
             return cached.data;
         }
 
         try {
             // Fetch fresh data
             console.log('[Financial Service] Calling API with parent sequence:', parentSequence);
-            const financialData = await this.financialAPI.getParentFinancialData(parentSequence);
-            console.log('[Financial Service] API response:', financialData);
+            const response = await this.financialAPI.getParentFinancialData(parentSequence);
+            console.log('[Financial Service] API response:', response);
+
+            // Store parent loyalty status
+            this.parentLoyaltyStatus = response.parentLoyaltyStatus;
+            console.log('[Financial Service] Parent loyalty status:', this.parentLoyaltyStatus);
+
+            const financialData = response.students;
 
             // Filter out PN (Prenursery) students
             const filteredStudents = financialData.filter(student => this.shouldShowStudent(student));
@@ -128,6 +136,7 @@ export class CoreFinancialService {
             this.financialDataCache.set(cacheKey, {
                 data: processedData,
                 timestamp: Date.now(),
+                parentLoyaltyStatus: this.parentLoyaltyStatus,
             });
 
             return processedData;
@@ -136,10 +145,29 @@ export class CoreFinancialService {
             // If API fails, return cached data if available
             if (cached) {
                 console.log('[Financial Service] Returning cached data');
+                this.parentLoyaltyStatus = cached.parentLoyaltyStatus;
                 return cached.data;
             }
             throw error;
         }
+    }
+
+    /**
+     * Check if the parent has platinum loyalty status.
+     *
+     * @returns Whether parent is platinum.
+     */
+    isParentPlatinum(): boolean {
+        return this.parentLoyaltyStatus?.toLowerCase() === 'platinum';
+    }
+
+    /**
+     * Get the parent's loyalty status.
+     *
+     * @returns Parent loyalty status.
+     */
+    getParentLoyaltyStatus(): string | undefined {
+        return this.parentLoyaltyStatus;
     }
 
     /**

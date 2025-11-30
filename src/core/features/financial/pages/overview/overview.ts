@@ -43,6 +43,7 @@ export class CoreFinancialOverviewPage implements OnInit {
     selectedStudent?: StudentFinancialData;
     expandedYears = new Set<string>();
     expandedStudentSections = new Map<string, Set<string>>();
+    isParentPlatinum = false;
 
     constructor(private alertController: AlertController) {}
 
@@ -89,6 +90,10 @@ export class CoreFinancialOverviewPage implements OnInit {
     async loadFinancialData(refresh = false): Promise<void> {
         try {
             this.studentsFinancialData = await CoreFinancial.getAllChildrenFinancialData(refresh);
+
+            // Check if parent is platinum
+            this.isParentPlatinum = CoreFinancial.isParentPlatinum();
+            console.log('[Financial Overview] Parent is platinum:', this.isParentPlatinum);
 
             // Calculate totals
             this.totalBalance = CoreFinancial.calculateTotalBalance(this.studentsFinancialData);
