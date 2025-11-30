@@ -25,13 +25,8 @@ export class CoreGradesCoursesSource extends CoreRoutedItemsManagerSource<CoreGr
      * @inheritdoc
      */
     protected async loadPageItems(): Promise<{ items: CoreGradesGradeOverviewWithCourseData[] }> {
-        console.log('[Grades Source] loadPageItems called');
         const grades = await CoreGrades.getCoursesGrades();
-        console.log('[Grades Source] Grades received:', grades);
-        console.log('[Grades Source] Number of grades:', grades?.length || 0);
         const courses = await CoreGradesHelper.getGradesCourseData(grades);
-        console.log('[Grades Source] Courses with grade data:', courses);
-        console.log('[Grades Source] Number of courses:', courses?.length || 0);
 
         return { items: courses };
     }

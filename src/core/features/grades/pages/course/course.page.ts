@@ -99,11 +99,16 @@ export class CoreGradesCoursePage implements AfterViewInit, OnDestroy {
             this.useLegacyLayout = !CoreSites.getRequiredCurrentSite().isVersionGreaterEqualThan('4.1');
 
             switch (route.snapshot?.data.swipeManagerSource ?? route.snapshot?.parent?.data.swipeManagerSource) {
-                case 'courses':
-                    this.swipeManager = new CoreGradesCourseCoursesSwipeManager(
-                        CoreRoutedItemsManagerSourcesTracker.getOrCreateSource(CoreGradesCoursesSource, []),
-                    );
+                case 'courses': {
+                    const source = CoreRoutedItemsManagerSourcesTracker.getOrCreateSource(CoreGradesCoursesSource, []);
+                    // Log current items for debugging - these might be stale if user switched children
+                    const currentItems = source.getItems();
+                    console.log('[Course Page] Swipe source items:', currentItems?.map((c: any) => c.courseid));
+                    // Don't reset here - the courses page should have done it
+                    // Just create the swipe manager with current source
+                    this.swipeManager = new CoreGradesCourseCoursesSwipeManager(source);
                     break;
+                }
                 case 'participants': {
                     const search = CoreNavigator.getRouteParam('search');
 
@@ -130,14 +135,12 @@ export class CoreGradesCoursePage implements AfterViewInit, OnDestroy {
      * @inheritdoc
      */
     async ngAfterViewInit(): Promise<void> {
-        console.log('[Grades] ngAfterViewInit started');
         this.withinSplitView = !!this.element.nativeElement.parentElement?.closest('core-split-view');
 
         // Check if we're coming from the course page (URL contains /course/ followed by number and /grades)
         const currentUrl = window.location.href;
         // Hide header when accessed from course page with URL pattern like /main/home/course/4/grades
         this.hideHeader = /\/course\/\d+\/grades/.test(currentUrl);
-        console.log('[Grades] Hide header:', this.hideHeader, 'URL:', currentUrl);
 
         // Check if viewing as parent/mentee
         await this.checkParentContext();
@@ -146,7 +149,6 @@ export class CoreGradesCoursePage implements AfterViewInit, OnDestroy {
         await this.fetchInitialGrades();
 
         this.loaded = true;
-        console.log('[Grades] Component loaded, viewMode:', this.viewMode);
     }
 
     /**
@@ -223,51 +225,29 @@ export class CoreGradesCoursePage implements AfterViewInit, OnDestroy {
 
     /**
      * Check if viewing as parent and update context accordingly.
+     * Note: We don't override userId here - we trust the current authentication.
+     * The userId is already set from the route or current site user.
      */
     private async checkParentContext(): Promise<void> {
         try {
-            const currentSiteUserId = CoreSites.getCurrentSiteUserId();
-            console.log('[Grades Course] checkParentContext - Initial state:', {
-                currentSiteUserId,
-                thisUserId: this.userId
-            });
+            // Check if user is a parent (for UI purposes only)
+            this.isParentUser = await CoreUserParent.isParentUser();
 
-            // Check if a mentee is selected first
+            // Check if viewing as a mentee
             const selectedMenteeId = await CoreUserParent.getSelectedMentee();
-            console.log('[Grades Course] Selected mentee ID:', selectedMenteeId);
+            const currentSiteUserId = CoreSites.getCurrentSiteUserId();
 
-            if (selectedMenteeId) {
-                // A mentee is selected - use their ID for grades
-                this.userId = selectedMenteeId;
+            if (selectedMenteeId && currentSiteUserId === selectedMenteeId) {
                 this.viewingAsMentee = true;
-
-                // Check if token switching worked
-                if (currentSiteUserId === selectedMenteeId) {
-                    console.log('[Grades Course] Token switching worked - authenticated as mentee');
-                } else {
-                    console.log('[Grades Course] Token switching may have failed - current user:', currentSiteUserId, 'mentee:', selectedMenteeId);
-                }
 
                 // Get mentee details for display
                 try {
                     const mentees = await CoreUserParent.getMentees();
                     this.selectedMentee = mentees.find(m => m.id === selectedMenteeId);
-                    console.log('[Grades Course] Found mentee:', this.selectedMentee?.fullname);
-                } catch (e) {
-                    console.error('[Grades Course] Error getting mentees:', e);
+                } catch {
+                    // Ignore error getting mentee details
                 }
-
-                // Also check if user is a parent (for UI purposes)
-                this.isParentUser = await CoreUserParent.isParentUser();
-            } else {
-                console.log('[Grades Course] No mentee selected, using current user');
             }
-
-            console.log('[Grades Course] Final state:', {
-                userId: this.userId,
-                viewingAsMentee: this.viewingAsMentee,
-                isParentUser: this.isParentUser
-            });
         } catch (error) {
             console.error('Error checking parent context:', error);
         }
@@ -306,55 +286,42 @@ export class CoreGradesCoursePage implements AfterViewInit, OnDestroy {
      * Update the table of grades.
      */
     private async fetchGrades(): Promise<void> {
-        console.log('[Grades Course] fetchGrades called for course:', this.courseId, 'user:', this.userId);
-        
-        const table = await CoreGrades.getCourseGradesTable(this.courseId, this.userId);
-        console.log('[Grades Course] Raw table data:', {
-            courseid: table.courseid,
-            userid: table.userid,
-            userfullname: table.userfullname,
-            maxdepth: table.maxdepth,
-            tabledataLength: table.tabledata?.length || 0,
-            firstRow: table.tabledata?.[0]
-        });
-        
+        let table;
+        try {
+            table = await CoreGrades.getCourseGradesTable(this.courseId, this.userId);
+        } catch (error: any) {
+            // Check if this is an access error (likely wrong child's course)
+            const errorMessage = error?.message || '';
+            if (errorMessage.toLowerCase().includes('not accessible') ||
+                errorMessage.toLowerCase().includes('access denied')) {
+                // The course might belong to a different child
+                // Navigate back to courses list
+                console.warn('[Course Page] Course not accessible for current user, navigating back');
+                CoreDomUtils.showErrorModal('This course is not accessible. You may need to select a different child or navigate to the grades list.');
+                CoreNavigator.back();
+
+                return;
+            }
+            throw error;
+        }
         const formattedTable = await CoreGradesHelper.formatGradesTable(table);
-        console.log('[Grades Course] Formatted table:', {
-            columnsCount: formattedTable.columns.length,
-            columns: formattedTable.columns.map(c => c.name),
-            rowsCount: formattedTable.rows.length,
-            firstRow: formattedTable.rows[0],
-            itemTypes: formattedTable.rows.map(r => r.itemtype),
-            rowsWithoutItemType: formattedTable.rows.filter(r => !r.itemtype).length
-        });
 
         this.title = this.swipeManager?.getPageTitle()
             ?? formattedTable.rows[0]?.gradeitem
             ?? Translate.instant('core.grades.grades');
         this.columns = formattedTable.columns;
-        
+
         // Filter and reorder rows to fix empty category totals
         this.rows = this.filterAndReorderRows(formattedTable.rows);
-        
+
         this.rowsOnView = this.getRowsOnHeight();
         this.totalColumnsSpan = formattedTable.columns.reduce((total, column) => total + column.colspan, 0);
-        
-        console.log('[Grades Course] Final state:', {
-            title: this.title,
-            columnsCount: this.columns.length,
-            rowsCount: this.rows.length,
-            rowsOnView: this.rowsOnView,
-            totalColumnsSpan: this.totalColumnsSpan
-        });
 
         this.logView();
-        
+
         // Process data for visualizations
         if (this.rows && this.rows.length > 0) {
-            console.log('[Grades] Processing data - found', this.rows.length, 'rows');
             this.processGradesData();
-        } else {
-            console.log('[Grades] WARNING: No rows to process!');
         }
     }
 
@@ -368,17 +335,16 @@ export class CoreGradesCoursePage implements AfterViewInit, OnDestroy {
         // Find and store course total for header display
         rows.forEach(row => {
             const gradeItemName = row.gradeitem?.toLowerCase() || '';
-            if (row.itemtype === 'courseitem' || gradeItemName.includes('course total')) {
+            const gradeItemClean = CoreText.cleanTags(row.gradeitem || '').toLowerCase();
+
+            // Check various ways the course total might appear
+            const isCourseItem = row.itemtype === 'courseitem';
+            const hasCourseTotal = gradeItemName.includes('course total') || gradeItemClean.includes('course total');
+
+            if (isCourseItem || hasCourseTotal) {
                 this.serverCourseTotal = row;
-                console.log('[Grades] Found server course total:', {
-                    grade: row.grade,
-                    percentage: row.percentage,
-                    range: row.range
-                });
             }
         });
-
-        console.log('[Grades] Total rows from server:', rows.length);
 
         // Return all rows without filtering - let the server decide what to show
         return rows;
@@ -391,13 +357,8 @@ export class CoreGradesCoursePage implements AfterViewInit, OnDestroy {
      */
     protected getRowsOnHeight(): number {
         const rowHeight = 44;
-        const result = Math.floor(window.innerHeight / rowHeight);
-        console.log('[Grades Course] getRowsOnHeight:', {
-            windowHeight: window.innerHeight,
-            rowHeight: rowHeight,
-            calculatedRows: result
-        });
-        return result;
+
+        return Math.floor(window.innerHeight / rowHeight);
     }
 
     /**
@@ -430,20 +391,6 @@ export class CoreGradesCoursePage implements AfterViewInit, OnDestroy {
      * Process grades data for visualizations.
      */
     protected processGradesData(): void {
-        console.log('[Grades] Processing grades data for visualizations');
-        console.log('[Grades] Total rows:', this.rows.length);
-        console.log('[Grades] First 5 rows full data:', this.rows.slice(0, 5).map(r => ({
-            ...r,
-            gradeitem: r.gradeitem?.substring(0, 50) // Truncate for logging
-        })));
-        console.log('[Grades] Row types:', this.rows.map(r => ({ 
-            itemtype: r.itemtype, 
-            gradeitem: r.gradeitem?.substring(0, 50), 
-            grade: r.grade,
-            percentage: r.percentage,
-            range: r.range
-        })));
-        
         // Initialize arrays if not already done
         if (!this.groupedCategories) {
             this.groupedCategories = [];
@@ -451,22 +398,15 @@ export class CoreGradesCoursePage implements AfterViewInit, OnDestroy {
         if (!this.timelineData) {
             this.timelineData = [];
         }
-        
+
         // Group grades by category
         this.groupGradesByCategory();
-        
+
         // Create timeline data
         this.createTimelineData();
-        
+
         // Calculate grade distribution
         this.calculateGradeDistribution();
-        
-        console.log('[Grades] Grouped categories:', this.groupedCategories);
-        console.log('[Grades] Timeline data:', this.timelineData);
-        console.log('[Grades] Distribution data:', {
-            labels: this.gradeDistributionLabels,
-            data: this.gradeDistributionData
-        });
     }
     
     /**
@@ -476,10 +416,8 @@ export class CoreGradesCoursePage implements AfterViewInit, OnDestroy {
         const categories: { [key: string]: any } = {};
         let currentCategory = 'Course';
 
-        console.log('[Grades] Starting category grouping with', this.rows.length, 'rows');
-
         // Process rows in order - category rows define the current category
-        this.rows.forEach((row, index) => {
+        this.rows.forEach((row) => {
             const gradeItemName = row.gradeitem?.toLowerCase() || '';
 
             // Skip leader/spacer rows
@@ -490,7 +428,6 @@ export class CoreGradesCoursePage implements AfterViewInit, OnDestroy {
             // Category header - start new category
             if (row.itemtype === 'category' && !gradeItemName.includes('total')) {
                 currentCategory = CoreText.cleanTags(row.gradeitem || 'Course');
-                console.log('[Grades] Found category:', currentCategory);
                 if (!categories[currentCategory]) {
                     categories[currentCategory] = {
                         name: currentCategory,
@@ -500,6 +437,7 @@ export class CoreGradesCoursePage implements AfterViewInit, OnDestroy {
                         totalItems: 0,
                     };
                 }
+
                 return;
             }
 
@@ -510,7 +448,6 @@ export class CoreGradesCoursePage implements AfterViewInit, OnDestroy {
 
             // Skip items without a grade value (- or empty means ungraded)
             if (!row.grade || row.grade === '-' || row.grade.trim() === '') {
-                console.log('[Grades] Skipping ungraded:', row.gradeitem);
                 return;
             }
 
@@ -540,7 +477,6 @@ export class CoreGradesCoursePage implements AfterViewInit, OnDestroy {
 
             categories[currentCategory].items.push(item);
             categories[currentCategory].totalItems++;
-            console.log('[Grades] Added item to', currentCategory, ':', item.name, 'grade:', item.grade);
         });
 
         // Update item counts
@@ -550,8 +486,6 @@ export class CoreGradesCoursePage implements AfterViewInit, OnDestroy {
 
         // Filter out empty categories
         this.groupedCategories = Object.values(categories).filter(cat => cat.items.length > 0);
-        console.log('[Grades] Grouped into', this.groupedCategories.length, 'categories:',
-            this.groupedCategories.map(c => `${c.name}(${c.items.length})`).join(', '));
     }
     
     /**
@@ -559,31 +493,21 @@ export class CoreGradesCoursePage implements AfterViewInit, OnDestroy {
      */
     protected createTimelineData(): void {
         const timelineItems: any[] = [];
-        
-        console.log('[Grades] Creating timeline data from rows:', this.rows.length);
-        console.log('[Grades] Sample rows:', this.rows.slice(0, 5).map(r => ({
-            itemtype: r.itemtype,
-            gradeitem: r.gradeitem?.substring(0, 30),
-            grade: r.grade
-        })));
-        
+
         this.rows.forEach((row, index) => {
             // Skip totals, categories, and leader items
             if (row.itemtype === 'courseitem' || row.itemtype === 'categoryitem' ||
                 row.itemtype === 'category' || row.itemtype === 'leader') {
-                console.log(`[Grades] Skipping timeline item: ${row.gradeitem} (type: ${row.itemtype})`);
                 return;
             }
 
             // Skip items without grades (but keep 0 grades)
             if (!row.grade || row.grade === '-' || row.grade === '') {
-                console.log(`[Grades] Skipping ungraded timeline item: ${row.gradeitem}`);
                 return;
             }
 
             // Skip items without a name
             if (!row.gradeitem || row.gradeitem.trim() === '') {
-                console.log('[Grades] Skipping timeline item with empty name');
                 return;
             }
 
@@ -593,9 +517,7 @@ export class CoreGradesCoursePage implements AfterViewInit, OnDestroy {
                 // In real implementation, this would come from the grade data
                 const daysAgo = index * 3; // Space items 3 days apart
                 const gradeDate = Date.now() - (daysAgo * 24 * 60 * 60 * 1000);
-                
-                console.log(`[Grades] Adding timeline item: ${row.gradeitem}, grade: ${row.grade}, date: ${new Date(gradeDate).toLocaleDateString()}`);
-                
+
                 // Format grade value
                 let formattedGrade = row.grade || '-';
                 if (formattedGrade !== '-') {
@@ -604,14 +526,14 @@ export class CoreGradesCoursePage implements AfterViewInit, OnDestroy {
                         formattedGrade = this.formatGradeValue(gradeNum);
                     }
                 }
-                
+
                 // Extract percentage without % sign
                 let percentageValue = row.percentage;
                 if (percentageValue && typeof percentageValue === 'string') {
                     const percentNum = this.extractPercentage(percentageValue);
                     percentageValue = this.formatGradeValue(percentNum) + '%';
                 }
-                
+
                 timelineItems.push({
                     name: CoreText.cleanTags(row.gradeitem || ''),
                     grade: formattedGrade || '-',
@@ -622,12 +544,10 @@ export class CoreGradesCoursePage implements AfterViewInit, OnDestroy {
                 });
             }
         });
-        
+
         // Sort by date descending
         timelineItems.sort((a, b) => b.gradedDate - a.gradedDate);
-        
-        console.log('[Grades] Timeline items created:', timelineItems.length);
-        
+
         // Group by month
         const months: { [key: string]: any } = {};
         timelineItems.forEach(item => {
@@ -640,13 +560,11 @@ export class CoreGradesCoursePage implements AfterViewInit, OnDestroy {
             }
             months[monthKey].items.push(item);
         });
-        
+
         this.timelineData = Object.values(months);
-        console.log('[Grades] Timeline months:', this.timelineData);
-        
+
         // If no items, create a placeholder
         if (this.timelineData.length === 0) {
-            console.log('[Grades] No timeline data available - creating placeholder');
             this.timelineData = [{
                 name: 'No Graded Items',
                 items: [{
@@ -695,129 +613,55 @@ export class CoreGradesCoursePage implements AfterViewInit, OnDestroy {
     }
     
     // Helper methods for template
+
+    /**
+     * Check if we have valid server course total data to display.
+     */
+    hasValidCourseTotal(): boolean {
+        return !!(this.serverCourseTotal?.grade &&
+                  this.serverCourseTotal.grade !== '-' &&
+                  this.serverCourseTotal.grade.trim() !== '');
+    }
+
     getCourseTotal(): string {
-        // Use server's calculated course total (respects weights and hidden items)
+        // Only return server data - no fallback
         if (this.serverCourseTotal?.grade && this.serverCourseTotal.grade !== '-') {
-            console.log('[Grades] Using server course total:', this.serverCourseTotal.grade);
             const gradeNum = parseFloat(this.serverCourseTotal.grade);
             if (!isNaN(gradeNum)) {
                 return this.formatGradeValue(gradeNum);
             }
             return this.serverCourseTotal.grade;
         }
-
-        // Fallback to calculating from visible items only if no server total
-        console.log('[Grades] No server course total, calculating from visible items');
-        const gradedSum = this.calculateGradedItemsSum();
-        return this.formatGradeValue(gradedSum);
+        return '-';
     }
 
     getCourseMaxGrade(): string {
-        // Use server's calculated max grade from range (respects weights)
+        // Only return server data - no fallback
         if (this.serverCourseTotal?.range) {
             const maxGrade = this.extractMaxGrade(this.serverCourseTotal.range);
-            console.log('[Grades] Using server max grade:', maxGrade);
             const maxGradeNum = parseFloat(maxGrade);
             if (!isNaN(maxGradeNum)) {
                 return maxGradeNum % 1 === 0 ? maxGradeNum.toString() : maxGradeNum.toFixed(2);
             }
             return maxGrade;
         }
-
-        // Fallback to calculating from visible items only if no server total
-        console.log('[Grades] No server max grade, calculating from visible items');
-        const maxGrade = this.calculateMaxGradeSum();
-        return maxGrade % 1 === 0 ? maxGrade.toString() : maxGrade.toFixed(2);
+        return '100';
     }
 
     getCoursePercentage(): string {
-        // Use server's calculated percentage (respects weights and hidden items)
-        if (this.serverCourseTotal?.percentage) {
-            console.log('[Grades] Using server percentage:', this.serverCourseTotal.percentage);
-            // Server percentage might have % sign, extract just the number
+        // Only return server data - no fallback
+        if (this.serverCourseTotal?.percentage && this.serverCourseTotal.percentage !== '-') {
             const percentNum = this.extractPercentage(this.serverCourseTotal.percentage);
             if (percentNum > 0) {
                 return percentNum.toFixed(2) + '%';
             }
             return this.serverCourseTotal.percentage;
         }
-
-        // Fallback to calculating from visible items
-        console.log('[Grades] No server percentage, calculating from totals');
-        const total = parseFloat(this.getCourseTotal());
-        const maxGrade = parseFloat(this.getCourseMaxGrade());
-
-        if (maxGrade > 0) {
-            const calculatedPercentage = (total / maxGrade) * 100;
-            return calculatedPercentage.toFixed(2) + '%';
-        }
-
-        return '0%';
+        return '-';
     }
 
     getCoursePercentageNumber(): number {
-        const percentage = this.extractPercentage(this.getCoursePercentage());
-        console.log('[Grades] Course percentage number:', percentage);
-        return percentage;
-    }
-    
-    /**
-     * Calculate the sum of all visible graded items (excluding totals).
-     */
-    protected calculateGradedItemsSum(): number {
-        let sum = 0;
-        this.rows.forEach(row => {
-            // Skip totals, category items, and course items
-            if (row.itemtype === 'courseitem' || row.itemtype === 'categoryitem' ||
-                row.itemtype === 'category' || row.itemtype === 'leader') {
-                return;
-            }
-
-            // Only count items with actual grades
-            if (!row.grade || row.grade === '-') {
-                return;
-            }
-
-            // Parse the grade value
-            const gradeValue = parseFloat(row.grade);
-            if (!isNaN(gradeValue)) {
-                sum += gradeValue;
-                console.log('[Grades] Adding grade:', row.gradeitem, '=', gradeValue, 'Total so far:', sum);
-            }
-        });
-        console.log('[Grades] Final sum of visible graded items:', sum);
-        return sum;
-    }
-
-    /**
-     * Calculate the sum of max grades for all visible graded items.
-     */
-    protected calculateMaxGradeSum(): number {
-        let sum = 0;
-        this.rows.forEach(row => {
-            // Skip totals, category items, and course items
-            if (row.itemtype === 'courseitem' || row.itemtype === 'categoryitem' ||
-                row.itemtype === 'category' || row.itemtype === 'leader') {
-                return;
-            }
-
-            // Only count items with actual grades (same filter as calculateGradedItemsSum)
-            if (!row.grade || row.grade === '-') {
-                return;
-            }
-
-            // Extract max grade from range (e.g., "0-100" -> 100)
-            if (row.range) {
-                const maxGrade = this.extractMaxGrade(row.range);
-                const maxGradeNum = parseFloat(maxGrade);
-                if (!isNaN(maxGradeNum)) {
-                    sum += maxGradeNum;
-                    console.log('[Grades] Adding max grade:', row.gradeitem, '=', maxGradeNum, 'Max total so far:', sum);
-                }
-            }
-        });
-        console.log('[Grades] Final sum of max grades for visible items:', sum);
-        return sum;
+        return this.extractPercentage(this.getCoursePercentage());
     }
     
     getCompletedItems(): number {
@@ -864,14 +708,11 @@ export class CoreGradesCoursePage implements AfterViewInit, OnDestroy {
     }
 
     hasGradeDistribution(): boolean {
-        const hasData = this.gradeDistributionData.length > 0;
-        console.log('[Grades] hasGradeDistribution:', hasData, 'data:', this.gradeDistributionData);
-        return hasData;
+        return this.gradeDistributionData.length > 0;
     }
-    
+
     hasPerformanceTrends(): boolean {
         // Simplified - would need historical data
-        console.log('[Grades] hasPerformanceTrends: false (no historical data)');
         return false;
     }
     
@@ -911,22 +752,18 @@ export class CoreGradesCoursePage implements AfterViewInit, OnDestroy {
     }
     
     onViewModeChange(): void {
-        // View mode changed
-        console.log('[Grades] View mode changed to:', this.viewMode);
+        // View mode changed - no action needed
     }
-    
+
     getGroupedGrades(): any[] {
-        console.log('[Grades] getGroupedGrades called, returning:', this.groupedCategories);
         return this.groupedCategories;
     }
-    
+
     toggleCategory(category: any): void {
-        console.log('[Grades] Toggling category:', category.name, 'from', category.expanded, 'to', !category.expanded);
         category.expanded = !category.expanded;
     }
-    
+
     getTimelineMonths(): any[] {
-        console.log('[Grades] getTimelineMonths called, returning:', this.timelineData);
         return this.timelineData;
     }
     

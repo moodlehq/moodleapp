@@ -24,7 +24,7 @@
             <div class="grades-dashboard">
                 <!-- Summary Cards -->
                 <div class="grade-summary-cards">
-                    <div class="summary-card overall-grade">
+                    <div class="summary-card overall-grade" *ngIf="hasValidCourseTotal()">
                         <div class="card-icon">
                             <ion-icon name="trophy-outline"></ion-icon>
                         </div>
@@ -181,8 +181,8 @@
                                         <span>{{ item.grade }}</span>
                                     </div>
                                     <div class="grade-details">
-                                        <span class="percentage" *ngIf="item.percentage">{{ item.percentage }}%</span>
-                                        <span class="weight" *ngIf="item.weight">Weight: {{ item.weight }}%</span>
+                                        <span class="percentage" *ngIf="item.percentage">{{ item.percentage }}</span>
+                                        <span class="weight" *ngIf="item.weight">Weight: {{ item.weight }}</span>
                                     </div>
                                 </div>
                             </div>

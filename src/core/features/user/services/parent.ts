@@ -19,6 +19,7 @@ import { CoreUser, CoreUserProfile } from './user';
 import { makeSingleton } from '@singletons';
 import { CoreError } from '@classes/errors/error';
 import { CoreEvents } from '@singletons/events';
+import { CoreWS } from '@services/ws';
 
 /**
  * Service to handle parent/mentee relationships.
@@ -31,18 +32,31 @@ export class CoreUserParentService {
 
     /**
      * Check if the current user has a parent/mentor role.
+     * This checks if the ORIGINAL user (before any token switching) is a parent.
      *
      * @param siteId Site ID. If not defined, use current site.
      * @returns Promise resolved with boolean indicating if user is a parent.
      */
     async isParentUser(siteId?: string): Promise<boolean> {
         const site = await CoreSites.getSite(siteId);
-        
+
+        // CRITICAL: If we're viewing as a child (token switched), we need to
+        // check if the PARENT is a parent, not the child.
+        const existingOriginalToken = await this.getStoredOriginalToken(site);
+
+        if (existingOriginalToken) {
+            // We're viewing as a child, so the original user IS a parent
+            console.log('[Parent Service] Already viewing as child, original user is a parent');
+
+            return true;
+        }
+
         try {
             console.log('[Parent Service] Checking if user is parent using web service...');
             // Use the dedicated web service to check parent status
-            const response = await site.read<{isparent: boolean, roles: any[], menteecount: number}>('local_aspireparent_get_parent_info', {});
+            const response = await site.read<{isparent: boolean; roles: any[]; menteecount: number}>('local_aspireparent_get_parent_info', {});
             console.log('[Parent Service] Web service response:', response);
+
             return response.isparent || false;
         } catch (error) {
             console.log('[Parent Service] Web service failed:', error);
@@ -51,21 +65,24 @@ export class CoreUserParentService {
                 console.log('[Parent Service] Falling back to user profile check...');
                 const userId = site.getUserId();
                 const user = await CoreUser.getProfile(userId, 0, false, site.getId());
-                
+
                 // Check if user has roles property (from CoreUserCourseProfile)
                 if ('roles' in user && user.roles) {
                     console.log('[Parent Service] User roles found:', user.roles);
                     // Check if any role matches parent role shortnames
-                    const isParent = user.roles.some(role => 
-                        CoreUserParentService.PARENT_ROLE_SHORTNAMES.includes(role.shortname.toLowerCase())
+                    const isParent = user.roles.some(role =>
+                        CoreUserParentService.PARENT_ROLE_SHORTNAMES.includes(role.shortname.toLowerCase()),
                     );
                     console.log('[Parent Service] Is parent based on roles:', isParent);
+
                     return isParent;
                 }
                 console.log('[Parent Service] No roles found in user profile');
+
                 return false;
             } catch (profileError) {
                 console.log('[Parent Service] Profile check failed:', profileError);
+
                 return false;
             }
         }
@@ -79,57 +96,56 @@ export class CoreUserParentService {
      */
     async getMentees(siteId?: string): Promise<CoreUserProfile[]> {
         const site = await CoreSites.getSite(siteId);
-        
+
         console.log('[Parent Service] Getting mentees for user...');
-        
+
         try {
-            // Note: Moodle core doesn't have a direct web service for fetching mentees
-            // The mentees block uses SQL queries to fetch users assigned in user context
-            // For a proper implementation, you would need to:
-            // 1. Create a custom web service in Moodle that replicates the mentees block query
-            // 2. Or use a combination of existing web services to fetch role assignments
-            
-            // The SQL query from mentees block is:
-            // SELECT u.* FROM {role_assignments} ra, {context} c, {user} u
-            // WHERE ra.userid = :mentorid
-            // AND ra.contextid = c.id
-            // AND c.instanceid = u.id
-            // AND c.contextlevel = CONTEXT_USER
-            
-            // Since we can't execute direct SQL from the app, you'll need to implement
-            // a custom web service in your Moodle instance that exposes this functionality
-            
-            const params = {
-                userid: site.getUserId(),
-            };
-            
-            console.log('[Parent Service] Calling local_aspireparent_get_mentees with params:', params);
-            
-            // Custom web service call
+            // CRITICAL: If we're viewing as a child (token switched), we need to use
+            // the PARENT's user ID, not the child's. The child has no mentees!
+            let parentUserId = site.getUserId();
+
+            // Check if we have a stored original (parent) user ID
             try {
-                const response = await site.read<{mentees: CoreUserProfile[]}>('local_aspireparent_get_mentees', params);
+                const storedParentId = await site.getLocalSiteConfig<string>(this.getOriginalUserKey(site.getId()));
+                if (storedParentId && storedParentId !== '') {
+                    parentUserId = parseInt(storedParentId, 10);
+                    console.log('[Parent Service] Using stored parent user ID:', parentUserId);
+                }
+            } catch {
+                // No stored parent ID, use current
+            }
+
+            // If viewing as child, we need to use the parent's token for this call
+            // But we do NOT switch the global token to avoid race conditions
+            const existingOriginalToken = await this.getStoredOriginalToken(site);
+
+            const params = {
+                userid: parentUserId,
+            };
+
+            console.log('[Parent Service] Calling local_aspireparent_get_mentees with params:', params);
+
+            try {
+                let response: {mentees: CoreUserProfile[]};
+
+                if (existingOriginalToken) {
+                    // Use parent token for this specific call without switching global token
+                    console.log('[Parent Service] Using parent token for getMentees (without global switch)');
+                    const wsPreSets = {
+                        wsToken: existingOriginalToken,
+                        siteUrl: site.getURL(),
+                    };
+                    response = await CoreWS.call<{mentees: CoreUserProfile[]}>('local_aspireparent_get_mentees', params, wsPreSets);
+                } else {
+                    response = await site.read<{mentees: CoreUserProfile[]}>('local_aspireparent_get_mentees', params);
+                }
+
                 console.log('[Parent Service] Mentees response:', response);
                 console.log('[Parent Service] Number of mentees found:', response.mentees ? response.mentees.length : 0);
-                
-                // Log each mentee for debugging
-                if (response.mentees && response.mentees.length > 0) {
-                    response.mentees.forEach((mentee, index) => {
-                        console.log(`[Parent Service] Mentee ${index + 1}:`, {
-                            id: mentee.id,
-                            fullname: mentee.fullname,
-                            email: mentee.email
-                        });
-                    });
-                }
-                
+
                 return response.mentees || [];
             } catch (wsError) {
-                // Fallback to empty array if web service doesn't exist
                 console.error('[Parent Service] Web service error:', wsError);
-                console.error('[Parent Service] Error type:', wsError?.constructor?.name);
-                console.error('[Parent Service] Error message:', wsError?.message);
-                console.error('[Parent Service] Error code:', wsError?.code);
-                console.warn('[Parent Service] local_aspireparent_get_mentees web service not found. Please install the local_aspireparent plugin in Moodle.');
                 return [];
             }
         } catch (error) {
@@ -187,12 +203,23 @@ export class CoreUserParentService {
     async setSelectedMentee(menteeId: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
         const key = this.getSelectedMenteeKey(site.getId());
-        
+
         console.log('[Parent Service] Setting selected mentee:', menteeId);
-        console.log('[Parent Service] Storage key:', key);
-        console.log('[Parent Service] Site ID:', site.getId());
-        
-        // Get a token for the mentee
+
+        // CRITICAL: Check if we're already viewing as a different mentee
+        // If so, we need to restore the parent's token FIRST before getting the new mentee's token
+        // The get_mentee_token WS only works with the parent's token, not another child's token
+        const existingOriginalToken = await this.getStoredOriginalToken(site);
+
+        if (existingOriginalToken) {
+            console.log('[Parent Service] Already viewing as a mentee, restoring parent token first...');
+
+            // Temporarily restore the parent's token to make the WS call
+            (site as any).token = existingOriginalToken;
+            console.log('[Parent Service] Temporarily restored parent token for WS call');
+        }
+
+        // Get a token for the mentee (using parent's token)
         try {
             console.log('[Parent Service] Getting token for mentee...');
             const tokenResponse = await site.write<{
@@ -202,78 +229,99 @@ export class CoreUserParentService {
                 privatetoken?: string;
             }>('local_aspireparent_get_mentee_token', {
                 menteeid: menteeId,
-                service: 'moodle_mobile_app'
+                service: 'moodle_mobile_app',
             });
-            
+
             console.log('[Parent Service] Token response:', {
                 menteeid: tokenResponse.menteeid,
                 menteename: tokenResponse.menteename,
-                tokenLength: tokenResponse.token?.length
+                hasToken: !!tokenResponse.token,
             });
-            
+
             if (tokenResponse.token) {
-                // Store the original parent's token and user info
-                const parentToken = site.getToken();
-                const parentInfo = site.getInfo();
-                
-                await site.setLocalSiteConfig(this.getOriginalUserKey(site.getId()), String(parentInfo?.userid || site.getUserId()));
-                await site.setLocalSiteConfig(this.getOriginalTokenKey(site.getId()), parentToken);
-                
-                console.log('[Parent Service] Stored parent info:', {
-                    userid: parentInfo?.userid,
-                    tokenLength: parentToken?.length
-                });
-                
-                // We need to update the token in the site object
-                // Since there's no public method to change the token, we'll use a workaround
-                console.log('[Parent Service] Token before update:', site.getToken()?.substring(0, 10) + '...');
-                
-                // Update the site object's token directly
+                // Store or keep the original parent's token
+                if (!existingOriginalToken) {
+                    // First time switching - store the parent's current token
+                    const parentToken = site.getToken();
+                    const parentInfo = site.getInfo();
+
+                    await site.setLocalSiteConfig(this.getOriginalUserKey(site.getId()), String(parentInfo?.userid || site.getUserId()));
+                    await site.setLocalSiteConfig(this.getOriginalTokenKey(site.getId()), parentToken);
+
+                    console.log('[Parent Service] Stored parent info (first switch)');
+                }
+                // If existingOriginalToken exists, we keep it - it's already the parent's token
+
+                // Update the site object's token to the new mentee's token
                 (site as any).token = tokenResponse.token;
-                
-                console.log('[Parent Service] Token after update:', site.getToken()?.substring(0, 10) + '...');
+
                 console.log('[Parent Service] Updated site object with mentee token');
-                
+
                 // Get the mentee's site info using the new token
                 let menteeInfo;
                 try {
-                    console.log('[Parent Service] Fetching site info with mentee token...');
                     menteeInfo = await site.fetchSiteInfo();
                     console.log('[Parent Service] Mentee site info:', {
                         userid: menteeInfo.userid,
-                        username: menteeInfo.username,
                         fullname: menteeInfo.fullname,
-                        userpictureurl: menteeInfo.userpictureurl
                     });
-                    
+
                     // Update the site's info with the mentee's data
                     site.setInfo(menteeInfo);
-                    
-                    console.log('[Parent Service] Updated site info with mentee data');
-                    console.log('[Parent Service] Site getUserId() now returns:', site.getUserId());
                 } catch (infoError) {
                     console.error('[Parent Service] Error fetching mentee site info:', infoError);
                     // Continue anyway - we have the token
                 }
-                
+
                 // Trigger events to refresh the UI
                 if (menteeInfo) {
                     CoreEvents.trigger(CoreEvents.SITE_UPDATED, menteeInfo, site.getId());
                 }
-                
+
                 console.log('[Parent Service] Site is now using mentee token for all requests');
+            } else {
+                // No token returned - restore original token if we changed it
+                if (existingOriginalToken) {
+                    console.log('[Parent Service] No token returned, keeping parent token');
+                    // Token is already set to parent's token from above
+                }
             }
         } catch (error) {
             console.error('[Parent Service] Failed to get mentee token:', error);
+            // If we temporarily switched to parent token and WS failed,
+            // we need to decide what to do. Keep parent token for safety.
+            if (existingOriginalToken) {
+                console.log('[Parent Service] WS failed, keeping parent token');
+                // Token is already set to parent's token from above
+            }
             // Fall back to using custom web services with parent token
         }
-        
+
         await site.setLocalSiteConfig(key, String(menteeId));
-        
+
         // Verify it was saved
         const saved = await site.getLocalSiteConfig(key);
         console.log('[Parent Service] Verified saved value:', saved);
-        console.log('[Parent Service] Successfully set mentee ID:', menteeId);
+    }
+
+    /**
+     * Get the stored original parent token if it exists.
+     *
+     * @param site The site object.
+     * @returns The original token or null.
+     */
+    private async getStoredOriginalToken(site: CoreSite): Promise<string | null> {
+        try {
+            const token = await site.getLocalSiteConfig<string>(this.getOriginalTokenKey(site.getId()));
+
+            if (token && token !== '') {
+                return token;
+            }
+
+            return null;
+        } catch {
+            return null;
+        }
     }
 
     /**

@@ -204,13 +204,13 @@ export class CoreGradesProvider {
         const selectedMenteeId = await CoreUserParent.getSelectedMentee(site.getId());
         const currentUserId = site.getUserId();
 
-        console.log('[Grades Service] getCourseGradesTable:', {
+        // DEBUG: Log all relevant values
+        console.log('[Grades Service] getCourseGradesTable called:', {
             courseId,
-            requestedUserId: userId,
+            passedUserId: userId,
+            currentUserId,
             selectedMenteeId,
-            currentSiteUserId: currentUserId,
-            tokenSwitchingWorked: selectedMenteeId === currentUserId,
-            usingWS: wsName
+            siteToken: site.getToken()?.substring(0, 20) + '...',
         });
 
         // If mentee is selected, always request grades for the mentee
@@ -224,43 +224,43 @@ export class CoreGradesProvider {
         };
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getCourseGradesCacheKey(courseId, userId),
+            // CRITICAL: Disable reading from cache to avoid stale data when switching children
+            // Use skipQueue to force immediate execution
+            getFromCache: false,
+            saveToCache: true,
+            reusePending: false,
+            skipQueue: true,
         };
 
-        if (ignoreCache) {
-            preSets.getFromCache = false;
-            preSets.emergencyCache = false;
-        }
-
         this.logger.debug(`Using WS ${wsName} with params:`, params);
-        console.log('[Grades Service] Calling WS:', wsName, 'with params:', params);
+
+        // DEBUG: Log final WS call params
+        console.log('[Grades Service] Making WS call:', {
+            wsName,
+            params,
+            cacheKey: preSets.cacheKey,
+        });
 
         try {
             const table = await site.read<CoreGradesGetUserGradesTableWSResponse>(wsName, params, preSets);
 
-            console.log('[Grades Service] WS response:', {
-                hasTables: !!table?.tables,
-                tablesLength: table?.tables?.length,
-                firstTableRowCount: table?.tables?.[0]?.tabledata?.length || 0
-            });
+            console.log('[Grades Service] WS call successful, got table for user:', table?.tables?.[0]?.userid);
 
             if (!table?.tables?.[0]) {
                 throw new CoreError('Couldn\'t get course grades table');
             }
 
-            console.log('[Grades Service] Returning table with', table.tables[0].tabledata?.length || 0, 'rows');
             return table.tables[0];
         } catch (error: any) {
+            console.error('[Grades Service] WS call failed:', error?.message || error);
             // If standard API failed and we have a mentee selected, try the custom WS as fallback
             // This happens when token switching failed and parent doesn't have direct access
             if (selectedMenteeId && selectedMenteeId !== currentUserId) {
-                console.log('[Grades Service] Standard API failed, trying custom WS fallback...');
                 const hasCustomWS = await site.wsAvailable('local_aspireparent_get_mentee_grades_table');
 
                 if (hasCustomWS) {
                     try {
                         const customParams = { courseid: courseId, userid: selectedMenteeId };
-                        console.log('[Grades Service] Calling custom WS with params:', customParams);
-
                         const customTable = await site.read<CoreGradesGetUserGradesTableWSResponse>(
                             'local_aspireparent_get_mentee_grades_table',
                             customParams,
@@ -268,16 +268,18 @@ export class CoreGradesProvider {
                         );
 
                         if (customTable?.tables?.[0]) {
-                            console.log('[Grades Service] Custom WS returned', customTable.tables[0].tabledata?.length || 0, 'rows');
                             return customTable.tables[0];
                         }
-                    } catch (customError) {
-                        console.error('[Grades Service] Custom WS also failed:', customError);
+                    } catch {
+                        // Custom WS also failed - fall through to re-throw original error
                     }
                 }
             }
 
             // Re-throw the original error if fallback didn't work
+            // NOTE: We do NOT clear the mentee selection here anymore.
+            // The token switching in parent service should handle this properly.
+            // Clearing here was causing issues when switching between children.
             throw error;
         }
     }
@@ -292,71 +294,77 @@ export class CoreGradesProvider {
         const site = await CoreSites.getSite(siteId);
 
         this.logger.debug('Get course grades');
-        console.log('[Grades Service] getCoursesGrades called');
-        console.log('[Grades Service] Site user ID:', site.getUserId());
 
-        // Check if viewing as mentee
+        // Get the current user ID - this is crucial for cache keys
+        // When token switching is used, this will be the child's ID
+        const currentUserId = site.getUserId();
+
+        // Check if viewing as mentee (without token switching - parent token with custom WS)
         const selectedMenteeId = await CoreUserParent.getSelectedMentee(site.getId());
-        console.log('[Grades Service] Selected mentee ID:', selectedMenteeId);
-        
-        if (selectedMenteeId && selectedMenteeId !== site.getUserId()) {
-            // Parent viewing mentee's grades
+
+        if (selectedMenteeId && selectedMenteeId !== currentUserId) {
+            // Parent viewing mentee's grades WITHOUT token switching
             this.logger.debug(`Parent viewing mentee's course grades, mentee ID: ${selectedMenteeId}`);
-            
+
             // Use the working web service
             const hasCustomWS = await site.wsAvailable('local_aspireparent_get_mentee_course_grades');
-            console.log('[Grades Service] Custom WS available:', hasCustomWS);
-            
+
             if (hasCustomWS) {
                 this.logger.debug('Using custom WS for parent viewing mentee course grades');
                 const params = { menteeid: selectedMenteeId };
-                console.log('[Grades Service] WS params:', params);
-                
+
                 const preSets: CoreSiteWSPreSets = {
                     cacheKey: this.getCoursesGradesCacheKey() + ':mentee:' + selectedMenteeId,
+                    getFromCache: false,
+                    saveToCache: true,
+                    reusePending: false,
+                    skipQueue: true,
                 };
-                
+
                 try {
-                    console.log('[Grades Service] Calling local_aspireparent_get_mentee_course_grades');
                     const data = await site.read<CoreGradesGetOverviewCourseGradesWSResponse>(
                         'local_aspireparent_get_mentee_course_grades',
                         params,
                         preSets,
                     );
-                    
+
                     this.logger.debug(`Got ${data?.grades?.length || 0} course grades for mentee`);
-                    console.log('[Grades Service] Mentee grades response:', data);
-                    console.log('[Grades Service] Number of grades:', data?.grades?.length || 0);
-                    if (data?.grades && data.grades.length > 0) {
-                        console.log('[Grades Service] First grade:', data.grades[0]);
-                    }
-                    
+
                     if (!data?.grades) {
-                        console.error('[Grades Service] No grades property in response');
                         throw new Error('Couldn\'t get mentee course grades');
                     }
-                    
+
                     return data.grades;
                 } catch (error) {
                     this.logger.error('Error getting mentee course grades:', error);
-                    console.error('[Grades Service] Error details:', error);
                     throw error;
                 }
             }
         }
-
-        console.log('[Grades Service] Falling back to standard grades endpoint');
 
         // Try custom WS first (works even with showgrades disabled)
         const hasCustomWS = await site.wsAvailable('local_aspireparent_get_all_course_grades');
 
         if (hasCustomWS) {
             this.logger.debug('Using custom WS for student course grades');
-            console.log('[Grades Service] Using local_aspireparent_get_all_course_grades for student');
 
+            // CRITICAL: Disable reading from cache when token switching is used
+            // Use skipQueue to force immediate execution, bypassing any pending request issues
             const preSets: CoreSiteWSPreSets = {
-                cacheKey: this.getCoursesGradesCacheKey(),
+                cacheKey: this.getCoursesGradesCacheKey() + ':user:' + currentUserId,
+                getFromCache: false,
+                saveToCache: true,
+                reusePending: false,
+                skipQueue: true,
             };
+
+            // DEBUG: Log cache key and current state
+            console.log('[Grades Service] getCoursesGrades loading:', {
+                currentUserId,
+                selectedMenteeId,
+                cacheKey: preSets.cacheKey,
+                siteToken: site.getToken()?.substring(0, 20) + '...',
+            });
 
             try {
                 const data = await site.read<CoreGradesGetOverviewCourseGradesWSResponse>(
@@ -366,17 +374,20 @@ export class CoreGradesProvider {
                 );
 
                 this.logger.debug(`Got ${data?.grades?.length || 0} course grades`);
-                console.log('[Grades Service] Student grades response:', data);
+
+                // DEBUG: Log the courses returned
+                console.log('[Grades Service] Courses loaded:', data?.grades?.map(g => ({
+                    courseid: g.courseid,
+                    grade: g.grade,
+                })));
 
                 if (!data?.grades) {
-                    console.error('[Grades Service] No grades property in response');
                     throw new Error('Couldn\'t get course grades');
                 }
 
                 return data.grades;
             } catch (error) {
                 this.logger.error('Error getting course grades:', error);
-                console.error('[Grades Service] Error details:', error);
                 // Fall through to Moodle standard WS
             }
         }
@@ -386,11 +397,16 @@ export class CoreGradesProvider {
             const data = await site.read<CoreGradesGetOverviewCourseGradesWSResponse>(
                 'gradereport_overview_get_course_grades',
                 { userid: 0 }, // 0 means current user
-                { cacheKey: this.getCoursesGradesCacheKey() },
+                {
+                    cacheKey: this.getCoursesGradesCacheKey() + ':user:' + currentUserId,
+                    getFromCache: false,
+                    saveToCache: true,
+                    reusePending: false,
+                    skipQueue: true,
+                },
             );
 
             this.logger.debug(`Got ${data?.grades?.length || 0} course grades from standard WS`);
-            console.log('[Grades Service] Standard WS grades response:', data);
 
             if (!data?.grades) {
                 throw new Error('Couldn\'t get course grades');
@@ -399,7 +415,6 @@ export class CoreGradesProvider {
             return data.grades;
         } catch (error) {
             this.logger.error('Error getting courses grades from standard WS', error);
-            console.error('[Grades Service] Standard WS error:', error);
 
             // Last resort: get courses without grades
             try {
@@ -409,10 +424,11 @@ export class CoreGradesProvider {
                     courseid: course.id,
                     grade: '-',
                     rawgrade: '',
-                    rank: undefined
+                    rank: undefined,
                 }));
             } catch (fallbackError) {
                 this.logger.error('Error getting courses', fallbackError);
+
                 return [];
             }
         }
@@ -456,7 +472,8 @@ export class CoreGradesProvider {
     async invalidateCoursesGradesData(siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
 
-        await site.invalidateWsCacheForKey(this.getCoursesGradesCacheKey());
+        // Use prefix matching since cache keys include user ID suffix (e.g., :user:123, :mentee:456)
+        await site.invalidateWsCacheForKeyStartingWith(this.getCoursesGradesCacheKey());
     }
 
     /**

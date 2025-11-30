@@ -1008,6 +1008,16 @@ export class CoreCoursesProvider {
                 ...CoreSites.getReadingStrategyPreSets(options.readingStrategy),
             };
 
+            // CRITICAL: Disable reading from cache when using mentee token to avoid stale data
+            // Use skipQueue to force immediate execution bypassing any pending request issues
+            if (isUsingMenteeToken) {
+                preSets.getFromCache = false;
+                preSets.saveToCache = true;
+                preSets.reusePending = false;
+                preSets.skipQueue = true;
+                console.log('[Courses] Cache read disabled for mentee token session');
+            }
+
             if (site.isVersionGreaterEqualThan('3.7')) {
                 wsParams.returnusercount = false;
             }

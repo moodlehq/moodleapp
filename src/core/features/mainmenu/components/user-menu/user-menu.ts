@@ -39,6 +39,9 @@ import { CoreCourses, CoreCoursesProvider } from '@features/courses/services/cou
 import { AddonBadges } from '@addons/badges/services/badges';
 import { CoreUserParent } from '@features/user/services/parent';
 import { CoreEvents } from '@singletons/events';
+import { CoreGrades } from '@features/grades/services/grades';
+import { CoreGradesCoursesSource } from '@features/grades/classes/grades-courses-source';
+import { CoreRoutedItemsManagerSourcesTracker } from '@classes/items-management/routed-items-manager-sources-tracker';
 
 /**
  * Component to display a user menu.
@@ -451,23 +454,45 @@ export class CoreMainMenuUserMenuComponent implements OnInit, OnDestroy {
      * @param mentee The mentee to select.
      */
     async selectMentee(mentee: CoreUserProfile): Promise<void> {
+        console.log('[User Menu] ========== SELECTING MENTEE ==========');
+        console.log('[User Menu] Mentee ID:', mentee.id);
+        console.log('[User Menu] Mentee Name:', mentee.fullname);
+        console.log('[User Menu] Previous Mentee ID:', this.selectedMenteeId);
+
         this.selectedMentee = mentee;
         this.selectedMenteeId = mentee.id;
         this.showMenteeSelector = false;
-        
-        // Save selection
+
+        // Save selection and switch token
+        console.log('[User Menu] Calling setSelectedMentee...');
         await CoreUserParent.setSelectedMentee(mentee.id);
-        
-        // Comprehensive cache invalidation
+        console.log('[User Menu] setSelectedMentee completed');
+
+        // Verify the switch
         const site = await CoreSites.getSite(this.siteId);
-        
+        console.log('[User Menu] After switch - Site User ID:', site.getUserId());
+        console.log('[User Menu] After switch - Site Token (first 20):', site.getToken()?.substring(0, 20) + '...');
+
+        // Comprehensive cache invalidation
+
         // Invalidate all courses-related caches
         await CoreCourses.invalidateAllUserCourses(this.siteId);
-        
+
+        // Invalidate grades-related caches (CRITICAL for switching between children)
+        await CoreGrades.invalidateCoursesGradesData(this.siteId);
+
+        // Reset the grades courses source to force reload when visiting grades page
+        // This ensures stale course items from the previous child are cleared
+        const gradesSource = CoreRoutedItemsManagerSourcesTracker.getSource(CoreGradesCoursesSource, []);
+        if (gradesSource) {
+            gradesSource.setDirty(true);
+            console.log('[User Menu] Marked grades source as dirty');
+        }
+
         // Invalidate dashboard blocks
         const { CoreCoursesDashboard, CoreCoursesDashboardProvider } = await import('@features/courses/services/dashboard');
         await CoreCoursesDashboard.invalidateDashboardBlocks(CoreCoursesDashboardProvider.MY_PAGE_COURSES);
-        
+
         // Force reload after view change
         console.log('[User Menu] View changed to mentee, forcing reload');
         
@@ -499,14 +524,24 @@ export class CoreMainMenuUserMenuComponent implements OnInit, OnDestroy {
         
         // Comprehensive cache invalidation
         const site = await CoreSites.getSite(this.siteId);
-        
+
         // Invalidate all courses-related caches
         await CoreCourses.invalidateAllUserCourses(this.siteId);
-        
+
+        // Invalidate grades-related caches (CRITICAL for switching back to parent)
+        await CoreGrades.invalidateCoursesGradesData(this.siteId);
+
+        // Reset the grades courses source to force reload when visiting grades page
+        const gradesSource = CoreRoutedItemsManagerSourcesTracker.getSource(CoreGradesCoursesSource, []);
+        if (gradesSource) {
+            gradesSource.setDirty(true);
+            console.log('[User Menu] Marked grades source as dirty');
+        }
+
         // Invalidate dashboard blocks
         const { CoreCoursesDashboard, CoreCoursesDashboardProvider } = await import('@features/courses/services/dashboard');
         await CoreCoursesDashboard.invalidateDashboardBlocks(CoreCoursesDashboardProvider.MY_PAGE_COURSES);
-        
+
         // Force reload the home page after cache invalidation
         console.log('[User Menu] View changed back to self, forcing reload');
         
