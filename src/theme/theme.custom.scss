@@ -112,6 +112,11 @@ page-core-financial-overview ion-toolbar ion-buttons[slot="end"] {
     display: flex !important;
 }
 
+// Show end buttons on messages page (search and settings)
+page-addon-messages-group-conversations ion-toolbar ion-buttons[slot="end"] {
+    display: flex !important;
+}
+
 page-core-mainmenu-home ion-header {
     display: none;
 }
