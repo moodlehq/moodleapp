@@ -230,9 +230,9 @@ export class CoreFinancialAPIService {
         try {
             let data: T;
 
-            // Use Native HTTP on iOS to avoid CORS issues with capacitor://localhost
-            if (CorePlatform.isIOS() && CorePlatform.isMobile()) {
-                console.log("[Financial API] Using Native HTTP for iOS");
+            // Use Native HTTP on mobile (iOS and Android) to avoid CORS issues
+            if (CorePlatform.isMobile()) {
+                console.log("[Financial API] Using Native HTTP for mobile");
 
                 // Set data serializer to json
                 NativeHttp.setDataSerializer("json");
@@ -255,7 +255,7 @@ export class CoreFinancialAPIService {
 
                 console.log("[Financial API] Native HTTP Response:", data);
             } else {
-                // Use Angular HTTP for web and Android
+                // Use Angular HTTP for web only (browser testing)
                 console.log("[Financial API] Using Angular HTTP");
 
                 const response = await firstValueFrom(
@@ -273,7 +273,7 @@ export class CoreFinancialAPIService {
             console.error("[Financial API] Error:", error);
 
             // Handle Native HTTP specific error format
-            if (error && error.status === 0 && CorePlatform.isIOS()) {
+            if (error && error.status === 0 && CorePlatform.isMobile()) {
                 throw new Error(
                     "Network request failed. Please check your internet connection.",
                 );

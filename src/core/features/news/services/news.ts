@@ -61,38 +61,65 @@ export class CoreNewsService {
         }
 
         console.log('[CoreNews] Starting getAllNews...');
-        
+
         // Check if parent viewing scenario
         const { CoreUserParent } = await import('@features/user/services/parent');
         const selectedMenteeId = await CoreUserParent.getSelectedMentee(site.getId());
-        
+        const isParent = await CoreUserParent.isParentUser(site.getId());
+
         // Log available services for debugging
         const isParentViewing = selectedMenteeId && selectedMenteeId !== site.getUserId();
-        console.log('[CoreNews] Parent viewing check:', { isParentViewing, selectedMenteeId, currentUserId: site.getUserId() });
-        
+        console.log('[CoreNews] Parent viewing check:', { isParent, isParentViewing, selectedMenteeId, currentUserId: site.getUserId() });
+
         // Check if the custom service is available
         const menteeNewsAvailable = site.wsAvailable('local_aspireparent_get_mentee_news');
         console.log('[CoreNews] local_aspireparent_get_mentee_news available:', menteeNewsAvailable);
-        
-        // If parent viewing and the custom web service is available, use it
-        if (isParentViewing && menteeNewsAvailable) {
-            
-            console.log('[CoreNews] Parent viewing detected, using custom mentee news service');
-            
+
+        // If parent (viewing as child or as themselves) and the custom web service is available, use it
+        if (isParent && menteeNewsAvailable) {
+
+            console.log('[CoreNews] Parent detected, using custom mentee news service');
+
             try {
-                const response = await site.read<{ newsitems: CoreNewsItem[] }>('local_aspireparent_get_mentee_news', {
-                    userid: selectedMenteeId
-                });
-                
-                console.log(`[CoreNews] Received ${response.newsitems.length} news items from mentee service`);
-                console.log('[CoreNews] News items by course:', 
-                    response.newsitems.reduce((acc, item) => {
-                        acc[item.courseFullname] = (acc[item.courseFullname] || 0) + 1;
-                        return acc;
-                    }, {} as Record<string, number>)
-                );
-                
-                return response.newsitems;
+                // If viewing as specific child, get that child's news
+                // If viewing as parent (no child selected), get news for all mentees
+                if (isParentViewing) {
+                    console.log('[CoreNews] Fetching news for specific mentee:', selectedMenteeId);
+                    const response = await site.read<{ newsitems: CoreNewsItem[] }>('local_aspireparent_get_mentee_news', {
+                        userid: selectedMenteeId
+                    });
+
+                    console.log(`[CoreNews] Received ${response.newsitems.length} news items from mentee service`);
+                    return response.newsitems;
+                } else {
+                    // Parent viewing as themselves - get news for ALL mentees
+                    console.log('[CoreNews] Parent viewing as themselves, fetching news for all mentees');
+                    const mentees = await CoreUserParent.getMentees(site.getId());
+                    console.log('[CoreNews] Found mentees:', mentees.length);
+
+                    const allMenteeNews: CoreNewsItem[] = [];
+                    for (const mentee of mentees) {
+                        try {
+                            console.log('[CoreNews] Fetching news for mentee:', mentee.id, mentee.fullname);
+                            const response = await site.read<{ newsitems: CoreNewsItem[] }>('local_aspireparent_get_mentee_news', {
+                                userid: mentee.id
+                            });
+                            console.log(`[CoreNews] Received ${response.newsitems.length} news items for mentee ${mentee.fullname}`);
+                            allMenteeNews.push(...response.newsitems);
+                        } catch (menteeError) {
+                            console.error(`[CoreNews] Error fetching news for mentee ${mentee.id}:`, menteeError);
+                        }
+                    }
+
+                    // Remove duplicates (same discussion ID) and sort by date
+                    const uniqueNews = allMenteeNews.filter((item, index, self) =>
+                        index === self.findIndex(t => t.discussionId === item.discussionId)
+                    );
+                    uniqueNews.sort((a, b) => b.created - a.created);
+
+                    console.log(`[CoreNews] Total unique news items for all mentees: ${uniqueNews.length}`);
+                    return uniqueNews;
+                }
             } catch (error) {
                 console.error('[CoreNews] Error using mentee news service:', error);
                 // Fall back to regular flow
