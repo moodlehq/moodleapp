@@ -116,10 +116,14 @@ export class CoreFinancialService {
             console.log('[Financial Service] Calling API with parent sequence:', parentSequence);
             const financialData = await this.financialAPI.getParentFinancialData(parentSequence);
             console.log('[Financial Service] API response:', financialData);
-            
+
+            // Filter out PN (Prenursery) students
+            const filteredStudents = financialData.filter(student => this.shouldShowStudent(student));
+            console.log('[Financial Service] Students after PN filter:', filteredStudents.length);
+
             // Process and group data by academic year
-            const processedData = financialData.map(student => this.processStudentFinancialData(student));
-            
+            const processedData = filteredStudents.map(student => this.processStudentFinancialData(student));
+
             // Update cache
             this.financialDataCache.set(cacheKey, {
                 data: processedData,
@@ -201,11 +205,90 @@ export class CoreFinancialService {
      */
     processStudentFinancialData(studentData: StudentFinancialData): StudentFinancialData {
         const academicYears = this.groupDataByAcademicYear(studentData);
-        
+
+        // Filter out academic years before 2024-2025
+        const filteredAcademicYears = academicYears.filter(year => {
+            return this.isAcademicYearValid(year.academic_year);
+        });
+
+        // Calculate total net_fees from current academic year only
+        const currentAcademicYear = this.getCurrentAcademicYearString();
+        const calculatedNetFees = filteredAcademicYears
+            .filter(year => year.academic_year === currentAcademicYear)
+            .reduce((total, year) => {
+                return total + (year.net_fees || year.total_fees || 0);
+            }, 0);
+
+        // Filter out recent payments with type "other_fees" or "other fees"
+        const filteredRecentPayments = studentData.recent_payments?.filter(payment => {
+            const paymentType = payment.payment_type?.toLowerCase().replace(/[_\s]/g, '') || '';
+            // Hide payments that are "otherfees"
+            return paymentType !== 'otherfees';
+        }) || [];
+
         return {
             ...studentData,
-            academic_years: academicYears
+            academic_years: filteredAcademicYears,
+            recent_payments: filteredRecentPayments,
+            financial_summary: {
+                ...studentData.financial_summary,
+                net_fees: calculatedNetFees,
+            },
         };
+    }
+
+    /**
+     * Check if a student should be shown in financial (not PN/Prenursery).
+     *
+     * @param studentData Student financial data.
+     * @returns Whether the student should be shown.
+     */
+    shouldShowStudent(studentData: StudentFinancialData): boolean {
+        const studentClass = studentData.student_info?.class?.toLowerCase() || '';
+        // Hide students in PN (Prenursery)
+        if (studentClass === 'pn' || studentClass === 'prenursery' || studentClass === 'pre-nursery') {
+            console.log('[Financial Service] Hiding PN student:', studentData.student_info.name);
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * Check if an academic year should be shown (2024-2025 or later).
+     *
+     * @param academicYear Academic year string (e.g., "2024-2025").
+     * @returns Whether the academic year is valid to show.
+     */
+    isAcademicYearValid(academicYear: string): boolean {
+        if (!academicYear) return false;
+
+        const years = academicYear.split('-');
+        if (years.length !== 2) return false;
+
+        const startYear = parseInt(years[0]);
+
+        // Only show 2024-2025 and later
+        return startYear >= 2024;
+    }
+
+    /**
+     * Get the current academic year string (e.g., "2025-2026").
+     *
+     * @returns Current academic year string.
+     */
+    getCurrentAcademicYearString(): string {
+        const currentDate = new Date();
+        const currentYear = currentDate.getFullYear();
+        const currentMonth = currentDate.getMonth(); // 0-based
+
+        // Academic year runs from September to August
+        // If we're in September-December, current year is start year
+        // If we're in January-August, previous year is start year
+        if (currentMonth >= 8) { // September (8) through December (11)
+            return `${currentYear}-${currentYear + 1}`;
+        } else {
+            return `${currentYear - 1}-${currentYear}`;
+        }
     }
 
     /**
@@ -224,6 +307,7 @@ export class CoreFinancialService {
                     yearMap.set(feeLine.academic_year, {
                         academic_year: feeLine.academic_year,
                         total_fees: 0,
+                        net_fees: 0,
                         total_paid: 0,
                         total_remaining: 0,
                         fee_lines: [],
@@ -235,6 +319,7 @@ export class CoreFinancialService {
                 const yearData = yearMap.get(feeLine.academic_year)!;
                 yearData.fee_lines.push(feeLine);
                 yearData.total_fees += feeLine.net_fees;
+                yearData.net_fees = (yearData.net_fees || 0) + feeLine.net_fees;
                 yearData.total_paid += feeLine.paid;
                 yearData.total_remaining += feeLine.remaining;
             });
@@ -247,6 +332,7 @@ export class CoreFinancialService {
                     yearMap.set(feeLine.academic_year, {
                         academic_year: feeLine.academic_year,
                         total_fees: 0,
+                        net_fees: 0,
                         total_paid: 0,
                         total_remaining: 0,
                         fee_lines: [],
@@ -258,6 +344,7 @@ export class CoreFinancialService {
                 const yearData = yearMap.get(feeLine.academic_year)!;
                 yearData.fee_lines.push(feeLine);
                 yearData.total_fees += feeLine.net_fees;
+                yearData.net_fees = (yearData.net_fees || 0) + feeLine.net_fees;
                 yearData.total_paid += feeLine.paid;
                 yearData.total_remaining += feeLine.remaining;
             });
@@ -270,6 +357,7 @@ export class CoreFinancialService {
                     yearMap.set(subject.academic_year, {
                         academic_year: subject.academic_year,
                         total_fees: 0,
+                        net_fees: 0,
                         total_paid: 0,
                         total_remaining: 0,
                         fee_lines: [],
@@ -281,6 +369,7 @@ export class CoreFinancialService {
                 const yearData = yearMap.get(subject.academic_year)!;
                 yearData.subjects.push(subject);
                 yearData.total_fees += subject.total;
+                yearData.net_fees = (yearData.net_fees || 0) + subject.total;
                 yearData.total_paid += subject.paid;
                 yearData.total_remaining += subject.remaining;
             });
@@ -293,6 +382,7 @@ export class CoreFinancialService {
                     yearMap.set(transport.academic_year, {
                         academic_year: transport.academic_year,
                         total_fees: 0,
+                        net_fees: 0,
                         total_paid: 0,
                         total_remaining: 0,
                         fee_lines: [],
@@ -304,6 +394,7 @@ export class CoreFinancialService {
                 const yearData = yearMap.get(transport.academic_year)!;
                 yearData.transport_registrations.push(transport);
                 yearData.total_fees += transport.fees;
+                yearData.net_fees = (yearData.net_fees || 0) + transport.fees;
                 yearData.total_paid += transport.paid;
                 yearData.total_remaining += transport.remaining;
             });
@@ -316,6 +407,7 @@ export class CoreFinancialService {
                     yearMap.set(bookActivity.academic_year, {
                         academic_year: bookActivity.academic_year,
                         total_fees: 0,
+                        net_fees: 0,
                         total_paid: 0,
                         total_remaining: 0,
                         fee_lines: [],
@@ -327,6 +419,7 @@ export class CoreFinancialService {
                 const yearData = yearMap.get(bookActivity.academic_year)!;
                 yearData.books_activities.push(bookActivity);
                 yearData.total_fees += bookActivity.net_amount;
+                yearData.net_fees = (yearData.net_fees || 0) + bookActivity.net_amount;
                 yearData.total_paid += bookActivity.paid;
                 yearData.total_remaining += bookActivity.remaining;
             });

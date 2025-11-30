@@ -88,6 +88,7 @@ export interface BooksActivities {
 export interface AcademicYearData {
     academic_year: string;
     total_fees: number;
+    net_fees?: number;
     total_paid: number;
     total_remaining: number;
     fee_lines: FeeLine[];
@@ -117,6 +118,7 @@ export interface StudentFinancialData {
     financial_summary: {
         currency: string;
         total_fees: number;
+        net_fees?: number;
         total_paid: number;
         total_remaining: number;
         payment_status: "paid" | "partial" | "unpaid" | "overdue";

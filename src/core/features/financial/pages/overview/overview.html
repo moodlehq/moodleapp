@@ -110,10 +110,10 @@
                     <div class="overview-stat">
                         <p class="stat-value">
                             {{
-                            formatCurrency(selectedStudent.financial_summary.total_fees)
+                            formatCurrency(selectedStudent.financial_summary.net_fees ?? selectedStudent.financial_summary.total_fees)
                             }}
                         </p>
-                        <p class="stat-label">Total Fees</p>
+                        <p class="stat-label">Net Fees</p>
                         <div class="progress-bar">
                             <div
                                 class="progress-fill success"
@@ -132,7 +132,7 @@
                         <div class="progress-bar">
                             <div
                                 class="progress-fill success"
-                                [style.width.%]="getProgress(selectedStudent.financial_summary.total_paid, selectedStudent.financial_summary.total_fees)"
+                                [style.width.%]="getProgress(selectedStudent.financial_summary.total_paid, selectedStudent.financial_summary.net_fees ?? selectedStudent.financial_summary.total_fees)"
                             ></div>
                         </div>
                     </div>
@@ -151,7 +151,7 @@
                             <div
                                 class="progress-fill"
                                 [ngClass]="selectedStudent.financial_summary.total_remaining > 0 ? 'danger' : 'success'"
-                                [style.width.%]="getProgress(selectedStudent.financial_summary.total_remaining, selectedStudent.financial_summary.total_fees)"
+                                [style.width.%]="getProgress(selectedStudent.financial_summary.total_remaining, selectedStudent.financial_summary.net_fees ?? selectedStudent.financial_summary.total_fees)"
                             ></div>
                         </div>
                     </div>
@@ -212,7 +212,7 @@
 
                         <div class="year-summary">
                             <p class="year-total">
-                                {{ formatCurrency(yearData.total_fees) }}
+                                {{ formatCurrency(yearData.net_fees ?? yearData.total_fees) }}
                             </p>
                             <p class="year-status">
                                 {{ yearData.total_remaining === 0 ? 'Paid' :
