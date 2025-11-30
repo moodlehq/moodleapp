@@ -886,19 +886,48 @@ export class AddonCalendarProvider {
 
         await Promise.all(promises);
 
+        // Check if using mentee token - if so, include user ID in cache key and bypass stale cache
+        const currentUserId = site.getUserId();
+        const isUsingMenteeToken = await this.isUsingMenteeToken(site);
+
         // We need to retrieve cached data using cache key because we have timestamp in the params.
         const preSets: CoreSiteWSPreSets = {
-            cacheKey: this.getEventsListCacheKey(daysToStart, daysInterval),
+            cacheKey: this.getEventsListCacheKey(daysToStart, daysInterval) + (isUsingMenteeToken ? ':user:' + currentUserId : ''),
             getCacheUsingCacheKey: true,
             uniqueCacheKey: true,
             updateFrequency: CoreSite.FREQUENCY_SOMETIMES,
         };
+
+        // For mentee token sessions, don't use stale cache
+        if (isUsingMenteeToken) {
+            preSets.getFromCache = false;
+            preSets.saveToCache = true;
+            console.log('[Calendar] Using mentee token, bypassing cache for user:', currentUserId);
+        }
+
         const response =
             await site.read<AddonCalendarGetCalendarEventsWSResponse>('core_calendar_get_calendar_events', params, preSets);
+
+        console.log('[Calendar] API response - events count:', response.events?.length || 0);
 
         this.updateLocalEvents(response.events, { siteId });
 
         return response.events;
+    }
+
+    /**
+     * Check if currently using a mentee token (parent viewing as child).
+     *
+     * @param site Site instance.
+     * @returns Whether using mentee token.
+     */
+    protected async isUsingMenteeToken(site: CoreSite): Promise<boolean> {
+        try {
+            const { CoreUserParent } = await import('@features/user/services/parent');
+            return await CoreUserParent.isParentUser(site.getId());
+        } catch {
+            return false;
+        }
     }
 
     /**

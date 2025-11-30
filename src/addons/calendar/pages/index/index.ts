@@ -34,6 +34,7 @@ import { CoreModals } from '@services/modals';
 import moment from 'moment-timezone';
 import { AddonCalendarEventToDisplay } from '../../services/calendar';
 import { CoreTimeUtils } from '@services/utils/time';
+import { CoreUserParent } from '@features/user/services/parent';
 
 /**
  * Page that displays the calendar events.
@@ -247,12 +248,19 @@ export class AddonCalendarIndexPage implements OnInit, OnDestroy {
                 return;
             }));
 
-            // Check if user can create events.
-            promises.push(AddonCalendarHelper.canEditEvents(this.filter.courseId).then((canEdit) => {
-                this.canCreate = canEdit;
-
-                return;
-            }));
+            // Check if user can create events - but disable for parents and students
+            promises.push((async () => {
+                const canEdit = await AddonCalendarHelper.canEditEvents(this.filter.courseId);
+                const site = CoreSites.getCurrentSite();
+                if (site) {
+                    const isParent = await CoreUserParent.isParentUser(site.getId());
+                    // For Aspire: parents and students cannot create calendar events
+                    // Only teachers/admins should be able to create events
+                    this.canCreate = canEdit && !isParent;
+                } else {
+                    this.canCreate = canEdit;
+                }
+            })());
 
             // Check if there is offline data.
             promises.push(AddonCalendarOffline.hasOfflineData().then((hasOffline) => {
@@ -432,18 +440,74 @@ export class AddonCalendarIndexPage implements OnInit, OnDestroy {
         }
 
         try {
-            // Get events for the week
-            const start = this.currentWeekStart.unix();
-            const end = weekEnd.unix();
-            
-            const events = await AddonCalendar.getEventsList(start, 0, 7, this.currentSiteId);
+            // Calculate days from now to start of week
+            const now = moment();
+            const daysToStart = this.currentWeekStart.diff(now.startOf('day'), 'days');
+
+            console.log('[Calendar] Loading week events:', {
+                weekStart: this.currentWeekStart.format('YYYY-MM-DD'),
+                daysToStart,
+                daysInterval: 7
+            });
+
+            let allEvents: any[] = [];
+            const site = CoreSites.getCurrentSite();
+
+            if (site) {
+                const isParent = await CoreUserParent.isParentUser(site.getId());
+                const selectedMentee = await CoreUserParent.getSelectedMentee(site.getId());
+
+                // If parent viewing as themselves (no child selected), get all children's events
+                if (isParent && !selectedMentee) {
+                    console.log('[Calendar] Parent viewing as self - loading all children events');
+                    const mentees = await CoreUserParent.getMentees(site.getId());
+
+                    for (const mentee of mentees) {
+                        try {
+                            // Switch to child's token to get their events
+                            await CoreUserParent.setSelectedMentee(mentee.id, site.getId());
+                            const menteeEvents = await AddonCalendar.getEventsList(undefined, daysToStart, 7, this.currentSiteId);
+                            console.log(`[Calendar] Events for ${mentee.fullname}:`, menteeEvents?.length || 0);
+
+                            if (menteeEvents && menteeEvents.length > 0) {
+                                for (const event of menteeEvents) {
+                                    (event as any).menteeName = mentee.fullname;
+                                    allEvents.push(event);
+                                }
+                            }
+                        } catch (err) {
+                            console.error('[Calendar] Error loading events for mentee:', mentee.id, err);
+                        }
+                    }
+
+                    // Switch back to parent view
+                    await CoreUserParent.clearSelectedMentee(site.getId());
+
+                    // Remove duplicates
+                    const seen = new Set();
+                    allEvents = allEvents.filter(event => {
+                        if (seen.has(event.id)) return false;
+                        seen.add(event.id);
+                        return true;
+                    });
+                } else {
+                    // Regular user or parent viewing as specific child
+                    const events = await AddonCalendar.getEventsList(undefined, daysToStart, 7, this.currentSiteId);
+                    allEvents = events || [];
+                }
+            } else {
+                const events = await AddonCalendar.getEventsList(undefined, daysToStart, 7, this.currentSiteId);
+                allEvents = events || [];
+            }
+
+            console.log('[Calendar] Total events received:', allEvents.length);
 
             // Group events by day
-            if (events && events.length > 0) {
-                for (const event of events) {
+            if (allEvents.length > 0) {
+                for (const event of allEvents) {
                     const eventDay = moment(event.timestart * 1000).startOf('day');
                     const dayIndex = eventDay.diff(this.currentWeekStart, 'days');
-                    
+
                     if (dayIndex >= 0 && dayIndex < 7) {
                         // Create event to display with additional properties
                         const eventToDisplay: any = {
@@ -451,12 +515,12 @@ export class AddonCalendarIndexPage implements OnInit, OnDestroy {
                             formattedType: event.eventtype || 'user',
                             ispast: moment().isAfter(moment(event.timestart * 1000))
                         };
-                        
+
                         // Add module icon if available
                         if (event.modulename) {
                             eventToDisplay.moduleIcon = await AddonCalendarHelper.getModuleIcon(event.modulename);
                         }
-                        
+
                         this.weekDays[dayIndex].events.push(eventToDisplay);
                     }
                 }
@@ -468,6 +532,7 @@ export class AddonCalendarIndexPage implements OnInit, OnDestroy {
             });
 
         } catch (error) {
+            console.error('[Calendar] Error loading week events:', error);
             CoreDomUtils.showErrorModal(error);
         }
     }
