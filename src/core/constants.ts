@@ -21,7 +21,6 @@ import {
 } from '@addons/mod/constants';
 import { InjectionToken } from '@angular/core';
 import { CoreStorageTable } from '@services/storage';
-import { CoreBrowser } from '@singletons/browser';
 
 /**
  * Injection token used for dependencies marked as optional that will never
@@ -325,12 +324,21 @@ export class CoreConstants {
      * Check whether devtools should be enabled.
      *
      * @returns Whether devtools should be enabled.
+     *
+     * @deprecated since 5.2. Use isDevOrTestingBuild() instead.
      */
     static enableDevTools(): boolean {
-        // @todo [4.0] This is not the proper way to check for development tools, we should rely only on the BUILD variable.
-        return this.BUILD.isDevelopment
-            || this.BUILD.isTesting
-            || CoreBrowser.hasDevelopmentSetting('DevTools');
+        return CoreConstants.isDevOrTestingBuild();
+
+    }
+
+    /**
+     * Check whether the build is a development or testing build.
+     *
+     * @returns Whether the build is a development or testing build.
+     */
+    static isDevOrTestingBuild(): boolean {
+        return CoreConstants.BUILD.isDevelopment || CoreConstants.BUILD.isTesting;
     }
 
 }
