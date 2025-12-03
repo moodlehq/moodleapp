@@ -20,9 +20,9 @@ import { TestingModule } from '@/testing/testing.module';
 import { AddonsModule } from '@addons/addons.module';
 import { CoreModule } from '@/core/core.module';
 import { AppRoutingModule } from './app/app-routing.module';
-import { TranslateHttpLoader } from '@ngx-translate/http-loader';
-import { TranslateModule, TranslateLoader } from '@ngx-translate/core';
-import { provideHttpClient, HttpClient, withInterceptors } from '@angular/common/http';
+import { provideTranslateHttpLoader } from '@ngx-translate/http-loader';
+import { provideTranslateService } from '@ngx-translate/core';
+import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { moodleTransitionAnimation } from '@classes/page-transition';
 import { provideAnimations } from '@angular/platform-browser/animations';
 import { BrowserModule, bootstrapApplication } from '@angular/platform-browser';
@@ -36,16 +36,6 @@ if (CoreConstants.BUILD.isProduction) {
     enableProdMode();
 }
 
-/**
- * For translate loader. AoT requires an exported function for factories.
- *
- * @param http Http client.
- * @returns Translate loader.
- */
-export function createTranslateLoader(http: HttpClient): TranslateHttpLoader {
-    return new TranslateHttpLoader(http, './assets/lang/', '.json');
-}
-
 bootstrapApplication(AppComponent, {
     providers: [
         importProvidersFrom(
@@ -56,13 +46,6 @@ bootstrapApplication(AppComponent, {
                 sanitizerEnabled: true,
                 useSetInputAPI: true,
             }),
-            TranslateModule.forRoot({
-                loader: {
-                    provide: TranslateLoader,
-                    useFactory: createTranslateLoader,
-                    deps: [HttpClient],
-                },
-            }),
             AppRoutingModule,
             CoreModule,
             AddonsModule,
@@ -71,6 +54,9 @@ bootstrapApplication(AppComponent, {
         { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
         provideAppInitializer(() => {
             CoreCronDelegate.register(CoreSiteInfoCronHandler.instance);
+        }),
+        provideTranslateService({
+            loader: provideTranslateHttpLoader({ prefix:'./assets/lang/', suffix:'.json' }),
         }),
         // eslint-disable-next-line @typescript-eslint/no-deprecated
         provideAnimations(),

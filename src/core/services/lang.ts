@@ -15,7 +15,7 @@
 import { Injectable } from '@angular/core';
 
 import { CoreConstants } from '@/core/constants';
-import { LangChangeEvent } from '@ngx-translate/core';
+import { LangChangeEvent, TranslationObject } from '@ngx-translate/core';
 import { CoreConfig } from '@services/config';
 import { CoreSubscriptions } from '@singletons/subscriptions';
 import { makeSingleton, Translate } from '@singletons';
@@ -46,7 +46,7 @@ export class CoreLangProvider {
 
     async initialize(): Promise<void> {
         // Set fallback language and language to use until the app determines the right language to use.
-        Translate.setDefaultLang(this.fallbackLanguage);
+        Translate.setFallbackLang(this.fallbackLanguage);
         Translate.use(this.defaultLanguage);
 
         Translate.onLangChange.subscribe((event: LangChangeEvent) => {
@@ -127,10 +127,10 @@ export class CoreLangProvider {
      * @param lang Language.
      * @returns Message if found, null otherwise.
      */
-    async getMessage(key: string, lang: string): Promise<string | null>  {
+    async getMessage(key: string, lang: string): Promise<string | undefined>  {
         const messages = await this.getMessages(lang);
 
-        return messages[key] ?? null;
+        return messages[key] as string | undefined;
     }
 
     /**
@@ -139,18 +139,8 @@ export class CoreLangProvider {
      * @param lang Language.
      * @returns Messages.
      */
-    getMessages(lang: string): Promise<Record<string, string>> {
-        // Try to use the loaded language first because Translate.getTranslation always reads from the file.
-        if (Translate.translations[lang]) {
-            return Promise.resolve(Translate.translations[lang]);
-        }
-
-        // Use Translate.getTranslation to read the translations from the file and store them in the translations variable.
-        return new Promise(resolve => CoreSubscriptions.once(
-            Translate.currentLoader.getTranslation(lang),
-            messages => resolve(messages),
-            () => resolve({}),
-        ));
+    async getMessages(lang: string): Promise<TranslationObject> {
+        return this.getTranslationTable(lang);
     }
 
     /**
@@ -171,9 +161,7 @@ export class CoreLangProvider {
      * @returns If a parent language is set, return the parent language.
      */
     protected async getParentLanguageForLang(lang: string): Promise<string | undefined> {
-        const translations = await this.getMessages(lang);
-
-        const parentLang: string | undefined = translations['core.parentlanguage'];
+        const parentLang = await this.getMessage('core.parentlanguage', lang);
         if (parentLang && parentLang !== 'core.parentlanguage' && parentLang !== lang) {
             return parentLang;
         }
@@ -205,15 +193,10 @@ export class CoreLangProvider {
             throw error;
         } finally {
             // Load the custom and site plugins strings for the language.
-            const [customStringsChangedLang, pluginsStringsChangedLang] = await Promise.all([
+            await Promise.all([
                 this.loadLangStrings(this.customStrings, language),
                 this.loadLangStrings(this.sitePluginsStrings, language),
             ]);
-
-            if (customStringsChangedLang || pluginsStringsChangedLang) {
-                // Some lang strings have changed, emit an event to update the pipes.
-                Translate.onLangChange.emit({ lang: language, translations: Translate.translations[language] });
-            }
         }
     }
 
@@ -467,7 +450,7 @@ export class CoreLangProvider {
      * @param lang The language to check.
      * @returns Promise resolved when done.
      */
-    getTranslationTable(lang: string): Promise<Record<string, unknown>> {
+    getTranslationTable(lang: string): Promise<TranslationObject> {
         // Create a promise to convert the observable into a promise.
         return new Promise((resolve, reject): void => {
             const observer = Translate.currentLoader.getTranslation(lang).subscribe({
@@ -555,8 +538,6 @@ export class CoreLangProvider {
             return;
         }
 
-        let currentLangChanged = false;
-
         const list: string[] = strings.split(/(?:\r\n|\r|\n)/);
         await Promise.all(list.map(async (entry: string) => {
             const values: string[] = entry.split('|').map(value => value.trim());
@@ -568,22 +549,10 @@ export class CoreLangProvider {
 
             const lang = this.formatLanguage(values[2], CoreLangFormat.App); // Use the app format instead of Moodle format.
 
-            if (lang === this.currentLanguage) {
-                currentLangChanged = true;
-            }
-
             await this.loadString(this.customStrings, lang, values[0], values[1]);
         }));
 
         this.customStringsRaw = strings;
-
-        if (currentLangChanged && this.currentLanguage) {
-            // Some lang strings have changed, emit an event to update the pipes.
-            Translate.onLangChange.emit({
-                lang: this.currentLanguage,
-                translations: Translate.translations[this.currentLanguage],
-            });
-        }
     }
 
     /**
@@ -610,13 +579,12 @@ export class CoreLangProvider {
                     // Store the modification in langObject so it can be undone later.
                     langObject[lang] = langObject[lang] || {};
                     langObject[lang][key] = {
-                        original: Translate.translations[lang][key],
                         value: langObject[parentLanguage][key].value,
                         applied: true,
                     };
 
                     // Store the string in the translations table.
-                    Translate.translations[lang][key] = langObject[parentLanguage][key].value;
+                    Translate.setTranslation(lang, { [key]: langObject[parentLanguage][key].value }, true);
                     langApplied = true;
                 }
             }
@@ -627,11 +595,8 @@ export class CoreLangProvider {
                 const entry = langObject[lang][key];
 
                 if (!entry.applied) {
-                    // Store the original value of the string.
-                    entry.original = Translate.translations[lang][key];
-
                     // Store the string in the translations table.
-                    Translate.translations[lang][key] = entry.value;
+                    Translate.setTranslation(lang, { [key]: entry.value }, true);
 
                     entry.applied = true;
                     langApplied = true;
@@ -650,14 +615,15 @@ export class CoreLangProvider {
      * @param key String key.
      * @param value String value.
      */
-    async loadString(langObject: CoreLanguageObject, lang: string, key: string, value: string): Promise<void> {
-        lang = lang.replace(/_/g, '-'); // Use the app format instead of Moodle format.
+    protected async loadString(langObject: CoreLanguageObject, lang: string, key: string, value: string): Promise<void> {
+        lang = this.formatLanguage(lang, CoreLangFormat.App); // Use the app format instead of Moodle format.
 
+        const loadedLangs = Translate.getLangs();
         // If the language to modify is the parent language of a loaded language and the value is inherited,
         // update the child language too.
-        for (const loadedLang in Translate.translations) {
+        loadedLangs.forEach(async (loadedLang) => {
             if (loadedLang === lang) {
-                continue;
+                return;
             }
 
             const isInheritedString = await this.isParentLang(lang, loadedLang) &&
@@ -666,21 +632,20 @@ export class CoreLangProvider {
                 // Modify the child language too.
                 await this.loadString(langObject, loadedLang, key, value);
             }
-        }
+        });
 
         langObject[lang] = langObject[lang] || {};
 
-        if (Translate.translations[lang]) {
+        if (loadedLangs.includes(lang)) {
             // The language is loaded.
             // Store the original value of the string.
             langObject[lang][key] = {
-                original: Translate.translations[lang][key],
                 value,
                 applied: true,
             };
 
             // Store the string in the translations table.
-            Translate.translations[lang][key] = value;
+            Translate.setTranslation(lang, { [key]: value }, true);
         } else {
             // The language isn't loaded.
             // Save it in our object but not in the translations table, it will be loaded when the lang is loaded.
@@ -696,10 +661,10 @@ export class CoreLangProvider {
      *
      * @param lang Language code.
      * @returns Promise resolved with the file contents.
-     * @deprecated since 5.0. Use getMessages instead.
+     * @deprecated since 5.0. Use getTranslationTable instead.
      */
-    async readLangFile(lang: CoreLangLanguage): Promise<Record<string, string>> {
-        return this.getMessages(lang);
+    async readLangFile(lang: CoreLangLanguage): Promise<TranslationObject> {
+        return this.getTranslationTable(lang);
     }
 
     /**
@@ -723,24 +688,15 @@ export class CoreLangProvider {
      * @param strings Strings to unload.
      */
     protected unloadStrings(strings: CoreLanguageObject): void {
+        const loadedLangs = Translate.getLangs();
         // Iterate over all languages and strings.
         for (const lang in strings) {
-            if (!Translate.translations[lang]) {
+            if (!loadedLangs.includes(lang)) {
                 // Language isn't loaded, nothing to unload.
                 continue;
             }
 
-            const langStrings = strings[lang];
-            for (const key in langStrings) {
-                const entry = langStrings[key];
-                if (entry.original) {
-                    // The string had a value, restore it.
-                    Translate.translations[lang][key] = entry.original;
-                } else {
-                    // The string didn't exist, delete it.
-                    delete Translate.translations[lang][key];
-                }
-            }
+            Translate.reloadLang(lang);
         }
     }
 
