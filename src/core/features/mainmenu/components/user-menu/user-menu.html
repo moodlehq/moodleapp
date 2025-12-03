@@ -67,6 +67,10 @@
                 }
             </ion-item>
 
+            @for (item of customItems; track item) {
+                <core-custom-menu-item [type]="item.type" [label]="item.label" [icon]="item.icon" [url]="item.url" />
+            }
+
             <ion-item button *ngFor="let handler of accountHandlers; let first = first"
                 (click)="handlerClicked($event, handler)"
                 [class]="['ion-text-wrap', 'core-user-account-menu-handler', handler.class]"
