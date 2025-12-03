@@ -25,6 +25,8 @@ import { CoreSite } from '../classes/sites/site';
 import { CorePlatform } from '@services/platform';
 import { CoreLogger } from '@singletons/logger';
 import { CoreSites } from './sites';
+import { MoodleTranslateLoader } from '@classes/lang-loader';
+import { firstValueFrom } from 'rxjs';
 
 /**
  * Service to handle language features, like changing the current language.
@@ -35,12 +37,8 @@ export class CoreLangProvider {
     protected fallbackLanguage = 'en'; // Always use English as fallback language since it contains all strings.
     protected defaultLanguage = CoreConstants.CONFIG.default_lang || 'en'; // Lang to use if device lang not valid or is forced.
     protected currentLanguage?: string; // Save current language in a variable to speed up the get function.
-    protected customStrings: CoreLanguageObject = {}; // Strings defined using the admin tool.
     protected customStringsRaw?: string;
-    protected sitePluginsStrings: CoreLanguageObject = {}; // Strings defined by site plugins.
     protected logger: CoreLogger;
-
-    static readonly PARENT_LANG_KEY = 'core.parentlanguage';
 
     constructor() {
         this.logger = CoreLogger.getInstance('CoreLang');
@@ -83,32 +81,35 @@ export class CoreLangProvider {
     /**
      * Add a set of site plugins strings for a certain language.
      *
-     * @param lang The language where to add the strings.
-     * @param strings Object with the strings to add.
+     * @param langStrings Object with the strings to add in every language.
      * @param prefix A prefix to add to all keys.
      */
-    async addSitePluginsStrings(lang: string, strings: string[], prefix?: string): Promise<void> {
-        lang = this.formatLanguage(lang, CoreLangFormat.App); // Use the app format instead of Moodle format.
+    async addSitePluginsStrings(langStrings: Record<string, string[]>, prefix?: string): Promise<void> {
+        const loadedStrings: { [lang: string]: TranslationObject } = {};
 
-        for (const key in strings) {
-            const prefixedKey = prefix + key;
-            if (this.customStrings[lang]?.[prefixedKey]) {
-                // This string is overridden by a custom string, ignore it.
-                continue;
+        for (let lang in langStrings) {
+            lang = this.formatLanguage(lang, CoreLangFormat.App); // Use the app format instead of Moodle format.
+
+            const strings = langStrings[lang];
+
+            loadedStrings[lang] = {};
+            for (const key in strings) {
+                const prefixedKey = prefix + key;
+
+                let value = strings[key];
+
+                // Replace the way to access subproperties.
+                value = value.replace(/\$a->/gm, '$a.');
+                // Add another curly bracket to string params ({$a} -> {{$a}}).
+                value = value.replace(/{([^ ]+)}/gm, '{{$1}}');
+                // Make sure we didn't add to many brackets in some case.
+                value = value.replace(/{{{([^ ]+)}}}/gm, '{{$1}}');
+
+                loadedStrings[lang][prefixedKey] = value;
             }
-
-            let value = strings[key];
-
-            // Replace the way to access subproperties.
-            value = value.replace(/\$a->/gm, '$a.');
-            // Add another curly bracket to string params ({$a} -> {{$a}}).
-            value = value.replace(/{([^ ]+)}/gm, '{{$1}}');
-            // Make sure we didn't add to many brackets in some case.
-            value = value.replace(/{{{([^ ]+)}}}/gm, '{{$1}}');
-
-            // Load the string.
-            await this.loadString(this.sitePluginsStrings, lang, prefixedKey, value);
         }
+
+        await this.getTranslateLoader().setSitePluginsStrings(loadedStrings, this.currentLanguage);
     }
 
     /**
@@ -130,7 +131,7 @@ export class CoreLangProvider {
      * @returns Message if found, null otherwise.
      */
     async getMessage(key: string, lang: string): Promise<string | undefined>  {
-        const messages = await this.getMessages(lang);
+        const messages = await this.getTranslationTable(lang);
 
         return messages[key] as string | undefined;
     }
@@ -151,22 +152,25 @@ export class CoreLangProvider {
      * @returns If a parent language is set, return the parent language.
      */
     getParentLanguage(): string | undefined {
-        const parentLang = Translate.instant(CoreLangProvider.PARENT_LANG_KEY);
-        if (parentLang !== '' && parentLang !== CoreLangProvider.PARENT_LANG_KEY && parentLang !== this.currentLanguage) {
-            return parentLang;
-        }
+        return this.currentLanguage
+            ? this.getTranslateLoader().getParentLanguage(this.currentLanguage)
+            : undefined;
     }
 
     /**
-     * Get the parent language for a certain language.
+     * Get the parent language for a certain language. We cannot use the loader function because the language could not be loaded.
      *
      * @param lang Language key.
      * @returns If a parent language is set, return the parent language.
      */
     protected async getParentLanguageForLang(lang: string): Promise<string | undefined> {
-        const parentLang = await this.getMessage(CoreLangProvider.PARENT_LANG_KEY, lang);
+        if (lang === this.currentLanguage) {
+            return this.getParentLanguage();
+        }
 
-        if (parentLang && parentLang !== CoreLangProvider.PARENT_LANG_KEY && parentLang !== lang) {
+        const parentLang = await this.getMessage(MoodleTranslateLoader.PARENT_LANG_KEY, lang);
+
+        if (parentLang && parentLang !== MoodleTranslateLoader.PARENT_LANG_KEY && parentLang !== lang) {
             return parentLang;
         }
     }
@@ -178,6 +182,7 @@ export class CoreLangProvider {
      * @returns Promise resolved when the change is finished.
      */
     async changeCurrentLanguage(language: string): Promise<void> {
+        language = this.formatLanguage(language, CoreLangFormat.App);
         await this.loadDayJSLocale(language);
 
         const previousLanguage = this.currentLanguage ?? this.getDefaultLanguage();
@@ -185,7 +190,7 @@ export class CoreLangProvider {
         this.currentLanguage = language;
 
         try {
-            await this.reloadLanguageStrings();
+            await firstValueFrom(Translate.use(language));
             await CoreConfig.set('current_language', language);
         } catch (error) {
             if (language !== previousLanguage) {
@@ -195,12 +200,6 @@ export class CoreLangProvider {
             }
 
             throw error;
-        } finally {
-            // Load the custom and site plugins strings for the language.
-            await Promise.all([
-                this.loadLangStrings(this.customStrings, language),
-                this.loadLangStrings(this.sitePluginsStrings, language),
-            ]);
         }
     }
 
@@ -244,10 +243,11 @@ export class CoreLangProvider {
 
     /**
      * Clear current custom strings.
+     *
+     * @param reloadCurrentLang If true, reloads the current language after resetting the strings.
      */
-    clearCustomStrings(): void {
-        this.unloadStrings(this.customStrings);
-        this.customStrings = {};
+    clearCustomStrings(reloadCurrentLang = true): void {
+        this.getTranslateLoader().clearCustomStrings(reloadCurrentLang ? this.currentLanguage : undefined);
         this.customStringsRaw = '';
     }
 
@@ -255,26 +255,27 @@ export class CoreLangProvider {
      * Clear current site plugins strings.
      */
     clearSitePluginsStrings(): void {
-        this.unloadStrings(this.sitePluginsStrings);
-        this.sitePluginsStrings = {};
+        this.getTranslateLoader().clearSitePluginsStrings(this.currentLanguage);
     }
 
     /**
      * Get all current custom strings.
      *
      * @returns Custom strings.
+     * @deprecated since 5.2. Not used anymore.
      */
     getAllCustomStrings(): CoreLanguageObject {
-        return this.customStrings;
+        return {};
     }
 
     /**
      * Get all current site plugins strings.
      *
      * @returns Site plugins strings.
+     * @deprecated since 5.2. Not used anymore.
      */
     getAllSitePluginsStrings(): CoreLanguageObject {
-        return this.sitePluginsStrings;
+        return {};
     }
 
     /**
@@ -465,36 +466,12 @@ export class CoreLangProvider {
     }
 
     /**
-     * Check if a certain string is inherited from the parent language.
+     * Get the translate loader as MoodleTranslateLoader.
      *
-     * @param lang Language being checked.
-     * @param key Key of the string to check.
-     * @param parentLang Parent language. If not set it will be calculated.
-     * @returns True if the string is inherited (same as parent), false otherwise.
+     * @returns The MoodleTranslateLoader instance.
      */
-    protected async isInheritedString(lang: string, key: string, parentLang?: string): Promise<boolean> {
-        parentLang = parentLang ?? await this.getParentLanguageForLang(lang);
-        if (!parentLang) {
-            return false;
-        }
-
-        const parentTranslation = await this.getMessage(key, parentLang);
-        const childTranslation = await this.getMessage(key, lang);
-
-        return parentTranslation === childTranslation;
-    }
-
-    /**
-     * Check if a language is parent of another language.
-     *
-     * @param possibleParentLang Possible parent language.
-     * @param possibleChildLang Possible children language.
-     * @returns True if lang is child of the possible parent language.
-     */
-    protected async isParentLang(possibleParentLang: string, possibleChildLang: string): Promise<boolean> {
-        const parentLang = await this.getParentLanguageForLang(possibleChildLang);
-
-        return !!parentLang && parentLang === possibleParentLang;
+    protected getTranslateLoader(): MoodleTranslateLoader {
+        return Translate.currentLoader as MoodleTranslateLoader;
     }
 
     /**
@@ -532,129 +509,32 @@ export class CoreLangProvider {
             return;
         }
 
-        // Reset current values.
-        this.clearCustomStrings();
-
         if (!strings) {
+            this.clearCustomStrings(false);
+
             return;
         }
 
-        const list: string[] = strings.split(/(?:\r\n|\r|\n)/);
-        await Promise.all(list.map(async (entry: string) => {
-            const values: string[] = entry.split('|').map(value => value.trim());
+        const customStrings: { [lang: string]: TranslationObject } = {};
 
+        const list = strings.split(/(?:\r\n|\r|\n)/);
+        list.forEach((entry: string) => {
+            const values: string[] = entry.split('|').map(value => value.trim());
             if (values.length < 3) {
                 // Not enough data, ignore the entry.
                 return;
             }
 
             const lang = this.formatLanguage(values[2], CoreLangFormat.App); // Use the app format instead of Moodle format.
-
-            await this.loadString(this.customStrings, lang, values[0], values[1]);
-        }));
-
-        this.customStringsRaw = strings;
-    }
-
-    /**
-     * Load custom strings for a certain language that weren't loaded because the language wasn't active.
-     *
-     * @param langObject The object with the strings to load.
-     * @param lang Language to load.
-     * @returns Whether the translation table was modified.
-     */
-    async loadLangStrings(langObject: CoreLanguageObject, lang: string): Promise<boolean> {
-        let langApplied = false;
-
-        // First load the strings of the parent language if they're inherited.
-        const parentLanguage = await this.getParentLanguageForLang(lang);
-        if (parentLanguage && langObject[parentLanguage]) {
-            for (const key in langObject[parentLanguage]) {
-                if (langObject[lang] && langObject[lang][key]) {
-                    // There is a custom string for the child language, ignore the parent one.
-                    continue;
-                }
-
-                const isInheritedString = await this.isInheritedString(lang, key, parentLanguage);
-                if (isInheritedString) {
-                    // Store the modification in langObject so it can be undone later.
-                    langObject[lang] = langObject[lang] || {};
-                    langObject[lang][key] = {
-                        value: langObject[parentLanguage][key].value,
-                        applied: true,
-                    };
-
-                    // Store the string in the translations table.
-                    Translate.setTranslation(lang, { [key]: langObject[parentLanguage][key].value }, true);
-                    langApplied = true;
-                }
+            if (!customStrings[lang]) {
+                customStrings[lang] = {};
             }
-        }
-
-        if (langObject[lang]) {
-            for (const key in langObject[lang]) {
-                const entry = langObject[lang][key];
-
-                if (!entry.applied) {
-                    // Store the string in the translations table.
-                    Translate.setTranslation(lang, { [key]: entry.value }, true);
-
-                    entry.applied = true;
-                    langApplied = true;
-                }
-            }
-        }
-
-        return langApplied;
-    }
-
-    /**
-     * Load a string in a certain lang object and in the translate table if the lang is loaded.
-     *
-     * @param langObject The object where to store the lang.
-     * @param lang Language code.
-     * @param key String key.
-     * @param value String value.
-     */
-    protected async loadString(langObject: CoreLanguageObject, lang: string, key: string, value: string): Promise<void> {
-        lang = this.formatLanguage(lang, CoreLangFormat.App); // Use the app format instead of Moodle format.
-
-        const loadedLangs = Translate.getLangs();
-        // If the language to modify is the parent language of a loaded language and the value is inherited,
-        // update the child language too.
-        loadedLangs.forEach(async (loadedLang) => {
-            if (loadedLang === lang) {
-                return;
-            }
-
-            const isInheritedString = await this.isParentLang(lang, loadedLang) &&
-                await this.isInheritedString(loadedLang, key, lang);
-            if (isInheritedString) {
-                // Modify the child language too.
-                await this.loadString(langObject, loadedLang, key, value);
-            }
+            customStrings[lang][values[0]] = values[1];
         });
 
-        langObject[lang] = langObject[lang] || {};
+        await this.getTranslateLoader().setCustomStrings(customStrings, this.currentLanguage);
 
-        if (loadedLangs.includes(lang)) {
-            // The language is loaded.
-            // Store the original value of the string.
-            langObject[lang][key] = {
-                value,
-                applied: true,
-            };
-
-            // Store the string in the translations table.
-            Translate.setTranslation(lang, { [key]: value }, true);
-        } else {
-            // The language isn't loaded.
-            // Save it in our object but not in the translations table, it will be loaded when the lang is loaded.
-            langObject[lang][key] = {
-                value,
-                applied: false,
-            };
-        }
+        this.customStringsRaw = strings;
     }
 
     /**
@@ -684,57 +564,15 @@ export class CoreLangProvider {
     }
 
     /**
-     * Unload custom or site plugin strings, removing them from the translations table.
+     * Load custom strings for a certain language that weren't loaded because the language wasn't active.
      *
-     * @param strings Strings to unload.
+     * @param langObject The object with the strings to load.
+     * @param lang Language to load.
+     * @returns Whether the translation table was modified.
+     * @deprecated since 5.2. Not used anymore.
      */
-    protected unloadStrings(strings: CoreLanguageObject): void {
-        const loadedLangs = Translate.getLangs();
-        // Iterate over all languages and strings.
-        for (const lang in strings) {
-            if (!loadedLangs.includes(lang)) {
-                // Language isn't loaded, nothing to unload.
-                continue;
-            }
-
-            Translate.reloadLang(lang);
-        }
-    }
-
-    /**
-     * Reload language strings for the current language.
-     */
-    protected async reloadLanguageStrings(): Promise<void> {
-        const currentLanguage = this.currentLanguage;
-
-        if (!currentLanguage) {
-            return;
-        }
-
-        await new Promise((resolve, reject) => {
-            CoreSubscriptions.once(Translate.use(currentLanguage), async data => {
-                // Check if it has a parent language.
-                const fallbackLang = this.getParentLanguage();
-
-                if (fallbackLang) {
-                    try {
-                        // Merge parent translations with the child ones.
-                        const parentTranslations = await this.getMessages(fallbackLang);
-
-                        const mergedData = {
-                            ...parentTranslations,
-                            ...data,
-                        };
-
-                        Object.assign(data, mergedData);
-                    } catch {
-                        // Ignore errors.
-                    }
-                }
-
-                resolve(data);
-            }, reject);
-        });
+    async loadLangStrings(langObject: CoreLanguageObject, lang: string): Promise<boolean> {
+        return false;
     }
 
 }
@@ -755,10 +593,9 @@ export type CoreLangLanguage = string;
  * Language object has two leves, first per language and second per string key.
  */
 type CoreLanguageObject = {
-    [s: string]: { // Lang name.
-        [s: string]: { // String key.
+    [lang: string]: { // Lang name.
+        [key: string]: { // String key.
             value: string; // Value with replacings done.
-            applied?: boolean; // If the key is applied to the translations table or not.
         };
     };
 };
