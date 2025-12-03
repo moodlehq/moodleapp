@@ -140,10 +140,26 @@ export class CoreLangProvider {
      * Get messages for the given language.
      *
      * @param lang Language.
+     * @param keyPrefix Optional prefix to filter the keys.
      * @returns Messages.
      */
-    async getMessages(lang: string): Promise<TranslationObject> {
-        return this.getTranslationTable(lang);
+    async getMessages(lang: string, keyPrefix = ''): Promise<TranslationObject> {
+        const table = this.getTranslationTable(lang);
+
+        if (!keyPrefix) {
+            return table;
+        }
+
+        // Gather all the keys for countries,
+        const filtered: TranslationObject = {};
+
+        for (const key in table) {
+            if (key.startsWith(keyPrefix)) {
+                filtered[key] = table[key];
+            }
+        }
+
+        return filtered;
     }
 
     /**
