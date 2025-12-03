@@ -16,13 +16,12 @@ import { Injectable } from '@angular/core';
 import { mergeDeep, TranslateLoader, TranslationObject } from '@ngx-translate/core';
 import { Http, Translate } from '@singletons';
 import { CoreLogger } from '@singletons/logger';
-import { firstValueFrom, Observable, Subject } from 'rxjs';
+import { firstValueFrom, Observable, of, Subject } from 'rxjs';
 
 @Injectable()
 export class MoodleTranslateLoader implements TranslateLoader {
 
     protected translations: { [lang: string]: TranslationObject } = {};
-    protected observables: { [lang: string]: Subject<TranslationObject> } = {};
 
     protected customStrings: { [lang: string]: TranslationObject } = {}; // Strings defined using the admin tool.
     protected sitePluginsStrings: { [lang: string]: TranslationObject } = {}; // Strings defined by site plugins.
@@ -38,30 +37,30 @@ export class MoodleTranslateLoader implements TranslateLoader {
      * @returns Observable resolved with the translations object.
      */
     getTranslation(lang: string): Observable<TranslationObject> {
-        if (this.observables[lang]) {
+        if (this.translations[lang]) {
             this.logger.debug('Get translation', lang);
             // This is done here to ensure site strings and custom strings are loaded in the proper order.
             const translation = this.mergeTranslation(lang);
 
-            this.observables[lang].next(translation);
-
-            return this.observables[lang];
+            return of(translation);
         }
 
-        this.observables[lang] = new Subject<TranslationObject>();
+        const observable = new Subject<TranslationObject>();
 
         this.loadLanguage(lang).then((translation) => {
-            this.observables[lang].next(translation);
+            observable.next(translation);
+            observable.complete();
 
             this.logger.debug('Load translation', lang);
 
             return;
         }).catch((error) => {
             this.logger.error('Error loading translation', lang, error);
-            this.observables[lang].next({});
+            observable.next({});
+            observable.complete();
         });
 
-        return this.observables[lang];
+        return observable;
     }
 
     /**
