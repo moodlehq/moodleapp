@@ -1,8 +1,8 @@
 diff --git a/node_modules/@angular/router/router_module.d.d.ts b/node_modules/@angular/router/router_module.d.d.ts
-index 6ccd057..be892ba 100755
+index c34325f..f1fab17 100755
 --- a/node_modules/@angular/router/router_module.d.d.ts
 +++ b/node_modules/@angular/router/router_module.d.d.ts
-@@ -1774,7 +1774,7 @@ declare class ActivatedRoute {
+@@ -1819,7 +1819,7 @@ declare class ActivatedRoute {
      /** The component of the route, a constant. */
      component: Type<any> | null;
      /** The current snapshot of this route */

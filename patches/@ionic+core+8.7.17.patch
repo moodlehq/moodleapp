@@ -1,8 +1,8 @@
 diff --git a/node_modules/@ionic/core/components/item.js b/node_modules/@ionic/core/components/item.js
-index ec9ab81..a384b35 100644
+index fba9b49..299c794 100644
 --- a/node_modules/@ionic/core/components/item.js
 +++ b/node_modules/@ionic/core/components/item.js
-@@ -139,7 +139,7 @@ const Item = /*@__PURE__*/ proxyCustomElement(class Item extends HTMLElement {
+@@ -141,7 +141,7 @@ const Item = /*@__PURE__*/ proxyCustomElement(class Item extends HTMLElement {
      // inputs, then those need to individually get each click
      hasCover() {
          const inputs = this.el.querySelectorAll('ion-checkbox, ion-datetime, ion-select, ion-radio');
@@ -12,7 +12,7 @@ index ec9ab81..a384b35 100644
      // If the item has an href or button property it will render a native
      // anchor or button that is clickable
 diff --git a/node_modules/@ionic/core/components/popover.js b/node_modules/@ionic/core/components/popover.js
-index 56b1107..03e5116 100644
+index 18518f3..5991598 100644
 --- a/node_modules/@ionic/core/components/popover.js
 +++ b/node_modules/@ionic/core/components/popover.js
 @@ -23,7 +23,9 @@ const getArrowDimensions = (arrowEl) => {
@@ -80,7 +80,7 @@ index 56b1107..03e5116 100644
      const contentEl = root.querySelector('.popover-content');
      const referenceSizeEl = trigger || ((_a = ev === null || ev === void 0 ? void 0 : ev.detail) === null || _a === void 0 ? void 0 : _a.ionShadowTarget) || (ev === null || ev === void 0 ? void 0 : ev.target);
 diff --git a/node_modules/@ionic/core/dist/cjs/ion-item_8.cjs.entry.js b/node_modules/@ionic/core/dist/cjs/ion-item_8.cjs.entry.js
-index 4ce05a4..cc5562b 100644
+index 930ee10..f6b7063 100644
 --- a/node_modules/@ionic/core/dist/cjs/ion-item_8.cjs.entry.js
 +++ b/node_modules/@ionic/core/dist/cjs/ion-item_8.cjs.entry.js
 @@ -137,7 +137,7 @@ const Item = class {
@@ -93,7 +93,7 @@ index 4ce05a4..cc5562b 100644
      // If the item has an href or button property it will render a native
      // anchor or button that is clickable
 diff --git a/node_modules/@ionic/core/dist/cjs/ion-popover.cjs.entry.js b/node_modules/@ionic/core/dist/cjs/ion-popover.cjs.entry.js
-index 687100e..9abe028 100644
+index 9af2837..75097e3 100644
 --- a/node_modules/@ionic/core/dist/cjs/ion-popover.cjs.entry.js
 +++ b/node_modules/@ionic/core/dist/cjs/ion-popover.cjs.entry.js
 @@ -26,7 +26,9 @@ const getArrowDimensions = (arrowEl) => {
@@ -161,7 +161,7 @@ index 687100e..9abe028 100644
      const contentEl = root.querySelector('.popover-content');
      const referenceSizeEl = trigger || ((_a = ev === null || ev === void 0 ? void 0 : ev.detail) === null || _a === void 0 ? void 0 : _a.ionShadowTarget) || (ev === null || ev === void 0 ? void 0 : ev.target);
 diff --git a/node_modules/@ionic/core/dist/collection/components/item/item.js b/node_modules/@ionic/core/dist/collection/components/item/item.js
-index 5bcc20e..ba8f46f 100644
+index 2714cf5..b7f7f51 100644
 --- a/node_modules/@ionic/core/dist/collection/components/item/item.js
 +++ b/node_modules/@ionic/core/dist/collection/components/item/item.js
 @@ -139,7 +139,7 @@ export class Item {
@@ -208,7 +208,7 @@ index 603923a..ff10a25 100644
      const contentEl = root.querySelector('.popover-content');
      const referenceSizeEl = trigger || ((_a = ev === null || ev === void 0 ? void 0 : ev.detail) === null || _a === void 0 ? void 0 : _a.ionShadowTarget) || (ev === null || ev === void 0 ? void 0 : ev.target);
 diff --git a/node_modules/@ionic/core/dist/esm/ion-item_8.entry.js b/node_modules/@ionic/core/dist/esm/ion-item_8.entry.js
-index 215918e..b83a6b1 100644
+index fac1ba2..e21ed9c 100644
 --- a/node_modules/@ionic/core/dist/esm/ion-item_8.entry.js
 +++ b/node_modules/@ionic/core/dist/esm/ion-item_8.entry.js
 @@ -135,7 +135,7 @@ const Item = class {
@@ -221,7 +221,7 @@ index 215918e..b83a6b1 100644
      // If the item has an href or button property it will render a native
      // anchor or button that is clickable
 diff --git a/node_modules/@ionic/core/dist/esm/ion-popover.entry.js b/node_modules/@ionic/core/dist/esm/ion-popover.entry.js
-index 2e352cf..4231f48 100644
+index 81893f0..cd4dd3f 100644
 --- a/node_modules/@ionic/core/dist/esm/ion-popover.entry.js
 +++ b/node_modules/@ionic/core/dist/esm/ion-popover.entry.js
 @@ -24,7 +24,9 @@ const getArrowDimensions = (arrowEl) => {
@@ -289,10 +289,10 @@ index 2e352cf..4231f48 100644
      const contentEl = root.querySelector('.popover-content');
      const referenceSizeEl = trigger || ((_a = ev === null || ev === void 0 ? void 0 : ev.detail) === null || _a === void 0 ? void 0 : _a.ionShadowTarget) || (ev === null || ev === void 0 ? void 0 : ev.target);
 diff --git a/node_modules/@ionic/core/hydrate/index.js b/node_modules/@ionic/core/hydrate/index.js
-index 7ea2833..71aac42 100644
+index 6dce50d..4a8f2ab 100644
 --- a/node_modules/@ionic/core/hydrate/index.js
 +++ b/node_modules/@ionic/core/hydrate/index.js
-@@ -17985,7 +17985,7 @@ class Item {
+@@ -18404,7 +18404,7 @@ class Item {
      // inputs, then those need to individually get each click
      hasCover() {
          const inputs = this.el.querySelectorAll('ion-checkbox, ion-datetime, ion-select, ion-radio');
@@ -301,7 +301,7 @@ index 7ea2833..71aac42 100644
      }
      // If the item has an href or button property it will render a native
      // anchor or button that is clickable
-@@ -26136,7 +26136,9 @@ const getArrowDimensions = (arrowEl) => {
+@@ -26722,7 +26722,9 @@ const getArrowDimensions = (arrowEl) => {
          return { arrowWidth: 0, arrowHeight: 0 };
      }
      const { width, height } = arrowEl.getBoundingClientRect();
@@ -312,7 +312,7 @@ index 7ea2833..71aac42 100644
  };
  /**
   * Returns the recommended dimensions of the popover
-@@ -26151,9 +26153,11 @@ const getPopoverDimensions = (size, contentEl, triggerEl) => {
+@@ -26737,9 +26739,11 @@ const getPopoverDimensions = (size, contentEl, triggerEl) => {
          const triggerDimensions = triggerEl.getBoundingClientRect();
          contentWidth = triggerDimensions.width;
      }
@@ -326,7 +326,7 @@ index 7ea2833..71aac42 100644
      };
  };
  const configureDismissInteraction = (triggerEl, triggerAction, popoverEl, parentPopoverEl) => {
-@@ -26550,6 +26554,12 @@ const getPopoverPosition = (isRTL, contentWidth, contentHeight, arrowWidth, arro
+@@ -27136,6 +27140,12 @@ const getPopoverPosition = (isRTL, contentWidth, contentHeight, arrowWidth, arro
              };
              break;
      }
@@ -339,7 +339,7 @@ index 7ea2833..71aac42 100644
      /**
       * Get top/left offset that would allow
       * popover to be positioned on the
-@@ -26876,8 +26886,10 @@ const iosEnterAnimation$1 = (baseEl, opts) => {
+@@ -27462,8 +27472,10 @@ const iosEnterAnimation$1 = (baseEl, opts) => {
      const { event: ev, size, trigger, reference, side, align } = opts;
      const doc = baseEl.ownerDocument;
      const isRTL = doc.dir === 'rtl';
@@ -352,7 +352,7 @@ index 7ea2833..71aac42 100644
      const root = getElementRoot(baseEl);
      const contentEl = root.querySelector('.popover-content');
      const arrowEl = root.querySelector('.popover-arrow');
-@@ -26997,8 +27009,10 @@ const mdEnterAnimation$1 = (baseEl, opts) => {
+@@ -27583,8 +27595,10 @@ const mdEnterAnimation$1 = (baseEl, opts) => {
      const { event: ev, size, trigger, reference, side, align } = opts;
      const doc = baseEl.ownerDocument;
      const isRTL = doc.dir === 'rtl';
@@ -366,10 +366,10 @@ index 7ea2833..71aac42 100644
      const contentEl = root.querySelector('.popover-content');
      const referenceSizeEl = trigger || ((_a = ev === null || ev === void 0 ? void 0 : ev.detail) === null || _a === void 0 ? void 0 : _a.ionShadowTarget) || (ev === null || ev === void 0 ? void 0 : ev.target);
 diff --git a/node_modules/@ionic/core/hydrate/index.mjs b/node_modules/@ionic/core/hydrate/index.mjs
-index bab3773..5ccdb98 100644
+index 3fb6cac..770f7d4 100644
 --- a/node_modules/@ionic/core/hydrate/index.mjs
 +++ b/node_modules/@ionic/core/hydrate/index.mjs
-@@ -17983,7 +17983,7 @@ class Item {
+@@ -18402,7 +18402,7 @@ class Item {
      // inputs, then those need to individually get each click
      hasCover() {
          const inputs = this.el.querySelectorAll('ion-checkbox, ion-datetime, ion-select, ion-radio');
@@ -378,7 +378,7 @@ index bab3773..5ccdb98 100644
      }
      // If the item has an href or button property it will render a native
      // anchor or button that is clickable
-@@ -26134,7 +26134,9 @@ const getArrowDimensions = (arrowEl) => {
+@@ -26720,7 +26720,9 @@ const getArrowDimensions = (arrowEl) => {
          return { arrowWidth: 0, arrowHeight: 0 };
      }
      const { width, height } = arrowEl.getBoundingClientRect();
@@ -389,7 +389,7 @@ index bab3773..5ccdb98 100644
  };
  /**
   * Returns the recommended dimensions of the popover
-@@ -26149,9 +26151,11 @@ const getPopoverDimensions = (size, contentEl, triggerEl) => {
+@@ -26735,9 +26737,11 @@ const getPopoverDimensions = (size, contentEl, triggerEl) => {
          const triggerDimensions = triggerEl.getBoundingClientRect();
          contentWidth = triggerDimensions.width;
      }
@@ -403,7 +403,7 @@ index bab3773..5ccdb98 100644
      };
  };
  const configureDismissInteraction = (triggerEl, triggerAction, popoverEl, parentPopoverEl) => {
-@@ -26548,6 +26552,12 @@ const getPopoverPosition = (isRTL, contentWidth, contentHeight, arrowWidth, arro
+@@ -27134,6 +27138,12 @@ const getPopoverPosition = (isRTL, contentWidth, contentHeight, arrowWidth, arro
              };
              break;
      }
@@ -416,7 +416,7 @@ index bab3773..5ccdb98 100644
      /**
       * Get top/left offset that would allow
       * popover to be positioned on the
-@@ -26874,8 +26884,10 @@ const iosEnterAnimation$1 = (baseEl, opts) => {
+@@ -27460,8 +27470,10 @@ const iosEnterAnimation$1 = (baseEl, opts) => {
      const { event: ev, size, trigger, reference, side, align } = opts;
      const doc = baseEl.ownerDocument;
      const isRTL = doc.dir === 'rtl';
@@ -429,7 +429,7 @@ index bab3773..5ccdb98 100644
      const root = getElementRoot(baseEl);
      const contentEl = root.querySelector('.popover-content');
      const arrowEl = root.querySelector('.popover-arrow');
-@@ -26995,8 +27007,10 @@ const mdEnterAnimation$1 = (baseEl, opts) => {
+@@ -27581,8 +27593,10 @@ const mdEnterAnimation$1 = (baseEl, opts) => {
      const { event: ev, size, trigger, reference, side, align } = opts;
      const doc = baseEl.ownerDocument;
      const isRTL = doc.dir === 'rtl';
