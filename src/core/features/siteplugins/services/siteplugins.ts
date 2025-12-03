@@ -19,7 +19,7 @@ import { CoreSite } from '@classes/sites/site';
 import { CoreCourseAnyModuleData } from '@features/course/services/course';
 import { CoreCourses } from '@features/courses/services/courses';
 import { CoreFilepool } from '@services/filepool';
-import { CoreLang, CoreLangFormat } from '@services/lang';
+import { CoreLang, CoreLangFormat, CoreLangTranslationByLanguage } from '@services/lang';
 import { CoreSites } from '@services/sites';
 import { CoreText } from '@singletons/text';
 import { CoreUtils } from '@singletons/utils';
@@ -812,7 +812,7 @@ export type CoreSitePluginsWSPlugin = {
  */
 export type CoreSitePluginsPlugin = CoreSitePluginsWSPlugin & {
     parsedHandlers?: Record<string, CoreSitePluginsHandlerData> | null;
-    parsedLang?: Record<string, string[]> | null;
+    parsedLang?: CoreLangTranslationByLanguage | null;
 };
 
 /**
