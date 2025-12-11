@@ -28,7 +28,12 @@ import { CoreNavigator } from '@services/navigator';
 import { CoreSites } from '@services/sites';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { makeSingleton } from '@singletons';
-import { GRADES_PAGE_NAME } from '../../constants';
+import {
+    CORE_GRADES_ACCOUNT_FEATURE_NAME,
+    CORE_GRADES_COMPONENT_NAME,
+    CORE_GRADES_USER_MENU_FEATURE_NAME,
+    GRADES_PAGE_NAME,
+} from '../../constants';
 
 /**
  * Profile grades handler.
@@ -37,7 +42,7 @@ import { GRADES_PAGE_NAME } from '../../constants';
 export class CoreGradesUserHandlerService implements CoreUserProfileHandler {
 
     // This name doesn't match any disabled feature, they'll be checked in isEnabledForContext.
-    name = 'CoreGrades:fakename';
+    name = `${CORE_GRADES_COMPONENT_NAME}:fakename`;
     priority = 500;
     type = CoreUserProfileHandlerType.LIST_ITEM;
     cacheEnabled = true;
@@ -60,10 +65,10 @@ export class CoreGradesUserHandlerService implements CoreUserProfileHandler {
         }
 
         if (context === CoreUserDelegateContext.USER_MENU) {
-            if (currentSite.isFeatureDisabled('CoreUserDelegate_CoreGrades')) {
+            if (currentSite.isFeatureDisabled(CORE_GRADES_ACCOUNT_FEATURE_NAME)) {
                 return false;
             }
-        } else if (currentSite.isFeatureDisabled('CoreUserDelegate_CoreGrades:viewGrades')) {
+        } else if (currentSite.isFeatureDisabled(CORE_GRADES_USER_MENU_FEATURE_NAME)) {
             return false;
         }
 

@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import { MAIN_MENU_FEATURE_PREFIX } from '@features/mainmenu/constants';
+
 export const ADDON_MESSAGES_NEW_MESSAGE_EVENT = 'addon_messages_new_message_event';
 export const ADDON_MESSAGES_READ_CHANGED_EVENT = 'addon_messages_read_changed_event';
 // Notify a conversation should be opened.
@@ -26,6 +28,9 @@ export const ADDON_MESSAGES_PUSH_SIMULATION_COMPONENT = 'AddonMessagesPushSimula
 
 export const ADDON_MESSAGES_PAGE_NAME = 'messages';
 export const ADDON_MESSAGES_SETTINGS_PAGE_NAME = 'messages';
+
+export const ADDONS_MESSAGES_COMPONENT_NAME = 'AddonMessages';
+export const ADDONS_MESSAGES_MENU_FEATURE_NAME = `${MAIN_MENU_FEATURE_PREFIX}${ADDONS_MESSAGES_COMPONENT_NAME}`;
 
 export const enum AddonMessagesMessagePrivacy {
     COURSEMEMBER = 0, // Privacy setting for being messaged by anyone within courses user is member.
