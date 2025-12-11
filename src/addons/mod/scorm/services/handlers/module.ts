@@ -18,6 +18,9 @@ import { CoreCourseModuleHandler } from '@features/course/services/module-delega
 import { makeSingleton } from '@singletons';
 import { ADDON_MOD_SCORM_MODNAME, ADDON_MOD_SCORM_PAGE_NAME } from '../../constants';
 import { ModFeature, ModPurpose } from '@addons/mod/constants';
+import { AddonModScorm } from '../scorm';
+import { CoreSitesReadingStrategy } from '@services/sites';
+import { CoreCourseModuleData } from '@features/course/services/course-helper';
 
 /**
  * Handler to support SCORM modules.
@@ -49,6 +52,19 @@ export class AddonModScormModuleHandlerService extends CoreModuleHandlerBase imp
         const { AddonModScormIndexComponent } = await import('../../components/index');
 
         return AddonModScormIndexComponent;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    async getModuleForcedLang(module: CoreCourseModuleData): Promise<string | undefined> {
+        const mod = await AddonModScorm.getScorm(
+            module.course,
+            module.id,
+            { readingStrategy: CoreSitesReadingStrategy.PREFER_CACHE },
+        );
+
+        return mod?.lang;
     }
 
 }
