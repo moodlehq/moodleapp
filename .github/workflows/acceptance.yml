@@ -1,218 +1,218 @@
 name: Acceptance tests (Behat)
 
 on:
-  workflow_dispatch:
-    inputs:
-      behat_tags:
-        description: "Behat tags to execute"
-      moodle_branch:
-        description: "Moodle branch"
-        required: true
-        default: "main"
-      moodle_repository:
-        description: "Moodle repository"
-        required: true
-        default: "https://github.com/moodle/moodle.git"
-  pull_request:
-    branches: [main, v*.x]
+    workflow_dispatch:
+        inputs:
+            behat_tags:
+                description: "Behat tags to execute"
+            moodle_branch:
+                description: "Moodle branch"
+                required: true
+                default: "main"
+            moodle_repository:
+                description: "Moodle repository"
+                required: true
+                default: "https://github.com/moodle/moodle.git"
+    pull_request:
+        branches: [main, v*.x]
 
 concurrency:
-  group: acceptance-${{ github.ref }}
-  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
+    group: acceptance-${{ github.ref }}
+    cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
-    outputs:
-      tags: ${{ steps.set-tags.outputs.tags }}
+    build:
+        runs-on: ubuntu-latest
+        outputs:
+            tags: ${{ steps.set-tags.outputs.tags }}
 
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          path: app
+        steps:
+            - uses: actions/checkout@v4
+              with:
+                  path: app
 
-      - uses: actions/setup-node@v4
-        with:
-          node-version-file: "app/.nvmrc"
+            - uses: actions/setup-node@v4
+              with:
+                  node-version-file: "app/.nvmrc"
 
-      - name: Install npm dependencies
-        working-directory: app
-        run: npm ci --no-audit
+            - name: Install npm dependencies
+              working-directory: app
+              run: npm ci --no-audit
 
-      - name: Install languages
-        working-directory: app
-        run: |
-          npx gulp lang
-          npm run lang:update-langpacks
+            - name: Install languages
+              working-directory: app
+              run: |
+                  npx gulp lang
+                  npm run lang:update-langpacks
 
-      - name: Build app
-        working-directory: app
-        run: npm run build:test
+            - name: Build app
+              working-directory: app
+              run: npm run build:test
 
-      - name: Generate SSL certificates
-        working-directory: app
-        run: |
-          mkdir ./ssl
-          openssl req -x509 -nodes \
-            -days 365 \
-            -newkey rsa:2048 \
-            -keyout ./ssl/certificate.key \
-            -out ./ssl/certificate.crt \
-            -subj="/O=Moodle"
+            - name: Generate SSL certificates
+              working-directory: app
+              run: |
+                  mkdir ./ssl
+                  openssl req -x509 -nodes \
+                    -days 365 \
+                    -newkey rsa:2048 \
+                    -keyout ./ssl/certificate.key \
+                    -out ./ssl/certificate.crt \
+                    -subj="/O=Moodle"
 
-      - name: Build Behat plugin
-        working-directory: app
-        run: ./scripts/build-behat-plugin.js ../plugin
+            - name: Build Behat plugin
+              working-directory: app
+              run: ./scripts/build-behat-plugin.js ../plugin
 
-      - name: Prepare Behat tags
-        id: set-tags
-        working-directory: app
-        run: |
-          if [ -z $BEHAT_TAGS ]; then
-            tags_json=`.github/scripts/print_behat_tags_json.sh`
-            echo "tags=$tags_json" >> $GITHUB_OUTPUT;
-          else
-            echo "tags=[\"$BEHAT_TAGS\"]" >> $GITHUB_OUTPUT;
-          fi
-        env:
-          BEHAT_TAGS: ${{ github.event.inputs.behat_tags }}
+            - name: Prepare Behat tags
+              id: set-tags
+              working-directory: app
+              run: |
+                  if [ -z $BEHAT_TAGS ]; then
+                    tags_json=`.github/scripts/print_behat_tags_json.sh`
+                    echo "tags=$tags_json" >> $GITHUB_OUTPUT;
+                  else
+                    echo "tags=[\"$BEHAT_TAGS\"]" >> $GITHUB_OUTPUT;
+                  fi
+              env:
+                  BEHAT_TAGS: ${{ github.event.inputs.behat_tags }}
 
-      # We need to upload an artifact so that the download-artifact action
-      # in the "complete" job does not fail if no other artifacts were uploaded.
-      - name: Create build logs
-        run: touch logs.txt
+            # We need to upload an artifact so that the download-artifact action
+            # in the "complete" job does not fail if no other artifacts were uploaded.
+            - name: Create build logs
+              run: touch logs.txt
 
-      - name: Upload build logs
-        uses: actions/upload-artifact@v4
-        with:
-          name: build
-          path: logs.txt
+            - name: Upload build logs
+              uses: actions/upload-artifact@v4
+              with:
+                  name: build
+                  path: logs.txt
 
-      - uses: actions/cache/save@v4
-        with:
-          key: build-${{ github.sha }}
-          path: |
-            app/ssl/**/*
-            app/node_modules/**/*
-            app/www/**/*
-            plugin/**/*
+            - uses: actions/cache/save@v4
+              with:
+                  key: build-${{ github.sha }}
+                  path: |
+                      app/ssl/**/*
+                      app/node_modules/**/*
+                      app/www/**/*
+                      plugin/**/*
 
-  behat:
-    runs-on: ubuntu-latest
-    needs: build
-    continue-on-error: true
+    behat:
+        runs-on: ubuntu-latest
+        needs: build
+        continue-on-error: true
 
-    strategy:
-      matrix:
-        tags: ${{ fromJSON(needs.build.outputs.tags) }}
+        strategy:
+            matrix:
+                tags: ${{ fromJSON(needs.build.outputs.tags) }}
 
-    services:
-      postgres:
-        image: postgres:15
-        env:
-          POSTGRES_USER: "postgres"
-          POSTGRES_HOST_AUTH_METHOD: "trust"
-        ports:
-          - 5432:5432
-        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 3
+        services:
+            postgres:
+                image: postgres:16
+                env:
+                    POSTGRES_USER: "postgres"
+                    POSTGRES_HOST_AUTH_METHOD: "trust"
+                ports:
+                    - 5432:5432
+                options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 3
 
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          path: app
+        steps:
+            - uses: actions/checkout@v4
+              with:
+                  path: app
 
-      - uses: actions/setup-node@v4
-        with:
-          node-version-file: "app/.nvmrc"
+            - uses: actions/setup-node@v4
+              with:
+                  node-version-file: "app/.nvmrc"
 
-      - uses: shivammathur/setup-php@v2
-        with:
-          php-version: 8.2
-          ini-values: max_input_vars=5000
-          coverage: none
+            - uses: shivammathur/setup-php@v2
+              with:
+                  php-version: 8.3
+                  ini-values: max_input_vars=5000
+                  coverage: none
 
-      - uses: actions/cache/restore@v4
-        with:
-          key: build-${{ github.sha }}
-          path: |
-            app/ssl/**/*
-            app/node_modules/**/*
-            app/www/**/*
-            plugin/**/*
+            - uses: actions/cache/restore@v4
+              with:
+                  key: build-${{ github.sha }}
+                  path: |
+                      app/ssl/**/*
+                      app/node_modules/**/*
+                      app/www/**/*
+                      plugin/**/*
 
-      - name: Launch Docker images
-        working-directory: app
-        run: |
-          docker run -d --rm \
-              -p 8001:443 \
-              --name moodleapp \
-              -v ./www:/usr/share/nginx/html \
-              -v ./nginx.conf:/etc/nginx/conf.d/default.conf \
-              -v ./ssl/certificate.crt:/etc/ssl/certificate.crt \
-              -v ./ssl/certificate.key:/etc/ssl/certificate.key \
-              nginx:alpine
-          docker run -d --rm -p 8002:80 --name bigbluebutton moodlehq/bigbluebutton_mock:latest
+            - name: Launch Docker images
+              working-directory: app
+              run: |
+                  docker run -d --rm \
+                      -p 8001:443 \
+                      --name moodleapp \
+                      -v ./www:/usr/share/nginx/html \
+                      -v ./nginx.conf:/etc/nginx/conf.d/default.conf \
+                      -v ./ssl/certificate.crt:/etc/ssl/certificate.crt \
+                      -v ./ssl/certificate.key:/etc/ssl/certificate.key \
+                      nginx:alpine
+                  docker run -d --rm -p 8002:80 --name bigbluebutton moodlehq/bigbluebutton_mock:latest
 
-      - name: Initialise moodle-plugin-ci
-        run: |
-          composer create-project -n --no-dev --prefer-dist moodlehq/moodle-plugin-ci ci ^4.5
-          echo $(cd ci/bin; pwd) >> $GITHUB_PATH
-          echo $(cd ci/vendor/bin; pwd) >> $GITHUB_PATH
-          sudo locale-gen en_AU.UTF-8
+            - name: Initialise moodle-plugin-ci
+              run: |
+                  composer create-project -n --no-dev --prefer-dist moodlehq/moodle-plugin-ci ci ^4.5
+                  echo $(cd ci/bin; pwd) >> $GITHUB_PATH
+                  echo $(cd ci/vendor/bin; pwd) >> $GITHUB_PATH
+                  sudo locale-gen en_AU.UTF-8
 
-          # Install nvm v0.39.7 as a temporary workaround for issue:
-          # https://github.com/moodlehq/moodle-plugin-ci/issues/309
-          curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
+                  # Install nvm v0.39.7 as a temporary workaround for issue:
+                  # https://github.com/moodlehq/moodle-plugin-ci/issues/309
+                  curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
 
-      - name: Install Behat Snapshots plugin
-        run: moodle-plugin-ci add-plugin moodlemobile/moodle-local_behatsnapshots
+            - name: Install Behat Snapshots plugin
+              run: moodle-plugin-ci add-plugin moodlemobile/moodle-local_behatsnapshots
 
-      - name: Install moodle-plugin-ci
-        run: moodle-plugin-ci install --plugin ./plugin --db-host=127.0.0.1
-        env:
-          DB: pgsql
-          MOODLE_BRANCH: ${{ github.event.inputs.moodle_branch || 'main' }}
-          MOODLE_REPO: ${{ github.event.inputs.moodle_repository || 'https://github.com/moodle/moodle.git' }}
-          MOODLE_BEHAT_IONIC_WWWROOT: https://localhost:8001
-          MOODLE_BEHAT_DEFAULT_BROWSER: chrome
-          MOODLE_BEHAT_CHROME_CAPABILITIES: "['extra_capabilities' => ['chromeOptions' => ['args' => ['--ignore-certificate-errors', '--allow-running-insecure-content'], 'prefs' => ['credentials_enable_service' => false, 'profile.password_manager_enabled' => false, 'profile.password_manager_leak_detection' => false]]]]"
+            - name: Install moodle-plugin-ci
+              run: moodle-plugin-ci install --plugin ./plugin --db-host=127.0.0.1
+              env:
+                  DB: pgsql
+                  MOODLE_BRANCH: ${{ github.event.inputs.moodle_branch || 'main' }}
+                  MOODLE_REPO: ${{ github.event.inputs.moodle_repository || 'https://github.com/moodle/moodle.git' }}
+                  MOODLE_BEHAT_IONIC_WWWROOT: https://localhost:8001
+                  MOODLE_BEHAT_DEFAULT_BROWSER: chrome
+                  MOODLE_BEHAT_CHROME_CAPABILITIES: "['extra_capabilities' => ['chromeOptions' => ['args' => ['--ignore-certificate-errors', '--allow-running-insecure-content'], 'prefs' => ['credentials_enable_service' => false, 'profile.password_manager_enabled' => false, 'profile.password_manager_leak_detection' => false]]]]"
 
-      - name: Update config
-        run: moodle-plugin-ci add-config 'define("TEST_MOD_BIGBLUEBUTTONBN_MOCK_SERVER", "http://localhost:8002/hash" . sha1($CFG->wwwroot));'
+            - name: Update config
+              run: moodle-plugin-ci add-config 'define("TEST_MOD_BIGBLUEBUTTONBN_MOCK_SERVER", "http://localhost:8002/hash" . sha1($CFG->wwwroot));'
 
-      - name: Run Behat tests
-        run: moodle-plugin-ci behat --auto-rerun 3 --profile chrome --tags="@app&&~@local&&$BEHAT_TAGS"
-        env:
-          BEHAT_TAGS: ${{ matrix.tags }}
-          MOODLE_BEHAT_SELENIUM_IMAGE: selenium/standalone-chrome:latest
+            - name: Run Behat tests
+              run: moodle-plugin-ci behat --auto-rerun 3 --profile chrome --tags="@app&&~@local&&$BEHAT_TAGS"
+              env:
+                  BEHAT_TAGS: ${{ matrix.tags }}
+                  MOODLE_BEHAT_SELENIUM_IMAGE: selenium/standalone-chrome:latest
 
-      - name: Upload Snapshot failures
-        uses: actions/upload-artifact@v4
-        if: ${{ failure() }}
-        with:
-          name: snapshot_failures-${{ matrix.tags }}
-          path: moodle/public/local/moodleappbehat/tests/behat/snapshots/failures/*
+            - name: Upload Snapshot failures
+              uses: actions/upload-artifact@v4
+              if: ${{ failure() }}
+              with:
+                  name: snapshot_failures-${{ matrix.tags }}
+                  path: moodle/public/local/moodleappbehat/tests/behat/snapshots/failures/*
 
-      - name: Upload Behat failures
-        uses: actions/upload-artifact@v4
-        if: ${{ failure() }}
-        with:
-          name: behat_failures-${{ matrix.tags }}
-          path: moodledata/behat_dump/*
+            - name: Upload Behat failures
+              uses: actions/upload-artifact@v4
+              if: ${{ failure() }}
+              with:
+                  name: behat_failures-${{ matrix.tags }}
+                  path: moodledata/behat_dump/*
 
-  complete:
-    runs-on: ubuntu-latest
-    needs: [behat]
+    complete:
+        runs-on: ubuntu-latest
+        needs: [behat]
 
-    steps:
-      - uses: actions/download-artifact@v4
-        with:
-          path: artifacts
+        steps:
+            - uses: actions/download-artifact@v4
+              with:
+                  path: artifacts
 
-      - name: Check failure artifacts
-        run: |
-          rm ./artifacts/build -rf
-          if [ -n "$(ls -A ./artifacts)" ]; then
-            echo "There were some failures in the previous jobs"
-            exit 1
-          fi
+            - name: Check failure artifacts
+              run: |
+                  rm ./artifacts/build -rf
+                  if [ -n "$(ls -A ./artifacts)" ]; then
+                    echo "There were some failures in the previous jobs"
+                    exit 1
+                  fi
