@@ -73,16 +73,15 @@ export class CoreFileUploaderAudioRecorderComponent extends CoreModalComponent<C
         }));
         this.status$ = combineLatest([this.media$.pipe(recorderStatus(), shareReplay()), this.recording$])
             .pipe(map(([recordingStatus, recording]) => {
+                if (recording) {
+                    return 'done';
+                }
                 if (recordingStatus === 'recording') {
                     return 'recording-ongoing';
                 }
 
                 if (recordingStatus === 'paused') {
                     return 'recording-paused';
-                }
-
-                if (recording) {
-                    return 'done';
                 }
 
                 return 'empty';
