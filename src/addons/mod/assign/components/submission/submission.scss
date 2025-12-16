@@ -91,8 +91,10 @@
             z-index: 6;
         }
     }
+}
 
-
+ion-checkbox[name="submissionstatement"] core-format-text {
+    display: inline;
 }
 
 :host-context(:root.dark) ::ng-deep {
