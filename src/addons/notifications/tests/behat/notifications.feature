@@ -57,7 +57,7 @@ Feature: Notifications
     Then I should find "Push 01" in the app
     And I should find "Test push" in the app
 
-    # Open notification detail
+    # Open notification detail
     When I go back in the app
     And I press "Test 30" in the app
     Then I should find "Test 30 description" in the app
