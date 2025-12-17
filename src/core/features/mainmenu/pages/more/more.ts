@@ -173,4 +173,11 @@ export default class CoreMainMenuMorePage implements OnInit, OnDestroy {
         }
     }
 
+    /**
+     * Open settings.
+     */
+    openLanguageSettings(): void {
+        CoreNavigator.navigateToSitePath('settings/general');
+    }
+
 }
