@@ -1,85 +1,25 @@
 {
-    "app_id": "com.moodle.moodlemobile",
-    "appname": "Moodle Mobile",
-    "versioncode": 51001,
-    "versionname": "5.1.0",
+    "app_id": "blsd.exentriq.com",
+    "appname": "BLSD School",
+    "versioncode": 1,
+    "versionname": "3.0.0",
     "cache_update_frequency_usually": 420000,
     "cache_update_frequency_often": 1200000,
     "cache_update_frequency_sometimes": 3600000,
     "cache_update_frequency_rarely": 43200000,
     "default_lang": "en",
     "languages": {
-        "af": "Afrikaans",
-        "ar": "العربية",
-        "az": "Azərbaycanca",
-        "bg": "Български",
-        "ca": "Català",
-        "cs": "Čeština",
-        "da": "Dansk",
-        "de": "Deutsch",
-        "de-du": "Deutsch (du)",
-        "el": "Ελληνικά",
+        "ar": "عربي",
         "en": "English",
-        "en-us": "English (United States)",
-        "es": "Español - Internacional",
-        "es-mx": "Español - México",
-        "eu": "Euskara",
-        "fa": "فارسی",
-        "fi": "Suomi",
+        "es": "Español",
         "fr": "Français",
-        "gl": "Galego",
-        "he": "עברית",
-        "hi": "हिंदी",
-        "hr": "Hrvatski",
-        "hsb": "Hornjoserbsce",
-        "hu": "magyar",
-        "hy": "Հայերեն",
-        "id": "Bahasa Indonesia",
         "it": "Italiano",
-        "ja": "日本語",
-        "km": "ខ្មែរ",
-        "kn": "ಕನ್ನಡ",
-        "ko": "한국어",
-        "lo": "ລາວ",
-        "lt": "Lietuvių",
-        "lv": "Latviešu",
-        "mn": "Монгол",
-        "mr": "मराठी",
-        "nl": "Nederlands",
-        "no": "Norsk",
-        "pl": "Polski",
-        "ps": "لیسي",
         "pt": "Português - Portugal",
-        "pt-br": "Português - Brasil",
-        "ro": "Română",
         "ru": "Русский",
-        "sl": "Slovenščina",
-        "sq": "Shqip",
-        "sr-cr": "Српски",
-        "sr-lt": "Srpski",
-        "sv": "Svenska",
-        "szl": "Ślōnski",
-        "tg": "Тоҷикӣ",
-        "tr": "Türkçe",
-        "uk": "Українська",
-        "uz": "O'zbekcha",
-        "vi": "Vietnamese",
-        "zh-cn": "简体中文",
-        "zh-tw": "正體中文"
+        "th": "Thai",
+        "de": "Deutschland"
     },
     "wsservice": "moodle_mobile_app",
-    "demo_sites": {
-        "student": {
-            "url": "https://school.moodledemo.net",
-            "username": "student",
-            "password": "moodle25"
-        },
-        "teacher": {
-            "url": "https://school.moodledemo.net",
-            "username": "teacher",
-            "password": "moodle25"
-        }
-    },
     "defaultZoomLevel": "none",
     "zoomlevels": {
         "none": 100,
@@ -87,12 +27,17 @@
         "high": 120
     },
     "customurlscheme": "moodlemobile",
-    "sites": [],
+    "sites": [
+        {
+            "name": "BLSD School",
+            "url": "https://www.blsdschool.com/"
+        }
+    ],
     "multisitesdisplay": "",
     "sitefindersettings": {},
-    "onlyallowlistedsites": false,
+    "onlyallowlistedsites": true,
     "forcedefaultlanguage": false,
-    "privacypolicy": "https://moodle.net/moodle-app-privacy/",
+    "privacypolicy": "https://www.blsdschool.com/static/privacypolicy.html",
     "notificoncolor": "#f98012",
     "enableanalytics": false,
     "enableonboarding": true,
@@ -101,7 +46,7 @@
     "showTopLogo": "hidden",
     "ioswebviewscheme": "moodleappfs",
     "appstores": {
-        "android": "com.moodle.moodlemobile",
+        "android": "blsd.exentriq.com",
         "ios": "id633359593"
     },
     "wsrequestqueuelimit": 10,
@@ -113,6 +58,7 @@
         "sticky": 0
     },
     "disableTokenFile": false,
+    "disableUserTours": true,
     "iconsPrefixes": {
         "font-awesome": {
             "brands": [

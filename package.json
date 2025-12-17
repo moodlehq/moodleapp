@@ -1,10 +1,10 @@
 {
-    "name": "moodlemobile",
-    "version": "5.1.0",
-    "description": "The official app for Moodle.",
+    "name": "blsdmobile",
+    "version": "2.0.6",
+    "description": "The official app for BLSD.",
     "author": {
-        "name": "Moodle Pty Ltd.",
-        "email": "mobile@moodle.com"
+        "name": "Exentriq Ltd.",
+        "email": "adriano@exentriq.com"
     },
     "repository": {
         "type": "git",

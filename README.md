@@ -15,3 +15,14 @@ License
 -------
 
 [Apache 2.0](http://www.apache.org/licenses/LICENSE-2.0)
+
+
+## MAC OS - Lauch Chrome
+open -na Google\ Chrome --args --user-data-dir=/tmp/temporary-chrome-profile-dir --disable-web-security
+
+##Download initial language pack
+./update_lang.sh
+
+
+## Troubleshooting
+1. To

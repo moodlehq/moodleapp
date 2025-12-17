@@ -1,8 +1,8 @@
 <?xml version='1.0' encoding='utf-8'?>
-<widget android-versionCode="51001" id="com.moodle.moodlemobile" ios-CFBundleVersion="5.1.0.1" version="5.1.0" versionCode="51001" xmlns="http://www.w3.org/ns/widgets" xmlns:android="http://schemas.android.com/apk/res/android" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+<widget android-versionCode="21" id="blsd.exentriq.com" ios-CFBundleVersion="3.0.5" version="3.0.5" versionCode="20" xmlns="http://www.w3.org/ns/widgets" xmlns:android="http://schemas.android.com/apk/res/android" xmlns:cdv="http://cordova.apache.org/ns/1.0">
     <name>Moodle</name>
-    <description>Moodle official app</description>
-    <author email="mobile@moodle.com" href="http://moodle.com">Moodle Mobile team</author>
+    <description>BLSD School official app</description>
+    <author email="info@exentriq.com" href="http://www.exentriq.com">Exentriq Ltd</author>
     <content src="index.html" />
     <access origin="*" />
     <access launch-external="yes" origin="tel:*" />
