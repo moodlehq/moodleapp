@@ -114,14 +114,14 @@
     </core-loading>
 </ion-content>
 <ion-footer>
-    @if (displaySwitchAccount) {
-        <ion-item button lines="full" (click)="switchAccounts($event)" [detail]="true" class="ion-text-wrap">
-            <ion-icon name="fas-right-left" slot="start" aria-hidden="true" />
-            <ion-label>
-                <p class="item-heading">{{ 'core.mainmenu.switchaccount' | translate }}</p>
-            </ion-label>
-        </ion-item>
-    }
+<!--    @if (displaySwitchAccount) {-->
+<!--        <ion-item button lines="full" (click)="switchAccounts($event)" [detail]="true" class="ion-text-wrap">-->
+<!--            <ion-icon name="fas-right-left" slot="start" aria-hidden="true" />-->
+<!--            <ion-label>-->
+<!--                <p class="item-heading">{{ 'core.mainmenu.switchaccount' | translate }}</p>-->
+<!--            </ion-label>-->
+<!--        </ion-item>-->
+<!--    }-->
     <div class="ion-padding">
         <ion-button (click)="logout($event)" expand="block" color="danger" [ariaLabel]="'core.mainmenu.logout' | translate"
             class="ion-text-wrap">
