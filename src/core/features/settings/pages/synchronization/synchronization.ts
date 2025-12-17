@@ -104,7 +104,7 @@ export default class CoreSettingsSynchronizationPage implements OnInit, OnDestro
 
         this.sitesLoaded = true;
 
-        this.dataSaver = await CoreConfig.get(CoreConstants.SETTINGS_SYNC_ONLY_ON_WIFI, true);
+        this.dataSaver = await CoreConfig.get(CoreConstants.SETTINGS_SYNC_ONLY_ON_WIFI, false);
     }
 
     /**

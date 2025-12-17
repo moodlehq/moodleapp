@@ -75,7 +75,7 @@ export default class CoreSitePreferencesPage implements AfterViewInit, OnDestroy
      * @inheritdoc
      */
     async ngAfterViewInit(): Promise<void> {
-        this.dataSaver = await CoreConfig.get(CoreConstants.SETTINGS_SYNC_ONLY_ON_WIFI, true);
+        this.dataSaver = await CoreConfig.get(CoreConstants.SETTINGS_SYNC_ONLY_ON_WIFI, false);
 
         const pageToOpen = CoreNavigator.getRouteParam('page');
 
