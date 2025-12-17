@@ -157,6 +157,17 @@
                             [contextInstanceId]="courseId" [courseId]="courseId" />
                     </ion-item-group>
                 }
+                @if (canChangeProfilePicture) {
+                    <ion-item-group>
+                        <ion-item-divider><ion-label>
+                            <h2>{{ 'core.usercancellation' | translate}}</h2>
+                        </ion-label></ion-item-divider>
+                        <ion-button expand="block" (click)="deleteUser()">
+                            <ion-icon name="fas-trash" aria-hidden="true"></ion-icon>
+                            {{ 'core.deleteuser' | translate}}
+                        </ion-button>
+                    </ion-item-group>
+                }
             </ion-list>
         }
 

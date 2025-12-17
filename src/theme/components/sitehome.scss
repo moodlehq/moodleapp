@@ -1,0 +1,69 @@
+h4.isdaTitle {
+    font-size: 20px;
+    color: #1B1D58;
+    margin-bottom: 15px;
+}
+
+.mobilestepform{
+	margin: 62px 16px;
+	text-align: center;
+}
+
+.btn-certs{
+	position: absolute;
+    display: block;
+    top: 0px;
+    right: 0;
+    /* background-color: #eb3651; */
+    padding: 6px;
+    border-radius: 40px;
+    color: #ffffff;
+    z-index: 100;
+}
+
+#step2native{
+
+}
+
+#step2native form input.teacher_code, #step1native form input.course_code{
+   margin: 0px;
+   margin-bottom: 10px;
+}
+
+#step3native span.change-code{
+   margin-top: 8px;
+     cursor: pointer;
+     text-decoration: underline;
+     color: #EB3751 !important;
+     display: block;
+     text-align: center;
+}
+
+#step2native h4.isdaTitle span {
+  font-weight: 800;
+  display: block;
+  color: #4CAF50;
+}
+
+.moodle-native-2022 .view-badges{
+	display: none;
+}
+
+.mobilestepform .button{
+	color: #ffffff;
+}
+
+span.course_info_block {
+  display: block;
+  margin: 20px 0;
+  font-size: 20px;
+}
+.course-teacher-label-and-name{
+  background-color: #fff;
+  display: block;
+  text-align: center;
+  min-height: 140px;
+  padding: 10px;
+  margin: 0 auto 20px;
+  border: 1px solid #ddd;
+}

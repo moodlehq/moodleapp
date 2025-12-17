@@ -99,6 +99,57 @@
             <core-empty-box icon="fas-box-open" [message]="'core.course.nocontentavailable' | translate" />
         }
     </core-loading>
+
+    <ion-button (click)="showBadgesNative()" expand="block" type="submit" class="ion-margin core-login-login-button btn-certs">
+        {{ 'core.course.certifications' | translate }}
+    </ion-button>
+
+    <form id="step1native" class="mobilestepform" [formGroup]="couponForm" (ngSubmit)="validateCoupon($event)">
+        <h4 id="isdaTitle1" class="isdaTitle">
+            {{ 'core.course.insert_course_code' | translate }}
+        </h4>
+        <ion-item>
+            <ion-input type="text" name="coursecode" placeholder="XXXX-XXXX" formControlName="coursecode" autocapitalize="none"
+                       autocorrect="off" autocomplete="username" enterkeyhint="next" required="true">
+            </ion-input>
+        </ion-item>
+        <ion-button expand="block" type="submit" class="ion-margin core-login-login-button">
+            {{ 'core.h5p.confirmlabel' | translate }}
+        </ion-button>
+    </form>
+
+    <form id="step2native" class="mobilestepform" style="display: none" [formGroup]="instructorForm"
+          (ngSubmit)="validateInstructor($event)">
+        <h4 id="isdaTitle" class="isdaTitle"><span>{{ 'core.course.valid_course_code' | translate }}!</span>
+            <div [innerHTML]="'core.course.insert_instructor_code' | translate"></div>
+        </h4>
+        <ion-item>
+            <ion-input type="text" name="courseinstructor" placeholder="XXXXX" formControlName="courseinstructor" autocapitalize="none"
+                       autocorrect="off" autocomplete="username" enterkeyhint="next" required="true">
+            </ion-input>
+        </ion-item>
+        <ion-button expand="block" type="submit" class="ion-margin core-login-login-button">
+            {{ 'core.course.select' | translate }}
+        </ion-button>
+    </form>
+
+    <form id="step3native" class="mobilestepform" style="display: none" (ngSubmit)="confirmCourse($event)">
+        <span class="course-teacher-label-and-name">
+            <span class="course_info_block">
+                <span id="course-teacher-label"> {{ 'core.course' | translate }}:</span>
+                <span id="course-label-name-native"></span>
+            </span>
+            <span class="course_info_block">
+                <span id="course-teacher-label">{{ 'core.course.instructor' | translate }}:</span>
+                <span id="course-teacher-name-native"></span>
+            </span>
+        </span>
+
+        <ion-button expand="block" type="submit" class="ion-margin core-login-login-button">
+            {{ 'core.h5p.confirmlabel' | translate }}
+        </ion-button>
+        <span class="change-code" (click)="changeCode()" style="">{{ 'core.course.try_another_code' | translate }}</span>
+    </form>
 </ion-content>
 
 <ng-template #allCourseList>

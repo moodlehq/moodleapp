@@ -79,50 +79,38 @@ export class CoreLoginSiteBadgesComponent {
         };
 
         fetch(url, {
-					    method: 'POST',
-					    headers: {
-					      'Accept': 'application/json',
-					      'Content-Type': 'application/json',
-					    },
-					    body: JSON.stringify(payload),
-					  })
-					  .then(response => response.json())
-					  .then(data => {
-					    // Handle data
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(payload),
+        })
+            .then(response => response.json())
+            .then(data => {
+                // Handle data
+                console.log(data);
+                // modal.dismiss();
+                if(data && data.length > 0) {
+                    var br2 = document.querySelector<HTMLElement>('.mybadges_result2');
+                    if(br2 != null){
+                        let html = '';
+                        for(let i=0; i < data.length; i++){
+                            html += '<div class=\'single_badge\' style=\'margin-top: 10px;padding-top: 10px;border-top: 1px solid #ccc;\'><div class=\'badge_img\'><img src=\'' + data[i].Image + '\'></div><div class=\'badge_desc\' style=\'display:none\'>' + data[i].Certification + '</div></div>';
+                        }
+                        br2.innerHTML = html;
+                    }
+                } else {
+                    const br = document.querySelector<HTMLElement>('.mybadges_result2');
+                    if(br != null){
+                        br.innerHTML = '<div class=\'noBadgeMsg\' style=\'padding:20px\'>' +  noBadgeMsg + '</div>';
+                    }
 
-					    console.log(data);
-
-					    // modal.dismiss();
-
-					    if(data && data.length > 0){
-
-				        	var br2 = document.querySelector<HTMLElement>('.mybadges_result2');
-					        if(br2 != null){
-
-						       let html = '';
-						       for(let i=0; i < data.length; i++){
-
-							        html += '<div class=\'single_badge\' style=\'margin-top: 10px;padding-top: 10px;border-top: 1px solid #ccc;\'><div class=\'badge_img\'><img src=\'' + data[i].Image + '\'></div><div class=\'badge_desc\' style=\'display:none\'>' + data[i].Certification + '</div></div>';
-
-						        }
-
-						         br2.innerHTML = html;
-
-					        }
-
-				        }else{
-					        const br = document.querySelector<HTMLElement>('.mybadges_result2');
-					        if(br != null){
-						        br.innerHTML = '<div class=\'noBadgeMsg\' style=\'padding:20px\'>' +  noBadgeMsg + '</div>';
-						    }
-
-						    var br2 = document.querySelector<HTMLElement>('.no-mybadges_result');
-					        if(br2 != null){
-						        br2.style.display = 'block';
-						    }
-
-				        }
-
+                    var br2 = document.querySelector<HTMLElement>('.no-mybadges_result');
+                    if(br2 != null){
+                        br2.style.display = 'block';
+                    }
+                }
             });
 
         this.canScanQR = CoreUtils.canScanQR();
