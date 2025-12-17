@@ -2748,5 +2748,21 @@
     "core.youreoffline": "Your device is offline",
     "core.youreonline": "Your device is back online",
     "core.zoomin": "Zoom In",
-    "core.zoomout": "Zoom Out"
+    "core.zoomout": "Zoom Out",
+
+    "core.usercancellation": "User Cancellation",
+    "core.deleteuser": "Cancel Account",
+    "core.course.not_valid": "Sorry, wrong code",
+    "core.course.course_server_error": "Sorry, we encountered a problem during enrolment, please try again",
+    "core.course.certifications": "Certifications",
+    "core.course.insert_course_code": "Enter the code to open a new course",
+    "core.course.valid_course_code": "VALID CODE",
+    "core.course.insert_instructor_code": "Now insert your&nbsp;<b>instructor</b> code",
+    "core.course.select": "Select",
+    "core.course.instructor": "Instructor",
+    "core.course.try_another_code": "Try another code",
+    "core.badges": "Certifications",
+    "core.settings.languagesettings": "Change Language",
+    "home.nobadges": "In this page your BLSD certification are listed. If you think some of them are missing, please contact your instructor or write to info@isdaworld.com",
+    "core.deleteuserconfirmation": "Are you sure you want to cancel your account? This operation is irreversible"
 }
