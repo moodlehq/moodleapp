@@ -32,6 +32,8 @@ import { CoreErrorHelper } from '@services/error-helper';
 import { CoreNavigator } from '@services/navigator';
 import { CoreHTMLClasses } from '@singletons/html-classes';
 import { CoreAlerts } from '@services/overlays/alerts';
+import { CoreCourse } from '@features/course/services/course';
+import { CoreDomUtils } from '@services/utils/dom';
 
 /**
  * Object with space usage and cache entries that can be erased.

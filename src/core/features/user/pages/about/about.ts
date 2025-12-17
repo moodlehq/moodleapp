@@ -41,7 +41,7 @@ import {
 import { CoreModals } from '@services/overlays/modals';
 import { CoreFile } from '@services/file';
 import { CoreFileUtils } from '@singletons/file-utils';
-import { CoreDomUtils } from "@services/utils/dom";
+import { CoreDomUtils } from '@services/utils/dom';
 
 /**
  * Page that displays info about a user.
