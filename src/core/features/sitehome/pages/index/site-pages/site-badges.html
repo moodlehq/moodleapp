@@ -1,0 +1,28 @@
+<ion-header>
+    <ion-toolbar>
+        <ion-buttons slot="start">
+            <ion-back-button [text]="'core.back' | translate"></ion-back-button>
+        </ion-buttons>
+        <ion-title>
+            <h1>{{ 'core.badges' | translate }}</h1>
+        </ion-title>
+        <ion-buttons slot="end">
+            <ion-button fill="clear" (click)="closeHelp()">
+                {{ 'core.close' | translate }}
+            </ion-button>
+        </ion-buttons>
+    </ion-toolbar>
+
+    <!--ion-toolbar>
+        <h2>{{ 'core.badges' | translate }}</h2>
+
+        <ion-buttons slot="end">
+            <ion-button fill="clear" (click)="closeHelp()" [attr.aria-label]="close">
+                {{ 'core.close' | translate }}
+            </ion-button>
+        </ion-buttons>
+    </ion-toolbar-->
+</ion-header>
+<ion-content>
+    <div class="mybadges_result2"></div>
+</ion-content>
