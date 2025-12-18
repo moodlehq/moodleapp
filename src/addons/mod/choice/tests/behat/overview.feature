@@ -1,4 +1,4 @@
-@addon_mod_choice @app @mod @mod_choice @javascript @lms_from5.1
+@app_parallel_run_choice @addon_mod_choice @app @mod @mod_choice @javascript @lms_from5.1
 Feature: Activities overview for choice activity
 
   Background:

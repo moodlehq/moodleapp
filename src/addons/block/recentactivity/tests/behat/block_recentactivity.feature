@@ -1,4 +1,4 @@
-@addon_block_recent_activity @app @block @block_recent_activity @javascript
+@app_parallel_run_blocks @addon_block_recent_activity @app @block @block_recent_activity @javascript
 Feature: Basic tests of recent activity block
 
   Background:

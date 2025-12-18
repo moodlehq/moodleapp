@@ -1,4 +1,4 @@
-@addon_block_blog_menu @app @block @block_blog_menu @javascript
+@app_parallel_run_blog @addon_block_blog_menu @app @block @block_blog_menu @javascript
 Feature: Basic tests of blog menu block
 
   Background:

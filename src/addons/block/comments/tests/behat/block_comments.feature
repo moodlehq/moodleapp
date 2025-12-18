@@ -1,4 +1,4 @@
-@addon_block_comments @app @block @block_comments @javascript
+@app_parallel_run_comments @addon_block_comments @app @block @block_comments @javascript
 Feature: View the comments block and check
     it links to the correct comments page
 

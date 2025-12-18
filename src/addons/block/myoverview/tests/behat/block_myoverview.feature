@@ -1,4 +1,4 @@
-@addon_block_myoverview @app @block @block_myoverview @javascript
+@app_parallel_run_courses @addon_block_myoverview @app @block @block_myoverview @javascript
 Feature: Basic tests of my overview block
 
   Background:

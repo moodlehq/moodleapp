@@ -1,4 +1,4 @@
-@addon_block_activity_modules @app @block @block_activity_modules @javascript @lms_upto5.0
+@app_parallel_run_blocks @addon_block_activity_modules @app @block @block_activity_modules @javascript @lms_upto5.0
 Feature: Basic tests of activity modules block
 
   Background:

@@ -1,4 +1,4 @@
-@addon_block_course_list @app @block @block_course_list @javascript
+@app_parallel_run_courses @addon_block_course_list @app @block @block_course_list @javascript
 Feature: View the my courses block and check it links to the my page
 
   Background:

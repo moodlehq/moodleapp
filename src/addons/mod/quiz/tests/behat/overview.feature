@@ -1,4 +1,4 @@
-@addon_mod_quiz @app @mod @mod_quiz @javascript @lms_from5.1
+@app_parallel_run_quiz @addon_mod_quiz @app @mod @mod_quiz @javascript @lms_from5.1
 Feature: Activities overview for quiz activity
 
   Background:

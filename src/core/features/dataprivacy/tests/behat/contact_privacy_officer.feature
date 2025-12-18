@@ -1,4 +1,4 @@
-@core_dataprivacy @app @tool @tool_dataprivacy @javascript @lms_from4.4
+@app_parallel_run_legal @core_dataprivacy @app @tool @tool_dataprivacy @javascript @lms_from4.4
 Feature: Contact the privacy officer
   As a user
   In order to reach out to the site's privacy officer

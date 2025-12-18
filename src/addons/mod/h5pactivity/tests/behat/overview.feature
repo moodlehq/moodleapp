@@ -1,4 +1,4 @@
-@addon_mod_h5pactivity @app @mod @mod_h5pactivity @javascript @lms_from5.1
+@app_parallel_run_h5p @addon_mod_h5pactivity @app @mod @mod_h5pactivity @javascript @lms_from5.1
 Feature: Activities overview for H5P activity
 
   Background:

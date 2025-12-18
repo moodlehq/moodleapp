@@ -1,4 +1,4 @@
-@core_dataprivacy @app @tool @tool_dataprivacy @javascript @lms_from4.4
+@app_parallel_run_legal @core_dataprivacy @app @tool @tool_dataprivacy @javascript @lms_from4.4
 Feature: Manage my own data requests
   In order to manage my own data requests
   As a user
