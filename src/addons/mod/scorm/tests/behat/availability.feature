@@ -1,4 +1,4 @@
-@addon_mod_scorm @app @mod @mod_scorm @javascript
+@app_parallel_run_scorm @addon_mod_scorm @app @mod @mod_scorm @javascript
 Feature: Test availability options of SCORM activity in app
   Only open SCORMs should be allowed to be played
 

@@ -1,4 +1,4 @@
-@addon_competency @app @tool @tool_lp @javascript
+@app_parallel_run_competencies @addon_competency @app @tool @tool_lp @javascript
 Feature: Test competency navigation
 
   Background:

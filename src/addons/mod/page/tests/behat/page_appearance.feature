@@ -1,4 +1,4 @@
-@addon_mod_page @app @mod @mod_page @javascript
+@app_parallel_run_page @addon_mod_page @app @mod @mod_page @javascript
 Feature: Configure page appearance
   In order to change the appearance of the page resource
   As an admin

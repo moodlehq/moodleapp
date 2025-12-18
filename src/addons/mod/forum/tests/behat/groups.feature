@@ -1,4 +1,4 @@
-@addon_mod_forum @app @mod @mod_forum @javascript
+@app_parallel_run_forum @addon_mod_forum @app @mod @mod_forum @javascript
 Feature: Test usage of forum activity with groups in app
 
   Background:

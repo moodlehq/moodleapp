@@ -1,4 +1,4 @@
-@addon_mod_assign @app @mod @mod_assign @javascript @singleactivity
+@app_parallel_run_assign @addon_mod_assign @app @mod @mod_assign @javascript @singleactivity
 Feature: Test single activity of assign type in app
   In order to view a assign while using the mobile app
   As a student

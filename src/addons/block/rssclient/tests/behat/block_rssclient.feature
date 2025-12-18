@@ -1,4 +1,4 @@
-@addon_block_rss_client @app @block @block_rss_client @javascript @lms_from4.5
+@app_parallel_run_blocks @addon_block_rss_client @app @block @block_rss_client @javascript @lms_from4.5
 Feature: Basic tests of rss client block
 
   Background:

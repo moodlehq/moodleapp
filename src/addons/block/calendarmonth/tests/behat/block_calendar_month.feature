@@ -1,4 +1,4 @@
-@addon_block_calendar_month @app @block @block_calendar_month @javascript
+@app_parallel_run_calendar @addon_block_calendar_month @app @block @block_calendar_month @javascript
 Feature: View the calendar block and check it links to the calendar page
 
   Background:

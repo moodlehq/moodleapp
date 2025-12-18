@@ -1,4 +1,4 @@
-@addon_blog @app @core @core_blog @javascript @lms_from4.4
+@app_parallel_run_blog @addon_blog @app @core @core_blog @javascript @lms_from4.4
 Feature: Edit blog entries
   In order to add or edit blog entries as User
 
