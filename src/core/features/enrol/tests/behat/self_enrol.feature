@@ -1,4 +1,4 @@
-@core_enrol @app @enrol @enrol_self @javascript
+@app_parallel_run_enrol @core_enrol @app @enrol @enrol_self @javascript
 Feature: Users can auto-enrol themself in courses where self enrolment is allowed
   In order to participate in courses while using the mobile app
   As a user

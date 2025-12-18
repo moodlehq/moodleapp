@@ -1,4 +1,4 @@
-@core_fontawesome @app @javascript
+@app_parallel_run_core @core_fontawesome @app @javascript
 Feature: Fontawesome icons are correctly shown in the app
 
   Background:

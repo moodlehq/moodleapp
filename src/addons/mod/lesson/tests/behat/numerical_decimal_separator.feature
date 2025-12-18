@@ -1,4 +1,4 @@
-@addon_mod_lesson @app @mod @mod_lesson @javascript
+@app_parallel_run_lesson @addon_mod_lesson @app @mod @mod_lesson @javascript
 Feature: Test decimal separators in lesson
 
   Background:

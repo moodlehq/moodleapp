@@ -1,4 +1,4 @@
-@addon_block_calendar_upcoming @app @block @block_calendar_upcoming @javascript
+@app_parallel_run_calendar @addon_block_calendar_upcoming @app @block @block_calendar_upcoming @javascript
 Feature: View the calendar upcoming block and check
     it links to the calendar upcoming events page
 

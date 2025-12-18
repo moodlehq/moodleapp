@@ -1,4 +1,4 @@
-@addon_mod_page @app @mod @mod_page @javascript @core_completion
+@app_parallel_run_page @addon_mod_page @app @mod @mod_page @javascript @core_completion
 Feature: View activity completion information in the Page resource
   In order to have visibility of page completion requirements
   As a student
