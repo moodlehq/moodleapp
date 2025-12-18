@@ -1,4 +1,4 @@
-@addon_coursecompletion @app @block @block_completionstatus @block_selfcompletion @javascript @lms_upto5.0
+@app_parallel_run_completion @addon_coursecompletion @app @block @block_completionstatus @block_selfcompletion @javascript @lms_upto5.0
 Feature: Course completion navigation
 
   Background:

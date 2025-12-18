@@ -1,4 +1,4 @@
-@core_course @app @core @javascript
+@app_parallel_run_course @core_course @app @core @javascript
 Feature: Test disabled text is shown when opening a disabled activity.
 
   Background:

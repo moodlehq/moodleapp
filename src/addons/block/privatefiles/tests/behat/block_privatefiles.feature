@@ -1,4 +1,4 @@
-@addon_block_private_files @app @block @block_private_files @javascript
+@app_parallel_run_files @addon_block_private_files @app @block @block_private_files @javascript
 Feature: View the private files block and check
     it links to the correct page
 

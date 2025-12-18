@@ -1,4 +1,4 @@
-@addon_block_completionstatus @app @block @block_completionstatus @core_completion @javascript
+@app_parallel_run_completion @addon_block_completionstatus @app @block @block_completionstatus @core_completion @javascript
 Feature: View the completion status block and check
     it links to the correct page
 

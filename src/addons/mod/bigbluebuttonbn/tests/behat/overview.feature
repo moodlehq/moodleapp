@@ -1,4 +1,4 @@
-@addon_mod_bigbluebuttonbn @app @mod @mod_bigbluebuttonbn @javascript @lms_from5.1
+@app_parallel_run_bbb @addon_mod_bigbluebuttonbn @app @mod @mod_bigbluebuttonbn @javascript @lms_from5.1
 Feature: Activities overview for bigbluebuttonbn activity
 
   Background:

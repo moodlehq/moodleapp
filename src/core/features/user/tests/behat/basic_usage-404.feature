@@ -1,4 +1,4 @@
-@core_user @app @core @javascript @lms_upto4.4
+@app_parallel_run_user @core_user @app @core @javascript @lms_upto4.4
 Feature: Test basic usage of user features
 
   Background:

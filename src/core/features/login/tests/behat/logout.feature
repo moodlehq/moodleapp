@@ -1,4 +1,4 @@
-@core_login @app @javascript
+@app_parallel_run_login @core_login @app @javascript
 Feature: Test different cases of logout and switch account
   I need different logout use cases to work
 

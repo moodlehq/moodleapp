@@ -1,4 +1,4 @@
-@addon_mod_chat @app @mod @mod_chat @javascript @lms_upto4.5
+@app_parallel_run_legacy_mod @addon_mod_chat @app @mod @mod_chat @javascript @lms_upto4.5
 Feature: Test basic usage of chat in app
   As a student
   I need basic chat functionality to work

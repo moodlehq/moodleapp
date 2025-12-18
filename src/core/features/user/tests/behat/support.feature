@@ -1,4 +1,4 @@
-@core_user @app @core @javascript
+@app_parallel_run_user @core_user @app @core @javascript
 Feature: Site support
 
   Background:

@@ -1,4 +1,4 @@
-@addon_block_site_main_menu @app @block @block_site_main_menu @javascript @lms_upto4.5
+@app_parallel_run_blocks @addon_block_site_main_menu @app @block @block_site_main_menu @javascript @lms_upto4.5
 Feature: Basic tests of Additional activities block
 
   Background:

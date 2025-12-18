@@ -1,4 +1,4 @@
-@addon_mod_assign @app @mod @mod_assign @javascript @lms_from5.0
+@app_parallel_run_grades @addon_mod_assign @app @mod @mod_assign @javascript @lms_from5.0
 Feature: Grade penalties in the gradebook
 
   Background:

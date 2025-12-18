@@ -1,4 +1,4 @@
-@addon_block_tags @app @block @block_tags @javascript
+@app_parallel_run_tags @addon_block_tags @app @block @block_tags @javascript
 Feature: Basic tests of tags block
 
   Background:

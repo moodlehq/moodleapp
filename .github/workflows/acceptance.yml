@@ -70,6 +70,7 @@ jobs:
               run: |
                   if [ -z $BEHAT_TAGS ]; then
                     tags_json=`.github/scripts/print_behat_tags_json.sh`
+                    echo "Generated tags: $tags_json"
                     echo "tags=$tags_json" >> $GITHUB_OUTPUT;
                   else
                     echo "tags=[\"$BEHAT_TAGS\"]" >> $GITHUB_OUTPUT;

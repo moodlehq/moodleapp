@@ -1,4 +1,4 @@
-@core_course @app @core @javascript @lms_upto4.5
+@app_parallel_run_course @core_course @app @core @javascript @lms_upto4.5
 Feature: Test basic usage of one course in app (LMS 4.5)
   In order to participate in one course while using the mobile app
   As a student

@@ -1,4 +1,4 @@
-@addon_block_globalsearch @app @block @block_globalsearch @javascript @lms_from4.3
+@app_parallel_run_search @addon_block_globalsearch @app @block @block_globalsearch @javascript @lms_from4.3
 Feature: View the global search block and check it links to the page
 
   Background:

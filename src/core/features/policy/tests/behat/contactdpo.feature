@@ -1,4 +1,4 @@
-@core_policy @app @tool @tool_policy @javascript @lms_from4.4
+@app_parallel_run_legal @core_policy @app @tool @tool_policy @javascript @lms_from4.4
 Feature: Test contact DPO from acceptances page
 
   Background:

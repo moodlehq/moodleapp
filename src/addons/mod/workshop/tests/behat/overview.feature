@@ -1,4 +1,4 @@
-@addon_mod_workshop @app @mod @mod_workshop @javascript @lms_from5.1
+@app_parallel_run_workshop @addon_mod_workshop @app @mod @mod_workshop @javascript @lms_from5.1
 Feature: Activities overview for workshop activity
 
   Background:

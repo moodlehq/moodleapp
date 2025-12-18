@@ -1,4 +1,4 @@
-@addon_mod_choice @app @mod @mod_choice @javascript @chartjs @lms_from5.0
+@app_parallel_run_choice @addon_mod_choice @app @mod @mod_choice @javascript @chartjs @lms_from5.0
 Feature: Test basic usage of choice activity in app
   In order to participate in the choice while using the mobile app
   As a student
