@@ -40,6 +40,7 @@ import { CoreBlockSideBlocksButtonComponent } from '../../../block/components/si
 
 import { CoreLoginSiteBadgesComponent } from '@features/sitehome/pages/index/site-pages/site-badges';
 import { CoreLang } from '@services/lang';
+import { CoreDomUtils } from '@services/utils/dom';
 
 /**
  * Page that displays site home index.
@@ -452,7 +453,7 @@ export default class CoreSiteHomeIndexPage implements OnInit, OnDestroy {
                     CoreCourseHelper.getCourse(data.courseId).then(result => {
 
                         CoreCourseHelper.openCourse(result.course);
-                        CoreUtils.ignoreErrors(CoreCourses.invalidateUserCourses());
+                        CoreDomUtils.ignoreErrors(CoreCourses.invalidateUserCourses());
 
                         window['courseId'] = null;
                         window['couponId'] = null;

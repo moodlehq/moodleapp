@@ -16,7 +16,9 @@ import { Component } from '@angular/core';
 
 import { CoreUtils } from '@services/utils/utils';
 import { ModalController, Translate } from '@singletons';
-import { CoreLoginHelperProvider } from '@features/login/services/login-helper';
+import { CoreSharedModule } from '@/core/shared.module';
+
+import { FAQ_QRCODE_IMAGE_HTML, FAQ_URL_IMAGE_HTML } from '@features/login/constants';
 
 /**
  * Component that displays help to connect to a site.
@@ -25,6 +27,9 @@ import { CoreLoginHelperProvider } from '@features/login/services/login-helper';
     selector: 'core-login-site-help',
     templateUrl: 'site-badges.html',
     styleUrls: ['site-badges.scss'],
+    imports: [
+        CoreSharedModule,
+    ],
 })
 
 export class CoreLoginSiteBadgesComponent {
@@ -114,8 +119,8 @@ export class CoreLoginSiteBadgesComponent {
             });
 
         this.canScanQR = CoreUtils.canScanQR();
-        this.urlImageHtml = CoreLoginHelperProvider.FAQ_URL_IMAGE_HTML;
-        this.qrCodeImageHtml = CoreLoginHelperProvider.FAQ_QRCODE_IMAGE_HTML;
+        this.urlImageHtml = FAQ_URL_IMAGE_HTML;
+        this.qrCodeImageHtml = FAQ_QRCODE_IMAGE_HTML;
         this.setupLinkHtml = '<a href="https://moodle.com/getstarted/" title="' +
             Translate.instant('core.login.faqsetupsitelinktitle') + '">https://moodle.com/getstarted/</a>';
     }
