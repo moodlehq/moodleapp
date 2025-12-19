@@ -453,7 +453,7 @@ export default class CoreSiteHomeIndexPage implements OnInit, OnDestroy {
                     CoreCourseHelper.getCourse(data.courseId).then(result => {
 
                         CoreCourseHelper.openCourse(result.course);
-                        CoreDomUtils.ignoreErrors(CoreCourses.invalidateUserCourses());
+                        CorePromiseUtils.ignoreErrors(CoreCourses.invalidateUserCourses());
 
                         window['courseId'] = null;
                         window['couponId'] = null;
