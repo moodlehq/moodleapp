@@ -16,7 +16,7 @@ import { Component, ElementRef, OnInit, ChangeDetectorRef, inject, viewChild } f
 import { FormBuilder, FormGroup, Validators, FormControl } from '@angular/forms';
 import { CoreText } from '@singletons/text';
 import { CoreCountries, CoreCountry } from '@singletons/countries';
-import { CoreWS, CoreWSExternalWarning } from '@services/ws';
+import { CoreWSExternalWarning } from '@services/ws';
 import { Translate } from '@singletons';
 import { CoreSitePublicConfigResponse, CoreUnauthenticatedSite } from '@classes/sites/unauthenticated-site';
 import { CoreUserProfileFieldDelegate } from '@features/user/services/user-profile-field-delegate';
@@ -197,10 +197,8 @@ export default class CoreLoginEmailSignupPage implements OnInit {
                 if (this.ageDigitalConsentVerification === undefined) {
 
                     const result = await CorePromiseUtils.ignoreErrors(
-                        CoreWS.callAjax<IsAgeVerificationEnabledWSResponse>(
+                        this.site.callAjax<IsAgeVerificationEnabledWSResponse>(
                             'core_auth_is_age_digital_consent_verification_enabled',
-                            {},
-                            { siteUrl: this.site.getURL() },
                         ),
                     );
 
@@ -344,10 +342,9 @@ export default class CoreLoginEmailSignupPage implements OnInit {
                 this.signupForm.value,
             );
 
-            const result = await CoreWS.callAjax<SignupUserWSResult>(
+            const result = await this.site.callAjax<SignupUserWSResult>(
                 'auth_email_signup_user',
                 params,
-                { siteUrl: this.site.getURL() },
             );
 
             if (result.success) {
@@ -430,7 +427,7 @@ export default class CoreLoginEmailSignupPage implements OnInit {
         params.age = parseInt(params.age, 10); // Use just the integer part.
 
         try {
-            const result = await CoreWS.callAjax<IsMinorWSResult>('core_auth_is_minor', params, { siteUrl: this.site.getURL() });
+            const result = await this.site.callAjax<IsMinorWSResult>('core_auth_is_minor', params);
 
             CoreForms.triggerFormSubmittedEvent(this.ageFormElement(), true);
 

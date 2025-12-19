@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { CoreConstants } from '@/core/constants';
-import { Component, OnInit } from '@angular/core';
+import { Component, computed, OnInit, signal } from '@angular/core';
 import {
     ALWAYS_SHOW_LOGIN_FORM,
     ALWAYS_SHOW_LOGIN_FORM_CHANGED,
@@ -72,6 +72,9 @@ export default class CoreSettingsDevPage implements OnInit {
 
     autoLoginTimeBetweenRequests?: number;
     lastAutoLoginTime?: number;
+
+    readonly wsOverrides = signal<{method: string; count: number}[]>([]);
+    readonly totalOverrides = computed(() => this.wsOverrides().reduce((sum, override) => sum + override.count, 0));
 
     async ngOnInit(): Promise<void> {
         this.rtl = CorePlatform.isRTL;
@@ -135,9 +138,14 @@ export default class CoreSettingsDevPage implements OnInit {
             version: plugin.version,
         }));
 
-        const disabledFeatures = (await currentSite.getPublicConfig())?.tool_mobile_disabledfeatures;
+        this.disabledFeatures = currentSite.getDisabledFeatures().split(',').filter(feature => feature.trim().length > 0) ?? [];
 
-        this.disabledFeatures = disabledFeatures?.split(',').filter(feature => feature.trim().length > 0) ?? [];
+        const overrides = currentSite.getApplicableWSOverrides();
+
+        this.wsOverrides.set(Object.keys(overrides).map((method) => ({
+            method,
+            count: overrides[method].length,
+        })));
     }
 
     /**

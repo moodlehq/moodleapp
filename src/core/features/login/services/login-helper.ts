@@ -20,7 +20,7 @@ import { CoreApp, CoreStoreConfig } from '@services/app';
 import { CoreConfig } from '@services/config';
 import { CoreEvents, CoreEventSessionExpiredData, CoreEventSiteData } from '@singletons/events';
 import { CoreSites, CoreLoginSiteInfo, CoreSiteBasicInfo } from '@services/sites';
-import { CoreWS, CoreWSExternalWarning } from '@services/ws';
+import { CoreWSExternalWarning } from '@services/ws';
 import { CoreText, CoreTextFormat } from '@singletons/text';
 import { CoreObject } from '@singletons/object';
 import { CoreConstants } from '@/core/constants';
@@ -65,6 +65,7 @@ import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreOpener } from '@singletons/opener';
 import { CoreAlerts } from '@services/overlays/alerts';
 import { CorePrompts } from '@services/overlays/prompts';
+import { CoreSitesFactory } from '@services/sites-factory';
 
 /**
  * Helper provider that provides some common features regarding authentication.
@@ -271,7 +272,7 @@ export class CoreLoginHelperProvider {
      * @returns Signup settings.
      */
     async getEmailSignupSettings(siteUrl: string): Promise<AuthEmailSignupSettings> {
-        return await CoreWS.callAjax('auth_email_get_signup_settings', {}, { siteUrl });
+        return await CoreSitesFactory.makeUnauthenticatedSite(siteUrl).callAjax('auth_email_get_signup_settings');
     }
 
     /**
@@ -830,7 +831,7 @@ export class CoreLoginHelperProvider {
             params.email = email.trim().toLowerCase();
         }
 
-        return CoreWS.callAjax('core_auth_request_password_reset', params, { siteUrl });
+        return CoreSitesFactory.makeUnauthenticatedSite(siteUrl).callAjax('core_auth_request_password_reset', params);
     }
 
     /**
@@ -1038,13 +1039,11 @@ export class CoreLoginHelperProvider {
             // Call the WS to resend the confirmation email.
             const modal = await CoreLoadings.show('core.sending', true);
             const data = { username: username?.toLowerCase(), password };
-            const preSets = { siteUrl };
 
             try {
-                const result = <ResendConfirmationEmailResult> await CoreWS.callAjax(
+                const result = <ResendConfirmationEmailResult> await CoreSitesFactory.makeUnauthenticatedSite(siteUrl).callAjax(
                     'core_auth_resend_confirmation_email',
                     data,
-                    preSets,
                 );
 
                 if (!result.status) {
@@ -1077,7 +1076,7 @@ export class CoreLoginHelperProvider {
         // We don't have site info before login, the only way to check if the WS is available is by calling it.
         try {
             // This call will always fail because we aren't sending parameters.
-            await CoreWS.callAjax('core_auth_resend_confirmation_email', {}, { siteUrl });
+            await CoreSitesFactory.makeUnauthenticatedSite(siteUrl).callAjax('core_auth_resend_confirmation_email');
 
             return true; // We should never reach here.
         } catch (error) {

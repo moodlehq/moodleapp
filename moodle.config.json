@@ -136,5 +136,53 @@
         }
     },
     "clearIABSessionWhenAutoLogin": "android",
-    "collapsibleItemsExpanded": false
+    "collapsibleItemsExpanded": false,
+    "wsOverrides": {
+        "tool_mobile_get_config": [
+            {
+                "op": "replace",
+                "path": "/settings/[name=tool_mobile_disabledfeatures]/value",
+                "userid": 15,
+                "value": "CoreReportBuilderDelegate,CoreMainMenuDelegate_AddonBlog,CoreMainMenuDelegate_CoreTag,CoreMainMenuDelegate_CoreGrades,CoreUserDelegate_AddonBadges:account,CoreUserDelegate_AddonBlog:account,CoreCourseOptionsDelegate_AddonCompetency,CoreMainMenuDelegate_CoreSiteHome"
+            },
+            {
+                "op": "replace",
+                "path": "/fullname",
+                "userid": 3108,
+                "value": "Dani Test"
+            },
+            {
+                "op": "replace",
+                "path": "/fullname",
+                "userid": 15,
+                "value": "Dani Test"
+            },
+            {
+                "op": "replace",
+                "path": "/aaa",
+                "userid": 15,
+                "value": "Dani Test"
+            },
+            {
+                "op": "replace",
+                "path": "/bbb",
+                "userid": 15,
+                "value": "Dani Test"
+            }
+        ],
+        "tool_mobile_get_public_config": [
+            {
+                "op": "replace",
+                "path": "/settings/[name=tool_mobile_disabledfeatures]/value",
+                "value": "CoreReportBuilderDelegate,CoreMainMenuDelegate_AddonBlog,CoreMainMenuDelegate_CoreTag,CoreMainMenuDelegate_CoreGrades,CoreUserDelegate_AddonBadges:account,CoreUserDelegate_AddonBlog:account,CoreCourseOptionsDelegate_AddonCompetency,CoreMainMenuDelegate_CoreSiteHome"
+            }
+        ],
+        "core_badges_get_user_badge_by_hash": [
+            {
+                "op": "replace",
+                "path": "/badge/imageurl",
+                "value": "https://moodle.net/wp-content/uploads/2020/05/moodle-badge.png"
+            }
+        ]
+    }
 }
