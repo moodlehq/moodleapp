@@ -1655,6 +1655,30 @@ export class CoreAuthenticatedSite extends CoreUnauthenticatedSite {
         return Number(patch.userid) === info.userid;
     }
 
+    /**
+     * Get the list of applicable WS overrides for this site.
+     *
+     * @returns WS overrides that should be applied for this site.
+     */
+    getApplicableWSOverrides(): Record<string, CoreWSOverride[]> {
+        if (!CoreConstants.CONFIG.wsOverrides) {
+            return {};
+        }
+
+        const effectiveOverrides: Record<string, CoreWSOverride[]> = {};
+
+        Object.keys(CoreConstants.CONFIG.wsOverrides).forEach((method) => {
+            const appliedPatches = CoreConstants.CONFIG.wsOverrides![method].filter((patch) =>
+                this.shouldApplyWSOverride(method, {}, patch));
+
+            if (appliedPatches.length) {
+                effectiveOverrides[method] = appliedPatches;
+            }
+        });
+
+        return effectiveOverrides;
+    }
+
 }
 
 /**
