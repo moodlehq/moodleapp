@@ -138,9 +138,7 @@ export default class CoreSettingsDevPage implements OnInit {
             version: plugin.version,
         }));
 
-        const disabledFeatures = (await currentSite.getPublicConfig())?.tool_mobile_disabledfeatures;
-
-        this.disabledFeatures = disabledFeatures?.split(',').filter(feature => feature.trim().length > 0) ?? [];
+        this.disabledFeatures = currentSite.getDisabledFeatures().split(',').filter(feature => feature.trim().length > 0) ?? [];
 
         const overrides = currentSite.getApplicableWSOverrides();
 

@@ -456,7 +456,7 @@ export class CoreUnauthenticatedSite {
      *
      * @returns Disabled features.
      */
-    protected getDisabledFeatures(): string {
+    getDisabledFeatures(): string {
         const siteDisabledFeatures = this.getSiteDisabledFeatures() || undefined; // If empty string, use undefined.
         const appDisabledFeatures = CoreConstants.CONFIG.disabledFeatures;
 
