@@ -1,5 +1,5 @@
 diff --git a/node_modules/@moodlehq/phonegap-plugin-push/src/ios/EncryptionHandler.m b/node_modules/@moodlehq/phonegap-plugin-push/src/ios/EncryptionHandler.m
-index 1ee2277..8920a39 100644
+index 1ee2277..6ec47f5 100644
 --- a/node_modules/@moodlehq/phonegap-plugin-push/src/ios/EncryptionHandler.m
 +++ b/node_modules/@moodlehq/phonegap-plugin-push/src/ios/EncryptionHandler.m
 @@ -6,7 +6,7 @@
@@ -7,7 +7,7 @@ index 1ee2277..8920a39 100644
  
  #import "EncryptionHandler.h"
 -#import "Moodle-Swift.h"
-+#import "BLSDSchool-Swift.h"
++#import "BLSD_School-Swift.h"
  
  @implementation EncryptionHandler
  
