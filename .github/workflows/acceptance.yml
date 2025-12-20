@@ -70,6 +70,7 @@ jobs:
               run: |
                   if [ -z $BEHAT_TAGS ]; then
                     tags_json=`.github/scripts/print_behat_tags_json.sh`
+                    echo "Generated tags: $tags_json"
                     echo "tags=$tags_json" >> $GITHUB_OUTPUT;
                   else
                     echo "tags=[\"$BEHAT_TAGS\"]" >> $GITHUB_OUTPUT;
@@ -186,18 +187,22 @@ jobs:
                   BEHAT_TAGS: ${{ matrix.tags }}
                   MOODLE_BEHAT_SELENIUM_IMAGE: selenium/standalone-chrome:latest
 
+            - name: Rename snapshot failure files
+              run: |
+                  echo "PARALLEL_NAME=${matrix.tags#@app_parallel_run_//}" >> $GITHUB_ENV
+                  echo ${{ env.PARALLEL_NAME }}
             - name: Upload Snapshot failures
               uses: actions/upload-artifact@v4
               if: ${{ failure() }}
               with:
-                  name: snapshot_failures-${{ matrix.tags }}
+                  name: snapshot_failures-${{ env.PARALLEL_NAME }}
                   path: moodle/public/local/moodleappbehat/tests/behat/snapshots/failures/*
 
             - name: Upload Behat failures
               uses: actions/upload-artifact@v4
               if: ${{ failure() }}
               with:
-                  name: behat_failures-${{ matrix.tags }}
+                  name: behat_failures-${{ env.PARALLEL_NAME }}
                   path: moodledata/behat_dump/*
 
     complete:

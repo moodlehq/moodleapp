@@ -1,4 +1,4 @@
-@core_login @app @javascript @lms_from4.5
+@app_parallel_run_login @core_login @app @javascript @lms_from4.5
 Feature: Test showloginform setting in the app
 
   Background:

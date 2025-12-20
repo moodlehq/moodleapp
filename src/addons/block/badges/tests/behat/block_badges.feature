@@ -1,4 +1,4 @@
-@addon_block_badges @app @block @block_badges @javascript
+@app_parallel_run_badges @addon_block_badges @app @block @block_badges @javascript
 Feature: Basic tests of badges block
 
   Background:

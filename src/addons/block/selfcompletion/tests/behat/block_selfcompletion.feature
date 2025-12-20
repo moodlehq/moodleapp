@@ -1,4 +1,4 @@
-@addon_block_selfcompletion @app @block @block_selfcompletion @javascript
+@app_parallel_run_completion @addon_block_selfcompletion @app @block @block_selfcompletion @javascript
 Feature: View the self completion block and check
     it links to the correct page
 

@@ -1,4 +1,4 @@
-@core_filesystem @app @javascript
+@app_parallel_run_files @core_filesystem @app @javascript
 Feature: It opens files properly.
 
   Background:

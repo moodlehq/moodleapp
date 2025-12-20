@@ -1,4 +1,4 @@
-@addon_mod_book @app @mod @mod_book @javascript @singleactivity
+@app_parallel_run_book @addon_mod_book @app @mod @mod_book @javascript @singleactivity
 Feature: Test single activity of book type in app
   In order to view a book while using the mobile app
   As a student

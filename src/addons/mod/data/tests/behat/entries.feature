@@ -1,4 +1,4 @@
-@addon_mod_data @app @mod @mod_data @javascript
+@app_parallel_run_data @addon_mod_data @app @mod @mod_data @javascript
 Feature: Users can manage entries in database activities
   In order to populate databases
   As a user
