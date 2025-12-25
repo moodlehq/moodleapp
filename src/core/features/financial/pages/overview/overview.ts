@@ -45,6 +45,23 @@ export class CoreFinancialOverviewPage implements OnInit {
     expandedStudentSections = new Map<string, Set<string>>();
     isParentPlatinum = false;
 
+    // Cached computed values (to avoid method calls in template causing infinite loops)
+    cachedUnpaidInvoices: Array<{
+        studentName: string;
+        number: string;
+        dueText: string;
+        remaining: number;
+        isOverdue: boolean;
+    }> = [];
+    cachedUpcomingDues: Array<{
+        studentName: string;
+        dueDate: string;
+        amount: number;
+        invoiceNumber?: string;
+        dueDateText: string;
+        isOverdue: boolean;
+    }> = [];
+
     constructor(private alertController: AlertController) {}
 
     /**
@@ -102,6 +119,9 @@ export class CoreFinancialOverviewPage implements OnInit {
             // Calculate invoice statistics
             this.calculateInvoiceStats();
 
+            // Cache computed values to avoid method calls in template
+            this.updateCachedValues();
+
             // Select first student by default if none selected
             if (!this.selectedStudentId && this.studentsFinancialData.length > 0) {
                 this.selectStudent(this.studentsFinancialData[0].student_info.sequence_number);
@@ -144,6 +164,86 @@ export class CoreFinancialOverviewPage implements OnInit {
                 }
             });
         });
+    }
+
+    /**
+     * Update cached computed values.
+     * This avoids method calls in template that would trigger infinite change detection.
+     */
+    private updateCachedValues(): void {
+        // Cache unpaid invoices
+        const invoices: Array<{
+            studentName: string;
+            number: string;
+            dueText: string;
+            remaining: number;
+            isOverdue: boolean;
+            dueDate: Date;
+        }> = [];
+        const now = new Date();
+        now.setHours(0, 0, 0, 0);
+
+        this.studentsFinancialData.forEach(student => {
+            student.invoices?.recent_invoices?.forEach(invoice => {
+                if (invoice.state !== 'paid' && invoice.remaining > 0) {
+                    const dueDate = new Date(invoice.due_date);
+                    dueDate.setHours(0, 0, 0, 0);
+                    const isOverdue = dueDate < now;
+
+                    invoices.push({
+                        studentName: student.student_info.name,
+                        number: invoice.number,
+                        dueText: this.getDueDateText(invoice.due_date),
+                        remaining: invoice.remaining,
+                        isOverdue: isOverdue,
+                        dueDate: dueDate,
+                    });
+                }
+            });
+        });
+
+        // Sort by due date (overdue first, then by date)
+        invoices.sort((a, b) => {
+            if (a.isOverdue && !b.isOverdue) return -1;
+            if (!a.isOverdue && b.isOverdue) return 1;
+            return a.dueDate.getTime() - b.dueDate.getTime();
+        });
+
+        this.cachedUnpaidInvoices = invoices.slice(0, 5);
+
+        // Cache upcoming due dates
+        const upcomingDates: Array<{
+            studentName: string;
+            dueDate: string;
+            amount: number;
+            invoiceNumber?: string;
+            dueDateText: string;
+            isOverdue: boolean;
+        }> = [];
+        const thirtyDaysFromNow = new Date();
+        thirtyDaysFromNow.setDate(now.getDate() + 30);
+
+        this.studentsFinancialData.forEach(student => {
+            student.invoices?.recent_invoices?.forEach(invoice => {
+                if (invoice.state !== 'paid' && invoice.due_date) {
+                    const dueDate = new Date(invoice.due_date);
+                    if (dueDate >= now && dueDate <= thirtyDaysFromNow) {
+                        const dueDateText = this.getDueDateText(invoice.due_date);
+                        upcomingDates.push({
+                            studentName: student.student_info.name,
+                            dueDate: invoice.due_date,
+                            amount: invoice.remaining,
+                            invoiceNumber: invoice.number,
+                            dueDateText: dueDateText,
+                            isOverdue: dueDateText.includes('Overdue'),
+                        });
+                    }
+                }
+            });
+        });
+
+        upcomingDates.sort((a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime());
+        this.cachedUpcomingDues = upcomingDates;
     }
 
     /**

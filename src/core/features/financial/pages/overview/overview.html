@@ -29,8 +29,8 @@
                         <span class="summary-label">Outstanding Invoices</span>
                         <span class="summary-total">{{ formatCurrency(totalInvoicesDueAmount + totalOverdueAmount) }}</span>
                     </div>
-                    <div class="invoice-list" *ngIf="getRecentUnpaidInvoices().length > 0">
-                        <div class="invoice-item" *ngFor="let inv of getRecentUnpaidInvoices()" [ngClass]="{'overdue': inv.isOverdue}">
+                    <div class="invoice-list" *ngIf="cachedUnpaidInvoices.length > 0">
+                        <div class="invoice-item" *ngFor="let inv of cachedUnpaidInvoices" [ngClass]="{'overdue': inv.isOverdue}">
                             <div class="invoice-info">
                                 <span class="invoice-student">{{ inv.studentName }}</span>
                                 <span class="invoice-number">{{ inv.number }}</span>
@@ -41,7 +41,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="invoice-empty" *ngIf="getRecentUnpaidInvoices().length === 0">
+                    <div class="invoice-empty" *ngIf="cachedUnpaidInvoices.length === 0">
                         All invoices paid
                     </div>
                 </div>
@@ -49,19 +49,19 @@
         </div>
 
         <!-- Upcoming Due Dates Banner -->
-        <div class="upcoming-dues-banner" *ngIf="getUpcomingDueDates().length > 0">
+        <div class="upcoming-dues-banner" *ngIf="cachedUpcomingDues.length > 0">
             <div class="banner-header">
                 <ion-icon name="calendar-outline" class="banner-icon"></ion-icon>
                 <h3>Upcoming Payments</h3>
             </div>
             <div class="due-dates-list">
-                <div class="due-date-item" *ngFor="let due of getUpcomingDueDates(); let i = index" [class.overdue]="getDueDateText(due.dueDate).includes('Overdue')">
+                <div class="due-date-item" *ngFor="let due of cachedUpcomingDues" [class.overdue]="due.isOverdue">
                     <div class="due-item-content">
                         <div class="due-item-left">
                             <p class="student-name-badge">{{ due.studentName }}</p>
                             <p class="due-date-text">
-                                <ion-icon [name]="getDueDateText(due.dueDate).includes('Overdue') ? 'alert-circle' : 'time-outline'"></ion-icon>
-                                {{ getDueDateText(due.dueDate) }}
+                                <ion-icon [name]="due.isOverdue ? 'alert-circle' : 'time-outline'"></ion-icon>
+                                {{ due.dueDateText }}
                             </p>
                             <p class="invoice-number" *ngIf="due.invoiceNumber">Invoice: {{ due.invoiceNumber }}</p>
                         </div>
