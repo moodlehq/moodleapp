@@ -63,11 +63,41 @@
         <preference name="AndroidWindowSplashScreenAnimatedIcon" value="resources/android/android-splash.xml" />
         <preference name="AndroidWindowSplashScreenBackground" value="#FFFFFF" />
         <preference name="AndroidWindowSplashScreenIconBackgroundColor" value="#FFFFFF" />
-        <resource-file src="google-services.json" target="app/google-services.json" />
-        <resource-file src="resources/android/icon/drawable-ldpi-smallicon.png" target="app/src/main/res/mipmap-ldpi/smallicon.png" />
-        <resource-file src="resources/android/icon/drawable-mdpi-smallicon.png" target="app/src/main/res/mipmap-mdpi/smallicon.png" />
-        <resource-file src="resources/android/icon/drawable-hdpi-smallicon.png" target="app/src/main/res/mipmap-hdpi/smallicon.png" />
-        <resource-file src="resources/android/icon/drawable-xhdpi-smallicon.png" target="app/src/main/res/mipmap-xhdpi/smallicon.png" />
+        <resource-file src="resources/android/icon/drawable-land-hdpi-screen.png" target="app/src/main/res/drawable-land-hdpi/screen.png" />
+        <resource-file src="resources/android/icon/drawable-land-ldpi-screen.png" target="app/src/main/res/drawable-land-ldpi/screen.png" />
+        <resource-file src="resources/android/icon/drawable-land-mdpi-screen.png" target="app/src/main/res/drawable-land-mdpi/screen.png" />
+        <resource-file src="resources/android/icon/drawable-land-xhdpi-screen.png" target="app/src/main/res/drawable-land-xhdpi/screen.png" />
+        <resource-file src="resources/android/icon/drawable-land-xxhdpi-screen.png" target="app/src/main/res/drawable-land-xxhdpi/screen.png" />
+        <resource-file src="resources/android/icon/drawable-land-xxxhdpi-screen.png" target="app/src/main/res/drawable-land-xxxhdpi/screen.png" />
+        <resource-file src="resources/android/icon/drawable-land-xxxhdpi-screen.png" target="app/src/main/res/drawable-land-xxxhdpi/screen.png" />
+        <resource-file src="resources/android/icon/drawable-port-hdpi-screen.png" target="app/src/main/res/drawable-port-hdpi/screen.png" />
+        <resource-file src="resources/android/icon/drawable-port-ldpi-screen.png" target="app/src/main/res/drawable-port-ldpi/screen.png" />
+        <resource-file src="resources/android/icon/drawable-port-mdpi-screen.png" target="app/src/main/res/drawable-port-mdpi/screen.png" />
+        <resource-file src="resources/android/icon/drawable-port-xhdpi-screen.png" target="app/src/main/res/drawable-port-xhdpi/screen.png" />
+        <resource-file src="resources/android/icon/drawable-port-xxhdpi-screen.png" target="app/src/main/res/drawable-port-xxhdpi/screen.png" />
+        <resource-file src="resources/android/icon/drawable-port-xxxhdpi-screen.png" target="app/src/main/res/drawable-port-xxxhdpi/screen.png" />
+        <resource-file src="resources/android/icon/mipmap-hdpi-smallicon.png" target="app/src/main/res/mipmap-hdpi/smallicon.png" />
+        <resource-file src="resources/android/icon/mipmap-hdpi-ic_launcher.png" target="app/src/main/res/mipmap-hdpi/ic_launcher.png" />
+        <resource-file src="resources/android/icon/mipmap-ldpi-smallicon.png" target="app/src/main/res/mipmap-ldpi/smallicon.png" />
+        <resource-file src="resources/android/icon/mipmap-ldpi-ic_launcher.png" target="app/src/main/res/mipmap-ldpi/ic_launcher.png" />
+        <resource-file src="resources/android/icon/mipmap-mdpi-smallicon.png" target="app/src/main/res/mipmap-mdpi/smallicon.png" />
+        <resource-file src="resources/android/icon/mipmap-mdpi-ic_launcher.png" target="app/src/main/res/mipmap-mdpi/ic_launcher.png" />
+        <resource-file src="resources/android/icon/mipmap-xhdpi-smallicon.png" target="app/src/main/res/mipmap-xhdpi/smallicon.png" />
+        <resource-file src="resources/android/icon/mipmap-xhdpi-ic_launcher.png" target="app/src/main/res/mipmap-xhdpi/ic_launcher.png" />
+        <resource-file src="resources/android/icon/mipmap-xxhdpi-ic_launcher.png" target="app/src/main/res/mipmap-xxhdpi/ic_launcher.png" />
+        <resource-file src="resources/android/icon/mipmap-xxxhdpi-ic_launcher.png" target="app/src/main/res/mipmap-xxxhdpi/ic_launcher.png" />
+        <resource-file src="resources/android/icon/mipmap-hdpi-v26-ic_launcher_background.png" target="app/src/main/res/mipmap-hdpi-v26/ic_launcher_background.png" />
+        <resource-file src="resources/android/icon/mipmap-hdpi-v26-ic_launcher_foreground.png" target="app/src/main/res/mipmap-hdpi-v26/ic_launcher_foreground.png" />
+        <resource-file src="resources/android/icon/mipmap-ldpi-v26-ic_launcher_background.png" target="app/src/main/res/mipmap-ldpi-v26/ic_launcher_background.png" />
+        <resource-file src="resources/android/icon/mipmap-ldpi-v26-ic_launcher_foreground.png" target="app/src/main/res/mipmap-ldpi-v26/ic_launcher_foreground.png" />
+        <resource-file src="resources/android/icon/mipmap-mdpi-v26-ic_launcher_background.png" target="app/src/main/res/mipmap-mdpi-v26/ic_launcher_background.png" />
+        <resource-file src="resources/android/icon/mipmap-mdpi-v26-ic_launcher_foreground.png" target="app/src/main/res/mipmap-mdpi-v26/ic_launcher_foreground.png" />
+        <resource-file src="resources/android/icon/mipmap-xhdpi-v26-ic_launcher_background.png" target="app/src/main/res/mipmap-xhdpi-v26/ic_launcher_background.png" />
+        <resource-file src="resources/android/icon/mipmap-xhdpi-v26-ic_launcher_foreground.png" target="app/src/main/res/mipmap-xhdpi-v26/ic_launcher_foreground.png" />
+        <resource-file src="resources/android/icon/mipmap-xxhdpi-v26-ic_launcher_background.png" target="app/src/main/res/mipmap-xxhdpi-v26/ic_launcher_background.png" />
+        <resource-file src="resources/android/icon/mipmap-xxhdpi-v26-ic_launcher_foreground.png" target="app/src/main/res/mipmap-xxhdpi-v26/ic_launcher_foreground.png" />
+        <resource-file src="resources/android/icon/mipmap-xxxhdpi-v26-ic_launcher_background.png" target="app/src/main/res/mipmap-xxxhdpi-v26/ic_launcher_background.png" />
+        <resource-file src="resources/android/icon/mipmap-xxxhdpi-v26-ic_launcher_foreground.png" target="app/src/main/res/mipmap-xxxhdpi-v26/ic_launcher_foreground.png" />
         <resource-file src="resources/android/xml/network_security_config.xml" target="app/src/main/res/xml/network_security_config.xml" />
         <edit-config file="app/src/main/AndroidManifest.xml" mode="merge" target="/manifest/application">
             <application android:allowBackup="false" android:largeHeap="true" android:networkSecurityConfig="@xml/network_security_config" />
