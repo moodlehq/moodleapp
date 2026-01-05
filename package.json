@@ -27,7 +27,7 @@
         "dev:android": "concurrently \"npm run dev:android:app\" \"npm run dev:android:cordova\"",
         "dev:android:app": "ionic cordova run android --livereload --external --ssl",
         "dev:android:cordova": "npm run dev --prefix cordova-plugin-moodleapp",
-        "dev:ios": "ionic cordova run ios",
+        "dev:ios": "NODE_OPTIONS=--max-old-space-size=8192 ionic cordova run ios",
         "prod:android": "npm run prod --prefix cordova-plugin-moodleapp && NODE_ENV=production ionic cordova run android --prod",
         "prod:ios": "NODE_ENV=production ionic cordova run ios --prod",
         "test": "NODE_ENV=testing gulp && jest --verbose",
