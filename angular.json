@@ -72,6 +72,8 @@
               },
               "outputHashing": "all",
               "sourceMap": false,
+              "namedChunks": false,
+              "vendorChunk": false,
               "budgets": [
                 {
                   "type": "initial",
