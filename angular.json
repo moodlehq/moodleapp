@@ -74,6 +74,7 @@
               "sourceMap": false,
               "namedChunks": false,
               "vendorChunk": false,
+              "buildOptimizer": false,
               "budgets": [
                 {
                   "type": "initial",
