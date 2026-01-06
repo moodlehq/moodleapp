@@ -30,16 +30,16 @@
     <preference name="prerendered-icon" value="true" />
     <preference name="AppendUserAgent" value="MoodleMobile 5.1.0 (51001)" />
     <preference name="BackupWebStorage" value="none" />
-    <preference name="ScrollEnabled" value="true" />
+    <preference name="ScrollEnabled" value="false" />
     <preference name="KeyboardDisplayRequiresUserAction" value="false" />
     <preference name="HideKeyboardFormAccessoryBar" value="false" />
     <preference name="KeyboardResizeMode" value="none" />
     <preference name="AllowInlineMediaPlayback" value="true" />
     <preference name="LoadUrlTimeoutValue" value="60000" />
     <preference name="load-url-timeout" value="60000" />
-    <preference name="AutoHideSplashScreen" value="false" />
+    <preference name="AutoHideSplashScreen" value="true" />
     <preference name="android-minSdkVersion" value="24" />
-    <preference name="android-targetSdkVersion" value="36" />
+    <preference name="android-targetSdkVersion" value="34" />
     <preference name="AndroidPersistentFileLocation" value="Compatibility" />
     <preference name="AndroidInsecureFileModeEnabled" value="true" />
     <preference name="CustomURLSchemePluginClearsAndroidIntent" value="true" />
