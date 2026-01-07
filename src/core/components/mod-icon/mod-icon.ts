@@ -54,7 +54,7 @@ const enum IconVersion {
     host: {
         '[attr.role]': 'showAlt() ? "img" : "presentation"',
         '[attr.aria-label]': 'showAlt() ? modNameTranslated() : ""',
-        '[class]': 'iconVersion() + " " + purposeClass() ?? ""',
+        '[class]': 'iconVersion() + " " + purposeClass()',
         '[class.branded]': 'addBrandedClass()',
         '[class.colorize]': 'addColorizeClass()',
     },
