@@ -1,4 +1,4 @@
-import { defineConfig } from "eslint/config";
+import { defineConfig } from 'eslint/config';
 import angular from 'angular-eslint';
 import tseslint from 'typescript-eslint';
 import eslint from '@eslint/js';
@@ -45,7 +45,7 @@ const appConfig = {
             ...globals.es6,
         },
         parserOptions: {
-            project: 'tsconfig.json',
+            project: 'tsconfig.app.json', // Use tsconfig.app instead of tsconfig because it limits the files loaded by TS.
             sourceType: 'module',
         },
     },
@@ -290,11 +290,10 @@ const appConfig = {
         'no-var': 'error',
         'object-curly-spacing': ['error', 'always'],
         'one-var': ['error', 'never'],
-        'padded-blocks': [
+        '@stylistic/padded-blocks': [
             'error',
             {
                 classes: 'always',
-                blocks: 'never',
                 switches: 'never',
             },
         ],
@@ -338,24 +337,56 @@ const appConfig = {
     },
 };
 
-var testsConfig = Object.assign({}, appConfig);
-testsConfig.rules['padded-blocks'] = [
-    'error',
-    {
-        classes: 'always',
-        switches: 'never',
+const cordovaPluginConfig = {
+    ...appConfig,
+    languageOptions: {
+        ...appConfig.languageOptions,
+        parserOptions: {
+            ...appConfig.languageOptions.parserOptions,
+            project: 'cordova-plugin-moodleapp/tsconfig.json', // Use the tsconfig of the cordova plugin.
+        },
     },
-];
-testsConfig.rules['jest/expect-expect'] = 'off';
-testsConfig.rules['jest/no-done-callback'] = 'off';
-testsConfig.plugins.jest = jest;
-testsConfig.extends.push('jest/flat/recommended');
+};
+
+const testsConfig = {
+    ...appConfig,
+    languageOptions: {
+        ...appConfig.languageOptions,
+        parserOptions: {
+            ...appConfig.languageOptions.parserOptions,
+            project: 'tsconfig.spec.json', // Use tsconfig.spec because it includes test files.
+        },
+    },
+    rules: {
+        ...appConfig.rules,
+        'jest/expect-expect': 'off',
+        'jest/no-done-callback': 'off',
+    },
+    plugins: {
+        ...appConfig.plugins,
+        jest,
+    },
+    extends: [
+        ...appConfig.extends,
+        'jest/flat/recommended',
+    ],
+};
 
 export default defineConfig([
-    Object.assign({ files: ['**/*.ts'] }, appConfig),
-    Object.assign({ files: ['**/*.test.ts'] }, testsConfig),
+    Object.assign({
+        files: ['src/**/*.ts'],
+        ignores: [
+            'src/**/tests/**',
+            'src/**/stories/**',
+            'src/testing/**',
+            'src/**/*.test.ts',
+            'src/**/*.stories.*'
+        ],
+    }, appConfig),
+    Object.assign({ files: ['cordova-plugin-moodleapp/src/ts/**/*.ts'] }, cordovaPluginConfig),
+    Object.assign({ files: ['src/**/*.test.ts'] }, testsConfig),
     {
-        files: ['**/*.html'],
+        files: ['src/**/*.html'],
         extends: [...angular.configs.templateRecommended,],
         rules: {
             '@angular-eslint/template/alt-text': 'error',
@@ -369,9 +400,6 @@ export default defineConfig([
             '@angular-eslint/template/prefer-control-flow': 'warn',
             'max-len': ['warn', { code: 140 }],
         },
-    },
-    {
-        files: ['**/*.component.ts'],
     },
     {
         ignores: ['**/*.js', '**/.*'],
