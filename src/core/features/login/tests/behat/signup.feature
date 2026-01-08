@@ -1,4 +1,4 @@
-@core_login @app @auth @auth_email @javascript
+@app_parallel_run_login @core_login @app @auth @auth_email @javascript
 Feature: Test signup in app
   I need basic signup functionality to work
 

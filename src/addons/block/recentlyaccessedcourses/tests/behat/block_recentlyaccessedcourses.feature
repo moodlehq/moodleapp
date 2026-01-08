@@ -1,4 +1,4 @@
-@addon_block_recentlyaccessedcourses @app @block @block_recentlyaccessedcourses @javascript
+@app_parallel_run_courses @addon_block_recentlyaccessedcourses @app @block @block_recentlyaccessedcourses @javascript
 Feature: Basic tests of recent accessed courses block
 
   Background:

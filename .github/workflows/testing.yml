@@ -24,6 +24,7 @@ jobs:
           result=$(cat scripts/langindex.json | grep \"TBD\" | wc -l); test $result -eq 0
           if [ $result -ne 0 ]; then
             echo "::error::There are lang strings to be decided on langindex.json"
+            echo "❌ There are lang strings to be decided on langindex.json" >> $GITHUB_STEP_SUMMARY
             exit 1
           fi
           gulp
@@ -31,6 +32,7 @@ jobs:
           langindexcount=`jq -r '. | length' scripts/langindex.json`
           if [ $langcount -ne $langindexcount ]; then
             echo "::error::Lang file has $langcount while langindex $langindexcount"
+            echo "❌ Lang file has $langcount while langindex $langindexcount" >> $GITHUB_STEP_SUMMARY
             exit 1
           fi
 
@@ -49,6 +51,7 @@ jobs:
           done
           if [ $found -ne 0 ]; then
             echo "::error::Found $found missing langkeys"
+            echo "❌ Found $found missing langkeys" >> $GITHUB_STEP_SUMMARY
             exit 1
           fi
       - name: Run Linters (ignore warnings)
@@ -68,6 +71,7 @@ jobs:
           cat circular-dependencies
           lines=$(cat circular-dependencies | wc -l)
           echo "Total circular dependencies: $lines"
+          echo "⚠️ Total circular dependencies: $lines" >> $GITHUB_STEP_SUMMARY
           test $lines -eq 80
       - name: JavaScript code compatibility
         run: |
@@ -80,5 +84,6 @@ jobs:
           # acorn is used by es-check but cannot check for this feature only, so we need to check it manually.
           if grep -qE '(^|[^-])\bstatic[ ]*\{' www/*.js cordova-plugin-moodleapp/www/*.js; then
             echo "::error::Static initialization blocks are not supported in Chrome 93 and iOS 15."
+            echo "❌ Static initialization blocks are not supported in Chrome 93 and iOS 15." >> $GITHUB_STEP_SUMMARY
             exit 1
           fi

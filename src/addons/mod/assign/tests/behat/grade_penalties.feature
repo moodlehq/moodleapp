@@ -1,4 +1,4 @@
-@addon_mod_assign @app @mod @mod_assign @javascript @lms_from5.0
+@app_parallel_run_assign @addon_mod_assign @app @mod @mod_assign @javascript @lms_from5.0
 Feature: Grade penalties in the assignment activity
 
   Background:

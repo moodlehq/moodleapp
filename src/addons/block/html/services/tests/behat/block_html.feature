@@ -1,4 +1,4 @@
-@addon_block_html @app @block @block_html @javascript
+@app_parallel_run_blocks @addon_block_html @app @block @block_html @javascript
 Feature: Basic tests of html block
 
   Background:

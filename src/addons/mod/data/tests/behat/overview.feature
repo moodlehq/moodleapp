@@ -1,4 +1,4 @@
-@addon_mod_data @app @mod @mod_data @javascript @lms_from5.1
+@app_parallel_run_data @addon_mod_data @app @mod @mod_data @javascript @lms_from5.1
 Feature: Activities overview for database activity
 
   Background:

@@ -1,4 +1,4 @@
-@core_courses @app @core @core_my @block_myoverview @javascript @lms_upto4.2
+@app_parallel_run_courses @core_courses @app @core @core_my @block_myoverview @javascript @lms_upto4.2
 Feature: Test basic usage of courses in app
   In order to participate in the courses while using the mobile app
   As a student

@@ -1,4 +1,4 @@
-@addon_mod_scorm @app @mod @mod_scorm @javascript @lms_from5.1
+@app_parallel_run_scorm @addon_mod_scorm @app @mod @mod_scorm @javascript @lms_from5.1
 Feature: Activities overview for SCORM activity
 
   Background:

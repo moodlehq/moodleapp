@@ -1,4 +1,4 @@
-@addon_block_activity_results @app @block @block_activity_results @javascript
+@app_parallel_run_blocks @addon_block_activity_results @app @block @block_activity_results @javascript
 Feature: Basic tests of activity results block
 
   Background:

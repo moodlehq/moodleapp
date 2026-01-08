@@ -1,4 +1,4 @@
-@addon_mod_quiz @app @mod @mod_quiz @javascript @lms_upto4.3
+@app_parallel_run_quiz @addon_mod_quiz @app @mod @mod_quiz @javascript @lms_upto4.3
 Feature: Attempt a quiz in app
   As a student
   In order to demonstrate what I know
