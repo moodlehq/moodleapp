@@ -258,7 +258,7 @@
     "openfilewithextension": "Open {{extension}} file",
     "openfullimage": "Click here to display the full size image",
     "openinbrowser": "Open in browser",
-    "openinbrowserdescription": "You will be taken to a web browser",
+    "openinbrowserdescription": "You will be taken to a web page",
     "openmodinbrowser": "Open {{$a}} in browser",
     "opensecurityquestion": "Open security question",
     "opensettings": "Open settings",
