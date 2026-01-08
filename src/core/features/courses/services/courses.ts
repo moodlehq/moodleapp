@@ -428,11 +428,23 @@ export class CoreCoursesProvider {
      *              category: category id the course belongs to.
      *              sectionid: section id that belongs to a course, since 4.5.
      * @param value The value to match.
-     * @param siteId Site ID. If not defined, use current site.
+     * @param options Other options. Direct usage of siteId is deprecated since 5.1.
      * @returns Promise resolved with the first course.
      */
-    async getCourseByField(field?: string, value?: string | number, siteId?: string): Promise<CoreCourseSearchedData> {
-        const courses = await this.getCoursesByField(field, value, siteId);
+    async getCourseByField(
+        field?: string,
+        value?: string | number,
+        options?: CoreSitesCommonWSOptions,
+    ): Promise<CoreCourseSearchedData>;
+    async getCourseByField(field?: string, value?: string | number, siteId?: string): Promise<CoreCourseSearchedData>;
+    async getCourseByField(
+        field: string = '',
+        value: string | number = '',
+        siteIdOrOptions?: string | CoreSitesCommonWSOptions,
+    ): Promise<CoreCourseSearchedData> {
+        const options =
+            typeof siteIdOrOptions === 'string' ? { siteId: siteIdOrOptions } : siteIdOrOptions || {};
+        const courses = await this.getCoursesByField(field, value, options);
 
         if (courses?.length > 0) {
             return courses[0];
@@ -452,15 +464,28 @@ export class CoreCoursesProvider {
      *              category: category id the course belongs to.
      *              sectionid: section id that belongs to a course, since 4.5.
      * @param value The value to match.
-     * @param siteId Site ID. If not defined, use current site.
+     * @param options Other options. Direct usage of siteId is deprecated since 5.1.
      * @returns Promise resolved with the courses.
      */
     async getCoursesByField(
+        field?: string,
+        value?: string | number,
+        options?: CoreSitesCommonWSOptions,
+    ): Promise<CoreCourseSearchedData[]>;
+    async getCoursesByField(
+        field?: string,
+        value?: string | number,
+        siteId?: string,
+    ): Promise<CoreCourseSearchedData[]>;
+    async getCoursesByField(
         field: string = '',
         value: string | number = '',
-        siteId?: string,
+        siteIdOrOptions?: string | CoreSitesCommonWSOptions,
     ): Promise<CoreCourseSearchedData[]> {
-        return await firstValueFrom(this.getCoursesByFieldObservable(field, value, { siteId }));
+        const options =
+            typeof siteIdOrOptions === 'string' ? { siteId: siteIdOrOptions } : siteIdOrOptions || {};
+
+        return await firstValueFrom(this.getCoursesByFieldObservable(field, value, options));
     }
 
     /**

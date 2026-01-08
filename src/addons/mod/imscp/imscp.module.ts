@@ -39,6 +39,7 @@ const routes: Routes = [
                 loadComponent: () => import('./pages/view/view'),
             },
         ],
+        data: { checkForcedLanguage: 'module' },
     },
 ];
 
