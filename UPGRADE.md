@@ -2,6 +2,11 @@ This file describes API changes in the Moodle App that affect site plugins, info
 
 For more information about upgrading, read the official documentation: https://moodledev.io/general/app/upgrading/
 
+5.2.0
+=====
+
+ - The core-files component now treats the `files` input array as immutable to simplify the change detection strategy and improve performance. To trigger an update, you must provide a new array reference (e.g. using `concat()` or the spread operator) rather than mutating the existing one with `push()` or `splice()`.
+
 5.1.0
 =====
 
