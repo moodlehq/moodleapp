@@ -288,6 +288,17 @@ export class CoreUnauthenticatedSite {
     }
 
     /**
+     * Get data to be sent in the request to get the public config.
+     *
+     * This function can be modified to configure the data sent in the request.
+     *
+     * @returns Promise resolved with data to be sent in the request.
+     */
+    protected async getRequestPublicConfigData(): Promise<Record<string, unknown>> {
+        return {};
+    }
+
+    /**
      * Perform a request to the server to get the public config of this site.
      *
      * @returns Promise resolved with public config.
@@ -299,8 +310,14 @@ export class CoreUnauthenticatedSite {
 
         let config: CoreSitePublicConfigResponse;
 
+        const data = await this.getRequestPublicConfigData();
+
         try {
-            config = await CoreWS.callAjax<CoreSitePublicConfigResponse>('tool_mobile_get_public_config', {}, preSets);
+            config = await CoreWS.callAjax(
+                'tool_mobile_get_public_config',
+                data,
+                preSets,
+            );
         } catch (error) {
             if (!error || error.errorcode !== 'codingerror' || (this.getInfo() && !this.isAjaxGetSupported())) {
                 throw error;
@@ -311,7 +328,11 @@ export class CoreUnauthenticatedSite {
             preSets.useGet = true;
 
             try {
-                config = await CoreWS.callAjax<CoreSitePublicConfigResponse>('tool_mobile_get_public_config', {}, preSets);
+                config = await CoreWS.callAjax(
+                    'tool_mobile_get_public_config',
+                    data,
+                    preSets,
+                );
             } catch (error2) {
                 if (this.isAjaxGetSupported()) {
                     // GET is supported, return the second error.
@@ -453,6 +474,16 @@ export class CoreUnauthenticatedSite {
         }
 
         return features;
+    }
+
+    /**
+     * Returns relative URL for the site.
+     *
+     * @param url URL to convert.
+     * @returns Relative URL.
+     */
+    async getRelativeUrl(url: string): Promise<string> {
+        return CoreText.addStartingSlash(CoreUrl.toRelativeURL(this.getURL(), url));
     }
 
 }
