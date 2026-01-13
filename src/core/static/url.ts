@@ -1117,6 +1117,31 @@ export class CoreUrl {
         return url.startsWith(CorePath.concatenatePaths(siteUrl, 'admin/tool/mobile/referer.php'));
     }
 
+    /**
+     * Checks if 'candidateUrl' is a subpath of 'rootUrl'. It ignores protocols and 'www'.
+     *
+     * @param rootUrl The parent URL to compare against.
+     * @param candidateUrl The URL that might be a subpath.
+     * @returns True if candidateUrl is within rootUrl.
+     */
+    static isSubpathOf(rootUrl: string, candidateUrl?: string): boolean {
+        if (!candidateUrl) {
+            return false;
+        }
+
+        const normalize = (url: string) => {
+            const stripped = CoreUrl.removeUrlParts(url, [
+                CoreUrlPartNames.Protocol,
+                CoreUrlPartNames.WWWInDomain,
+            ]);
+
+            // Ensure trailing slash so we don't match "site.com/foo" with "site.com/foobar"
+            return CoreText.addEndingSlash(stripped);
+        };
+
+        return normalize(candidateUrl).startsWith(normalize(rootUrl));
+    }
+
 }
 
 export type CoreUrlParams = { [key: string]: string };

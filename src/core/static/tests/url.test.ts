@@ -372,4 +372,16 @@ describe('CoreUrl', () => {
         expect(CoreUrl.isRefererScriptUrl(`${siteUrl}/myplugin/admin/tool/mobile/referer.php`, siteUrl)).toBe(false);
     });
 
+    it('detects if a URL is subpath of another URL', () => {
+        expect(CoreUrl.isSubpathOf('https://example.com', 'https://example.com/path/to/resource')).toBe(true);
+        expect(CoreUrl.isSubpathOf('https://example.com/path/to/', 'https://example.com/path/to/resource')).toBe(true);
+        expect(CoreUrl.isSubpathOf('http://www.example.com/path/to', 'https://example.com/path/to/')).toBe(true);
+        expect(CoreUrl.isSubpathOf('example.com/path/to', 'https://www.example.com/path/to/')).toBe(true);
+        expect(CoreUrl.isSubpathOf('https://example.com/path/to', 'example.com/path/to/')).toBe(true);
+
+        expect(CoreUrl.isSubpathOf('https://example.com/path/to', 'https://example.com/path/too/resource')).toBe(false);
+        expect(CoreUrl.isSubpathOf('https://example.com/path/to', 'https://example.com/other/path/to/resource')).toBe(false);
+        expect(CoreUrl.isSubpathOf('https://example.com/path/to', 'https://example2.com/path/to/resource')).toBe(false);
+    });
+
 });
