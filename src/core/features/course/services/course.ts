@@ -1428,7 +1428,7 @@ export class CoreCourseProvider {
      * @param courseId Course ID.
      * @param siteId Site ID. If not defined, current site.
      * @returns Promise resolved when the status is changed. Resolve param: new status.
-     * @deprecated since 5.0. Use CoreCourseStatusHelper.setCoursePreviousStatus.
+     * @deprecated since 5.0. Use CoreCourseDownloadStatusHelper.setCoursePreviousStatus.
      */
     async setCoursePreviousStatus(courseId: number, siteId?: string): Promise<DownloadStatus> {
         return CoreCourseDownloadStatusHelper.setCoursePreviousStatus(courseId, siteId);

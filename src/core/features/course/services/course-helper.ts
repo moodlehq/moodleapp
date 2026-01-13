@@ -1987,7 +1987,7 @@ export class CoreCourseHelperProvider {
      *
      * @param course Course selected
      */
-    async openCourseSummary(course: CoreCourseWithImageAndColor & CoreCourseAnyCourseData): Promise<void> {
+    async openCourseSummary(course: CoreCourseWithImageAndColor & CoreCourseAnyCourseData, options: Params = {}): Promise<void> {
         const page = await this.getCourseSummaryPage();
 
         CoreModals.openSideModal<void>({
@@ -1995,6 +1995,7 @@ export class CoreCourseHelperProvider {
             componentProps: {
                 courseId: course.id,
                 course: course,
+                ...options,
             },
         });
     }
