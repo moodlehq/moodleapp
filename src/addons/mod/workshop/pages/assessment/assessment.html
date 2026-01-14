@@ -42,12 +42,12 @@
                     </p>
                 }
                 @if (workshop && access && access.canviewallsubmissions && assessment && showGrade(assessment.gradinggrade)) {
-                    <p [class.core-has-overriden-grade]=" showGrade(assessment.gradinggrade)">
+                    <p [class.core-has-overridden-grade]=" showGrade(assessment.gradinggrade)">
                         {{ 'addon.mod_workshop.gradinggradeof' | translate:{$a: workshop.gradinggrade } }}: {{assessment.gradinggrade}}
                     </p>
                 }
                 @if (access && access.canviewallsubmissions && assessment && showGrade(assessment.gradinggradeover)) {
-                    <p class="core-overriden-grade">
+                    <p class="core-overridden-grade">
                         {{ 'addon.mod_workshop.gradinggradeover' | translate }}: {{assessment.gradinggradeover}}
                     </p>
                 }

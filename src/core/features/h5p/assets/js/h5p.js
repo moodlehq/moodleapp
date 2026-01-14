@@ -2923,7 +2923,7 @@ H5P.createTitle = function (rawTitle, maxLength) {
     }
 
     /**
-     * Prevent H5P Core from initializing. Must be overriden before document ready.
+     * Prevent H5P Core from initializing. Must be overridden before document ready.
      * @member {boolean} H5P.preventInit
      */
     if (!H5P.preventInit) {

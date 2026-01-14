@@ -1974,7 +1974,7 @@ export class CoreCourseHelperProvider {
 
     /**
      * Retrieves course summary page module.
-     * This is meant to be here so it can be overriden.
+     * This is meant to be here so it can be overridden.
      *
      * @returns Course summary page module.
      */

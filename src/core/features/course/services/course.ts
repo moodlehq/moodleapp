@@ -1550,7 +1550,7 @@ export type CoreCourseCompletionActivityStatus = {
     state: CoreCourseModuleCompletionStatus; // Completion state value.
     timecompleted: number; // Timestamp for completed activity.
     tracking: CoreCourseModuleCompletionTracking; // Type of tracking: 0 means none, 1 manual, 2 automatic.
-    overrideby: number | null; // The user id who has overriden the status, or null.
+    overrideby: number | null; // The user id who has overridden the status, or null.
     valueused?: boolean; // Whether the completion status affects the availability of another activity.
     hascompletion?: boolean; // @since 3.11. Whether this activity module has completion enabled.
     isautomatic?: boolean; // @since 3.11. Whether this activity module instance tracks completion automatically.
@@ -1765,7 +1765,7 @@ type CoreCourseGetCourseModuleWSResponse = {
 export type CoreCourseModuleWSCompletionData = {
     state: CoreCourseModuleCompletionStatus; // Completion state value.
     timecompleted: number; // Timestamp for completion status.
-    overrideby: number | null; // The user id who has overriden the status.
+    overrideby: number | null; // The user id who has overridden the status.
     valueused?: boolean; // Whether the completion status affects the availability of another activity.
     hascompletion?: boolean; // @since 3.11. Whether this activity module has completion enabled.
     isautomatic?: boolean; // @since 3.11. Whether this activity module instance tracks completion automatically.
