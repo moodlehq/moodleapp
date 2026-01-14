@@ -1,4 +1,4 @@
-@core_user @app @core @javascript @participants
+@app_parallel_run_user @core_user @app @core @javascript @participants
 Feature: Test course participants tab
 
   Background:

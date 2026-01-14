@@ -70,6 +70,7 @@ jobs:
               run: |
                   if [ -z $BEHAT_TAGS ]; then
                     tags_json=`.github/scripts/print_behat_tags_json.sh`
+                    echo "Generated tags: $tags_json"
                     echo "tags=$tags_json" >> $GITHUB_OUTPUT;
                   else
                     echo "tags=[\"$BEHAT_TAGS\"]" >> $GITHUB_OUTPUT;
@@ -181,24 +182,43 @@ jobs:
               run: moodle-plugin-ci add-config 'define("TEST_MOD_BIGBLUEBUTTONBN_MOCK_SERVER", "http://localhost:8002/hash" . sha1($CFG->wwwroot));'
 
             - name: Run Behat tests
+              id: run-behat-tests
               run: moodle-plugin-ci behat --auto-rerun 3 --profile chrome --tags="@app&&~@local&&$BEHAT_TAGS"
               env:
                   BEHAT_TAGS: ${{ matrix.tags }}
                   MOODLE_BEHAT_SELENIUM_IMAGE: selenium/standalone-chrome:latest
 
+            - name: Rename snapshot failure files
+              id: filename
+              if: ${{ failure() && steps.run-behat-tests.conclusion == 'failure' }}
+              run: |
+                  PARALLEL_NAME=$(echo "${{ matrix.tags }}" | sed 's/^@app_parallel_run_//')
+                  echo "PARALLEL_NAME=$PARALLEL_NAME" >> $GITHUB_OUTPUT
+                  echo "❌ $PARALLEL_NAME failed" >> $GITHUB_STEP_SUMMARY
+
             - name: Upload Snapshot failures
               uses: actions/upload-artifact@v4
-              if: ${{ failure() }}
+              if: ${{ failure() && steps.run-behat-tests.conclusion == 'failure' }}
+              env:
+                  PARALLEL_NAME: ${{ steps.filename.outputs.PARALLEL_NAME }}
               with:
-                  name: snapshot_failures-${{ matrix.tags }}
+                  name: snapshot_failures-${{ env.PARALLEL_NAME }}
                   path: moodle/public/local/moodleappbehat/tests/behat/snapshots/failures/*
+                  if-no-files-found: ignore
 
             - name: Upload Behat failures
               uses: actions/upload-artifact@v4
-              if: ${{ failure() }}
+              if: ${{ failure() && steps.run-behat-tests.conclusion == 'failure' }}
+              env:
+                  PARALLEL_NAME: ${{ steps.filename.outputs.PARALLEL_NAME }}
               with:
-                  name: behat_failures-${{ matrix.tags }}
+                  name: behat_failures-${{ env.PARALLEL_NAME }}
                   path: moodledata/behat_dump/*
+                  if-no-files-found: ignore
+
+            - name: Mark cancelled jobs as failed.
+              if: ${{ cancelled() }}
+              run: exit 1
 
     complete:
         runs-on: ubuntu-latest
@@ -214,5 +234,6 @@ jobs:
                   rm ./artifacts/build -rf
                   if [ -n "$(ls -A ./artifacts)" ]; then
                     echo "There were some failures in the previous jobs"
+                    echo "### ❌ There were some failures in the previous jobs" >> $GITHUB_STEP_SUMMARY
                     exit 1
                   fi

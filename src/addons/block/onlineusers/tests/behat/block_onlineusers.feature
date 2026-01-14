@@ -1,4 +1,4 @@
-@addon_block_online_users @app @block @block_online_users @javascript
+@app_parallel_run_blocks @addon_block_online_users @app @block @block_online_users @javascript
 Feature: Basic tests of online users block
 
   Background:

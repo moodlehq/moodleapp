@@ -1,4 +1,4 @@
-@core_settings @app @javascript
+@app_parallel_run_settings @core_settings @app @javascript
 Feature: It synchronise sites properly
 
   Background:

@@ -1,4 +1,4 @@
-@addon_block_search_forums @app @block @block_search_forums @mod_forum @javascript @lms_from4.3
+@app_parallel_run_blocks @addon_block_search_forums @app @block @block_search_forums @mod_forum @javascript @lms_from4.3
 Feature: View the search forums block and check
     it links to the correct page
 

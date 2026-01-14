@@ -1,4 +1,4 @@
-@addon_mod_scorm @app @mod @mod_scorm @javascript @singleactivity
+@app_parallel_run_scorm @addon_mod_scorm @app @mod @mod_scorm @javascript @singleactivity
 Feature: Test single activity of scorm type in app
   In order to view a scorm while using the mobile app
   As a student

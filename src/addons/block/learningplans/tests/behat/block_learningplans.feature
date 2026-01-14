@@ -1,4 +1,4 @@
-@addon_block_lp @app @block @block_lp @tool_lp @javascript
+@app_parallel_run_competencies @addon_block_lp @app @block @block_lp @tool_lp @javascript
 Feature: View the learning plans block and check
     it links to the correct page
 

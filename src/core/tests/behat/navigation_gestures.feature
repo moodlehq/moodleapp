@@ -1,4 +1,4 @@
-@core_navigation @app @javascript
+@app_parallel_run_core @core_navigation @app @javascript
 Feature: It navigates using gestures.
 
   Background:
