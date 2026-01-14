@@ -2,6 +2,10 @@ This file describes API changes in the Moodle App that affect site plugins, info
 
 For more information about upgrading, read the official documentation: https://moodledev.io/general/app/upgrading/
 
+5.2.0
+=====
+ - CoreCourses.getCoursesByField and CoreCourses.getCourseByField now accepts CoreSitesCommonWSOptions, direct usage of siteId has been deprecated.
+
 5.1.0
 =====
 

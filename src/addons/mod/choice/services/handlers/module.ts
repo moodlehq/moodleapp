@@ -18,6 +18,9 @@ import { CoreCourseModuleHandler } from '@features/course/services/module-delega
 import { makeSingleton } from '@singletons';
 import { ADDON_MOD_CHOICE_MODNAME, ADDON_MOD_CHOICE_PAGE_NAME } from '../../constants';
 import { ModFeature, ModPurpose } from '@addons/mod/constants';
+import { AddonModChoice } from '../choice';
+import { CoreCourseModuleData } from '@features/course/services/course-helper';
+import { CoreSitesReadingStrategy } from '@services/sites';
 
 /**
  * Handler to support choice modules.
@@ -49,6 +52,19 @@ export class AddonModChoiceModuleHandlerService extends CoreModuleHandlerBase im
         const { AddonModChoiceIndexComponent } = await import('../../components/index');
 
         return AddonModChoiceIndexComponent;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    async getModuleForcedLang(module: CoreCourseModuleData): Promise<string | undefined> {
+        const mod = await AddonModChoice.getChoice(
+            module.course,
+            module.id,
+            { readingStrategy: CoreSitesReadingStrategy.PREFER_CACHE },
+        );
+
+        return mod?.lang;
     }
 
 }

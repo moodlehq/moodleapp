@@ -75,6 +75,7 @@ const routes: Routes = [
                 loadComponent: () => import('./pages/review/review'),
             },
         ],
+        data: { checkForcedLanguage: 'module' },
     },
 ];
 
