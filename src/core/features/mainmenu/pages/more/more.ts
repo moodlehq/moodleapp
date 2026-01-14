@@ -28,6 +28,7 @@ import { CoreSharedModule } from '@/core/shared.module';
 import { CoreMainMenuUserButtonComponent } from '../../components/user-menu-button/user-menu-button';
 import { CoreContentLinksHelper } from '@features/contentlinks/services/contentlinks-helper';
 import { CoreUrl } from '@singletons/url';
+import { CORE_QRREADER_MENU_FEATURE_NAME } from '@features/viewer/constants';
 
 /**
  * Page that displays the more page of the app.
@@ -64,7 +65,7 @@ export default class CoreMainMenuMorePage implements OnInit, OnDestroy {
         this.loadCustomMenuItems();
 
         this.showScanQR = CoreQRScan.canScanQR() &&
-                !CoreSites.getCurrentSite()?.isFeatureDisabled('CoreMainMenuDelegate_QrReader');
+                !CoreSites.getCurrentSite()?.isFeatureDisabled(CORE_QRREADER_MENU_FEATURE_NAME);
     }
 
     /**

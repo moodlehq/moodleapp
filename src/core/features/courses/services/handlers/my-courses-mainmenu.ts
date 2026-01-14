@@ -20,7 +20,11 @@ import { CoreSites } from '@services/sites';
 import { makeSingleton } from '@singletons';
 import { CoreCourses } from '../courses';
 import { CoreDashboardHomeHandler } from './dashboard-home';
-import { CORE_COURSES_MYCOURSES_PAGE_NAME, CoreCoursesMyPageName } from '@features/courses/constants';
+import {
+    CORE_COURSES_MY_COURSES_COMPONENT_NAME,
+    CORE_COURSES_MYCOURSES_PAGE_NAME,
+    CoreCoursesMyPageName,
+} from '@features/courses/constants';
 import { CoreCoursesDashboard } from '../dashboard';
 import { CoreBlockDelegate } from '@features/block/services/block-delegate';
 
@@ -30,7 +34,8 @@ import { CoreBlockDelegate } from '@features/block/services/block-delegate';
 @Injectable({ providedIn: 'root' })
 export class CoreCoursesMyCoursesMainMenuHandlerService implements CoreMainMenuHandler {
 
-    name = 'CoreCoursesMyCourses';
+    // @todo: Check why the component name does not match the disabled feature name.
+    name = CORE_COURSES_MY_COURSES_COMPONENT_NAME;
     priority = 900;
 
     /**

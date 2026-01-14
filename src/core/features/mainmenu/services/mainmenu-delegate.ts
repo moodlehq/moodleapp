@@ -18,6 +18,12 @@ import { Params } from '@angular/router';
 import { CoreDelegateDisplayHandler, CoreDelegateToDisplay } from '@classes/delegate';
 import { CoreSortedDelegate } from '@classes/delegate-sorted';
 import { makeSingleton } from '@singletons';
+import { MAIN_MENU_FEATURE_PREFIX } from '../constants';
+import { CoreConstants } from '@/core/constants';
+import { CoreEvents } from '@singletons/events';
+import { CoreConfig, CoreConfigProvider } from '@services/config';
+import { ADDONS_BLOG_COMPONENT_NAME } from '@addons/blog/constants';
+import { CoreMainMenuOverrideItem } from './mainmenu';
 
 /**
  * Interface that all main menu handlers must implement.
@@ -106,7 +112,55 @@ export interface CoreMainMenuHandlerToDisplay extends CoreDelegateToDisplay, Cor
 @Injectable({ providedIn: 'root' })
 export class CoreMainMenuDelegateService extends CoreSortedDelegate<CoreMainMenuHandlerToDisplay, CoreMainMenuHandler> {
 
-    protected featurePrefix = 'CoreMainMenuDelegate_';
+    protected featurePrefix = MAIN_MENU_FEATURE_PREFIX;
+    protected previousEnvironment: CoreMainMenuOverrideItem[] = [];
+
+    constructor() {
+        super();
+
+        CoreEvents.on(CoreConfigProvider.ENVIRONMENT_UPDATED, (config) => {
+            const newConfig = config.overrideMainMenuButtons ?? [];
+            if (JSON.stringify(this.previousEnvironment) === JSON.stringify(newConfig)) {
+                return;
+            }
+            this.updateHandlers();
+        });
+
+        setTimeout(() => {
+            CoreConfig.patchEnvironment({
+                overrideMainMenuButtons: [
+                {
+                        handler: ADDONS_BLOG_COMPONENT_NAME,
+                        icon: 'fas-house',
+                        priority: 3000,
+                    },
+                ],
+            });
+        }, 30000);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    protected getHandlerDisplayData(name: string): CoreMainMenuHandlerToDisplay {
+        const data = super.getHandlerDisplayData(name);
+
+        // Override priority and icon if needed.
+        const config = CoreConstants.CONFIG.overrideMainMenuButtons ?? [];
+        this.previousEnvironment = config;
+
+        const override = config.find((entry) => entry.handler === name);
+        if (override) {
+            if (override.priority !== undefined) {
+                data.priority = override.priority;
+            }
+            if (override.icon !== undefined) {
+                data.icon = override.icon;
+            }
+        }
+
+        return data;
+    }
 
 }
 

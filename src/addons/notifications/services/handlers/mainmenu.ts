@@ -24,6 +24,7 @@ import { CorePushNotificationsDelegate } from '@features/pushnotifications/servi
 import { AddonNotifications } from '../notifications';
 import { MAIN_MENU_HANDLER_BADGE_UPDATED_EVENT } from '@features/mainmenu/constants';
 import {
+    ADDONS_NOTICATIONS_COMPONENT_NAME,
     ADDONS_NOTICATIONS_MAIN_PAGE_NAME,
     ADDONS_NOTIFICATIONS_READ_CHANGED_EVENT,
     ADDONS_NOTIFICATIONS_READ_CRON_EVENT,
@@ -35,7 +36,7 @@ import {
 @Injectable({ providedIn: 'root' })
 export class AddonNotificationsMainMenuHandlerService implements CoreMainMenuHandler {
 
-    name = 'AddonNotifications';
+    name = ADDONS_NOTICATIONS_COMPONENT_NAME;
     priority = 600;
 
     protected handlerData: CoreMainMenuHandlerData = {
