@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
-import { HttpResponse, HttpParams, HttpErrorResponse } from '@angular/common/http';
+import { HttpResponse, HttpParams, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
 
 import { FileEntry } from '@awesome-cordova-plugins/file/ngx';
 import { HTTPResponse as NativeHttpResponse } from '@awesome-cordova-plugins/http';
@@ -255,8 +255,8 @@ export class CoreWSProvider {
             // Create the tmp file as an empty file.
             const fileEntry = await CoreFile.createFile(tmpPath);
 
-            let fileDownloaded: { entry: globalThis.FileEntry; headers: Record<string, string> | undefined};
-            let redirectUrl: string | undefined;
+            let headers: HttpHeaders | undefined;
+            let redirectUrl: string | null = null;
             let maxRedirects = 5;
             do {
                 const transfer = new window.FileTransfer();
@@ -265,21 +265,23 @@ export class CoreWSProvider {
                 }
 
                 // Download the file in the tmp file.
-                fileDownloaded = await new Promise((resolve, reject) => {
+                const responseHeaders = await new Promise<Record<string, string> | undefined>((resolve, reject) => {
                     transfer.download(
                         redirectUrl ?? url,
                         CoreFile.getFileEntryURL(fileEntry),
-                        (result) => resolve(result),
+                        (result) => resolve(result.headers),
                         (error: FileTransferError) => reject(error),
                         true,
                         { headers: { 'User-Agent': navigator.userAgent } },
                     );
                 });
 
+                headers = new HttpHeaders(responseHeaders); // Convert to HttpHeaders because names are normalised.
+
                 // Redirections should have been handled by the platform,
                 // but Android does not follow redirections between HTTP and HTTPS.
                 // See: https://developer.android.com/reference/java/net/HttpURLConnection#response-handling
-                redirectUrl = fileDownloaded.headers?.['location'] ?? fileDownloaded.headers?.['Location'];
+                redirectUrl = headers.get('Location');
                 maxRedirects--;
             } while (redirectUrl && maxRedirects >= 0);
 
@@ -292,8 +294,7 @@ export class CoreWSProvider {
                 if (!extension || ['gdoc', 'gsheet', 'gslides', 'gdraw', 'php'].includes(extension)) {
 
                     // Not valid, get the file's mimetype.
-                    const contentType = fileDownloaded.headers?.['Content-Type'] || fileDownloaded.headers?.['content-type'];
-                    const requestContentType = contentType?.split(';')[0];
+                    const requestContentType = headers.get('Content-Type')?.split(';')[0];
                     const mimetype = requestContentType ?? await this.getRemoteFileMimeType(url);
 
                     if (mimetype) {
@@ -1195,23 +1196,22 @@ export class CoreWSProvider {
             }
 
             let response: NativeHttpResponse;
-            let redirectUrl: string | undefined;
+            let redirectUrl: string | null = null;
             let maxRedirects = 5;
             do {
                 try {
                     response = await NativeHttp.sendRequest(redirectUrl ?? url, options);
-                    redirectUrl = undefined;
+                    redirectUrl = null;
                 } catch (error) {
                     // Error is a response object.
                     response = error as NativeHttpResponse;
 
-                    // For some errors, the response doesn't contain headers. Make sure it always exists, even if it's empty.
-                    response.headers = response.headers || {};
+                    const headers = new HttpHeaders(response.headers); // Convert to HttpHeaders because names are normalised.
 
                     // Redirections should have been handled by the platform,
                     // but Android does not follow redirections between HTTP and HTTPS.
                     // See: https://developer.android.com/reference/java/net/HttpURLConnection#response-handling
-                    redirectUrl = response.headers['location'] ?? response.headers['Location'];
+                    redirectUrl = headers.get('Location');
                     maxRedirects--;
                     if (!redirectUrl || maxRedirects < 0) {
                         throw error;
