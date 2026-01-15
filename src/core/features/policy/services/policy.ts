@@ -15,7 +15,7 @@
 import { Injectable } from '@angular/core';
 import { CoreError } from '@classes/errors/error';
 import { CoreWSError } from '@classes/errors/wserror';
-import { CoreLoginHelper } from '@features/login/services/login-helper';
+import { CoreLoginSignUp } from '@features/login/services/signup';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSites, CoreSitesCommonWSOptions } from '@services/sites';
 import { CoreWSExternalWarning } from '@services/ws';
@@ -78,7 +78,7 @@ export class CorePolicyService {
             sitePolicy = await site.getConfig('sitepolicy', true);
         } catch {
             // Cannot get config, try to get the site policy using signup settings.
-            const settings = await CoreLoginHelper.getEmailSignupSettings(site.getURL());
+            const settings = await CoreLoginSignUp.getEmailSignupSettings(site.getURL());
 
             sitePolicy = settings.sitepolicy;
         }
