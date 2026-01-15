@@ -16,7 +16,7 @@ import { Injectable, Type } from '@angular/core';
 
 import { CoreDelegate, CoreDelegateHandler } from '@classes/delegate';
 import { CoreError } from '@classes/errors/error';
-import { AuthEmailSignupProfileField } from '@features/login/services/login-helper';
+import { AuthEmailSignupProfileField } from '@features/login/services/signup';
 import { makeSingleton } from '@singletons';
 import { CoreUserProfileField } from './user';
 
