@@ -45,6 +45,7 @@ import { CoreWait } from '@singletons/wait';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreObject } from '@singletons/object';
 import { CoreArray } from '@singletons/array';
+import { CoreBrowser } from '@singletons/browser';
 
 /**
  * Class that represents a site (combination of site + user) where the user has authenticated but the site hasn't been validated
@@ -863,7 +864,7 @@ export class CoreAuthenticatedSite extends CoreUnauthenticatedSite {
         preSets: CoreSiteWSPreSets,
         wsPreSets: CoreWSPreSets,
     ): Promise<T> {
-        if (preSets.skipQueue || !this.wsAvailable('tool_mobile_call_external_functions')) {
+        if (preSets.skipQueue || !this.wsAvailable('tool_mobile_call_external_functions') || !this.shouldGroupWSRequests()) {
             return CoreWS.call<T>(method, data, wsPreSets);
         }
 
@@ -1036,6 +1037,15 @@ export class CoreAuthenticatedSite extends CoreUnauthenticatedSite {
                 request.deferred.reject(error);
             });
         }
+    }
+
+    /**
+     * Check if WS requests should be grouped.
+     *
+     * @returns Whether WS requests should be grouped.
+     */
+    protected shouldGroupWSRequests(): boolean {
+        return !CoreUtils.isFalseOrZero(CoreBrowser.getDevelopmentSetting('GroupWSRequests') ?? true);
     }
 
     /**
