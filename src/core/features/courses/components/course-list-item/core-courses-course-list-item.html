@@ -1,23 +1,35 @@
-<ion-card [class.core-course-list-item]="layout === 'list' || layout === 'listwithenrol'"
-    [class.core-course-list-card]="layout === 'card' || layout === 'summarycard'"
-    [class.item-dimmed]="course.hidden" 
-    [ngClass]="getPastelColorClass()"
+<ion-card class="aspire-course-card"
+    [class.item-dimmed]="course.hidden"
     (click)="openCourse()"
     button [attr.aria-label]="course.displayname || course.fullname">
 
-    <ion-item class="ion-text-wrap">
-        <ion-label>
-            <h2 class="item-heading">
-                <ion-icon *ngIf="course.isfavourite" name="fas-star" aria-hidden="true"></ion-icon>
-                {{ getCleanCourseName() }}
-            </h2>
+    <div class="card-content">
+        <!-- Course Icon -->
+        <div class="course-icon-wrapper">
+            <ion-icon name="school"></ion-icon>
+        </div>
 
-            <div *ngIf="layout !== 'summarycard' && isEnrolled && progress >= 0 && completionUserTracked !== false"
-                 class="core-course-progress">
-                <p>{{ 'core.courses.progress' | translate }}: {{ progress }}%</p>
-                <core-progress-bar [progress]="progress" a11yText="core.courses.aria:courseprogress"></core-progress-bar>
+        <!-- Course Name -->
+        <h3 class="course-name">
+            <ion-icon *ngIf="course.isfavourite" name="star" class="favorite-icon"></ion-icon>
+            {{ getCleanCourseName() }}
+        </h3>
+
+        <!-- Divider Line -->
+        <div class="course-divider"></div>
+
+        <!-- Category -->
+        <p class="course-category" *ngIf="course.categoryname">
+            {{ course.categoryname }}
+        </p>
+
+        <!-- Progress -->
+        <div class="course-progress" *ngIf="isEnrolled && progress >= 0 && completionUserTracked !== false">
+            <div class="progress-bar-container">
+                <div class="progress-bar-fill" [style.width.%]="progress"></div>
             </div>
-        </ion-label>
-    </ion-item>
+            <span class="progress-text">{{ progress }}%</span>
+        </div>
+    </div>
 
 </ion-card>

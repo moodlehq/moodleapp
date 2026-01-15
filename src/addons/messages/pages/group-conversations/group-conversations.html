@@ -50,89 +50,17 @@
                         </ion-item>
                         <div slot="content">
                             <ng-container *ngIf="!option.loading">
-                                <!-- Teachers by course has a different structure -->
-                                <ng-container *ngIf="option.optionName === 'teachersByCourse'">
-                                    <!-- For students: Show courses with teachers -->
-                                    <ng-container *ngIf="!isParent && teacherConversations.length > 0">
-                                        <ion-accordion-group>
-                                            <ion-accordion *ngFor="let course of teacherConversations" [value]="'course-' + course.courseId">
-                                                <ion-item slot="header" class="ion-text-wrap">
-                                                    <ion-avatar *ngIf="course.courseImage" slot="start">
-                                                        <img [src]="course.courseImage" [alt]="course.courseName">
-                                                    </ion-avatar>
-                                                    <ion-icon *ngIf="!course.courseImage" name="fas-graduation-cap" slot="start" aria-hidden="true" />
-                                                    <ion-label>
-                                                        <h3>{{ course.courseName }}</h3>
-                                                        <p>{{ course.teachers.length }} {{ 'addon.messages.teachers' | translate }}</p>
-                                                    </ion-label>
-                                                </ion-item>
-                                                <div slot="content">
-                                                    <ng-container *ngTemplateOutlet="conversationsTemplate;
-                                                            context: {conversations: course.teachers, isTeacher: true}" />
-                                                </div>
-                                            </ion-accordion>
-                                        </ion-accordion-group>
-                                    </ng-container>
-                                    
-                                    <!-- For parents: Show children with courses with teachers -->
-                                    <ng-container *ngIf="isParent && childTeacherConversations.length > 0">
-                                        <div *ngFor="let child of childTeacherConversations">
-                                            <!-- Child header -->
-                                            <ion-item class="ion-text-wrap child-header" button (click)="toggleChildExpanded(child); $event.stopPropagation()">
-                                                <core-user-avatar [user]="child.childAvatar" [linkProfile]="false" slot="start" />
-                                                <ion-label>
-                                                    <h3>{{ child.childName }}</h3>
-                                                    <p>{{ child.courses.length }} {{ 'core.courses.courses' | translate }}</p>
-                                                </ion-label>
-                                                <ion-icon [name]="child.expanded ? 'fas-chevron-up' : 'fas-chevron-down'" slot="end" aria-hidden="true" />
-                                            </ion-item>
-                                            <!-- Child courses -->
-                                            <div *ngIf="child.expanded" class="child-courses" (click)="$event.stopPropagation()">
-                                                <div *ngFor="let course of child.courses">
-                                                    <!-- Course header -->
-                                                    <ion-item class="ion-text-wrap course-header ion-padding-start" button (click)="toggleCourseExpanded(course); $event.stopPropagation()">
-                                                        <ion-avatar *ngIf="course.courseImage" slot="start">
-                                                            <img [src]="course.courseImage" [alt]="course.courseName">
-                                                        </ion-avatar>
-                                                        <ion-icon *ngIf="!course.courseImage" name="fas-graduation-cap" slot="start" aria-hidden="true" />
-                                                        <ion-label>
-                                                            <h4>{{ course.courseName }}</h4>
-                                                            <p>{{ course.teachers.length }} {{ 'addon.messages.teachers' | translate }}</p>
-                                                        </ion-label>
-                                                        <ion-icon [name]="course.expanded ? 'fas-chevron-up' : 'fas-chevron-down'" slot="end" aria-hidden="true" />
-                                                    </ion-item>
-                                                    <!-- Teachers list -->
-                                                    <div *ngIf="course.expanded" class="teachers-list ion-padding-start">
-                                                        <ng-container *ngTemplateOutlet="conversationsTemplate;
-                                                                context: {conversations: course.teachers, isTeacher: true}" />
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </ng-container>
-                                    
-                                    <!-- Empty state -->
-                                    <ion-item class="ion-text-wrap" *ngIf="((!isParent && teacherConversations.length === 0) || (isParent && childTeacherConversations.length === 0))">
-                                        <ion-label>
-                                            <p>{{ option.emptyString| translate }}</p>
-                                        </ion-label>
-                                    </ion-item>
-                                </ng-container>
-                                
-                                <!-- Regular conversations -->
-                                <ng-container *ngIf="option.optionName !== 'teachersByCourse'">
-                                    <ng-container *ngTemplateOutlet="conversationsTemplate;
-                                            context: {conversations: option.conversations}" />
-                                    <!-- The infinite loading cannot be inside the ng-template,
-                                        it fails because it doesn't find ion-content. -->
-                                    <core-infinite-loading [enabled]="option.canLoadMore" (action)="loadMoreConversations(option, $event)"
-                                        [error]="option.loadMoreError" />
-                                    <ion-item class="ion-text-wrap" *ngIf="option.conversations && option.conversations.length === 0">
-                                        <ion-label>
-                                            <p>{{ option.emptyString| translate }}</p>
-                                        </ion-label>
-                                    </ion-item>
-                                </ng-container>
+                                <ng-container *ngTemplateOutlet="conversationsTemplate;
+                                        context: {conversations: option.conversations}" />
+                                <!-- The infinite loading cannot be inside the ng-template,
+                                    it fails because it doesn't find ion-content. -->
+                                <core-infinite-loading [enabled]="option.canLoadMore" (action)="loadMoreConversations(option, $event)"
+                                    [error]="option.loadMoreError" />
+                                <ion-item class="ion-text-wrap" *ngIf="option.conversations && option.conversations.length === 0">
+                                    <ion-label>
+                                        <p>{{ option.emptyString| translate }}</p>
+                                    </ion-label>
+                                </ion-item>
                             </ng-container>
                             <ion-item class="ion-text-center" *ngIf="option.loading">
                                 <ion-label>

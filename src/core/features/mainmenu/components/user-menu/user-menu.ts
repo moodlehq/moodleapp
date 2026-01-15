@@ -82,6 +82,11 @@ export class CoreMainMenuUserMenuComponent implements OnInit, OnDestroy {
     selectedMentee?: CoreUserProfile;
     showMenteeSelector = false;
 
+    // Resource sections collapse state
+    uniformSectionOpen = false;
+    handbooksSectionOpen = false;
+    policiesSectionOpen = false;
+
     protected subscription!: Subscription;
 
     /**
@@ -276,6 +281,47 @@ export class CoreMainMenuUserMenuComponent implements OnInit, OnDestroy {
     async contactSupport(event: Event): Promise<void> {
         await this.close(event);
         await CoreUserSupport.contact();
+    }
+
+    /**
+     * Open Contact Us page.
+     *
+     * @param event Click event.
+     */
+    async openContactUs(event: Event): Promise<void> {
+        await this.close(event);
+        await CoreNavigator.navigateToSitePath('/contactus');
+    }
+
+    /**
+     * Open an external URL in browser.
+     *
+     * @param event Click event.
+     * @param url The URL to open.
+     */
+    async openExternalUrl(event: Event, url: string): Promise<void> {
+        event.preventDefault();
+        event.stopPropagation();
+        await CoreUtils.openInBrowser(url);
+    }
+
+    /**
+     * Toggle resource section.
+     *
+     * @param section The section to toggle.
+     */
+    toggleSection(section: 'uniform' | 'handbooks' | 'policies'): void {
+        switch (section) {
+            case 'uniform':
+                this.uniformSectionOpen = !this.uniformSectionOpen;
+                break;
+            case 'handbooks':
+                this.handbooksSectionOpen = !this.handbooksSectionOpen;
+                break;
+            case 'policies':
+                this.policiesSectionOpen = !this.policiesSectionOpen;
+                break;
+        }
     }
 
     /**

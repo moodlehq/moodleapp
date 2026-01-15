@@ -25,6 +25,7 @@ import { CoreEmulatorModule } from './emulator/emulator.module';
 import { CoreEnrolModule } from './enrol/enrol.module';
 import { CoreFileUploaderModule } from './fileuploader/fileuploader.module';
 import { CoreFilterModule } from './filter/filter.module';
+import { CoreContactUsModule } from './contactus/contactus.module';
 import { CoreFinancialModule } from './financial/financial.module';
 import { CoreGradesModule } from './grades/grades.module';
 import { CoreH5PModule } from './h5p/h5p.module';
@@ -62,6 +63,7 @@ import { CorePolicyModule } from './policy/policy.module';
         CoreEnrolModule,
         CoreFileUploaderModule,
         CoreFilterModule,
+        CoreContactUsModule,
         CoreFinancialModule,
         CoreGradesModule,
         CoreH5PModule,

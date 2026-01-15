@@ -20,6 +20,7 @@
         <!-- My Children Section for Parents -->
         <div class="aspire-my-children-section" *ngIf="isParent && mentees.length > 0">
             <h2 class="aspire-section-title">My Children</h2>
+
             <div class="aspire-children-grid">
                 <div class="aspire-child-card"
                  *ngFor="let mentee of mentees"
@@ -33,7 +34,7 @@
                 </ion-avatar>
                 <div class="aspire-child-info">
                     <h3>{{ getFirstWordOfFirstName(mentee) }}</h3>
-                    <p class="aspire-child-email">{{ mentee.email }}</p>
+                    <p class="aspire-child-sequence" *ngIf="getMenteeSequence(mentee)">{{ getMenteeSequence(mentee) }}</p>
                     <ion-badge color="primary" *ngIf="selectedMenteeId === mentee.id">Viewing</ion-badge>
                 </div>
                 <div class="aspire-child-actions">

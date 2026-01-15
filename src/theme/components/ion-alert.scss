@@ -192,3 +192,134 @@ ion-alert.platinum-program-alert {
         }
     }
 }
+
+// Payment Methods Alert
+ion-alert.payment-methods-alert {
+    --max-width: 90%;
+    --max-height: 85vh;
+
+    @include media-breakpoint-up(md) {
+        --max-width: 520px;
+    }
+
+    .alert-wrapper {
+        background: linear-gradient(180deg, #F0F9FF 0%, #E6F7F7 100%);
+        border: 2px solid #8DDCDC;
+    }
+
+    .alert-head {
+        background: linear-gradient(135deg, #B3EBF2 0%, #8DDCDC 50%, #98FBCB 100%);
+        padding: 16px 20px;
+        border-radius: var(--border-radius) var(--border-radius) 0 0;
+
+        h2 {
+            color: #1A4E52;
+            font-weight: 700;
+            font-size: 1.25rem;
+            text-align: center;
+        }
+    }
+
+    .alert-message {
+        padding: 20px;
+        max-height: 65vh;
+        overflow-y: auto;
+
+        .payment-methods-content {
+            color: #2C3E50;
+            font-size: 0.9375rem;
+            line-height: 1.6;
+
+            p {
+                margin: 0 0 12px 0;
+            }
+
+            h3 {
+                color: #1A4E52;
+                font-size: 1.0625rem;
+                font-weight: 700;
+                margin: 20px 0 10px 0;
+                padding-bottom: 8px;
+                border-bottom: 2px solid #B3EBF2;
+            }
+
+            h4 {
+                color: #276749;
+                font-size: 0.9375rem;
+                font-weight: 600;
+                margin: 12px 0 8px 0;
+            }
+
+            .bank-info {
+                background: rgba(179, 235, 242, 0.15);
+                border-radius: 12px;
+                padding: 12px 16px;
+                margin-bottom: 12px;
+                border: 1px solid rgba(141, 220, 220, 0.3);
+
+                h4 {
+                    margin-top: 0;
+                }
+
+                p {
+                    margin: 0 0 6px 0;
+                    font-size: 0.875rem;
+                }
+
+                strong {
+                    color: #1A4E52;
+                }
+            }
+
+            .payment-notice {
+                background: rgba(152, 251, 203, 0.15);
+                border-radius: 12px;
+                padding: 12px 16px;
+                margin: 16px 0;
+                border: 1px solid rgba(152, 251, 203, 0.3);
+
+                p {
+                    margin: 0 0 6px 0;
+                    font-size: 0.875rem;
+                }
+
+                a {
+                    color: #2C5F66;
+                    text-decoration: none;
+                    font-weight: 500;
+                }
+            }
+
+            .warning {
+                color: #C62828;
+                font-weight: 600;
+                background: rgba(255, 181, 167, 0.15);
+                padding: 10px 14px;
+                border-radius: 8px;
+                margin: 12px 0;
+                text-align: center;
+            }
+
+            a {
+                color: #2C5F66;
+                text-decoration: none;
+            }
+        }
+    }
+
+    .alert-button-group {
+        padding: 12px 20px 16px;
+
+        .alert-button {
+            background: linear-gradient(135deg, #8DDCDC 0%, #72D2D2 100%);
+            color: #1A4E52;
+            font-weight: 600;
+            border-radius: 20px;
+            text-transform: none;
+
+            &:hover {
+                background: linear-gradient(135deg, #72D2D2 0%, #5DC8C8 100%);
+            }
+        }
+    }
+}

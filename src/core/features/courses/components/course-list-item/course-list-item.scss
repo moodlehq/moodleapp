@@ -1,5 +1,173 @@
 @use "theme/globals" as *;
 
+// ============================================
+// ASPIRE COURSE CARD - MODERN MINIMAL
+// ============================================
+
+// Color palette for course cards
+$course-colors: (
+    0: (bg: linear-gradient(135deg, #4A9B7F 0%, #3D8B9E 100%), text: #FFFFFF),
+    1: (bg: linear-gradient(135deg, #6366F1 0%, #8B5CF6 100%), text: #FFFFFF),
+    2: (bg: linear-gradient(135deg, #F472B6 0%, #EC4899 100%), text: #FFFFFF),
+    3: (bg: linear-gradient(135deg, #FBBF24 0%, #F59E0B 100%), text: #FFFFFF),
+    4: (bg: linear-gradient(135deg, #34D399 0%, #10B981 100%), text: #FFFFFF),
+    5: (bg: linear-gradient(135deg, #60A5FA 0%, #3B82F6 100%), text: #FFFFFF),
+    6: (bg: linear-gradient(135deg, #A78BFA 0%, #7C3AED 100%), text: #FFFFFF),
+    7: (bg: linear-gradient(135deg, #FB923C 0%, #EA580C 100%), text: #FFFFFF),
+    8: (bg: linear-gradient(135deg, #2DD4BF 0%, #14B8A6 100%), text: #FFFFFF),
+    9: (bg: linear-gradient(135deg, #F87171 0%, #EF4444 100%), text: #FFFFFF),
+);
+
+:host {
+    display: block;
+    width: 100%;
+    height: 100%;
+
+    // Generate color classes
+    @for $i from 0 through 9 {
+        &.course-color-#{$i} {
+            .aspire-course-card {
+                background: map-get(map-get($course-colors, $i), bg);
+            }
+        }
+    }
+}
+
+.aspire-course-card {
+    --background: transparent;
+    --color: #FFFFFF;
+    margin: 0;
+    height: 100%;
+    border-radius: 16px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+
+    &::part(native) {
+        background: transparent;
+        padding: 0;
+        height: 100%;
+    }
+
+    &:active {
+        transform: scale(0.98);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    }
+
+    &.item-dimmed {
+        opacity: 0.6;
+    }
+
+    .card-content {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 16px 12px;
+        height: 100%;
+        text-align: center;
+        min-height: 130px;
+    }
+
+    // Course Icon
+    .course-icon-wrapper {
+        width: 40px;
+        height: 40px;
+        border-radius: 12px;
+        background: rgba(255, 255, 255, 0.2);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 10px;
+
+        ion-icon {
+            font-size: 20px;
+            color: #FFFFFF;
+        }
+    }
+
+    // Course Name
+    .course-name {
+        font-size: 14px;
+        font-weight: 700;
+        color: #FFFFFF;
+        margin: 0 0 8px;
+        line-height: 1.3;
+        max-width: 100%;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        text-overflow: ellipsis;
+
+        .favorite-icon {
+            font-size: 12px;
+            color: #FCD34D;
+            margin-right: 4px;
+            vertical-align: middle;
+        }
+    }
+
+    // Divider
+    .course-divider {
+        width: 40px;
+        height: 2px;
+        background: rgba(255, 255, 255, 0.3);
+        border-radius: 1px;
+        margin-bottom: 8px;
+    }
+
+    // Category
+    .course-category {
+        font-size: 11px;
+        font-weight: 500;
+        color: rgba(255, 255, 255, 0.85);
+        margin: 0 0 8px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        max-width: 100%;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    // Progress
+    .course-progress {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        width: 100%;
+        max-width: 120px;
+        margin-top: auto;
+
+        .progress-bar-container {
+            flex: 1;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.25);
+            border-radius: 2px;
+            overflow: hidden;
+
+            .progress-bar-fill {
+                height: 100%;
+                background: #FFFFFF;
+                border-radius: 2px;
+                transition: width 0.3s ease;
+            }
+        }
+
+        .progress-text {
+            font-size: 10px;
+            font-weight: 600;
+            color: #FFFFFF;
+            min-width: 28px;
+        }
+    }
+}
+
+// ============================================
+// LEGACY SUPPORT (keep for compatibility)
+// ============================================
+
 :host {
     @for $i from 0 to length($core-course-image-background) {
         &.course-color-#{$i} {
@@ -7,287 +175,10 @@
             --course-color-tint: var(--core-course-color-#{$i}-tint);
         }
     }
-
-    --avatar-radius: var(--core-courseimage-radius);
-    --avatar-size: 60px;
-    --avatar-margin: 16px;
-
-    --card-vertical-margin: 8px;
-    --card-radius: 12px;
-
-    --shortname-size: 12px;
-
-    --button-size: 44px;
-    --button-padding: 10px;
-    --button-radius: 50%;
-    --button-background: rgb(255 255 255 / 50%);
-
-    @include media-breakpoint-down(md) {
-        --avatar-size: 48px;
-        --avatar-margin: 12px;
-    }
 }
 
-
-:host-context(:root.dark) {
-    --button-background: rgb(0 0 0 / 30%);
-}
-
-// Common styles.
-.item-heading ion-icon {
-    @include margin-horizontal(null, 4px);
-    color: var(--core-star-color);
-}
-
-button {
-    z-index: 1;
-}
-
-ion-card {
-    --border-radius: var(--card-radius);
-}
-
-.core-button-spinner {
-    margin: 0;
-    position: absolute;
-    @include position(8px, 8px, null, null);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    z-index: 2;
-
-    ion-spinner {
-        margin-top: 4px;
-    }
-
-    ::ng-deep ion-button {
-        --border-radius: var(--button-radius);
-        --background: var(--button-background);
-        --padding-top: var(--button-padding);
-        --padding-end: var(--button-padding);
-        --padding-bottom: var(--button-padding);
-        --padding-start: var(--button-padding);
-        width: var(--button-size);
-        height: var(--button-size);
-        margin: 0;
-        &::part(native) {
-            background: var(--background);
-        }
-    }
-
-    core-download-refresh ::ng-deep .core-icon-downloaded {
-        display: none;
-    }
-}
-
-.core-course-enrol-icons, .core-icon-downloaded {
-    @include margin-horizontal(4px, 0px);
-}
-
-.core-course-shortname {
-    font-size: var(--shortname-size);
-    color: var(--dark);
-    @include ellipsis();
-}
-
-ion-chip {
-    margin-top: 8px;
-    margin-left: 0;
-    margin-right: 0;
-    max-width: 100%;
-
-    &.core-course-category {
-        @include margin-horizontal(0px, 8px);
-    }
-}
-
-
-// List layout.
-ion-card.core-course-list-item {
-    max-width: var(--list-item-max-width);
-
-    /** Deprecated icon */
-    ion-icon.course-icon {
-        padding: 12px;
-        font-size: calc(var(--avatar-size) - 24px);
-        border-radius: var(--avatar-radius);
-        color: var(--course-color-tint);
-        background: var(--course-color, transparent);
-    }
-
-    ion-avatar {
-       --border-radius: var(--avatar-radius);
-        width: var(--avatar-size);
-        height: var(--avatar-size);
-        img {
-            background: transparent;
-        }
-    }
-
-    ion-item::part(native) {
-        --padding-start: var(--avatar-margin);
-    }
-
-    .core-course-thumb {
-        @include margin(var(--avatar-margin), var(--avatar-margin), var(--avatar-margin), null);
-    }
-
-    .core-course-maininfo {
-        @include margin-horizontal(null, 32px);
-    }
-
-    @if ($core-course-hide-progress-on-list-items) {
-        .core-course-progress {
-            display: none;
-        }
-    }
-}
-
-// Fill geopaterns
-.core-course-thumb img[src$=".svg"] {
-    min-width: 100%;
-}
-
-// Card layout.
+// Legacy list layout (hidden but kept for compatibility)
+ion-card.core-course-list-item,
 ion-card.core-course-list-card {
-    &::part(native) {
-        display: flex;
-        flex-direction: column;
-        align-items: stretch;
-        height: 100%;
-    }
-
-    height: calc(100% - var(--card-vertical-margin) - var(--card-vertical-margin));
-    margin-top: var(--card-vertical-margin);
-    margin-bottom: var(--card-vertical-margin);
-
-    .core-course-thumb {
-        background: var(--course-color, white);
-        padding-top: 40%;
-        width: 100%;
-        overflow: hidden;
-        cursor: pointer;
-        pointer-events: auto;
-        position: relative;
-        background-position: center;
-        background-size: cover;
-
-        ion-icon.course-icon {
-            color: white;
-            opacity: 0.5;
-            position: absolute;
-            left: 0;
-            right: 0;
-            top: 50%;
-            bottom: 0;
-            width: 80px;
-            height: 80px;
-            margin: 0 auto;
-            transform: translateY(-50%);
-        }
-
-        &.core-course-color-img {
-            background: var(--ion-item-background);
-        }
-
-        img {
-            position: absolute;
-            top: 0;
-            bottom: 0;
-            right: 0;
-            left: 0;
-            margin: auto;
-        }
-    }
-
-    .core-course-shortname {
-        margin-bottom: 8px;
-    }
-
-    ion-item {
-        flex-grow: 1;
-        display: flex;
-        flex-direction: column;
-
-        &::part(native) {
-            flex-grow: 1;
-            align-items: self-start;
-        }
-
-        > ion-label{
-            margin: 16px 0;
-
-            display: flex;
-            flex-direction: column;
-            align-items: flex-start;
-            align-self: stretch;
-            flex-grow: 1;
-
-            // Clamp one line with ellipsis on tablet view, and 2 in mobile.
-            .item-heading {
-                @include ellipsis();
-            }
-
-            @include media-breakpoint-down(md) {
-                .item-heading {
-                    // Addition lines for 2 line or multiline ellipsis
-                    @include ellipsis(2);
-                }
-            }
-
-            .core-course-maininfo {
-                flex-grow: 1;
-                max-width: 100%;
-            }
-
-            .core-course-progress {
-                align-self: stretch;
-            }
-        }
-    }
-
-    @if ($core-course-hide-thumb-on-cards) {
-        .core-course-thumb {
-            display: none;
-        }
-    }
-
-    @if ($core-course-thumb-on-cards-background) {
-        .core-course-thumb {
-            background: $core-course-thumb-on-cards-background !important;
-        }
-    }
-
-    @if ($core-course-hide-progress-on-cards) {
-        .core-course-progress {
-            display: none;
-        }
-    }
-}
-
-:host-context(.core-horizontal-scroll) {
-    @include horizontal_scroll_item(80%, 250px, 300px);
-
-    ion-card.core-course-list-card {
-        .core-course-thumb {
-            padding-top: 30%;
-        }
-
-        ion-item {
-            --padding-start: 8px;
-            --inner-padding-end: 8px;
-
-            > ion-label {
-                margin: 8px 0;
-
-                .item-heading {
-                    display: block;
-                }
-
-                .item-heading ion-icon {
-                    margin-right: 2px;
-                }
-            }
-        }
-    }
+    display: none;
 }

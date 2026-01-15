@@ -194,15 +194,16 @@
                     }
 
                     &.overdue {
-                        background: rgba(255, 181, 167, 0.05);
+                        background: rgba(255, 181, 167, 0.08);
 
                         .invoice-due {
                             color: #D64545;
-                            font-weight: 600;
+                            font-weight: 700;
+                            font-size: 0.875rem;
                         }
 
                         &:hover {
-                            background: rgba(255, 181, 167, 0.08);
+                            background: rgba(255, 181, 167, 0.12);
                         }
                     }
 
@@ -210,6 +211,8 @@
                         display: flex;
                         flex-direction: column;
                         gap: 2px;
+                        flex: 1;
+                        min-width: 0;
 
                         .invoice-student {
                             font-size: 0.8125rem;
@@ -220,6 +223,9 @@
                         .invoice-number {
                             font-size: 0.75rem;
                             color: var(--text-muted);
+                            white-space: nowrap;
+                            overflow: hidden;
+                            text-overflow: ellipsis;
                         }
                     }
 
@@ -228,10 +234,12 @@
                         flex-direction: column;
                         align-items: flex-end;
                         gap: 2px;
+                        flex-shrink: 0;
 
                         .invoice-due {
-                            font-size: 0.75rem;
+                            font-size: 0.8125rem;
                             color: var(--text-tertiary);
+                            font-weight: 500;
                         }
 
                         .invoice-amount {

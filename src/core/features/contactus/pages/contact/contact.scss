@@ -1,0 +1,467 @@
+@use "theme/globals" as *;
+
+:host {
+    // Premium color palette matching dashboard
+    --contact-primary: #4A9B7F;
+    --contact-primary-light: #5FAFA0;
+    --contact-secondary: #3D8B9E;
+    --contact-text-dark: #1A202C;
+    --contact-text-medium: #4A5568;
+    --contact-text-light: #718096;
+    --contact-call: #2E7D32;
+    --contact-email: #1565C0;
+    --contact-copy: #6B7280;
+    --contact-booking: #E65100;
+}
+
+.contact-container {
+    padding: 20px 16px;
+    max-width: 600px;
+    margin: 0 auto;
+    background: #FAFBFC;
+    min-height: 100%;
+}
+
+// Reception Card - Premium Design
+.reception-card {
+    background: linear-gradient(135deg, var(--contact-primary) 0%, var(--contact-secondary) 100%);
+    border-radius: 20px;
+    padding: 24px;
+    margin-bottom: 16px;
+    box-shadow: 0 8px 24px rgba(74, 155, 127, 0.25);
+    position: relative;
+    overflow: hidden;
+
+    &::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        right: -20%;
+        width: 200px;
+        height: 200px;
+        background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
+        border-radius: 50%;
+    }
+
+    .reception-content {
+        display: flex;
+        align-items: center;
+        gap: 18px;
+        margin-bottom: 20px;
+        position: relative;
+        z-index: 1;
+
+        .reception-icon {
+            width: 60px;
+            height: 60px;
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+
+            ion-icon {
+                font-size: 28px;
+                color: #FFFFFF;
+            }
+        }
+
+        .reception-info {
+            h2 {
+                margin: 0 0 4px 0;
+                font-size: 1.0625rem;
+                font-weight: 600;
+                color: rgba(255, 255, 255, 0.9);
+            }
+
+            .reception-number {
+                margin: 0;
+                font-size: 1.375rem;
+                font-weight: 700;
+                color: #FFFFFF;
+                letter-spacing: 0.5px;
+            }
+        }
+    }
+
+    .reception-actions {
+        display: flex;
+        gap: 12px;
+        position: relative;
+        z-index: 1;
+
+        .action-btn {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 14px 20px;
+            border: none;
+            border-radius: 14px;
+            font-size: 0.9375rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+
+            ion-icon {
+                font-size: 20px;
+            }
+
+            &.call {
+                background: #FFFFFF;
+                color: var(--contact-call);
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+
+                &:hover, &:active {
+                    background: #F0FFF4;
+                    transform: translateY(-2px);
+                    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+                }
+            }
+
+            &.copy {
+                background: rgba(255, 255, 255, 0.2);
+                color: #FFFFFF;
+                backdrop-filter: blur(10px);
+                border: 1px solid rgba(255, 255, 255, 0.2);
+
+                &:hover, &:active {
+                    background: rgba(255, 255, 255, 0.3);
+                    transform: translateY(-2px);
+                }
+            }
+        }
+    }
+}
+
+// Booking Card - Premium Design
+.booking-card {
+    background: #FFFFFF;
+    border-radius: 20px;
+    padding: 22px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06), 0 1px 3px rgba(0, 0, 0, 0.04);
+    border: none;
+
+    .booking-content {
+        display: flex;
+        align-items: flex-start;
+        gap: 16px;
+        margin-bottom: 18px;
+
+        .booking-icon {
+            width: 52px;
+            height: 52px;
+            background: linear-gradient(135deg, #FFF3E0 0%, #FFE0B2 100%);
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+
+            ion-icon {
+                font-size: 26px;
+                color: #E65100;
+            }
+        }
+
+        .booking-info {
+            h2 {
+                margin: 0 0 6px 0;
+                font-size: 1.125rem;
+                font-weight: 700;
+                color: var(--contact-text-dark);
+                letter-spacing: -0.2px;
+            }
+
+            p {
+                margin: 0;
+                font-size: 0.875rem;
+                color: var(--contact-text-light);
+                line-height: 1.5;
+            }
+        }
+    }
+
+    .booking-btn {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        padding: 16px 24px;
+        background: linear-gradient(135deg, #FF9800 0%, #F57C00 100%);
+        color: white;
+        border: none;
+        border-radius: 14px;
+        font-size: 0.9375rem;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        box-shadow: 0 4px 12px rgba(255, 152, 0, 0.35);
+
+        ion-icon {
+            font-size: 20px;
+        }
+
+        &:hover, &:active {
+            background: linear-gradient(135deg, #F57C00 0%, #E65100 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(255, 152, 0, 0.45);
+        }
+    }
+}
+
+// Contact Sections - Premium Design
+.contact-sections {
+    .contact-section {
+        background: #FFFFFF;
+        border-radius: 20px;
+        margin-bottom: 16px;
+        box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06), 0 1px 3px rgba(0, 0, 0, 0.04);
+        overflow: hidden;
+        border: none;
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 18px 22px;
+            background: linear-gradient(135deg, #F0FAF8 0%, #E8F8F5 100%);
+            border-bottom: 1px solid rgba(74, 155, 127, 0.1);
+
+            ion-icon {
+                font-size: 24px;
+                color: var(--contact-primary);
+                background: #FFFFFF;
+                padding: 10px;
+                border-radius: 12px;
+                box-shadow: 0 2px 6px rgba(74, 155, 127, 0.15);
+            }
+
+            h3 {
+                margin: 0;
+                font-size: 1.0625rem;
+                font-weight: 700;
+                color: var(--contact-text-dark);
+                letter-spacing: -0.2px;
+            }
+        }
+
+        .section-items {
+            .contact-item {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                padding: 16px 22px;
+                border-bottom: 1px solid rgba(0, 0, 0, 0.04);
+                transition: all 0.2s ease;
+
+                &:last-child {
+                    border-bottom: none;
+                }
+
+                &:hover {
+                    background: rgba(74, 155, 127, 0.03);
+                }
+
+                .item-info {
+                    flex: 1;
+                    min-width: 0;
+
+                    .item-name {
+                        margin: 0 0 4px 0;
+                        font-size: 0.9375rem;
+                        font-weight: 600;
+                        color: var(--contact-text-dark);
+                    }
+
+                    .item-description {
+                        margin: 0;
+                        font-size: 0.8125rem;
+                        color: var(--contact-text-light);
+                    }
+                }
+
+                .item-actions {
+                    display: flex;
+                    gap: 10px;
+                    flex-shrink: 0;
+
+                    .contact-action {
+                        width: 42px;
+                        height: 42px;
+                        border: none;
+                        border-radius: 12px;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        cursor: pointer;
+                        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+                        ion-icon {
+                            font-size: 20px;
+                        }
+
+                        &.email {
+                            background: linear-gradient(135deg, #E3F2FD 0%, #BBDEFB 100%);
+                            color: var(--contact-email);
+
+                            &:hover, &:active {
+                                transform: scale(1.08);
+                                box-shadow: 0 4px 12px rgba(21, 101, 192, 0.25);
+                            }
+                        }
+
+                        &.copy {
+                            background: linear-gradient(135deg, #F5F5F5 0%, #EEEEEE 100%);
+                            color: var(--contact-copy);
+
+                            &:hover, &:active {
+                                transform: scale(1.08);
+                                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+                            }
+                        }
+
+                        &.call {
+                            background: linear-gradient(135deg, #E8F5E9 0%, #C8E6C9 100%);
+                            color: var(--contact-call);
+
+                            &:hover, &:active {
+                                transform: scale(1.08);
+                                box-shadow: 0 4px 12px rgba(46, 125, 50, 0.25);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+// Office Hours - Premium Design
+.office-hours {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 18px 22px;
+    background: #FFFFFF;
+    border-radius: 16px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    margin-top: 4px;
+    position: relative;
+    overflow: hidden;
+
+    &::before {
+        content: '';
+        position: absolute;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        width: 4px;
+        background: linear-gradient(180deg, #FF9800 0%, #F57C00 100%);
+    }
+
+    ion-icon {
+        font-size: 24px;
+        color: #F57C00;
+        flex-shrink: 0;
+        background: linear-gradient(135deg, #FFF3E0 0%, #FFE0B2 100%);
+        padding: 10px;
+        border-radius: 12px;
+    }
+
+    .hours-info {
+        h4 {
+            margin: 0 0 4px 0;
+            font-size: 0.9375rem;
+            font-weight: 700;
+            color: var(--contact-text-dark);
+        }
+
+        p {
+            margin: 0;
+            font-size: 0.875rem;
+            color: var(--contact-text-medium);
+            font-weight: 500;
+        }
+    }
+}
+
+// Dark mode support
+:host-context(:root.dark) {
+    .contact-container {
+        background: #111827;
+    }
+
+    .reception-card {
+        background: linear-gradient(135deg, #234545 0%, #1F4A3A 100%);
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+
+        .reception-content {
+            .reception-icon {
+                background: rgba(255, 255, 255, 0.1);
+                border-color: rgba(255, 255, 255, 0.1);
+
+                ion-icon {
+                    color: #A8E6E6;
+                }
+            }
+
+            .reception-info {
+                h2 {
+                    color: rgba(255, 255, 255, 0.8);
+                }
+                .reception-number {
+                    color: #FFFFFF;
+                }
+            }
+        }
+
+        .reception-actions {
+            .action-btn.call {
+                background: rgba(255, 255, 255, 0.95);
+            }
+            .action-btn.copy {
+                background: rgba(255, 255, 255, 0.1);
+            }
+        }
+    }
+
+    .booking-card,
+    .contact-sections .contact-section,
+    .office-hours {
+        background: #1F2937;
+        box-shadow: 0 2px 12px rgba(0, 0, 0, 0.2);
+
+        .booking-info, .section-header, .item-info, .hours-info {
+            h2, h3, h4, .item-name {
+                color: #F3F4F6;
+            }
+
+            p, .item-description {
+                color: #9CA3AF;
+            }
+        }
+
+        .section-header {
+            background: linear-gradient(135deg, rgba(74, 155, 127, 0.1) 0%, rgba(61, 139, 158, 0.1) 100%);
+            border-color: rgba(74, 155, 127, 0.15);
+
+            ion-icon {
+                background: rgba(255, 255, 255, 0.05);
+            }
+        }
+
+        .contact-item:hover {
+            background: rgba(255, 255, 255, 0.02);
+        }
+    }
+}

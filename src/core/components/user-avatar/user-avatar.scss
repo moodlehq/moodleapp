@@ -2,8 +2,7 @@
 
 :host {
     position: relative;
-    width: var(--core-avatar-size);
-    height: var(--core-avatar-size);
+
     padding: 0px;
     --contact-status-size: 14px;
     --margin-end-on-item: 8px;
@@ -12,8 +11,6 @@
 
     img.userpicture {
         border-radius: var(--core-avatar-radius);
-        width: var(--core-avatar-size);
-        height: var(--core-avatar-size);
         max-width: var(--core-avatar-size);
         max-height: var(--core-avatar-size);
         min-width: var(--core-avatar-size);

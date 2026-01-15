@@ -96,12 +96,14 @@ export class CoreCoursesCourseListItemComponent implements OnInit, OnDestroy, On
      */
     getCleanCourseName(): string {
         const name = this.course.displayname || this.course.fullname || '';
-        // Remove PN, FS1, FS2, Y1-Y12 and T1-T3 patterns along with surrounding dashes/spaces
+        // Remove year/term patterns: Y1-Y13, T1-T3, PN, FS1, FS2 and combinations
         return name
-            .replace(/\s*-?\s*\b(PN|FS[12]|Y([1-9]|1[0-2]))\b\s*-?\s*/gi, ' ') // Remove PN, FS1, FS2, Y1-Y12 with dashes
-            .replace(/\s*-?\s*\bT[1-3]\b\s*-?\s*/gi, ' ') // Remove T1, T2, T3 with dashes
-            .replace(/\s*-+\s*$/g, '') // Remove trailing dashes with spaces
-            .replace(/^\s*-+\s*/g, '') // Remove leading dashes with spaces
+            .replace(/\s*-*\s*Y\d+\s*-\s*T\d+\s*-*\s*/gi, ' ') // Remove Y# - T# (Y + number + spaces? + dash + spaces? + T + number)
+            .replace(/\s*-*\s*\b(PN|FS[12])\b\s*-*\s*/gi, ' ') // Remove PN, FS1, FS2
+            .replace(/\s*-*\s*\bY\d+\b\s*-*\s*/gi, ' ') // Remove standalone Y#
+            .replace(/\s*-*\s*\bT[1-3]\b\s*-*\s*/gi, ' ') // Remove standalone T1, T2, T3
+            .replace(/[\s-]+$/g, '') // Remove all trailing spaces and dashes
+            .replace(/^[\s-]+/g, '') // Remove all leading spaces and dashes
             .replace(/\s+/g, ' ') // Replace multiple spaces with single space
             .trim(); // Final trim
     }
@@ -173,6 +175,10 @@ export class CoreCoursesCourseListItemComponent implements OnInit, OnDestroy, On
             this.element.style.setProperty('--course-color-tint', tint);
         } else if(this.course.colorNumber !== undefined) {
             this.element.classList.add('course-color-' + this.course.colorNumber);
+        } else {
+            // Fallback: assign color based on course ID for consistent coloring
+            const colorIndex = this.course.id % 10;
+            this.element.classList.add('course-color-' + colorIndex);
         }
     }
 

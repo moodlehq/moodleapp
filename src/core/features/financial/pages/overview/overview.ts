@@ -286,9 +286,10 @@ export class CoreFinancialOverviewPage implements OnInit {
      * @returns Formatted date string.
      */
     formatDate(date: string): string {
-        // Convert date string to timestamp and format it
-        const timestamp = new Date(date).getTime();
-        return CoreTimeUtils.userDate(timestamp, 'core.strftimedatefullshort');
+        // Convert date string to readable format like "Jan 15, 2026"
+        const dateObj = new Date(date);
+        const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+        return `${months[dateObj.getMonth()]} ${dateObj.getDate()}, ${dateObj.getFullYear()}`;
     }
 
 
@@ -300,13 +301,67 @@ export class CoreFinancialOverviewPage implements OnInit {
      */
     formatPaymentType(paymentType: string): string {
         if (!paymentType) return '';
-        
+
         // Replace underscores with spaces and capitalize each word
         return paymentType
             .replace(/_/g, ' ')
             .split(' ')
             .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
             .join(' ');
+    }
+
+    /**
+     * Format invoice status for display.
+     *
+     * @param status The status string (e.g., NOT_PAID, PAID, PARTIAL).
+     * @returns Formatted status string.
+     */
+    formatStatus(status: string): string {
+        if (!status) return '';
+
+        // Replace underscores with spaces and capitalize each word
+        return status
+            .replace(/_/g, ' ')
+            .split(' ')
+            .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+            .join(' ');
+    }
+
+    /**
+     * Get plural or singular form based on count.
+     *
+     * @param count The count.
+     * @param singular Singular form.
+     * @param plural Plural form.
+     * @returns Appropriate form based on count.
+     */
+    pluralize(count: number, singular: string, plural: string): string {
+        return count === 1 ? singular : plural;
+    }
+
+    /**
+     * Get unpaid invoices (remaining > 0) for display.
+     *
+     * @param invoices All invoices.
+     * @returns Filtered invoices with remaining > 0.
+     */
+    getUnpaidInvoices(invoices: any[]): any[] {
+        if (!invoices) return [];
+        return invoices.filter(inv => inv.remaining > 0);
+    }
+
+    /**
+     * Get short name (first name + last name initial or first two names).
+     *
+     * @param fullName Full name.
+     * @returns Shortened name.
+     */
+    getShortName(fullName: string): string {
+        if (!fullName) return '';
+        const parts = fullName.trim().split(' ');
+        if (parts.length <= 2) return fullName;
+        // Return first name + last name
+        return `${parts[0]} ${parts[parts.length - 1]}`;
     }
 
     /**
@@ -683,6 +738,57 @@ export class CoreFinancialOverviewPage implements OnInit {
      */
     trackByAcademicYear(index: number, yearData: AcademicYearData): string {
         return yearData.academic_year;
+    }
+
+    /**
+     * Show Payment Methods information.
+     */
+    async showPaymentMethods(): Promise<void> {
+        const alert = await this.alertController.create({
+            header: 'Payment Methods',
+            cssClass: 'payment-methods-alert',
+            message: `
+                <div class="payment-methods-content">
+                    <h3>1. Visit the Accounting Office</h3>
+                    <p>Pay via debit or credit cards.</p>
+
+                    <h3>2. Online Transfers</h3>
+                    <p>Through INSTAPAY, bank transfer, or bank deposits:</p>
+
+                    <div class="bank-info">
+                        <h4>2.1. Misr Bank</h4>
+                        <p><strong>Company Name:</strong> Aspire International School</p>
+                        <p><strong>Account Number:</strong> 5230001000011038</p>
+                        <p><strong>IBAN:</strong> 32000205230523000100001103</p>
+                    </div>
+
+                    <div class="bank-info">
+                        <h4>2.2. Commercial International Bank – CIB</h4>
+                        <p><strong>Company Name:</strong> Aspire International School</p>
+                        <p><strong>Account Number:</strong> 100022222257</p>
+                        <p><strong>IBAN:</strong> EG260010015400000100022222257</p>
+                    </div>
+
+                    <div class="payment-notice">
+                        <p><strong>For bank transfers/deposits:</strong> Send a scanned copy of your receipt to:</p>
+                        <p>Email: <a href="mailto:accounting@aspireschool.org">accounting@aspireschool.org</a></p>
+                        <p>Tel: <a href="tel:+201283911239">01283911239</a></p>
+                        <p>WhatsApp: <a href="https://wa.me/201283909964">01283909964</a></p>
+                    </div>
+
+                    <p class="warning">Cash payments are not allowed</p>
+
+                    <h3>Contact Information</h3>
+                    <p><strong>Accounting Department</strong></p>
+                    <p>Email: <a href="mailto:accounting@aspireschool.org">accounting@aspireschool.org</a></p>
+                    <p>Tel: <a href="tel:+201283909964">01283909964</a> | <a href="tel:+201283911239">01283911239</a></p>
+                    <p>WhatsApp: <a href="https://wa.me/201283909964">01283909964</a></p>
+                </div>
+            `,
+            buttons: ['Close'],
+        });
+
+        await alert.present();
     }
 
     /**

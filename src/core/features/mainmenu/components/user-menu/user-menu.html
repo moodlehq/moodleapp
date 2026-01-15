@@ -1,287 +1,236 @@
-<ion-header class="aspire-user-menu-header"> </ion-header>
+<ion-header class="aspire-user-menu-header"></ion-header>
 <ion-content class="aspire-user-menu-content">
     <core-loading [hideUntil]="siteLogoLoaded && handlersLoaded">
-        <!-- Aspire School: Modern User Profile Card -->
-        <div class="aspire-profile-header" *ngIf="siteInfo">
-            <div class="aspire-profile-backdrop">
-                <button class="aspire-logout-btn" (click)="logout($event)">
-                    <ion-icon name="log-out-outline"></ion-icon>
-                    <span>{{ 'core.mainmenu.logout' | translate }}</span>
-                </button>
+        <!-- Profile Card -->
+        <div class="aspire-profile-card" *ngIf="siteInfo">
+            <!-- Background Pattern -->
+            <div class="profile-card-bg">
+                <div class="bg-pattern"></div>
+                <div class="bg-gradient"></div>
             </div>
-            <div class="aspire-profile-content">
-                <div class="aspire-avatar-wrapper">
-                    <core-user-avatar
-                        [site]="siteInfo"
-                        [userId]="siteInfo.userid"
-                        [linkProfile]="false"
-                        class="aspire-avatar-large"
-                    />
-                    <div class="aspire-avatar-ring"></div>
+
+            <!-- Logout Button -->
+            <button class="logout-btn" (click)="logout($event)">
+                <ion-icon name="log-out-outline"></ion-icon>
+            </button>
+
+            <!-- Profile Content -->
+            <div class="profile-content">
+                <!-- Avatar -->
+                <div class="avatar-container">
+                    <div class="avatar-ring">
+                        <core-user-avatar
+                            [site]="siteInfo"
+                            [userId]="siteInfo.userid"
+                            [linkProfile]="false"
+                            class="profile-avatar"
+                        />
+                    </div>
+                    <div class="avatar-badge" *ngIf="badgeCount > 0">
+                        <ion-icon name="trophy"></ion-icon>
+                    </div>
                 </div>
-                <h2 class="aspire-user-name">{{ siteInfo.fullname }}</h2>
-                <p class="aspire-user-email">{{ siteInfo.username }}</p>
-                <p class="aspire-user-sequence" *ngIf="getSequenceValue()">{{ getSequenceValue() }}</p>
-                
-                <!-- Parent/Mentee Selector -->
-                <div class="aspire-mentee-selector" *ngIf="isParentUser && mentees.length > 0">
-                    <button class="aspire-mentee-button" (click)="toggleMenteeSelector()">
-                        <ion-icon name="people-outline"></ion-icon>
-                        <span *ngIf="!selectedMentee">{{ 'core.user.viewingas' | translate }}: {{ 'core.yourself' | translate }}</span>
-                        <span *ngIf="selectedMentee">{{ 'core.user.viewingas' | translate }}: {{ getMenteeFirstWord() }}</span>
-                        <ion-icon name="chevron-down-outline" [class.rotated]="showMenteeSelector"></ion-icon>
+
+                <!-- User Info -->
+                <h2 class="user-name">{{ siteInfo.fullname }}</h2>
+                <p class="user-email">{{ siteInfo.username }}</p>
+
+                <!-- Student ID Badge -->
+                <div class="id-badge" *ngIf="getSequenceValue()">
+                    <ion-icon name="id-card-outline"></ion-icon>
+                    <span>{{ getSequenceValue() }}</span>
+                </div>
+
+                <!-- Mentee Selector (Parents) -->
+                <div class="mentee-selector" *ngIf="isParentUser && mentees.length > 0">
+                    <button class="mentee-trigger" (click)="toggleMenteeSelector()">
+                        <div class="mentee-icon">
+                            <ion-icon name="people"></ion-icon>
+                        </div>
+                        <span class="mentee-label">
+                            <small>{{ 'core.user.viewingas' | translate }}</small>
+                            <strong *ngIf="!selectedMentee">{{ 'core.yourself' | translate }}</strong>
+                            <strong *ngIf="selectedMentee">{{ getMenteeFirstWord() }}</strong>
+                        </span>
+                        <ion-icon name="chevron-down" class="mentee-arrow" [class.open]="showMenteeSelector"></ion-icon>
                     </button>
-                    
-                    <div class="aspire-mentee-dropdown" *ngIf="showMenteeSelector">
-                        <button class="aspire-mentee-option" (click)="clearMenteeSelection()" [class.selected]="!selectedMenteeId">
-                            <core-user-avatar
-                                [userId]="siteInfo.userid"
-                                [linkProfile]="false"
-                            />
+
+                    <div class="mentee-dropdown" [class.show]="showMenteeSelector">
+                        <button class="mentee-option" (click)="clearMenteeSelection()" [class.active]="!selectedMenteeId">
+                            <core-user-avatar [userId]="siteInfo.userid" [linkProfile]="false" />
                             <span>{{ 'core.yourself' | translate }}</span>
-                            <ion-icon name="checkmark" *ngIf="!selectedMenteeId"></ion-icon>
+                            <ion-icon name="checkmark-circle" class="check-icon" *ngIf="!selectedMenteeId"></ion-icon>
                         </button>
-                        
-                        <button class="aspire-mentee-option" *ngFor="let mentee of mentees" 
-                            (click)="selectMentee(mentee)" 
-                            [class.selected]="selectedMenteeId === mentee.id">
-                            <core-user-avatar
-                                [user]="mentee"
-                                [userId]="mentee.id"
-                                [linkProfile]="false"
-                            />
+
+                        <button class="mentee-option" *ngFor="let mentee of mentees"
+                            (click)="selectMentee(mentee)"
+                            [class.active]="selectedMenteeId === mentee.id">
+                            <core-user-avatar [user]="mentee" [userId]="mentee.id" [linkProfile]="false" />
                             <span>{{ mentee.fullname }}</span>
-                            <ion-icon name="checkmark" *ngIf="selectedMenteeId === mentee.id"></ion-icon>
+                            <ion-icon name="checkmark-circle" class="check-icon" *ngIf="selectedMenteeId === mentee.id"></ion-icon>
                         </button>
                     </div>
                 </div>
-                <div class="aspire-profile-stats">
-                    <div class="aspire-stat-item">
+            </div>
+
+            <!-- Stats Row -->
+            <div class="stats-row">
+                <div class="stat-item">
+                    <div class="stat-icon">
+                        <ion-icon name="book"></ion-icon>
+                    </div>
+                    <div class="stat-info">
+                        <span class="stat-value">{{ courseCount || 0 }}</span>
+                        <span class="stat-label">Courses</span>
+                    </div>
+                </div>
+                <div class="stat-divider"></div>
+                <div class="stat-item">
+                    <div class="stat-icon badges">
+                        <ion-icon name="trophy"></ion-icon>
+                    </div>
+                    <div class="stat-info">
+                        <span class="stat-value">{{ badgeCount || 0 }}</span>
+                        <span class="stat-label">Badges</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Resources Section -->
+        <div class="menu-section resources-section">
+            <div class="section-header">
+                <span class="section-title">School Resources</span>
+                <div class="section-line"></div>
+            </div>
+
+            <!-- Uniform & Supplies -->
+            <div class="collapsible-group">
+                <button class="collapsible-header" (click)="toggleSection('uniform')">
+                    <div class="header-icon uniform">
+                        <ion-icon name="shirt-outline"></ion-icon>
+                    </div>
+                    <span class="header-title">Uniform & Supplies</span>
+                    <ion-icon name="chevron-down" class="collapse-arrow" [class.open]="uniformSectionOpen"></ion-icon>
+                </button>
+                <div class="collapsible-content" [class.open]="uniformSectionOpen">
+                    <button class="resource-item" (click)="openExternalUrl($event, 'https://sway.cloud.microsoft/3ssKMIFWptes61Jj?ref=Link')">
+                        <span>Uniform Catalog</span>
+                        <ion-icon name="open-outline"></ion-icon>
+                    </button>
+                    <button class="resource-item" (click)="openExternalUrl($event, 'https://aischool11.sharepoint.com/sites/AdmissionAspireSchool/Shared%20Documents/Forms/AllItems.aspx?id=%2Fsites%2FAdmissionAspireSchool%2FShared%20Documents%2FGeneral%2FEmails%2025%2D26%2FSupplies%20List%2025%2D26&viewid=95763e17%2D9d4e%2D4566%2D8ae7%2D1a3c70be784a&ga=1')">
+                        <span>School Supplies 25-26</span>
+                        <ion-icon name="open-outline"></ion-icon>
+                    </button>
+                    <button class="resource-item" (click)="openExternalUrl($event, 'https://aischool11.sharepoint.com/sites/AdmissionAspireSchool/Shared%20Documents/Forms/AllItems.aspx?id=%2Fsites%2FAdmissionAspireSchool%2FShared%20Documents%2FGeneral%2FEmails%2025%2D26%2FUniform%20Policy%20%2D%20Aspire%20International%20School%20%2D%2025%2D26%2Epdf&parent=%2Fsites%2FAdmissionAspireSchool%2FShared%20Documents%2FGeneral%2FEmails%2025%2D26&p=true&ga=1')">
+                        <span>Uniform Policy</span>
+                        <ion-icon name="open-outline"></ion-icon>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Handbooks -->
+            <div class="collapsible-group">
+                <button class="collapsible-header" (click)="toggleSection('handbooks')">
+                    <div class="header-icon handbook">
                         <ion-icon name="book-outline"></ion-icon>
-                        <span>{{ courseCount || 0 }}</span>
-                        <label
-                            >{{ 'core.courses.mycourses' | translate }}</label
-                        >
                     </div>
-                    <div class="aspire-stat-item">
-                        <ion-icon name="trophy-outline"></ion-icon>
-                        <span>{{ badgeCount || 0 }}</span>
-                        <label>{{ 'addon.badges.badges' | translate }}</label>
+                    <span class="header-title">Student Handbooks</span>
+                    <ion-icon name="chevron-down" class="collapse-arrow" [class.open]="handbooksSectionOpen"></ion-icon>
+                </button>
+                <div class="collapsible-content" [class.open]="handbooksSectionOpen">
+                    <button class="resource-item" (click)="openExternalUrl($event, 'https://aischool11.sharepoint.com/sites/AdmissionAspireSchool/Shared%20Documents/Forms/AllItems.aspx?id=%2Fsites%2FAdmissionAspireSchool%2FShared%20Documents%2FGeneral%2FHandbooks%202023%2D2024%2FEYFS%20Handbook%20%2D%20Aspire%20International%20School%2Epdf&parent=%2Fsites%2FAdmissionAspireSchool%2FShared%20Documents%2FGeneral%2FHandbooks%202023%2D2024&p=true&ga=1')">
+                        <span>EYFS Handbook</span>
+                        <ion-icon name="open-outline"></ion-icon>
+                    </button>
+                    <button class="resource-item" (click)="openExternalUrl($event, 'https://aischool11.sharepoint.com/sites/AdmissionAspireSchool/Shared%20Documents/Forms/AllItems.aspx?id=%2Fsites%2FAdmissionAspireSchool%2FShared%20Documents%2FGeneral%2FHandbooks%202023%2D2024%2FKey%20Stage%20Handbook%20Aspire%20International%20School%2Epdf&parent=%2Fsites%2FAdmissionAspireSchool%2FShared%20Documents%2FGeneral%2FHandbooks%202023%2D2024&p=true&ga=1')">
+                        <span>Key Stage Handbook</span>
+                        <ion-icon name="open-outline"></ion-icon>
+                    </button>
+                    <button class="resource-item" (click)="openExternalUrl($event, 'https://aischool11.sharepoint.com/sites/AdmissionAspireSchool/Shared%20Documents/Forms/AllItems.aspx?id=%2Fsites%2FAdmissionAspireSchool%2FShared%20Documents%2FGeneral%2FHandbooks%202023%2D2024%2FYear%209%2D11%20Handbook%20%2D%20Aspire%20International%20School%2Epdf&parent=%2Fsites%2FAdmissionAspireSchool%2FShared%20Documents%2FGeneral%2FHandbooks%202023%2D2024&p=true&ga=1')">
+                        <span>Year 9-11 Handbook</span>
+                        <ion-icon name="open-outline"></ion-icon>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Policies -->
+            <div class="collapsible-group">
+                <button class="collapsible-header" (click)="toggleSection('policies')">
+                    <div class="header-icon policy">
+                        <ion-icon name="shield-checkmark-outline"></ion-icon>
                     </div>
+                    <span class="header-title">School Policies</span>
+                    <ion-icon name="chevron-down" class="collapse-arrow" [class.open]="policiesSectionOpen"></ion-icon>
+                </button>
+                <div class="collapsible-content" [class.open]="policiesSectionOpen">
+                    <button class="resource-item" (click)="openExternalUrl($event, 'https://aischool11.sharepoint.com/sites/AdmissionAspireSchool/Shared%20Documents/Forms/AllItems.aspx?id=%2Fsites%2FAdmissionAspireSchool%2FShared%20Documents%2FGeneral%2FHandbooks%202023%2D2024%2FBehaviour%20Policy%20%2D%20Aspire%20International%20School%2Epdf&parent=%2Fsites%2FAdmissionAspireSchool%2FShared%20Documents%2FGeneral%2FHandbooks%202023%2D2024&p=true&ga=1')">
+                        <span>Behavior Policy (Y1-8)</span>
+                        <ion-icon name="open-outline"></ion-icon>
+                    </button>
+                    <button class="resource-item" (click)="openExternalUrl($event, 'https://aischool11.sharepoint.com/sites/AdmissionAspireSchool/Shared%20Documents/Forms/AllItems.aspx?id=%2Fsites%2FAdmissionAspireSchool%2FShared%20Documents%2FGeneral%2FHandbooks%202023%2D2024%2FBehaviour%20Policy%20Year%209%20%2D%2011%20%2D%20Aspire%20International%20School%2Epdf&parent=%2Fsites%2FAdmissionAspireSchool%2FShared%20Documents%2FGeneral%2FHandbooks%202023%2D2024&p=true&ga=1')">
+                        <span>Behavior Policy (Y9-12)</span>
+                        <ion-icon name="open-outline"></ion-icon>
+                    </button>
                 </div>
             </div>
         </div>
 
-        <!-- Quick Actions Grid -->
-        <div class="aspire-user-menu-actions-grid">
-            <div
-                class="aspire-user-action-card"
-                (click)="openUserProfile($event)"
-            >
-                <div class="aspire-user-action-icon profile">
-                    <ion-icon name="person-circle-outline"></ion-icon>
-                </div>
-                <span>{{ 'core.user.profile' | translate }}</span>
-            </div>
-
-            <div
-                class="aspire-user-action-card"
-                (click)="openPreferences($event)"
-                *ngIf="displayPreferences !== false"
-            >
-                <div class="aspire-user-action-icon settings">
-                    <ion-icon name="settings-outline"></ion-icon>
-                </div>
-                <span>{{ 'core.settings.settings' | translate }}</span>
-            </div>
-
-            <div class="aspire-user-action-card" (click)="openGrades($event)">
-                <div class="aspire-user-action-icon grades">
-                    <ion-icon name="stats-chart-outline"></ion-icon>
-                </div>
-                <span>{{ 'core.grades.grades' | translate }}</span>
-            </div>
-
-            <div class="aspire-user-action-card" (click)="openMessages($event)">
-                <div class="aspire-user-action-icon messages">
-                    <ion-icon name="chatbubble-ellipses-outline"></ion-icon>
-                </div>
-                <span>{{ 'addon.messages.messages' | translate }}</span>
-            </div>
-        </div>
-
-        <!-- Menu Items with Icons -->
-        <div
-            class="aspire-menu-section"
-            *ngIf="handlers && handlers.length > 0"
-        >
-            <h3 class="aspire-section-title">{{ 'core.more' | translate }}</h3>
-            <ion-list class="aspire-menu-list">
-                <ion-item
-                    *ngFor="let handler of handlers"
-                    button
-                    (click)="handlerClicked($event, handler)"
-                    [hidden]="handler.hidden"
-                    class="aspire-menu-item"
-                >
-                    <div class="aspire-menu-icon" slot="start">
-                        <ion-icon
-                            *ngIf="handler.icon"
-                            [name]="handler.icon"
-                        ></ion-icon>
-                    </div>
-                    <ion-label>
-                        <h4>{{ handler.title | translate }}</h4>
-                    </ion-label>
-                    <ion-badge
-                        *ngIf="handler.showBadge && handler.badge"
-                        slot="end"
-                        class="aspire-badge"
-                    >
-                        {{ handler.badge }}
-                    </ion-badge>
-                </ion-item>
-            </ion-list>
-        </div>
-
-        <!-- Aspire School: Hidden delegate handlers for minimal interface -->
+        <!-- Hidden original handlers for compatibility -->
         <ng-container *ngIf="false">
-            <ion-item
-                button
-                *ngFor="let handler of handlers"
-                class="ion-text-wrap"
+            <ion-item button *ngFor="let handler of handlers" class="ion-text-wrap"
                 (click)="handlerClicked($event, handler)"
                 [ngClass]="['core-user-menu-handler', handler.class || '']"
-                [hidden]="handler.hidden"
-                [attr.aria-label]="handler.title | translate"
-                [detail]="true"
-            >
-                <ion-icon
-                    *ngIf="handler.icon"
-                    [name]="handler.icon"
-                    slot="start"
-                    aria-hidden="true"
-                />
-                <ion-label>
-                    <p class="item-heading">{{ handler.title | translate }}</p>
-                </ion-label>
-                <ion-badge
-                    slot="end"
-                    *ngIf="handler.showBadge"
-                    [hidden]="handler.loading || !handler.badge"
-                    aria-hidden="true"
-                >
-                    {{handler.badge}}
-                </ion-badge>
-                <span
-                    *ngIf="handler.showBadge && handler.badge && handler.badgeA11yText"
-                    class="sr-only"
-                >
-                    {{ handler.badgeA11yText | translate: {$a : handler.badge }
-                    }}
-                </span>
-                <ion-spinner
-                    slot="end"
-                    *ngIf="handler.showBadge && handler.loading"
-                    [attr.aria-label]="'core.loading' | translate"
-                />
+                [hidden]="handler.hidden" [attr.aria-label]="handler.title | translate" [detail]="true">
+                <ion-icon *ngIf="handler.icon" [name]="handler.icon" slot="start" aria-hidden="true" />
+                <ion-label><p class="item-heading">{{ handler.title | translate }}</p></ion-label>
+                <ion-badge slot="end" *ngIf="handler.showBadge" [hidden]="handler.loading || !handler.badge" aria-hidden="true">{{handler.badge}}</ion-badge>
+                <ion-spinner slot="end" *ngIf="handler.showBadge && handler.loading" [attr.aria-label]="'core.loading' | translate" />
             </ion-item>
 
-            <ion-item
-                button
-                *ngFor="let handler of accountHandlers; let first = first"
-                class="ion-text-wrap"
+            <ion-item button *ngFor="let handler of accountHandlers; let first = first" class="ion-text-wrap"
                 (click)="handlerClicked($event, handler)"
                 [ngClass]="['core-user-account-menu-handler', handler.class || '', first ? 'core-user-menu-separator' : '']"
-                [hidden]="handler.hidden"
-                [attr.aria-label]="handler.title | translate"
-                [detail]="true"
-            >
-                <ion-icon
-                    *ngIf="handler.icon"
-                    [name]="handler.icon"
-                    slot="start"
-                    aria-hidden="true"
-                />
-                <ion-label>
-                    <p class="item-heading">{{ handler.title | translate }}</p>
-                </ion-label>
-                <ion-badge
-                    slot="end"
-                    *ngIf="handler.showBadge"
-                    [hidden]="handler.loading || !handler.badge"
-                    aria-hidden="true"
-                >
-                    {{handler.badge}}
-                </ion-badge>
-                <span
-                    *ngIf="handler.showBadge && handler.badge && handler.badgeA11yText"
-                    class="sr-only"
-                >
-                    {{ handler.badgeA11yText | translate: {$a : handler.badge }
-                    }}
-                </span>
-                <ion-spinner
-                    slot="end"
-                    *ngIf="handler.showBadge && handler.loading"
-                    [attr.aria-label]="'core.loading' | translate"
-                />
-            </ion-item>
-        </ng-container>
-
-        <!-- Aspire School: Hidden preferences and support for minimal interface -->
-        <ng-container *ngIf="false">
-            <ion-item
-                button
-                (click)="openPreferences($event)"
-                [attr.aria-label]="'core.settings.preferences' | translate"
-                [detail]="true"
-                class="core-user-menu-preferences core-user-menu-separator"
-            >
-                <ion-icon name="fas-wrench" slot="start" aria-hidden="true" />
-                <ion-label>
-                    <p class="item-heading">
-                        {{ 'core.settings.preferences' | translate }}
-                    </p>
-                </ion-label>
-            </ion-item>
-
-            <ion-item
-                *ngIf="displayContactSupport"
-                button
-                (click)="contactSupport($event)"
-                [attr.aria-label]="'core.user.support' | translate"
-                [detail]="true"
-                detailIcon="open-outline"
-                class="core-user-menu-support"
-            >
-                <ion-icon name="fas-envelope" slot="start" aria-hidden="true" />
-                <ion-label>
-                    <p class="item-heading">
-                        {{ 'core.user.support' | translate }}
-                    </p>
-                </ion-label>
+                [hidden]="handler.hidden" [attr.aria-label]="handler.title | translate" [detail]="true">
+                <ion-icon *ngIf="handler.icon" [name]="handler.icon" slot="start" aria-hidden="true" />
+                <ion-label><p class="item-heading">{{ handler.title | translate }}</p></ion-label>
+                <ion-badge slot="end" *ngIf="handler.showBadge" [hidden]="handler.loading || !handler.badge" aria-hidden="true">{{handler.badge}}</ion-badge>
+                <ion-spinner slot="end" *ngIf="handler.showBadge && handler.loading" [attr.aria-label]="'core.loading' | translate" />
             </ion-item>
         </ng-container>
     </core-loading>
 </ion-content>
+
 <ion-footer class="aspire-user-menu-footer">
-    <!-- Support & Switch Account Actions -->
-    <div class="aspire-footer-actions">
-        <button
-            class="aspire-support-button"
-            (click)="contactSupport($event)"
-            *ngIf="displayContactSupport"
-        >
-            <ion-icon name="help-circle-outline"></ion-icon>
-            <span>{{ 'core.needhelp' | translate }}</span>
+    <!-- Social Media Links -->
+    <div class="social-links">
+        <span class="social-label">Connect With Us</span>
+        <div class="social-icons">
+            <a href="https://www.facebook.com/AspireinternationalSchool.Egypt" target="_blank" class="social-icon facebook">
+                <ion-icon name="logo-facebook"></ion-icon>
+            </a>
+            <a href="https://www.instagram.com/aspire.international.school.eg/" target="_blank" class="social-icon instagram">
+                <ion-icon name="logo-instagram"></ion-icon>
+            </a>
+            <a href="https://www.youtube.com/@aspireinternationalschool" target="_blank" class="social-icon youtube">
+                <ion-icon name="logo-youtube"></ion-icon>
+            </a>
+            <a href="https://www.linkedin.com/company/aspire-international-school" target="_blank" class="social-icon linkedin">
+                <ion-icon name="logo-linkedin"></ion-icon>
+            </a>
+            <a href="https://www.aspireschool.org/" target="_blank" class="social-icon website">
+                <ion-icon name="globe-outline"></ion-icon>
+            </a>
+        </div>
+    </div>
+
+    <div class="footer-actions">
+        <button class="footer-btn contact" (click)="openContactUs($event)">
+            <ion-icon name="headset-outline"></ion-icon>
+            <span>Contact Us</span>
         </button>
 
-        <button
-            class="aspire-switch-button"
-            (click)="switchAccounts($event)"
-            *ngIf="displaySwitchAccount"
-        >
+        <button class="footer-btn switch" (click)="switchAccounts($event)" *ngIf="displaySwitchAccount">
             <ion-icon name="swap-horizontal-outline"></ion-icon>
             <span>{{ 'core.mainmenu.switchaccount' | translate }}</span>
         </button>

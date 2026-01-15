@@ -362,6 +362,37 @@ export class CoreCoursesDashboardPage implements OnInit, OnDestroy {
     }
 
     /**
+     * Get the sequence (student ID) for a mentee from custom fields.
+     *
+     * @param mentee The mentee user.
+     * @returns The sequence string or empty string.
+     */
+    getMenteeSequence(mentee: CoreUserProfile): string {
+        if (!mentee) {
+            return '';
+        }
+
+        // Check for customfields array
+        const customFields = (mentee as any).customfields;
+        if (!customFields || !Array.isArray(customFields)) {
+            return '';
+        }
+
+        // Look for sequence field
+        const sequenceField = customFields.find((field: any) =>
+            field.name?.toLowerCase() === 'sequence' ||
+            field.shortname === 'sequence' ||
+            field.shortname === 'Sequence',
+        );
+
+        if (sequenceField) {
+            return sequenceField.displayvalue || sequenceField.value || '';
+        }
+
+        return '';
+    }
+
+    /**
      * @inheritdoc
      */
     ngOnDestroy(): void {

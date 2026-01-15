@@ -29,7 +29,7 @@ import {
     AddonMessagesOfflineAnyMessagesFormatted,
 } from '../../services/messages-offline';
 import { CoreDomUtils } from '@services/utils/dom';
-import { CoreUser, CoreUserParticipant } from '@features/user/services/user';
+import { CoreUser } from '@features/user/services/user';
 import { CorePushNotificationsDelegate } from '@features/pushnotifications/services/push-delegate';
 import { Translate } from '@singletons';
 import { Subscription } from 'rxjs';
@@ -40,37 +40,11 @@ import { CoreNavigator } from '@services/navigator';
 import { CoreScreen } from '@services/screen';
 import { CorePlatform } from '@services/platform';
 import { CoreSplitViewComponent } from '@components/split-view/split-view';
-import { CoreCourses } from '@features/courses/services/courses';
-import { CoreUserParent } from '@features/user/services/parent';
-import { CoreEnrolledCourseData } from '@features/courses/services/courses';
 
 const enum AddonMessagesGroupConversationOptionNames {
     FAVOURITES = 'favourites',
     GROUP = 'group',
     INDIVIDUAL = 'individual',
-    TEACHERS_BY_COURSE = 'teachersByCourse',
-}
-
-/**
- * Teacher conversation group structure.
- */
-interface TeacherConversationGroup {
-    courseId: number;
-    courseName: string;
-    courseImage?: string;
-    teachers: AddonMessagesConversationFormatted[];
-    expanded?: boolean;
-}
-
-/**
- * Child teacher conversations structure.
- */
-interface ChildTeacherConversations {
-    childId: number;
-    childName: string;
-    childAvatar?: any;
-    courses: TeacherConversationGroup[];
-    expanded?: boolean;
 }
 
 /**
@@ -93,11 +67,6 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
     selectedUserId?: number;
     contactRequestsCount = 0;
     
-    // Teacher conversations data
-    isParent = false;
-    teacherConversations: TeacherConversationGroup[] = [];
-    childTeacherConversations: ChildTeacherConversations[] = [];
-    showTeachersByCourse = false;
 
     groupConversations: AddonMessagesGroupConversationOption[] = [
         {
@@ -125,16 +94,6 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
             titleString: 'addon.messages.individualconversations',
             emptyString: 'addon.messages.noindividualconversations',
             type: AddonMessagesProvider.MESSAGE_CONVERSATION_TYPE_INDIVIDUAL,
-            favourites: false,
-            count: 0,
-            unread: 0,
-            conversations: [],
-        },
-        {
-            optionName: AddonMessagesGroupConversationOptionNames.TEACHERS_BY_COURSE,
-            titleString: 'addon.messages.teachersbycourse',
-            emptyString: 'addon.messages.noteachers',
-            type: undefined,
             favourites: false,
             count: 0,
             unread: 0,
@@ -353,19 +312,6 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
             }
         });
 
-        // Check if user is a parent
-        this.isParent = await CoreUserParent.isParentUser();
-        
-        // Show teachers by course section for students and parents
-        this.showTeachersByCourse = true;
-        
-        // Remove the teachers option if not needed
-        if (!this.showTeachersByCourse) {
-            this.groupConversations = this.groupConversations.filter(
-                option => option.optionName !== AddonMessagesGroupConversationOptionNames.TEACHERS_BY_COURSE
-            );
-        }
-
         await this.fetchData();
 
         if (!this.selectedConversationId && !this.selectedUserId && CoreScreen.isTablet) {
@@ -398,11 +344,6 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
         promises.push(AddonMessages.getContactRequestsCount(this.siteId));
         if (refreshUnreadCounts) {
             promises.push(AddonMessages.refreshUnreadConversationCounts(this.siteId));
-        }
-        
-        // Fetch teacher conversations to get the count
-        if (this.showTeachersByCourse) {
-            promises.push(this.fetchTeacherConversations());
         }
 
         try {
@@ -466,316 +407,6 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
     }
 
     /**
-     * Fetch teacher conversations grouped by course.
-     */
-    protected async fetchTeacherConversations(): Promise<void> {
-        try {
-            console.log('[AddonMessagesGroupConversations] Fetching teacher conversations, isParent:', this.isParent);
-            
-            if (this.isParent) {
-                // For parents, get mentees first
-                const mentees = await CoreUserParent.getMentees();
-                this.childTeacherConversations = [];
-                console.log('[AddonMessagesGroupConversations] Found mentees:', mentees.length);
-
-                for (const mentee of mentees) {
-                    // Get courses using the custom web service if available
-                    let childCourses: CoreEnrolledCourseData[] = [];
-                    const site = CoreSites.getCurrentSite();
-                    
-                    if (site && site.wsAvailable('local_aspireparent_get_mentee_courses')) {
-                        console.log('[AddonMessagesGroupConversations] Using custom WS for mentee courses');
-                        console.log('[AddonMessagesGroupConversations] Calling with params:', { userid: mentee.id });
-                        try {
-                            const response = await site.read<CoreEnrolledCourseData[]>('local_aspireparent_get_mentee_courses', {
-                                userid: mentee.id,
-                            });
-                            // The response is directly an array of courses, not wrapped in a courses property
-                            childCourses = response || [];
-                            console.log('[AddonMessagesGroupConversations] Custom WS returned', childCourses.length, 'courses');
-                            console.log('[AddonMessagesGroupConversations] First course:', childCourses[0]);
-                        } catch (error) {
-                            console.error('[AddonMessagesGroupConversations] Error getting mentee courses:', error);
-                            // Try fallback
-                            childCourses = await CoreCourses.getUserCourses(true, this.siteId, mentee.id);
-                        }
-                    } else {
-                        console.log('[AddonMessagesGroupConversations] Custom WS not available, using fallback');
-                        // Fallback to regular method - but this won't work for parents
-                        // Let's also check if there's another custom service we can use
-                        if (site && site.wsAvailable('core_enrol_get_users_courses')) {
-                            try {
-                                // Try to call the web service directly as it might bypass some checks
-                                const response = await site.read<CoreEnrolledCourseData[]>('core_enrol_get_users_courses', {
-                                    userid: mentee.id,
-                                });
-                                childCourses = response || [];
-                                console.log('[AddonMessagesGroupConversations] Direct WS call returned', childCourses.length, 'courses');
-                            } catch (error) {
-                                console.error('[AddonMessagesGroupConversations] Error with direct WS call:', error);
-                                childCourses = [];
-                            }
-                        } else {
-                            childCourses = await CoreCourses.getUserCourses(true, this.siteId, mentee.id);
-                        }
-                    }
-                    
-                    console.log('[AddonMessagesGroupConversations] Courses for mentee', mentee.id, ':', childCourses.length);
-
-                    // Filter to only show visible/active courses
-                    const visibleCourses = childCourses.filter(course => {
-                        // Include course if it's visible (1) and not hidden from dashboard
-                        const isVisible = course.visible === undefined || course.visible === 1;
-                        const isNotHidden = !course.hidden;
-                        return isVisible && isNotHidden;
-                    });
-                    console.log('[AddonMessagesGroupConversations] Visible courses for mentee', mentee.id, ':', visibleCourses.length);
-
-                    const childTeachers: ChildTeacherConversations = {
-                        childId: mentee.id,
-                        childName: mentee.fullname || '',
-                        childAvatar: mentee,
-                        courses: [],
-                        expanded: false,
-                    };
-
-                    // Group teachers by course for this child
-                    for (const course of visibleCourses) {
-                        const teachers = await this.getTeachersInCourse(course.id);
-                        if (teachers.length > 0) {
-                            // Get course image from overviewfiles
-                            let courseImage: string | undefined;
-                            if (course.overviewfiles && course.overviewfiles.length > 0) {
-                                courseImage = course.overviewfiles[0].fileurl;
-                            }
-                            
-                            childTeachers.courses.push({
-                                courseId: course.id,
-                                courseName: course.fullname || course.shortname || '',
-                                courseImage: courseImage,
-                                teachers: teachers,
-                                expanded: false,
-                            });
-                        }
-                    }
-
-                    if (childTeachers.courses.length > 0) {
-                        this.childTeacherConversations.push(childTeachers);
-                    }
-                }
-            } else {
-                // For students, get their own courses
-                const allCourses = await CoreCourses.getUserCourses(true);
-
-                // Filter to only show visible/active courses
-                const courses = allCourses.filter(course => {
-                    // Include course if it's visible (1) and not hidden from dashboard
-                    const isVisible = course.visible === undefined || course.visible === 1;
-                    const isNotHidden = !course.hidden;
-                    return isVisible && isNotHidden;
-                });
-
-                this.teacherConversations = [];
-                console.log('[AddonMessagesGroupConversations] All courses:', allCourses.length, 'Visible courses:', courses.length);
-
-                for (const course of courses) {
-                    const teachers = await this.getTeachersInCourse(course.id);
-                    if (teachers.length > 0) {
-                        // Get course image from overviewfiles
-                        let courseImage: string | undefined;
-                        if (course.overviewfiles && course.overviewfiles.length > 0) {
-                            courseImage = course.overviewfiles[0].fileurl;
-                        }
-                        
-                        this.teacherConversations.push({
-                            courseId: course.id,
-                            courseName: course.fullname || course.shortname || '',
-                            courseImage: courseImage,
-                            teachers: teachers,
-                            expanded: false,
-                        });
-                    }
-                }
-            }
-
-            // Update the count for the teachers option
-            const teachersOption = this.getConversationGroupByName(AddonMessagesGroupConversationOptionNames.TEACHERS_BY_COURSE);
-            if (this.isParent) {
-                teachersOption.count = this.childTeacherConversations.reduce((total, child) => 
-                    total + child.courses.reduce((courseTotal, course) => courseTotal + course.teachers.length, 0), 0);
-            } else {
-                teachersOption.count = this.teacherConversations.reduce((total, course) => 
-                    total + course.teachers.length, 0);
-            }
-            console.log('[AddonMessagesGroupConversations] Teacher conversations count:', teachersOption.count);
-        } catch (error) {
-            CoreDomUtils.showErrorModalDefault(error, 'addon.messages.errorwhileretrievingteachers', true);
-        }
-    }
-
-    /**
-     * Get teachers in a specific course.
-     * 
-     * @param courseId The course ID.
-     * @returns Promise resolved with the list of teachers.
-     */
-    protected async getTeachersInCourse(courseId: number): Promise<AddonMessagesConversationFormatted[]> {
-        try {
-            // Check if user is viewing as parent
-            const selectedMenteeId = await CoreUserParent.getSelectedMentee(this.siteId);
-            let participants: CoreUserParticipant[] = [];
-            
-            if (selectedMenteeId && selectedMenteeId !== this.currentUserId) {
-                // Parent viewing - use custom web service
-                console.log('[AddonMessagesGroupConversations] Parent viewing detected, using custom web service');
-                console.log('[AddonMessagesGroupConversations] Getting teachers for course', courseId, 'mentee', selectedMenteeId);
-                
-                try {
-                    const site = CoreSites.getCurrentSite();
-                    if (!site) {
-                        console.error('[AddonMessagesGroupConversations] No current site');
-                        return [];
-                    }
-                    
-                    const hasCustomWS = site.wsAvailable('local_aspireparent_get_mentee_course_teachers');
-                    console.log('[AddonMessagesGroupConversations] Custom WS available:', hasCustomWS);
-                    
-                    if (hasCustomWS) {
-                        const result = await site.read<{teachers: Array<{
-                            id: number;
-                            fullname: string;
-                            firstname: string;
-                            lastname: string;
-                            email: string;
-                            profileimageurl: string;
-                            roleid: number;
-                        }>}>('local_aspireparent_get_mentee_course_teachers', {
-                            courseid: courseId,
-                            menteeid: selectedMenteeId,
-                        });
-                        
-                        console.log('[AddonMessagesGroupConversations] Found', result.teachers.length, 'teachers');
-                        
-                        // Convert teachers to participant format
-                        participants = result.teachers.map((teacher) => ({
-                            id: teacher.id,
-                            fullname: teacher.fullname,
-                            profileimageurl: teacher.profileimageurl,
-                            roles: [{ shortname: 'teacher', name: 'Teacher' }],
-                        } as CoreUserParticipant));
-                    } else {
-                        console.error('[AddonMessagesGroupConversations] Custom WS not available');
-                        return [];
-                    }
-                } catch (error) {
-                    console.error('[AddonMessagesGroupConversations] Error getting mentee course teachers', error);
-                    return [];
-                }
-            } else {
-                // Regular user - get participants normally
-                const result = await CoreUser.getParticipants(courseId, 0, 100, this.siteId);
-                participants = result.participants;
-            }
-            
-            // Filter for teachers/instructors based on roles
-            const teachers: AddonMessagesConversationFormatted[] = [];
-            
-            for (const participant of participants) {
-                // For parent viewing, we already have teachers from the custom WS
-                if (selectedMenteeId && selectedMenteeId !== this.currentUserId) {
-                    // Already filtered - add all participants
-                } else {
-                    // Regular user - check if participant has teacher-like roles
-                    if (!participant.roles || participant.roles.length === 0) {
-                        continue;
-                    }
-                    
-                    // Check for teacher/instructor roles
-                    // Primary check: if role shortname contains 'teacher'
-                    const isTeacher = participant.roles.some(role => {
-                        if (!role.shortname) return false;
-                        const shortnameLower = role.shortname.toLowerCase();
-                        
-                        // Check if shortname contains 'teacher' (this will match 'teacher', 'editingteacher', 'noneeditingteacher', etc.)
-                        return shortnameLower.includes('teacher');
-                    });
-                    
-                    if (!isTeacher) {
-                        continue;
-                    }
-                }
-                
-                // Check if there's an existing conversation with this teacher
-                const existingConv = await this.findExistingConversation(participant.id);
-                
-                // Create a conversation object for each teacher
-                const conversation: AddonMessagesConversationFormatted = {
-                    id: existingConv?.id || 0, // Use existing conversation ID if available
-                    type: AddonMessagesProvider.MESSAGE_CONVERSATION_TYPE_INDIVIDUAL,
-                    membercount: 2,
-                    ismuted: existingConv?.ismuted || false,
-                    isfavourite: existingConv?.isfavourite || false,
-                    isread: existingConv?.isread !== false,
-                    members: existingConv?.members || [],
-                    messages: existingConv?.messages || [],
-                    candeletemessagesforallusers: existingConv?.candeletemessagesforallusers || false,
-                    userid: participant.id,
-                    name: participant.fullname || '',
-                    imageurl: participant.profileimageurl || '',
-                    unreadcount: existingConv?.unreadcount || 0,
-                    lastmessage: existingConv?.lastmessage,
-                    lastmessagedate: existingConv?.lastmessagedate,
-                    sentfromcurrentuser: existingConv?.sentfromcurrentuser,
-                };
-                
-                // Set otherUser for avatar display if we have the info
-                if (participant.id && participant.fullname) {
-                    (conversation as any).otherUser = {
-                        id: participant.id,
-                        fullname: participant.fullname,
-                        profileimageurl: participant.profileimageurl || '',
-                    };
-                }
-                
-                teachers.push(conversation);
-            }
-            
-            return teachers;
-        } catch (error) {
-            console.error('[AddonMessagesGroupConversations] Error getting teachers in course', courseId, error);
-            return [];
-        }
-    }
-
-    /**
-     * Find existing conversation with a user.
-     * 
-     * @param userId The user ID to find conversation with.
-     * @returns Promise resolved with the conversation if found.
-     */
-    protected async findExistingConversation(userId: number): Promise<AddonMessagesConversationFormatted | undefined> {
-        try {
-            // Try to find in already loaded conversations
-            const existingConv = this.findConversation(undefined, userId);
-            if (existingConv) {
-                return existingConv;
-            }
-            
-            // If not found, try to get from server
-            const conversations = await AddonMessages.getConversations(
-                AddonMessagesProvider.MESSAGE_CONVERSATION_TYPE_INDIVIDUAL,
-                false,
-                0,
-                this.siteId
-            );
-            
-            return conversations.conversations.find(conv => conv.userid === userId);
-        } catch {
-            return undefined;
-        }
-    }
-
-    /**
      * Fetch data for a certain option.
      *
      * @param option The option to fetch data for.
@@ -789,14 +420,6 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
         getCounts = false,
     ): Promise<void> {
         option.loadMoreError = false;
-
-        // Handle teachers by course option differently
-        if (option.optionName === AddonMessagesGroupConversationOptionNames.TEACHERS_BY_COURSE) {
-            if (!loadingMore) {
-                await this.fetchTeacherConversations();
-            }
-            return;
-        }
 
         const limitFrom = loadingMore ? option.conversations.length : 0;
         const promises: Promise<unknown>[] = [];
@@ -1199,24 +822,6 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
      */
     gotoSearch(): void {
         CoreNavigator.navigateToSitePath('search');
-    }
-    
-    /**
-     * Toggle child expanded state for parent view.
-     * 
-     * @param child The child teacher conversations to toggle.
-     */
-    toggleChildExpanded(child: ChildTeacherConversations): void {
-        child.expanded = !child.expanded;
-    }
-    
-    /**
-     * Toggle course expanded state.
-     * 
-     * @param course The course to toggle.
-     */
-    toggleCourseExpanded(course: TeacherConversationGroup): void {
-        course.expanded = !course.expanded;
     }
 
     /**

@@ -1,5 +1,866 @@
 @use "theme/globals" as *;
 
+// ============================================
+// ASPIRE USER MENU - REFINED DESIGN V2
+// ============================================
+
+// Color Variables
+$primary-teal: #4A9B7F;
+$secondary-teal: #3D8B9E;
+$accent-gold: #F5A623;
+$text-dark: #1A202C;
+$text-muted: #64748B;
+$text-light: #94A3B8;
+$bg-light: #F8FAFC;
+$bg-card: #FFFFFF;
+$border-light: #E2E8F0;
+$shadow-soft: 0 2px 8px rgba(0, 0, 0, 0.06);
+$shadow-medium: 0 4px 16px rgba(0, 0, 0, 0.08);
+
+:host {
+    --background: #{$bg-light};
+}
+
+.aspire-user-menu-content {
+    --background: #{$bg-light};
+}
+
+// ============================================
+// PROFILE CARD
+// ============================================
+.aspire-profile-card {
+    position: relative;
+    margin: 16px;
+    border-radius: 24px;
+    background: $bg-card;
+    box-shadow: $shadow-medium;
+    overflow: hidden;
+
+    // Background Pattern
+    .profile-card-bg {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 90px;
+        overflow: hidden;
+
+        .bg-pattern {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, $primary-teal 0%, $secondary-teal 100%);
+
+            &::before {
+                content: '';
+                position: absolute;
+                top: -50%;
+                right: -20%;
+                width: 180px;
+                height: 180px;
+                background: radial-gradient(circle, rgba(255,255,255,0.12) 0%, transparent 70%);
+                border-radius: 50%;
+            }
+        }
+
+        .bg-gradient {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 30px;
+            background: linear-gradient(to top, $bg-card 0%, transparent 100%);
+        }
+    }
+
+    // Logout Button
+    .logout-btn {
+        position: absolute;
+        top: 12px;
+        right: 12px;
+        z-index: 10;
+        width: 34px;
+        height: 34px;
+        border-radius: 10px;
+        background: rgba(255, 255, 255, 0.2);
+        backdrop-filter: blur(8px);
+        border: 1px solid rgba(255, 255, 255, 0.25);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.2s ease;
+
+        ion-icon {
+            font-size: 17px;
+            color: #FFFFFF;
+        }
+
+        &:active {
+            transform: scale(0.95);
+            background: rgba(255, 255, 255, 0.3);
+        }
+    }
+
+    // Profile Content
+    .profile-content {
+        position: relative;
+        z-index: 5;
+        padding: 16px 20px 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+
+        // Avatar - LARGER SIZE
+        .avatar-container {
+            position: relative;
+            margin-bottom: 10px;
+
+            .avatar-ring {
+                width: 88px;
+                height: 88px;
+                border-radius: 50%;
+                background: linear-gradient(135deg, $primary-teal, $secondary-teal, $accent-gold);
+                box-shadow: 0 4px 16px rgba($primary-teal, 0.3);
+                position: relative;
+
+                .profile-avatar {
+                    position: absolute;
+                    top: 50%;
+                    left: 50%;
+                    transform: translate(-50%, -50%);
+
+                    ::ng-deep {
+                        .userinitials,
+                        div.userinitials {
+                            width: 78px !important;
+                            height: 78px !important;
+                            min-width: 78px !important;
+                            min-height: 78px !important;
+                            font-size: 28px !important;
+                            line-height: 78px !important;
+                            border: 3px solid $bg-card !important;
+                            box-sizing: border-box !important;
+                        }
+
+                        core-user-avatar,
+                        .core-user-avatar,
+                        ion-avatar,
+                        .avatar {
+                            width: 78px !important;
+                            height: 78px !important;
+                            min-width: 78px !important;
+                            min-height: 78px !important;
+                            --size: 78px !important;
+                            display: block !important;
+                        }
+
+                        img {
+                            width: 78px !important;
+                            height: 78px !important;
+                            min-width: 78px !important;
+                            min-height: 78px !important;
+                            border-radius: 50% !important;
+                            object-fit: cover !important;
+                            border: 3px solid $bg-card !important;
+                            box-sizing: border-box !important;
+                        }
+                    }
+                }
+            }
+
+            .avatar-badge {
+                position: absolute;
+                bottom: 0;
+                right: 0;
+                width: 24px;
+                height: 24px;
+                border-radius: 50%;
+                background: linear-gradient(135deg, $accent-gold, #FF9500);
+                border: 2px solid $bg-card;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+
+                ion-icon {
+                    font-size: 11px;
+                    color: #FFFFFF;
+                }
+            }
+        }
+
+        // User Info
+        .user-name {
+            font-size: 18px;
+            font-weight: 700;
+            color: $text-dark;
+            margin: 0 0 2px;
+            text-align: center;
+            line-height: 1.3;
+        }
+
+        .user-email {
+            font-size: 12px;
+            color: $text-muted;
+            margin: 0 0 8px;
+            text-align: center;
+        }
+
+        // ID Badge
+        .id-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 5px 12px;
+            background: linear-gradient(135deg, rgba($primary-teal, 0.08), rgba($secondary-teal, 0.08));
+            border: 1px solid rgba($primary-teal, 0.12);
+            border-radius: 16px;
+            margin-bottom: 10px;
+
+            ion-icon {
+                font-size: 12px;
+                color: $primary-teal;
+            }
+
+            span {
+                font-size: 11px;
+                font-weight: 600;
+                color: $primary-teal;
+                letter-spacing: 0.3px;
+            }
+        }
+
+        // Mentee Selector
+        .mentee-selector {
+            width: 100%;
+            max-width: 240px;
+            margin-bottom: 12px;
+
+            .mentee-trigger {
+                width: 100%;
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                padding: 8px 12px;
+                background: $bg-light;
+                border: 1px solid $border-light;
+                border-radius: 12px;
+                cursor: pointer;
+                transition: all 0.2s ease;
+
+                .mentee-icon {
+                    width: 28px;
+                    height: 28px;
+                    border-radius: 8px;
+                    background: linear-gradient(135deg, $primary-teal, $secondary-teal);
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+
+                    ion-icon {
+                        font-size: 14px;
+                        color: #FFFFFF;
+                    }
+                }
+
+                .mentee-label {
+                    flex: 1;
+                    display: flex;
+                    flex-direction: column;
+                    align-items: flex-start;
+
+                    small {
+                        font-size: 9px;
+                        color: $text-light;
+                        text-transform: uppercase;
+                        letter-spacing: 0.4px;
+                    }
+
+                    strong {
+                        font-size: 13px;
+                        font-weight: 600;
+                        color: $text-dark;
+                    }
+                }
+
+                .mentee-arrow {
+                    font-size: 14px;
+                    color: $text-muted;
+                    transition: transform 0.2s ease;
+
+                    &.open {
+                        transform: rotate(180deg);
+                    }
+                }
+
+                &:active {
+                    border-color: $primary-teal;
+                }
+            }
+
+            .mentee-dropdown {
+                margin-top: 6px;
+                background: $bg-card;
+                border: 1px solid $border-light;
+                border-radius: 12px;
+                box-shadow: $shadow-medium;
+                overflow: hidden;
+                max-height: 0;
+                opacity: 0;
+                transition: all 0.25s ease;
+
+                &.show {
+                    max-height: 280px;
+                    opacity: 1;
+                }
+
+                .mentee-option {
+                    width: 100%;
+                    display: flex;
+                    align-items: center;
+                    gap: 10px;
+                    padding: 10px 12px;
+                    background: transparent;
+                    border: none;
+                    border-bottom: 1px solid $border-light;
+                    cursor: pointer;
+
+                    &:last-child {
+                        border-bottom: none;
+                    }
+
+                    core-user-avatar {
+                        --size: 32px;
+                    }
+
+                    span {
+                        flex: 1;
+                        font-size: 13px;
+                        color: $text-dark;
+                        text-align: left;
+                    }
+
+                    .check-icon {
+                        font-size: 18px;
+                        color: $primary-teal;
+                    }
+
+                    &:active {
+                        background: $bg-light;
+                    }
+
+                    &.active {
+                        background: rgba($primary-teal, 0.05);
+                    }
+                }
+            }
+        }
+    }
+
+    // Stats Row
+    .stats-row {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 12px 20px 16px;
+        gap: 20px;
+
+        .stat-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+
+            .stat-icon {
+                width: 38px;
+                height: 38px;
+                border-radius: 12px;
+                background: linear-gradient(135deg, rgba($primary-teal, 0.1), rgba($secondary-teal, 0.1));
+                display: flex;
+                align-items: center;
+                justify-content: center;
+
+                ion-icon {
+                    font-size: 18px;
+                    color: $primary-teal;
+                }
+
+                &.badges {
+                    background: linear-gradient(135deg, rgba($accent-gold, 0.12), rgba(#FF9500, 0.12));
+
+                    ion-icon {
+                        color: $accent-gold;
+                    }
+                }
+            }
+
+            .stat-info {
+                display: flex;
+                flex-direction: column;
+
+                .stat-value {
+                    font-size: 18px;
+                    font-weight: 700;
+                    color: $text-dark;
+                    line-height: 1.1;
+                }
+
+                .stat-label {
+                    font-size: 10px;
+                    color: $text-muted;
+                    text-transform: uppercase;
+                    letter-spacing: 0.3px;
+                }
+            }
+        }
+
+        .stat-divider {
+            width: 1px;
+            height: 32px;
+            background: $border-light;
+        }
+    }
+}
+
+// ============================================
+// QUICK ACTIONS - CREATIVE HORIZONTAL STRIP
+// ============================================
+.quick-actions {
+    display: flex;
+    gap: 8px;
+    padding: 0 16px;
+    margin-bottom: 16px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+
+    &::-webkit-scrollbar {
+        display: none;
+    }
+
+    .action-btn {
+        flex: 1;
+        min-width: 0;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 12px 14px;
+        background: $bg-card;
+        border: none;
+        border-radius: 14px;
+        box-shadow: $shadow-soft;
+        cursor: pointer;
+        transition: all 0.2s ease;
+
+        .action-icon {
+            width: 36px;
+            height: 36px;
+            min-width: 36px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            ion-icon {
+                font-size: 18px;
+                color: #FFFFFF;
+            }
+
+            &.profile {
+                background: linear-gradient(135deg, #6366F1, #8B5CF6);
+            }
+
+            &.settings {
+                background: linear-gradient(135deg, #64748B, #475569);
+            }
+
+            &.grades {
+                background: linear-gradient(135deg, $primary-teal, $secondary-teal);
+            }
+
+            &.messages {
+                background: linear-gradient(135deg, #F472B6, #EC4899);
+            }
+        }
+
+        span {
+            font-size: 12px;
+            font-weight: 600;
+            color: $text-dark;
+            white-space: nowrap;
+        }
+
+        &:active {
+            transform: scale(0.97);
+            box-shadow: $shadow-medium;
+        }
+    }
+}
+
+// ============================================
+// MENU SECTION
+// ============================================
+.menu-section {
+    padding: 0 16px 16px;
+
+    // Collapsible Groups
+    .collapsible-group {
+        background: $bg-card;
+        border-radius: 14px;
+        box-shadow: $shadow-soft;
+        margin-bottom: 10px;
+        overflow: hidden;
+
+        .collapsible-header {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 14px 16px;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            transition: background 0.15s ease;
+
+            .header-icon {
+                width: 38px;
+                height: 38px;
+                border-radius: 10px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+
+                ion-icon {
+                    font-size: 18px;
+                    color: #FFFFFF;
+                }
+
+                &.uniform {
+                    background: linear-gradient(135deg, #6366F1, #8B5CF6);
+                }
+
+                &.handbook {
+                    background: linear-gradient(135deg, #3B82F6, #2563EB);
+                }
+
+                &.policy {
+                    background: linear-gradient(135deg, #10B981, #059669);
+                }
+            }
+
+            .header-title {
+                flex: 1;
+                font-size: 15px;
+                font-weight: 600;
+                color: $text-dark;
+                text-align: left;
+            }
+
+            .collapse-arrow {
+                font-size: 16px;
+                color: $text-muted;
+                transition: transform 0.25s ease;
+
+                &.open {
+                    transform: rotate(180deg);
+                }
+            }
+
+            &:active {
+                background: $bg-light;
+            }
+        }
+
+        .collapsible-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+            background: $bg-light;
+
+            &.open {
+                max-height: 300px;
+            }
+
+            .resource-item {
+                width: 100%;
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                padding: 12px 16px 12px 66px;
+                background: transparent;
+                border: none;
+                border-top: 1px solid $border-light;
+                cursor: pointer;
+                transition: background 0.15s ease;
+
+                span {
+                    font-size: 13px;
+                    font-weight: 500;
+                    color: $text-dark;
+                }
+
+                ion-icon {
+                    font-size: 14px;
+                    color: $text-muted;
+                    opacity: 0.6;
+                }
+
+                &:active {
+                    background: rgba($primary-teal, 0.05);
+                }
+            }
+        }
+    }
+
+    .section-header {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 10px;
+        padding: 0 4px;
+
+        .section-title {
+            font-size: 11px;
+            font-weight: 700;
+            color: $text-muted;
+            text-transform: uppercase;
+            letter-spacing: 0.6px;
+        }
+
+        .section-line {
+            flex: 1;
+            height: 1px;
+            background: linear-gradient(to right, $border-light, transparent);
+        }
+    }
+
+    .menu-list {
+        background: $bg-card;
+        border-radius: 14px;
+        box-shadow: $shadow-soft;
+        overflow: hidden;
+
+        .menu-item {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 14px;
+            background: transparent;
+            border: none;
+            border-bottom: 1px solid $border-light;
+            cursor: pointer;
+            transition: background 0.15s ease;
+
+            &:last-child {
+                border-bottom: none;
+            }
+
+            .menu-icon {
+                width: 36px;
+                height: 36px;
+                border-radius: 10px;
+                background: $bg-light;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+
+                ion-icon {
+                    font-size: 16px;
+                    color: $text-muted;
+                }
+
+                // Resource icon colors
+                &.uniform {
+                    background: linear-gradient(135deg, rgba(#6366F1, 0.12), rgba(#8B5CF6, 0.12));
+                    ion-icon { color: #6366F1; }
+                }
+
+                &.supplies {
+                    background: linear-gradient(135deg, rgba(#F59E0B, 0.12), rgba(#D97706, 0.12));
+                    ion-icon { color: #F59E0B; }
+                }
+
+                &.policy {
+                    background: linear-gradient(135deg, rgba($primary-teal, 0.12), rgba($secondary-teal, 0.12));
+                    ion-icon { color: $primary-teal; }
+                }
+
+                &.handbook {
+                    background: linear-gradient(135deg, rgba(#3B82F6, 0.12), rgba(#2563EB, 0.12));
+                    ion-icon { color: #3B82F6; }
+                }
+
+                &.behavior {
+                    background: linear-gradient(135deg, rgba(#10B981, 0.12), rgba(#059669, 0.12));
+                    ion-icon { color: #10B981; }
+                }
+            }
+
+            .menu-label {
+                flex: 1;
+                font-size: 14px;
+                font-weight: 500;
+                color: $text-dark;
+                text-align: left;
+            }
+
+            .menu-badge {
+                padding: 3px 8px;
+                font-size: 11px;
+                font-weight: 600;
+                background: linear-gradient(135deg, $primary-teal, $secondary-teal);
+                color: #FFFFFF;
+                border-radius: 8px;
+            }
+
+            .menu-arrow {
+                font-size: 14px;
+                color: $text-light;
+
+                &.external {
+                    font-size: 12px;
+                    color: $text-muted;
+                    opacity: 0.7;
+                }
+            }
+
+            &:active {
+                background: $bg-light;
+
+                .menu-icon {
+                    background: linear-gradient(135deg, rgba($primary-teal, 0.1), rgba($secondary-teal, 0.1));
+
+                    ion-icon {
+                        color: $primary-teal;
+                    }
+                }
+            }
+        }
+    }
+}
+
+// ============================================
+// FOOTER
+// ============================================
+.aspire-user-menu-footer {
+    background: $bg-card;
+    border-top: 1px solid $border-light;
+    padding: 12px 16px;
+    padding-bottom: calc(12px + var(--ion-safe-area-bottom, 0px));
+
+    // Social Media Links
+    .social-links {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin-bottom: 12px;
+        padding-bottom: 12px;
+        border-bottom: 1px solid $border-light;
+
+        .social-label {
+            font-size: 10px;
+            font-weight: 600;
+            color: $text-muted;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 10px;
+        }
+
+        .social-icons {
+            display: flex;
+            gap: 12px;
+
+            .social-icon {
+                width: 36px;
+                height: 36px;
+                border-radius: 10px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                text-decoration: none;
+                transition: all 0.2s ease;
+
+                ion-icon {
+                    font-size: 18px;
+                    color: #FFFFFF;
+                }
+
+                &.facebook {
+                    background: linear-gradient(135deg, #1877F2, #0C63D4);
+                }
+
+                &.instagram {
+                    background: linear-gradient(135deg, #E4405F, #C13584, #833AB4);
+                }
+
+                &.youtube {
+                    background: linear-gradient(135deg, #FF0000, #CC0000);
+                }
+
+                &.linkedin {
+                    background: linear-gradient(135deg, #0A66C2, #004182);
+                }
+
+                &.website {
+                    background: linear-gradient(135deg, $primary-teal, $secondary-teal);
+                }
+
+                &:active {
+                    transform: scale(0.92);
+                    opacity: 0.9;
+                }
+            }
+        }
+    }
+
+    .footer-actions {
+        display: flex;
+        gap: 10px;
+
+        .footer-btn {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            padding: 10px 14px;
+            border-radius: 10px;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s ease;
+
+            ion-icon {
+                font-size: 16px;
+            }
+
+            span {
+                font-size: 12px;
+                font-weight: 600;
+            }
+
+            &.contact {
+                background: linear-gradient(135deg, rgba($primary-teal, 0.1), rgba($secondary-teal, 0.1));
+                color: $primary-teal;
+
+                &:active {
+                    background: linear-gradient(135deg, rgba($primary-teal, 0.15), rgba($secondary-teal, 0.15));
+                }
+            }
+
+            &.switch {
+                background: $bg-light;
+                color: $text-muted;
+
+                &:active {
+                    background: $border-light;
+                }
+            }
+        }
+    }
+}
+
+// ============================================
+// LEGACY SUPPORT
+// ============================================
 :host {
     .core-user-menu-separator {
         --inner-border-width: 0;
@@ -8,18 +869,7 @@
 }
 
 .core-usermenu-siteinfo {
-    text-align: center;
-    ion-label {
-        margin: 0;
-    }
-    --padding-top: 10px;
-    --padding-bottom: 10px;
-}
-
-@if ($core-user-hide-siteinfo) {
-    .core-usermenu-siteinfo {
-        display: none;
-    }
+    display: none;
 }
 
 .core-usermenu-sitename {
@@ -35,19 +885,108 @@ img.image-not-found {
     display: none;
 }
 
-
-@if ($core-user-hide-sitename) {
-    .core-usermenu-sitename {
-        display: none;
-    }
-}
-
-@if ($core-user-hide-siteurl) {
-    .core-usermenu-siteurl {
-        display: none;
-    }
-}
-
 ion-footer {
     background: var(--contrast-background);
+}
+
+// ============================================
+// DARK MODE
+// ============================================
+@media (prefers-color-scheme: dark) {
+    :host {
+        --background: #0F172A;
+    }
+
+    .aspire-user-menu-content {
+        --background: #0F172A;
+    }
+
+    .aspire-profile-card {
+        background: #1E293B;
+
+        .profile-card-bg .bg-gradient {
+            background: linear-gradient(to top, #1E293B 0%, transparent 100%);
+        }
+
+        .profile-content {
+            .user-name { color: #F1F5F9; }
+            .user-email { color: #94A3B8; }
+
+            .id-badge {
+                background: rgba($primary-teal, 0.15);
+                border-color: rgba($primary-teal, 0.2);
+            }
+
+            .mentee-selector {
+                .mentee-trigger {
+                    background: #0F172A;
+                    border-color: #334155;
+                    .mentee-label strong { color: #F1F5F9; }
+                }
+
+                .mentee-dropdown {
+                    background: #1E293B;
+                    border-color: #334155;
+                    .mentee-option {
+                        border-color: #334155;
+                        span { color: #F1F5F9; }
+                        &:active { background: #0F172A; }
+                    }
+                }
+            }
+        }
+
+        .stats-row {
+            .stat-item .stat-info .stat-value { color: #F1F5F9; }
+            .stat-divider { background: #334155; }
+        }
+    }
+
+    .quick-actions .action-btn {
+        background: #1E293B;
+        span { color: #F1F5F9; }
+    }
+
+    .menu-section {
+        .collapsible-group {
+            background: #1E293B;
+
+            .collapsible-header {
+                .header-title { color: #F1F5F9; }
+                &:active { background: #0F172A; }
+            }
+
+            .collapsible-content {
+                background: #0F172A;
+
+                .resource-item {
+                    border-color: #334155;
+                    span { color: #F1F5F9; }
+                    &:active { background: rgba($primary-teal, 0.1); }
+                }
+            }
+        }
+
+        .menu-list {
+            background: #1E293B;
+            .menu-item {
+                border-color: #334155;
+                .menu-icon { background: #0F172A; }
+                .menu-label { color: #F1F5F9; }
+                &:active { background: #0F172A; }
+            }
+        }
+    }
+
+    .aspire-user-menu-footer {
+        background: #1E293B;
+        border-color: #334155;
+
+        .social-links {
+            border-color: #334155;
+            .social-label { color: #94A3B8; }
+        }
+
+        .footer-actions .footer-btn.switch { background: #0F172A; }
+    }
 }

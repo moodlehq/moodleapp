@@ -5,6 +5,10 @@
             <h1>Financial Overview</h1>
         </ion-title>
         <ion-buttons slot="end">
+            <button class="payment-methods-btn" (click)="showPaymentMethods()">
+                <ion-icon name="card-outline"></ion-icon>
+                <span>How to Pay</span>
+            </button>
             <button class="platinum-parent-btn" (click)="showPlatinumProgram()" *ngIf="isParentPlatinum">
                 <ion-icon name="diamond-outline"></ion-icon>
                 <span>Platinum</span>
@@ -97,8 +101,8 @@
             <!-- Student Overview Card -->
             <div class="student-overview-card">
                 <div class="student-card-header">
-                    <h2 class="student-name">
-                        {{ selectedStudent.student_info.full_name }}
+                    <h2 class="student-name" [title]="selectedStudent.student_info.full_name">
+                        {{ getShortName(selectedStudent.student_info.full_name) }}
                     </h2>
                     <p class="student-class">
                         {{ selectedStudent.student_info.class }} - {{
@@ -784,27 +788,25 @@
                                 [ngClass]="'overdue'"
                             >
                                 {{ selectedStudent.invoices.overdue_count }}
-                                overdue invoice(s)
+                                overdue {{ pluralize(selectedStudent.invoices.overdue_count, 'invoice', 'invoices') }}
                             </p>
                             <p
                                 class="card-subtitle"
                                 *ngIf="selectedStudent.invoices.overdue_count === 0"
                             >
-                                {{
-                                selectedStudent.invoices.recent_invoices.length
-                                }} recent invoice(s)
+                                {{ getUnpaidInvoices(selectedStudent.invoices.recent_invoices).length }}
+                                recent {{ pluralize(getUnpaidInvoices(selectedStudent.invoices.recent_invoices).length, 'invoice', 'invoices') }}
                             </p>
                         </div>
 
                         <div class="card-content">
                             <div
                                 class="activity-item"
-                                *ngFor="let invoice of selectedStudent.invoices.recent_invoices | slice:0:5"
+                                *ngFor="let invoice of getUnpaidInvoices(selectedStudent.invoices.recent_invoices) | slice:0:5"
                             >
                                 <div class="activity-header">
                                     <h4 class="activity-title">
-                                        {{ invoice.type }} - {{ invoice.number
-                                        }}
+                                        {{ invoice.type }} - {{ invoice.number }}
                                     </h4>
                                     <p class="activity-amount invoice">
                                         {{ formatCurrency(invoice.remaining) }}
@@ -818,7 +820,7 @@
                                     <span
                                         class="activity-status"
                                         [ngClass]="getStatusClass(invoice.state)"
-                                        >{{ invoice.state | titlecase }}</span
+                                        >{{ formatStatus(invoice.state) }}</span
                                     >
                                 </div>
                             </div>

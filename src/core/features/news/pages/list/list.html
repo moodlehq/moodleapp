@@ -15,12 +15,12 @@
     </ion-refresher>
 
     <core-loading [hideUntil]="loaded">
-        <core-empty-box *ngIf="loaded && news.length === 0" 
-                        icon="fas-bullhorn" 
+        <core-empty-box *ngIf="loaded && news.length === 0"
+                        icon="fas-bullhorn"
                         [message]="'core.news.nonews' | translate">
         </core-empty-box>
 
-        <div *ngIf="news.length > 0" class="news-container pastel-news-view">
+        <div *ngIf="news.length > 0" class="news-container">
             <!-- VIEW TOGGLE -->
             <div class="view-toggle">
                 <ion-segment [(ngModel)]="viewMode" (ionChange)="onViewModeChange()">
@@ -45,79 +45,127 @@
                 </ion-segment>
             </div>
 
-            <!-- GROUPED VIEW -->
+            <!-- GROUPED VIEW - NEW COMPACT NAVIGATION -->
             <div class="news-grouped-view" *ngIf="viewMode === 'grouped'">
-                <ng-container *ngFor="let category of categoryTree">
-                    <ng-container *ngTemplateOutlet="categoryNode; context: { node: category, depth: 0 }"></ng-container>
-                </ng-container>
-            </div>
-            
-            <!-- Category Node Template -->
-            <ng-template #categoryNode let-node="node" let-depth="depth">
-                <!-- Category Header -->
-                <div class="category-header" 
-                     [class.category-depth-1]="depth === 1" 
-                     [class.category-depth-2]="depth === 2"
-                     [class.category-depth-3]="depth >= 3"
-                     (click)="toggleCategory(node.id)"
-                     *ngIf="node.newsItems.length > 0 || node.children.length > 0">
-                    <div class="category-info">
-                        <div class="category-icon">
+                <!-- Breadcrumb Navigation -->
+                <div class="category-breadcrumb" *ngIf="currentPath.length > 0">
+                    <div class="breadcrumb-track">
+                        <button class="breadcrumb-item home" (click)="navigateToRoot()">
+                            <ion-icon name="home-outline"></ion-icon>
+                        </button>
+                        <ng-container *ngFor="let crumb of currentPath; let i = index; let last = last">
+                            <ion-icon name="chevron-forward" class="breadcrumb-separator"></ion-icon>
+                            <button class="breadcrumb-item"
+                                    [class.active]="last"
+                                    (click)="navigateToBreadcrumb(i)">
+                                {{ crumb.name }}
+                            </button>
+                        </ng-container>
+                    </div>
+                </div>
+
+                <!-- Subcategory Chips -->
+                <div class="subcategory-chips" *ngIf="currentSubcategories.length > 0">
+                    <div class="chips-track">
+                        <button class="subcategory-chip"
+                                *ngFor="let subcat of currentSubcategories"
+                                (click)="navigateToCategory(subcat)">
                             <ion-icon name="folder-outline"></ion-icon>
-                        </div>
-                        <div class="category-details">
-                            <h3>{{ node.name }}</h3>
-                            <p>{{ countTotalNewsItems(node) }} announcements</p>
+                            <span class="chip-name">{{ subcat.name }}</span>
+                            <span class="chip-count">{{ countTotalNewsItems(subcat) }}</span>
+                            <ion-icon name="chevron-forward" class="chip-arrow"></ion-icon>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Current Category News Items -->
+                <div class="category-news-section" *ngIf="currentNewsItems.length > 0">
+                    <div class="section-header" *ngIf="currentPath.length > 0">
+                        <span class="section-label">
+                            <ion-icon name="newspaper-outline"></ion-icon>
+                            {{ currentPath[currentPath.length - 1]?.name || 'All' }} News
+                        </span>
+                        <span class="section-count">{{ currentNewsItems.length }} items</span>
+                    </div>
+
+                    <div class="news-items-list">
+                        <div class="news-card-item" *ngFor="let item of currentNewsItems" (click)="openNewsItem(item)">
+                            <div class="card-accent"></div>
+                            <div class="card-body">
+                                <div class="card-header">
+                                    <div class="author-avatar" *ngIf="item.userpictureurl">
+                                        <img [src]="item.userpictureurl"
+                                             [alt]="item.userfullname"
+                                             core-external-content
+                                             onError="this.src='assets/img/user-avatar.png'">
+                                    </div>
+                                    <div class="card-meta">
+                                        <h4 class="card-title">{{ item.subject }}</h4>
+                                        <div class="meta-row">
+                                            <span class="course-tag">{{ item.courseFullname }}</span>
+                                            <span class="date-text">{{ formatDate(item.created) }}</span>
+                                        </div>
+                                    </div>
+                                    <ion-icon *ngIf="item.pinned" name="pin" class="pin-badge"></ion-icon>
+                                </div>
+                                <div class="card-preview">
+                                    <p [innerHTML]="item.message | coreNoTags"></p>
+                                </div>
+                                <div class="card-footer">
+                                    <div class="footer-left">
+                                        <span class="author-name">
+                                            <ion-icon name="person-outline"></ion-icon>
+                                            {{ item.userfullname }}
+                                        </span>
+                                        <div class="reply-count" *ngIf="item.numreplies > 0">
+                                            <ion-icon name="chatbubbles-outline"></ion-icon>
+                                            <span>{{ item.numreplies }}</span>
+                                        </div>
+                                    </div>
+                                    <div class="read-more-indicator">
+                                        <span>Read more</span>
+                                        <ion-icon name="arrow-forward"></ion-icon>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="unread-badge" *ngIf="item.numunread > 0">{{ item.numunread }} new</div>
                         </div>
                     </div>
-                    <ion-icon name="chevron-down" class="expand-icon" [class.expanded]="node.expanded"></ion-icon>
                 </div>
-                
-                <!-- Category Content -->
-                <div [hidden]="!node.expanded" class="category-content">
-                    <!-- News Items -->
-                    <div class="news-items">
-                        <div class="news-item" *ngFor="let item of node.newsItems" (click)="openNewsItem(item)">
-                            <div class="news-header">
-                                <div class="news-avatar" *ngIf="item.userpictureurl">
-                                    <img [src]="item.userpictureurl" 
-                                         [alt]="item.userfullname"
-                                         core-external-content
-                                         onError="this.src='assets/img/user-avatar.png'">
-                                </div>
-                                <div class="news-meta">
-                                    <h4>{{ item.subject }}</h4>
-                                    <div class="meta-info">
-                                        <span class="course-name">{{ item.courseFullname }}</span>
-                                        <span class="separator">•</span>
-                                        <span class="author">{{ item.userfullname }}</span>
-                                        <span class="separator">•</span>
-                                        <span class="date">{{ formatDate(item.created) }}</span>
-                                    </div>
-                                </div>
-                                <ion-icon *ngIf="item.pinned" name="pin" class="pin-icon"></ion-icon>
-                            </div>
-                            <div class="news-content">
-                                <div class="message" [innerHTML]="item.message | coreNoTags"></div>
-                                <div class="news-footer" *ngIf="item.numreplies > 0 || item.numunread > 0">
-                                    <div class="replies" *ngIf="item.numreplies > 0">
-                                        <ion-icon name="chatbubbles-outline"></ion-icon>
-                                        <span>{{ item.numreplies }}</span>
-                                    </div>
-                                    <div class="unread" *ngIf="item.numunread > 0">
-                                        <span class="unread-badge">{{ item.numunread }} new</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+
+                <!-- Empty State for Current Category -->
+                <div class="empty-category" *ngIf="currentNewsItems.length === 0 && currentSubcategories.length === 0">
+                    <ion-icon name="folder-open-outline"></ion-icon>
+                    <p>No announcements in this category</p>
+                    <button class="back-button" (click)="navigateToRoot()">
+                        <ion-icon name="arrow-back"></ion-icon>
+                        Go back to all categories
+                    </button>
+                </div>
+
+                <!-- Root Level: Show All Top-Level Categories -->
+                <div class="root-categories" *ngIf="currentPath.length === 0">
+                    <div class="root-header">
+                        <ion-icon name="library-outline"></ion-icon>
+                        <span>Browse by Category</span>
                     </div>
-                    
-                    <!-- Child Categories -->
-                    <ng-container *ngFor="let child of node.children">
-                        <ng-container *ngTemplateOutlet="categoryNode; context: { node: child, depth: depth + 1 }"></ng-container>
-                    </ng-container>
+                    <div class="category-grid">
+                        <button class="category-tile"
+                                *ngFor="let cat of categoryTree; let i = index"
+                                [attr.data-index]="i"
+                                (click)="navigateToCategory(cat)">
+                            <div class="tile-icon">
+                                <ion-icon name="folder-outline"></ion-icon>
+                            </div>
+                            <div class="tile-info">
+                                <h5>{{ cat.name }}</h5>
+                                <span>{{ countTotalNewsItems(cat) }} announcements</span>
+                            </div>
+                            <ion-icon name="chevron-forward" class="tile-arrow"></ion-icon>
+                        </button>
+                    </div>
                 </div>
-            </ng-template>
+            </div>
 
             <!-- TIMELINE VIEW -->
             <div class="news-timeline-view" *ngIf="viewMode === 'timeline'">
@@ -138,9 +186,9 @@
                                     <p class="content-preview" [innerHTML]="item.message | coreNoTags"></p>
                                     <div class="content-footer">
                                         <span class="author">{{ item.userfullname }}</span>
-                                        <div class="stats" *ngIf="item.numreplies > 0">
-                                            <ion-icon name="chatbubbles-outline"></ion-icon>
-                                            <span>{{ item.numreplies }}</span>
+                                        <div class="read-more">
+                                            <span>Read</span>
+                                            <ion-icon name="arrow-forward"></ion-icon>
                                         </div>
                                     </div>
                                 </div>
@@ -157,8 +205,8 @@
                     <div class="news-card" *ngFor="let item of news" (click)="openNewsItem(item)">
                         <div class="card-header">
                             <div class="header-left">
-                                <img *ngIf="item.userpictureurl" 
-                                     [src]="item.userpictureurl" 
+                                <img *ngIf="item.userpictureurl"
+                                     [src]="item.userpictureurl"
                                      [alt]="item.userfullname"
                                      class="user-avatar"
                                      core-external-content
@@ -181,15 +229,9 @@
                                 <ion-icon name="person-outline"></ion-icon>
                                 <span>{{ item.userfullname }}</span>
                             </div>
-                            <div class="stats">
-                                <div class="stat-item" *ngIf="item.numreplies > 0">
-                                    <ion-icon name="chatbubbles-outline"></ion-icon>
-                                    <span>{{ item.numreplies }}</span>
-                                </div>
-                                <div class="stat-item unread" *ngIf="item.numunread > 0">
-                                    <ion-icon name="mail-unread-outline"></ion-icon>
-                                    <span>{{ item.numunread }}</span>
-                                </div>
+                            <div class="read-action">
+                                <span>Read more</span>
+                                <ion-icon name="arrow-forward"></ion-icon>
                             </div>
                         </div>
                     </div>
@@ -198,3 +240,59 @@
         </div>
     </core-loading>
 </ion-content>
+
+<!-- News Detail Modal -->
+<ion-modal [isOpen]="isModalOpen" (didDismiss)="closeModal()" class="news-detail-modal">
+    <ng-template>
+        <ion-content class="ion-padding" *ngIf="selectedNewsItem">
+            <div class="modal-news-content">
+                <!-- Header row: Close button + Author info -->
+                <div class="modal-header-row">
+                    <button class="modal-close-btn" (click)="closeModal()">
+                        <ion-icon name="close"></ion-icon>
+                    </button>
+                    <div class="author-avatar" *ngIf="selectedNewsItem.userpictureurl">
+                        <img [src]="selectedNewsItem.userpictureurl"
+                             [alt]="selectedNewsItem.userfullname"
+                             core-external-content
+                             onError="this.src='assets/img/user-avatar.png'">
+                    </div>
+                    <div class="author-details">
+                        <span class="author-name">{{ selectedNewsItem.userfullname }}</span>
+                        <div class="author-meta">
+                            <span class="post-date">{{ formatFullDate(selectedNewsItem.created) }}</span>
+                            <span class="announcement-badge">Announcement</span>
+                        </div>
+                    </div>
+                    <ion-icon *ngIf="selectedNewsItem.pinned" name="pin" class="pinned-icon"></ion-icon>
+                </div>
+
+                <!-- Course/Forum badges -->
+                <div class="modal-badges">
+                    <span class="course-badge">
+                        <ion-icon name="school-outline"></ion-icon>
+                        {{ selectedNewsItem.courseFullname }}
+                    </span>
+                    <span class="forum-badge" *ngIf="selectedNewsItem.forumName">
+                        <ion-icon name="chatbubbles-outline"></ion-icon>
+                        {{ selectedNewsItem.forumName }}
+                    </span>
+                </div>
+
+                <!-- Title -->
+                <h1 class="modal-title">{{ selectedNewsItem.subject }}</h1>
+
+                <!-- Full message content -->
+                <div class="modal-body" [innerHTML]="selectedNewsItem.message"></div>
+
+                <!-- Footer with stats -->
+                <div class="modal-footer" *ngIf="selectedNewsItem.numreplies > 0">
+                    <div class="reply-info">
+                        <ion-icon name="chatbubble-outline"></ion-icon>
+                        <span>{{ selectedNewsItem.numreplies }} {{ selectedNewsItem.numreplies === 1 ? 'reply' : 'replies' }}</span>
+                    </div>
+                </div>
+            </div>
+        </ion-content>
+    </ng-template>
+</ion-modal>

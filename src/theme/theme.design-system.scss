@@ -260,6 +260,48 @@
     --item-divider-font-size-big: var(--mdl-typography-subtitle-fontSize-lg);
 }
 
+// Payment Methods Button
+.payment-methods-btn {
+    display: flex !important;
+    align-items: center;
+    gap: 6px;
+    background: linear-gradient(135deg, #B3EBF2 0%, #8DDCDC 50%, #98FBCB 100%) !important;
+    border: none !important;
+    border-radius: 20px !important;
+    padding: 8px 14px !important;
+    color: #1A4E52 !important;
+    font-weight: 600;
+    font-size: 0.8125rem;
+    letter-spacing: 0.25px;
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(141, 220, 220, 0.3);
+    transition: all 0.2s ease;
+    margin-right: 8px;
+    height: auto !important;
+    min-height: 36px;
+
+    &:hover, &:active {
+        background: linear-gradient(135deg, #9FE5ED 0%, #72D2D2 50%, #80F9BE 100%) !important;
+        box-shadow: 0 3px 10px rgba(141, 220, 220, 0.4);
+    }
+
+    ion-icon {
+        font-size: 1.125rem;
+        color: #1A4E52;
+    }
+
+    span {
+        color: #1A4E52;
+    }
+
+    @media (max-width: 380px) {
+        span {
+            display: none;
+        }
+        padding: 8px 10px !important;
+    }
+}
+
 // Platinum Parent Program Button
 .platinum-parent-btn {
     display: flex !important;
