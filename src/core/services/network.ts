@@ -91,7 +91,7 @@ export class CoreNetworkService extends Network {
 
         if (CorePlatform.isMobile()) {
             // We cannot directly listen to onChange because it depends on
-            // onConnect and onDisconnect that have been already overriden.
+            // onConnect and onDisconnect that have been already overridden.
             super.onConnect().subscribe(() => {
                 this.fireObservable();
             });

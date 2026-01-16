@@ -972,7 +972,11 @@ export class CoreAuthenticatedSite extends CoreUnauthenticatedSite {
                 };
             }),
         };
-        requestsData.moodlewssettinglang = lang;
+
+        // Only force the language if set.
+        if (lang) {
+            requestsData.moodlewssettinglang = CoreLang.getLanguageAppVariant(lang);
+        }
 
         const wsPresets: CoreWSPreSets = {
             siteUrl: this.siteUrl,

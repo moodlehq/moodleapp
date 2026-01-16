@@ -902,6 +902,31 @@ export class CoreCoursesProvider {
     }
 
     /**
+     * Get user courses WS observable.
+     *
+     * This function can be modified to configure the data sent in the request or change the method.
+     *
+     * @param site Site.
+     * @param wsParams WS parameters.
+     * @param preSets PreSets.
+     * @param options Options.
+     * @returns Observable that returns the courses.
+     */
+    protected getWSUserCoursesObservable(
+        site: CoreSite,
+        wsParams: CoreEnrolGetUsersCoursesWSParams,
+        preSets: CoreSiteWSPreSets = {},
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        options: CoreSitesCommonWSOptions = {},
+    ): WSObservable<CoreEnrolGetUsersCoursesWSResponse> {
+        return site.readObservable<CoreEnrolGetUsersCoursesWSResponse>(
+            'core_enrol_get_users_courses',
+            wsParams,
+            preSets,
+        );
+    }
+
+    /**
      * Get user courses.
      *
      * @param options Options.
@@ -927,11 +952,7 @@ export class CoreCoursesProvider {
                 wsParams.returnusercount = false;
             }
 
-            const observable = site.readObservable<CoreEnrolGetUsersCoursesWSResponse>(
-                'core_enrol_get_users_courses',
-                wsParams,
-                preSets,
-            );
+            const observable = this.getWSUserCoursesObservable(site, wsParams, preSets, options);
 
             return observable.pipe(map(courses => {
                 if (this.userCoursesIds) {
@@ -1276,7 +1297,7 @@ export type CoreCoursesDashboardDownloadEnabledChangedEventData = {
 /**
  * Params of core_enrol_get_users_courses WS.
  */
-type CoreEnrolGetUsersCoursesWSParams = {
+export type CoreEnrolGetUsersCoursesWSParams = {
     userid: number; // User id.
     returnusercount?: boolean; // Include count of enrolled users for each course? This can add several seconds to the response
     // time if a user is on several large courses, so set this to false if the value will not be used to improve performance.
@@ -1285,7 +1306,7 @@ type CoreEnrolGetUsersCoursesWSParams = {
 /**
  * Data returned by core_enrol_get_users_courses WS.
  */
-type CoreEnrolGetUsersCoursesWSResponse = (CoreEnrolledCourseData & {
+export type CoreEnrolGetUsersCoursesWSResponse = (CoreEnrolledCourseData & {
     category?: number; // Course category id.
 })[];
 

@@ -14,12 +14,12 @@
                         <p>{{profile.fullname}}</p>
                     }
                     @if (showGrade(submission.grade)) {
-                        <p [class.addon-has-overriden-grade]="showGrade(submission.gradeover)">
+                        <p [class.addon-has-overridden-grade]="showGrade(submission.gradeover)">
                             {{ 'addon.mod_workshop.submissiongradeof' | translate:{$a: workshop.grade } }}: {{submission.grade}}
                         </p>
                     }
                     @if (showGrade(submission.gradeover)) {
-                        <p class="addon-overriden-grade">
+                        <p class="addon-overridden-grade">
                             {{ 'addon.mod_workshop.gradeover' | translate }}: {{submission.gradeover}}
                         </p>
                     }
@@ -118,7 +118,7 @@
                     </p>
                 }
                 @if (showGrade(submission.gradeover)) {
-                    <p class="addon-overriden-grade">
+                    <p class="addon-overridden-grade">
                         {{ 'addon.mod_workshop.submissiongradeof' | translate:{$a: workshop.grade } }}: {{submission.gradeover}}
                     </p>
                 }

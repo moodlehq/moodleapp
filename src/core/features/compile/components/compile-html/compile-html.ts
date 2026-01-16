@@ -318,12 +318,12 @@ export class CoreCompileHtmlComponent implements OnChanges, OnDestroy, DoCheck {
             }
 
             /**
-             * Call a lifecycle method that can be overriden in plugins.
+             * Call a lifecycle method that can be overridden in plugins.
              *
              * This is necessary because overriding lifecycle hooks at runtime does not work in Angular. This may be happening
              * because lifecycle hooks are special methods treated by the Angular compiler, so it is possible that it's storing
              * a reference to the method defined during compilation. In order to work around that, this will call the actual method
-             * from the plugin without causing infinite loops in case it wasn't overriden.
+             * from the plugin without causing infinite loops in case it wasn't overridden.
              *
              * @param method Lifecycle hook method name.
              */

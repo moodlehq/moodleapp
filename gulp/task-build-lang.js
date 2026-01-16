@@ -64,13 +64,13 @@ class BuildLangTask {
         gulp.src(paths, { allowEmpty: true })
             .pipe(slash())
             .pipe(clipEmptyFiles())
-            .pipe(through(function(file) {
+            .pipe(through(function (file) {
                 if (!firstFile) {
                     firstFile = file;
                 }
 
                 return self.treatFile(file, data);
-            }, function() {
+            }, function () {
                 /* This implementation is based on gulp-jsoncombine module.
                  * https://github.com/reflog/gulp-jsoncombine */
                 if (firstFile) {
@@ -155,7 +155,7 @@ class BuildLangTask {
                     filename = filename.split('.').slice(0, -1).join('.');
                     return `assets.${filename}.`;
                 default:
-                    return `${folders[0]}.${folders[1]}.`;
+                    return `${folders.join('.')}.`;
             }
         }
 

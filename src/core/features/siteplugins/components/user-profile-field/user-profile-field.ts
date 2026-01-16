@@ -19,7 +19,7 @@ import { Component, OnInit, Input } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 import { CoreCompileHtmlComponent } from '@features/compile/components/compile-html/compile-html';
 
-import { AuthEmailSignupProfileField } from '@features/login/services/login-helper';
+import { AuthEmailSignupProfileField } from '@features/login/services/signup';
 import { CoreSitePluginsCompileInitComponent } from '@features/siteplugins/classes/compile-init-component';
 import { CoreUserProfileField } from '@features/user/services/user';
 import { CoreUserProfileFieldDelegate } from '@features/user/services/user-profile-field-delegate';

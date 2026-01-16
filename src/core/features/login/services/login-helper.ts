@@ -21,7 +21,7 @@ import { CoreConfig } from '@services/config';
 import { CoreEvents, CoreEventSessionExpiredData, CoreEventSiteData } from '@singletons/events';
 import { CoreSites, CoreLoginSiteInfo, CoreSiteBasicInfo } from '@services/sites';
 import { CoreWS, CoreWSExternalWarning } from '@services/ws';
-import { CoreText, CoreTextFormat } from '@singletons/text';
+import { CoreText } from '@singletons/text';
 import { CoreObject } from '@singletons/object';
 import { CoreConstants } from '@/core/constants';
 import { CoreSite } from '@classes/sites/site';
@@ -65,6 +65,12 @@ import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreOpener } from '@singletons/opener';
 import { CoreAlerts } from '@services/overlays/alerts';
 import { CorePrompts } from '@services/overlays/prompts';
+import {
+    AuthEmailSignupProfileField,
+    AuthEmailSignupProfileFieldsCategory,
+    AuthEmailSignupSettings,
+    CoreLoginSignUp,
+} from './signup';
 
 /**
  * Helper provider that provides some common features regarding authentication.
@@ -186,32 +192,10 @@ export class CoreLoginHelperProvider {
      *
      * @param profileFields Profile fields to format.
      * @returns Categories with the fields to show in each one.
+     * @deprecated since 5.2. Please use CoreLoginSignUp.formatProfileFieldsForSignup instead.
      */
     formatProfileFieldsForSignup(profileFields?: AuthEmailSignupProfileField[]): AuthEmailSignupProfileFieldsCategory[] {
-        if (!profileFields) {
-            return [];
-        }
-
-        const categories: Record<number, AuthEmailSignupProfileFieldsCategory> = {};
-
-        profileFields.forEach((field) => {
-            if (!field.signup || !field.categoryid) {
-                // Not a signup field, ignore it.
-                return;
-            }
-
-            if (!categories[field.categoryid]) {
-                categories[field.categoryid] = {
-                    id: field.categoryid,
-                    name: field.categoryname || '',
-                    fields: [],
-                };
-            }
-
-            categories[field.categoryid].fields.push(field);
-        });
-
-        return Object.keys(categories).map((index) => categories[Number(index)]);
+        return CoreLoginSignUp.formatProfileFieldsForSignup(profileFields);
     }
 
     /**
@@ -269,9 +253,10 @@ export class CoreLoginHelperProvider {
      *
      * @param siteUrl Site URL.
      * @returns Signup settings.
+     * @deprecated since 5.2. Please use CoreLoginSignUp.getEmailSignupSettings instead.
      */
     async getEmailSignupSettings(siteUrl: string): Promise<AuthEmailSignupSettings> {
-        return await CoreWS.callAjax('auth_email_get_signup_settings', {}, { siteUrl });
+        return CoreLoginSignUp.getEmailSignupSettings(siteUrl);
     }
 
     /**
@@ -480,7 +465,7 @@ export class CoreLoginHelperProvider {
      *
      * @param feature Feature to check.
      * @param config Site public config.
-     * @returns Whether email signup is disabled.
+     * @returns Whether selected feature is disabled.
      * @deprecated since 4.4. Please use isFeatureDisabled in a site instance.
      */
     isFeatureDisabled(feature: string, config?: CoreSitePublicConfigResponse): boolean {
@@ -1519,7 +1504,6 @@ export class CoreLoginHelperProvider {
     }
 
 }
-
 export const CoreLoginHelper = makeSingleton(CoreLoginHelperProvider);
 
 /**
@@ -1540,61 +1524,6 @@ export type CoreLoginSSOData = CoreRedirectPayload & {
     token?: string; // User's token.
     privateToken?: string; // User's private token.
     ssoUrlParams?: CoreUrlParams; // Other params added to the login url.
-};
-
-/**
- * Result of WS auth_email_get_signup_settings.
- */
-export type AuthEmailSignupSettings = {
-    namefields: string[];
-    passwordpolicy?: string; // Password policy.
-    sitepolicy?: string; // Site policy.
-    sitepolicyhandler?: string; // Site policy handler.
-    defaultcity?: string; // Default city.
-    country?: string; // Default country.
-    extendedusernamechars?: boolean; // @since 4.4. Extended characters in usernames or no.
-    profilefields?: AuthEmailSignupProfileField[]; // Required profile fields.
-    recaptchapublickey?: string; // Recaptcha public key.
-    recaptchachallengehash?: string; // Recaptcha challenge hash.
-    recaptchachallengeimage?: string; // Recaptcha challenge noscript image.
-    recaptchachallengejs?: string; // Recaptcha challenge js url.
-    warnings?: CoreWSExternalWarning[];
-};
-
-/**
- * Profile field for signup.
- */
-export type AuthEmailSignupProfileField = {
-    id?: number; // Profile field id.
-    shortname?: string; // Profile field shortname.
-    name?: string; // Profield field name.
-    datatype?: string; // Profield field datatype.
-    description?: string; // Profield field description.
-    descriptionformat: CoreTextFormat; // Description format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
-    categoryid?: number; // Profield field category id.
-    categoryname?: string; // Profield field category name.
-    sortorder?: number; // Profield field sort order.
-    required?: number; // Profield field required.
-    locked?: number; // Profield field locked.
-    visible?: number; // Profield field visible.
-    forceunique?: number; // Profield field unique.
-    signup?: number; // Profield field in signup form.
-    defaultdata?: string; // Profield field default data.
-    defaultdataformat: CoreTextFormat; // Defaultdata format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
-    param1?: string; // Profield field settings.
-    param2?: string; // Profield field settings.
-    param3?: string; // Profield field settings.
-    param4?: string; // Profield field settings.
-    param5?: string; // Profield field settings.
-};
-
-/**
- * Category of profile fields for signup.
- */
-export type AuthEmailSignupProfileFieldsCategory = {
-    id: number; // Category ID.
-    name: string; // Category name.
-    fields: AuthEmailSignupProfileField[]; // Field in the category.
 };
 
 /**

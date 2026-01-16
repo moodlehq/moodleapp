@@ -45,6 +45,7 @@ import { CoreLang, CoreLangFormat } from './lang';
 import { CoreErrorLogs } from '@singletons/error-logs';
 import { CoreErrorHelper, CoreErrorObject } from './error-helper';
 import { CoreDom } from '@singletons/dom';
+import { CoreUserNullSupportConfig } from '@features/user/classes/support/null-support-config';
 
 /**
  * This service allows performing WS calls and download/upload files.
@@ -427,7 +428,7 @@ export class CoreWSProvider {
      * @param preSets Extra settings and information. Only some
      * @returns Promise resolved with the response data in success and rejected with CoreAjaxError.
      */
-    protected async performAjax<T = unknown> (
+    protected async performAjax<T = unknown>(
         method: string,
         data: Record<string, unknown>,
         preSets: CoreWSAjaxPreSets,
@@ -507,7 +508,9 @@ export class CoreWSProvider {
 
                 throw new CoreAjaxError({
                     message,
-                    supportConfig: await CoreUserGuestSupportConfig.forSite(preSets.siteUrl),
+                    supportConfig: preSets.omitSupport ?
+                        new CoreUserNullSupportConfig() :
+                        await CoreUserGuestSupportConfig.forSite(preSets.siteUrl),
                     debug: {
                         code: 'invalidresponse',
                         details: Translate.instant('core.serverconnection', {
@@ -534,8 +537,10 @@ export class CoreWSProvider {
 
             const options: CoreSiteErrorOptions = {
                 message,
-                supportConfig: await CoreUserGuestSupportConfig.forSite(preSets.siteUrl),
-            };
+                supportConfig: preSets.omitSupport ?
+                    new CoreUserNullSupportConfig() :
+                    await CoreUserGuestSupportConfig.forSite(preSets.siteUrl),
+                };
 
             if (CorePlatform.isMobile()) {
                 switch (data.status) {
@@ -1518,6 +1523,11 @@ export type CoreWSAjaxPreSets = {
      * Whether to send the parameters via GET. Only if noLogin is true.
      */
     useGet?: boolean;
+
+    /**
+     * Whether to omit the support config.
+     */
+    omitSupport?: boolean;
 };
 
 /**

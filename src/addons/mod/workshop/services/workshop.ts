@@ -1663,7 +1663,7 @@ export type AddonModWorkshopSubmissionData = {
     grade?: number; // Aggregated grade for the submission. The grade is a decimal number from interval 0..100.
     // If NULL then the grade for submission has not been aggregated yet.
     gradeover?: number; // Grade for the submission manually overridden by a teacher. Grade is always from interval 0..100.
-    // If NULL then the grade is not overriden.
+    // If NULL then the grade is not overridden.
     gradeoverby?: number; // The id of the user who has overridden the grade for submission.
     feedbackauthor?: string; // Teacher comment/feedback for the author of the submission, for example describing the reasons
     // for the grade overriding.
@@ -1790,7 +1790,7 @@ export type AddonModWorkshopSubmissionAssessmentData = {
     // If NULL then it has not been aggregated yet.
     gradinggrade?: number; // The computed grade 0..100 for this assessment. If NULL then it has not been computed yet.
     gradinggradeover?: number; // Grade for the assessment manually overridden by a teacher.
-    // Grade is always from interval 0..100. If NULL then the grade is not overriden.
+    // Grade is always from interval 0..100. If NULL then the grade is not overridden.
     gradinggradeoverby: number; // The id of the user who has overridden the grade for submission.
     feedbackauthor: string; // The comment/feedback from the reviewer for the author.
     feedbackauthorformat?: CoreTextFormat; // Feedbackauthor format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
