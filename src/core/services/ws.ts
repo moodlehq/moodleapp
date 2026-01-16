@@ -427,7 +427,7 @@ export class CoreWSProvider {
      * @param preSets Extra settings and information. Only some
      * @returns Promise resolved with the response data in success and rejected with CoreAjaxError.
      */
-    protected async performAjax<T = unknown> (
+    protected async performAjax<T = unknown>(
         method: string,
         data: Record<string, unknown>,
         preSets: CoreWSAjaxPreSets,
