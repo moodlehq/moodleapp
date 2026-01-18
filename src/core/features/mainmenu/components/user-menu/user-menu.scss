@@ -855,6 +855,34 @@ $shadow-medium: 0 4px 16px rgba(0, 0, 0, 0.08);
             }
         }
     }
+
+    .version-info {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        padding: 10px 16px 6px;
+        font-size: 10px;
+        color: $text-light;
+        font-family: monospace;
+
+        .version-divider {
+            opacity: 0.5;
+        }
+
+        .commit-hash {
+            background: rgba($primary-teal, 0.08);
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: $primary-teal;
+            font-weight: 500;
+        }
+
+        .build-time {
+            opacity: 0.7;
+            font-size: 9px;
+        }
+    }
 }
 
 // ============================================
