@@ -870,17 +870,16 @@ $shadow-medium: 0 4px 16px rgba(0, 0, 0, 0.08);
             opacity: 0.5;
         }
 
-        .commit-hash {
-            background: rgba($primary-teal, 0.08);
-            padding: 2px 6px;
+        .build-number {
+            background: rgba($primary-teal, 0.1);
+            padding: 2px 8px;
             border-radius: 4px;
             color: $primary-teal;
-            font-weight: 500;
+            font-weight: 600;
         }
 
         .build-time {
             opacity: 0.7;
-            font-size: 9px;
         }
     }
 }

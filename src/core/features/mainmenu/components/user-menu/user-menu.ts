@@ -87,10 +87,10 @@ export class CoreMainMenuUserMenuComponent implements OnInit, OnDestroy {
     handbooksSectionOpen = false;
     policiesSectionOpen = false;
 
-    // App version info (auto-updated by pre-commit hook)
+    // App version info (auto-updated by post-commit hook)
     appVersion = CoreConstants.CONFIG.versionname;
-    commitHash = '14721ab2b';
-    buildTime = '2026-01-18 12:11';
+    buildNumber = 3;
+    buildTime = '2026-01-18 12:13';
 
     protected subscription!: Subscription;
 
