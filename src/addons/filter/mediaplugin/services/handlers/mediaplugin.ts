@@ -19,6 +19,7 @@ import { Injectable } from '@angular/core';
 import { CoreFilterDefaultHandler } from '@features/filter/services/handlers/default-filter';
 import { makeSingleton } from '@singletons';
 import { CoreMedia } from '@singletons/media';
+import { CoreUrl } from '@singletons/url';
 
 /**
  * Handler to support the Multimedia filter.
@@ -38,8 +39,63 @@ export class AddonFilterMediaPluginHandlerService extends CoreFilterDefaultHandl
 
             videos.forEach((video) => {
                 AddonFilterMediaPluginVideoJS.treatYoutubeVideos(video);
+
+                // Also handle videos with broken YouTube URLs (mangled by autolink filter)
+                this.treatBrokenYoutubeVideos(video);
             });
         });
+    }
+
+    /**
+     * Handle video elements where YouTube URLs have been broken by Moodle's autolink filter.
+     * The autolink filter converts "www" into a link, breaking the URL structure.
+     *
+     * @param video Video element to check.
+     */
+    private treatBrokenYoutubeVideos(video: HTMLVideoElement): void {
+        // Check if video still exists (might have been replaced by treatYoutubeVideos)
+        if (!video.parentNode) {
+            return;
+        }
+
+        // Get the text content and check for broken YouTube URLs
+        // Pattern: https://<a ...>www</a>.youtube.com/watch?v=VIDEO_ID
+        const innerHTML = video.innerHTML;
+        if (!innerHTML.includes('youtube.com') && !innerHTML.includes('youtu.be')) {
+            return;
+        }
+
+        // Extract text content, stripping HTML tags to get the URL
+        const textContent = video.textContent?.trim() || '';
+
+        // Try to extract YouTube video ID from the text
+        const match = textContent.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]{11})/);
+        if (!match) {
+            return;
+        }
+
+        const videoId = match[1];
+        const youtubeUrl = CoreUrl.getYoutubeEmbedUrl(`https://www.youtube.com/watch?v=${videoId}`);
+
+        if (!youtubeUrl) {
+            return;
+        }
+
+        // Create iframe to replace the broken video
+        const iframe = document.createElement('iframe');
+        iframe.id = video.id;
+        iframe.src = youtubeUrl;
+        iframe.setAttribute('frameborder', '0');
+        iframe.setAttribute('allowfullscreen', '1');
+        iframe.setAttribute('allow', 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share');
+        iframe.setAttribute('referrerpolicy', 'strict-origin-when-cross-origin');
+        iframe.setAttribute('credentialless', '');
+        iframe.width = '100%';
+        iframe.height = '300';
+        iframe.className = video.className;
+
+        // Replace video tag with iframe
+        video.parentNode.replaceChild(iframe, video);
     }
 
     /**

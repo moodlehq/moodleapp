@@ -12,14 +12,19 @@
     </core-navbar-buttons>
 
     <!-- allowfullscreen cannot be set dynamically using attribute binding, define 2 iframe elements. -->
+    <!-- credentialless allows embedding cross-origin content without COEP compliance -->
     <ng-container *ngIf="allowFullscreen">
         <iframe #iframe class="core-iframe" [attr.id]="id" [ngStyle]="{'width': iframeWidth, 'height': iframeHeight}" [src]="safeUrl"
-            allowfullscreen="true" [class.core-iframe-loading]="loading">
+            allowfullscreen="true" [class.core-iframe-loading]="loading"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+            referrerpolicy="strict-origin-when-cross-origin" credentialless>
         </iframe>
     </ng-container>
     <ng-container *ngIf="!allowFullscreen">
         <iframe #iframe class="core-iframe" [attr.id]="id" [ngStyle]="{'width': iframeWidth, 'height': iframeHeight}" [src]="safeUrl"
-            [class.core-iframe-loading]="loading">
+            [class.core-iframe-loading]="loading"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+            referrerpolicy="strict-origin-when-cross-origin" credentialless>
         </iframe>
     </ng-container>
 

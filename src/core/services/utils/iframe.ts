@@ -697,7 +697,9 @@ export class CoreIframeUtilsProvider {
 
             if (!mimetype || mimetype === 'text/html' || mimetype === 'text/plain') {
                 // It's probably a web page, open in browser.
-                options.site ? options.site.openInBrowserWithAutoLogin(url) : CoreUtils.openInBrowser(url);
+                // Convert YouTube embed URLs to watch URLs for better external app support.
+                const watchUrl = CoreUrl.getYoutubeWatchUrl(url);
+                options.site ? options.site.openInBrowserWithAutoLogin(watchUrl) : CoreUtils.openInBrowser(watchUrl);
 
                 return;
             }

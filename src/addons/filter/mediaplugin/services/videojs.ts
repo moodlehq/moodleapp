@@ -118,6 +118,9 @@ export class AddonFilterMediaPluginVideoJSService {
         iframe.src = youtubeUrl;
         iframe.setAttribute('frameborder', '0');
         iframe.setAttribute('allowfullscreen', '1');
+        iframe.setAttribute('allow', 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share');
+        iframe.setAttribute('referrerpolicy', 'strict-origin-when-cross-origin');
+        iframe.setAttribute('credentialless', '');
         iframe.width = '100%';
         iframe.height = '300';
 

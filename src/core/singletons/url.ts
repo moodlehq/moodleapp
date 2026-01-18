@@ -671,7 +671,39 @@ export class CoreUrl {
             }
         }
 
-        return CoreUrl.addParamsToUrl('https://www.youtube.com/embed/' + videoId, params);
+        // Use youtube-nocookie.com to fix Error 153 on iOS WKWebView
+        return CoreUrl.addParamsToUrl('https://www.youtube-nocookie.com/embed/' + videoId, params);
+    }
+
+    /**
+     * Convert a YouTube embed URL to a watch URL for external opening.
+     *
+     * @param url URL to convert.
+     * @returns Watch URL if it's a YouTube embed, original URL otherwise.
+     */
+    static getYoutubeWatchUrl(url: string): string {
+        // Check if it's a YouTube embed URL
+        const embedMatch = url.match(/(?:youtube\.com|youtube-nocookie\.com)\/embed\/([a-zA-Z0-9_-]{11})/);
+        if (!embedMatch) {
+            return url;
+        }
+
+        const videoId = embedMatch[1];
+        const params: CoreUrlParams = {};
+
+        // Extract start time if present
+        const startMatch = url.match(/[?&]start=(\d+)/);
+        if (startMatch) {
+            params.t = startMatch[1];
+        }
+
+        // Extract playlist if present
+        const listMatch = url.match(/[?&]list=([^#&?]+)/);
+        if (listMatch) {
+            params.list = listMatch[1];
+        }
+
+        return CoreUrl.addParamsToUrl('https://www.youtube.com/watch?v=' + videoId, params);
     }
 
     /**
