@@ -24,10 +24,10 @@
                 </div>
             </div>
             <div class="reception-actions">
-                <button class="action-btn call" (click)="callPhone(receptionPhone)">
+                <a class="action-btn call" [href]="'tel:' + receptionPhone">
                     <ion-icon name="call"></ion-icon>
                     <span>Call</span>
-                </button>
+                </a>
                 <button class="action-btn copy" (click)="copyToClipboard(receptionPhone, 'Phone number')">
                     <ion-icon name="copy"></ion-icon>
                     <span>Copy</span>
@@ -68,14 +68,14 @@
                         </div>
 
                         <div class="item-actions">
-                            <button
+                            <a
                                 class="contact-action email"
                                 *ngIf="item.email"
-                                (click)="sendEmail(item.email)"
+                                [href]="'mailto:' + item.email"
                                 [title]="item.email"
                             >
                                 <ion-icon name="mail"></ion-icon>
-                            </button>
+                            </a>
                             <button
                                 class="contact-action copy"
                                 *ngIf="item.email"
@@ -83,13 +83,13 @@
                             >
                                 <ion-icon name="copy"></ion-icon>
                             </button>
-                            <button
+                            <a
                                 class="contact-action call"
                                 *ngIf="item.phone"
-                                (click)="callPhone(item.phone)"
+                                [href]="'tel:' + item.phone"
                             >
                                 <ion-icon name="call"></ion-icon>
-                            </button>
+                            </a>
                         </div>
                     </div>
                 </div>

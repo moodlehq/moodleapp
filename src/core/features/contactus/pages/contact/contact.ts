@@ -100,24 +100,6 @@ export class CoreContactUsPage {
     bookingLink = 'https://outlook.office.com/book/KeyStageParentBookingCalendar@aspireschool.org/?ismsaljsauthenabled';
 
     /**
-     * Call a phone number.
-     *
-     * @param phone Phone number to call.
-     */
-    callPhone(phone: string): void {
-        CoreUtils.openInBrowser(`tel:${phone}`, { showBrowserWarning: false });
-    }
-
-    /**
-     * Send an email.
-     *
-     * @param email Email address.
-     */
-    sendEmail(email: string): void {
-        CoreUtils.openInBrowser(`mailto:${email}`, { showBrowserWarning: false });
-    }
-
-    /**
      * Open WhatsApp chat.
      *
      * @param phone Phone number for WhatsApp.
