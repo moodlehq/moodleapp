@@ -76,6 +76,7 @@ export class CoreGradesCoursePage implements AfterViewInit, OnDestroy {
     groupedCategories: any[] = [];
     timelineData: any[] = [];
     hideHeader = false;
+    distributionExpanded = false;
 
     // Store server's course total for accurate display
     protected serverCourseTotal: CoreGradesFormattedTableRow | null = null;

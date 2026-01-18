@@ -294,15 +294,16 @@ export class CoreMainMenuUserMenuComponent implements OnInit, OnDestroy {
     }
 
     /**
-     * Open an external URL in browser.
+     * Open an external URL in embedded browser.
      *
      * @param event Click event.
      * @param url The URL to open.
      */
-    async openExternalUrl(event: Event, url: string): Promise<void> {
+    openExternalUrl(event: Event, url: string): void {
         event.preventDefault();
         event.stopPropagation();
-        await CoreUtils.openInBrowser(url);
+        // Use openInApp for embedded browser that works on iOS
+        CoreUtils.openInApp(url);
     }
 
     /**

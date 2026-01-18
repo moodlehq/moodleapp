@@ -363,75 +363,362 @@ ion-item-group {
 }
 
 // ====================================
-// HIERARCHICAL CATEGORY TREE
+// STUDENT GRADES VIEW - ENHANCED
 // ====================================
-.category-tree {
+.student-grades-view {
     padding: 16px;
-    
-    ion-item-divider {
-        --background: transparent;
-        --color: var(--text-primary);
-        --padding-top: 12px;
-        --padding-bottom: 12px;
-        --padding-start: 16px;
-        margin-bottom: 4px;
-        border-radius: var(--radius-md);
-        transition: var(--transition-fast);
-        cursor: pointer;
-        
-        &:hover {
-            background: var(--bg-hover);
+
+    // Performance Summary Card
+    .performance-summary-card {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 20px;
+        background: var(--gradient-header);
+        border-radius: var(--radius-xl);
+        margin-bottom: 20px;
+        box-shadow: var(--shadow-md);
+        position: relative;
+        overflow: hidden;
+
+        // Decorative elements
+        &::before {
+            content: '';
+            position: absolute;
+            top: -40%;
+            right: -10%;
+            width: 140px;
+            height: 140px;
+            background: radial-gradient(circle at center, rgba(255, 255, 255, 0.12) 0%, transparent 60%);
+            border-radius: 50%;
         }
-        
-        &.category-depth-1 {
-            --padding-start: 40px;
+
+        &::after {
+            content: '';
+            position: absolute;
+            bottom: -30%;
+            left: 20%;
+            width: 80px;
+            height: 80px;
+            background: radial-gradient(circle at center, rgba(152, 251, 203, 0.15) 0%, transparent 60%);
+            border-radius: 50%;
         }
-        
-        &.category-depth-2 {
-            --padding-start: 64px;
+
+        .summary-left {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            position: relative;
+            z-index: 2;
         }
-        
-        &.category-depth-3 {
-            --padding-start: 88px;
-        }
-        
-        .category-toggle-icon {
-            font-size: 1.25rem;
-            color: var(--text-muted);
-            transition: var(--transition-fast);
-            margin-right: 8px;
-        }
-        
-        ion-label {
-            h2 {
-                font-size: 1.125rem;
-                font-weight: 600;
-                margin: 0 0 2px 0;
-                color: var(--text-secondary);
+
+        .summary-avatar {
+            width: 52px;
+            height: 52px;
+            border-radius: var(--radius-lg);
+            background: rgba(255, 255, 255, 0.25);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            ion-icon {
+                font-size: 26px;
+                color: var(--text-on-dark-pastel);
             }
-            
+        }
+
+        .summary-info {
+            h2 {
+                font-size: 1.25rem;
+                font-weight: 700;
+                color: var(--text-on-dark-pastel);
+                margin: 0 0 4px 0;
+                letter-spacing: -0.3px;
+            }
+
             p {
-                font-size: 0.875rem;
-                color: var(--text-muted);
+                font-size: 0.8125rem;
+                color: var(--text-on-dark-pastel);
+                opacity: 0.85;
                 margin: 0;
+                font-weight: 500;
+            }
+        }
+
+        .summary-right {
+            position: relative;
+            z-index: 2;
+        }
+
+        .overall-average {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 12px 16px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: var(--radius-lg);
+            backdrop-filter: blur(10px);
+
+            .avg-value {
+                font-size: 1.5rem;
+                font-weight: 800;
+                color: var(--text-on-dark-pastel);
+                line-height: 1;
+                letter-spacing: -0.5px;
+            }
+
+            .avg-label {
+                font-size: 0.6875rem;
+                color: var(--text-on-dark-pastel);
+                opacity: 0.8;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+                margin-top: 4px;
             }
         }
     }
-    
+
+    .category-tree {
+        padding: 0;
+    }
+}
+
+// ====================================
+// HIERARCHICAL CATEGORY TREE - MODERN CARDS
+// ====================================
+.category-tree {
+    padding: 16px;
+
+    // Category Header - Term Card
+    ion-item-divider {
+        --background: var(--gradient-header);
+        --color: var(--text-on-dark-pastel);
+        --padding-top: 16px;
+        --padding-bottom: 16px;
+        --padding-start: 20px;
+        margin-bottom: 12px;
+        margin-top: 8px;
+        border-radius: var(--radius-lg);
+        transition: var(--transition-fast);
+        cursor: pointer;
+        box-shadow: var(--shadow-sm);
+        position: relative;
+        overflow: hidden;
+
+        // Decorative orb
+        &::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -10%;
+            width: 100px;
+            height: 100px;
+            background: radial-gradient(circle at center, rgba(255, 255, 255, 0.15) 0%, transparent 60%);
+            border-radius: 50%;
+        }
+
+        &:first-of-type {
+            margin-top: 0;
+        }
+
+        &:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        &:active {
+            transform: translateY(0);
+        }
+
+        &.category-depth-1 {
+            --padding-start: 36px;
+            margin-left: 16px;
+        }
+
+        &.category-depth-2 {
+            --padding-start: 36px;
+            margin-left: 32px;
+        }
+
+        &.category-depth-3 {
+            --padding-start: 36px;
+            margin-left: 48px;
+        }
+
+        .category-toggle-icon {
+            font-size: 1.25rem;
+            color: var(--text-on-dark-pastel);
+            transition: var(--transition-fast);
+            margin-right: 12px;
+            opacity: 0.9;
+        }
+
+        ion-label {
+            position: relative;
+            z-index: 2;
+
+            h2 {
+                font-size: 1.125rem;
+                font-weight: 700;
+                margin: 0 0 4px 0;
+                color: var(--text-on-dark-pastel);
+                letter-spacing: -0.3px;
+            }
+
+            p {
+                font-size: 0.8125rem;
+                color: var(--text-on-dark-pastel);
+                opacity: 0.85;
+                margin: 0;
+                font-weight: 500;
+            }
+        }
+    }
+
     .category-content {
         transition: var(--transition-base);
-        
-        .course-item {
+        padding-bottom: 8px;
+
+        // Course Card - New Design
+        .course-card {
+            display: flex;
+            align-items: center;
+            padding: 14px 16px;
+            margin: 0 0 10px 0;
+            background: var(--bg-card);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-sm);
+            border: var(--border-light);
+            border-left: 4px solid var(--pastel-mint);
+            cursor: pointer;
+            transition: var(--transition-base);
+
+            &:hover {
+                transform: translateX(4px);
+                box-shadow: var(--shadow-md);
+            }
+
+            &:active {
+                transform: translateX(2px);
+            }
+
+            // Grade-based border colors
+            &.grade-excellent {
+                border-left-color: #10B981; // Emerald green
+            }
+            &.grade-good {
+                border-left-color: #3B82F6; // Blue
+            }
+            &.grade-average {
+                border-left-color: #F59E0B; // Amber
+            }
+            &.grade-below {
+                border-left-color: #F97316; // Orange
+            }
+            &.grade-poor {
+                border-left-color: #EF4444; // Red
+            }
+
             &.course-depth-1 {
-                --padding-start: 56px;
+                margin-left: 0;
             }
-            
             &.course-depth-2 {
-                --padding-start: 80px;
+                margin-left: 16px;
             }
-            
             &.course-depth-3 {
-                --padding-start: 104px;
+                margin-left: 32px;
+            }
+
+            .course-card-left {
+                flex-shrink: 0;
+                margin-right: 14px;
+
+                .subject-icon {
+                    width: 42px;
+                    height: 42px;
+                    border-radius: var(--radius-md);
+                    background: linear-gradient(135deg, var(--pastel-sky-light) 0%, var(--pastel-turquoise-light) 100%);
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+
+                    ion-icon {
+                        font-size: 20px;
+                        color: var(--text-on-dark-pastel);
+                    }
+                }
+            }
+
+            .course-card-center {
+                flex: 1;
+                min-width: 0;
+
+                .course-name {
+                    font-size: 0.9375rem;
+                    font-weight: 600;
+                    color: var(--text-secondary);
+                    margin: 0;
+                    line-height: 1.4;
+                    display: -webkit-box;
+                    -webkit-line-clamp: 2;
+                    -webkit-box-orient: vertical;
+                    overflow: hidden;
+                }
+            }
+
+            .course-card-right {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                margin-left: 12px;
+
+                .grade-circle {
+                    min-width: 56px;
+                    padding: 8px 12px;
+                    border-radius: var(--radius-full);
+                    background: var(--gradient-grade-high);
+                    text-align: center;
+                    box-shadow: 0 2px 6px rgba(173, 235, 179, 0.25);
+
+                    .grade-value {
+                        font-size: 0.8125rem;
+                        font-weight: 700;
+                        color: var(--text-on-pastel);
+                        letter-spacing: -0.3px;
+                    }
+                }
+
+                .arrow-icon {
+                    font-size: 18px;
+                    color: var(--text-muted);
+                    transition: var(--transition-fast);
+                }
+            }
+
+            &:hover .arrow-icon {
+                color: var(--text-secondary);
+                transform: translateX(2px);
+            }
+
+            // Grade-based circle backgrounds
+            &.grade-excellent .grade-circle {
+                background: linear-gradient(135deg, #ADEBB3 0%, #10B981 100%);
+            }
+            &.grade-good .grade-circle {
+                background: linear-gradient(135deg, #93C5FD 0%, #3B82F6 100%);
+                .grade-value { color: #FFFFFF; }
+            }
+            &.grade-average .grade-circle {
+                background: linear-gradient(135deg, #FDE68A 0%, #F59E0B 100%);
+                .grade-value { color: #78350F; }
+            }
+            &.grade-below .grade-circle {
+                background: linear-gradient(135deg, #FDBA74 0%, #F97316 100%);
+                .grade-value { color: #7C2D12; }
+            }
+            &.grade-poor .grade-circle {
+                background: linear-gradient(135deg, #FCA5A5 0%, #EF4444 100%);
+                .grade-value { color: #FFFFFF; }
             }
         }
     }
@@ -516,5 +803,255 @@ core-loading {
     ion-list {
         padding: 32px;
         max-width: 960px;
+    }
+}
+
+// ====================================
+// PARENT VIEW - MODERN CARD LAYOUT
+// ====================================
+.parent-grades-view {
+    padding: 16px;
+
+    .mentee-section {
+        margin-bottom: 24px;
+    }
+
+    // Mentee Header Card
+    .mentee-header-card {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        padding: 20px;
+        background: var(--gradient-header);
+        border-radius: var(--radius-xl);
+        margin-bottom: 16px;
+        position: relative;
+        overflow: hidden;
+        box-shadow: var(--shadow-md);
+
+        // Decorative element
+        &::before {
+            content: '';
+            position: absolute;
+            top: -30%;
+            right: -5%;
+            width: 120px;
+            height: 120px;
+            background: radial-gradient(circle at center, rgba(255, 255, 255, 0.15) 0%, transparent 60%);
+            border-radius: 50%;
+        }
+
+        .mentee-avatar {
+            width: 56px;
+            height: 56px;
+            border-radius: var(--radius-lg);
+            background: rgba(255, 255, 255, 0.25);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+
+            ion-icon {
+                font-size: 28px;
+                color: var(--text-on-dark-pastel);
+            }
+        }
+
+        .mentee-info {
+            flex: 1;
+            min-width: 0;
+
+            h2 {
+                font-size: 1.25rem;
+                font-weight: 700;
+                color: var(--text-on-dark-pastel);
+                margin: 0 0 4px 0;
+                letter-spacing: -0.5px;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+
+            p {
+                font-size: 0.875rem;
+                color: var(--text-on-dark-pastel);
+                opacity: 0.85;
+                margin: 0;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+        }
+
+        .mentee-stats {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 8px 16px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: var(--radius-md);
+
+            .course-count {
+                font-size: 1.5rem;
+                font-weight: 700;
+                color: var(--text-on-dark-pastel);
+                line-height: 1;
+            }
+
+            .course-label {
+                font-size: 0.75rem;
+                color: var(--text-on-dark-pastel);
+                opacity: 0.85;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+            }
+        }
+    }
+
+    // Course Cards Grid
+    .courses-grid {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .course-grade-card {
+        display: flex;
+        align-items: center;
+        padding: 16px 20px;
+        background: var(--bg-card);
+        border-radius: var(--radius-lg);
+        border: var(--border-light);
+        box-shadow: var(--shadow-sm);
+        cursor: pointer;
+        transition: var(--transition-base);
+
+        &:hover {
+            transform: translateX(4px);
+            box-shadow: var(--shadow-md);
+            border-color: rgba(152, 251, 203, 0.3);
+        }
+
+        &:active {
+            transform: translateX(2px);
+        }
+
+        .card-content {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            flex: 1;
+            min-width: 0;
+        }
+
+        .course-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: var(--radius-md);
+            background: linear-gradient(135deg, var(--pastel-sky-light) 0%, var(--pastel-turquoise-light) 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+
+            ion-icon {
+                font-size: 22px;
+                color: var(--text-on-dark-pastel);
+            }
+        }
+
+        .course-info {
+            flex: 1;
+            min-width: 0;
+
+            h3 {
+                font-size: 1rem;
+                font-weight: 600;
+                color: var(--text-secondary);
+                margin: 0;
+                line-height: 1.4;
+                display: -webkit-box;
+                -webkit-line-clamp: 2;
+                -webkit-box-orient: vertical;
+                overflow: hidden;
+            }
+        }
+
+        .grade-badge {
+            padding: 8px 14px;
+            border-radius: var(--radius-full);
+            background: var(--gradient-grade-high);
+            color: var(--text-on-pastel);
+            font-size: 0.9375rem;
+            font-weight: 700;
+            white-space: nowrap;
+            box-shadow: 0 2px 8px rgba(173, 235, 179, 0.25);
+        }
+
+        .card-arrow {
+            margin-left: 8px;
+
+            ion-icon {
+                font-size: 20px;
+                color: var(--text-muted);
+                transition: var(--transition-fast);
+            }
+        }
+
+        &:hover .card-arrow ion-icon {
+            color: var(--text-secondary);
+            transform: translateX(2px);
+        }
+    }
+}
+
+// ====================================
+// RESPONSIVE - PARENT VIEW
+// ====================================
+@include media-breakpoint-up(md) {
+    .parent-grades-view {
+        padding: 24px;
+        max-width: 800px;
+        margin: 0 auto;
+
+        .courses-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+        }
+
+        .course-grade-card {
+            flex-direction: column;
+            align-items: stretch;
+            padding: 20px;
+
+            .card-content {
+                flex-direction: column;
+                align-items: center;
+                text-align: center;
+                gap: 12px;
+            }
+
+            .course-icon {
+                width: 56px;
+                height: 56px;
+
+                ion-icon {
+                    font-size: 28px;
+                }
+            }
+
+            .course-info h3 {
+                font-size: 1.0625rem;
+            }
+
+            .grade-badge {
+                margin-top: 8px;
+            }
+
+            .card-arrow {
+                display: none;
+            }
+        }
     }
 }

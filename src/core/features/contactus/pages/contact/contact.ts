@@ -105,7 +105,7 @@ export class CoreContactUsPage {
      * @param phone Phone number to call.
      */
     callPhone(phone: string): void {
-        window.open(`tel:${phone}`, '_system');
+        CoreUtils.openInBrowser(`tel:${phone}`, { showBrowserWarning: false });
     }
 
     /**
@@ -114,7 +114,18 @@ export class CoreContactUsPage {
      * @param email Email address.
      */
     sendEmail(email: string): void {
-        window.open(`mailto:${email}`, '_system');
+        CoreUtils.openInBrowser(`mailto:${email}`, { showBrowserWarning: false });
+    }
+
+    /**
+     * Open WhatsApp chat.
+     *
+     * @param phone Phone number for WhatsApp.
+     */
+    openWhatsApp(phone: string): void {
+        // Remove any non-numeric characters for WhatsApp URL
+        const cleanPhone = phone.replace(/\D/g, '');
+        CoreUtils.openInBrowser(`https://wa.me/${cleanPhone}`, { showBrowserWarning: false });
     }
 
     /**
@@ -133,10 +144,10 @@ export class CoreContactUsPage {
     }
 
     /**
-     * Open the booking link in browser.
+     * Open the booking link in embedded browser.
      */
-    async openBookingLink(): Promise<void> {
-        await CoreUtils.openInBrowser(this.bookingLink, { showBrowserWarning: false });
+    openBookingLink(): void {
+        CoreUtils.openInApp(this.bookingLink);
     }
 
 }

@@ -1,1131 +1,469 @@
 @use "theme/globals" as *;
 
 // ====================================
-// PASTEL COLOR SYSTEM - GRADES REDESIGN
+// ASPIRE GRADES - CLEAN DESIGN SYSTEM
+// Matches dashboard and news pages
 // ====================================
+
 :host {
-    // Primary Pastel Blues & Turquoises (matching financial page)
-    --pastel-sky: #B3EBF2;
-    --pastel-sky-light: #C8F0F7;
-    --pastel-sky-dark: #9FE5ED;
-    --pastel-turquoise: #8DDCDC;
-    --pastel-turquoise-light: #A8E6E6;
-    --pastel-turquoise-dark: #72D2D2;
-    --pastel-mint-blue: #98FBCB;
-    --pastel-mint-blue-light: #B0FDD8;
-    --pastel-mint-blue-dark: #80F9BE;
-    --pastel-powder: #B0E0E6;
-    --pastel-powder-light: #C5E9ED;
-    --pastel-powder-dark: #9BD7DF;
+    // Aspire Primary Colors (matching dashboard)
+    --aspire-primary: #4A9B7F;
+    --aspire-primary-light: #5EADBE;
+    --aspire-primary-dark: #3D8B6F;
+    --aspire-secondary: #3D8B9E;
+    --aspire-accent: #5EADBE;
 
-    // Pastel Greens for success states
-    --pastel-mint: #ADEBB3;
-    --pastel-mint-light: #C1F0C6;
-    --pastel-mint-dark: #99E6A0;
-    --pastel-sage: #BCE3C5;
-    --pastel-sage-light: #CDEBD4;
-    --pastel-sage-dark: #ABDBB6;
-    --pastel-green: #80EF80;
-    --pastel-green-light: #99F399;
-    --pastel-green-dark: #66EB66;
+    // Background & Surface
+    --bg-page: #FAFBFC;
+    --bg-card: #FFFFFF;
+    --bg-subtle: rgba(74, 155, 127, 0.04);
+    --bg-hover: rgba(74, 155, 127, 0.08);
 
-    // Soft Accent Colors
-    --pastel-lavender: #E6E6FA;
-    --pastel-periwinkle: #C5C5FF;
-    --pastel-peach: #FFDAC1;
-    --pastel-coral: #FFB5A7;
-    --pastel-cream: #FFF5E1;
-    --pastel-yellow: #FFFD96;
-    --pastel-pink: #FFE1E6;
+    // Text Hierarchy
+    --text-primary: #1A2332;
+    --text-secondary: #374151;
+    --text-muted: #6B7280;
+    --text-light: #9CA3AF;
 
-    // TEXT COLORS - NO BLACK!
-    --text-primary: #1A2332; // Deep navy for main content
-    --text-secondary: #2C3E50; // Charcoal blue for headers
-    --text-tertiary: #4A5568; // Slate gray for descriptions
-    --text-muted: #718096; // Soft gray for less important
-    --text-link: #2C5F66; // Muted teal for links
-    --text-on-pastel: #276749; // Deep green for text on pastel backgrounds
-    --text-on-dark-pastel: #1A4E52; // Deeper teal for darker pastels
+    // Shadows (matching dashboard)
+    --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.06);
+    --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08);
+    --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.12);
 
-    // Background Colors
-    --bg-base: #FAFBFC; // Off-white base
-    --bg-card: #FFFFFF; // Pure white for cards
-    --bg-pastel-overlay: rgba(179, 235, 242, 0.08); // Subtle pastel overlay
-    --bg-interactive: rgba(152, 251, 203, 0.12); // Interactive element bg
-    --bg-hover: rgba(141, 220, 220, 0.15); // Hover state bg
-
-    // Gradients - Soft and Subtle
-    --gradient-sky-mint: linear-gradient(135deg, #B3EBF2 0%, #ADEBB3 100%);
-    --gradient-turquoise-flow: linear-gradient(90deg, #8DDCDC 0%, #B3EBF2 50%, #98FBCB 100%);
-    --gradient-morning: linear-gradient(180deg, #E6F3FF 0%, #F0F9FF 100%);
-    --gradient-card: linear-gradient(135deg, rgba(176, 224, 230, 0.05) 0%, rgba(173, 235, 179, 0.05) 100%);
-    --gradient-header: linear-gradient(135deg, #B3EBF2 0%, #8DDCDC 50%, #98FBCB 100%);
-    --gradient-success: linear-gradient(135deg, #ADEBB3 0%, #80EF80 100%);
-    --gradient-warning: linear-gradient(135deg, #FFDAC1 0%, #FFB5A7 100%);
-
-    // Shadows - Soft and Colorful
-    --shadow-sm: 0 1px 2px rgba(44, 62, 80, 0.04), 0 1px 3px rgba(179, 235, 242, 0.08);
-    --shadow-md: 0 4px 6px rgba(44, 62, 80, 0.05), 0 2px 4px rgba(141, 220, 220, 0.1);
-    --shadow-lg: 0 10px 15px rgba(44, 62, 80, 0.06), 0 4px 6px rgba(152, 251, 203, 0.12);
-    --shadow-xl: 0 20px 25px rgba(44, 62, 80, 0.08), 0 10px 10px rgba(179, 235, 242, 0.15);
-    --shadow-glow: 0 0 20px rgba(152, 251, 203, 0.3);
-    --shadow-hover: 0 8px 16px rgba(44, 62, 80, 0.08), 0 4px 8px rgba(141, 220, 220, 0.15);
-
-    // Border Radius
+    // Radius
     --radius-sm: 8px;
     --radius-md: 12px;
     --radius-lg: 16px;
     --radius-xl: 20px;
-    --radius-full: 9999px;
 
     // Transitions
-    --transition-base: all 0.3s cubic-bezier(0.4, 0.0, 0.2, 1);
-    --transition-fast: all 0.15s cubic-bezier(0.4, 0.0, 0.2, 1);
-    --transition-slow: all 0.5s cubic-bezier(0.4, 0.0, 0.2, 1);
+    --transition-fast: 0.15s ease;
+    --transition-base: 0.25s ease;
 
-    // Borders
-    --border-light: 1px solid rgba(179, 235, 242, 0.2);
-    --border-medium: 1px solid rgba(141, 220, 220, 0.3);
-    --border-focus: 2px solid rgba(152, 251, 203, 0.5);
-
-    // Grade specific colors - School Attainment Scale
-    --grade-ha-color: #00B050;   // High attainer (95-100%)
-    --grade-mep-color: #92D050;  // More than expected progress (80-94.99%)
-    --grade-ep-color: #FFFF00;   // Expected progress (60-79.99%)
-    --grade-lep-color: #FFC000;  // Less than expected progress (50-59.99%)
-    --grade-la-color: #FF0000;   // Low attainer (<50%)
-
-    // Legacy grade colors (kept for backwards compatibility)
-    --grade-a-color: var(--grade-ha-color);
-    --grade-b-color: var(--grade-mep-color);
-    --grade-c-color: var(--grade-ep-color);
-    --grade-d-color: var(--grade-lep-color);
-    --grade-f-color: var(--grade-la-color);
+    // Grade Colors (School Attainment Scale)
+    --grade-ha: #00B050;     // High attainer (95-100%)
+    --grade-mep: #92D050;    // More than expected (80-94.99%)
+    --grade-ep: #FFFF00;     // Expected progress (60-79.99%)
+    --grade-lep: #FFC000;    // Less than expected (50-59.99%)
+    --grade-la: #FF0000;     // Low attainer (<50%)
 }
 
-// Dark Mode Adjustments
+// Dark mode adjustments
 :host-context(:root.dark) {
-    // Darker pastels for dark mode
-    --pastel-sky: #2A4A52;
-    --pastel-turquoise: #234545;
-    --pastel-mint-blue: #1F4A3A;
-    --bg-base: #0F1419;
-    --bg-card: #1A1F2A;
-    --text-primary: #E6F3FF;
-    --text-secondary: #C8F0F7;
-    --text-tertiary: #A8E6E6;
-    --text-muted: #8DDCDC;
-
-    // Adjusted shadows for dark mode
-    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3), 0 1px 3px rgba(179, 235, 242, 0.05);
-    --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.4), 0 2px 4px rgba(141, 220, 220, 0.08);
+    --bg-page: #111827;
+    --bg-card: #1F2937;
+    --bg-subtle: rgba(74, 155, 127, 0.08);
+    --bg-hover: rgba(74, 155, 127, 0.12);
+    --text-primary: #F9FAFB;
+    --text-secondary: #E5E7EB;
+    --text-muted: #9CA3AF;
+    --text-light: #6B7280;
+    --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.3);
+    --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.4);
 }
 
 // ====================================
-// ION-CONTENT & BASE SETUP
+// BASE LAYOUT
 // ====================================
+
 ion-content {
-    --background: var(--bg-base);
-    
-    &::part(scroll) {
-        overflow-y: auto !important;
-    }
+    --background: var(--bg-page);
 }
 
 // ====================================
-// GRADES HEADER - PASTEL DESIGN
+// ENHANCED HEADER - Rich Design
 // ====================================
-ion-header {
+
+ion-header.aspire-header {
+
     ion-toolbar {
-        --background: var(--gradient-header);
-        --color: var(--text-on-dark-pastel);
-        padding: 8px 0;
+        --background: linear-gradient(135deg, var(--aspire-primary) 0%, var(--aspire-secondary) 100%);
+        --color: #FFFFFF;
+        --padding-top: 8px;
+        --padding-bottom: 16px;
+        --min-height: 72px;
+    }
+
+    // Floating orbs on the header itself
+    &::before {
+        content: '';
+        position: absolute;
+        top: -20px;
+        right: 20px;
+        width: 120px;
+        height: 120px;
+        background: radial-gradient(circle, rgba(255, 255, 255, 0.12) 0%, transparent 70%);
+        border-radius: 50%;
+        pointer-events: none;
+        z-index: 0;
+        animation: floatOrb 8s ease-in-out infinite;
+    }
+
+    &::after {
+        content: '';
+        position: absolute;
+        bottom: 10px;
+        left: -20px;
+        width: 80px;
+        height: 80px;
+        background: radial-gradient(circle, rgba(255, 255, 255, 0.08) 0%, transparent 70%);
+        border-radius: 50%;
+        pointer-events: none;
+        z-index: 0;
+        animation: floatOrb 10s ease-in-out infinite reverse;
+    }
+
+    ion-back-button {
+        --color: #FFFFFF;
         position: relative;
-        overflow: hidden;
-        
-        // Soft floating orb effect
-        &::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            right: -20%;
-            width: 200px;
-            height: 200px;
-            background: radial-gradient(circle at center, rgba(152, 251, 203, 0.15) 0%, transparent 60%);
-            border-radius: 50%;
-            filter: blur(30px);
-            animation: floatSoft 12s ease-in-out infinite;
-        }
-        
-        &::after {
-            content: '';
-            position: absolute;
-            bottom: -60%;
-            left: -15%;
-            width: 180px;
-            height: 180px;
-            background: radial-gradient(circle at center, rgba(189, 227, 197, 0.2) 0%, transparent 60%);
-            border-radius: 50%;
-            filter: blur(25px);
-            animation: floatSoft 15s ease-in-out infinite reverse;
-        }
-        
-        ion-title {
-            position: relative;
-            z-index: 2;
-            
-            h1 {
-                font-size: 1.5rem;
-                font-weight: 700;
-                color: var(--text-on-dark-pastel);
-                margin: 0;
-                letter-spacing: -0.5px;
-                text-shadow: 0 2px 4px rgba(26, 35, 50, 0.08);
-            }
-            
-            .aspire-mentee-indicator {
-                font-size: 0.875rem;
-                color: rgba(26, 78, 82, 0.85);
-                margin: 4px 0 0 0;
-                display: flex;
-                align-items: center;
-                gap: 6px;
-                font-weight: 500;
-                
-                ion-icon {
-                    font-size: 1rem;
-                }
-            }
-        }
-        
-        ion-buttons {
-            position: relative;
-            z-index: 2;
-            
-            ion-back-button {
-                --color: var(--text-on-dark-pastel);
-            }
-        }
+        z-index: 2;
     }
-}
 
-// ====================================
-// GRADES CONTAINER & TABLE REDESIGN
-// ====================================
-.core-grades-container {
-    padding: 24px 16px;
-    min-height: 400px;
-    width: 100%;
-    overflow: visible;
-    
-    &.grades-table-view {
-        padding: 16px 8px; // Less padding for table view
-    }
-}
+    ion-title {
+        position: relative;
+        z-index: 2;
+        padding-inline: 0;
 
-// ====================================
-// TABLE VIEW - MOBILE CARD LAYOUT
-// ====================================
-.grades-table-view {
-    padding: 0 12px;
-    
-    .grades-card-list {
-        display: flex;
-        flex-direction: column;
-        gap: 12px;
-        
-        .grade-card {
-            background: var(--bg-card);
-            border-radius: var(--radius-lg);
-            box-shadow: var(--shadow-sm);
-            border: var(--border-light);
-            overflow: hidden;
-            transition: var(--transition-fast);
-            
-            &.expandable {
-                cursor: pointer;
-            }
-            
-            &:active {
-                transform: scale(0.98);
-            }
-            
-            // Category/Total cards have different styling
-            &.category-card {
-                background: var(--gradient-card);
-                border-color: var(--pastel-sky-light);
-                
-                .card-header {
-                    background: var(--gradient-turquoise-flow);
-                    
-                    .item-name h3 {
-                        color: var(--text-on-dark-pastel);
-                        font-weight: 700;
-                    }
-                }
-                
-                .grade-value {
-                    font-size: 1.25rem;
-                    font-weight: 700;
-                }
-            }
-            
-            // Card Header
-            .card-header {
-                padding: 12px 16px;
-                background: var(--bg-pastel-overlay);
-                border-bottom: var(--border-light);
-                
-                .item-info {
-                    display: flex;
-                    align-items: center;
-                    gap: 12px;
-                    
-                    .item-icon {
-                        width: 36px;
-                        height: 36px;
-                        min-width: 36px;
-                        background: var(--bg-interactive);
-                        border-radius: var(--radius-sm);
-                        display: flex;
-                        align-items: center;
-                        justify-content: center;
-                        
-                        ion-icon {
-                            font-size: 1.25rem;
-                            color: var(--text-link);
-                        }
-                        
-                        img, core-mod-icon {
-                            width: 24px;
-                            height: 24px;
-                            object-fit: contain;
-                        }
-                    }
-                    
-                    .item-name {
-                        flex: 1;
-                        min-width: 0; // Enable text truncation
-                        
-                        h3 {
-                            margin: 0;
-                            font-size: 0.9375rem;
-                            font-weight: 600;
-                            color: var(--text-secondary);
-                            overflow: hidden;
-                            text-overflow: ellipsis;
-                            display: -webkit-box;
-                            -webkit-line-clamp: 2;
-                            -webkit-box-orient: vertical;
-                            line-height: 1.3;
-                        }
-                    }
-                    
-                    .expand-icon {
-                        font-size: 1.25rem;
-                        color: var(--text-muted);
-                        transition: transform 0.3s ease;
-                        
-                        &.expanded {
-                            transform: rotate(180deg);
-                        }
-                    }
-                }
-            }
-            
-            // Card Content
-            .card-content {
-                padding: 12px 16px;
-                
-                .grade-section {
-                    display: flex;
-                    align-items: center;
-                    justify-content: space-between;
-                    gap: 12px;
-                    
-                    .grade-main {
-                        display: flex;
-                        align-items: center;
-                        gap: 8px;
-                        
-                        ion-icon {
-                            font-size: 1.125rem;
-                            
-                            &[name*="check"] {
-                                color: var(--pastel-mint-dark);
-                            }
-                            
-                            &[name*="xmark"], &[name*="times"] {
-                                color: var(--pastel-coral);
-                            }
-                        }
-                        
-                        .grade-value {
-                            font-size: 1.125rem;
-                            font-weight: 700;
-                            color: var(--text-primary);
-                            letter-spacing: -0.5px;
-                            
-                            &.text-success {
-                                color: var(--text-on-pastel);
-                                background: var(--pastel-mint);
-                                padding: 2px 10px;
-                                border-radius: var(--radius-full);
-                            }
-                            
-                            &.text-danger {
-                                color: #C62828;
-                                background: var(--pastel-coral);
-                                padding: 2px 10px;
-                                border-radius: var(--radius-full);
-                            }
-                        }
-                    }
-                    
-                    .grade-secondary {
-                        display: flex;
-                        flex-direction: column;
-                        align-items: flex-end;
-                        gap: 2px;
-                        text-align: right;
-                        
-                        .range {
-                            font-size: 0.8125rem;
-                            color: var(--text-muted);
-                        }
-                        
-                        .percentage {
-                            font-size: 0.875rem;
-                            font-weight: 600;
-                            color: var(--text-tertiary);
+        .header-content {
+            display: flex;
+            align-items: center;
+            gap: 12px;
 
-                            // Attainment scale colored badges
-                            &.grade-badge {
-                                padding: 2px 8px;
-                                border-radius: var(--radius-full);
-
-                                &.grade-ha {
-                                    background: var(--grade-ha-color);
-                                    color: #FFFFFF;
-                                }
-
-                                &.grade-mep {
-                                    background: var(--grade-mep-color);
-                                    color: #1A4E00;
-                                }
-
-                                &.grade-ep {
-                                    background: var(--grade-ep-color);
-                                    color: #5D5D00;
-                                }
-
-                                &.grade-lep {
-                                    background: var(--grade-lep-color);
-                                    color: #5D3000;
-                                }
-
-                                &.grade-la {
-                                    background: var(--grade-la-color);
-                                    color: #FFFFFF;
-                                }
-                            }
-                        }
-                    }
-                }
-                
-                .weight-info {
-                    margin-top: 8px;
-                    padding-top: 8px;
-                    border-top: var(--border-light);
-                    display: flex;
-                    align-items: center;
-                    gap: 8px;
-                    
-                    .label {
-                        font-size: 0.8125rem;
-                        color: var(--text-muted);
-                        font-weight: 600;
-                        text-transform: uppercase;
-                        letter-spacing: 0.5px;
-                    }
-                    
-                    .value {
-                        font-size: 0.875rem;
-                        color: var(--text-tertiary);
-                        font-weight: 500;
-                    }
-                }
-            }
-            
-            // Expandable Details
-            .card-details {
-                padding: 16px;
-                background: var(--bg-pastel-overlay);
-                border-top: var(--border-light);
-                animation: slideDown 0.3s ease;
-                
-                .detail-item {
-                    display: flex;
-                    justify-content: space-between;
-                    align-items: center;
-                    padding: 6px 0;
-                    
-                    &:not(:last-child) {
-                        border-bottom: var(--border-light);
-                    }
-                    
-                    .detail-label {
-                        font-size: 0.8125rem;
-                        color: var(--text-muted);
-                        font-weight: 500;
-                    }
-                    
-                    .detail-value {
-                        font-size: 0.875rem;
-                        color: var(--text-secondary);
-                        font-weight: 600;
-                        text-align: right;
-                        max-width: 50%; // Prevent overflow
-                        word-break: break-word;
-                    }
-                }
-                
-                .detail-feedback {
-                    margin-top: 12px;
-                    padding-top: 12px;
-                    border-top: var(--border-light);
-                    
-                    .detail-label {
-                        font-size: 0.8125rem;
-                        color: var(--text-muted);
-                        font-weight: 600;
-                        text-transform: uppercase;
-                        letter-spacing: 0.5px;
-                        margin-bottom: 8px;
-                    }
-                    
-                    core-format-text {
-                        font-size: 0.875rem;
-                        color: var(--text-tertiary);
-                        line-height: 1.5;
-                    }
-                }
-            }
-        }
-    }
-}
-
-@keyframes slideDown {
-    from {
-        max-height: 0;
-        opacity: 0;
-    }
-    to {
-        max-height: 500px;
-        opacity: 1;
-    }
-}
-
-// OLD TABLE STYLES - REMOVED (Using card layout for mobile app)
-// Table elements are hidden to prevent any legacy rendering
-table.core-table.core-grades-table {
-    display: none !important;
-}
-
-// ====================================
-// EMPTY STATE - PASTEL DESIGN
-// ====================================
-core-empty-box {
-    --empty-box-icon-color: var(--pastel-turquoise);
-    --empty-box-text-color: var(--text-tertiary);
-    --empty-box-background: var(--bg-card);
-    padding: 60px 20px;
-    
-    &::part(container) {
-        background: var(--gradient-card);
-        border-radius: var(--radius-xl);
-        box-shadow: var(--shadow-md);
-        border: var(--border-light);
-    }
-}
-
-// ====================================
-// LOADING STATES - SOFT ANIMATION
-// ====================================
-core-loading {
-    .core-loading-container {
-        background: rgba(250, 251, 252, 0.95);
-        backdrop-filter: blur(10px);
-        
-        ion-spinner {
-            --color: var(--pastel-turquoise);
-        }
-        
-        .core-loading-message {
-            color: var(--text-secondary);
-            font-weight: 500;
-            letter-spacing: -0.25px;
-        }
-    }
-}
-
-// ====================================
-// ANIMATIONS
-// ====================================
-@keyframes floatSoft {
-    0%, 100% {
-        transform: translateY(0) scale(1);
-    }
-    50% {
-        transform: translateY(-20px) scale(1.05);
-    }
-}
-
-@keyframes shimmerSoft {
-    0% {
-        transform: translateX(-100%);
-    }
-    100% {
-        transform: translateX(100%);
-    }
-}
-
-// ====================================
-// RESPONSIVE DESIGN
-// ====================================
-@include media-breakpoint-down(md) {
-    .core-grades-container {
-        padding: 16px 8px;
-    }
-    
-    // Table view uses cards on mobile, no special mobile styles needed
-    .grades-table-view {
-        padding: 0 8px;
-        
-        .grades-card-list {
-            gap: 10px;
-            
-            .grade-card {
-                .card-header {
-                    padding: 10px 12px;
-                    
-                    .item-info {
-                        gap: 10px;
-                        
-                        .item-icon {
-                            width: 32px;
-                            height: 32px;
-                            min-width: 32px;
-                        }
-                        
-                        .item-name h3 {
-                            font-size: 0.875rem;
-                        }
-                    }
-                }
-                
-                .card-content {
-                    padding: 10px 12px;
-                    
-                    .grade-section {
-                        .grade-main .grade-value {
-                            font-size: 1rem;
-                        }
-                        
-                        .grade-secondary {
-                            .range {
-                                font-size: 0.75rem;
-                            }
-                            .percentage {
-                                font-size: 0.8125rem;
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-}
-
-// Extra small devices (portrait phones, less than 360px)
-@media (max-width: 359px) {
-    .grades-table-view {
-        padding: 0 6px;
-        
-        .grades-card-list {
-            gap: 8px;
-            
-            .grade-card {
-                .card-header {
-                    padding: 8px 10px;
-                    
-                    .item-info {
-                        gap: 8px;
-                        
-                        .item-icon {
-                            width: 28px;
-                            height: 28px;
-                            min-width: 28px;
-                            
-                            ion-icon {
-                                font-size: 1rem;
-                            }
-                            
-                            img, core-mod-icon {
-                                width: 20px;
-                                height: 20px;
-                            }
-                        }
-                        
-                        .item-name h3 {
-                            font-size: 0.8125rem;
-                            -webkit-line-clamp: 1; // Only show 1 line on very small screens
-                        }
-                        
-                        .expand-icon {
-                            font-size: 1rem;
-                        }
-                    }
-                }
-                
-                .card-content {
-                    padding: 8px 10px;
-                    
-                    .grade-section {
-                        gap: 8px;
-                        
-                        .grade-main {
-                            gap: 6px;
-                            
-                            .grade-value {
-                                font-size: 0.9375rem;
-                            }
-                            
-                            ion-icon {
-                                font-size: 1rem;
-                            }
-                        }
-                        
-                        .grade-secondary {
-                            .range {
-                                font-size: 0.6875rem;
-                            }
-                            .percentage {
-                                font-size: 0.75rem;
-                            }
-                        }
-                    }
-                    
-                    .weight-info {
-                        margin-top: 6px;
-                        padding-top: 6px;
-                        gap: 6px;
-                        
-                        .label {
-                            font-size: 0.75rem;
-                        }
-                        
-                        .value {
-                            font-size: 0.8125rem;
-                        }
-                    }
-                }
-                
-                .card-details {
-                    padding: 12px 10px;
-                    
-                    .detail-item {
-                        padding: 4px 0;
-                        
-                        .detail-label {
-                            font-size: 0.75rem;
-                        }
-                        
-                        .detail-value {
-                            font-size: 0.8125rem;
-                        }
-                    }
-                }
-            }
-        }
-    }
-}
-
-@include media-breakpoint-up(md) {
-    .core-grades-container {
-        padding: 32px 24px;
-    }
-    
-    table.core-table.core-grades-table {
-        thead tr th {
-            padding: 24px 20px;
-        }
-        
-        tbody {
-            th, td {
-                padding: 20px 16px;
-            }
-        }
-    }
-}
-
-@include media-breakpoint-up(lg) {
-    .core-grades-container {
-        max-width: 1200px;
-        margin: 0 auto;
-        padding: 40px 32px;
-    }
-}
-
-// ====================================
-// GRADES DASHBOARD - OVERVIEW CARDS
-// ====================================
-.grades-dashboard {
-    padding: 0 16px 20px; // Less bottom padding
-    
-    .grade-summary-cards {
-        display: grid;
-        grid-template-columns: 1fr;
-        gap: 16px;
-        margin-bottom: 24px;
-        
-        @include media-breakpoint-up(md) {
-            grid-template-columns: repeat(3, 1fr);
-            gap: 20px;
-        }
-        
-        .summary-card {
-            background: var(--bg-card);
-            border-radius: var(--radius-xl);
-            padding: 24px;
-            box-shadow: var(--shadow-md);
-            border: var(--border-light);
-            position: relative;
-            overflow: hidden;
-            transition: var(--transition-base);
-            
-            &:hover {
-                transform: translateY(-3px);
-                box-shadow: var(--shadow-xl);
-                border-color: rgba(152, 251, 203, 0.3);
-            }
-            
-            .card-icon {
-                width: 56px;
-                height: 56px;
-                border-radius: var(--radius-lg);
+            .course-icon {
+                width: 42px;
+                height: 42px;
+                min-width: 42px;
+                background: rgba(255, 255, 255, 0.2);
+                backdrop-filter: blur(8px);
+                border-radius: 12px;
                 display: flex;
                 align-items: center;
                 justify-content: center;
-                margin-bottom: 16px;
-                position: relative;
-                
+                border: 1px solid rgba(255, 255, 255, 0.3);
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+
                 ion-icon {
-                    font-size: 1.75rem;
-                    color: var(--text-on-dark-pastel);
+                    font-size: 1.375rem;
+                    color: #FFFFFF;
                 }
             }
-            
-            .card-content {
-                position: relative;
-                z-index: 2;
-                
-                h3 {
-                    font-size: 0.875rem;
-                    font-weight: 600;
-                    text-transform: uppercase;
-                    letter-spacing: 0.75px;
-                    color: var(--text-muted);
-                    margin: 0 0 12px 0;
-                }
-                
-                .grade-display {
-                    display: flex;
-                    align-items: baseline;
-                    gap: 4px;
-                    margin-bottom: 8px;
-                    
-                    .grade-value {
-                        font-size: 2.25rem;
-                        font-weight: 700;
-                        color: var(--text-secondary);
-                        letter-spacing: -1px;
-                    }
-                    
-                    .grade-max {
-                        font-size: 1.25rem;
-                        font-weight: 500;
-                        color: var(--text-tertiary);
-                    }
-                }
-                
-                .grade-percentage {
-                    font-size: 1.125rem;
-                    font-weight: 600;
-                    color: var(--text-on-pastel);
-                }
-                
-                .stat-value {
-                    font-size: 2.5rem;
+
+            .course-info {
+                flex: 1;
+                min-width: 0;
+
+                h1 {
+                    font-size: 1.0625rem;
                     font-weight: 700;
-                    color: var(--text-secondary);
-                    letter-spacing: -1px;
-                    line-height: 1;
-                }
-                
-                .stat-label {
-                    font-size: 0.9375rem;
-                    color: var(--text-tertiary);
-                    font-weight: 500;
-                }
-                
-                .rank-display {
-                    display: flex;
-                    align-items: baseline;
-                    gap: 8px;
-                    
-                    .rank-value {
-                        font-size: 2.25rem;
-                        font-weight: 700;
-                        color: var(--text-secondary);
-                        letter-spacing: -0.5px;
-                    }
-                    
-                    .rank-total {
-                        font-size: 1rem;
-                        color: var(--text-tertiary);
-                        font-weight: 500;
-                    }
-                }
-            }
-            
-            &.overall-grade {
-                background: var(--gradient-card);
-                
-                .card-icon {
-                    background: var(--gradient-turquoise-flow);
-                }
-                
-                .progress-ring {
-                    position: absolute;
-                    right: 20px;
-                    top: 50%;
-                    transform: translateY(-50%);
-                    width: 100px;
-                    height: 100px;
-                    
-                    svg {
-                        width: 100%;
-                        height: 100%;
-                        transform: rotate(-90deg);
-                    }
-                    
-                    circle {
-                        transition: stroke-dashoffset 0.8s cubic-bezier(0.4, 0.0, 0.2, 1);
-                    }
-                }
-            }
-            
-            &.items-completed {
-                .card-icon {
-                    background: var(--gradient-sky-mint);
-                }
-            }
-            
-            &.class-rank {
-                .card-icon {
-                    background: var(--gradient-grade-high);
-                }
-            }
-        }
-    }
-    
-    // Grade Distribution Card
-    .grade-distribution-card {
-        background: var(--bg-card);
-        border-radius: var(--radius-xl);
-        padding: 24px;
-        box-shadow: var(--shadow-md);
-        border: var(--border-light);
-        margin-bottom: 24px;
-        
-        h3 {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            font-size: 1.125rem;
-            font-weight: 600;
-            color: var(--text-secondary);
-            margin: 0 0 20px 0;
-            
-            ion-icon {
-                font-size: 1.5rem;
-                color: var(--text-link);
-            }
-        }
-        
-        .distribution-bars {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-
-            .distribution-row {
-                display: flex;
-                align-items: center;
-                gap: 12px;
-
-                .row-label {
-                    display: flex;
-                    align-items: center;
-                    gap: 8px;
-                    min-width: 200px;
-                    flex-shrink: 0;
-
-                    .abbrev {
-                        display: inline-flex;
-                        align-items: center;
-                        justify-content: center;
-                        min-width: 40px;
-                        padding: 4px 8px;
-                        border-radius: var(--radius-sm);
-                        font-size: 0.75rem;
-                        font-weight: 700;
-                        text-transform: uppercase;
-                    }
-
-                    .description {
-                        font-size: 0.875rem;
-                        color: var(--text-tertiary);
-                        white-space: nowrap;
-                    }
-                }
-
-                .row-bar {
-                    flex: 1;
-                    height: 24px;
-                    background: rgba(179, 235, 242, 0.15);
-                    border-radius: var(--radius-sm);
+                    margin: 0;
+                    line-height: 1.25;
+                    color: #FFFFFF;
+                    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+                    white-space: nowrap;
                     overflow: hidden;
-                    min-width: 60px;
-
-                    .bar-fill {
-                        height: 100%;
-                        border-radius: var(--radius-sm);
-                        transition: width 0.5s ease;
-                        min-width: 2px;
-                    }
+                    text-overflow: ellipsis;
                 }
 
-                .row-count {
-                    min-width: 28px;
-                    text-align: right;
-                    font-size: 0.9375rem;
-                    font-weight: 700;
-                    color: var(--text-secondary);
-                }
-            }
-        }
+                .mentee-badge {
+                    display: inline-flex;
+                    align-items: center;
+                    gap: 4px;
+                    margin-top: 4px;
+                    padding: 2px 10px 2px 5px;
+                    background: rgba(255, 255, 255, 0.2);
+                    border-radius: 12px;
+                    font-size: 0.6875rem;
+                    font-weight: 500;
+                    color: #FFFFFF;
+                    backdrop-filter: blur(4px);
 
-        // Mobile responsive
-        @media (max-width: 480px) {
-            .distribution-bars {
-                .distribution-row {
-                    flex-wrap: wrap;
-                    gap: 8px;
-
-                    .row-label {
-                        min-width: 100%;
-                        order: 1;
-
-                        .description {
-                            font-size: 0.8125rem;
-                        }
-                    }
-
-                    .row-bar {
-                        flex: 1;
-                        order: 2;
-                        height: 20px;
-                    }
-
-                    .row-count {
-                        order: 3;
-                        min-width: 24px;
-                        font-size: 0.875rem;
+                    ion-icon {
+                        font-size: 0.8125rem;
                     }
                 }
             }
         }
     }
-    
-    // Performance Trends Card
-    .performance-trends-card {
-        background: var(--bg-card);
-        border-radius: var(--radius-xl);
-        padding: 24px;
-        box-shadow: var(--shadow-md);
-        border: var(--border-light);
-        margin-bottom: 24px;
-        
-        h3 {
+
+    // Curved bottom decoration
+    .header-decoration {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 16px;
+        background: var(--bg-page, #FAFBFC);
+        border-radius: 16px 16px 0 0;
+        z-index: 3;
+
+        // Small pill accent
+        &::after {
+            content: '';
+            position: absolute;
+            top: 6px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 32px;
+            height: 4px;
+            background: var(--aspire-primary);
+            opacity: 0.25;
+            border-radius: 2px;
+        }
+    }
+}
+
+@keyframes floatOrb {
+    0%, 100% {
+        transform: translate(0, 0) scale(1);
+    }
+    50% {
+        transform: translate(-8px, 8px) scale(1.05);
+    }
+}
+
+// Fallback for non-enhanced header
+ion-header:not(.aspire-header) ion-toolbar {
+    --background: linear-gradient(135deg, var(--aspire-primary) 0%, var(--aspire-secondary) 100%);
+    --color: #FFFFFF;
+
+    ion-back-button {
+        --color: #FFFFFF;
+    }
+}
+
+.aspire-grades-container {
+    padding: 20px 16px 32px;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+// ====================================
+// HERO SECTION - Overall Grade
+// ====================================
+
+.grade-hero {
+    background: linear-gradient(135deg, var(--aspire-primary) 0%, var(--aspire-secondary) 100%);
+    border-radius: var(--radius-xl);
+    padding: 28px 24px;
+    margin-bottom: 20px;
+    box-shadow: var(--shadow-md);
+
+    .hero-content {
+        text-align: center;
+    }
+
+    .hero-label {
+        font-size: 0.8125rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        color: rgba(255, 255, 255, 0.85);
+        margin-bottom: 8px;
+    }
+
+    .hero-grade {
+        display: flex;
+        align-items: baseline;
+        justify-content: center;
+        gap: 4px;
+        margin-bottom: 16px;
+
+        .grade-number {
+            font-size: 3rem;
+            font-weight: 700;
+            color: #FFFFFF;
+            line-height: 1;
+            letter-spacing: -1px;
+        }
+
+        .grade-max {
+            font-size: 1.25rem;
+            font-weight: 500;
+            color: rgba(255, 255, 255, 0.7);
+        }
+    }
+
+    .hero-progress {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 16px;
+
+        .progress-bar {
+            flex: 1;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.25);
+            border-radius: 4px;
+            overflow: hidden;
+
+            .progress-fill {
+                height: 100%;
+                background: #FFFFFF;
+                border-radius: 4px;
+                transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            }
+        }
+
+        .progress-percentage {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #FFFFFF;
+            min-width: 60px;
+            text-align: right;
+        }
+    }
+
+    .hero-meta {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        font-size: 0.875rem;
+        color: rgba(255, 255, 255, 0.85);
+
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+
+            ion-icon {
+                font-size: 1rem;
+            }
+        }
+
+        .meta-divider {
+            opacity: 0.5;
+        }
+    }
+}
+
+// ====================================
+// GRADE BREAKDOWN - Collapsible
+// ====================================
+
+.grade-breakdown {
+    background: var(--bg-card);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-sm);
+    margin-bottom: 20px;
+    overflow: hidden;
+
+    .breakdown-header {
+        display: flex;
+        align-items: center;
+        padding: 16px 20px;
+        cursor: pointer;
+        transition: background var(--transition-fast);
+
+        &:hover {
+            background: var(--bg-subtle);
+        }
+
+        .breakdown-label {
+            font-size: 0.9375rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            margin-right: auto;
+        }
+
+        .breakdown-summary {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin-right: 12px;
+
+            .breakdown-dot {
+                width: 8px;
+                height: 8px;
+                border-radius: 50%;
+            }
+
+            .breakdown-count {
+                font-size: 0.8125rem;
+                font-weight: 500;
+                color: var(--text-muted);
+            }
+
+            .breakdown-sep {
+                font-size: 0.75rem;
+                color: var(--text-light);
+            }
+        }
+
+        .expand-icon {
+            font-size: 1.125rem;
+            color: var(--text-muted);
+            transition: transform var(--transition-base);
+
+            &.expanded {
+                transform: rotate(180deg);
+            }
+        }
+    }
+
+    .breakdown-details {
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.3s ease;
+
+        &.expanded {
+            max-height: 400px;
+        }
+
+        padding: 0 20px;
+
+        &.expanded {
+            padding: 0 20px 16px;
+        }
+
+        .breakdown-row {
             display: flex;
             align-items: center;
             gap: 12px;
-            font-size: 1.125rem;
-            font-weight: 600;
-            color: var(--text-secondary);
-            margin: 0 0 20px 0;
-            
-            ion-icon {
-                font-size: 1.5rem;
-                color: var(--text-link);
-            }
-        }
-        
-        .trend-indicators {
-            display: flex;
-            gap: 16px;
-            flex-wrap: wrap;
-            
-            .trend-item {
+            padding: 10px 0;
+            border-top: 1px solid rgba(0, 0, 0, 0.06);
+
+            .breakdown-info {
                 display: flex;
                 align-items: center;
-                gap: 8px;
-                padding: 8px 16px;
-                border-radius: var(--radius-full);
+                gap: 10px;
+                min-width: 180px;
+
+                .abbrev-badge {
+                    font-size: 0.6875rem;
+                    font-weight: 700;
+                    padding: 3px 8px;
+                    border-radius: 4px;
+                    text-transform: uppercase;
+                }
+
+                .description {
+                    font-size: 0.8125rem;
+                    color: var(--text-muted);
+                }
+            }
+
+            .breakdown-bar {
+                flex: 1;
+                height: 6px;
+                background: rgba(0, 0, 0, 0.06);
+                border-radius: 3px;
+                overflow: hidden;
+
+                .bar-fill {
+                    height: 100%;
+                    border-radius: 3px;
+                    min-width: 2px;
+                    transition: width 0.4s ease;
+                }
+            }
+
+            .breakdown-value {
                 font-size: 0.875rem;
                 font-weight: 600;
-                
-                ion-icon {
-                    font-size: 1.25rem;
-                }
-                
-                &.improving {
-                    background: rgba(173, 235, 179, 0.15);
-                    color: var(--text-on-pastel);
-                    
-                    ion-icon {
-                        color: var(--pastel-mint-dark);
-                    }
-                }
-                
-                &.declining {
-                    background: rgba(255, 181, 167, 0.15);
-                    color: #C62828;
-                    
-                    ion-icon {
-                        color: var(--pastel-coral);
-                    }
-                }
-                
-                &.stable {
-                    background: rgba(179, 235, 242, 0.15);
-                    color: var(--text-link);
-                    
-                    ion-icon {
-                        color: var(--pastel-turquoise);
-                    }
-                }
+                color: var(--text-secondary);
+                min-width: 24px;
+                text-align: right;
             }
         }
     }
@@ -1134,610 +472,211 @@ core-loading {
 // ====================================
 // VIEW TOGGLE
 // ====================================
+
 .view-toggle {
-    padding: 0 16px 16px; // Less bottom padding
-    
-    ion-segment {
-        --background: var(--bg-pastel-overlay);
-        border-radius: var(--radius-lg);
-        padding: 6px;
-        box-shadow: var(--shadow-md);
-        border: var(--border-light);
-        
-        ion-segment-button {
-            --color: var(--text-tertiary);
-            --color-checked: var(--text-on-pastel);
-            --background-checked: var(--pastel-mint-blue);
-            --border-radius: calc(var(--radius-lg) - 4px);
-            font-weight: 600;
-            transition: var(--transition-base);
-            min-height: 44px;
-            
-            ion-label {
-                display: flex;
-                align-items: center;
-                gap: 8px;
-                
-                ion-icon {
-                    font-size: 1.125rem;
-                }
+    margin-bottom: 20px;
+
+    .toggle-group {
+        display: flex;
+        background: var(--bg-card);
+        border-radius: var(--radius-md);
+        padding: 4px;
+        box-shadow: var(--shadow-sm);
+
+        .toggle-btn {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            padding: 10px 16px;
+            border: none;
+            background: transparent;
+            border-radius: var(--radius-sm);
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: all var(--transition-fast);
+
+            ion-icon {
+                font-size: 1rem;
             }
-            
-            &.segment-button-checked {
-                box-shadow: var(--shadow-sm);
+
+            &.active {
+                background: linear-gradient(135deg, var(--aspire-primary) 0%, var(--aspire-secondary) 100%);
+                color: #FFFFFF;
+                box-shadow: 0 2px 6px rgba(74, 155, 127, 0.3);
+            }
+
+            &:not(.active):hover {
+                background: var(--bg-subtle);
+                color: var(--text-secondary);
             }
         }
     }
 }
 
 // ====================================
+// GRADES LIST - Common Styles
+// ====================================
+
+.grades-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+// ====================================
 // GROUPED VIEW
 // ====================================
-.grades-grouped-view {
-    padding: 0 16px;
-    
-    .category-group {
+
+.grouped-view {
+    .category-section {
         background: var(--bg-card);
-        border-radius: var(--radius-xl);
-        box-shadow: var(--shadow-md);
-        border: var(--border-light);
-        margin-bottom: 20px;
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-sm);
         overflow: hidden;
-        transition: var(--transition-base);
-        
-        &:hover {
-            box-shadow: var(--shadow-lg);
-        }
-        
+
         .category-header {
-            padding: 20px;
-            cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: space-between;
-            background: var(--gradient-card);
-            transition: var(--transition-fast);
-            
+            padding: 16px 20px;
+            background: var(--bg-subtle);
+            cursor: pointer;
+            transition: background var(--transition-fast);
+
             &:hover {
                 background: var(--bg-hover);
             }
-            
-            .category-info {
+
+            .category-title {
                 display: flex;
                 align-items: center;
-                gap: 16px;
-                flex: 1;
-                
-                .category-icon {
-                    width: 56px;
-                    height: 56px;
-                    border-radius: var(--radius-lg);
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    background: var(--gradient-turquoise-flow);
-                    box-shadow: 0 4px 12px rgba(141, 220, 220, 0.3);
-                    
-                    ion-icon {
-                        font-size: 1.5rem;
-                        color: var(--text-on-dark-pastel);
-                    }
-                    
-                    &.icon-assignments {
-                        background: var(--gradient-sky-mint);
-                    }
-                    
-                    &.icon-quizzes {
-                        background: linear-gradient(135deg, var(--pastel-lavender) 0%, var(--pastel-periwinkle) 100%);
-                    }
-                }
-                
-                .category-details {
-                    h3 {
-                        font-size: 1.125rem;
-                        font-weight: 600;
-                        color: var(--text-secondary);
-                        margin: 0 0 4px 0;
-                    }
-                    
-                    p {
-                        font-size: 0.875rem;
-                        color: var(--text-muted);
-                        margin: 0;
-                    }
+                gap: 10px;
+                font-size: 1rem;
+                font-weight: 600;
+                color: var(--text-secondary);
+
+                ion-icon {
+                    font-size: 1.25rem;
+                    color: var(--aspire-primary);
                 }
             }
-            
-            .category-stats {
+
+            .category-right {
                 display: flex;
                 align-items: center;
-                gap: 20px;
-                
-                .category-grade {
-                    text-align: right;
-                    
-                    .grade {
-                        font-size: 1.5rem;
-                        font-weight: 700;
-                        color: var(--text-secondary);
-                    }
-                    
-                    .max {
-                        font-size: 1rem;
-                        color: var(--text-tertiary);
-                    }
+                gap: 12px;
+
+                .category-count {
+                    font-size: 0.8125rem;
+                    color: var(--text-muted);
                 }
-                
-                .category-percentage {
-                    font-size: 1.25rem;
-                    font-weight: 700;
-                    padding: 8px 16px;
-                    border-radius: var(--radius-full);
 
-                    // School Attainment Scale
-                    &.grade-ha {
-                        background: var(--grade-ha-color);
-                        color: #FFFFFF;
-                    }
-
-                    &.grade-mep {
-                        background: var(--grade-mep-color);
-                        color: #1A4E00;
-                    }
-
-                    &.grade-ep {
-                        background: var(--grade-ep-color);
-                        color: #5D5D00;
-                    }
-
-                    &.grade-lep {
-                        background: var(--grade-lep-color);
-                        color: #5D3000;
-                    }
-
-                    &.grade-la {
-                        background: var(--grade-la-color);
-                        color: #FFFFFF;
-                    }
-
-                    // Legacy classes
-                    &.grade-a {
-                        background: var(--grade-a-color);
-                        color: var(--text-on-pastel);
-                    }
-
-                    &.grade-b {
-                        background: var(--grade-b-color);
-                        color: var(--text-on-dark-pastel);
-                    }
-
-                    &.grade-c {
-                        background: var(--grade-c-color);
-                        color: #8B6F00;
-                    }
-
-                    &.grade-d {
-                        background: var(--grade-d-color);
-                        color: #BF6000;
-                    }
-
-                    &.grade-f {
-                        background: var(--grade-f-color);
-                        color: #C62828;
-                    }
-                }
-                
                 .expand-icon {
-                    font-size: 1.5rem;
-                    color: var(--text-tertiary);
-                    transition: transform 0.3s ease;
-                    
+                    font-size: 1.125rem;
+                    color: var(--text-muted);
+                    transition: transform var(--transition-base);
+
                     &.expanded {
                         transform: rotate(180deg);
                     }
                 }
             }
         }
-        
-        .category-content {
+
+        .category-items {
             max-height: 0;
             overflow: hidden;
-            transition: max-height 0.4s cubic-bezier(0.4, 0.0, 0.2, 1);
-            
+            transition: max-height 0.4s ease;
+
             &.expanded {
                 max-height: 2000px;
             }
-            
-            .grade-items {
-                padding: 0 20px 20px;
-                
-                .grade-item {
+
+            .grade-item {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                padding: 14px 20px;
+                border-top: 1px solid rgba(0, 0, 0, 0.04);
+                transition: background var(--transition-fast);
+
+                &:hover {
+                    background: var(--bg-subtle);
+                }
+
+                .item-left {
                     display: flex;
                     align-items: center;
-                    gap: 16px;
-                    padding: 16px;
-                    background: var(--bg-pastel-overlay);
-                    border-radius: var(--radius-lg);
-                    margin-bottom: 12px;
-                    transition: var(--transition-fast);
-                    
-                    &:hover {
-                        background: var(--bg-hover);
-                        transform: translateX(4px);
-                    }
-                    
-                    &:last-child {
-                        margin-bottom: 0;
-                    }
-                    
+                    gap: 12px;
+                    flex: 1;
+                    min-width: 0;
+
                     .item-icon {
-                        width: 40px;
-                        height: 40px;
-                        border-radius: var(--radius-md);
+                        width: 36px;
+                        height: 36px;
+                        border-radius: var(--radius-sm);
+                        background: var(--bg-subtle);
                         display: flex;
                         align-items: center;
                         justify-content: center;
-                        background: var(--bg-interactive);
                         flex-shrink: 0;
-                        
+
                         img {
-                            width: 24px;
-                            height: 24px;
+                            width: 22px;
+                            height: 22px;
                             object-fit: contain;
                         }
-                        
+
                         ion-icon {
-                            font-size: 1.25rem;
-                            color: var(--text-link);
+                            font-size: 1.125rem;
+                            color: var(--aspire-primary);
                         }
                     }
-                    
-                    .item-info {
-                        flex: 1;
-                        
-                        h4 {
-                            font-size: 1rem;
-                            font-weight: 600;
+
+                    .item-details {
+                        min-width: 0;
+
+                        .item-name {
+                            font-size: 0.9375rem;
+                            font-weight: 500;
                             color: var(--text-secondary);
-                            margin: 0 0 4px 0;
-                        }
-                        
-                        .item-date {
-                            font-size: 0.875rem;
-                            color: var(--text-muted);
-                            display: flex;
-                            align-items: center;
-                            gap: 4px;
                             margin: 0;
-                            
-                            ion-icon {
-                                font-size: 0.875rem;
-                            }
+                            overflow: hidden;
+                            text-overflow: ellipsis;
+                            white-space: nowrap;
                         }
-                    }
-                    
-                    .item-grade {
-                        text-align: right;
-                        
-                        .grade-badge {
-                            display: inline-flex;
-                            align-items: center;
-                            gap: 6px;
-                            padding: 6px 14px;
-                            border-radius: var(--radius-full);
-                            font-size: 1rem;
-                            font-weight: 700;
-                            margin-bottom: 4px;
-                            
-                            // School Attainment Scale grade badges
-                            &.grade-ha {
-                                background: var(--grade-ha-color);
-                                color: #FFFFFF;
-                                box-shadow: 0 2px 6px rgba(0, 176, 80, 0.4);
-                            }
 
-                            &.grade-mep {
-                                background: var(--grade-mep-color);
-                                color: #1A4E00;
-                                box-shadow: 0 2px 6px rgba(146, 208, 80, 0.4);
-                            }
-
-                            &.grade-ep {
-                                background: var(--grade-ep-color);
-                                color: #5D5D00;
-                                box-shadow: 0 2px 6px rgba(255, 255, 0, 0.4);
-                            }
-
-                            &.grade-lep {
-                                background: var(--grade-lep-color);
-                                color: #5D3000;
-                                box-shadow: 0 2px 6px rgba(255, 192, 0, 0.4);
-                            }
-
-                            &.grade-la {
-                                background: var(--grade-la-color);
-                                color: #FFFFFF;
-                                box-shadow: 0 2px 6px rgba(255, 0, 0, 0.4);
-                            }
-
-                            // Legacy grade classes (for backward compatibility)
-                            &.grade-a {
-                                background: linear-gradient(135deg, var(--pastel-mint) 0%, var(--pastel-mint-light) 100%);
-                                color: var(--text-on-pastel);
-                                box-shadow: 0 2px 6px rgba(173, 235, 179, 0.3);
-                            }
-
-                            &.grade-b {
-                                background: linear-gradient(135deg, var(--pastel-sky) 0%, var(--pastel-sky-light) 100%);
-                                color: var(--text-on-dark-pastel);
-                                box-shadow: 0 2px 6px rgba(179, 235, 242, 0.3);
-                            }
-
-                            &.grade-c {
-                                background: linear-gradient(135deg, var(--pastel-yellow) 0%, var(--pastel-peach) 100%);
-                                color: #8B6F00;
-                                box-shadow: 0 2px 6px rgba(255, 253, 150, 0.3);
-                            }
-
-                            &.grade-d, &.grade-f {
-                                background: linear-gradient(135deg, var(--pastel-coral) 0%, var(--pastel-peach) 100%);
-                                color: #C62828;
-                                box-shadow: 0 2px 6px rgba(255, 181, 167, 0.3);
-                            }
-                        }
-                        
-                        .grade-details {
-                            display: flex;
-                            gap: 12px;
-                            font-size: 0.8125rem;
-                            color: var(--text-muted);
-                            
-                            .percentage {
-                                font-weight: 600;
-                            }
-                        }
-                    }
-                }
-            }
-            
-            .category-progress {
-                padding: 20px;
-                background: var(--bg-pastel-overlay);
-                border-top: var(--border-light);
-                
-                .progress-info {
-                    display: flex;
-                    justify-content: space-between;
-                    align-items: center;
-                    margin-bottom: 12px;
-                    font-size: 0.875rem;
-                    color: var(--text-tertiary);
-                }
-                
-                .progress-bar {
-                    height: 8px;
-                    background: rgba(179, 235, 242, 0.2);
-                    border-radius: var(--radius-full);
-                    overflow: hidden;
-                    
-                    .progress-fill {
-                        height: 100%;
-                        background: var(--gradient-turquoise-flow);
-                        border-radius: var(--radius-full);
-                        transition: width 0.8s cubic-bezier(0.4, 0.0, 0.2, 1);
-                        position: relative;
-                        
-                        &::after {
-                            content: '';
-                            position: absolute;
-                            top: 0;
-                            left: 0;
-                            right: 0;
-                            bottom: 0;
-                            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
-                            animation: shimmerSoft 2.5s infinite;
-                        }
-                    }
-                }
-            }
-        }
-    }
-}
-
-// ====================================
-// TIMELINE VIEW
-// ====================================
-.grades-timeline-view {
-    padding: 0 16px;
-    min-height: 200px; // Ensure visibility
-    
-    .timeline-container {
-        position: relative;
-        min-height: 100px; // Minimum height
-        
-        &::before {
-            content: '';
-            position: absolute;
-            left: 31px;
-            top: 0;
-            bottom: 0;
-            width: 2px;
-            background: var(--border-light);
-        }
-        
-        .timeline-month {
-            margin-bottom: 32px;
-            
-            .month-header {
-                font-size: 1.125rem;
-                font-weight: 700;
-                color: var(--text-secondary);
-                margin: 0 0 16px 0;
-                padding-left: 56px;
-                position: relative;
-                
-                &::before {
-                    content: '';
-                    position: absolute;
-                    left: 24px;
-                    top: 50%;
-                    transform: translateY(-50%);
-                    width: 16px;
-                    height: 16px;
-                    background: var(--gradient-turquoise-flow);
-                    border-radius: 50%;
-                    box-shadow: 0 0 0 4px rgba(141, 220, 220, 0.2);
-                }
-            }
-            
-            .timeline-items {
-                .timeline-item {
-                    display: flex;
-                    align-items: flex-start;
-                    gap: 16px;
-                    margin-bottom: 20px;
-                    position: relative;
-                    
-                    .timeline-date {
-                        width: 48px;
-                        text-align: center;
-                        flex-shrink: 0;
-                        position: relative;
-                        z-index: 2; // Ensure date text is above connector
-                        
-                        .day {
-                            font-size: 1.5rem;
-                            font-weight: 700;
-                            color: var(--text-secondary);
-                            display: block;
-                            line-height: 1;
-                            background: var(--bg-base); // Add background to prevent visual overlap
-                            padding: 2px 4px;
-                            border-radius: var(--radius-sm);
-                        }
-                        
-                        .weekday {
+                        .item-meta {
                             font-size: 0.75rem;
                             color: var(--text-muted);
-                            text-transform: uppercase;
+                            margin: 2px 0 0;
                         }
                     }
-                    
-                    .timeline-content {
-                        flex: 1;
-                        background: var(--bg-card);
-                        border-radius: var(--radius-lg);
-                        padding: 16px 20px;
-                        box-shadow: var(--shadow-sm);
-                        border: var(--border-light);
-                        transition: var(--transition-fast);
-                        
-                        &:hover {
-                            box-shadow: var(--shadow-md);
-                            transform: translateX(4px);
-                        }
-                        
-                        .item-header {
-                            display: flex;
-                            align-items: center;
-                            gap: 8px;
-                            margin-bottom: 8px;
-                            
-                            ion-icon {
-                                font-size: 1.125rem;
-                                color: var(--text-link);
-                            }
-                            
-                            h4 {
-                                font-size: 1rem;
-                                font-weight: 600;
-                                color: var(--text-secondary);
-                                margin: 0;
-                            }
-                        }
-                        
-                        .item-grade {
-                            display: flex;
-                            align-items: center;
-                            gap: 12px;
-                            
-                            .grade-value {
-                                font-size: 1.125rem;
-                                font-weight: 700;
-                                color: var(--text-primary);
-                            }
-                            
-                            .grade-percentage {
-                                font-size: 0.875rem;
-                                font-weight: 600;
-                                padding: 4px 10px;
-                                border-radius: var(--radius-full);
+                }
 
-                                // Attainment scale colors
-                                &.grade-ha {
-                                    background: var(--grade-ha-color);
-                                    color: #FFFFFF;
-                                }
+                .item-right {
+                    display: flex;
+                    flex-direction: column;
+                    align-items: flex-end;
+                    gap: 2px;
+                    flex-shrink: 0;
+                    margin-left: 12px;
 
-                                &.grade-mep {
-                                    background: var(--grade-mep-color);
-                                    color: #1A4E00;
-                                }
-
-                                &.grade-ep {
-                                    background: var(--grade-ep-color);
-                                    color: #5D5D00;
-                                }
-
-                                &.grade-lep {
-                                    background: var(--grade-lep-color);
-                                    color: #5D3000;
-                                }
-
-                                &.grade-la {
-                                    background: var(--grade-la-color);
-                                    color: #FFFFFF;
-                                }
-
-                                // Fallback for no class
-                                &:not(.grade-ha):not(.grade-mep):not(.grade-ep):not(.grade-lep):not(.grade-la) {
-                                    background: var(--bg-pastel-overlay);
-                                    color: var(--text-on-pastel);
-                                }
-                            }
-                        }
+                    .item-grade {
+                        font-size: 1rem;
+                        font-weight: 600;
+                        color: var(--text-primary);
                     }
-                    
-                    .timeline-connector {
-                        position: absolute;
-                        left: 24px;
-                        top: 12px;
-                        width: 16px;
-                        height: 16px;
-                        background: var(--bg-card);
-                        border: 2px solid var(--pastel-turquoise);
-                        border-radius: 50%;
-                        z-index: 1;
-                        
-                        &::after {
-                            content: '';
-                            position: absolute;
-                            left: 50%;
-                            top: 50%;
-                            transform: translate(-50%, -50%);
-                            width: 6px;
-                            height: 6px;
-                            background: var(--pastel-turquoise);
-                            border-radius: 50%;
-                        }
-                    }
-                    
-                    &.type-manual .timeline-connector {
-                        border-color: var(--pastel-mint);
-                        
-                        &::after {
-                            background: var(--pastel-mint);
-                        }
+
+                    .item-percentage {
+                        font-size: 0.75rem;
+                        font-weight: 600;
+                        padding: 2px 8px;
+                        border-radius: 10px;
                     }
                 }
             }
@@ -1746,29 +685,462 @@ core-loading {
 }
 
 // ====================================
-// UTILITY CLASSES
+// TABLE VIEW
 // ====================================
-.text-grade-a {
-    color: var(--text-on-pastel);
-    background: var(--grade-a-color);
+
+.table-view {
+    gap: 10px;
+
+    .category-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 14px 16px;
+        background: var(--bg-subtle);
+        border-radius: var(--radius-md);
+        border-left: 4px solid var(--aspire-primary);
+
+        .category-row-left {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+
+            ion-icon {
+                font-size: 1.125rem;
+                color: var(--aspire-primary);
+            }
+
+            .category-name {
+                font-size: 0.9375rem;
+                font-weight: 600;
+                color: var(--text-secondary);
+            }
+        }
+
+        .category-row-right {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+
+            .category-grade {
+                font-size: 1rem;
+                font-weight: 600;
+                color: var(--text-primary);
+            }
+
+            .category-percentage {
+                font-size: 0.75rem;
+                font-weight: 600;
+                padding: 3px 10px;
+                border-radius: 12px;
+            }
+        }
+    }
+
+    .grade-card {
+        background: var(--bg-card);
+        border-radius: var(--radius-md);
+        box-shadow: var(--shadow-sm);
+        overflow: hidden;
+        transition: box-shadow var(--transition-fast), transform var(--transition-fast);
+
+        &.expandable {
+            cursor: pointer;
+        }
+
+        &:active {
+            transform: scale(0.995);
+        }
+
+        &:hover {
+            box-shadow: var(--shadow-md);
+        }
+
+        .card-main {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 14px 16px;
+
+            .card-left {
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                flex: 1;
+                min-width: 0;
+
+                .card-icon {
+                    width: 36px;
+                    height: 36px;
+                    border-radius: var(--radius-sm);
+                    background: var(--bg-subtle);
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    flex-shrink: 0;
+
+                    ion-icon {
+                        font-size: 1.125rem;
+                        color: var(--aspire-primary);
+                    }
+
+                    img, core-mod-icon {
+                        width: 22px;
+                        height: 22px;
+                        object-fit: contain;
+                    }
+                }
+
+                .card-info {
+                    min-width: 0;
+
+                    .card-name {
+                        font-size: 0.9375rem;
+                        font-weight: 500;
+                        color: var(--text-secondary);
+                        margin: 0;
+                        overflow: hidden;
+                        text-overflow: ellipsis;
+                        display: -webkit-box;
+                        -webkit-line-clamp: 2;
+                        -webkit-box-orient: vertical;
+                        line-height: 1.3;
+                    }
+
+                    .card-meta {
+                        font-size: 0.75rem;
+                        color: var(--text-muted);
+                        margin: 3px 0 0;
+                    }
+                }
+            }
+
+            .card-right {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                flex-shrink: 0;
+                margin-left: 12px;
+
+                .grade-display {
+                    display: flex;
+                    align-items: center;
+                    gap: 4px;
+
+                    ion-icon {
+                        font-size: 1rem;
+                        color: var(--aspire-primary);
+                    }
+
+                    .grade-value {
+                        font-size: 1rem;
+                        font-weight: 600;
+                        color: var(--text-primary);
+                    }
+                }
+
+                .grade-percentage {
+                    font-size: 0.75rem;
+                    font-weight: 600;
+                    padding: 3px 10px;
+                    border-radius: 12px;
+                }
+
+                .expand-icon {
+                    font-size: 1rem;
+                    color: var(--text-muted);
+                    transition: transform var(--transition-base);
+                    margin-left: 4px;
+
+                    &.expanded {
+                        transform: rotate(180deg);
+                    }
+                }
+            }
+        }
+
+        .card-details {
+            padding: 0 16px 16px;
+            border-top: 1px solid rgba(0, 0, 0, 0.04);
+            margin-top: -1px;
+            padding-top: 12px;
+            background: var(--bg-subtle);
+            animation: slideIn 0.25s ease;
+
+            .detail-row {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 6px 0;
+
+                .detail-label {
+                    font-size: 0.8125rem;
+                    color: var(--text-muted);
+                }
+
+                .detail-value {
+                    font-size: 0.875rem;
+                    font-weight: 500;
+                    color: var(--text-secondary);
+                }
+            }
+
+            .detail-feedback {
+                margin-top: 8px;
+                padding-top: 8px;
+                border-top: 1px solid rgba(0, 0, 0, 0.04);
+
+                .detail-label {
+                    font-size: 0.8125rem;
+                    color: var(--text-muted);
+                    display: block;
+                    margin-bottom: 6px;
+                }
+
+                core-format-text {
+                    font-size: 0.875rem;
+                    color: var(--text-secondary);
+                    line-height: 1.5;
+                }
+            }
+        }
+    }
 }
 
-.text-grade-b {
-    color: var(--text-on-dark-pastel);
-    background: var(--grade-b-color);
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-8px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
-.text-grade-c {
-    color: #8B6F00;
-    background: var(--grade-c-color);
+// ====================================
+// TIMELINE VIEW (Optional)
+// ====================================
+
+.timeline-view {
+    .timeline-month {
+        margin-bottom: 24px;
+
+        .month-header {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            margin: 0 0 12px 0;
+            padding-left: 4px;
+        }
+
+        .timeline-item {
+            display: flex;
+            gap: 16px;
+            padding: 12px 0;
+
+            .timeline-date {
+                width: 40px;
+                text-align: center;
+                flex-shrink: 0;
+
+                .day {
+                    display: block;
+                    font-size: 1.25rem;
+                    font-weight: 600;
+                    color: var(--text-secondary);
+                    line-height: 1;
+                }
+
+                .weekday {
+                    font-size: 0.6875rem;
+                    color: var(--text-muted);
+                    text-transform: uppercase;
+                }
+            }
+
+            .timeline-content {
+                flex: 1;
+                background: var(--bg-card);
+                border-radius: var(--radius-md);
+                padding: 14px 16px;
+                box-shadow: var(--shadow-sm);
+
+                .timeline-header {
+                    display: flex;
+                    align-items: center;
+                    gap: 8px;
+                    margin-bottom: 6px;
+
+                    ion-icon {
+                        font-size: 1rem;
+                        color: var(--aspire-primary);
+                    }
+
+                    h4 {
+                        font-size: 0.9375rem;
+                        font-weight: 500;
+                        color: var(--text-secondary);
+                        margin: 0;
+                    }
+                }
+
+                .timeline-grade {
+                    display: flex;
+                    align-items: center;
+                    gap: 10px;
+
+                    .grade-value {
+                        font-size: 1rem;
+                        font-weight: 600;
+                        color: var(--text-primary);
+                    }
+
+                    .grade-percentage {
+                        font-size: 0.75rem;
+                        font-weight: 600;
+                        padding: 2px 8px;
+                        border-radius: 10px;
+                    }
+                }
+            }
+        }
+    }
 }
 
-.text-grade-d {
-    color: #BF6000;
-    background: var(--grade-d-color);
+// ====================================
+// GRADE PERCENTAGE BADGES
+// School Attainment Scale Colors
+// ====================================
+
+.grade-ha {
+    background: var(--grade-ha) !important;
+    color: #FFFFFF !important;
 }
 
-.text-grade-f {
-    color: #C62828;
-    background: var(--grade-f-color);
+.grade-mep {
+    background: var(--grade-mep) !important;
+    color: #1A4E00 !important;
+}
+
+.grade-ep {
+    background: var(--grade-ep) !important;
+    color: #5D5D00 !important;
+}
+
+.grade-lep {
+    background: var(--grade-lep) !important;
+    color: #5D3000 !important;
+}
+
+.grade-la {
+    background: var(--grade-la) !important;
+    color: #FFFFFF !important;
+}
+
+// ====================================
+// EMPTY STATE
+// ====================================
+
+core-empty-box {
+    --empty-box-icon-color: var(--aspire-primary);
+    --empty-box-text-color: var(--text-muted);
+    padding: 60px 20px;
+}
+
+// ====================================
+// LOADING STATE
+// ====================================
+
+core-loading {
+    ion-spinner {
+        --color: var(--aspire-primary);
+    }
+}
+
+// ====================================
+// RESPONSIVE ADJUSTMENTS
+// ====================================
+
+@media (max-width: 400px) {
+    .aspire-grades-container {
+        padding: 16px 12px 24px;
+    }
+
+    .grade-hero {
+        padding: 24px 20px;
+
+        .hero-grade .grade-number {
+            font-size: 2.5rem;
+        }
+    }
+
+    .grade-breakdown {
+        .breakdown-header {
+            padding: 14px 16px;
+
+            .breakdown-summary {
+                display: none; // Hide on very small screens
+            }
+        }
+
+        .breakdown-details .breakdown-row {
+            flex-wrap: wrap;
+
+            .breakdown-info {
+                min-width: 100%;
+                margin-bottom: 6px;
+            }
+        }
+    }
+
+    .grouped-view .category-section {
+        .category-header {
+            padding: 14px 16px;
+        }
+
+        .category-items .grade-item {
+            padding: 12px 16px;
+
+            .item-left .item-icon {
+                width: 32px;
+                height: 32px;
+            }
+
+            .item-left .item-details .item-name {
+                font-size: 0.875rem;
+            }
+        }
+    }
+
+    .table-view {
+        .category-row {
+            padding: 12px 14px;
+        }
+
+        .grade-card .card-main {
+            padding: 12px 14px;
+
+            .card-left .card-icon {
+                width: 32px;
+                height: 32px;
+            }
+
+            .card-left .card-info .card-name {
+                font-size: 0.875rem;
+            }
+        }
+    }
+}
+
+// Tablet and up
+@media (min-width: 768px) {
+    .aspire-grades-container {
+        padding: 32px 24px 48px;
+        max-width: 700px;
+    }
+
+    .grade-hero {
+        padding: 32px;
+    }
 }

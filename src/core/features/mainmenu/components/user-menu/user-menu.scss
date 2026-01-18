@@ -745,7 +745,6 @@ $shadow-medium: 0 4px 16px rgba(0, 0, 0, 0.08);
     background: $bg-card;
     border-top: 1px solid $border-light;
     padding: 12px 16px;
-    padding-bottom: calc(12px + var(--ion-safe-area-bottom, 0px));
 
     // Social Media Links
     .social-links {

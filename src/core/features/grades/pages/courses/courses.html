@@ -50,47 +50,61 @@
                 <p>Loading grades...</p>
             </div>
 
-            <!-- Parent View: Group by Student -->
+            <!-- Parent View: Modern Card Layout -->
             <div
                 *ngIf="isParentView && mentees && mentees.length > 0 && parentDataLoaded"
+                class="parent-grades-view"
             >
                 <ng-container *ngIf="hasAnyCourses(); else noCoursesFound">
-                    <!-- Only show mentee group if they have courses with grades -->
-                    <ion-item-group *ngFor="let mentee of mentees">
+                    <!-- Mentee Section -->
+                    <div class="mentee-section" *ngFor="let mentee of mentees">
                         <ng-container *ngIf="getCoursesForMentee(mentee.id).length > 0">
-                            <ion-item-divider>
-                                <ion-label>
+                            <!-- Mentee Header Card -->
+                            <div class="mentee-header-card">
+                                <div class="mentee-avatar">
+                                    <ion-icon name="person"></ion-icon>
+                                </div>
+                                <div class="mentee-info">
                                     <h2>{{ mentee.fullname }}</h2>
                                     <p>{{ mentee.email }}</p>
-                                </ion-label>
-                            </ion-item-divider>
+                                </div>
+                                <div class="mentee-stats">
+                                    <span class="course-count">{{ getCoursesForMentee(mentee.id).length }}</span>
+                                    <span class="course-label">Courses</span>
+                                </div>
+                            </div>
 
-                            <ion-item
-                                *ngFor="let course of getCoursesForMentee(mentee.id)"
-                                [attr.aria-label]="course.courseFullName"
-                                class="ion-text-wrap"
-                                button
-                                [detail]="true"
-                                (click)="selectCourseForMentee(course, mentee.id)"
-                            >
-                            <ion-label>
-                                <p class="item-heading">
-                                    <core-format-text
-                                        [text]="course.courseFullName"
-                                        [contextInstanceId]="course.courseid"
-                                        contextLevel="course"
-                                    />
-                                </p>
-                            </ion-label>
-                            <!-- <ion-badge slot="end" color="light">
-                                <span class="sr-only" *ngIf="course.grade && course.grade !== '-'">
-                                    {{ 'core.grades.grade' | translate }}
-                                </span>
-                                {{course.grade}}
-                            </ion-badge> -->
-                            </ion-item>
+                            <!-- Course Cards Grid -->
+                            <div class="courses-grid">
+                                <div
+                                    class="course-grade-card"
+                                    *ngFor="let course of getCoursesForMentee(mentee.id)"
+                                    (click)="selectCourseForMentee(course, mentee.id)"
+                                >
+                                    <div class="card-content">
+                                        <div class="course-icon">
+                                            <ion-icon name="school-outline"></ion-icon>
+                                        </div>
+                                        <div class="course-info">
+                                            <h3>
+                                                <core-format-text
+                                                    [text]="course.courseFullName"
+                                                    [contextInstanceId]="course.courseid"
+                                                    contextLevel="course"
+                                                />
+                                            </h3>
+                                        </div>
+                                        <div class="grade-badge" *ngIf="course.grade && course.grade !== '-'">
+                                            {{ course.grade }}
+                                        </div>
+                                    </div>
+                                    <div class="card-arrow">
+                                        <ion-icon name="chevron-forward"></ion-icon>
+                                    </div>
+                                </div>
+                            </div>
                         </ng-container>
-                    </ion-item-group>
+                    </div>
                 </ng-container>
 
                 <ng-template #noCoursesFound>
@@ -101,13 +115,36 @@
                 </ng-template>
             </div>
 
-            <!-- Student View: Hierarchical Category Tree -->
-            <div *ngIf="!courses.empty && !isParentView" class="category-tree">
-                <ng-container *ngFor="let category of categoryTree">
-                    <ng-container
-                        *ngTemplateOutlet="categoryNode; context: { node: category, depth: 0 }"
-                    ></ng-container>
-                </ng-container>
+            <!-- Student View: Enhanced Grade Overview -->
+            <div *ngIf="!courses.empty && !isParentView" class="student-grades-view">
+
+                <!-- Overall Performance Summary -->
+                <div class="performance-summary-card">
+                    <div class="summary-left">
+                        <div class="summary-avatar">
+                            <ion-icon name="school"></ion-icon>
+                        </div>
+                        <div class="summary-info">
+                            <h2>My Grades</h2>
+                            <p>{{ getTotalCourseCount() }} courses with grades</p>
+                        </div>
+                    </div>
+                    <div class="summary-right">
+                        <div class="overall-average" *ngIf="getOverallAverage() !== null">
+                            <span class="avg-value">{{ getOverallAverage() | number:'1.1-1' }}%</span>
+                            <span class="avg-label">Average</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Category Tree -->
+                <div class="category-tree">
+                    <ng-container *ngFor="let category of categoryTree">
+                        <ng-container
+                            *ngTemplateOutlet="categoryNode; context: { node: category, depth: 0 }"
+                        ></ng-container>
+                    </ng-container>
+                </div>
             </div>
 
             <!-- Category Node Template -->
@@ -136,37 +173,36 @@
 
                 <!-- Category Courses -->
                 <div [hidden]="!node.expanded" class="category-content">
-                    <ion-item
+                    <div
                         *ngFor="let course of node.courses"
-                        [attr.aria-label]="course.courseFullName"
-                        [attr.aria-current]="courses.getItemAriaCurrent(course)"
-                        class="ion-text-wrap course-item"
+                        class="course-card"
                         [class.course-depth-1]="depth === 0"
                         [class.course-depth-2]="depth === 1"
                         [class.course-depth-3]="depth >= 2"
-                        button
-                        [detail]="true"
+                        [class]="getGradeColorClass(course.grade)"
                         (click)="courses.select(course)"
                     >
-                        <ion-label>
-                            <p class="item-heading">
+                        <div class="course-card-left">
+                            <div class="subject-icon">
+                                <ion-icon [name]="getSubjectIcon(course.courseFullName)"></ion-icon>
+                            </div>
+                        </div>
+                        <div class="course-card-center">
+                            <h4 class="course-name">
                                 <core-format-text
                                     [text]="course.courseFullName"
                                     [contextInstanceId]="course.courseid"
                                     contextLevel="course"
                                 />
-                            </p>
-                        </ion-label>
-                        <ion-badge slot="end" color="light">
-                            <span
-                                class="sr-only"
-                                *ngIf="course.grade && course.grade !== '-'"
-                            >
-                                {{ 'core.grades.grade' | translate }}
-                            </span>
-                            {{course.grade}}
-                        </ion-badge>
-                    </ion-item>
+                            </h4>
+                        </div>
+                        <div class="course-card-right">
+                            <div class="grade-circle">
+                                <span class="grade-value">{{ course.grade }}</span>
+                            </div>
+                            <ion-icon name="chevron-forward" class="arrow-icon"></ion-icon>
+                        </div>
+                    </div>
 
                     <!-- Child Categories -->
                     <ng-container *ngFor="let child of node.children">

@@ -621,6 +621,75 @@ export class CoreGradesCoursesPage implements OnDestroy, AfterViewInit {
         updateNode(this.categoryTree);
     }
 
+    /**
+     * Get total count of courses with grades.
+     */
+    getTotalCourseCount(): number {
+        const countCourses = (nodes: CategoryNode[]): number => {
+            return nodes.reduce((total, node) => {
+                return total + node.courses.length + countCourses(node.children);
+            }, 0);
+        };
+        return countCourses(this.categoryTree);
+    }
+
+    /**
+     * Get overall average grade across all courses.
+     */
+    getOverallAverage(): number | null {
+        const allCourses = this.menteeCoursesForStudentView || this.courses.items || [];
+        const coursesWithGrades = allCourses.filter((course: any) => {
+            if (!course.grade || course.grade === '-') return false;
+            const gradeStr = String(course.grade).replace('%', '').trim();
+            return !isNaN(parseFloat(gradeStr));
+        });
+
+        if (coursesWithGrades.length === 0) return null;
+
+        const total = coursesWithGrades.reduce((sum: number, course: any) => {
+            const gradeStr = String(course.grade).replace('%', '').trim();
+            return sum + parseFloat(gradeStr);
+        }, 0);
+
+        return total / coursesWithGrades.length;
+    }
+
+    /**
+     * Get subject icon based on course name.
+     */
+    getSubjectIcon(courseName: string): string {
+        const name = courseName.toLowerCase();
+        if (name.includes('math') || name.includes('رياضيات')) return 'calculator-outline';
+        if (name.includes('arabic') || name.includes('عربي')) return 'language-outline';
+        if (name.includes('english')) return 'text-outline';
+        if (name.includes('science') || name.includes('علوم')) return 'flask-outline';
+        if (name.includes('reading')) return 'book-outline';
+        if (name.includes('german') || name.includes('french') || name.includes('spanish')) return 'globe-outline';
+        if (name.includes('religion') || name.includes('دين')) return 'heart-outline';
+        if (name.includes('art') || name.includes('فن')) return 'color-palette-outline';
+        if (name.includes('music') || name.includes('موسيقى')) return 'musical-notes-outline';
+        if (name.includes('pe') || name.includes('physical') || name.includes('sport')) return 'fitness-outline';
+        if (name.includes('computer') || name.includes('ict') || name.includes('حاسب')) return 'desktop-outline';
+        if (name.includes('history') || name.includes('تاريخ')) return 'time-outline';
+        if (name.includes('geography') || name.includes('جغرافيا')) return 'earth-outline';
+        return 'school-outline';
+    }
+
+    /**
+     * Get grade color class based on percentage.
+     */
+    getGradeColorClass(grade: string): string {
+        if (!grade || grade === '-') return 'grade-none';
+        const gradeStr = String(grade).replace('%', '').trim();
+        const gradeNum = parseFloat(gradeStr);
+        if (isNaN(gradeNum)) return 'grade-none';
+        if (gradeNum >= 90) return 'grade-excellent';
+        if (gradeNum >= 80) return 'grade-good';
+        if (gradeNum >= 70) return 'grade-average';
+        if (gradeNum >= 60) return 'grade-below';
+        return 'grade-poor';
+    }
+
 }
 
 /**

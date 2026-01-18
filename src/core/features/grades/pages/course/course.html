@@ -1,15 +1,23 @@
-<ion-header *ngIf="!hideHeader">
+<ion-header *ngIf="!hideHeader" class="aspire-header">
     <ion-toolbar>
         <ion-buttons slot="start">
             <ion-back-button [text]="'core.back' | translate" />
         </ion-buttons>
         <ion-title>
-            <h1>{{ title }}</h1>
-            <p *ngIf="viewingAsMentee && selectedMentee" class="aspire-mentee-indicator">
-                <ion-icon name="people-outline"></ion-icon>
-                {{ 'core.user.viewingas' | translate }}: {{ getMenteeFirstWord() }}
-            </p>
+            <div class="header-content">
+                <div class="course-icon">
+                    <ion-icon name="school-outline"></ion-icon>
+                </div>
+                <div class="course-info">
+                    <h1>{{ title }}</h1>
+                    <p *ngIf="viewingAsMentee && selectedMentee" class="mentee-badge">
+                        <ion-icon name="person-circle-outline"></ion-icon>
+                        <span>{{ getMenteeFirstWord() }}</span>
+                    </p>
+                </div>
+            </div>
         </ion-title>
+        <div class="header-decoration"></div>
     </ion-toolbar>
 </ion-header>
 <ion-content [core-swipe-navigation]="swipeManager">
@@ -19,304 +27,214 @@
     <core-loading [hideUntil]="loaded">
         <core-empty-box *ngIf="!rows.length" icon="fas-chart-bar" [message]="'core.grades.nogradesreturned' | translate" />
 
-        <div *ngIf="rows.length" class="core-grades-container grades-pastel-view">
-            <!-- GRADE OVERVIEW DASHBOARD -->
-            <div class="grades-dashboard">
-                <!-- Summary Cards -->
-                <div class="grade-summary-cards">
-                    <div class="summary-card overall-grade" *ngIf="hasValidCourseTotal()">
-                        <div class="card-icon">
-                            <ion-icon name="trophy-outline"></ion-icon>
-                        </div>
-                        <div class="card-content">
-                            <h3>{{ 'core.grades.overallgrade' | translate }}</h3>
-                            <div class="grade-display">
-                                <span class="grade-value">{{ getCourseTotal() }}</span>
-                                <span class="grade-max">/{{ getCourseMaxGrade() }}</span>
-                            </div>
-                            <div class="grade-percentage">{{ getCoursePercentage() }}</div>
-                        </div>
-                        <div class="progress-ring">
-                            <svg viewBox="0 0 100 100">
-                                <circle cx="50" cy="50" r="45" fill="none" stroke="var(--pastel-sky-light)" stroke-width="8"/>
-                                <circle cx="50" cy="50" r="45" fill="none" stroke="url(#grade-gradient)" stroke-width="8"
-                                    [style.stroke-dasharray]="'283 283'"
-                                    [style.stroke-dashoffset]="283 - (283 * getCoursePercentageNumber() / 100)"
-                                    transform="rotate(-90 50 50)"/>
-                                <defs>
-                                    <linearGradient id="grade-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                                        <stop offset="0%" style="stop-color:var(--pastel-mint);stop-opacity:1" />
-                                        <stop offset="100%" style="stop-color:var(--pastel-turquoise);stop-opacity:1" />
-                                    </linearGradient>
-                                </defs>
-                            </svg>
-                        </div>
-                    </div>
+        <div *ngIf="rows.length" class="aspire-grades-container">
 
-                    <div class="summary-card items-completed">
-                        <div class="card-icon">
-                            <ion-icon name="checkmark-circle-outline"></ion-icon>
-                        </div>
-                        <div class="card-content">
-                            <h3>{{ 'core.grades.itemscompleted' | translate }}</h3>
-                            <div class="stat-value">{{ getCompletedItems() }}</div>
-                            <div class="stat-label">of {{ getTotalGradedItems() }} items</div>
-                        </div>
+            <!-- HERO SECTION: Overall Grade -->
+            <div class="grade-hero" *ngIf="hasValidCourseTotal()">
+                <div class="hero-content">
+                    <div class="hero-label">Overall Grade</div>
+                    <div class="hero-grade">
+                        <span class="grade-number">{{ getCourseTotal() }}</span>
+                        <span class="grade-max">/{{ getCourseMaxGrade() }}</span>
                     </div>
-
-                    <div class="summary-card class-rank" *ngIf="getClassRank()">
-                        <div class="card-icon">
-                            <ion-icon name="medal-outline"></ion-icon>
+                    <div class="hero-progress">
+                        <div class="progress-bar">
+                            <div class="progress-fill" [style.width.%]="getCoursePercentageNumber()"></div>
                         </div>
-                        <div class="card-content">
-                            <h3>{{ 'core.grades.rank' | translate }}</h3>
-                            <div class="rank-display">
-                                <span class="rank-value">#{{ getClassRank() }}</span>
-                                <span class="rank-total">of {{ getTotalStudents() }}</span>
-                            </div>
-                        </div>
+                        <span class="progress-percentage">{{ getCoursePercentage() }}</span>
                     </div>
-                </div>
-
-                <!-- Grade Distribution Chart -->
-                <div class="grade-distribution-card" *ngIf="hasGradeDistribution()">
-                    <h3>
-                        <ion-icon name="bar-chart-outline"></ion-icon>
-                        {{ 'core.grades.gradedistribution' | translate }}
-                    </h3>
-                    <div class="distribution-bars">
-                        <div class="distribution-row" *ngFor="let item of getGradeDistributionLegend()">
-                            <div class="row-label">
-                                <span class="abbrev" [style.background]="item.color" [style.color]="item.textColor">{{ item.abbrev }}</span>
-                                <span class="description">{{ item.description }}</span>
-                            </div>
-                            <div class="row-bar">
-                                <div class="bar-fill" [style.background]="item.color" [style.width.%]="item.percentage"></div>
-                            </div>
-                            <span class="row-count">{{ item.count }}</span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Performance Trends -->
-                <div class="performance-trends-card" *ngIf="hasPerformanceTrends()">
-                    <h3>
-                        <ion-icon name="trending-up-outline"></ion-icon>
-                        {{ 'core.grades.performancetrends' | translate }}
-                    </h3>
-                    <div class="trend-indicators">
-                        <div class="trend-item improving" *ngIf="getImprovingCategories().length">
-                            <ion-icon name="arrow-up-circle"></ion-icon>
-                            <span>{{ getImprovingCategories().length }} improving</span>
-                        </div>
-                        <div class="trend-item declining" *ngIf="getDecliningCategories().length">
-                            <ion-icon name="arrow-down-circle"></ion-icon>
-                            <span>{{ getDecliningCategories().length }} declining</span>
-                        </div>
-                        <div class="trend-item stable" *ngIf="getStableCategories().length">
-                            <ion-icon name="remove-circle"></ion-icon>
-                            <span>{{ getStableCategories().length }} stable</span>
-                        </div>
+                    <div class="hero-meta">
+                        <span class="meta-item" *ngIf="getCompletedItems() > 0">
+                            <ion-icon name="checkmark-circle"></ion-icon>
+                            {{ getCompletedItems() }} graded
+                        </span>
+                        <span class="meta-divider" *ngIf="getCompletedItems() > 0 && getClassRank()">•</span>
+                        <span class="meta-item" *ngIf="getClassRank()">
+                            <ion-icon name="trophy"></ion-icon>
+                            Rank #{{ getClassRank() }}
+                        </span>
                     </div>
                 </div>
             </div>
 
-            <!-- VIEW TOGGLE -->
+            <!-- GRADE BREAKDOWN: Inline summary -->
+            <div class="grade-breakdown" *ngIf="hasGradeDistribution() && getTotalGradedItems() > 0">
+                <div class="breakdown-header" (click)="distributionExpanded = !distributionExpanded">
+                    <span class="breakdown-label">Grade Breakdown</span>
+                    <div class="breakdown-summary">
+                        <ng-container *ngFor="let item of getGradeDistributionLegend(); let last = last">
+                            <span class="breakdown-dot" *ngIf="item.count > 0" [style.background]="item.color"></span>
+                            <span class="breakdown-count" *ngIf="item.count > 0">{{ item.count }} {{ item.abbrev }}</span>
+                            <span class="breakdown-sep" *ngIf="item.count > 0 && !last">•</span>
+                        </ng-container>
+                    </div>
+                    <ion-icon name="chevron-down" class="expand-icon" [class.expanded]="distributionExpanded"></ion-icon>
+                </div>
+                <div class="breakdown-details" [class.expanded]="distributionExpanded">
+                    <div class="breakdown-row" *ngFor="let item of getGradeDistributionLegend()">
+                        <div class="breakdown-info">
+                            <span class="abbrev-badge" [style.background]="item.color" [style.color]="item.textColor">{{ item.abbrev }}</span>
+                            <span class="description">{{ item.description }}</span>
+                        </div>
+                        <div class="breakdown-bar">
+                            <div class="bar-fill" [style.background]="item.color" [style.width.%]="item.percentage"></div>
+                        </div>
+                        <span class="breakdown-value">{{ item.count }}</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- VIEW TOGGLE: Simplified -->
             <div class="view-toggle">
-                <ion-segment [(ngModel)]="viewMode" (ionChange)="onViewModeChange()">
-                    <ion-segment-button value="grouped">
-                        <ion-label>
-                            <ion-icon name="layers-outline"></ion-icon>
-                            Grouped
-                        </ion-label>
-                    </ion-segment-button>
-                    <ion-segment-button value="timeline">
-                        <ion-label>
-                            <ion-icon name="calendar-outline"></ion-icon>
-                            Timeline
-                        </ion-label>
-                    </ion-segment-button>
-                    <ion-segment-button value="table">
-                        <ion-label>
-                            <ion-icon name="grid-outline"></ion-icon>
-                            Table View
-                        </ion-label>
-                    </ion-segment-button>
-                </ion-segment>
+                <div class="toggle-group">
+                    <button class="toggle-btn" [class.active]="viewMode === 'grouped'" (click)="viewMode = 'grouped'">
+                        <ion-icon name="layers-outline"></ion-icon>
+                        By Category
+                    </button>
+                    <button class="toggle-btn" [class.active]="viewMode === 'table'" (click)="viewMode = 'table'">
+                        <ion-icon name="list-outline"></ion-icon>
+                        All Items
+                    </button>
+                </div>
             </div>
 
             <!-- GROUPED VIEW -->
-            <div class="grades-grouped-view" *ngIf="viewMode === 'grouped'">
-                <div class="category-group" *ngFor="let category of getGroupedGrades()">
+            <div class="grades-list grouped-view" *ngIf="viewMode === 'grouped'">
+                <div class="category-section" *ngFor="let category of getGroupedGrades()">
                     <div class="category-header" (click)="toggleCategory(category)">
-                        <div class="category-info">
-                            <div class="category-icon" [class]="'icon-' + category.type">
-                                <ion-icon [name]="getCategoryIcon(category)"></ion-icon>
-                            </div>
-                            <div class="category-details">
-                                <h3>{{ category.name }}</h3>
-                                <p>{{ category.itemCount }} items</p>
-                            </div>
+                        <div class="category-title">
+                            <ion-icon [name]="getCategoryIcon(category)"></ion-icon>
+                            <span>{{ category.name }}</span>
                         </div>
-                        <ion-icon name="chevron-down" class="expand-icon" [class.expanded]="category.expanded"></ion-icon>
+                        <div class="category-right">
+                            <span class="category-count">{{ category.itemCount }} items</span>
+                            <ion-icon name="chevron-down" class="expand-icon" [class.expanded]="category.expanded"></ion-icon>
+                        </div>
                     </div>
 
-                    <div class="category-content" [class.expanded]="category.expanded">
-                        <div class="grade-items">
-                            <div class="grade-item" *ngFor="let item of category.items">
-                                <div class="item-icon">
+                    <div class="category-items" [class.expanded]="category.expanded">
+                        <div class="grade-item" *ngFor="let item of category.items">
+                            <div class="item-left">
+                                <div class="item-icon" *ngIf="item.image || item.icon">
                                     <img *ngIf="item.image" [src]="item.image" [alt]="item.iconAlt">
                                     <ion-icon *ngIf="item.icon && !item.image" [name]="item.icon"></ion-icon>
                                 </div>
-                                <div class="item-info">
-                                    <h4>{{ item.name }}</h4>
-                                    <p class="item-date" *ngIf="item.gradeDate">
-                                        <ion-icon name="time-outline"></ion-icon>
-                                        {{ item.gradeDate | coreFormatDate }}
-                                    </p>
+                                <div class="item-details">
+                                    <h4 class="item-name">{{ item.name }}</h4>
+                                    <p class="item-meta" *ngIf="item.weight">Weight: {{ item.weight }}</p>
                                 </div>
-                                <div class="item-grade">
-                                    <div class="grade-badge" [class]="getGradeBadgeClass(item)">
-                                        <ion-icon *ngIf="item.gradeIcon" [name]="item.gradeIcon"></ion-icon>
-                                        <span>{{ item.grade }}</span>
-                                    </div>
-                                    <div class="grade-details">
-                                        <span class="percentage" *ngIf="item.percentage">{{ item.percentage }}</span>
-                                        <span class="weight" *ngIf="item.weight">Weight: {{ item.weight }}</span>
-                                    </div>
-                                </div>
+                            </div>
+                            <div class="item-right">
+                                <span class="item-grade">{{ item.grade }}</span>
+                                <span class="item-percentage" [class]="getGradeBadgeClass(item)" *ngIf="item.percentage && item.percentage !== '-'">{{ item.percentage }}</span>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- TIMELINE VIEW -->
-            <div class="grades-timeline-view" *ngIf="viewMode === 'timeline'">
-                <div class="timeline-container">
-                    <div class="timeline-month" *ngFor="let month of getTimelineMonths()">
-                        <h3 class="month-header">{{ month.name }}</h3>
-                        <div class="timeline-items">
-                            <div class="timeline-item" *ngFor="let item of month.items" [class]="'type-' + item.itemtype">
-                                <div class="timeline-date">
-                                    <span class="day">{{ item.gradedDate | date:'d' }}</span>
-                                    <span class="weekday">{{ item.gradedDate | date:'EEE' }}</span>
-                                </div>
-                                <div class="timeline-content">
-                                    <div class="item-header">
-                                        <ion-icon [name]="item.icon || 'document-outline'"></ion-icon>
-                                        <h4>{{ item.name }}</h4>
-                                    </div>
-                                    <div class="item-grade">
-                                        <span class="grade-value">{{ item.grade }}</span>
-                                        <span class="grade-percentage" [class]="getGradeBadgeClass(item)" *ngIf="item.percentage && item.percentage !== '-'">{{ item.percentage }}</span>
-                                    </div>
-                                </div>
-                                <div class="timeline-connector"></div>
+            <!-- TABLE VIEW: All Items -->
+            <div class="grades-list table-view" *ngIf="viewMode === 'table'">
+                <ng-container *ngFor="let row of rows | slice:0:rowsOnView">
+                    <ng-container *ngIf="row.itemtype !== 'leader'">
+
+                        <!-- Category Header -->
+                        <div class="category-row" *ngIf="row.itemtype === 'category' || row.itemtype === 'categoryitem' || row.itemtype === 'courseitem'">
+                            <div class="category-row-left">
+                                <ion-icon *ngIf="row.icon" [name]="row.icon"></ion-icon>
+                                <span class="category-name" [innerHTML]="row.gradeitem"></span>
+                            </div>
+                            <div class="category-row-right">
+                                <span class="category-grade" *ngIf="row.grade && row.grade !== '-'" [innerHTML]="row.grade"></span>
+                                <span class="category-percentage" [class]="getRowGradeClass(row)" *ngIf="row.percentage && row.percentage !== '-'">{{ row.percentage }}</span>
                             </div>
                         </div>
-                    </div>
-                </div>
-            </div>
 
-            <!-- TABLE VIEW - Mobile Optimized Card Layout -->
-            <div class="grades-table-view" *ngIf="viewMode === 'table'">
-                <div class="grades-card-list">
-                    <ng-container *ngFor="let row of rows | slice:0:rowsOnView">
-                        <!-- Skip leader rows -->
-                        <ng-container *ngIf="row.itemtype !== 'leader'">
-                            <!-- Grade Item Card -->
-                            <div class="grade-card" 
-                                [class.category-card]="row.itemtype === 'category' || row.itemtype === 'categoryitem' || row.itemtype === 'courseitem'"
-                                [class.expandable]="row.expandable && showSummary"
-                                [class.expanded]="row.expanded"
-                                (click)="row.expandable && showSummary && toggleRow(row)">
-                                
-                                <!-- Card Header -->
-                                <div class="card-header">
-                                    <div class="item-info">
-                                        <!-- Icon/Image -->
-                                        <div class="item-icon" *ngIf="row.icon || row.image">
-                                            <ion-icon *ngIf="row.icon" [name]="row.icon" [attr.aria-label]="row.iconAlt"></ion-icon>
-                                            <img *ngIf="row.image && !row.itemmodule" [src]="row.image" [alt]="row.iconAlt" core-external-content />
-                                            <core-mod-icon *ngIf="row.image && row.itemmodule" [modicon]="row.image" 
-                                                [modname]="row.itemmodule" [colorize]="false" />
-                                        </div>
-                                        
-                                        <!-- Grade Item Name -->
-                                        <div class="item-name">
-                                            <h3 [innerHTML]="row.gradeitem"></h3>
-                                        </div>
-                                        
-                                        <!-- Expand Icon -->
-                                        <ion-icon *ngIf="row.expandable && showSummary" 
-                                            name="chevron-down" 
-                                            class="expand-icon"
-                                            [class.expanded]="row.expanded">
-                                        </ion-icon>
+                        <!-- Grade Item -->
+                        <div class="grade-card"
+                            *ngIf="row.itemtype !== 'category' && row.itemtype !== 'categoryitem' && row.itemtype !== 'courseitem'"
+                            [class.expandable]="row.expandable && showSummary"
+                            [class.expanded]="row.expanded"
+                            (click)="row.expandable && showSummary && toggleRow(row)">
+
+                            <div class="card-main">
+                                <div class="card-left">
+                                    <div class="card-icon" *ngIf="row.icon || row.image">
+                                        <ion-icon *ngIf="row.icon" [name]="row.icon"></ion-icon>
+                                        <img *ngIf="row.image && !row.itemmodule" [src]="row.image" [alt]="row.iconAlt" core-external-content />
+                                        <core-mod-icon *ngIf="row.image && row.itemmodule" [modicon]="row.image" [modname]="row.itemmodule" [colorize]="false" />
+                                    </div>
+                                    <div class="card-info">
+                                        <h4 class="card-name" [innerHTML]="row.gradeitem"></h4>
+                                        <p class="card-meta" *ngIf="row.weight">Weight: <span [innerHTML]="row.weight"></span></p>
                                     </div>
                                 </div>
-                                
-                                <!-- Card Content - Primary Info -->
-                                <div class="card-content">
-                                    <!-- Grade Display -->
-                                    <div class="grade-section" *ngIf="row.grade">
-                                        <div class="grade-main">
-                                            <ion-icon *ngIf="row.gradeIcon" [name]="row.gradeIcon" [attr.aria-label]="row.gradeIconAlt"></ion-icon>
-                                            <span class="grade-value" [innerHTML]="row.grade"></span>
-                                        </div>
-                                        <div class="grade-secondary">
-                                            <span class="range" *ngIf="row.range">{{ row.range }}</span>
-                                            <span class="percentage grade-badge" [class]="getRowGradeClass(row)" *ngIf="row.percentage">{{ row.percentage }}</span>
-                                        </div>
+                                <div class="card-right">
+                                    <div class="grade-display" *ngIf="row.grade">
+                                        <ion-icon *ngIf="row.gradeIcon" [name]="row.gradeIcon"></ion-icon>
+                                        <span class="grade-value" [innerHTML]="row.grade"></span>
                                     </div>
-
-                                    <!-- Weight if visible -->
-                                    <div class="weight-info" *ngIf="row.weight && !row.expandable">
-                                        <span class="label">Weight:</span>
-                                        <span class="value" [innerHTML]="row.weight"></span>
-                                    </div>
-                                </div>
-                                
-                                <!-- Expandable Details -->
-                                <div class="card-details" *ngIf="row.expandable && row.expanded">
-                                    <div class="detail-item" *ngIf="row.weight">
-                                        <span class="detail-label">{{ 'core.grades.weight' | translate }}:</span>
-                                        <span class="detail-value" [innerHTML]="row.weight"></span>
-                                    </div>
-                                    
-                                    <div class="detail-item" *ngIf="row.lettergrade">
-                                        <span class="detail-label">{{ 'core.grades.lettergrade' | translate }}:</span>
-                                        <span class="detail-value" [innerHTML]="row.lettergrade"></span>
-                                    </div>
-                                    
-                                    <div class="detail-item" *ngIf="row.rank">
-                                        <span class="detail-label">{{ 'core.grades.rank' | translate }}:</span>
-                                        <span class="detail-value" [innerHTML]="row.rank"></span>
-                                    </div>
-                                    
-                                    <div class="detail-item" *ngIf="row.average">
-                                        <span class="detail-label">{{ 'core.grades.average' | translate }}:</span>
-                                        <span class="detail-value" [innerHTML]="row.average"></span>
-                                    </div>
-                                    
-                                    <div class="detail-item" *ngIf="row.contributiontocoursetotal">
-                                        <span class="detail-label">{{ 'core.grades.contributiontocoursetotal' | translate }}:</span>
-                                        <span class="detail-value" [innerHTML]="row.contributiontocoursetotal"></span>
-                                    </div>
-                                    
-                                    <div class="detail-feedback" *ngIf="row.feedback">
-                                        <p class="detail-label">{{ 'core.grades.feedback' | translate }}:</p>
-                                        <core-format-text collapsible-item [text]="row.feedback" contextLevel="course"
-                                            [contextInstanceId]="courseId" />
-                                    </div>
+                                    <span class="grade-percentage" [class]="getRowGradeClass(row)" *ngIf="row.percentage && row.percentage !== '-'">{{ row.percentage }}</span>
+                                    <ion-icon *ngIf="row.expandable && showSummary" name="chevron-down" class="expand-icon" [class.expanded]="row.expanded"></ion-icon>
                                 </div>
                             </div>
-                        </ng-container>
+
+                            <!-- Expanded Details -->
+                            <div class="card-details" *ngIf="row.expandable && row.expanded">
+                                <div class="detail-row" *ngIf="row.range">
+                                    <span class="detail-label">Range:</span>
+                                    <span class="detail-value" [innerHTML]="row.range"></span>
+                                </div>
+                                <div class="detail-row" *ngIf="row.lettergrade">
+                                    <span class="detail-label">{{ 'core.grades.lettergrade' | translate }}:</span>
+                                    <span class="detail-value" [innerHTML]="row.lettergrade"></span>
+                                </div>
+                                <div class="detail-row" *ngIf="row.rank">
+                                    <span class="detail-label">{{ 'core.grades.rank' | translate }}:</span>
+                                    <span class="detail-value" [innerHTML]="row.rank"></span>
+                                </div>
+                                <div class="detail-row" *ngIf="row.average">
+                                    <span class="detail-label">{{ 'core.grades.average' | translate }}:</span>
+                                    <span class="detail-value" [innerHTML]="row.average"></span>
+                                </div>
+                                <div class="detail-row" *ngIf="row.contributiontocoursetotal">
+                                    <span class="detail-label">{{ 'core.grades.contributiontocoursetotal' | translate }}:</span>
+                                    <span class="detail-value" [innerHTML]="row.contributiontocoursetotal"></span>
+                                </div>
+                                <div class="detail-feedback" *ngIf="row.feedback">
+                                    <span class="detail-label">{{ 'core.grades.feedback' | translate }}:</span>
+                                    <core-format-text collapsible-item [text]="row.feedback" contextLevel="course" [contextInstanceId]="courseId" />
+                                </div>
+                            </div>
+                        </div>
                     </ng-container>
-                </div>
+                </ng-container>
                 <core-infinite-loading [enabled]="rowsOnView < rows.length" (action)="loadMore($event)" />
             </div>
+
+            <!-- TIMELINE VIEW (Hidden by default - can be enabled if needed) -->
+            <div class="grades-list timeline-view" *ngIf="viewMode === 'timeline'">
+                <div class="timeline-month" *ngFor="let month of getTimelineMonths()">
+                    <h3 class="month-header">{{ month.name }}</h3>
+                    <div class="timeline-item" *ngFor="let item of month.items">
+                        <div class="timeline-date">
+                            <span class="day">{{ item.gradedDate | date:'d' }}</span>
+                            <span class="weekday">{{ item.gradedDate | date:'EEE' }}</span>
+                        </div>
+                        <div class="timeline-content">
+                            <div class="timeline-header">
+                                <ion-icon [name]="item.icon || 'document-outline'"></ion-icon>
+                                <h4>{{ item.name }}</h4>
+                            </div>
+                            <div class="timeline-grade">
+                                <span class="grade-value">{{ item.grade }}</span>
+                                <span class="grade-percentage" [class]="getGradeBadgeClass(item)" *ngIf="item.percentage && item.percentage !== '-'">{{ item.percentage }}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
         </div>
     </core-loading>
 </ion-content>
