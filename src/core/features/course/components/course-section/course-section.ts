@@ -16,6 +16,8 @@ import {
     HostBinding,
     Input,
     OnInit,
+    Output,
+    EventEmitter,
 } from '@angular/core';
 import {
     CoreCourseSection,
@@ -49,6 +51,8 @@ export class CoreCourseSectionComponent implements OnInit {
     @Input() lastModuleViewed?: CoreCourseViewedModulesDBRecord;
     @Input() viewedModules: Record<number, boolean> = {};
 
+    @Output() sectionClicked = new EventEmitter<CoreCourseSectionToDisplay>();
+
     @HostBinding('class')
         get collapsibleClass(): string {
             return this.collapsible ? 'collapsible' : 'non-collapsible';
@@ -65,6 +69,16 @@ export class CoreCourseSectionComponent implements OnInit {
         this.highlightedName = this.section.highlighted && this.highlightedName === undefined
             ? CoreCourseFormatDelegate.getSectionHightlightedName(this.course)
             : undefined;
+    }
+
+    /**
+     * Handle section header click to navigate to single section view.
+     *
+     * @param event Click event.
+     */
+    onSectionNavigate(event: Event): void {
+        event.stopPropagation();
+        this.sectionClicked.emit(this.section);
     }
 
 }

@@ -1,21 +1,17 @@
-<ion-header [collapsible]="(tabsComponent?.selectedIndex === 0 || tabsComponent?.selectedIndex === undefined) && !fullScreenEnabled">
+<!-- Aspire Course Page - Compact Modern Design -->
+<ion-header class="aspire-header">
     <ion-toolbar>
         <ion-buttons slot="start">
-            <ion-back-button [text]="'core.back' | translate" />
+            <ion-back-button [text]="''" />
         </ion-buttons>
-        <ion-title>
-            <h1>
-                <core-format-text [text]="title" contextLevel="course" [contextInstanceId]="course?.id" />
-            </h1>
+        <ion-title *ngIf="course">
+            <core-format-text [text]="title" contextLevel="course" [contextInstanceId]="course?.id" />
         </ion-title>
-
         <ion-buttons slot="end">
             @if (course?.format !== 'singleactivity') {
-            <ion-button fill="clear" (click)="openCourseSummary()" [ariaLabel]="'core.course.coursesummary' | translate">
-                <ion-icon name="fas-circle-info" slot="icon-only" aria-hidden="true" />
+            <ion-button fill="clear" (click)="openCourseSummary()">
+                <ion-icon name="information-circle-outline" slot="icon-only" />
             </ion-button>
-
-            <!-- Add an empty context menu so tab pages can add items, otherwise the menu disappears in some cases. -->
             <core-context-menu />
             } @else {
             <core-context-menu>
@@ -25,26 +21,23 @@
             }
         </ion-buttons>
     </ion-toolbar>
-</ion-header>
-<div class="core-course-header">
-    <ion-item class="core-format-progress-list ion-text-wrap list-item-limited-width" collapsible>
-        <ng-container *ngIf="course">
-            <div *ngIf="!course.courseimage" #courseThumb slot="start" class="core-course-thumb">
-                <ion-icon name="fas-graduation-cap" class="course-icon" aria-hidden="true" />
-            </div>
-            <ion-avatar *ngIf="course.courseimage" slot="start" class="core-course-thumb">
-                <img [url]="course.courseimage" core-external-content alt="" />
-            </ion-avatar>
-        </ng-container>
 
-        <ion-label>
-            <h1>
-                <core-format-text [text]="title" contextLevel="course" [contextInstanceId]="course?.id" />
-            </h1>
-            <div class="core-course-progress" *ngIf="progress !== undefined">
-                <core-progress-bar [progress]="progress" a11yText="core.course.aria:sectionprogress" />
-            </div>
-        </ion-label>
-    </ion-item>
+    <!-- Compact Tab Bar -->
+    <div class="tab-bar">
+        <ng-container *ngFor="let tab of tabs; let i = index">
+            <button class="tab-item" [class.active]="tabsComponent?.selectedIndex === i"
+                (click)="tabsComponent?.selectByIndex(i)">
+                <ion-icon [name]="getTabIcon(tab)"></ion-icon>
+                <span>{{ tab.title | translate }}</span>
+            </button>
+        </ng-container>
+    </div>
+</ion-header>
+
+<!-- Progress Strip (only if has progress) -->
+<div class="progress-strip" *ngIf="progress !== undefined && progress > 0">
+    <div class="progress-fill" [style.width.%]="progress"></div>
+    <span class="progress-text">{{ progress }}%</span>
 </div>
+
 <core-tabs-outlet [tabs]="tabs" [hideUntil]="loaded" (ionChange)="tabSelected()" />

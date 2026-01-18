@@ -1,12 +1,57 @@
+@use "theme/globals" as *;
+
+// Aspire Course Format - Full Width Layout
+$aspire-primary: #4A9B7F;
+
+// Remove width restrictions for full-width content
+.list-item-limited-width {
+    max-width: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+// Section navigation buttons
 .core-course-section-nav-buttons {
     display: flex;
     justify-content: space-between;
-    padding-left: 8px;
-    padding-right: 8px;
+    padding: 12px 16px;
+    gap: 12px;
+    background: #f8fafc;
+    border-top: 1px solid #e2e8f0;
 
     ion-button {
         flex: 1;
-        margin-left: 4px;
-        margin-right: 4px;
+        margin: 0;
+        --background: #{$aspire-primary};
+        --background-activated: darken($aspire-primary, 10%);
+        --border-radius: 10px;
+        --padding-top: 12px;
+        --padding-bottom: 12px;
+        font-weight: 600;
+        font-size: 14px;
+
+        ion-icon {
+            font-size: 16px;
+        }
     }
+}
+
+// Accordion group - remove extra spacing
+ion-accordion-group {
+    ion-accordion {
+        // Remove accordion borders and shadows
+        &::part(header) {
+            padding: 0;
+        }
+
+        &::part(content) {
+            padding: 0;
+        }
+    }
+}
+
+// Course index FAB button
+ion-fab-button[color="secondary"] {
+    --background: #{$aspire-primary};
+    --background-activated: darken($aspire-primary, 10%);
 }

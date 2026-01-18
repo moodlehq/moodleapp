@@ -1,347 +1,383 @@
 @use "theme/globals" as *;
 
+// Aspire Course Modules - Compact Modern Design
+$primary: #4A9B7F;
+$primary-light: rgba(74, 155, 127, 0.08);
+$text-dark: #1e293b;
+$text-muted: #64748b;
+$text-light: #94a3b8;
+$border: #e5e7eb;
+
+// Module type accent colors
+$type-forum: #3b82f6;
+$type-resource: #10b981;
+$type-url: #8b5cf6;
+$type-assign: #f59e0b;
+$type-quiz: #ef4444;
+$type-page: #06b6d4;
+$type-folder: #f97316;
+
 :host {
-    --horizontal-spacing: var(--mdl-spacing-4);
-    --vertical-spacing: var(--mdl-spacing-2);
-    --colored-box-padding: var(--mdl-spacing-2);
-    --card-border-width: 0px;
-    --card-radius: 0px;
-    --card-background: transparent;
-    --activity-border: 1px solid var(--stroke);
-    --card-padding-bottom: var(--vertical-spacing);
-
-    ion-card {
-        margin: var(--vertical-spacing) var(--horizontal-spacing);
-        padding: 0px;
-        --ion-card-border-width: var(--card-border-width);
-        --ion-card-radius: var(--card-radius);
-        --ion-card-background: var(--card-background);
-        padding-bottom: var(--card-padding-bottom);
-        border-bottom: var(--activity-border);
-    }
-
-    ion-item {
-        --padding-start: 0px;
-        --inner-padding-end: 0px;
-        --background: transparent;
-        ion-label {
-            margin-top: 0px;
-            margin-bottom: 0px;
-        }
-    }
-
-    .activity-main {
-        --min-height: 52px;
-        display: flex;
-        flex-direction: row;
-
-        core-mod-icon {
-            --module-icon-padding: 0px;
-            --module-legacy-icon-padding: 4px;
-            --module-icon-radius: var(--mdl-shape-borderRadius-xs);
-
-            @include margin-horizontal(null, 8px);
-            align-self: self-start;
-        }
-
-        .activity-title {
-            flex-grow: 1;
-            align-self: center;
-            @include margin-horizontal(null, var(--horizontal-spacing));
-
-            .item-heading ion-icon {
-                @include margin-horizontal(8px, null);
-                vertical-align: middle;
-            }
-        }
-
-        .core-module-buttons {
-            align-self: self-start;
-
-            display: flex;
-            flex-flow: row;
-            align-items: center;
-            z-index: 1;
-            justify-content: flex-end;
-            align-content: center;
-
-            ion-button.core-module-button-more {
-                cursor: pointer;
-                pointer-events: auto;
-                margin: 0px 8px;
-                --a11y-target-min-size: 32px;
-                width: var(--a11y-target-min-size);
-                height: var(--a11y-target-min-size);
-                min-width: var(--a11y-target-min-size);
-                min-height: var(--a11y-target-min-size);
-                --padding-start: 0px;
-                --padding-end: 0px;
-                ion-icon {
-                    font-size: var(--mdl-typography-icon-fontSize-md);
-                }
-            }
-
-            core-course-module-completion {
-                --margin: 0px;
-            }
-        }
-
-        core-mod-icon,
-        .activity-title,
-        .core-module-buttons {
-            margin-top: var(--vertical-spacing);
-            margin-bottom: var(--vertical-spacing);
-        }
-
-        .core-module-additional-info {
-            display: flex;
-            align-items: center;
-            flex-wrap: wrap;
-            margin-top: 4px;
-            margin-bottom: 4px;
-
-            ion-badge {
-                @include margin-horizontal(null, 4px);
-                font: var(--mdl-typography-body-font-sm);
-            }
-        }
-    }
-
-    .core-module-description ::ng-deep img,
-    .activity-title .item-heading core-format-text ::ng-deep img {
-        border-radius: var(--mdl-shape-borderRadius-lg);
-    }
-
-    core-course-module-completion {
-        --margin: var(--vertical-spacing) 0px;
-    }
-
-    .activity-dates {
-        display: flex;
-        flex-direction: row;
-        flex-wrap: wrap;
-
-        core-reminders-date {
-          --display-icon: none;
-        }
-    }
-
-    .activity-description-availabilityinfo,
-    .activity-extrabadges {
-        margin-top: var(--vertical-spacing);
-        margin-bottom: var(--vertical-spacing);
-    }
-
-    .core-module-description {
-        display: block;
-    }
-
-    .activity-extrabadges {
-        font: var(--mdl-typography-body-font-md);
-        color: var(--medium);
-        border: 1px solid var(--stroke);
-        border-radius: var(--mdl-shape-borderRadius-sm);
-        padding: var(--mdl-spacing-2) var(--mdl-spacing-3) var(--mdl-spacing-2) var(--mdl-spacing-3);
-    }
-
-    .activity-description-availabilityinfo .core-module-availabilityinfo {
-        background: var(--gray-300);
-        font: var(--mdl-typography-label-font-lg);
-
-        ::ng-deep ul {
-            margin-top: 8px;
-            margin-bottom: 0px;
-
-            li {
-                margin-bottom: 4px;
-            }
-        }
-    }
-
-    .core-module-loading {
-        width: 100%;
-        text-align: center;
-        padding-top: 10px;
-        clear: both;
-    }
-
-    .colored-box-with-icon {
-        margin-top: var(--vertical-spacing);
-        margin-bottom: var(--vertical-spacing);
-
-        border: 0px;
-        padding: var(--colored-box-padding);
-        border-radius: var(--mdl-shape-borderRadius-sm);
-
-        ion-icon {
-            @include margin-horizontal(null, var(--mdl-spacing-2));
-            margin-top: auto;
-            margin-bottom: auto;
-        }
-
-        &.core-course-last-module-viewed {
-            display: flex;
-            background-color: var(--info-tint);
-            color: var(--info-shade);
-            font: var(--mdl-typography-label-font-md);
-        }
-    }
-
-    @include media-breakpoint-down(md) {
-        .core-module-buttons core-course-module-completion {
-            display: none;
-        }
-    }
-
-    @include media-breakpoint-up(md) {
-        core-course-module-completion.activity-extra {
-            display: none;
-        }
-    }
-
-    &.indented ion-card {
-        @include margin-horizontal(calc(var(--horizontal-spacing) + 1rem), null);
-    }
-
-    // Hide download folder icon meanwhile MOBILE-4147 is not solved
-    core-format-text.core-module-description ::ng-deep .description-inner .navitem {
-        display: none;
-    }
-
-    // Resource inline viewer styles
-    .activity-preview {
-        margin-top: var(--vertical-spacing);
-
-        ::ng-deep .addon-mod-resource-inline-viewer {
-            background: var(--ion-color-light);
-            border-radius: 8px;
-            overflow: hidden;
-            border: 1px solid var(--ion-color-medium-tint);
-
-            .viewer-header {
-                display: flex;
-                align-items: center;
-                padding: 12px;
-                background: var(--ion-color-light-shade);
-                border-bottom: 1px solid var(--ion-color-medium-tint);
-
-                .file-icon {
-                    font-size: 20px;
-                    margin-right: 8px;
-
-                    &.pdf {
-                        color: #dc2626;
-                    }
-
-                    &.word {
-                        color: #2563eb;
-                    }
-
-                    &.powerpoint {
-                        color: #dc2626;
-                    }
-                }
-
-                .file-name {
-                    font-weight: 600;
-                    font-size: 14px;
-                    flex: 1;
-                    overflow: hidden;
-                    text-overflow: ellipsis;
-                    white-space: nowrap;
-                }
-            }
-
-            .pdf-viewer-container,
-            .office-viewer-container {
-                position: relative;
-                width: 100%;
-                height: 400px;
-                background: #f8f8f8;
-
-                iframe {
-                    width: 100%;
-                    height: 100%;
-                    border: none;
-                    display: block;
-                }
-
-                // Loading state
-                &::before {
-                    content: '';
-                    position: absolute;
-                    top: 50%;
-                    left: 50%;
-                    transform: translate(-50%, -50%);
-                    width: 40px;
-                    height: 40px;
-                    border: 3px solid var(--ion-color-primary-tint);
-                    border-top-color: var(--ion-color-primary);
-                    border-radius: 50%;
-                    animation: spin 1s linear infinite;
-                    z-index: -1;
-                }
-            }
-
-            @keyframes spin {
-                to { transform: translate(-50%, -50%) rotate(360deg); }
-            }
-
-            .file-preview-info {
-                padding: 40px 20px;
-                text-align: center;
-
-                .file-type-indicator {
-                    margin-bottom: 20px;
-
-                    .large-icon {
-                        font-size: 64px;
-                        margin-bottom: 10px;
-
-                        &.pdf {
-                            color: #dc2626;
-                        }
-
-                        &.word {
-                            color: #2563eb;
-                        }
-
-                        &.powerpoint {
-                            color: #dc2626;
-                        }
-                    }
-
-                    .file-type {
-                        font-size: 16px;
-                        font-weight: 600;
-                        color: var(--ion-text-color);
-                        margin: 0;
-                    }
-                }
-
-                .file-actions {
-                    .preview-note {
-                        font-size: 14px;
-                        color: var(--ion-color-medium-shade);
-                        margin-bottom: 15px;
-                    }
-
-                    .download-button {
-                        --padding-start: 16px;
-                        --padding-end: 16px;
-                    }
-                }
-            }
-        }
-    }
-
+    display: block;
 }
 
+// ===========================================
+// LABEL MODULES - Full content, not clickable
+// ===========================================
+.label-module {
+    padding: 8px 12px;
+    background: #fafafa;
+    border-bottom: 1px solid $border;
 
+    &.item-dimmed {
+        opacity: 0.5;
+    }
+
+    .label-content {
+        width: 100%;
+
+        core-format-text {
+            display: block;
+            width: 100%;
+            font-size: 12px;
+            line-height: 1.5;
+            color: $text-muted;
+
+            ::ng-deep {
+                * {
+                    white-space: normal !important;
+                    overflow: visible !important;
+                    text-overflow: unset !important;
+                    max-width: 100% !important;
+                }
+
+                h1, h2, h3, h4, h5, h6 {
+                    color: $primary;
+                    font-size: 11px;
+                    font-weight: 700;
+                    text-transform: uppercase;
+                    letter-spacing: 0.3px;
+                    margin: 0 0 4px 0;
+                    padding: 0;
+                }
+
+                p {
+                    color: $text-muted;
+                    font-size: 12px;
+                    line-height: 1.5;
+                    margin: 0 0 4px 0;
+                    word-wrap: break-word;
+
+                    &:last-child {
+                        margin-bottom: 0;
+                    }
+                }
+
+                strong, b {
+                    color: $text-dark;
+                    font-weight: 600;
+                }
+
+                ul, ol {
+                    margin: 4px 0;
+                    padding-left: 20px;
+
+                    li {
+                        margin-bottom: 2px;
+                        line-height: 1.4;
+                    }
+                }
+
+                a {
+                    color: $primary;
+                    text-decoration: underline;
+                }
+
+                img {
+                    max-width: 100%;
+                    height: auto;
+                    border-radius: 6px;
+                    margin: 6px 0;
+                }
+            }
+        }
+    }
+}
+
+// ===========================================
+// ACTIVITY MODULES - Compact clickable rows
+// ===========================================
+.activity-module {
+    background: white;
+    border-bottom: 1px solid $border;
+
+    &.clickable {
+        cursor: pointer;
+
+        &:active {
+            background: $primary-light;
+        }
+    }
+
+    &.item-dimmed {
+        opacity: 0.5;
+    }
+
+    // Main row layout - tight
+    .activity-row {
+        display: flex;
+        align-items: center;
+        padding: 8px 12px;
+        gap: 10px;
+    }
+
+    // Module icon - smaller
+    .activity-icon {
+        flex-shrink: 0;
+
+        core-mod-icon {
+            --module-icon-padding: 0;
+            --module-icon-radius: 6px;
+
+            ::ng-deep .core-module-icon {
+                width: 32px;
+                height: 32px;
+                border-radius: 8px;
+                background: $primary-light;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+
+                img, ion-icon {
+                    width: 18px;
+                    height: 18px;
+                }
+            }
+        }
+    }
+
+    // Title and badges
+    .activity-info {
+        flex: 1;
+        min-width: 0;
+
+        .activity-title {
+            display: block;
+            font-size: 13px;
+            font-weight: 500;
+            color: $text-dark;
+            line-height: 1.3;
+
+            core-format-text {
+                display: block;
+
+                ::ng-deep p {
+                    margin: 0;
+                }
+            }
+        }
+
+        .activity-badges {
+            display: flex;
+            gap: 4px;
+            margin-top: 2px;
+
+            ion-badge {
+                font-size: 9px;
+                padding: 1px 5px;
+                border-radius: 3px;
+
+                ion-icon {
+                    font-size: 9px;
+                    margin-right: 2px;
+                }
+            }
+        }
+    }
+
+    // Right side actions
+    .activity-actions {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        flex-shrink: 0;
+
+        core-course-module-completion {
+            --margin: 0;
+        }
+
+        .chevron {
+            font-size: 14px;
+            color: $text-light;
+        }
+    }
+
+    // Activity dates - compact
+    .activity-dates {
+        padding: 4px 12px 4px 54px;
+        background: #fafafa;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+
+        core-reminders-date {
+            font-size: 10px;
+            color: $text-muted;
+        }
+    }
+
+    // Description - compact
+    .activity-description {
+        padding: 6px 12px 6px 54px;
+        background: #fafafa;
+        border-top: 1px solid $border;
+
+        core-format-text {
+            font-size: 11px;
+            line-height: 1.4;
+            color: $text-muted;
+
+            ::ng-deep {
+                p {
+                    margin: 0 0 4px 0;
+                    &:last-child { margin: 0; }
+                }
+
+                a {
+                    color: $primary;
+                }
+            }
+        }
+    }
+
+    // Availability restrictions
+    .activity-availability {
+        display: flex;
+        align-items: flex-start;
+        gap: 6px;
+        padding: 6px 12px 6px 54px;
+        background: #fef9c3;
+        font-size: 10px;
+        color: #854d0e;
+
+        ion-icon {
+            font-size: 12px;
+            flex-shrink: 0;
+            margin-top: 1px;
+        }
+
+        core-format-text ::ng-deep p {
+            margin: 0;
+        }
+    }
+
+    // Extra badges
+    .activity-extra-badges {
+        padding: 4px 12px 4px 54px;
+        font-size: 10px;
+        color: $text-muted;
+        background: #fafafa;
+    }
+
+    // Last viewed indicator
+    .activity-last-viewed {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        padding: 4px 12px 4px 54px;
+        background: $primary-light;
+        color: $primary;
+        font-size: 10px;
+        font-weight: 500;
+
+        ion-icon {
+            font-size: 10px;
+        }
+    }
+
+    // Loading state
+    .activity-loading {
+        padding: 16px;
+        text-align: center;
+
+        ion-spinner {
+            --color: #{$primary};
+            width: 20px;
+            height: 20px;
+        }
+    }
+}
+
+// ===========================================
+// MODULE TYPE ICON COLORS
+// ===========================================
+@mixin module-icon-color($color) {
+    .activity-icon core-mod-icon ::ng-deep .core-module-icon {
+        background: rgba($color, 0.1) !important;
+
+        img, ion-icon {
+            color: $color;
+        }
+    }
+}
+
+:host-context(.addon_mod_forum) { @include module-icon-color($type-forum); }
+:host-context(.addon_mod_resource) { @include module-icon-color($type-resource); }
+:host-context(.addon_mod_url) { @include module-icon-color($type-url); }
+:host-context(.addon_mod_assign) { @include module-icon-color($type-assign); }
+:host-context(.addon_mod_quiz) { @include module-icon-color($type-quiz); }
+:host-context(.addon_mod_page) { @include module-icon-color($type-page); }
+:host-context(.addon_mod_folder) { @include module-icon-color($type-folder); }
+
+// ===========================================
+// DARK MODE
+// ===========================================
 :host-context(:root.dark) {
-    .activity-description-availabilityinfo {
-        .core-module-availabilityinfo {
-            background: var(--gray-800);
+    .label-module {
+        background: #1e293b;
+        border-color: #334155;
+
+        .label-content core-format-text {
+            color: #94a3b8;
+
+            ::ng-deep {
+                h1, h2, h3, h4, h5, h6 {
+                    color: #6ee7b7;
+                }
+
+                p, li {
+                    color: #94a3b8;
+                }
+
+                strong, b {
+                    color: #f1f5f9;
+                }
+            }
+        }
+    }
+
+    .activity-module {
+        background: #1e293b;
+        border-color: #334155;
+
+        &.clickable:active {
+            background: #334155;
+        }
+
+        .activity-info .activity-title {
+            color: #f1f5f9;
+        }
+
+        .activity-dates,
+        .activity-description,
+        .activity-extra-badges {
+            background: #0f172a;
+            border-color: #334155;
+        }
+
+        .activity-availability {
+            background: #422006;
+            color: #fcd34d;
         }
     }
 }

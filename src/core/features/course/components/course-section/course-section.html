@@ -37,6 +37,11 @@
             </div>
         </ion-label>
         <ion-badge *ngIf="section.highlighted && highlightedName" slot="end">{{highlightedName}}</ion-badge>
+        <!-- View section button -->
+        <button *ngIf="collapsible && section.name" class="section-view-btn" slot="end"
+            (click)="onSectionNavigate($event)" aria-label="View section">
+            <ion-icon name="open-outline"></ion-icon>
+        </button>
     </ion-item>
 </ng-template>
 

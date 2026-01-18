@@ -1,19 +1,217 @@
 @use "theme/globals" as *;
 
+// Aspire Course Page - Compact Modern Design
+$primary: #4A9B7F;
+$primary-dark: #3d8269;
+$text-dark: #1e293b;
+$text-muted: #64748b;
+$border: #e2e8f0;
+$bg: #f8fafc;
+
 :host {
-    // Remove default padding from ion-content
-    ion-content {
-        --padding-top: 0;
-        --padding-bottom: 0;
-        --padding-start: 0;
-        --padding-end: 0;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    background: $bg;
+
+    // Compact Header
+    .aspire-header {
+        ion-toolbar {
+            --background: white;
+            --border-width: 0;
+            --min-height: 44px;
+            --padding-start: 4px;
+            --padding-end: 4px;
+
+            ion-back-button {
+                --color: #{$text-dark};
+                --padding-start: 0;
+                --padding-end: 0;
+                --icon-font-size: 20px;
+            }
+
+            ion-title {
+                font-size: 15px;
+                font-weight: 600;
+                color: $text-dark;
+                padding: 0 8px;
+
+                core-format-text ::ng-deep p {
+                    margin: 0;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                    white-space: nowrap;
+                }
+            }
+
+            ion-button {
+                --padding-start: 8px;
+                --padding-end: 8px;
+                --color: #{$text-muted};
+
+                ion-icon {
+                    font-size: 20px;
+                }
+            }
+        }
+
+        // Tab Bar - Compact underline style
+        .tab-bar {
+            display: flex;
+            background: white;
+            border-bottom: 1px solid $border;
+            padding: 0 8px;
+            gap: 0;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+
+            &::-webkit-scrollbar {
+                display: none;
+            }
+
+            .tab-item {
+                display: flex;
+                align-items: center;
+                gap: 5px;
+                padding: 10px 12px;
+                border: none;
+                background: transparent;
+                font-size: 12px;
+                font-weight: 500;
+                color: $text-muted;
+                white-space: nowrap;
+                cursor: pointer;
+                position: relative;
+                transition: color 0.15s;
+
+                ion-icon {
+                    font-size: 15px;
+                }
+
+                &::after {
+                    content: '';
+                    position: absolute;
+                    bottom: 0;
+                    left: 12px;
+                    right: 12px;
+                    height: 2px;
+                    background: $primary;
+                    transform: scaleX(0);
+                    transition: transform 0.15s;
+                }
+
+                &.active {
+                    color: $primary;
+
+                    &::after {
+                        transform: scaleX(1);
+                    }
+                }
+
+                &:active:not(.active) {
+                    color: $text-dark;
+                }
+            }
+        }
     }
-    
-    // Ensure tabs outlet takes full height
+
+    // Progress Strip - Thin bar below header
+    .progress-strip {
+        height: 3px;
+        background: #e2e8f0;
+        position: relative;
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, $primary, lighten($primary, 8%));
+            transition: width 0.3s;
+        }
+
+        .progress-text {
+            position: absolute;
+            right: 8px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 9px;
+            font-weight: 600;
+            color: $primary;
+            background: white;
+            padding: 1px 4px;
+            border-radius: 2px;
+            line-height: 1;
+        }
+    }
+
+    // Hide default tab bar
     core-tabs-outlet {
+        flex: 1;
         display: flex;
         flex-direction: column;
-        flex: 1;
         min-height: 0;
+
+        ::ng-deep {
+            .core-tabs-bar,
+            ion-tab-bar,
+            .tabs-bar {
+                display: none !important;
+            }
+
+            ion-content {
+                --background: #{$bg};
+            }
+        }
+    }
+}
+
+// Dark mode
+:host-context(:root.dark) {
+    background: #0f172a;
+
+    .aspire-header {
+        ion-toolbar {
+            --background: #1e293b;
+
+            ion-back-button {
+                --color: #f1f5f9;
+            }
+
+            ion-title {
+                color: #f1f5f9;
+            }
+
+            ion-button {
+                --color: #94a3b8;
+            }
+        }
+
+        .tab-bar {
+            background: #1e293b;
+            border-color: #334155;
+
+            .tab-item {
+                color: #94a3b8;
+
+                &.active {
+                    color: #6ee7b7;
+
+                    &::after {
+                        background: #6ee7b7;
+                    }
+                }
+            }
+        }
+    }
+
+    .progress-strip {
+        background: #334155;
+
+        .progress-text {
+            background: #1e293b;
+            color: #6ee7b7;
+        }
+    }
+
+    core-tabs-outlet ::ng-deep ion-content {
+        --background: #0f172a;
     }
 }

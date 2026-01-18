@@ -30,7 +30,8 @@
                     @if ($index
                     <= lastShownSectionIndex && !section.hiddenbynumsections && section.id !==allSectionsId && section.id
                         !==stealthModulesSectionId) { <core-course-section [course]="course" [section]="section"
-                        [lastModuleViewed]="lastModuleViewed" [viewedModules]="viewedModules" [collapsible]="true" />
+                        [lastModuleViewed]="lastModuleViewed" [viewedModules]="viewedModules" [collapsible]="true"
+                        (sectionClicked)="sectionChanged($event)" />
                     }
                     }
                 </ion-accordion-group>

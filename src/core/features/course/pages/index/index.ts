@@ -299,6 +299,30 @@ export class CoreCourseIndexPage implements OnInit, OnDestroy {
     }
 
     /**
+     * Get icon for tab based on its name/page.
+     *
+     * @param tab The tab to get icon for.
+     * @returns Icon name.
+     */
+    getTabIcon(tab: CourseTab): string {
+        const page = tab.page.toLowerCase();
+        if (page.includes('contents')) {
+            return 'book-outline';
+        } else if (page.includes('participants')) {
+            return 'people-outline';
+        } else if (page.includes('grades')) {
+            return 'ribbon-outline';
+        } else if (page.includes('competencies')) {
+            return 'trophy-outline';
+        } else if (page.includes('notes')) {
+            return 'document-text-outline';
+        } else if (page.includes('blog')) {
+            return 'newspaper-outline';
+        }
+        return 'ellipsis-horizontal-outline';
+    }
+
+    /**
      * Set course color.
      */
     protected async setCourseColor(): Promise<void> {

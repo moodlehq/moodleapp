@@ -1,47 +1,216 @@
 @use "theme/globals" as *;
 
+// Aspire Course Sections - Compact Modern Design
+$primary: #4A9B7F;
+$primary-light: rgba(74, 155, 127, 0.08);
+$text-dark: #1e293b;
+$text-muted: #64748b;
+$text-light: #94a3b8;
+$border: #e5e7eb;
+$bg-section: #f1f5f9;
+
 :host {
+    display: block;
+
+    .core-course-module-list-wrapper {
+        background: transparent;
+        border: none;
+        margin: 0;
+        padding: 0;
+    }
+
+    // Section Header - Compact sticky bar
     .course-section {
-        --inner-padding-end: var(--mdl-spacing-3);
+        --padding-start: 12px;
+        --inner-padding-end: 8px;
+        --min-height: 40px;
+        --background: #{$bg-section};
+        position: sticky;
+        top: 0;
+        z-index: 10;
+        border-bottom: 1px solid $border;
+
+        ion-label {
+            margin: 0;
+
+            h2 {
+                font-size: 11px;
+                font-weight: 700;
+                color: $text-muted;
+                margin: 0;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+                display: flex;
+                align-items: center;
+                gap: 6px;
+
+                core-format-text {
+                    flex: 1;
+
+                    ::ng-deep p {
+                        margin: 0;
+                    }
+                }
+
+                ion-icon {
+                    font-size: 11px;
+                    color: $text-light;
+                }
+            }
+        }
 
         ion-badge {
-            @include margin-horizontal(null, 4px);
-            font: var(--mdl-typography-body-font-sm);
+            font-size: 9px;
+            font-weight: 600;
+            padding: 2px 6px;
+            border-radius: 3px;
         }
 
-        h2 ion-icon {
-            @include margin-horizontal(4px, null);
+        ion-badge[slot="end"] {
+            background: $primary;
+            color: white;
+            font-size: 8px;
+            font-weight: 700;
+            padding: 3px 6px;
+            border-radius: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
         }
-    }
 
-    &.collapsible {
-        .core-course-module-list-wrapper {
-            border: var(--ion-card-border-width) solid var(--ion-card-border-color);
-            border-radius: var(--ion-card-radius);
-            margin: var(--mdl-spacing-4);
-            width: calc(100% - var(--mdl-spacing-8));
+        // View section button - Compact
+        .section-view-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 26px;
+            height: 26px;
+            border: none;
+            background: transparent;
+            border-radius: 6px;
+            color: $text-light;
+            cursor: pointer;
+            margin-left: 4px;
+            transition: all 0.15s;
 
-            ion-card {
-                --ion-card-background: transparent;
+            ion-icon {
+                font-size: 14px;
             }
 
-            ion-item.divider.course-section {
-                --background: transparent;
+            &:active {
+                background: $primary-light;
+                color: $primary;
             }
         }
     }
 
-    core-course-module:has( + core-course-section) {
-        --activity-border: 0px;
-        --card-padding-bottom: 0px;
+    // Section Summary - Minimal warning bar
+    .section-summary {
+        --padding-start: 12px;
+        --padding-end: 12px;
+        --min-height: auto;
+        --background: #fef9c3;
+        border-bottom: 1px solid #fde047;
+
+        ion-label {
+            font-size: 11px;
+            color: #854d0e;
+            line-height: 1.4;
+            padding: 8px 0;
+            margin: 0;
+
+            core-format-text ::ng-deep p {
+                margin: 0;
+            }
+        }
+
+        ion-chip {
+            --background: transparent;
+            --color: #854d0e;
+            height: auto;
+            padding: 0;
+            margin: 0;
+
+            ion-icon {
+                font-size: 12px;
+                margin-right: 4px;
+            }
+
+            ion-label {
+                font-size: 11px;
+                padding: 0;
+                white-space: normal;
+            }
+        }
     }
 
-    core-course-module:last-child {
-        --activity-border: 0px;
-        --card-padding-bottom: 0px;
+    // Nested subsections
+    core-course-section {
+        display: block;
+        margin: 0;
+        padding-left: 8px;
+        border-left: 2px solid $primary-light;
+
+        .course-section {
+            --background: #fafafa;
+
+            h2 {
+                font-size: 10px;
+                text-transform: none;
+            }
+        }
+    }
+}
+
+// Accordion styling
+ion-accordion {
+    background: transparent;
+
+    .ion-accordion-toggle-icon {
+        color: $text-light;
+        font-size: 14px;
+        margin-right: 2px;
     }
 
-    core-course-module:first-child ::ng-deep ion-card {
-        margin-top: 0px;
+    &::part(header) {
+        background: transparent;
+    }
+
+    &::part(content) {
+        background: transparent;
+        padding: 0;
+    }
+}
+
+// Dark mode
+:host-context(:root.dark) {
+    .course-section {
+        --background: #0f172a;
+        border-color: #334155;
+
+        ion-label h2 {
+            color: #94a3b8;
+        }
+
+        .section-view-btn {
+            color: #64748b;
+
+            &:active {
+                background: rgba(74, 155, 127, 0.15);
+                color: #6ee7b7;
+            }
+        }
+    }
+
+    .section-summary {
+        --background: #422006;
+        border-color: #854d0e;
+
+        ion-label {
+            color: #fcd34d;
+        }
+    }
+
+    ion-accordion .ion-accordion-toggle-icon {
+        color: #64748b;
     }
 }
