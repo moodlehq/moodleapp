@@ -39,7 +39,38 @@ export class CoreErrorLogs {
      * @param error Error.
      */
     static addErrorLog(error: CoreSettingsErrorLog): void {
-        CoreErrorLogs.errorLogs.push(error);
+        CoreErrorLogs.errorLogs.push({
+            ...error,
+            data: CoreErrorLogs.sanitizeData(error.data),
+        });
+    }
+
+    /**
+     * Sanitize error data by replacing possible tokens with masked values.
+     *
+     * @param data Data to sanitize.
+     * @returns Sanitized data.
+     */
+    protected static sanitizeData(data: unknown): unknown {
+        if (typeof data === 'string') {
+            // Hide anything that looks like a possible token.
+            return data.replace(/\b[a-zA-Z0-9]{32,}/g, (match) => `...${match.slice(-3)}`);
+        }
+
+        if (typeof data !== 'object' || data === null) {
+            return data;
+        }
+
+        if (Array.isArray(data)) {
+            return data.map(item => CoreErrorLogs.sanitizeData(item));
+        }
+
+        const sanitized: Record<string, unknown> = {};
+        for (const [key, value] of Object.entries(data)) {
+            sanitized[key] = CoreErrorLogs.sanitizeData(value);
+        }
+
+        return sanitized;
     }
 
 }
