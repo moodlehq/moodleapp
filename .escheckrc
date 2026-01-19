@@ -6,6 +6,7 @@
             "cordova-plugin-moodleapp/www/*.js"
         ],
         "checkFeatures": true,
-        "checkForPolyfills": true
+        "checkForPolyfills": true,
+        "ignore": "ArrayPrototypeGroup"
     }
 ]

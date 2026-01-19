@@ -77,7 +77,7 @@ jobs:
         run: |
           # Check for ES2021 features, allowing ErrorCause feature.
           # browserslist is not used here because of a bug in es-check
-          # See https://github.com/yowainwright/es-check/blob/main/constants.js to see the list of features and polyfills.
+          # See https://github.com/yowainwright/es-check/tree/main/lib/constants/es-features to see the list of features and polyfills.
           npx es-check --config=.escheckrc
           # In order to support Chrome 93 and iOS 15 we need to find Static initialization blocks are not present in the code.
           # See https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Classes/Static_initialization_blocks
