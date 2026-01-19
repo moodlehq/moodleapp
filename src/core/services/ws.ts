@@ -461,7 +461,7 @@ export class CoreWSProvider {
             preSets.responseExpected = true;
         }
 
-        const script = preSets.noLogin ? 'service-nologin.php' : 'service.php';
+        const script = 'service-nologin.php';
         const ajaxData = [{
             index: 0,
             methodname: method,
