@@ -37,7 +37,6 @@
 <!-- Progress Strip (only if has progress) -->
 <div class="progress-strip" *ngIf="progress !== undefined && progress > 0">
     <div class="progress-fill" [style.width.%]="progress"></div>
-    <span class="progress-text">{{ progress }}%</span>
 </div>
 
 <core-tabs-outlet [tabs]="tabs" [hideUntil]="loaded" (ionChange)="tabSelected()" />

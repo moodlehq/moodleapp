@@ -38,12 +38,16 @@
             if (params.get('list')) embedParams.set('list', params.get('list'));
             if (params.get('loop')) embedParams.set('loop', params.get('loop'));
 
-            // Enable JS API and set origin
+            // Enable JS API and set origin - CRITICAL for iOS WKWebView
             embedParams.set('enablejsapi', '1');
+            embedParams.set('origin', window.location.origin);
+            embedParams.set('widget_referrer', window.location.href);
+            embedParams.set('playsinline', '1');
             embedParams.set('rel', '0');
             embedParams.set('modestbranding', '1');
 
-            var embedUrl = 'https://www.youtube-nocookie.com/embed/' + videoId;
+            // Use regular youtube.com - youtube-nocookie.com has stricter embed restrictions
+            var embedUrl = 'https://www.youtube.com/embed/' + videoId;
             if (embedParams.toString()) {
                 embedUrl += '?' + embedParams.toString();
             }
