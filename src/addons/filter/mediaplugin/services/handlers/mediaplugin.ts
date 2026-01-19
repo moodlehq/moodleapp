@@ -75,12 +75,16 @@ export class AddonFilterMediaPluginHandlerService extends CoreFilterDefaultHandl
         }
 
         const videoId = match[1];
+        console.log('[YouTube] Found broken YouTube URL, video ID:', videoId);
 
         // Use getYoutubeEmbedUrl which handles iOS proxy vs direct embed
         const embedUrl = CoreUrl.getYoutubeEmbedUrl(`https://www.youtube.com/watch?v=${videoId}`);
         if (!embedUrl) {
+            console.warn('[YouTube] Failed to get embed URL for video:', videoId);
             return;
         }
+
+        console.log('[YouTube] Creating iframe with src:', embedUrl);
 
         // Create iframe to replace the broken video
         const iframe = document.createElement('iframe');
@@ -94,8 +98,13 @@ export class AddonFilterMediaPluginHandlerService extends CoreFilterDefaultHandl
         iframe.height = '300';
         iframe.className = video.className;
 
+        // Add load/error listeners for debugging
+        iframe.onload = () => console.log('[YouTube] Iframe loaded successfully');
+        iframe.onerror = (e) => console.error('[YouTube] Iframe load error:', e);
+
         // Replace video tag with iframe
         video.parentNode.replaceChild(iframe, video);
+        console.log('[YouTube] Replaced broken video element with iframe');
     }
 
     /**

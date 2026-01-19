@@ -34,6 +34,9 @@ import { CoreSiteInfoCronHandler } from '@services/handlers/site-info-cron';
 import { moodleTransitionAnimation } from '@classes/page-transition';
 import { TestingModule } from '@/testing/testing.module';
 
+// Initialize debug console capture early
+import '@services/debug-console';
+
 /**
  * For translate loader. AoT requires an exported function for factories.
  *

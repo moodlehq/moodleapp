@@ -675,11 +675,15 @@ export class CoreUrl {
         // The proxy sets proper referrer headers that YouTube requires
         if (CorePlatform.isIOS()) {
             params.v = videoId;
-            return CoreUrl.addParamsToUrl('assets/youtube-proxy.html', params);
+            const proxyUrl = CoreUrl.addParamsToUrl('assets/youtube-proxy.html', params);
+            console.log('[YouTube] iOS detected - using proxy:', proxyUrl);
+            return proxyUrl;
         }
 
         // On other platforms, use youtube-nocookie.com directly with credentialless iframe
-        return CoreUrl.addParamsToUrl('https://www.youtube-nocookie.com/embed/' + videoId, params);
+        const embedUrl = CoreUrl.addParamsToUrl('https://www.youtube-nocookie.com/embed/' + videoId, params);
+        console.log('[YouTube] Non-iOS - using direct embed:', embedUrl);
+        return embedUrl;
     }
 
     /**

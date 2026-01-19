@@ -1,0 +1,349 @@
+// Debug Console Page Styles
+
+$bg-dark: #0d1117;
+$bg-card: #161b22;
+$bg-input: #21262d;
+$border-color: #30363d;
+$text-primary: #c9d1d9;
+$text-secondary: #8b949e;
+$text-muted: #6e7681;
+
+$color-error: #f85149;
+$color-warn: #d29922;
+$color-info: #58a6ff;
+$color-log: #8b949e;
+$color-debug: #a371f7;
+$color-success: #3fb950;
+
+.debug-page {
+    --background: #{$bg-dark};
+    --color: #{$text-primary};
+}
+
+// System Info Card
+.system-info-card {
+    background: $bg-card;
+    border: 1px solid $border-color;
+    border-radius: 8px;
+    margin: 12px;
+    padding: 12px;
+
+    .info-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 6px 0;
+        border-bottom: 1px solid $border-color;
+
+        &:last-child {
+            border-bottom: none;
+        }
+
+        .info-label {
+            font-size: 12px;
+            color: $text-secondary;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .info-value {
+            font-size: 12px;
+            font-family: 'SF Mono', monospace;
+            color: $text-primary;
+
+            &.truncate {
+                max-width: 200px;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+            }
+        }
+    }
+}
+
+// Stats Bar
+.stats-bar {
+    display: flex;
+    gap: 8px;
+    margin: 0 12px 12px;
+
+    .stat {
+        flex: 1;
+        background: $bg-card;
+        border: 1px solid $border-color;
+        border-radius: 8px;
+        padding: 10px;
+        text-align: center;
+
+        .stat-value {
+            display: block;
+            font-size: 20px;
+            font-weight: 700;
+            font-family: 'SF Mono', monospace;
+            color: $text-primary;
+        }
+
+        .stat-label {
+            font-size: 10px;
+            color: $text-secondary;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        &.stat-error {
+            border-color: rgba($color-error, 0.3);
+            .stat-value { color: $color-error; }
+        }
+
+        &.stat-warn {
+            border-color: rgba($color-warn, 0.3);
+            .stat-value { color: $color-warn; }
+        }
+    }
+}
+
+// Action Buttons
+.action-buttons {
+    display: flex;
+    gap: 8px;
+    margin: 0 12px 12px;
+
+    .action-btn {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 4px;
+        padding: 10px 8px;
+        background: $bg-card;
+        border: 1px solid $border-color;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+
+        ion-icon {
+            font-size: 20px;
+            color: $color-info;
+        }
+
+        span {
+            font-size: 10px;
+            color: $text-secondary;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+
+        &:active {
+            background: $bg-input;
+            border-color: $color-info;
+        }
+    }
+}
+
+// Filter Tabs
+.filter-tabs {
+    display: flex;
+    gap: 4px;
+    margin: 0 12px 8px;
+    padding: 4px;
+    background: $bg-card;
+    border-radius: 8px;
+    overflow-x: auto;
+
+    .filter-tab {
+        flex: 1;
+        min-width: 50px;
+        padding: 8px 12px;
+        font-size: 11px;
+        font-weight: 600;
+        color: $text-secondary;
+        background: transparent;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        white-space: nowrap;
+
+        &.active {
+            background: $color-info;
+            color: #fff;
+        }
+
+        &:not(.active):active {
+            background: $bg-input;
+        }
+    }
+}
+
+// Search Bar
+.search-bar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0 12px 12px;
+    padding: 8px 12px;
+    background: $bg-input;
+    border: 1px solid $border-color;
+    border-radius: 8px;
+
+    ion-icon {
+        font-size: 18px;
+        color: $text-muted;
+    }
+
+    input {
+        flex: 1;
+        background: transparent;
+        border: none;
+        outline: none;
+        font-size: 14px;
+        color: $text-primary;
+
+        &::placeholder {
+            color: $text-muted;
+        }
+    }
+
+    .clear-search {
+        background: transparent;
+        border: none;
+        padding: 0;
+        cursor: pointer;
+
+        ion-icon {
+            font-size: 18px;
+            color: $text-secondary;
+        }
+    }
+}
+
+// Logs Container
+.logs-container {
+    margin: 0 12px 12px;
+    padding: 8px;
+    background: $bg-card;
+    border: 1px solid $border-color;
+    border-radius: 8px;
+    max-height: calc(100vh - 420px);
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+
+    .log-entry {
+        padding: 8px;
+        border-radius: 4px;
+        margin-bottom: 4px;
+        border-left: 3px solid $border-color;
+        background: rgba($bg-input, 0.5);
+
+        &:last-child {
+            margin-bottom: 0;
+        }
+
+        .log-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 4px;
+
+            .log-time {
+                font-size: 10px;
+                font-family: 'SF Mono', monospace;
+                color: $text-muted;
+            }
+
+            .log-level {
+                font-size: 9px;
+                font-weight: 700;
+                padding: 2px 6px;
+                border-radius: 4px;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+            }
+        }
+
+        .log-message {
+            font-size: 12px;
+            font-family: 'SF Mono', monospace;
+            color: $text-primary;
+            word-break: break-word;
+            white-space: pre-wrap;
+        }
+
+        .log-args {
+            font-size: 11px;
+            font-family: 'SF Mono', monospace;
+            color: $text-secondary;
+            margin-top: 4px;
+            padding-left: 8px;
+            border-left: 2px solid $border-color;
+            word-break: break-word;
+            white-space: pre-wrap;
+        }
+
+        // Level-specific styles
+        &.log-error {
+            border-left-color: $color-error;
+            background: rgba($color-error, 0.08);
+
+            .log-level {
+                background: rgba($color-error, 0.2);
+                color: $color-error;
+            }
+        }
+
+        &.log-warn {
+            border-left-color: $color-warn;
+            background: rgba($color-warn, 0.08);
+
+            .log-level {
+                background: rgba($color-warn, 0.2);
+                color: $color-warn;
+            }
+        }
+
+        &.log-info {
+            border-left-color: $color-info;
+
+            .log-level {
+                background: rgba($color-info, 0.2);
+                color: $color-info;
+            }
+        }
+
+        &.log-log {
+            .log-level {
+                background: rgba($color-log, 0.2);
+                color: $color-log;
+            }
+        }
+
+        &.log-debug {
+            border-left-color: $color-debug;
+
+            .log-level {
+                background: rgba($color-debug, 0.2);
+                color: $color-debug;
+            }
+        }
+    }
+
+    .no-logs {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 40px 20px;
+        color: $text-muted;
+
+        ion-icon {
+            font-size: 48px;
+            margin-bottom: 12px;
+            opacity: 0.5;
+        }
+
+        p {
+            font-size: 14px;
+            margin: 0;
+        }
+    }
+}

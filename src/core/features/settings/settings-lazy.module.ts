@@ -29,6 +29,7 @@ import { CoreSettingsLicensesPage } from '@features/settings/pages/licenses/lice
 import { CoreSettingsDeviceInfoPage } from '@features/settings/pages/deviceinfo/deviceinfo';
 import { CoreSettingsDevPage } from '@features/settings/pages/dev/dev';
 import { CoreSettingsErrorLogPage } from '@features/settings/pages/error-log/error-log';
+import { CoreDebugPage } from '@features/settings/pages/debug/debug';
 
 const sectionRoutes: Routes = [
     {
@@ -94,6 +95,10 @@ const routes: Routes = [
     {
         path: 'about/licenses',
         component: CoreSettingsLicensesPage,
+    },
+    {
+        path: 'debug',
+        component: CoreDebugPage,
     },
 ];
 

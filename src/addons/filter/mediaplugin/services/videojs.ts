@@ -107,11 +107,16 @@ export class AddonFilterMediaPluginVideoJSService {
 
         const dataSetupString = video.getAttribute('data-setup') || video.getAttribute('data-setup-lazy') || '{}';
         const data = CoreText.parseJSON<VideoJSOptions>(dataSetupString, {});
+        console.log('[YouTube] VideoJS data-setup:', data);
+
         const youtubeUrl = data.techOrder?.[0] == 'youtube' && CoreUrl.getYoutubeEmbedUrl(data.sources?.[0]?.src);
 
         if (!youtubeUrl) {
+            console.log('[YouTube] Not a YouTube video or failed to get URL');
             return;
         }
+
+        console.log('[YouTube] VideoJS YouTube video, creating iframe with src:', youtubeUrl);
 
         const iframe = document.createElement('iframe');
         iframe.id = video.id;
@@ -123,8 +128,13 @@ export class AddonFilterMediaPluginVideoJSService {
         iframe.width = '100%';
         iframe.height = '300';
 
+        // Add load/error listeners for debugging
+        iframe.onload = () => console.log('[YouTube] VideoJS iframe loaded successfully');
+        iframe.onerror = (e) => console.error('[YouTube] VideoJS iframe load error:', e);
+
         // Replace video tag by the iframe.
         video.parentNode?.replaceChild(iframe, video);
+        console.log('[YouTube] VideoJS replaced video element with iframe');
     }
 
     /**

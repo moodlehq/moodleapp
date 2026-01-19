@@ -155,6 +155,8 @@ export class CoreUserParentService {
 
     /**
      * Get the currently selected mentee from storage.
+     * NOTE: On fresh app launch, this will return null even if a child was previously selected.
+     * The selection is cleared on launch so parent sees their own view by default.
      *
      * @param siteId Site ID. If not defined, use current site.
      * @returns Promise resolved with selected mentee ID or null.
@@ -162,33 +164,81 @@ export class CoreUserParentService {
     async getSelectedMentee(siteId?: string): Promise<number | null> {
         const site = await CoreSites.getSite(siteId);
         const key = this.getSelectedMenteeKey(site.getId());
-        
+
         console.log('[Parent Service] Getting selected mentee with key:', key);
         console.log('[Parent Service] Site ID:', site.getId());
         console.log('[Parent Service] Current user ID:', site.getUserId());
-        
+
         try {
+            const storedParentToken = await this.getStoredOriginalToken(site);
+            const storedMenteeToken = await this.getStoredMenteeToken(site);
             const value = await site.getLocalSiteConfig(key);
+
             console.log('[Parent Service] Raw stored value:', value);
-            
+            console.log('[Parent Service] Has stored parent token:', !!storedParentToken);
+            console.log('[Parent Service] Has stored mentee token:', !!storedMenteeToken);
+
             // Handle empty string as null (cleared value)
             if (!value || value === '') {
                 console.log('[Parent Service] No mentee selected (empty or null value)');
                 return null;
             }
-            
+
             const menteeId = parseInt(String(value), 10);
             console.log('[Parent Service] Parsed mentee ID:', menteeId);
-            
+
             // Check if parsing resulted in a valid number
             if (isNaN(menteeId)) {
                 console.log('[Parent Service] Invalid mentee ID, returning null');
                 return null;
             }
-            
+
+            // CRITICAL: If we have a stored mentee selection AND stored mentee token,
+            // restore the token to the site object (for app restart scenario)
+            if (storedMenteeToken && storedParentToken) {
+                const currentToken = site.getToken();
+
+                // Check if the current site token is the parent's token (not yet switched)
+                if (currentToken === storedParentToken) {
+                    console.log('[Parent Service] App restarted - restoring mentee token to site object');
+                    (site as any).token = storedMenteeToken;
+
+                    // Also refresh site info for the mentee
+                    try {
+                        const menteeInfo = await site.fetchSiteInfo();
+                        site.setInfo(menteeInfo);
+                        console.log('[Parent Service] Restored mentee session:', menteeInfo.fullname);
+                    } catch (e) {
+                        console.warn('[Parent Service] Could not fetch mentee info on restore:', e);
+                    }
+                } else {
+                    console.log('[Parent Service] Token already switched, no restore needed');
+                }
+            }
+
             return menteeId;
         } catch (error) {
             console.error('[Parent Service] Error getting selected mentee:', error);
+            return null;
+        }
+    }
+
+    /**
+     * Get the stored mentee token if it exists.
+     *
+     * @param site The site object.
+     * @returns The mentee token or null.
+     */
+    private async getStoredMenteeToken(site: CoreSite): Promise<string | null> {
+        try {
+            const token = await site.getLocalSiteConfig<string>(this.getMenteeTokenKey(site.getId()));
+
+            if (token && token !== '') {
+                return token;
+            }
+
+            return null;
+        } catch {
             return null;
         }
     }
@@ -251,6 +301,10 @@ export class CoreUserParentService {
                     console.log('[Parent Service] Stored parent info (first switch)');
                 }
                 // If existingOriginalToken exists, we keep it - it's already the parent's token
+
+                // Store the mentee's token so we can restore it on app restart
+                await site.setLocalSiteConfig(this.getMenteeTokenKey(site.getId()), tokenResponse.token);
+                console.log('[Parent Service] Stored mentee token for session restore');
 
                 // Update the site object's token to the new mentee's token
                 (site as any).token = tokenResponse.token;
@@ -373,12 +427,13 @@ export class CoreUserParentService {
                 // Clear the stored tokens and user ID
                 await site.setLocalSiteConfig(this.getOriginalTokenKey(site.getId()), '');
                 await site.setLocalSiteConfig(this.getOriginalUserKey(site.getId()), '');
-                
+                await site.setLocalSiteConfig(this.getMenteeTokenKey(site.getId()), '');
+
                 // Trigger events to refresh the UI
                 if (parentInfo) {
                     CoreEvents.trigger(CoreEvents.SITE_UPDATED, parentInfo, site.getId());
                 }
-                
+
                 console.log('[Parent Service] Restored parent token and cleared stored data');
             }
         } catch (error) {
@@ -425,6 +480,16 @@ export class CoreUserParentService {
      */
     protected getOriginalTokenKey(siteId: string): string {
         return CoreUserParentService.CACHE_KEY + 'originalToken:' + siteId;
+    }
+
+    /**
+     * Get the key for storing mentee token.
+     *
+     * @param siteId Site ID.
+     * @returns Storage key.
+     */
+    protected getMenteeTokenKey(siteId: string): string {
+        return CoreUserParentService.CACHE_KEY + 'menteeToken:' + siteId;
     }
 
     /**

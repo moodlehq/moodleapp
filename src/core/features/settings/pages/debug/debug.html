@@ -1,0 +1,142 @@
+<ion-header>
+    <ion-toolbar color="dark">
+        <ion-buttons slot="start">
+            <ion-back-button defaultHref="/main/home" color="light"></ion-back-button>
+        </ion-buttons>
+        <ion-title>
+            <ion-icon name="bug" style="margin-right: 8px;"></ion-icon>
+            Debug Console
+        </ion-title>
+        <ion-buttons slot="end">
+            <ion-button (click)="clearLogs()" color="light">
+                <ion-icon name="trash-outline" slot="icon-only"></ion-icon>
+            </ion-button>
+        </ion-buttons>
+    </ion-toolbar>
+</ion-header>
+
+<ion-content class="debug-page">
+    <!-- System Info Card -->
+    <div class="system-info-card">
+        <div class="info-row">
+            <span class="info-label">Platform</span>
+            <span class="info-value">{{ platform }}</span>
+        </div>
+        <div class="info-row">
+            <span class="info-label">Version</span>
+            <span class="info-value">{{ appVersion }}</span>
+        </div>
+        <div class="info-row">
+            <span class="info-label">Site</span>
+            <span class="info-value truncate">{{ siteUrl }}</span>
+        </div>
+        <div class="info-row">
+            <span class="info-label">User ID</span>
+            <span class="info-value">{{ userId }}</span>
+        </div>
+        <div class="info-row">
+            <span class="info-label">Parent</span>
+            <span class="info-value">{{ isParent ? 'Yes' : 'No' }}</span>
+        </div>
+    </div>
+
+    <!-- Stats Bar -->
+    <div class="stats-bar">
+        <div class="stat">
+            <span class="stat-value">{{ totalLogs }}</span>
+            <span class="stat-label">Total</span>
+        </div>
+        <div class="stat stat-error">
+            <span class="stat-value">{{ errorCount }}</span>
+            <span class="stat-label">Errors</span>
+        </div>
+        <div class="stat stat-warn">
+            <span class="stat-value">{{ warnCount }}</span>
+            <span class="stat-label">Warnings</span>
+        </div>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="action-buttons">
+        <button class="action-btn" (click)="copyLogs()">
+            <ion-icon name="copy-outline"></ion-icon>
+            <span>Copy</span>
+        </button>
+        <button class="action-btn" (click)="exportLogs()">
+            <ion-icon name="download-outline"></ion-icon>
+            <span>Export</span>
+        </button>
+        <button class="action-btn" (click)="testYouTube()">
+            <ion-icon name="logo-youtube"></ion-icon>
+            <span>Test YT</span>
+        </button>
+        <button class="action-btn" (click)="refreshLogs()">
+            <ion-icon name="refresh-outline"></ion-icon>
+            <span>Refresh</span>
+        </button>
+    </div>
+
+    <!-- Filter Tabs -->
+    <div class="filter-tabs">
+        <button
+            class="filter-tab"
+            [class.active]="activeFilter === 'all'"
+            (click)="setFilter('all')"
+        >All</button>
+        <button
+            class="filter-tab"
+            [class.active]="activeFilter === 'error'"
+            (click)="setFilter('error')"
+        >Errors</button>
+        <button
+            class="filter-tab"
+            [class.active]="activeFilter === 'warn'"
+            (click)="setFilter('warn')"
+        >Warns</button>
+        <button
+            class="filter-tab"
+            [class.active]="activeFilter === 'log'"
+            (click)="setFilter('log')"
+        >Logs</button>
+        <button
+            class="filter-tab"
+            [class.active]="activeFilter === 'info'"
+            (click)="setFilter('info')"
+        >Info</button>
+    </div>
+
+    <!-- Search -->
+    <div class="search-bar">
+        <ion-icon name="search-outline"></ion-icon>
+        <input
+            type="text"
+            [(ngModel)]="searchQuery"
+            (input)="onSearchChange()"
+            placeholder="Filter logs..."
+        />
+        <button *ngIf="searchQuery" class="clear-search" (click)="searchQuery = ''; onSearchChange()">
+            <ion-icon name="close-circle"></ion-icon>
+        </button>
+    </div>
+
+    <!-- Logs List -->
+    <div class="logs-container">
+        <div
+            *ngFor="let log of filteredLogs; trackBy: trackByIndex"
+            class="log-entry"
+            [ngClass]="getLevelClass(log.level)"
+        >
+            <div class="log-header">
+                <span class="log-time">{{ formatTime(log.timestamp) }}</span>
+                <span class="log-level">{{ log.level.toUpperCase() }}</span>
+            </div>
+            <div class="log-message">{{ log.message }}</div>
+            <div class="log-args" *ngIf="log.args">{{ log.args }}</div>
+        </div>
+
+        <div *ngIf="filteredLogs.length === 0" class="no-logs">
+            <ion-icon name="document-text-outline"></ion-icon>
+            <p>No logs to display</p>
+        </div>
+    </div>
+</ion-content>

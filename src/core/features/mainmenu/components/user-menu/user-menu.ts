@@ -89,8 +89,12 @@ export class CoreMainMenuUserMenuComponent implements OnInit, OnDestroy {
 
     // App version info (auto-updated by post-commit hook)
     appVersion = CoreConstants.CONFIG.versionname;
-    buildNumber = 8;
-    buildTime = '2026-01-19 08:36';
+    buildNumber = 9;
+    buildTime = '2026-01-19 09:21';
+
+    // Secret debug menu (tap build number 7 times)
+    debugTapCount = 0;
+    debugTapTimeout?: ReturnType<typeof setTimeout>;
 
     protected subscription!: Subscription;
 
@@ -630,10 +634,37 @@ export class CoreMainMenuUserMenuComponent implements OnInit, OnDestroy {
     }
 
     /**
+     * Handle tap on build number for secret debug menu.
+     */
+    async onBuildNumberTap(): Promise<void> {
+        // Clear previous timeout
+        if (this.debugTapTimeout) {
+            clearTimeout(this.debugTapTimeout);
+        }
+
+        this.debugTapCount++;
+
+        // Open debug page after 7 taps (no messages)
+        if (this.debugTapCount >= 7) {
+            this.debugTapCount = 0;
+            await this.close(new Event('click'));
+            CoreNavigator.navigateToSitePath('/settings/debug');
+        }
+
+        // Reset tap count after 3 seconds of no taps
+        this.debugTapTimeout = setTimeout(() => {
+            this.debugTapCount = 0;
+        }, 3000);
+    }
+
+    /**
      * @inheritdoc
      */
     ngOnDestroy(): void {
         this.subscription?.unsubscribe();
+        if (this.debugTapTimeout) {
+            clearTimeout(this.debugTapTimeout);
+        }
     }
 
 }
