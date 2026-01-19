@@ -26,4 +26,5 @@ export default async function(): Promise<void> {
     await CorePlatform.ready();
 
     NativeHttp.setHeader('*', 'User-Agent', navigator.userAgent);
+    NativeHttp.setServerTrustMode('legacy');
 }
