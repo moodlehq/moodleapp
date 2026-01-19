@@ -1428,7 +1428,7 @@ export class CoreCourseProvider {
      * @param courseId Course ID.
      * @param siteId Site ID. If not defined, current site.
      * @returns Promise resolved when the status is changed. Resolve param: new status.
-     * @deprecated since 5.0. Use CoreCourseStatusHelper.setCoursePreviousStatus.
+     * @deprecated since 5.0. Use CoreCourseDownloadStatusHelper.setCoursePreviousStatus.
      */
     async setCoursePreviousStatus(courseId: number, siteId?: string): Promise<DownloadStatus> {
         return CoreCourseDownloadStatusHelper.setCoursePreviousStatus(courseId, siteId);
@@ -1550,7 +1550,7 @@ export type CoreCourseCompletionActivityStatus = {
     state: CoreCourseModuleCompletionStatus; // Completion state value.
     timecompleted: number; // Timestamp for completed activity.
     tracking: CoreCourseModuleCompletionTracking; // Type of tracking: 0 means none, 1 manual, 2 automatic.
-    overrideby: number | null; // The user id who has overriden the status, or null.
+    overrideby: number | null; // The user id who has overridden the status, or null.
     valueused?: boolean; // Whether the completion status affects the availability of another activity.
     hascompletion?: boolean; // @since 3.11. Whether this activity module has completion enabled.
     isautomatic?: boolean; // @since 3.11. Whether this activity module instance tracks completion automatically.
@@ -1765,7 +1765,7 @@ type CoreCourseGetCourseModuleWSResponse = {
 export type CoreCourseModuleWSCompletionData = {
     state: CoreCourseModuleCompletionStatus; // Completion state value.
     timecompleted: number; // Timestamp for completion status.
-    overrideby: number | null; // The user id who has overriden the status.
+    overrideby: number | null; // The user id who has overridden the status.
     valueused?: boolean; // Whether the completion status affects the availability of another activity.
     hascompletion?: boolean; // @since 3.11. Whether this activity module has completion enabled.
     isautomatic?: boolean; // @since 3.11. Whether this activity module instance tracks completion automatically.

@@ -15,7 +15,7 @@
 import { Component, Input, OnInit, Type } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 import { CoreLang } from '@services/lang';
-import { AuthEmailSignupProfileField } from '@features/login/services/login-helper';
+import { AuthEmailSignupProfileField } from '@features/login/services/signup';
 import { CoreUserProfileField } from '@features/user/services/user';
 import { CoreUserProfileFieldDelegate } from '@features/user/services/user-profile-field-delegate';
 import { CoreUtils } from '@singletons/utils';

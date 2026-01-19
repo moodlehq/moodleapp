@@ -109,7 +109,7 @@ export class CoreModIconComponent {
 
         // Exception for bigbluebuttonbn, it's the only one that has a branded icon.
         if (this.iconVersion() === IconVersion.VERSION_4_0 && this.computedModName() === 'bigbluebuttonbn') {
-            // Known issue, if the icon is overriden by theme it won't be colorized.
+            // Known issue, if the icon is overridden by theme it won't be colorized.
             return true;
         }
 

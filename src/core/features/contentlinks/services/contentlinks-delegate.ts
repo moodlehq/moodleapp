@@ -17,7 +17,6 @@ import { CoreLogger } from '@singletons/logger';
 import { CoreSites } from '@services/sites';
 import { CoreUrl } from '@singletons/url';
 import { makeSingleton } from '@singletons';
-import { CoreText } from '@singletons/text';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreNavigator } from '@services/navigator';
 
@@ -175,7 +174,7 @@ export class CoreContentLinksDelegateService {
         const linkActions: CoreContentLinksHandlerActions[] = [];
         const promises: Promise<void>[] = [];
         const params = CoreUrl.extractUrlParams(url);
-        const relativeUrl = CoreText.addStartingSlash(CoreUrl.toRelativeURL(site.getURL(), url));
+        const relativeUrl = await site.getRelativeUrl(url);
 
         for (const name in this.handlers) {
             const handler = this.handlers[name];

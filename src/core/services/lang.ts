@@ -26,9 +26,9 @@ import { CorePlatform } from '@services/platform';
 import { CoreLogger } from '@singletons/logger';
 import { CoreSites } from './sites';
 
-/*
+/**
  * Service to handle language features, like changing the current language.
-*/
+ */
 @Injectable({ providedIn: 'root' })
 export class CoreLangProvider {
 
@@ -318,6 +318,41 @@ export class CoreLangProvider {
     }
 
     /**
+     * Get language suffix.
+     *
+     * This function can be modified to configure the language suffix.
+     *
+     * @returns Suffix.
+     */
+    getLanguageSuffix(): string {
+        return '';
+    }
+
+    /**
+     * Get language app variant. Ie: 'en-US_wp'.
+     *
+     * @param lang Language code.
+     * @returns Language variant.
+     */
+    getLanguageAppVariant(lang: string): string {
+        const langSuffix = this.getLanguageSuffix();
+        if (langSuffix) {
+            if (lang.endsWith(`_${langSuffix}`)) {
+                return lang;
+            }
+
+            // Append the suffix using the correct separator.
+            if (lang.endsWith(`-${langSuffix}`)) {
+                return lang.replace(`-${langSuffix}`, `_${langSuffix}`);
+            }
+
+            return `${lang}_${langSuffix}`;
+        }
+
+        return lang;
+    }
+
+    /**
      * Update a language code to the given format.
      *
      * @param lang Language code.
@@ -329,7 +364,10 @@ export class CoreLangProvider {
             case CoreLangFormat.App:
                 return lang.replace('_', '-');
             case CoreLangFormat.LMS:
-                return lang.replace('-', '_');
+                lang = lang.replace('-', '_');
+
+                // Use the app variant everywhere for LMS format too.
+                return this.getLanguageAppVariant(lang);
         }
     }
 
