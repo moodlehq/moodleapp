@@ -75,20 +75,20 @@ export class AddonFilterMediaPluginHandlerService extends CoreFilterDefaultHandl
         }
 
         const videoId = match[1];
-        const youtubeUrl = CoreUrl.getYoutubeEmbedUrl(`https://www.youtube.com/watch?v=${videoId}`);
 
-        if (!youtubeUrl) {
+        // Use getYoutubeEmbedUrl which handles iOS proxy vs direct embed
+        const embedUrl = CoreUrl.getYoutubeEmbedUrl(`https://www.youtube.com/watch?v=${videoId}`);
+        if (!embedUrl) {
             return;
         }
 
         // Create iframe to replace the broken video
         const iframe = document.createElement('iframe');
         iframe.id = video.id;
-        iframe.src = youtubeUrl;
+        iframe.src = embedUrl;
         iframe.setAttribute('frameborder', '0');
         iframe.setAttribute('allowfullscreen', '1');
         iframe.setAttribute('allow', 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share');
-        iframe.setAttribute('referrerpolicy', 'strict-origin-when-cross-origin');
         iframe.setAttribute('credentialless', '');
         iframe.width = '100%';
         iframe.height = '300';

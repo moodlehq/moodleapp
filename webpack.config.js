@@ -17,6 +17,13 @@ const CircularDependencyPlugin = require('circular-dependency-plugin');
 const { appendFileSync } = require('fs');
 
 module.exports = config => {
+    // Set COEP/COOP headers for dev server to allow YouTube embeds
+    config.devServer = config.devServer || {};
+    config.devServer.headers = {
+        'Cross-Origin-Opener-Policy': 'same-origin',
+        'Cross-Origin-Embedder-Policy': 'credentialless',
+    };
+
     config.optimization.minimizer.push(
         new TerserPlugin({
             terserOptions: {

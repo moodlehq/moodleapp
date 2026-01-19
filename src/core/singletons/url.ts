@@ -671,7 +671,14 @@ export class CoreUrl {
             }
         }
 
-        // Use youtube-nocookie.com to fix Error 153 on iOS WKWebView
+        // On iOS native, use local proxy to fix Error 153 on WKWebView
+        // The proxy sets proper referrer headers that YouTube requires
+        if (CorePlatform.isIOS()) {
+            params.v = videoId;
+            return CoreUrl.addParamsToUrl('assets/youtube-proxy.html', params);
+        }
+
+        // On other platforms, use youtube-nocookie.com directly with credentialless iframe
         return CoreUrl.addParamsToUrl('https://www.youtube-nocookie.com/embed/' + videoId, params);
     }
 
@@ -682,17 +689,27 @@ export class CoreUrl {
      * @returns Watch URL if it's a YouTube embed, original URL otherwise.
      */
     static getYoutubeWatchUrl(url: string): string {
-        // Check if it's a YouTube embed URL
-        const embedMatch = url.match(/(?:youtube\.com|youtube-nocookie\.com)\/embed\/([a-zA-Z0-9_-]{11})/);
-        if (!embedMatch) {
+        const params: CoreUrlParams = {};
+        let videoId = '';
+
+        // Check if it's our local proxy URL
+        const proxyMatch = url.match(/youtube-proxy\.html\?.*v=([a-zA-Z0-9_-]{11})/);
+        if (proxyMatch) {
+            videoId = proxyMatch[1];
+        } else {
+            // Check if it's a YouTube embed URL
+            const embedMatch = url.match(/(?:youtube\.com|youtube-nocookie\.com)\/embed\/([a-zA-Z0-9_-]{11})/);
+            if (embedMatch) {
+                videoId = embedMatch[1];
+            }
+        }
+
+        if (!videoId) {
             return url;
         }
 
-        const videoId = embedMatch[1];
-        const params: CoreUrlParams = {};
-
         // Extract start time if present
-        const startMatch = url.match(/[?&]start=(\d+)/);
+        const startMatch = url.match(/[?&](?:start|t)=(\d+)/);
         if (startMatch) {
             params.t = startMatch[1];
         }
