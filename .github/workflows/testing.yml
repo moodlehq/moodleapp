@@ -87,3 +87,14 @@ jobs:
             echo "❌ Static initialization blocks are not supported in Chrome 93 and iOS 15." >> $GITHUB_STEP_SUMMARY
             exit 1
           fi
+
+      - name: Check .feature files all have @app_parallel_run_ prefixed tag
+        run: |
+          missing_tags=$(grep -L -E '^@app_parallel_run_' **/*.feature || true)
+          if [ -n "$missing_tags" ]; then
+            echo "::error::The following .feature files are missing the @app_parallel_run_ prefixed tag:"
+            echo "$missing_tags"
+            echo "❌ The following .feature files are missing the @app_parallel_run_ prefixed tag:" >> $GITHUB_STEP_SUMMARY
+            echo "$missing_tags" >> $GITHUB_STEP_SUMMARY
+            exit 1
+          fi
