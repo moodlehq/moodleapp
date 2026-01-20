@@ -13,8 +13,9 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
+import { CoreUnauthenticatedSite } from '@classes/sites/unauthenticated-site';
 import { CoreUserProfileFieldHandlerData } from '@features/user/services/user-profile-field-delegate';
-import { CoreWS, CoreWSAjaxPreSets, CoreWSExternalWarning } from '@services/ws';
+import { CoreWSExternalWarning } from '@services/ws';
 import { makeSingleton } from '@singletons';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreText, CoreTextFormat } from '@singletons/text';
@@ -29,13 +30,13 @@ export class CoreLoginSignUpService {
      * Sign up a user using email signup.
      *
      * @param userInfo User information.
-     * @param siteUrl Site URL of unauthenticated site.
+     * @param site Unauthenticated site.
      * @param signupOptions Optional options like custom profile fields, redirect URL. and recaptcha response.
      * @returns Promise resolved with the WS result.
      */
     async emailSignup(
         userInfo: CoreAuthSignupUserInfo,
-        siteUrl: string,
+        site: CoreUnauthenticatedSite,
         signupOptions?: {
             recaptchaResponse?: string;
             customProfileFields?: CoreUserProfileFieldHandlerData[];
@@ -55,29 +56,22 @@ export class CoreLoginSignUpService {
         params.email = params.email.trim();
         params.city = CoreText.cleanTags(params.city);
 
-        const preSets: CoreWSAjaxPreSets = {
-            siteUrl,
-        };
-
-        return await CoreWS.callAjax<CoreAuthSignupUserWSResponse>(
+        return await site.callAjax<CoreAuthSignupUserWSResponse>(
             'auth_email_signup_user',
             params,
-            preSets,
         );
     }
 
     /**
      * Check if age verification is enabled.
      *
-     * @param siteUrl Site URL of unauthenticated site.
+     * @param site Unauthenticated site.
      * @returns Promise resolved with true if enabled, false otherwise.
      */
-    async isAgeVerificationEnabled(siteUrl: string): Promise<boolean> {
+    async isAgeVerificationEnabled(site: CoreUnauthenticatedSite): Promise<boolean> {
         const result = await CorePromiseUtils.ignoreErrors(
-            CoreWS.callAjax<CoreAuthIsAgeDigitalConsentVerificationEnabledWSResponse>(
+            site.callAjax<CoreAuthIsAgeDigitalConsentVerificationEnabledWSResponse>(
                 'core_auth_is_age_digital_consent_verification_enabled',
-                {},
-                { siteUrl },
             ),
         );
 
@@ -89,16 +83,16 @@ export class CoreLoginSignUpService {
      *
      * @param age User age.
      * @param country User country.
-     * @param siteUrl Site URL of unauthenticated site.
+     * @param site Unauthenticated site.
      * @returns Promise resolved with true if the user is a minor, false otherwise.
      */
-    async isMinor(age: number, country: string, siteUrl: string): Promise<boolean> {
+    async isMinor(age: number, country: string, site: CoreUnauthenticatedSite): Promise<boolean> {
         const params: CoreAuthIsMinorWSParams = {
             age,
             country,
         };
 
-        const result = await CoreWS.callAjax<CoreAuthIsMinorWSResponse>('core_auth_is_minor', params, { siteUrl });
+        const result = await site.callAjax<CoreAuthIsMinorWSResponse>('core_auth_is_minor', params);
 
         return !!result.status;
     }
@@ -139,11 +133,11 @@ export class CoreLoginSignUpService {
     /**
      * Get email signup settings.
      *
-     * @param siteUrl Site URL.
+     * @param site Unauthenticated site.
      * @returns Signup settings.
      */
-    async getEmailSignupSettings(siteUrl: string): Promise<AuthEmailSignupSettings> {
-        return await CoreWS.callAjax('auth_email_get_signup_settings', {}, { siteUrl });
+    async getEmailSignupSettings(site: CoreUnauthenticatedSite): Promise<AuthEmailSignupSettings> {
+        return await site.callAjax('auth_email_get_signup_settings');
     }
 
 }

@@ -20,11 +20,16 @@ import { CoreText } from '@singletons/text';
 import { CoreUrl, CoreUrlPartNames } from '@singletons/url';
 import { CoreWS, CoreWSAjaxPreSets, CoreWSExternalWarning } from '@services/ws';
 import { CorePath } from '@singletons/path';
+import { CoreJsonPatch, JsonPatchOperation } from '@singletons/json-patch';
+import { CoreUtils } from '@singletons/utils';
+import { CoreLogger } from '@singletons/logger';
 
 /**
  * Class that represents a Moodle site where the user still hasn't authenticated.
  */
 export class CoreUnauthenticatedSite {
+
+    protected logger = CoreLogger.getInstance('CoreUnauthenticatedSite');
 
     siteUrl: string;
 
@@ -254,7 +259,7 @@ export class CoreUnauthenticatedSite {
         const ignoreCache = options.readingStrategy === CoreSitesReadingStrategy.ONLY_NETWORK ||
             options.readingStrategy ===  CoreSitesReadingStrategy.PREFER_NETWORK;
         if (!ignoreCache && this.publicConfig) {
-            return this.publicConfig;
+            return this.overridePublicConfig(this.publicConfig);
         }
 
         if (options.readingStrategy === CoreSitesReadingStrategy.ONLY_CACHE) {
@@ -266,7 +271,7 @@ export class CoreUnauthenticatedSite {
 
             this.setPublicConfig(config);
 
-            return config;
+            return this.overridePublicConfig(config);
         } catch (error) {
             if (options.readingStrategy === CoreSitesReadingStrategy.ONLY_NETWORK || !this.publicConfig) {
                 throw error;
@@ -296,6 +301,20 @@ export class CoreUnauthenticatedSite {
      */
     protected async getRequestPublicConfigData(): Promise<Record<string, unknown>> {
         return {};
+    }
+
+    /**
+     * Apply overrides to the public config of the site.
+     *
+     * @param config Public config.
+     * @returns Public config with overrides if any.
+     */
+    protected overridePublicConfig(config: CoreSitePublicConfigResponse): CoreSitePublicConfigResponse {
+        // Always clone the object because it can be modified when applying patches or in the caller function
+        // and we don't want to modify the stored public config.
+        const clonedData = CoreUtils.clone(config);
+
+        return this.applyWSOverrides('tool_mobile_get_public_config', clonedData);
     }
 
     /**
@@ -437,7 +456,7 @@ export class CoreUnauthenticatedSite {
      *
      * @returns Disabled features.
      */
-    protected getDisabledFeatures(): string {
+    getDisabledFeatures(): string {
         const siteDisabledFeatures = this.getSiteDisabledFeatures() || undefined; // If empty string, use undefined.
         const appDisabledFeatures = CoreConstants.CONFIG.disabledFeatures;
 
@@ -484,6 +503,69 @@ export class CoreUnauthenticatedSite {
      */
     async getRelativeUrl(url: string): Promise<string> {
         return CoreText.addStartingSlash(CoreUrl.toRelativeURL(this.getURL(), url));
+    }
+
+    /**
+     * Call a Moodle WS using the AJAX API and applies WebService overrides (if any) to the result.
+     *
+     * @param method WS method name.
+     * @param data Arguments to pass to the method.
+     * @param preSets Extra settings and information.
+     * @returns Promise resolved with the response data in success and rejected with CoreAjaxError.
+     */
+    async callAjax<T = unknown>(
+        method: string,
+        data: Record<string, unknown> = {},
+        preSets: Omit<CoreWSAjaxPreSets, 'siteUrl'> = {},
+    ): Promise<T> {
+        const result = await CoreWS.callAjax<T>(method, data, { ...preSets, siteUrl: this.siteUrl });
+
+        // No need to clone the data in this case because it's not stored in any cache.
+        return this.applyWSOverrides(method, result);
+    }
+
+    /**
+     * Apply WS overrides (if any) to the data of a WebService response.
+     *
+     * @param method WS method name.
+     * @param data WS response data.
+     * @returns Modified data (or original data if no overrides).
+     */
+    protected applyWSOverrides<T>(method: string, data: T): T {
+        if (!CoreConstants.CONFIG.wsOverrides || !CoreConstants.CONFIG.wsOverrides[method]) {
+            return data;
+        }
+
+        CoreConstants.CONFIG.wsOverrides[method].forEach((patch) => {
+            if (!this.shouldApplyWSOverride(method, data, patch)) {
+                this.logger.warn('Patch ignored, conditions not fulfilled:', method, patch);
+
+                return;
+            }
+
+            try {
+                CoreJsonPatch.applyPatch(data, patch);
+            } catch (error) {
+                this.logger.error('Error applying WS override:', error, patch);
+            }
+        });
+
+        return data;
+    }
+
+    /**
+     * Whether a patch should be applied as a WS override.
+     *
+     * @param method WS method name.
+     * @param data Data returned by the WS.
+     * @param patch Patch to check.
+     * @returns Whether it should be applied.
+     */
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    protected shouldApplyWSOverride(method: string, data: unknown, patch: CoreWSOverride): boolean {
+        // Always apply patches for unauthenticated sites since we don't have user info.
+        // If the patch for an AJAX WebService contains an userid is probably by mistake.
+        return true;
     }
 
 }
@@ -637,3 +719,10 @@ export enum TypeOfLogin {
     BROWSER = 2, // SSO in browser window is required.
     EMBEDDED = 3, // SSO in embedded browser is required.
 }
+
+/**
+ * WebService override patch.
+ */
+export type CoreWSOverride = JsonPatchOperation & {
+    userid?: number; // To apply the patch only if the current user matches this userid.
+};
