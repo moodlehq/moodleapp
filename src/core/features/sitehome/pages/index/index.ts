@@ -36,6 +36,8 @@ import { Translate } from '@singletons';
 import { CoreSharedModule } from '@/core/shared.module';
 import { CoreCourseModuleComponent } from '../../../course/components/module/module';
 import { CoreBlockSideBlocksButtonComponent } from '../../../block/components/side-blocks-button/side-blocks-button';
+import { Subscription } from 'rxjs';
+import { CoreBlockDelegate } from '@features/block/services/block-delegate';
 
 /**
  * Page that displays site home index.
@@ -67,6 +69,7 @@ export default class CoreSiteHomeIndexPage implements OnInit, OnDestroy {
     isModule = sectionContentIsModule;
 
     protected updateSiteObserver: CoreEventObserver;
+    protected blockSubscription: Subscription;
     protected logView: () => void;
     protected route = inject(ActivatedRoute);
 
@@ -86,6 +89,11 @@ export default class CoreSiteHomeIndexPage implements OnInit, OnDestroy {
                 data: { id: this.siteHomeId, category: 'course' },
                 url: '/?redirect=0',
             });
+        });
+
+        // Re-evaluate if blocks are supported if the list of handlers changed (e.g. site plugins added).
+        this.blockSubscription = CoreBlockDelegate.blocksUpdateObservable.subscribe(async (): Promise<void> => {
+            this.hasBlocks = await CoreBlockHelper.hasCourseBlocks(this.siteHomeId);
         });
     }
 
@@ -240,6 +248,7 @@ export default class CoreSiteHomeIndexPage implements OnInit, OnDestroy {
      */
     ngOnDestroy(): void {
         this.updateSiteObserver.off();
+        this.blockSubscription.unsubscribe();
     }
 
     /**
