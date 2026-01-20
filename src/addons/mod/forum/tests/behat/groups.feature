@@ -352,7 +352,7 @@ Feature: Test usage of forum activity with groups in app
     And I should find "Downloaded" within "Visible groups" "ion-item" in the app
 
     When I go back in the app
-    And I switch network connection to "offline"
+    And I switch network connection to offline
     And I press "Separate groups forum" in the app
     Then I should find "Disc sep G1" in the app
     And I should be able to press "Add discussion topic" in the app
