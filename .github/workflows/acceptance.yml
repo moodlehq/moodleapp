@@ -222,18 +222,13 @@ jobs:
 
     complete:
         runs-on: ubuntu-latest
-        needs: [behat]
+        needs: behat
 
         steps:
-            - uses: actions/download-artifact@v4
-              with:
-                  path: artifacts
-
-            - name: Check failure artifacts
+            - uses: technote-space/workflow-conclusion-action@v3
+            - name: Check job status and fail if they are red
+              if: env.WORKFLOW_CONCLUSION == 'failure'
               run: |
-                  rm ./artifacts/build -rf
-                  if [ -n "$(ls -A ./artifacts)" ]; then
-                    echo "There were some failures in the previous jobs"
-                    echo "### ❌ There were some failures in the previous jobs" >> $GITHUB_STEP_SUMMARY
-                    exit 1
-                  fi
+                  echo "There were some failures in the previous jobs"
+                  echo "### ❌ There were some failures in the previous jobs" >> $GITHUB_STEP_SUMMARY
+                  exit 1
