@@ -27,7 +27,7 @@ The codebase uses delegates extensively to allow addons to register handlers:
     ],
 })
 ```
-- Key delegates: `CoreCourseModuleDelegate`, `CoreContentLinksDelegate`, `CoreCourseModulePrefetchDelegate`, `CoreMainMenuDelegate`
+- Delegate examples: `CoreCourseModuleDelegate`, `CoreContentLinksDelegate`, `CoreCourseModulePrefetchDelegate`, `CoreMainMenuDelegate`
 
 ### Path Aliases (TypeScript)
 Use barrel exports for cleaner imports:
@@ -52,9 +52,13 @@ export default class MyLazyModule {}
 Main routing modules:
 - `CoreMainMenuRoutingModule` - Top-level tabs (calendar, messages, etc.)
 - `CoreMainMenuTabRoutingModule` - Child routes within tabs
+- `CoreCourseContentsRoutingModule` - Module used to register routes in the course contents page. These are routes that will only be used on single activity courses where the activity uses split-view navigation in tablets, such as forum or glossary.
+- `CoreCourseIndexRoutingModule` - Course tab pages
+- `CoreMainMenuHomeRoutingModule` - Home page tabs
+- `CoreSitePreferencesRoutingModule` - Site preferences pages
 - Use `buildTabMainRoutes()` helper for consistent tab navigation
 
-### Offline-First Data Layer
+### Cache Data Layer
 **SQLite Database**: Site-specific tables via `CORE_SITE_SCHEMAS` token:
 ```typescript
 providers: [
@@ -65,6 +69,8 @@ providers: [
 **File Management**:
 - `CoreFilepool` - Downloads/caches files with queue management
 - `CoreCourseModulePrefetchDelegate` - Handles module prefetching for offline
+- `CoreCourseHelper` - Manages course and section downloads for offline access
+- `CoreFileProvider` - Manages file operations (read, write, delete) across device storage
 - Files stored in filepool with metadata tracking (stale detection, external file flags)
 
 **Sync Pattern**:
@@ -120,17 +126,19 @@ Watch for changes: `gulp watch`
 ### Module Structure
 - Core modules: `src/core/features/{feature}/`
 - Addon modules: `src/addons/{type}/{name}/`
-- Each feature has `{name}.module.ts` (eager) and `{name}-lazy.module.ts` (lazy-loaded routes)
+- Each feature has `{name}.module.ts` (eager) and `{name}-lazy.module.ts` (lazy-loaded routes) when needed
+- Avoid creating separate `-lazy.module.ts` files; instead use `loadComponent` with dynamic imports for lazy loading
 - Services in `services/`, components in `components/`, pages in `pages/`
 
 ### Handler Pattern
-Handlers are singletons with `.instance` property:
+Handlers are singletons with `.instance` property added by `makeSingleton`:
 ```typescript
+@Injectable({ providedIn: 'root' })
 export class MyHandler extends CoreContentLinksHandler {
     name = 'AddonMyHandler';
     // ...implementation
-    static readonly instance = new MyHandler();
 }
+export const MyHandler = makeSingleton(MyHandler);
 ```
 
 ### Shared Module Usage
@@ -142,16 +150,7 @@ Components import `CoreSharedModule` which re-exports:
 Define tables with columns, indexes in site schemas. Version increments trigger migrations.
 
 ### Environment Configuration
-`moodle.config.json` (gitignored) extends `moodle.config.example.json`. Access via `CoreConfig` service. Test config overrides via `TestingBehatRuntime.init()`.
-
-## Key Files
-
-- `gulpfile.js` - Build tasks for lang, env, icons, behat
-- `src/core/singletons/index.ts` - Singleton wrappers for Angular/Ionic/Cordova APIs
-- `src/core/classes/delegate.ts` - Base delegate class
-- `src/core/services/sites.ts` - Multi-site management
-- `src/core/services/filepool.ts` - File download/cache system
-- `src/testing/services/behat-runtime.ts` - E2E test runtime
+`moodle.config.json` (gitignored) extends `moodle.config.example.json`. Access via `CoreConstants.CONFIG` service. Test config overrides via `TestingBehatRuntime.init()`.
 
 ## Common Pitfalls
 
@@ -161,3 +160,7 @@ Define tables with columns, indexes in site schemas. Version increments trigger 
 4. **Don't** import from barrel files that aren't configured in `tsconfig.json` paths
 5. **Do** run `gulp` before testing to ensure lang files are built
 6. **Do** use `CoreSitesReadingStrategy` when fetching data to control cache vs network behavior
+
+
+## Code reviews
+- When performing a code review, check that the language is in British English.
