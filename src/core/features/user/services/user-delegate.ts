@@ -126,13 +126,6 @@ export interface CoreUserProfileHandlerData {
     hidden?: boolean;
 
     /**
-     * If enabled will show an spinner.
-     *
-     * @deprecated since 4.4. Not used anymore.
-     */
-    spinner?: boolean;
-
-    /**
      * If the handler has badge to show or not. Only for CoreUserProfileHandlerType.LIST_ITEM.
      */
     showBadge?: boolean;
@@ -199,25 +192,6 @@ export const USER_DELEGATE_UPDATE_HANDLER_EVENT = 'CoreUserDelegate_update_handl
  */
 @Injectable({ providedIn: 'root' })
 export class CoreUserDelegateService extends CoreDelegate<CoreUserProfileHandler> {
-
-    /**
-     * User profile handler type for communication.
-     *
-     * @deprecated since 4.4. Use CoreUserProfileHandlerType.BUTTON instead.
-     */
-    static readonly TYPE_COMMUNICATION = 'communication';
-    /**
-     * User profile handler type for new page.
-     *
-     * @deprecated since 4.4. Use CoreUserProfileHandlerType.LIST_ITEM instead.
-     */
-    static readonly TYPE_NEW_PAGE = 'newpage';
-    /**
-     * User profile handler type for actions.
-     *
-     * @deprecated since 4.4. Use CoreUserProfileHandlerType.BUTTON instead.
-     */
-    static readonly TYPE_ACTION = 'action';
 
     /**
      * Cache object that checks enabled for use.
@@ -506,24 +480,6 @@ export class CoreUserDelegateService extends CoreDelegate<CoreUserProfileHandler
         }
 
         return this.userHandlers[userId][contextKey];
-    }
-
-    /**
-     * @inheritdoc
-     */
-    registerHandler(handler: CoreUserProfileHandler): boolean {
-        const type = handler.type as string;
-
-        // eslint-disable-next-line @typescript-eslint/no-deprecated
-        if (type === CoreUserDelegateService.TYPE_COMMUNICATION || type === CoreUserDelegateService.TYPE_ACTION) {
-            handler.type = CoreUserProfileHandlerType.BUTTON;
-        // eslint-disable-next-line @typescript-eslint/no-deprecated
-        } else if (type === CoreUserDelegateService.TYPE_NEW_PAGE) {
-            handler.type = CoreUserProfileHandlerType.LIST_ITEM;
-
-        }
-
-        return super.registerHandler(handler);
     }
 
 }

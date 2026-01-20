@@ -236,12 +236,3 @@
     // ***** LINKS ***** //
     --core-link-decoration: underline;
 }
-/** @deprecated since 4.4 **/
-:root {
-    --font-size-normal: var(--mdl-typography-fontSize-md);
-    --a11y-min-target-size: var(--a11y-sizing-minTargetSize);
-    --a11y-focus-width: var(--a11y-shadow-focus-boxShadowSpread);
-    --a11y-focus-color: var(--a11y-shadow-focus-boxShadowColor);
-    --item-divider-font-size: var(--mdl-typography-subtitle-fontSize-md);
-    --item-divider-font-size-big: var(--mdl-typography-subtitle-fontSize-lg);
-}

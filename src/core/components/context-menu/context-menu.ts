@@ -41,13 +41,6 @@ export class CoreContextMenuComponent implements OnDestroy {
         alias: 'aria-label',
     });
 
-    /**
-     * Title to be shown on the top of the popover.
-     *
-     * @deprecated since 4.4. Use aria-label instead.
-     */
-    readonly title = input<string>(); // Text to be shown on the top of the popover.
-
     readonly hideMenu = computed(() => !this.items().some((item) => !item.hidden())); // Hide menu if all items are hidden.
     readonly uniqueId = `core-context-menu-${CoreUtils.getUniqueId('CoreContextMenuComponent')}`;
 

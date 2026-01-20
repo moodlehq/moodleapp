@@ -49,10 +49,6 @@ export class CoreTimerComponent implements OnInit, OnDestroy {
     readonly underTimeClassThresholds = input([]); // Number of seconds to add the class 'core-timer-under-'.
     readonly timerHiddenPreferenceName = input<string>(); // Name of the preference to store the timer visibility.
     readonly finished = output<void>(); // Will emit an event when the timer reaches 0.
-    /**
-     * @deprecated since 4.4. Use hidable instead.
-     */
-    readonly hiddable = input(false, { transform: toBoolean }); // Whether the user can hide the time left.
 
     readonly timeLeft = signal(-1); // Seconds left to end.
     readonly hiddenByUser = signal(false); // Whether the user has hidden the timer.
@@ -60,8 +56,7 @@ export class CoreTimerComponent implements OnInit, OnDestroy {
     readonly showTimeLeft = computed(() => !this.canHideTimer() || !this.hiddenByUser());
 
     readonly canHideTimer = computed(() => {
-        // eslint-disable-next-line @typescript-eslint/no-deprecated
-        if (!this.hidable() && !this.hiddable()) {
+        if (!this.hidable()) {
             return false;
         }
 

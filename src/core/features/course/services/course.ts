@@ -51,7 +51,6 @@ import { CoreText, CoreTextFormat } from '@singletons/text';
 import { ArrayElement } from '@/core/utils/types';
 import { CORE_COURSES_MY_COURSES_UPDATED_EVENT, CoreCoursesMyCoursesUpdatedEventAction } from '@features/courses/constants';
 import {
-    CoreCourseAccessDataType,
     CoreCourseModuleCompletionStatus,
     CoreCourseModuleCompletionTracking,
     CORE_COURSE_ALL_COURSES_CLEARED,
@@ -94,15 +93,6 @@ declare module '@singletons/events' {
  */
 @Injectable({ providedIn: 'root' })
 export class CoreCourseProvider {
-
-    /**
-     * @deprecated since 4.4 Not used anymore. Use CoreCourseAccessDataType instead.
-     */
-    static readonly ACCESS_GUEST = CoreCourseAccessDataType.ACCESS_GUEST;
-    /**
-     * @deprecated since 4.4 Not used anymore. Use CoreCourseAccessDataType instead.
-     */
-    static readonly ACCESS_DEFAULT = CoreCourseAccessDataType.ACCESS_DEFAULT;
 
     /**
      * @deprecated since 5.0 Not used anymore. Use COURSE_ALL_SECTIONS_ID instead.

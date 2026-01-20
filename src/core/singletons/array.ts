@@ -74,22 +74,6 @@ export class CoreArray {
     }
 
     /**
-     * Flatten the first dimension of a multi-dimensional array.
-     *
-     * @see https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/flat#reduce_and_concat
-     *
-     * @param arr Original array.
-     * @returns Flattened array.
-     * @deprecated since 4.4 Use Array.prototype.flat() instead.
-     */
-    static flatten<T>(arr: T[][]): T[] {
-        // eslint-disable-next-line no-console
-        console.warn('CoreArray.flatten is deprecated and will be removed soon. Please use array \'flat\' instead.');
-
-        return arr.flat();
-    }
-
-    /**
      * Obtain a new array without the specified item.
      *
      * @param arr Array.

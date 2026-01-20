@@ -52,17 +52,6 @@ export class AddonCompetencyProvider {
     }
 
     /**
-     * Check if all competencies features are disabled.
-     *
-     * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved with boolean: whether all competency features are disabled.
-     * @deprecated since 4.4. Use areCompetenciesEnabled instead.
-     */
-    async allCompetenciesDisabled(siteId?: string): Promise<boolean> {
-        return !(await this.areCompetenciesEnabled({ siteId }));
-    }
-
-    /**
      * Returns whether current user can see another user competencies in a course.
      *
      * @param courseId Course ID.

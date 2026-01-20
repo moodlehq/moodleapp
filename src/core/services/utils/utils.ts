@@ -199,24 +199,6 @@ export class CoreUtilsProvider {
     }
 
     /**
-     * Copy properties from one object to another.
-     *
-     * @param from Object to copy the properties from.
-     * @param to Object where to store the properties.
-     * @param clone Whether the properties should be cloned (so they are different instances).
-     * @deprecated since 4.4. Not used anymore.
-     */
-    copyProperties(from: Record<string, unknown>, to: Record<string, unknown>, clone: boolean = true): void {
-        for (const name in from) {
-            if (clone) {
-                to[name] = CoreUtilsSingleton.clone(from[name]);
-            } else {
-                to[name] = from[name];
-            }
-        }
-    }
-
-    /**
      * Copies a text to clipboard and shows a toast message.
      *
      * @param text Text to be copied
@@ -226,30 +208,6 @@ export class CoreUtilsProvider {
      */
     async copyToClipboard(text: string): Promise<void> {
         return CoreText.copyToClipboard(text);
-    }
-
-    /**
-     * Empties an array without losing its reference.
-     *
-     * @param array Array to empty.
-     * @deprecated since 4.4. Not used anymore.
-     */
-    emptyArray(array: unknown[]): void {
-        array.length = 0; // Empty array without losing its reference.
-    }
-
-    /**
-     * Removes all properties from an object without losing its reference.
-     *
-     * @param object Object to remove the properties.
-     * @deprecated since 4.4. Not used anymore.
-     */
-    emptyObject(object: Record<string, unknown>): void {
-        for (const key in object) {
-            if (Object.prototype.hasOwnProperty.call(object, key)) {
-                delete object[key];
-            }
-        }
     }
 
     /**
@@ -274,18 +232,6 @@ export class CoreUtilsProvider {
      */
     flattenObject(obj: Record<string, unknown>, useDotNotation?: boolean): Record<string, unknown> {
         return CoreObject.flatten(obj, useDotNotation);
-    }
-
-    /**
-     * Given an array of strings, return only the ones that match a regular expression.
-     *
-     * @param array Array to filter.
-     * @param regex RegExp to apply to each string.
-     * @returns Filtered array.
-     * @deprecated since 4.4. Use CoreArray.filterByRegexp instead.
-     */
-    filterByRegexp(array: string[], regex: RegExp): string[] {
-        return CoreArray.filterByRegexp(array, regex);
     }
 
     /**
@@ -440,18 +386,6 @@ export class CoreUtilsProvider {
      */
     hasRepeatedFilenames(files: CoreFileEntry[]): string | false {
         return CoreFileUtils.hasRepeatedFilenames(files);
-    }
-
-    /**
-     * Gets the index of the first string that matches a regular expression.
-     *
-     * @param array Array to search.
-     * @param regex RegExp to apply to each string.
-     * @returns Index of the first string that matches the RegExp. -1 if not found.
-     * @deprecated since 4.4. Use CoreArray.indexOfRegexp instead.
-     */
-    indexOfRegexp(array: string[], regex: RegExp): number {
-        return CoreArray.indexOfRegexp(array, regex);
     }
 
     /**
@@ -787,18 +721,6 @@ export class CoreUtilsProvider {
      */
     unformatFloat(localeFloat: string | number | null | undefined, strict?: boolean): false | '' | number {
         return CoreUtilsSingleton.unformatFloat(localeFloat, strict);
-    }
-
-    /**
-     * Return an array without duplicate values.
-     *
-     * @param array The array to treat.
-     * @param [key] Key of the property that must be unique. If not specified, the whole entry.
-     * @returns Array without duplicate values.
-     * @deprecated since 4.4. Use CoreArray.unique instead.
-     */
-    uniqueArray<T>(array: T[], key?: string): T[] {
-        return CoreArray.unique(array, key);
     }
 
     /**

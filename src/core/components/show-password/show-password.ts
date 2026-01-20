@@ -12,41 +12,18 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, ViewEncapsulation, input, contentChild, effect } from '@angular/core';
-import { IonInput } from '@ionic/angular';
-import { convertTextToHTMLElement } from '@/core/utils/create-html-element';
-
-import { CorePromiseUtils } from '@singletons/promise-utils';
-import { CoreLogger } from '@singletons/logger';
+import { Component, ViewEncapsulation, input } from '@angular/core';
 import { CoreBaseModule } from '@/core/base.module';
 
 /**
  * This component allows to show/hide a password.
  * It's meant to be used with ion-input as a slot of the input.
  *
- * @description
- *
- * There are 2 ways to use ths component:
- * - Slot it to start or end on the ion-input element.
- * - Surround the ion-input with the password with this component. Not recommended.
- *
- * Example of new usage:
- *
- * <ion-input type="password">
- *     <core-show-password slot="end" />
- * </ion-input>
- *
- * Example surrounding usage:
- *
- * <core-show-password>
- *     <ion-input type="password" />
- * </core-show-password>
- *
  * @deprecated since 4.5. Use <ion-input-password-toggle slot="end" showIcon="fas-eye" hideIcon="fas-eye-slash" /> instead.
  */
 @Component({
     selector: 'core-show-password',
-    templateUrl: 'core-show-password.html',
+    template: '<ng-content /><ion-input-password-toggle slot="end" />',
     styles: 'core-show-password { display: contents; }',
     encapsulation: ViewEncapsulation.None,
     imports: [CoreBaseModule],
@@ -57,36 +34,5 @@ export class CoreShowPasswordComponent {
      * @deprecated since 4.5. Not used anymore.
      */
     readonly initialShown = input('');
-
-    /**
-     * @deprecated since 4.4. Not used anymore.
-     */
-    readonly name = input('');
-
-    /**
-     * @deprecated since 4.4. Use slotted solution instead.
-     */
-    readonly ionInput = contentChild<IonInput | HTMLIonInputElement>(IonInput);
-
-    constructor() {
-        CoreLogger.getInstance('CoreShowPasswordComponent')
-            .warn('Deprecated component, use <ion-input-password-toggle /> instead.');
-
-        effect(async () => {
-            // eslint-disable-next-line @typescript-eslint/no-deprecated
-            const ionInput = this.ionInput();
-            if (!ionInput) {
-                return;
-            }
-
-            const input = await CorePromiseUtils.ignoreErrors(ionInput.getInputElement());
-            if (!input) {
-                return;
-            }
-
-            const toggle = convertTextToHTMLElement('<ion-input-password-toggle slot="end" />');
-            input.parentElement?.appendChild(toggle.children[0]);
-        });
-    }
 
 }
