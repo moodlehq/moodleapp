@@ -1,4 +1,4 @@
-@core_lang @app @javascript
+@app_parallel_run_core @core_lang @app @javascript
 Feature: Test language changes
 
   Background:

@@ -1,4 +1,4 @@
-@addon_mod_wiki @app @mod @mod_wiki @javascript @lms_from5.1
+@app_parallel_run_wiki @addon_mod_wiki @app @mod @mod_wiki @javascript @lms_from5.1
 Feature: Activities overview for wiki activity
 
   Background:

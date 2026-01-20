@@ -1,4 +1,4 @@
-@core_mainmenu @app @javascript
+@app_parallel_run_core @core_mainmenu @app @javascript
 Feature: Main Menu opens the right page
 
   Background:

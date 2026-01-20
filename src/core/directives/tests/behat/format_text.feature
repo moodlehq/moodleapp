@@ -1,4 +1,4 @@
-@core_directives @app @core @javascript
+@app_parallel_run_core @core_directives @app @core @javascript
 Feature: Test functionality added by the format-text directive
 
   Background:

@@ -1,4 +1,4 @@
-@addon_coursecompletion @app @block @block_completionstatus @block_selfcompletion @javascript
+@app_parallel_run_completion @addon_coursecompletion @app @block @block_completionstatus @block_selfcompletion @javascript
 Feature: Student should be able to complete a course with self completion enabled.
 
   Background:

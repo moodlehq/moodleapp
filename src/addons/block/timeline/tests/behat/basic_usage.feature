@@ -1,4 +1,4 @@
-@addon_block_timeline @app @block @block_timeline @javascript
+@app_parallel_run_courses @addon_block_timeline @app @block @block_timeline @javascript
 Feature: Timeline block.
 
   Background:

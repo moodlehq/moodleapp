@@ -1,4 +1,4 @@
-@addon_mod_glossary @app @mod @mod_glossary @javascript @lms_from5.1
+@app_parallel_run_glossary @addon_mod_glossary @app @mod @mod_glossary @javascript @lms_from5.1
 Feature: Activities overview for glossary activity
 
   Background:

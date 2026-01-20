@@ -1,4 +1,4 @@
-@core_reportbuilder @app @javascript
+@app_parallel_run_reportbuilder @core_reportbuilder @app @javascript
 Feature: Report builder
 
   Background:

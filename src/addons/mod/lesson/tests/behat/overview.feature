@@ -1,4 +1,4 @@
-@addon_mod_lesson @app @mod @mod_lesson @javascript @lms_from5.1
+@app_parallel_run_lesson @addon_mod_lesson @app @mod @mod_lesson @javascript @lms_from5.1
 Feature: Activities overview for lesson activity
 
   Background:

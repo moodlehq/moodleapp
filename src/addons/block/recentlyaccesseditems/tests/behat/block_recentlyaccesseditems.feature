@@ -1,4 +1,4 @@
-@addon_block_recentlyaccesseditems @app @block @block_recentlyaccesseditems @javascript
+@app_parallel_run_courses @addon_block_recentlyaccesseditems @app @block @block_recentlyaccesseditems @javascript
 Feature: Basic tests of recent activity block
 
   Background:

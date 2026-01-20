@@ -1,4 +1,4 @@
-@addon_mod_glossary @app @mod @mod_glossary @javascript
+@app_parallel_run_glossary @addon_mod_glossary @app @mod @mod_glossary @javascript
 Feature: Test basic usage of glossary in app
   In order to participate in the glossaries while using the mobile app
   As a student

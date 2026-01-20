@@ -1,4 +1,4 @@
-@addon_block_news_items @app @block @block_news_items @javascript
+@app_parallel_run_blocks @addon_block_news_items @app @block @block_news_items @javascript
 Feature: Basic tests of news items block
 
   Background:

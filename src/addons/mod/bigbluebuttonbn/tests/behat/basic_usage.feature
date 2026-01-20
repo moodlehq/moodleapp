@@ -1,4 +1,4 @@
-@addon_mod_bigbluebuttonbn @app @mod @mod_bigbluebuttonbn @javascript
+@app_parallel_run_bbb @addon_mod_bigbluebuttonbn @app @mod @mod_bigbluebuttonbn @javascript
 Feature: Test basic usage of BBB activity in app
   In order to join a BBB meeting while using the mobile app
   As a student

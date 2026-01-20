@@ -1,4 +1,4 @@
-@addon_mod_quiz @app @mod @mod_quiz @javascript
+@app_parallel_run_quiz @addon_mod_quiz @app @mod @mod_quiz @javascript
 Feature: Users can only review attempts that are allowed to be reviewed
 
   Background:

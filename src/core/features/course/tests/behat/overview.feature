@@ -1,4 +1,4 @@
-@core_course @app @core @javascript @lms_from5.1
+@app_parallel_run_course @core_course @app @core @javascript @lms_from5.1
 Feature: Activities overview common functionality
 
   Background:
