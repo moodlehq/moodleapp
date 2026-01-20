@@ -172,28 +172,6 @@ export class CoreConstants {
     // Login constants.
     static readonly LOGIN_LAUNCH_DATA = 'CoreLoginLaunchData';
 
-    // Download status constants.
-    /**
-     * @deprecated since 4.4. Use DownloadStatus.DOWNLOADED instead.
-     */
-    static readonly DOWNLOADED = DownloadStatus.DOWNLOADED;
-    /**
-     * @deprecated since 4.4. Use DownloadStatus.DOWNLOADING instead.
-     */
-    static readonly DOWNLOADING = DownloadStatus.DOWNLOADING;
-    /**
-     * @deprecated since 4.4. Use DownloadStatus.DOWNLOADABLE_NOT_DOWNLOADED instead.
-     */
-    static readonly NOT_DOWNLOADED = DownloadStatus.DOWNLOADABLE_NOT_DOWNLOADED;
-    /**
-     * @deprecated since 4.4. Use DownloadStatus.OUTDATED instead.
-     */
-    static readonly OUTDATED = DownloadStatus.OUTDATED;
-    /**
-     * @deprecated since 4.4. Use DownloadStatus.NOT_DOWNLOADABLE instead.
-     */
-    static readonly NOT_DOWNLOADABLE = DownloadStatus.NOT_DOWNLOADABLE;
-
     // Download / prefetch status icon.
     static readonly ICON_DOWNLOADED = 'fam-cloud-done';
     static readonly ICON_DOWNLOADING = 'spinner';

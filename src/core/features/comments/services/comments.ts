@@ -182,28 +182,6 @@ export class CoreCommentsProvider {
     }
 
     /**
-     * Check if comments are disabled in a certain site.
-     *
-     * @param site Site. If not defined, use current site.
-     * @returns Whether it's disabled.
-     * @deprecated since 4.4. Use areCommentsEnabledInSite instead.
-     */
-    areCommentsDisabledInSite(site?: CoreSite): boolean {
-        return !this.areCommentsEnabledInSite(site);
-    }
-
-    /**
-     * Check if comments are disabled in a certain site.
-     *
-     * @param siteId Site Id. If not defined, use current site.
-     * @returns Promise resolved with true if disabled, rejected or resolved with false otherwise.
-     * @deprecated since 4.4. Use areCommentsEnabled instead.
-     */
-    async areCommentsDisabled(siteId?: string): Promise<boolean> {
-        return !this.areCommentsEnabled(siteId);
-    }
-
-    /**
      * Check if comments are enabled in a certain site.
      *
      * @param site Site. If not defined, use current site.

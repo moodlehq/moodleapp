@@ -17,7 +17,7 @@ import { CoreNavigator } from '@services/navigator';
 import { CoreSites } from '@services/sites';
 
 import { makeSingleton, Translate } from '@singletons';
-import { CoreUser, CoreUserProfile, CoreUserRole } from './user';
+import { CoreUser, CoreUserRole } from './user';
 import { CoreTime } from '@singletons/time';
 
 /**
@@ -65,22 +65,6 @@ export class CoreUserHelperProvider {
         }
 
         await CoreNavigator.navigate('/user/completeprofile', { params: { siteId }, reset: true });
-    }
-
-    /**
-     * Get the user initials.
-     *
-     * @param user User object.
-     * @returns User initials.
-     * @deprecated since 4.4. Use getUserInitialsFromParts instead.
-     */
-    getUserInitials(user: Partial<CoreUserProfile>): string {
-        if (!user.firstname && !user.lastname) {
-            // @TODO: Use local info or check WS to get initials from.
-            return '';
-        }
-
-        return (user.firstname?.charAt(0) || '') + (user.lastname?.charAt(0) || '');
     }
 
     /**

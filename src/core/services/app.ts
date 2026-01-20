@@ -25,7 +25,6 @@ import { CorePromisedValue } from '@classes/promised-value';
 import { Subscription } from 'rxjs';
 import { CorePlatform } from '@services/platform';
 import { CoreKeyboard } from '@singletons/keyboard';
-import { CoreNetwork } from './network';
 import { CoreSSO } from '@singletons/sso';
 import { CoreRedirectData, CoreRedirects } from '@singletons/redirects';
 import { MAIN_MENU_VISIBILITY_UPDATED_EVENT } from '@features/mainmenu/constants';
@@ -44,16 +43,6 @@ export class CoreAppProvider {
         }
 
         CoreEvents.on(MAIN_MENU_VISIBILITY_UPDATED_EVENT, () => this.setAndroidNavigationBarColor());
-    }
-
-    /**
-     * Returns whether the user agent is controlled by automation. I.e. Behat testing.
-     *
-     * @returns True if the user agent is controlled by automation, false otherwise.
-     * @deprecated since 4.4. Use CorePlatform.isAutomated() instead.
-     */
-    static isAutomated(): boolean {
-        return CorePlatform.isAutomated();
     }
 
     /**
@@ -157,17 +146,6 @@ export class CoreAppProvider {
      */
     isWide(): boolean {
         return CorePlatform.isWide();
-    }
-
-    /**
-     * Returns whether we are online.
-     *
-     * @returns Whether the app is online.
-     * @deprecated since 4.1. Use CoreNetwork instead.
-     * Keeping this a bit more to avoid plugins breaking.
-     */
-    isOnline(): boolean {
-        return CoreNetwork.isOnline();
     }
 
     /**

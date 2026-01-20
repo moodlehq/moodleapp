@@ -66,15 +66,15 @@ export class CoreExternalContentDirective implements AfterViewInit, OnChanges, O
     @Input() url?: string | null; // The URL to use in the element, either as src or href.
     @Input() posterUrl?: string | null; // The poster URL.
     /**
-     * @deprecated since 4.4. Use url instead.
+     * @deprecated since 4.4. Use url instead. Keeping it a bit more time for backward compatibility.
      */
     @Input() src?: string;
     /**
-     * @deprecated since 4.4. Use url instead.
+     * @deprecated since 4.4. Use url instead. Keeping it a bit more time for backward compatibility.
      */
     @Input() href?: string;
     /**
-     * @deprecated since 4.4. Use posterUrl instead.
+     * @deprecated since 4.4. Use posterUrl instead. Keeping it a bit more time for backward compatibility.
      */
     @Input() poster?: string;
 
