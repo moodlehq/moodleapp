@@ -1,12 +1,12 @@
 ---
-description: "Guidelines for writing Node.js and JavaScript code with Jest testing"
-applyTo: '**/*.js, **/*.mjs, **/*.cjs'
+description: "Guidelines for writing Node.js and Typescript code with Jest testing"
+applyTo: '**/*.test.ts'
 ---
 
 # Code Generation Guidelines
 
 ## Coding standards
-- Use JavaScript with ES2022 features and Node.js (20+) ESM modules
+- Use TypeScript with ES2022 features and Node.js (version defined in .nvmrc) ESM modules
 - Use Node.js built-in modules and avoid external dependencies where possible
 - Ask the user if you require any additional dependencies before adding them
 - Always use async/await for asynchronous code, and use 'node:util' promisify function to avoid callbacks
@@ -18,12 +18,9 @@ applyTo: '**/*.js, **/*.mjs, **/*.cjs'
 
 ## Testing
 - Use Jest for testing
-- Write tests for all new features and bug fixes
+- It's recommended to write tests for all new features and bug fixes
 - Ensure tests cover edge cases and error handling
 - NEVER change the original code to make it easier to test, instead, write tests that cover the original code as it is
-
-## Documentation
-- When adding new features or making significant changes, update the README.md file where necessary
 
 ## User interactions
 - Ask questions if you are unsure about the implementation details, design choices, or need clarification on the requirements
