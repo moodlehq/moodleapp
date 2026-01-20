@@ -300,11 +300,6 @@ export class CoreCompileProvider {
         instance['untracked'] = untracked;
         instance['effect'] = options.effectWrapper ?? effectWithInjectionContext(injector);
 
-        /**
-         * @deprecated since 4.1, plugins should use CoreNetwork instead.
-         * Keeping this a bit more to avoid plugins breaking.
-         */
-        instance['Network'] = CoreNetwork.instance;
         instance['CoreNetwork'] = CoreNetwork.instance;
         instance['CoreArray'] = CoreArray;
         instance['CoreColors'] = CoreColors;

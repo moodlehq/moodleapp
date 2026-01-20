@@ -25,7 +25,6 @@ import { CorePromisedValue } from '@classes/promised-value';
 import { Subscription } from 'rxjs';
 import { CorePlatform } from '@services/platform';
 import { CoreKeyboard } from '@singletons/keyboard';
-import { CoreNetwork } from './network';
 import { CoreSSO } from '@singletons/sso';
 import { CoreRedirectData, CoreRedirects } from '@singletons/redirects';
 import { MAIN_MENU_VISIBILITY_UPDATED_EVENT } from '@features/mainmenu/constants';
@@ -147,17 +146,6 @@ export class CoreAppProvider {
      */
     isWide(): boolean {
         return CorePlatform.isWide();
-    }
-
-    /**
-     * Returns whether we are online.
-     *
-     * @returns Whether the app is online.
-     * @deprecated since 4.1. Use CoreNetwork instead.
-     * Keeping this a bit more to avoid plugins breaking.
-     */
-    isOnline(): boolean {
-        return CoreNetwork.isOnline();
     }
 
     /**

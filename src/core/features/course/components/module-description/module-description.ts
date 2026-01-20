@@ -15,7 +15,7 @@
 import { ContextLevel } from '@/core/constants';
 import { CoreSharedModule } from '@/core/shared.module';
 import { toBoolean } from '@/core/transforms/boolean';
-import { Component, Input } from '@angular/core';
+import { Component, input } from '@angular/core';
 
 /**
  * Component to display the description of a module.
@@ -48,13 +48,13 @@ import { Component, Input } from '@angular/core';
 })
 export class CoreCourseModuleDescriptionComponent {
 
-    @Input() description?: string; // The description to display.
-    @Input() note?: string; // A note to display along with the description.
-    @Input() component?: string; // Component for format text directive.
-    @Input() componentId?: string | number; // Component ID to use in conjunction with the component.
-    @Input({ transform: toBoolean }) showFull = false; // Whether to always display the full description.
-    @Input() contextLevel?: ContextLevel; // The context level.
-    @Input() contextInstanceId?: number; // The instance ID related to the context.
-    @Input() courseId?: number; // Course ID the text belongs to. It can be used to improve performance with filters.
+    readonly description = input<string>(); // The description to display.
+    readonly note = input<string>(); // A note to display along with the description.
+    readonly component = input<string>(); // Component for format text directive.
+    readonly componentId = input<string | number>(); // Component ID to use in conjunction with the component.
+    readonly showFull = input(false, { transform: toBoolean }); // Whether to always display the full description.
+    readonly contextLevel = input<ContextLevel>(); // The context level.
+    readonly contextInstanceId = input<number>(); // The instance ID related to the context.
+    readonly courseId = input<number>(); // Course ID the text belongs to. It can be used to improve performance with filters.
 
 }

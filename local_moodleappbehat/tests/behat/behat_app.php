@@ -1186,18 +1186,6 @@ class behat_app extends behat_app_helper {
     }
 
     /**
-     * Switch navigator online mode.
-     *
-     * @Given /^I switch offline mode to "(true|false)"$/
-     * @param string $offline New value for navigator online mode
-     * @throws DriverException If the navigator.online mode is not available
-     * @deprecated since 4.1 use i_switch_network_connection instead.
-     */
-    public function i_switch_offline_mode(string $offline) {
-        $this->i_switch_network_connection($offline == 'true' ? 'offline' : 'wifi');
-    }
-
-    /**
      * Switch network connection.
      *
      * @When /^I switch network connection to (wifi|cellular|offline)$/

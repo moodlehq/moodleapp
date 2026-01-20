@@ -1,15 +1,15 @@
-@if (description) {
+@if (description()) {
     <ion-card>
         <ion-item class="ion-text-wrap">
             <ion-label>
-                <core-format-text [text]="description" [component]="component" [componentId]="componentId" collapsible-item
-                    [contextLevel]="contextLevel" [contextInstanceId]="contextInstanceId" [courseId]="courseId" />
+                <core-format-text [text]="description()" [component]="component()" [componentId]="componentId()" collapsible-item
+                    [contextLevel]="contextLevel()" [contextInstanceId]="contextInstanceId()" [courseId]="courseId()" />
             </ion-label>
         </ion-item>
-        @if (note) {
+        @if (note()) {
             <ion-item class="ion-text-wrap">
                 <ion-label>
-                    <ion-note slot="end">{{ note }}</ion-note>
+                    <ion-note slot="end">{{ note() }}</ion-note>
                 </ion-label>
             </ion-item>
         }
