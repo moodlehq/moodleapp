@@ -2,8 +2,8 @@ name: Docker Build and Test
 
 on:
   push:
-    branches: [main, freemium-*, workplace-main]
-    tags: ["v*.x", "freemium-*", "workplace-*"]
+    branches: [main, latest]
+    tags: ["v*.x"]
   workflow_dispatch:
 
 concurrency:
@@ -13,13 +13,14 @@ concurrency:
 jobs:
   docker:
     runs-on: ubuntu-latest
+    if: github.repository == 'moodlehq/moodleapp'
     steps:
       - uses: actions/checkout@v4
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
-      - name: Build and push
+      - name: Test build
         uses: docker/build-push-action@v6
         with:
           path: app
