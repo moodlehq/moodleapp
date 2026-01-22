@@ -67,6 +67,7 @@ Feature: Main Menu opens the right page
     And I should find "Course 1" in the app
 
 # @todo MOBILE-4119: This test is too flaky to run in CI until the race condition is fixed.
+#   @disabled_features
 #   Scenario: Opens first tab after Site Home, Dashboard, and My Courses are disabled
 #     Given I entered the app as "student"
 #     Then "Dashboard" should be selected in the app

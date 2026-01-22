@@ -25,6 +25,7 @@ Feature: Site support
     When I press "Contact site support" in the app
     Then the app should have opened a browser tab with url "https:\/\/campus\.example\.edu\/support"
 
+  @disabled_features
   Scenario: Cannot contact support
     Given the following config values are set as admin:
       | disabledfeatures | NoDelegate_CoreUserSupport | tool_mobile |

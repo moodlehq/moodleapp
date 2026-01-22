@@ -48,6 +48,7 @@ Feature: Basic tests of tags block
     And I should find "Chapter" in the app
     And I should find "Cool" in the app
 
+  @disabled_features
   Scenario: Block is included in disabled features
     # Add another block just to ensure there is something in the block region and the drawer is displayed.
     Given the following "blocks" exist:

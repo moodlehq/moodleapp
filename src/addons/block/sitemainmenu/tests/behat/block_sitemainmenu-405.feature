@@ -42,6 +42,7 @@ Feature: Basic tests of Additional activities block
     When I press "Visible forum" in the app
     Then the header should be "Visible forum" in the app
 
+  @disabled_features
   Scenario: Block is included in disabled features
     # Add another block just to ensure there is something in the block region and the drawer is displayed.
     Given the following "blocks" exist:
