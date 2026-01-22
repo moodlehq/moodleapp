@@ -23,7 +23,7 @@ import { CoreEditorService } from '@features/editor/services/editor';
 /**
  * Defines license info
  */
-export interface CoreSettingsLicense {
+export type CoreSettingsLicense = {
     name: string;
     version: string;
     licenses: string | string[];
@@ -33,7 +33,7 @@ export interface CoreSettingsLicense {
     email?: string;
     licenseUrl?: string;
     licenseFile?: string;
-}
+};
 
 /**
  * Page that displays the open source licenses information.

@@ -20,7 +20,7 @@ import {
     CoreUserDelegateContext,
     CoreUserProfileHandlerType,
     CoreUserProfileHandler,
-    CoreUserProfileHandlerData,
+    CoreUserProfileListHandlerData,
 } from '@features/user/services/user-delegate';
 import { CoreUserProfile } from '@features/user/services/user';
 import { CoreNavigator } from '@services/navigator';
@@ -33,9 +33,9 @@ import { ADDON_PRIVATE_FILES_PAGE_NAME } from '@addons/privatefiles/constants';
 @Injectable({ providedIn: 'root' })
 export class AddonPrivateFilesUserHandlerService implements CoreUserProfileHandler {
 
+    readonly type = CoreUserProfileHandlerType.LIST_ITEM;
     name = 'AddonPrivateFiles';
     priority = 400;
-    type = CoreUserProfileHandlerType.LIST_ITEM;
     cacheEnabled = true;
 
     /**
@@ -55,7 +55,7 @@ export class AddonPrivateFilesUserHandlerService implements CoreUserProfileHandl
     /**
      * @inheritdoc
      */
-    getDisplayData(): CoreUserProfileHandlerData {
+    getDisplayData(): CoreUserProfileListHandlerData {
         return {
             icon: 'fas-folder',
             title: 'addon.privatefiles.files',

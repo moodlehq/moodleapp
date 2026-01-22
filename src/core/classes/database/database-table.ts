@@ -434,9 +434,9 @@ export interface CoreDatabaseConfiguration {
 /**
  * Database table listener.
  */
-export interface CoreDatabaseTableListener {
+export type CoreDatabaseTableListener = {
     onDestroy?(): void;
-}
+};
 
 /**
  * CoreDatabaseTable constructor.

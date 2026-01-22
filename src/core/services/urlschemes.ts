@@ -591,7 +591,7 @@ export const CoreCustomURLSchemes = makeSingleton(CoreCustomURLSchemesProvider);
 /**
  * All params that can be in a custom URL scheme.
  */
-export interface CoreCustomURLSchemesParams extends CoreLoginSSOData {
+export type CoreCustomURLSchemesParams = CoreLoginSSOData & {
 
     /**
      * Username.
@@ -612,4 +612,4 @@ export interface CoreCustomURLSchemesParams extends CoreLoginSSOData {
      * Whether the URL is meant to perform an authentication.
      */
     isAuthenticationURL?: boolean;
-}
+};

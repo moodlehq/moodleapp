@@ -36,10 +36,10 @@ import { CoreAlerts } from '@services/overlays/alerts';
 /**
  * Object with space usage and cache entries that can be erased.
  */
-export interface CoreSiteSpaceUsage {
+export type CoreSiteSpaceUsage = {
     cacheEntries: number; // Number of cached entries that can be cleared.
     spaceUsage: number; // Space used in this site (total files + estimate of cache).
-}
+};
 
 /**
  * Constants to define color schemes.

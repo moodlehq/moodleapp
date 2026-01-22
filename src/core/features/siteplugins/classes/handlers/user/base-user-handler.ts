@@ -23,21 +23,21 @@ import {
 import { CoreUserProfile } from '@features/user/services/user';
 import {
     CoreUserDelegateContext,
-    CoreUserProfileHandlerType,
+    CoreUserProfileButtonHandlerData,
     CoreUserProfileHandler,
-    CoreUserProfileHandlerData,
+    CoreUserProfileListActionHandlerData,
 } from '@features/user/services/user-delegate';
 import { CoreNavigator } from '@services/navigator';
 import { Md5 } from 'ts-md5';
-import { CoreSitePluginsBaseHandler } from './base-handler';
+import { CoreSitePluginsBaseHandler } from '../base-handler';
 
 /**
  * Handler to display a site plugin in the user profile.
  */
-export class CoreSitePluginsUserProfileHandler extends CoreSitePluginsBaseHandler implements CoreUserProfileHandler {
+export abstract class CoreSitePluginsBaseUserProfileHandler extends CoreSitePluginsBaseHandler implements
+    Partial<CoreUserProfileHandler> {
 
     priority: number;
-    type: CoreUserProfileHandlerType;
 
     protected updatingDefer?: CorePromisedValue<void>;
 
@@ -51,11 +51,6 @@ export class CoreSitePluginsUserProfileHandler extends CoreSitePluginsBaseHandle
         super(name);
 
         this.priority = handlerSchema.priority || 0;
-
-        // Only support LIST_ITEM and BUTTON.
-        this.type = !handlerSchema.type || handlerSchema.type === CoreUserProfileHandlerType.LIST_ACCOUNT_ITEM
-            ? CoreUserProfileHandlerType.LIST_ITEM
-            : handlerSchema.type;
     }
 
     /**
@@ -92,9 +87,11 @@ export class CoreSitePluginsUserProfileHandler extends CoreSitePluginsBaseHandle
     }
 
     /**
-     * @inheritdoc
+     * Get the display data for action handlers.
+     *
+     * @returns Display data.
      */
-    getDisplayData(): CoreUserProfileHandlerData {
+    protected getActionDisplayData(): CoreUserProfileButtonHandlerData | CoreUserProfileListActionHandlerData {
         return {
             title: this.title,
             icon: this.handlerSchema.displaydata?.icon,

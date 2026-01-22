@@ -36,6 +36,7 @@ import { CoreEvents } from '@singletons/events';
 import { CORE_COURSE_PAGE_NAME, CORE_COURSE_INDEX_PATH } from '@features/course/constants';
 import { PARTICIPANTS_PAGE_NAME } from './constants';
 import { CoreUserParticipantsLinkHandler } from './services/handlers/participants-link';
+import { CoreUserProfileDetailsHandler } from './services/handlers/profile-details';
 
 /**
  * Get user services.
@@ -141,6 +142,7 @@ const courseIndexRoutes: Routes = [
         },
         provideAppInitializer(() => {
             CoreUserDelegate.registerHandler(CoreUserProfileMailHandler.instance);
+            CoreUserDelegate.registerHandler(CoreUserProfileDetailsHandler.instance);
             CoreContentLinksDelegate.registerHandler(CoreUserProfileLinkHandler.instance);
             CoreContentLinksDelegate.registerHandler(CoreUserParticipantsLinkHandler.instance);
             CoreCronDelegate.register(CoreUserSyncCronHandler.instance);

@@ -779,7 +779,7 @@ export const AddonModAssignHelper = makeSingleton(AddonModAssignHelperProvider);
 /**
  * Assign submission with some calculated data.
  */
-export interface AddonModAssignSubmissionFormatted extends AddonModAssignSubmission {
+export type AddonModAssignSubmissionFormatted = AddonModAssignSubmission & {
     blindid?: number; // Calculated in the app. Blindid of the user that did the submission.
     submitid?: number; // Calculated in the app. Userid or blindid of the user that did the submission.
     userfullname?: string; // Calculated in the app. Full name of the user that did the submission.
@@ -787,7 +787,7 @@ export interface AddonModAssignSubmissionFormatted extends AddonModAssignSubmiss
     manyGroups?: boolean; // Calculated in the app. Whether the user belongs to more than 1 group.
     noGroups?: boolean; // Calculated in the app. Whether the user doesn't belong to any group.
     groupname?: string; // Calculated in the app. Name of the group the submission belongs to.
-}
+};
 
 /**
  * Assignment plugin config.

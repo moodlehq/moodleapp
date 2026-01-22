@@ -16,7 +16,7 @@ import { Injectable } from '@angular/core';
 import {
     AddonMessages,
 } from '../messages';
-import { CoreMainMenuHandler, CoreMainMenuHandlerToDisplay } from '@features/mainmenu/services/mainmenu-delegate';
+import { CoreMainMenuHandler, CoreMainMenuPageNavHandlerData } from '@features/mainmenu/services/mainmenu-delegate';
 import { CoreCronHandler } from '@services/cron';
 import { CoreSites } from '@services/sites';
 import { CoreEvents } from '@singletons/events';
@@ -42,7 +42,7 @@ export class AddonMessagesMainMenuHandlerService implements CoreMainMenuHandler,
     name = 'AddonMessages';
     priority = 700;
 
-    protected handler: CoreMainMenuHandlerToDisplay = {
+    protected handler: CoreMainMenuPageNavHandlerData = {
         icon: 'fas-comments',
         title: 'addon.messages.messages',
         page: ADDON_MESSAGES_PAGE_NAME,
@@ -112,7 +112,7 @@ export class AddonMessagesMainMenuHandlerService implements CoreMainMenuHandler,
      *
      * @returns Data needed to render the handler.
      */
-    getDisplayData(): CoreMainMenuHandlerToDisplay {
+    getDisplayData(): CoreMainMenuPageNavHandlerData {
         if (this.handler.loading) {
             this.refreshBadge();
         }

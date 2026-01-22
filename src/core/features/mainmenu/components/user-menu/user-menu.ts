@@ -14,17 +14,18 @@
 
 import { CoreConstants } from '@/core/constants';
 import { CoreSharedModule } from '@/core/shared.module';
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, viewChildren } from '@angular/core';
 import { CoreSiteInfo } from '@classes/sites/unauthenticated-site';
 import { CoreFilter } from '@features/filter/services/filter';
 import { CoreUserAuthenticatedSupportConfig } from '@features/user/classes/support/authenticated-support-config';
 import { CoreUserSupport } from '@features/user/services/support';
 import { CoreUser, CoreUserProfile } from '@features/user/services/user';
 import {
-    CoreUserProfileHandlerData,
+    CoreUserProfileListActionHandlerData,
     CoreUserDelegate,
     CoreUserProfileHandlerType,
     CoreUserDelegateContext,
+    CoreUserProfileListHandlerData,
 } from '@features/user/services/user-delegate';
 import { CoreModals } from '@services/overlays/modals';
 import { CoreNavigator } from '@services/navigator';
@@ -34,6 +35,9 @@ import { Subscription } from 'rxjs';
 import { CoreLoginHelper } from '@features/login/services/login-helper';
 import { CoreSiteLogoComponent } from '@/core/components/site-logo/site-logo';
 import { CoreAlerts } from '@services/overlays/alerts';
+import { CoreDynamicComponent } from '@components/dynamic-component/dynamic-component';
+import { CorePromiseUtils } from '@singletons/promise-utils';
+import type { ReloadableComponent } from '@coretypes/reloadable-component';
 
 /**
  * Component to display a user menu.
@@ -49,11 +53,13 @@ import { CoreAlerts } from '@services/overlays/alerts';
 })
 export class CoreMainMenuUserMenuComponent implements OnInit, OnDestroy {
 
+    readonly dynamicComponents = viewChildren<CoreDynamicComponent<ReloadableComponent>>(CoreDynamicComponent);
+
     siteInfo?: CoreSiteInfo;
     siteUrl?: string;
     displaySiteUrl = false;
-    handlers: CoreUserProfileHandlerData[] = [];
-    accountHandlers: CoreUserProfileHandlerData[] = [];
+    handlers: HandlerData[] = [];
+    accountHandlers: HandlerData[] = [];
     handlersLoaded = false;
     user?: CoreUserProfile;
     displaySwitchAccount = true;
@@ -78,19 +84,32 @@ export class CoreMainMenuUserMenuComponent implements OnInit, OnDestroy {
         this.removeAccountOnLogout = !!CoreConstants.CONFIG.removeaccountonlogout;
         this.displaySiteUrl = currentSite.shouldDisplayInformativeLinks();
 
+        await this.loadData();
+    }
+
+    /**
+     * Load data.
+     */
+    async loadData(): Promise<void> {
         if (!this.siteInfo) {
             return;
         }
 
-        // Load the handlers.
         try {
             this.user = await CoreUser.getProfile(this.siteInfo.userid);
         } catch {
             this.user = {
                 id: this.siteInfo.userid,
                 fullname: this.siteInfo.fullname,
+                profileimageurl: this.siteInfo.userpictureurl,
             };
         }
+
+        // Load the handlers.
+        const defaultComponentData = {
+            user: this.user,
+            context: CoreUserDelegateContext.USER_MENU,
+        };
 
         this.subscription = CoreUserDelegate.getProfileHandlersFor(this.user, CoreUserDelegateContext.USER_MENU)
             .subscribe((handlers) => {
@@ -100,7 +119,14 @@ export class CoreMainMenuUserMenuComponent implements OnInit, OnDestroy {
 
                 let newHandlers = handlers
                     .filter((handler) => handler.type === CoreUserProfileHandlerType.LIST_ITEM)
-                    .map((handler) => handler.data);
+                    .map((handler) => ({
+                        name: handler.name,
+                        ...handler.data,
+                        componentData: 'componentData' in handler.data ? {
+                            ...defaultComponentData,
+                            ...(handler.data.componentData || {}),
+                        } : undefined,
+                    }));
 
                 // Only update handlers if they have changed, to prevent a blink effect.
                 if (newHandlers.length !== this.handlers.length ||
@@ -110,7 +136,14 @@ export class CoreMainMenuUserMenuComponent implements OnInit, OnDestroy {
 
                 newHandlers = handlers
                     .filter((handler) => handler.type === CoreUserProfileHandlerType.LIST_ACCOUNT_ITEM)
-                    .map((handler) => handler.data);
+                    .map((handler) => ({
+                        name: handler.name,
+                        ...handler.data,
+                        componentData: 'componentData' in handler.data ? {
+                            ...defaultComponentData,
+                            ...(handler.data.componentData || {}),
+                        } : undefined,
+                    }));
 
                 // Only update handlers if they have changed, to prevent a blink effect.
                 if (newHandlers.length !== this.accountHandlers.length ||
@@ -120,6 +153,28 @@ export class CoreMainMenuUserMenuComponent implements OnInit, OnDestroy {
 
                 this.handlersLoaded = CoreUserDelegate.areHandlersLoaded(this.user.id, CoreUserDelegateContext.USER_MENU);
             });
+    }
+
+    /**
+     * Refresh the data.
+     *
+     * @param event Event.
+     * @returns Promise resolved when done.
+     */
+    async refreshData(event?: HTMLIonRefresherElement): Promise<void> {
+        await CorePromiseUtils.ignoreErrors(Promise.all([
+            this.user ? CoreUser.invalidateUserCache(this.user.id) : Promise.resolve(),
+            ...(this.dynamicComponents()?.map((component) =>
+                Promise.resolve(component.callComponentMethod('invalidateContent'))) || []),
+        ]));
+
+        await this.loadData();
+
+        await CorePromiseUtils.allPromisesIgnoringErrors(
+            this.dynamicComponents()?.map((component) => Promise.resolve(component.callComponentMethod('reloadContent'))),
+        );
+
+        event?.complete();
     }
 
     /**
@@ -158,7 +213,7 @@ export class CoreMainMenuUserMenuComponent implements OnInit, OnDestroy {
      * @param event Click event.
      * @param handler Handler that was clicked.
      */
-    async handlerClicked(event: Event, handler: CoreUserProfileHandlerData): Promise<void> {
+    async handlerClicked(event: Event, handler: CoreUserProfileListActionHandlerData): Promise<void> {
         if (!this.user) {
             return;
         }
@@ -241,6 +296,16 @@ export class CoreMainMenuUserMenuComponent implements OnInit, OnDestroy {
     }
 
     /**
+     * Helper function to cast to the proper type in the template.
+     *
+     * @param handler Variable to cast.
+     * @returns Casted variable.
+     */
+    castHandlerType(handler: HandlerData): HandlerData {
+        return handler;
+    }
+
+    /**
      * Close modal.
      */
     async close(event: Event): Promise<void> {
@@ -258,3 +323,5 @@ export class CoreMainMenuUserMenuComponent implements OnInit, OnDestroy {
     }
 
 }
+
+type HandlerData = CoreUserProfileListHandlerData & { name: string };

@@ -19,7 +19,11 @@ import { Subscription } from 'rxjs';
 
 import { CoreEvents, CoreEventObserver } from '@singletons/events';
 import { CoreMainMenu } from '../../services/mainmenu';
-import { CoreMainMenuDelegate, CoreMainMenuHandlerToDisplay } from '../../services/mainmenu-delegate';
+import {
+    CoreMainMenuDelegate,
+    CoreMainMenuHandlerToDisplay,
+    CoreMainMenuPageNavHandlerToDisplay,
+} from '../../services/mainmenu-delegate';
 import { Router } from '@singletons';
 import { CoreUtils } from '@singletons/utils';
 import { CoreAriaRoleTab, CoreAriaRoleTabFindable } from '@classes/aria-role-tab';
@@ -74,7 +78,7 @@ export default class CoreMainMenuPage implements OnInit, OnDestroy {
 
     readonly hiddenAnimationFinished = signal(false);
 
-    tabs: CoreMainMenuHandlerToDisplay[] = [];
+    tabs: HandlerToDisplay[] = [];
     allHandlers?: CoreMainMenuHandlerToDisplay[];
     readonly loaded = signal(false);
     showTabs = false;
@@ -188,20 +192,22 @@ export default class CoreMainMenuPage implements OnInit, OnDestroy {
 
         this.loadingTabsLength = this.getLoadingTabsLength();
 
-        const handlers = this.allHandlers
-            .filter((handler) => !handler.onlyInMore)
+        const handlers = CoreMainMenuDelegate.skipOnlyMoreHandlers(this.allHandlers)
             .slice(0, CoreMainMenu.getNumItems()); // Get main handlers.
 
         // Re-build the list of tabs. If a handler is already in the list, use existing object to prevent re-creating the tab.
-        const newTabs: CoreMainMenuHandlerToDisplay[] = [];
+        const newTabs: HandlerToDisplay[] = [];
 
         for (let i = 0; i < handlers.length; i++) {
-            const handler = handlers[i];
+            const handler = handlers[i] as HandlerToDisplay;
 
             // Check if the handler is already in the tabs list. If so, use it.
             const tab = this.tabs.find((tab) => tab.page === handler.page);
 
             tab ? tab.hide = false : null;
+
+            // @todo: Ideally we shouldn't modify the original handler, but right now the badge is modified in the original
+            // handler so we need to keep the reference.
             handler.hide = false;
             handler.id = handler.id || `core-mainmenu-${CoreUtils.getUniqueId('CoreMainMenuPage')}`;
 
@@ -218,8 +224,8 @@ export default class CoreMainMenuPage implements OnInit, OnDestroy {
         let removedHandlersPages: string[] = [];
         if (previousHandlers) {
             const allHandlers = this.allHandlers;
-            removedHandlersPages = previousHandlers.map(handler => handler.page)
-                .filter(page => !allHandlers.some(handler => handler.page === page));
+            removedHandlersPages = previousHandlers.filter(handler => 'page' in handler).map(handler => handler.page)
+                .filter(page => !allHandlers.some(handler => 'page' in handler && handler.page === page));
         }
 
         const mainMenuTab = CoreNavigator.getCurrentMainMenuTab();
@@ -293,12 +299,12 @@ export default class CoreMainMenuPage implements OnInit, OnDestroy {
         }
 
         // Calculate the main handlers not to display them in this view.
-        const mainHandlers = this.allHandlers
-            .filter((handler) => !handler.onlyInMore)
+        const mainHandlers = CoreMainMenuDelegate.skipOnlyMoreHandlers(this.allHandlers)
             .slice(0, CoreMainMenu.getNumItems());
 
         // Use only the handlers that don't appear in the main view.
-        this.moreBadge = this.allHandlers.some((handler) => mainHandlers.indexOf(handler) === -1 && !!handler.badge);
+        this.moreBadge = this.allHandlers.some((handler) =>
+            'badge' in handler && !!handler.badge && mainHandlers.indexOf(handler) === -1);
     }
 
     /**
@@ -413,3 +419,15 @@ class CoreMainMenuRoleTab extends CoreAriaRoleTab<CoreMainMenuPage> {
     }
 
 }
+
+type HandlerToDisplay = CoreMainMenuPageNavHandlerToDisplay & {
+    /**
+     * Hide tab. Used then resizing.
+     */
+    hide?: boolean;
+
+    /**
+     * Used to control tabs.
+     */
+    id?: string;
+};

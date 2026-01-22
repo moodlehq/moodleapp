@@ -14,7 +14,7 @@
 
 import { AddonBlockMyOverviewComponent } from '@addons/block/myoverview/components/myoverview/myoverview';
 import { Component, effect, OnDestroy, OnInit, viewChild, inject } from '@angular/core';
-import { AsyncDirective } from '@classes/async-directive';
+import type { AsyncDirective } from '@coretypes/async-directive';
 import { PageLoadsManager } from '@classes/page-loads-manager';
 import { CorePromisedValue } from '@classes/promised-value';
 import { CoreBlockComponent } from '@features/block/components/block/block';

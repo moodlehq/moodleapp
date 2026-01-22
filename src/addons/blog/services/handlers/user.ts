@@ -15,7 +15,7 @@
 import { Injectable } from '@angular/core';
 import {
     CoreUserProfileHandler,
-    CoreUserProfileHandlerData,
+    CoreUserProfileListHandlerData,
     CoreUserProfileHandlerType,
     CoreUserDelegateContext,
 } from '@features/user/services/user-delegate';
@@ -30,9 +30,9 @@ import { AddonBlog } from '../blog';
 @Injectable({ providedIn: 'root' })
 export class AddonBlogUserHandlerService implements CoreUserProfileHandler {
 
+    readonly type = CoreUserProfileHandlerType.LIST_ITEM;
     name = 'AddonBlog'; // This name doesn't match any disabled feature, they'll be checked in isEnabledForContext.
     priority = 200;
-    type = CoreUserProfileHandlerType.LIST_ITEM;
 
     /**
      * @inheritdoc
@@ -65,7 +65,7 @@ export class AddonBlogUserHandlerService implements CoreUserProfileHandler {
     /**
      * @inheritdoc
      */
-    getDisplayData(): CoreUserProfileHandlerData {
+    getDisplayData(): CoreUserProfileListHandlerData {
         return {
             icon: 'far-newspaper',
             title: 'addon.blog.blogentries',

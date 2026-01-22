@@ -18,7 +18,7 @@ import { CoreSites } from '@services/sites';
 import { CoreUtils } from '@singletons/utils';
 import { makeSingleton } from '@singletons';
 import { CoreEvents } from '@singletons/events';
-import { CoreMainMenuHandler, CoreMainMenuHandlerData } from '@features/mainmenu/services/mainmenu-delegate';
+import { CoreMainMenuHandler, CoreMainMenuPageNavHandlerData } from '@features/mainmenu/services/mainmenu-delegate';
 import { CorePushNotifications } from '@features/pushnotifications/services/pushnotifications';
 import { CorePushNotificationsDelegate } from '@features/pushnotifications/services/push-delegate';
 import { AddonNotifications } from '../notifications';
@@ -38,7 +38,7 @@ export class AddonNotificationsMainMenuHandlerService implements CoreMainMenuHan
     name = 'AddonNotifications';
     priority = 600;
 
-    protected handlerData: CoreMainMenuHandlerData = {
+    protected handlerData: CoreMainMenuPageNavHandlerData = {
         icon: 'fas-bell',
         title: 'addon.notifications.notifications',
         page: ADDONS_NOTICATIONS_MAIN_PAGE_NAME,
@@ -93,7 +93,7 @@ export class AddonNotificationsMainMenuHandlerService implements CoreMainMenuHan
      *
      * @returns Data needed to render the handler.
      */
-    getDisplayData(): CoreMainMenuHandlerData {
+    getDisplayData(): CoreMainMenuPageNavHandlerData {
         if (this.handlerData.loading) {
             this.updateBadge();
         }

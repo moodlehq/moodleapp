@@ -31,7 +31,7 @@ import { CoreMainMenuDelegate } from '@features/mainmenu/services/mainmenu-deleg
 import { CoreQuestionBehaviourDelegate } from '@features/question/services/behaviour-delegate';
 import { CoreQuestionDelegate } from '@features/question/services/question-delegate';
 import { CoreSettingsDelegate } from '@features/settings/services/settings-delegate';
-import { CoreUserDelegate } from '@features/user/services/user-delegate';
+import { CoreUserDelegate, CoreUserProfileHandlerType } from '@features/user/services/user-delegate';
 import { CoreUserProfileFieldDelegate } from '@features/user/services/user-profile-field-delegate';
 import { CoreFilepool } from '@services/filepool';
 import { CoreLang } from '@services/lang';
@@ -54,7 +54,8 @@ import { CoreSitePluginsQuestionBehaviourHandler } from '../classes/handlers/que
 import { CoreSitePluginsQuestionHandler } from '../classes/handlers/question-handler';
 import { CoreSitePluginsQuizAccessRuleHandler } from '../classes/handlers/quiz-access-rule-handler';
 import { CoreSitePluginsSettingsHandler } from '../classes/handlers/settings-handler';
-import { CoreSitePluginsUserProfileHandler } from '../classes/handlers/user-handler';
+import { CoreSitePluginsUserProfileButtonHandler } from '../classes/handlers/user/button-user-handler';
+import { CoreSitePluginsUserProfileListHandler } from '../classes/handlers/user/list-user-handler';
 import { CoreSitePluginsUserProfileFieldHandler } from '../classes/handlers/user-profile-field-handler';
 import {
     CoreSitePlugins,
@@ -108,7 +109,8 @@ export class CoreSitePluginsInitService {
         plugin: CoreSitePluginsPlugin;
         handlerName: string;
         handlerSchema: CoreSitePluginsCourseOptionHandlerData | CoreSitePluginsUserHandlerData;
-        handler: CoreSitePluginsCourseOptionHandler | CoreSitePluginsUserProfileHandler;
+        handler: CoreSitePluginsCourseOptionHandler | CoreSitePluginsUserProfileButtonHandler |
+            CoreSitePluginsUserProfileListHandler;
     }> = {};
 
     protected static readonly HANDLER_DISABLED = 'core_site_plugins_helper_handler_disabled';
@@ -834,7 +836,7 @@ export class CoreSitePluginsInitService {
         handlerSchema: CoreSitePluginsMainMenuHandlerData,
         initResult: CoreSitePluginsContent | null,
     ): string | undefined {
-        if (!handlerSchema.displaydata) {
+        if (!handlerSchema.displaydata && !handlerSchema.displayinline) {
             // Required data not provided, stop.
             this.logger.warn('Ignore site plugin because it doesn\'t provide displaydata', plugin, handlerSchema);
 
@@ -845,7 +847,7 @@ export class CoreSitePluginsInitService {
 
         // Create and register the handler.
         const uniqueName = CoreSitePlugins.getHandlerUniqueName(plugin, handlerName);
-        const prefixedTitle = this.getPrefixedString(plugin.addon, handlerSchema.displaydata.title);
+        const prefixedTitle = this.getPrefixedString(plugin.addon, handlerSchema.displaydata?.title);
 
         CoreMainMenuDelegate.registerHandler(
             new CoreSitePluginsMainMenuHandler(uniqueName, prefixedTitle, plugin, handlerSchema, initResult),
@@ -1070,7 +1072,7 @@ export class CoreSitePluginsInitService {
         handlerSchema: CoreSitePluginsUserHandlerData,
         initResult: CoreSitePluginsContent | null,
     ): string | undefined {
-        if (!handlerSchema.displaydata) {
+        if (!handlerSchema.displaydata && !handlerSchema.displayinline) {
             // Required data not provided, stop.
             this.logger.warn('Ignore site plugin because it doesn\'t provide displaydata', plugin, handlerSchema);
 
@@ -1081,8 +1083,12 @@ export class CoreSitePluginsInitService {
 
         // Create and register the handler.
         const uniqueName = CoreSitePlugins.getHandlerUniqueName(plugin, handlerName);
-        const prefixedTitle = this.getPrefixedString(plugin.addon, handlerSchema.displaydata.title);
-        const handler = new CoreSitePluginsUserProfileHandler(uniqueName, prefixedTitle, plugin, handlerSchema, initResult);
+        const prefixedTitle = this.getPrefixedString(plugin.addon, handlerSchema.displaydata?.title);
+
+        // Only support LIST_ITEM and BUTTON.
+        const handler = handlerSchema.type === CoreUserProfileHandlerType.BUTTON ?
+            new CoreSitePluginsUserProfileButtonHandler(uniqueName, prefixedTitle, plugin, handlerSchema, initResult) :
+            new CoreSitePluginsUserProfileListHandler(uniqueName, prefixedTitle, plugin, handlerSchema, initResult);
 
         CoreUserDelegate.registerHandler(handler);
 

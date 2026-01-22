@@ -341,13 +341,13 @@ export const CoreDB = makeSingleton(CoreDbProvider);
 /**
  * Database query log entry.
  */
-export interface CoreDbQueryLog {
+export type CoreDbQueryLog = {
     dbName: string;
     sql: string;
     duration: number;
     error?: Error;
     params?: unknown[];
-}
+};
 
 /**
  * Summary about a certain DB statement.

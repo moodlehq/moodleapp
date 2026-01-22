@@ -105,19 +105,19 @@ export interface CoreEnrolGuestHandler extends CoreEnrolHandler {
 /**
  * Data needed to render a enrolment icons. It's returned by the handler.
  */
-export interface CoreEnrolInfoIcon {
+export type CoreEnrolInfoIcon = {
     label: string;
     icon: string;
     className?: string;
-}
+};
 
 /**
  * Data about course access using a GUEST enrolment method.
  */
-export interface CoreEnrolCanAccessData {
+export type CoreEnrolCanAccessData = {
     canAccess: boolean; // Whether the user can access the course using this enrolment method.
     requiresUserInput?: boolean; // Whether the user needs to input some data to access the course using this enrolment method.
-}
+};
 
 /**
  * Delegate to register enrol handlers.

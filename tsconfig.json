@@ -43,6 +43,9 @@
       "@components/*": [
         "./core/components/*"
       ],
+      "@coretypes/*": [
+        "./core/types/*"
+      ],
       "@directives/*": [
         "./core/directives/*"
       ],

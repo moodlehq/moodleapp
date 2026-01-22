@@ -14,7 +14,7 @@
 
 import { Injectable } from '@angular/core';
 import { makeSingleton } from '@singletons';
-import { CoreMainMenuHandler, CoreMainMenuHandlerData } from '@features/mainmenu/services/mainmenu-delegate';
+import { CoreMainMenuHandler, CoreMainMenuPageNavHandlerData } from '@features/mainmenu/services/mainmenu-delegate';
 import { CoreSearchGlobalSearch } from '@features/search/services/global-search';
 
 export const CORE_SEARCH_PAGE_NAME = 'search';
@@ -38,7 +38,7 @@ export class CoreSearchMainMenuHandlerService implements CoreMainMenuHandler {
     /**
      * @inheritdoc
      */
-    getDisplayData(): CoreMainMenuHandlerData {
+    getDisplayData(): CoreMainMenuPageNavHandlerData {
         return {
             icon: 'fas-magnifying-glass',
             title: 'core.search.globalsearch',

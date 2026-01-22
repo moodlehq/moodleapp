@@ -13,6 +13,9 @@
     </ion-toolbar>
 </ion-header>
 <ion-content>
+    <ion-refresher slot="fixed" (ionRefresh)="refreshData($event.target)">
+        <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}" />
+    </ion-refresher>
     <core-loading [hideUntil]="handlersLoaded" placeholderType="column" placeholderHeight="48px">
         <ion-list>
             @if (siteInfo) {
@@ -36,62 +39,21 @@
                 }
 
                 <ion-item button class="core-usermenu-profile ion-text-wrap" lines="full" (click)="openUserProfile($event)" [detail]="true">
-                    <core-user-avatar [site]="siteInfo" [userId]="siteInfo.userid" [linkProfile]="false" slot="start" />
+                    <core-user-avatar [user]="user" [linkProfile]="false" slot="start" />
                     <ion-label>
-                        <p class="item-heading">{{ siteInfo.fullname }}</p>
+                        <p class="item-heading">{{ user?.fullname ?? siteInfo.fullname }}</p>
                     </ion-label>
                 </ion-item>
             }
 
-            <ion-item button *ngFor="let handler of handlers" (click)="handlerClicked($event, handler)"
-                [class]="['ion-text-wrap', 'core-user-menu-handler', handler.class]" [hidden]="handler.hidden"
-                [attr.aria-label]="handler.title | translate" [detail]="true">
-                @if (handler.icon) {
-                    <ion-icon [name]="handler.icon" slot="start" aria-hidden="true" />
-                }
-                <ion-label>
-                    <p class="item-heading">{{ handler.title | translate }}</p>
-                </ion-label>
-                @if (handler.showBadge) {
-                    <ion-badge slot="end" [hidden]="handler.loading || !handler.badge" aria-hidden="true">
-                        {{handler.badge}}
-                    </ion-badge>
-                    @if (handler.badge && handler.badgeA11yText) {
-                        <span class="sr-only">
-                            {{ handler.badgeA11yText | translate: {$a : handler.badge } }}
-                        </span>
-                    }
-                    @if (handler.loading) {
-                        <ion-spinner slot="end" [attr.aria-label]="'core.loading' | translate" />
-                    }
-                }
-            </ion-item>
+            @for (handler of handlers; track handler.name) {
+                <ng-container *ngTemplateOutlet="menuHandler; context: { handler, class: 'core-user-menu-handler', addSeparator: false }" />
+            }
 
-            <ion-item button *ngFor="let handler of accountHandlers; let first = first"
-                (click)="handlerClicked($event, handler)"
-                [class]="['ion-text-wrap', 'core-user-account-menu-handler', handler.class]"
-                [class.core-user-menu-separator]="first"
-                [hidden]="handler.hidden" [attr.aria-label]="handler.title | translate" [detail]="true">
-                @if (handler.icon) {
-                    <ion-icon [name]="handler.icon" slot="start" aria-hidden="true" />
-                }
-                <ion-label>
-                    <p class="item-heading">{{ handler.title | translate }}</p>
-                </ion-label>
-                @if (handler.showBadge) {
-                    <ion-badge slot="end" [hidden]="handler.loading || !handler.badge" aria-hidden="true">
-                        {{handler.badge}}
-                    </ion-badge>
-                    @if (handler.badge && handler.badgeA11yText) {
-                        <span class="sr-only">
-                            {{ handler.badgeA11yText | translate: {$a : handler.badge } }}
-                        </span>
-                    }
-                    @if (handler.loading) {
-                        <ion-spinner slot="end" [attr.aria-label]="'core.loading' | translate" />
-                    }
-                }
-            </ion-item>
+            @for (handler of accountHandlers; track handler.name; let first = $first) {
+                <ng-container
+                    *ngTemplateOutlet="menuHandler; context: { handler, class: 'core-user-account-menu-handler', addSeparator: first }" />
+            }
 
             <ion-item button (click)="openPreferences($event)" [attr.aria-label]="'core.settings.preferences' | translate" [detail]="true"
                 class="core-user-menu-preferences core-user-menu-separator">
@@ -139,3 +101,35 @@
         </ion-button>
     </div>
 </ion-footer>
+
+<ng-template #menuHandler let-handlerUntyped="handler" let-typeClass="class" let-addSeparator="addSeparator">
+    @let handler = castHandlerType(handlerUntyped);
+
+    @if ('component' in handler) {
+        <core-dynamic-component [component]="handler.component" [data]="handler.componentData" />
+    } @else {
+        <ion-item button (click)="handlerClicked($event, handler)" [class]="['ion-text-wrap', typeClass, handler.class]"
+            [class.core-user-menu-separator]="addSeparator" [hidden]="handler.hidden"
+            [attr.aria-label]="handler.title | translate" [detail]="true">
+            @if (handler.icon) {
+                <ion-icon [name]="handler.icon" slot="start" aria-hidden="true" />
+            }
+            <ion-label>
+                <p class="item-heading">{{ handler.title | translate }}</p>
+            </ion-label>
+            @if (handler.showBadge) {
+                <ion-badge slot="end" [hidden]="handler.loading || !handler.badge" aria-hidden="true">
+                    {{handler.badge}}
+                </ion-badge>
+                @if (handler.badge && handler.badgeA11yText) {
+                    <span class="sr-only">
+                        {{ handler.badgeA11yText | translate: {$a : handler.badge } }}
+                    </span>
+                }
+                @if (handler.loading) {
+                    <ion-spinner slot="end" [attr.aria-label]="'core.loading' | translate" />
+                }
+            }
+        </ion-item>
+    }
+</ng-template>

@@ -27,7 +27,7 @@ import {
     ViewChild,
     inject,
 } from '@angular/core';
-import { AsyncDirective } from '@classes/async-directive';
+import type { AsyncDirective } from '@coretypes/async-directive';
 import { CoreSwipeSlidesItemsManager } from '@classes/items-management/swipe-slides-items-manager';
 import { CorePromisedValue } from '@classes/promised-value';
 import { IonContent } from '@ionic/angular';

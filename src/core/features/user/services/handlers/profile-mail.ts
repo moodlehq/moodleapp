@@ -17,7 +17,7 @@ import { Injectable } from '@angular/core';
 import {
     CoreUserProfileHandlerType,
     CoreUserProfileHandler,
-    CoreUserProfileHandlerData,
+    CoreUserProfileButtonHandlerData,
 } from '../user-delegate';
 import { CoreSites } from '@services/sites';
 import { CoreOpener } from '@singletons/opener';
@@ -30,9 +30,9 @@ import { makeSingleton } from '@singletons';
 @Injectable({ providedIn: 'root' })
 export class CoreUserProfileMailHandlerService implements CoreUserProfileHandler {
 
+    readonly type = CoreUserProfileHandlerType.BUTTON;
     name = 'CoreUserProfileMail';
     priority = 700;
-    type = CoreUserProfileHandlerType.BUTTON;
 
     /**
      * @inheritdoc
@@ -51,7 +51,7 @@ export class CoreUserProfileMailHandlerService implements CoreUserProfileHandler
     /**
      * @inheritdoc
      */
-    getDisplayData(): CoreUserProfileHandlerData {
+    getDisplayData(): CoreUserProfileButtonHandlerData {
         return {
             icon: 'fas-envelope',
             title: 'core.user.sendemail',

@@ -22,12 +22,13 @@ import { makeSingleton } from '@singletons';
 /**
  * Interface that all settings handlers must implement.
  */
-export type CoreSettingsHandler = CoreDelegateDisplayHandler<CoreSettingsHandlerToDisplay>;
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
+export interface CoreSettingsHandler extends CoreDelegateDisplayHandler<CoreSettingsHandlerToDisplay> {}
 
 /**
  * Main data returned by the handler.
  */
-interface CoreSettingsHandlerBaseData {
+type CoreSettingsHandlerBaseData = {
     /**
      * Title to display for the handler.
      */
@@ -42,9 +43,9 @@ interface CoreSettingsHandlerBaseData {
      * Class to add to the displayed handler.
      */
     class?: string;
-}
+};
 
-interface CoreSettingsToggleHandlerData extends CoreSettingsHandlerBaseData {
+type CoreSettingsToggleHandlerData = CoreSettingsHandlerBaseData & {
     /**
      * Toggle checked.
      */
@@ -54,9 +55,9 @@ interface CoreSettingsToggleHandlerData extends CoreSettingsHandlerBaseData {
      * Method for emit events to the handler.
      */
     toggle(checked: boolean): void;
-}
+};
 
-interface CoreSettingsPageHandlerData extends CoreSettingsHandlerBaseData {
+type CoreSettingsPageHandlerData = CoreSettingsHandlerBaseData & {
     /**
      * Name of the page to load for the handler.
      */
@@ -66,7 +67,7 @@ interface CoreSettingsPageHandlerData extends CoreSettingsHandlerBaseData {
      * Params list of the page to load for the handler.
      */
     params?: Params;
-}
+};
 
 /**
  * Data needed to render a setting handler. It's returned by the handler.

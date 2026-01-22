@@ -31,7 +31,7 @@ import {
     EventEmitter,
     OutputEmitterRef,
 } from '@angular/core';
-import { AsyncDirective } from '@classes/async-directive';
+import type { AsyncDirective } from '@coretypes/async-directive';
 import { CorePromisedValue } from '@classes/promised-value';
 
 import { CoreAngular } from '@singletons/angular';

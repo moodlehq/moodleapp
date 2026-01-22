@@ -17,7 +17,7 @@ import { CoreUserProfile } from '@features/user/services/user';
 import {
     CoreUserProfileHandler,
     CoreUserProfileHandlerType,
-    CoreUserProfileHandlerData,
+    CoreUserProfileListHandlerData,
     CoreUserDelegateContext,
 } from '@features/user/services/user-delegate';
 import { CoreNavigator } from '@services/navigator';
@@ -30,8 +30,8 @@ import { AddonCourseCompletion } from '../coursecompletion';
 @Injectable({ providedIn: 'root' })
 export class AddonCourseCompletionUserHandlerService implements CoreUserProfileHandler {
 
+    readonly type = CoreUserProfileHandlerType.LIST_ITEM;
     name = 'AddonCourseCompletion:viewCompletion';
-    type = CoreUserProfileHandlerType.LIST_ITEM;
     priority = 350;
     cacheEnabled = true;
 
@@ -63,7 +63,7 @@ export class AddonCourseCompletionUserHandlerService implements CoreUserProfileH
     /**
      * @inheritdoc
      */
-    getDisplayData(): CoreUserProfileHandlerData {
+    getDisplayData(): CoreUserProfileListHandlerData {
         return {
             icon: 'fas-list-check',
             title: 'addon.coursecompletion.coursecompletion',

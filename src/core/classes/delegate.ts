@@ -412,7 +412,7 @@ export interface CoreDelegateHandler {
 /**
  * Data returned by the delegate for each handler to be displayed.
  */
-export interface CoreDelegateToDisplay {
+export type CoreDelegateToDisplay = {
     /**
      * Name of the handler.
      */
@@ -422,7 +422,7 @@ export interface CoreDelegateToDisplay {
      * Priority of the handler.
      */
     priority?: number;
-}
+};
 
 /**
  * Base interface for a core delegate needed to be displayed.

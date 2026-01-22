@@ -17,7 +17,7 @@ import { CoreBlockDelegate } from '../../services/block-delegate';
 import { CoreDynamicComponent } from '@components/dynamic-component/dynamic-component';
 import { Subscription } from 'rxjs';
 import { CoreCourseBlock } from '@features/course/services/course';
-import type { ICoreBlockComponent } from '@features/block/classes/base-block-component';
+import type { ReloadableComponent } from '@coretypes/reloadable-component';
 import { ContextLevel } from '@/core/constants';
 import { CoreSharedModule } from '@/core/shared.module';
 
@@ -34,7 +34,7 @@ import { CoreSharedModule } from '@/core/shared.module';
 })
 export class CoreBlockComponent implements OnDestroy {
 
-    readonly dynamicComponent = viewChild<CoreDynamicComponent<ICoreBlockComponent>>(CoreDynamicComponent);
+    readonly dynamicComponent = viewChild<CoreDynamicComponent<ReloadableComponent>>(CoreDynamicComponent);
 
     readonly block = input.required<CoreCourseBlock>(); // The block to render.
     readonly contextLevel = input.required<ContextLevel>(); // The context where the block will be used.
@@ -46,7 +46,7 @@ export class CoreBlockComponent implements OnDestroy {
      */
     readonly extraData = input<unknown>(); // Any extra data to be passed to the block.
 
-    readonly componentClass = signal<Type<ICoreBlockComponent> | undefined>(undefined); // The class of the component to render.
+    readonly componentClass = signal<Type<ReloadableComponent> | undefined>(undefined); // The class of the component to render.
     readonly data = signal<Record<string, unknown>>({}); // Data to pass to the component.
     readonly class = signal<string>(''); // CSS class to apply to the block.
     readonly loaded = signal(false);

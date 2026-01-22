@@ -28,7 +28,7 @@ import { Subscription } from 'rxjs';
 import { CoreFormatTextDirective } from './format-text';
 import { CoreWait } from '@singletons/wait';
 import { toBoolean } from '../transforms/boolean';
-import { AsyncDirective } from '@classes/async-directive';
+import type { AsyncDirective } from '@coretypes/async-directive';
 import { CoreSplitViewComponent } from '@components/split-view/split-view';
 
 declare module '@singletons/events' {

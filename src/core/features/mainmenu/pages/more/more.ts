@@ -12,12 +12,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, viewChildren } from '@angular/core';
 import { Subscription } from 'rxjs';
 
 import { CoreSites } from '@services/sites';
 import { CoreQRScan } from '@services/qrscan';
-import { CoreMainMenuDelegate, CoreMainMenuHandlerData } from '../../services/mainmenu-delegate';
+import {
+    CoreMainMenuDelegate,
+    CoreMainMenuHandlerToDisplay,
+    CoreMainMenuPageNavHandlerToDisplay,
+} from '../../services/mainmenu-delegate';
 import { CoreMainMenu, CoreMainMenuCustomItem } from '../../services/mainmenu';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { CoreNavigator } from '@services/navigator';
@@ -28,6 +32,9 @@ import { CoreSharedModule } from '@/core/shared.module';
 import { CoreMainMenuUserButtonComponent } from '../../components/user-menu-button/user-menu-button';
 import { CoreContentLinksHelper } from '@features/contentlinks/services/contentlinks-helper';
 import { CoreUrl } from '@singletons/url';
+import { CoreDynamicComponent } from '@components/dynamic-component/dynamic-component';
+import { ReloadableComponent } from '@coretypes/reloadable-component';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 
 /**
  * Page that displays the more page of the app.
@@ -43,12 +50,15 @@ import { CoreUrl } from '@singletons/url';
 })
 export default class CoreMainMenuMorePage implements OnInit, OnDestroy {
 
-    handlers?: CoreMainMenuHandlerData[];
+    readonly dynamicComponents = viewChildren<CoreDynamicComponent<ReloadableComponent>>(CoreDynamicComponent);
+
+    handlers?: CoreMainMenuHandlerToDisplay[];
     handlersLoaded = false;
     showScanQR: boolean;
     customItems?: CoreMainMenuCustomItem[];
+    hasComponentHandlers = false;
 
-    protected allHandlers?: CoreMainMenuHandlerData[];
+    protected allHandlers?: CoreMainMenuHandlerToDisplay[];
     protected subscription!: Subscription;
     protected langObserver: CoreEventObserver;
     protected updateSiteObserver: CoreEventObserver;
@@ -104,12 +114,12 @@ export default class CoreMainMenuMorePage implements OnInit, OnDestroy {
         }
 
         // Calculate the main handlers not to display them in this view.
-        const mainHandlers = this.allHandlers
-            .filter((handler) => !handler.onlyInMore)
+        const mainHandlers: CoreMainMenuHandlerToDisplay[] = CoreMainMenuDelegate.skipOnlyMoreHandlers(this.allHandlers)
             .slice(0, CoreMainMenu.getNumItems());
 
         // Get only the handlers that don't appear in the main view.
-        this.handlers = this.allHandlers.filter((handler) => mainHandlers.indexOf(handler) == -1);
+        this.handlers = this.allHandlers.filter((handler) => mainHandlers.indexOf(handler) === -1);
+        this.hasComponentHandlers = this.handlers.some((handler) => 'component' in handler);
 
         this.handlersLoaded = CoreMainMenuDelegate.areHandlersLoaded();
     }
@@ -126,7 +136,7 @@ export default class CoreMainMenuMorePage implements OnInit, OnDestroy {
      *
      * @param handler Handler to open.
      */
-    openHandler(handler: CoreMainMenuHandlerData): void {
+    openHandler(handler: CoreMainMenuPageNavHandlerToDisplay): void {
         const params = handler.pageParams;
 
         CoreNavigator.navigateToSitePath(handler.page, { params });
@@ -171,6 +181,25 @@ export default class CoreMainMenuMorePage implements OnInit, OnDestroy {
                 displayCopyButton: true,
             });
         }
+    }
+
+    /**
+     * Refresh the data.
+     *
+     * @param event Event.
+     * @returns Promise resolved when done.
+     */
+    async refreshData(event?: HTMLIonRefresherElement): Promise<void> {
+        await CorePromiseUtils.ignoreErrors(Promise.all([
+            ...(this.dynamicComponents()?.map((component) =>
+                Promise.resolve(component.callComponentMethod('invalidateContent'))) || []),
+        ]));
+
+        await CorePromiseUtils.allPromisesIgnoringErrors(
+            this.dynamicComponents()?.map((component) => Promise.resolve(component.callComponentMethod('reloadContent'))),
+        );
+
+        event?.complete();
     }
 
 }

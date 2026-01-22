@@ -35,7 +35,7 @@ import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { DownloadStatus } from '../constants';
 import { CoreNetwork } from '@services/network';
 import { Translate } from '@singletons';
-import { AsyncDirective } from '@classes/async-directive';
+import type { AsyncDirective } from '@coretypes/async-directive';
 import { CoreDirectivesRegistry } from '@singletons/directives-registry';
 import { CorePromisedValue } from '@classes/promised-value';
 import { CorePlatform } from '@services/platform';

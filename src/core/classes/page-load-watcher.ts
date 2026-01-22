@@ -15,7 +15,7 @@
 import { CoreSitesReadingStrategy } from '@services/sites';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { Subscription } from 'rxjs';
-import { AsyncDirective } from './async-directive';
+import type { AsyncDirective } from '../types/async-directive';
 import { PageLoadsManager } from './page-loads-manager';
 import { CorePromisedValue } from './promised-value';
 import { WSObservable } from './sites/authenticated-site';

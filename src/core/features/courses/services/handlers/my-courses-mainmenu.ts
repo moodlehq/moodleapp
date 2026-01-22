@@ -14,7 +14,7 @@
 
 import { Injectable } from '@angular/core';
 import { CoreSiteInfoUserHomepage } from '@classes/sites/unauthenticated-site';
-import { CoreMainMenuHandler, CoreMainMenuHandlerData } from '@features/mainmenu/services/mainmenu-delegate';
+import { CoreMainMenuHandler, CoreMainMenuPageNavHandlerData } from '@features/mainmenu/services/mainmenu-delegate';
 import { CoreSiteHomeHomeHandler } from '@features/sitehome/services/handlers/sitehome-home';
 import { CoreSites } from '@services/sites';
 import { makeSingleton } from '@singletons';
@@ -68,7 +68,7 @@ export class CoreCoursesMyCoursesMainMenuHandlerService implements CoreMainMenuH
     /**
      * @inheritdoc
      */
-    getDisplayData(): CoreMainMenuHandlerData {
+    getDisplayData(): CoreMainMenuPageNavHandlerData {
         const userHomePage = CoreSites.getCurrentSite()?.getInfo()?.userhomepage;
 
         const displayMyCourses = userHomePage === CoreSiteInfoUserHomepage.HOMEPAGE_MYCOURSES ||
