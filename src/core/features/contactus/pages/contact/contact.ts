@@ -97,6 +97,7 @@ export class CoreContactUsPage {
     ];
 
     receptionPhone = '+201211000057';
+    receptionPhoneDisplay = '01211000057';
     bookingLink = 'https://outlook.office.com/book/KeyStageParentBookingCalendar@aspireschool.org/?ismsaljsauthenabled';
 
     /**

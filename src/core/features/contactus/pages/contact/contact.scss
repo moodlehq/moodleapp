@@ -78,10 +78,20 @@
 
             .reception-number {
                 margin: 0;
-                font-size: 1.375rem;
-                font-weight: 700;
-                color: #FFFFFF;
-                letter-spacing: 0.5px;
+                font-size: 1.125rem;
+                font-weight: 500;
+                color: rgba(255, 255, 255, 0.9);
+
+                a {
+                    color: #FFFFFF;
+                    text-decoration: none;
+                    font-weight: 700;
+                    font-size: 1.25rem;
+
+                    &:hover, &:active {
+                        text-decoration: underline;
+                    }
+                }
             }
         }
     }
@@ -284,9 +294,30 @@
                     }
 
                     .item-description {
-                        margin: 0;
+                        margin: 0 0 6px 0;
                         font-size: 0.8125rem;
                         color: var(--contact-text-light);
+                    }
+
+                    .item-email,
+                    .item-phone {
+                        margin: 4px 0 0 0;
+                        font-size: 0.8125rem;
+                        color: var(--contact-text-medium);
+
+                        a {
+                            color: var(--contact-email);
+                            text-decoration: none;
+                            font-weight: 500;
+
+                            &:hover, &:active {
+                                text-decoration: underline;
+                            }
+                        }
+                    }
+
+                    .item-phone a {
+                        color: var(--contact-call);
                     }
                 }
 
@@ -448,6 +479,14 @@
 
             p, .item-description {
                 color: #9CA3AF;
+            }
+
+            .item-email a {
+                color: #60A5FA;
+            }
+
+            .item-phone a {
+                color: #6EE7B7;
             }
         }
 

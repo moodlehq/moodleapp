@@ -34,7 +34,6 @@ import {
 } from '../../services/resource';
 import { AddonModResourceHelper } from '../../services/resource-helper';
 import { CorePlatform } from '@services/platform';
-import { CoreIframeUtils } from '@services/utils/iframe';
 import { ADDON_MOD_RESOURCE_COMPONENT } from '../../constants';
 
 /**
@@ -316,7 +315,7 @@ export class AddonModResourceIndexComponent extends CoreCourseModuleMainResource
     }
 
     /**
-     * Open the document file externally (outside the iframe viewer).
+     * Open the document file externally in the system browser.
      * This is needed on iOS where Google Docs/Office viewer download buttons don't work.
      */
     async openFileExternally(): Promise<void> {
@@ -324,11 +323,8 @@ export class AddonModResourceIndexComponent extends CoreCourseModuleMainResource
             return;
         }
 
-        await CoreIframeUtils.frameLaunchExternal(this.originalFileUrl, {
-            site: CoreSites.getCurrentSite(),
-            component: this.component,
-            componentId: this.module.id,
-        });
+        // Open directly in external system browser
+        await CoreUtils.openInBrowser(this.originalFileUrl, { showBrowserWarning: false });
     }
 
     /**

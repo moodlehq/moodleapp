@@ -91,8 +91,8 @@ export class CoreMainMenuUserMenuComponent implements OnInit, OnDestroy {
 
     // App version info (auto-updated by post-commit hook)
     appVersion = CoreConstants.CONFIG.versionname;
-    buildNumber = 12;
-    buildTime = '2026-01-22 19:05';
+    buildNumber = 13;
+    buildTime = '2026-01-22 19:23';
 
     // Secret debug menu (tap build number 7 times)
     debugTapCount = 0;
@@ -308,7 +308,7 @@ export class CoreMainMenuUserMenuComponent implements OnInit, OnDestroy {
     }
 
     /**
-     * Open an external URL in embedded browser.
+     * Open an external URL in the system browser.
      *
      * @param event Click event.
      * @param url The URL to open.
@@ -316,8 +316,8 @@ export class CoreMainMenuUserMenuComponent implements OnInit, OnDestroy {
     openExternalUrl(event: Event, url: string): void {
         event.preventDefault();
         event.stopPropagation();
-        // Use openInApp for embedded browser that works on iOS
-        CoreUtils.openInApp(url);
+        // Open in external system browser
+        CoreUtils.openInBrowser(url, { showBrowserWarning: false });
     }
 
     /**
@@ -380,7 +380,7 @@ export class CoreMainMenuUserMenuComponent implements OnInit, OnDestroy {
     }
 
     /**
-     * Open an app link item.
+     * Open an app link item in the system browser.
      *
      * @param event Click event.
      * @param item The link item to open.
@@ -393,8 +393,8 @@ export class CoreMainMenuUserMenuComponent implements OnInit, OnDestroy {
             return;
         }
 
-        // Use openInApp for embedded browser that works on iOS
-        CoreUtils.openInApp(item.url);
+        // Open in external system browser
+        CoreUtils.openInBrowser(item.url, { showBrowserWarning: false });
     }
 
     /**
