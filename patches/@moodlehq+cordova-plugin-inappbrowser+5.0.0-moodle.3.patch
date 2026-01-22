@@ -1,0 +1,23 @@
+diff --git a/src/ios/CDVWKInAppBrowser.m b/src/ios/CDVWKInAppBrowser.m
+index 1234567..abcdefg 100644
+--- a/src/ios/CDVWKInAppBrowser.m
++++ b/src/ios/CDVWKInAppBrowser.m
+@@ -358,11 +358,14 @@ static CDVWKInAppBrowser* instance = nil;
+ }
+
+ - (void)openInSystem:(NSURL*)url
+ {
+-    if ([[UIApplication sharedApplication] openURL:url] == NO) {
+-        [[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:CDVPluginHandleOpenURLNotification object:url]];
+-        [[UIApplication sharedApplication] openURL:url];
+-    }
++    // iOS 18+ requires the new openURL:options:completionHandler: method
++    // The old openURL: method is deprecated and returns NO on iOS 18
++    [[UIApplication sharedApplication] openURL:url options:@{} completionHandler:^(BOOL success) {
++        if (!success) {
++            [[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:CDVPluginHandleOpenURLNotification object:url]];
++        }
++    }];
+ }
+
+ - (void)loadAfterBeforeload:(CDVInvokedUrlCommand*)command
