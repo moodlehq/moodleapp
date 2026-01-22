@@ -50,7 +50,8 @@ $services = array(
             'local_aspireparent_login_as_mentee',
             'local_aspireparent_restore_original_user',
             'local_aspireparent_get_mentee_token',
-            'local_aspireparent_get_lightboxgallery_images'
+            'local_aspireparent_get_lightboxgallery_images',
+            'local_aspireparent_get_app_links'
         ),
         'restrictedusers' => 0,
         'enabled' => 1,
@@ -272,6 +273,15 @@ $functions = array(
         'classname' => 'local_aspireparent\external\get_lightboxgallery_images',
         'methodname' => 'execute',
         'description' => 'Get images from a lightboxgallery module',
+        'type' => 'read',
+        'ajax' => true,
+        'capabilities' => '',
+        'services' => array('local_aspireparent_service', MOODLE_OFFICIAL_MOBILE_SERVICE)
+    ),
+    'local_aspireparent_get_app_links' => array(
+        'classname' => 'local_aspireparent\external\get_app_links',
+        'methodname' => 'execute',
+        'description' => 'Get app links from a dedicated course without requiring enrollment',
         'type' => 'read',
         'ajax' => true,
         'capabilities' => '',

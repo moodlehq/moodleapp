@@ -97,81 +97,45 @@
             </div>
         </div>
 
-        <!-- Resources Section -->
-        <div class="menu-section resources-section">
+        <!-- Resources Section (Dynamic from Moodle course) -->
+        <div class="menu-section resources-section" *ngIf="appLinkSections.length > 0">
             <div class="section-header">
                 <span class="section-title">School Resources</span>
                 <div class="section-line"></div>
             </div>
 
-            <!-- Uniform & Supplies -->
-            <div class="collapsible-group">
-                <button class="collapsible-header" (click)="toggleSection('uniform')">
-                    <div class="header-icon uniform">
-                        <ion-icon name="shirt-outline"></ion-icon>
+            <!-- Dynamic sections from App Links course -->
+            <div class="collapsible-group" *ngFor="let section of appLinkSections">
+                <button class="collapsible-header" (click)="toggleAppSection(section.id)">
+                    <div class="header-icon" [ngClass]="getIconClass(section.icon)">
+                        <ion-icon [name]="section.icon"></ion-icon>
                     </div>
-                    <span class="header-title">Uniform & Supplies</span>
-                    <ion-icon name="chevron-down" class="collapse-arrow" [class.open]="uniformSectionOpen"></ion-icon>
+                    <span class="header-title">{{ section.name }}</span>
+                    <ion-icon name="chevron-down" class="collapse-arrow" [class.open]="isSectionExpanded(section.id)"></ion-icon>
                 </button>
-                <div class="collapsible-content" [class.open]="uniformSectionOpen">
-                    <button class="resource-item" (click)="openExternalUrl($event, 'https://sway.cloud.microsoft/3ssKMIFWptes61Jj?ref=Link')">
-                        <span>Uniform Catalog</span>
-                        <ion-icon name="open-outline"></ion-icon>
-                    </button>
-                    <button class="resource-item" (click)="openExternalUrl($event, 'https://aischool11.sharepoint.com/sites/AdmissionAspireSchool/Shared%20Documents/Forms/AllItems.aspx?id=%2Fsites%2FAdmissionAspireSchool%2FShared%20Documents%2FGeneral%2FEmails%2025%2D26%2FSupplies%20List%2025%2D26&viewid=95763e17%2D9d4e%2D4566%2D8ae7%2D1a3c70be784a&ga=1')">
-                        <span>School Supplies 25-26</span>
-                        <ion-icon name="open-outline"></ion-icon>
-                    </button>
-                    <button class="resource-item" (click)="openExternalUrl($event, 'https://aischool11.sharepoint.com/sites/AdmissionAspireSchool/Shared%20Documents/Forms/AllItems.aspx?id=%2Fsites%2FAdmissionAspireSchool%2FShared%20Documents%2FGeneral%2FEmails%2025%2D26%2FUniform%20Policy%20%2D%20Aspire%20International%20School%20%2D%2025%2D26%2Epdf&parent=%2Fsites%2FAdmissionAspireSchool%2FShared%20Documents%2FGeneral%2FEmails%2025%2D26&p=true&ga=1')">
-                        <span>Uniform Policy</span>
-                        <ion-icon name="open-outline"></ion-icon>
-                    </button>
-                </div>
-            </div>
+                <div class="collapsible-content" [class.open]="isSectionExpanded(section.id)">
+                    <ng-container *ngFor="let item of section.items">
+                        <!-- Regular link or file -->
+                        <button class="resource-item" *ngIf="item.type !== 'folder'" (click)="openAppLink($event, item)">
+                            <span>{{ item.name }}</span>
+                            <ion-icon [name]="item.icon || 'open-outline'"></ion-icon>
+                        </button>
 
-            <!-- Handbooks -->
-            <div class="collapsible-group">
-                <button class="collapsible-header" (click)="toggleSection('handbooks')">
-                    <div class="header-icon handbook">
-                        <ion-icon name="book-outline"></ion-icon>
-                    </div>
-                    <span class="header-title">Student Handbooks</span>
-                    <ion-icon name="chevron-down" class="collapse-arrow" [class.open]="handbooksSectionOpen"></ion-icon>
-                </button>
-                <div class="collapsible-content" [class.open]="handbooksSectionOpen">
-                    <button class="resource-item" (click)="openExternalUrl($event, 'https://aischool11.sharepoint.com/sites/AdmissionAspireSchool/Shared%20Documents/Forms/AllItems.aspx?id=%2Fsites%2FAdmissionAspireSchool%2FShared%20Documents%2FGeneral%2FHandbooks%202023%2D2024%2FEYFS%20Handbook%20%2D%20Aspire%20International%20School%2Epdf&parent=%2Fsites%2FAdmissionAspireSchool%2FShared%20Documents%2FGeneral%2FHandbooks%202023%2D2024&p=true&ga=1')">
-                        <span>EYFS Handbook</span>
-                        <ion-icon name="open-outline"></ion-icon>
-                    </button>
-                    <button class="resource-item" (click)="openExternalUrl($event, 'https://aischool11.sharepoint.com/sites/AdmissionAspireSchool/Shared%20Documents/Forms/AllItems.aspx?id=%2Fsites%2FAdmissionAspireSchool%2FShared%20Documents%2FGeneral%2FHandbooks%202023%2D2024%2FKey%20Stage%20Handbook%20Aspire%20International%20School%2Epdf&parent=%2Fsites%2FAdmissionAspireSchool%2FShared%20Documents%2FGeneral%2FHandbooks%202023%2D2024&p=true&ga=1')">
-                        <span>Key Stage Handbook</span>
-                        <ion-icon name="open-outline"></ion-icon>
-                    </button>
-                    <button class="resource-item" (click)="openExternalUrl($event, 'https://aischool11.sharepoint.com/sites/AdmissionAspireSchool/Shared%20Documents/Forms/AllItems.aspx?id=%2Fsites%2FAdmissionAspireSchool%2FShared%20Documents%2FGeneral%2FHandbooks%202023%2D2024%2FYear%209%2D11%20Handbook%20%2D%20Aspire%20International%20School%2Epdf&parent=%2Fsites%2FAdmissionAspireSchool%2FShared%20Documents%2FGeneral%2FHandbooks%202023%2D2024&p=true&ga=1')">
-                        <span>Year 9-11 Handbook</span>
-                        <ion-icon name="open-outline"></ion-icon>
-                    </button>
-                </div>
-            </div>
-
-            <!-- Policies -->
-            <div class="collapsible-group">
-                <button class="collapsible-header" (click)="toggleSection('policies')">
-                    <div class="header-icon policy">
-                        <ion-icon name="shield-checkmark-outline"></ion-icon>
-                    </div>
-                    <span class="header-title">School Policies</span>
-                    <ion-icon name="chevron-down" class="collapse-arrow" [class.open]="policiesSectionOpen"></ion-icon>
-                </button>
-                <div class="collapsible-content" [class.open]="policiesSectionOpen">
-                    <button class="resource-item" (click)="openExternalUrl($event, 'https://aischool11.sharepoint.com/sites/AdmissionAspireSchool/Shared%20Documents/Forms/AllItems.aspx?id=%2Fsites%2FAdmissionAspireSchool%2FShared%20Documents%2FGeneral%2FHandbooks%202023%2D2024%2FBehaviour%20Policy%20%2D%20Aspire%20International%20School%2Epdf&parent=%2Fsites%2FAdmissionAspireSchool%2FShared%20Documents%2FGeneral%2FHandbooks%202023%2D2024&p=true&ga=1')">
-                        <span>Behavior Policy (Y1-8)</span>
-                        <ion-icon name="open-outline"></ion-icon>
-                    </button>
-                    <button class="resource-item" (click)="openExternalUrl($event, 'https://aischool11.sharepoint.com/sites/AdmissionAspireSchool/Shared%20Documents/Forms/AllItems.aspx?id=%2Fsites%2FAdmissionAspireSchool%2FShared%20Documents%2FGeneral%2FHandbooks%202023%2D2024%2FBehaviour%20Policy%20Year%209%20%2D%2011%20%2D%20Aspire%20International%20School%2Epdf&parent=%2Fsites%2FAdmissionAspireSchool%2FShared%20Documents%2FGeneral%2FHandbooks%202023%2D2024&p=true&ga=1')">
-                        <span>Behavior Policy (Y9-12)</span>
-                        <ion-icon name="open-outline"></ion-icon>
-                    </button>
+                        <!-- Folder with children -->
+                        <div class="folder-group" *ngIf="item.type === 'folder'">
+                            <button class="resource-item folder-header" (click)="toggleFolder(item.name)">
+                                <ion-icon [name]="item.icon || 'folder-outline'" class="folder-icon"></ion-icon>
+                                <span>{{ item.name }}</span>
+                                <ion-icon name="chevron-down" class="folder-arrow" [class.open]="isFolderExpanded(item.name)"></ion-icon>
+                            </button>
+                            <div class="folder-content" [class.open]="isFolderExpanded(item.name)">
+                                <button class="resource-item folder-item" *ngFor="let child of item.children" (click)="openAppLink($event, child)">
+                                    <span>{{ child.name }}</span>
+                                    <ion-icon [name]="child.icon || 'document-outline'"></ion-icon>
+                                </button>
+                            </div>
+                        </div>
+                    </ng-container>
                 </div>
             </div>
         </div>
@@ -206,21 +170,21 @@
     <div class="social-links">
         <span class="social-label">Connect With Us</span>
         <div class="social-icons">
-            <a href="https://www.facebook.com/AspireinternationalSchool.Egypt" target="_blank" class="social-icon facebook">
+            <button (click)="openExternalUrl($event, 'https://www.facebook.com/AspireinternationalSchool.Egypt')" class="social-icon facebook">
                 <ion-icon name="logo-facebook"></ion-icon>
-            </a>
-            <a href="https://www.instagram.com/aspire.international.school.eg/" target="_blank" class="social-icon instagram">
+            </button>
+            <button (click)="openExternalUrl($event, 'https://www.instagram.com/aspire.international.school.eg/')" class="social-icon instagram">
                 <ion-icon name="logo-instagram"></ion-icon>
-            </a>
-            <a href="https://www.youtube.com/@aspireinternationalschool" target="_blank" class="social-icon youtube">
+            </button>
+            <button (click)="openExternalUrl($event, 'https://www.youtube.com/@aspireinternationalschool')" class="social-icon youtube">
                 <ion-icon name="logo-youtube"></ion-icon>
-            </a>
-            <a href="https://www.linkedin.com/company/aspire-international-school" target="_blank" class="social-icon linkedin">
+            </button>
+            <button (click)="openExternalUrl($event, 'https://www.linkedin.com/company/aspire-international-school')" class="social-icon linkedin">
                 <ion-icon name="logo-linkedin"></ion-icon>
-            </a>
-            <a href="https://www.aspireschool.org/" target="_blank" class="social-icon website">
+            </button>
+            <button (click)="openExternalUrl($event, 'https://www.aspireschool.org/')" class="social-icon website">
                 <ion-icon name="globe-outline"></ion-icon>
-            </a>
+            </button>
         </div>
     </div>
 

@@ -132,4 +132,22 @@ export class CoreContactUsPage {
         CoreUtils.openInApp(this.bookingLink);
     }
 
+    /**
+     * Open email client with the specified email address.
+     *
+     * @param email Email address to send to.
+     */
+    openEmail(email: string): void {
+        CoreUtils.openInBrowser(`mailto:${email}`, { showBrowserWarning: false });
+    }
+
+    /**
+     * Open phone dialer with the specified phone number.
+     *
+     * @param phone Phone number to call.
+     */
+    openPhone(phone: string): void {
+        CoreUtils.openInBrowser(`tel:${phone}`, { showBrowserWarning: false });
+    }
+
 }

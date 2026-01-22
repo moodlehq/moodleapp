@@ -34,6 +34,7 @@ import {
 } from '../../services/resource';
 import { AddonModResourceHelper } from '../../services/resource-helper';
 import { CorePlatform } from '@services/platform';
+import { CoreIframeUtils } from '@services/utils/iframe';
 import { ADDON_MOD_RESOURCE_COMPONENT } from '../../constants';
 
 /**
@@ -62,6 +63,10 @@ export class AddonModResourceIndexComponent extends CoreCourseModuleMainResource
     isOnline = false;
     isStreamedFile = false;
     shouldOpenInBrowser = false;
+
+    // Variables for iframe mode - original file URL for "open externally" button.
+    originalFileUrl = '';
+    isIframeDocument = false; // True when displaying PDF/Office docs in iframe viewer
 
     // Variables for 'external' mode.
     type = '';
@@ -208,10 +213,15 @@ export class AddonModResourceIndexComponent extends CoreCourseModuleMainResource
                         fileUrl = await CoreFileHelper.getFileUrl(file);
                     }
                 }
-                
+
+                // Store original URL for "open externally" button (needed on iOS where viewer downloads don't work)
+                this.originalFileUrl = fileUrl;
+                this.isIframeDocument = true;
+
                 // Use Google Docs viewer for PDFs (similar to Office viewer for docs)
+                // chrome=false attempts to hide the toolbar, embedded=true for iframe embedding
                 const encodedUrl = encodeURIComponent(fileUrl);
-                const viewerUrl = `https://docs.google.com/viewer?url=${encodedUrl}&embedded=true`;
+                const viewerUrl = `https://docs.google.com/viewer?url=${encodedUrl}&embedded=true&chrome=false`;
                 this.mode = 'iframe';
                 this.src = viewerUrl;
                 this.displayDescription = false;
@@ -220,13 +230,13 @@ export class AddonModResourceIndexComponent extends CoreCourseModuleMainResource
             }
             
             // For Word and PowerPoint files, check if we can use iframe
-            if ((mimetype === 'application/msword' || 
+            if ((mimetype === 'application/msword' ||
                 mimetype === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' ||
                 extension === 'doc' || extension === 'docx' ||
-                mimetype === 'application/vnd.ms-powerpoint' || 
+                mimetype === 'application/vnd.ms-powerpoint' ||
                 mimetype === 'application/vnd.openxmlformats-officedocument.presentationml.presentation' ||
                 extension === 'ppt' || extension === 'pptx')) {
-                
+
                 let fileUrl: string;
                 if (file.isexternalfile || (file.fileurl && !file.fileurl.includes('/webservice/'))) {
                     // External file, use the URL directly
@@ -242,7 +252,11 @@ export class AddonModResourceIndexComponent extends CoreCourseModuleMainResource
                         fileUrl = await CoreFileHelper.getFileUrl(file);
                     }
                 }
-                
+
+                // Store original URL for "open externally" button (needed on iOS where viewer downloads don't work)
+                this.originalFileUrl = fileUrl;
+                this.isIframeDocument = true;
+
                 // Use Office Online viewer
                 const encodedUrl = encodeURIComponent(fileUrl);
                 const viewerUrl = `https://view.officeapps.live.com/op/embed.aspx?src=${encodedUrl}`;
@@ -299,6 +313,22 @@ export class AddonModResourceIndexComponent extends CoreCourseModuleMainResource
 
         // The resource cannot be downloaded, open the activity in browser.
         await CoreSites.getCurrentSite()?.openInBrowserWithAutoLogin(this.module.url || '');
+    }
+
+    /**
+     * Open the document file externally (outside the iframe viewer).
+     * This is needed on iOS where Google Docs/Office viewer download buttons don't work.
+     */
+    async openFileExternally(): Promise<void> {
+        if (!this.originalFileUrl) {
+            return;
+        }
+
+        await CoreIframeUtils.frameLaunchExternal(this.originalFileUrl, {
+            site: CoreSites.getCurrentSite(),
+            component: this.component,
+            componentId: this.module.id,
+        });
     }
 
     /**

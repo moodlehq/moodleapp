@@ -42,6 +42,7 @@ import { CoreEvents } from '@singletons/events';
 import { CoreGrades } from '@features/grades/services/grades';
 import { CoreGradesCoursesSource } from '@features/grades/classes/grades-courses-source';
 import { CoreRoutedItemsManagerSourcesTracker } from '@classes/items-management/routed-items-manager-sources-tracker';
+import { CoreAppLinks, AppLinkSection, AppLinkItem } from '../../services/app-links';
 
 /**
  * Component to display a user menu.
@@ -82,15 +83,16 @@ export class CoreMainMenuUserMenuComponent implements OnInit, OnDestroy {
     selectedMentee?: CoreUserProfile;
     showMenteeSelector = false;
 
-    // Resource sections collapse state
-    uniformSectionOpen = false;
-    handbooksSectionOpen = false;
-    policiesSectionOpen = false;
+    // Dynamic app links from Moodle course
+    appLinkSections: AppLinkSection[] = [];
+    appLinksLoaded = false;
+    expandedSections = new Set<number>(); // Track expanded section IDs
+    expandedFolders = new Set<string>(); // Track expanded folder names
 
     // App version info (auto-updated by post-commit hook)
     appVersion = CoreConstants.CONFIG.versionname;
-    buildNumber = 11;
-    buildTime = '2026-01-22 11:12';
+    buildNumber = 12;
+    buildTime = '2026-01-22 19:05';
 
     // Secret debug menu (tap build number 7 times)
     debugTapCount = 0;
@@ -137,9 +139,12 @@ export class CoreMainMenuUserMenuComponent implements OnInit, OnDestroy {
 
         // Load course and badge counts
         this.loadUserStats();
-        
+
         // Check if user is a parent and load mentees
         this.loadParentData();
+
+        // Load dynamic app links
+        this.loadAppLinks();
 
         this.subscription = CoreUserDelegate.getProfileHandlersFor(this.user, CoreUserDelegateContext.USER_MENU)
             .subscribe((handlers) => {
@@ -316,22 +321,106 @@ export class CoreMainMenuUserMenuComponent implements OnInit, OnDestroy {
     }
 
     /**
-     * Toggle resource section.
-     *
-     * @param section The section to toggle.
+     * Load dynamic app links from Moodle course.
      */
-    toggleSection(section: 'uniform' | 'handbooks' | 'policies'): void {
-        switch (section) {
-            case 'uniform':
-                this.uniformSectionOpen = !this.uniformSectionOpen;
-                break;
-            case 'handbooks':
-                this.handbooksSectionOpen = !this.handbooksSectionOpen;
-                break;
-            case 'policies':
-                this.policiesSectionOpen = !this.policiesSectionOpen;
-                break;
+    protected async loadAppLinks(): Promise<void> {
+        try {
+            this.appLinkSections = await CoreAppLinks.getAppLinkSections();
+            this.appLinksLoaded = true;
+        } catch (error) {
+            console.error('[User Menu] Error loading app links:', error);
+            this.appLinksLoaded = true; // Still mark as loaded to hide loading state
         }
+    }
+
+    /**
+     * Toggle a dynamic section.
+     *
+     * @param sectionId Section ID to toggle.
+     */
+    toggleAppSection(sectionId: number): void {
+        if (this.expandedSections.has(sectionId)) {
+            this.expandedSections.delete(sectionId);
+        } else {
+            this.expandedSections.add(sectionId);
+        }
+    }
+
+    /**
+     * Check if a section is expanded.
+     *
+     * @param sectionId Section ID to check.
+     * @returns Whether the section is expanded.
+     */
+    isSectionExpanded(sectionId: number): boolean {
+        return this.expandedSections.has(sectionId);
+    }
+
+    /**
+     * Toggle a folder item.
+     *
+     * @param folderName Folder name to toggle.
+     */
+    toggleFolder(folderName: string): void {
+        if (this.expandedFolders.has(folderName)) {
+            this.expandedFolders.delete(folderName);
+        } else {
+            this.expandedFolders.add(folderName);
+        }
+    }
+
+    /**
+     * Check if a folder is expanded.
+     *
+     * @param folderName Folder name to check.
+     * @returns Whether the folder is expanded.
+     */
+    isFolderExpanded(folderName: string): boolean {
+        return this.expandedFolders.has(folderName);
+    }
+
+    /**
+     * Open an app link item.
+     *
+     * @param event Click event.
+     * @param item The link item to open.
+     */
+    openAppLink(event: Event, item: AppLinkItem): void {
+        event.preventDefault();
+        event.stopPropagation();
+
+        if (!item.url) {
+            return;
+        }
+
+        // Use openInApp for embedded browser that works on iOS
+        CoreUtils.openInApp(item.url);
+    }
+
+    /**
+     * Get CSS class for header icon based on icon name.
+     *
+     * @param iconName The icon name.
+     * @returns CSS class string.
+     */
+    getIconClass(iconName: string): string {
+        if (iconName.includes('calendar')) {
+            return 'icon-calendar';
+        }
+        if (iconName.includes('shirt')) {
+            return 'icon-shirt';
+        }
+        if (iconName.includes('book')) {
+            return 'icon-book';
+        }
+        if (iconName.includes('shield')) {
+            return 'icon-shield';
+        }
+        if (iconName.includes('folder')) {
+            return 'icon-folder';
+        }
+
+        return '';
     }
 
     /**

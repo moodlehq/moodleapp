@@ -1,5 +1,10 @@
 <!-- Buttons to add to the header. -->
 <core-navbar-buttons slot="end">
+    <!-- Open externally button for iframe documents (PDF/Office) -->
+    <ion-button *ngIf="isIframeDocument && originalFileUrl" fill="clear" (click)="openFileExternally()"
+        [ariaLabel]="'core.openwith' | translate">
+        <ion-icon name="far-share-from-square" slot="icon-only" aria-hidden="true" />
+    </ion-button>
     @if (!courseContentsPage) {
     <ion-button fill="clear" (click)="openModuleSummary()" aria-haspopup="true" [ariaLabel]="'core.info' | translate">
         <ion-icon name="fas-circle-info" slot="icon-only" aria-hidden="true" />
@@ -15,13 +20,15 @@
 <!-- Content. -->
 <core-loading [hideUntil]="!showLoading">
 
-    <!-- Activity info. -->
-    <core-course-module-info [module]="module" [courseId]="courseId" [description]="displayDescription && description"
-        [component]="component" [componentId]="componentId" (completionChanged)="onCompletionChange()">
-        <div class="addon-mod_resource-afterlink ion-text-wrap" *ngIf="module.afterlink" description>
-            <core-format-text [text]="module.afterlink" contextLevel="module" [contextInstanceId]="module.id" [courseId]="courseId" />
-        </div>
-    </core-course-module-info>
+    <!-- Activity info - hidden for iframe mode to maximize viewer space -->
+    <ng-container *ngIf="mode !== 'iframe'">
+        <core-course-module-info [module]="module" [courseId]="courseId" [description]="displayDescription && description"
+            [component]="component" [componentId]="componentId" (completionChanged)="onCompletionChange()">
+            <div class="addon-mod_resource-afterlink ion-text-wrap" *ngIf="module.afterlink" description>
+                <core-format-text [text]="module.afterlink" contextLevel="module" [contextInstanceId]="module.id" [courseId]="courseId" />
+            </div>
+        </core-course-module-info>
+    </ng-container>
 
     <ion-card class="core-warning-card" *ngIf="warning">
         <ion-item>

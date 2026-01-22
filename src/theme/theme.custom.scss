@@ -103,18 +103,24 @@ h6 {
 
 // School-specific UI Elements
 // Hide the entire end buttons section in toolbar (where user avatar was)
-// Exception for financial page platinum button
+// Exception pages are listed below with display: flex !important
 ion-toolbar ion-buttons[slot="end"]:not(.show-end-buttons) {
     display: none;
 }
 
-page-core-financial-overview ion-toolbar ion-buttons[slot="end"] {
+// Pages that need end buttons visible
+page-addon-mod-resource-index ion-toolbar ion-buttons[slot="end"],
+page-core-financial-overview ion-toolbar ion-buttons[slot="end"],
+page-addon-messages-group-conversations ion-toolbar ion-buttons[slot="end"] {
     display: flex !important;
 }
 
-// Show end buttons on messages page (search and settings)
-page-addon-messages-group-conversations ion-toolbar ion-buttons[slot="end"] {
-    display: flex !important;
+// RTL text truncation fix for toolbar titles
+// h1 in ion-title now has dir="auto" set by core-format-text directive
+// This ensures ellipsis appears on the correct side for RTL text (left) and LTR text (right)
+ion-toolbar ion-title h1[dir="auto"],
+ion-toolbar ion-title h1[dir="rtl"] {
+    text-align: start;
 }
 
 page-core-mainmenu-home ion-header {

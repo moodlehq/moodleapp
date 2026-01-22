@@ -527,22 +527,32 @@ $shadow-medium: 0 4px 16px rgba(0, 0, 0, 0.08);
                 display: flex;
                 align-items: center;
                 justify-content: center;
+                background: linear-gradient(135deg, $primary-teal, darken($primary-teal, 10%)); // Default
 
                 ion-icon {
                     font-size: 18px;
                     color: #FFFFFF;
                 }
 
-                &.uniform {
+                // Dynamic backgrounds based on icon type
+                &.icon-calendar {
+                    background: linear-gradient(135deg, #F59E0B, #D97706);
+                }
+
+                &.icon-shirt {
                     background: linear-gradient(135deg, #6366F1, #8B5CF6);
                 }
 
-                &.handbook {
+                &.icon-book {
                     background: linear-gradient(135deg, #3B82F6, #2563EB);
                 }
 
-                &.policy {
+                &.icon-shield {
                     background: linear-gradient(135deg, #10B981, #059669);
+                }
+
+                &.icon-folder {
+                    background: linear-gradient(135deg, #8B5CF6, #7C3AED);
                 }
             }
 
@@ -576,7 +586,7 @@ $shadow-medium: 0 4px 16px rgba(0, 0, 0, 0.08);
             background: $bg-light;
 
             &.open {
-                max-height: 300px;
+                max-height: 1000px; // Increased for dynamic content
             }
 
             .resource-item {
@@ -605,6 +615,45 @@ $shadow-medium: 0 4px 16px rgba(0, 0, 0, 0.08);
 
                 &:active {
                     background: rgba($primary-teal, 0.05);
+                }
+            }
+
+            // Folder styling
+            .folder-group {
+                .folder-header {
+                    .folder-icon {
+                        font-size: 16px;
+                        color: $primary-teal;
+                        margin-right: 8px;
+                        opacity: 0.8;
+                    }
+
+                    .folder-arrow {
+                        transition: transform 0.2s ease;
+
+                        &.open {
+                            transform: rotate(180deg);
+                        }
+                    }
+                }
+
+                .folder-content {
+                    max-height: 0;
+                    overflow: hidden;
+                    transition: max-height 0.3s ease;
+                    background: rgba($primary-teal, 0.02);
+
+                    &.open {
+                        max-height: 500px;
+                    }
+
+                    .folder-item {
+                        padding-left: 82px; // More indentation for nested items
+
+                        span {
+                            font-size: 12px;
+                        }
+                    }
                 }
             }
         }

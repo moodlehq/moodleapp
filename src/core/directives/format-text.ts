@@ -115,6 +115,9 @@ export class CoreFormatTextDirective implements OnChanges, OnDestroy, AsyncDirec
         this.element = element.nativeElement;
         this.element.classList.add('core-loading'); // Hide contents until they're treated.
 
+        // Auto-detect text direction for proper RTL/LTR handling (Arabic, Hebrew, etc.)
+        this.element.setAttribute('dir', 'auto');
+
         this.emptyText = this.hideIfEmpty ? '' : '&nbsp;';
         this.element.innerHTML = this.emptyText;
 
@@ -345,6 +348,19 @@ export class CoreFormatTextDirective implements OnChanges, OnDestroy, AsyncDirec
     protected async finishRender(triggerFilterRender = true): Promise<void> {
         // Show the element again.
         this.element.classList.remove('core-loading');
+
+        // For toolbar titles, detect RTL text and set direction explicitly for proper ellipsis placement.
+        // We can't use dir="auto" because it looks at the first character which may be HTML tags, not the actual text.
+        const parentH1 = this.element.closest('h1');
+        if (parentH1 && parentH1.closest('ion-title')) {
+            const text = this.element.textContent || '';
+            // Check for RTL characters (Arabic, Hebrew, and related scripts)
+            const rtlPattern = /[\u0600-\u06FF\u0750-\u077F\u08A0-\u08FF\uFB50-\uFDFF\uFE70-\uFEFF\u0590-\u05FF]/;
+            if (rtlPattern.test(text)) {
+                parentH1.setAttribute('dir', 'rtl');
+                (parentH1 as HTMLElement).style.direction = 'rtl';
+            }
+        }
 
         await CoreWait.nextTick();
 

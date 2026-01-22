@@ -11,6 +11,11 @@ ion-header.header-md {
         --border-width: 0 0 var(--core-header-toolbar-border-width) 0;
         --border-color: var(--core-header-toolbar-border-color);
 
+        // Ensure buttons don't get hidden by long titles
+        ion-buttons {
+            flex-shrink: 0;
+        }
+
         ion-button {
             --ion-toolbar-color: var(--core-header-toolbar-color);
             --color: var(--core-header-toolbar-color);
@@ -59,6 +64,10 @@ ion-header.header-md {
 
     ion-title {
         @include padding(0, 16px);
+        // Ensure title doesn't overflow into buttons area
+        overflow: hidden;
+        flex-shrink: 1;
+        min-width: 0;
 
         h1, h2, .subheading {
             @include ellipsis();

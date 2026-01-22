@@ -25,8 +25,8 @@
 defined("MOODLE_INTERNAL") || die();
 
 $plugin->component = "local_aspireparent";
-$plugin->version = 2026011900; // YYYYMMDDXX format - Add YouTube proxy for iOS Error 153 fix
-$plugin->release = "1.5.4";
+$plugin->version = 2026012202; // YYYYMMDDXX format - Add custom file serving for App Links
+$plugin->release = "1.5.7";
 $plugin->requires = 2022041900; // Moodle 4.0 or later
 $plugin->maturity = MATURITY_STABLE;
 $plugin->cron = 0;
