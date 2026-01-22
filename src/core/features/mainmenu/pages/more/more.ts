@@ -22,7 +22,7 @@ import {
     CoreMainMenuHandlerToDisplay,
     CoreMainMenuPageNavHandlerToDisplay,
 } from '../../services/mainmenu-delegate';
-import { CoreMainMenu, CoreMainMenuCustomItem } from '../../services/mainmenu';
+import { CoreMainMenu } from '../../services/mainmenu';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { CoreNavigator } from '@services/navigator';
 import { Translate } from '@singletons';
@@ -35,6 +35,7 @@ import { CoreUrl } from '@singletons/url';
 import { CoreDynamicComponent } from '@components/dynamic-component/dynamic-component';
 import { ReloadableComponent } from '@coretypes/reloadable-component';
 import { CorePromiseUtils } from '@singletons/promise-utils';
+import { CoreCustomMenu, CoreCustomMenuItem } from '@features/mainmenu/services/custommenu';
 
 /**
  * Page that displays the more page of the app.
@@ -55,7 +56,7 @@ export default class CoreMainMenuMorePage implements OnInit, OnDestroy {
     handlers?: CoreMainMenuHandlerToDisplay[];
     handlersLoaded = false;
     showScanQR: boolean;
-    customItems?: CoreMainMenuCustomItem[];
+    customItems?: CoreCustomMenuItem[];
     hasComponentHandlers = false;
 
     protected allHandlers?: CoreMainMenuHandlerToDisplay[];
@@ -68,7 +69,7 @@ export default class CoreMainMenuMorePage implements OnInit, OnDestroy {
         this.langObserver = CoreEvents.on(CoreEvents.LANGUAGE_CHANGED, () => this.loadCustomMenuItems());
 
         this.updateSiteObserver = CoreEvents.on(CoreEvents.SITE_UPDATED, async () => {
-            this.customItems = await CoreMainMenu.getCustomMenuItems();
+            this.customItems = await CoreCustomMenu.getCustomMainMenuItems();
         }, CoreSites.getCurrentSiteId());
 
         this.loadCustomMenuItems();
@@ -128,7 +129,7 @@ export default class CoreMainMenuMorePage implements OnInit, OnDestroy {
      * Load custom menu items.
      */
     protected async loadCustomMenuItems(): Promise<void> {
-        this.customItems = await CoreMainMenu.getCustomMenuItems();
+        this.customItems = await CoreCustomMenu.getCustomMainMenuItems();
     }
 
     /**
@@ -147,7 +148,7 @@ export default class CoreMainMenuMorePage implements OnInit, OnDestroy {
      *
      * @param item Item to open.
      */
-    openItem(item: CoreMainMenuCustomItem): void {
+    openItem(item: CoreCustomMenuItem): void {
         CoreViewer.openIframeViewer(item.label, item.url);
     }
 

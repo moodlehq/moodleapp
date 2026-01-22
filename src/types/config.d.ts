@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { CoreColorScheme, CoreZoomLevel } from '@features/settings/services/settings-helper';
-import { CoreMainMenuLocalizedCustomItem } from '@features/mainmenu/services/mainmenu';
+import { CoreCustomMenuLocalizedCustomItem } from '@features/mainmenu/services/custommenu';
 import { CoreLoginSiteInfo, CoreSitesDemoSiteData } from '@services/sites';
 import { OpenFileAction } from '@singletons/opener';
 import { CoreLoginSiteFinderSettings, CoreLoginSiteSelectorListMethod } from '@features/login/services/login-helper';
@@ -61,7 +61,8 @@ export interface EnvironmentConfig {
     displayqronsitescreen?: boolean;
     forceOpenLinksIn?: 'app' | 'browser';
     iOSDefaultOpenFileAction?: OpenFileAction;
-    customMainMenuItems?: CoreMainMenuLocalizedCustomItem[];
+    customMainMenuItems?: CoreCustomMenuLocalizedCustomItem[];
+    customUserMenuItems?: CoreCustomMenuLocalizedCustomItem[];
     feedbackFormUrl?: string | false;
     a11yStatement?: string | false;
     legalDisclaimer?: string | false;
