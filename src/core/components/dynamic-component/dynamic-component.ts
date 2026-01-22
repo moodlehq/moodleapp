@@ -163,7 +163,7 @@ export class CoreDynamicComponent<ComponentClass> implements OnChanges, DoCheck,
             return;
         }
 
-        return instance[method].apply(instance, params);
+        return instance[method](...params);
     }
 
     /**

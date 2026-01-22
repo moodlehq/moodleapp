@@ -745,8 +745,8 @@ export class AddonModScormSyncProvider extends CoreCourseActivitySyncBaseProvide
         const warnings: string[] = [];
         const newAttemptsSameOrder: number[] = []; // Attempts that will be created as new attempts but keeping the current order.
         const newAttemptsAtEnd: Record<number, number> = {}; // Attempts that'll be created at the end of list (should be max 1).
-        const lastCollision = Math.max.apply(Math, collisions);
-        let lastOffline = Math.max.apply(Math, offlineAttempts);
+        const lastCollision = Math.max(...collisions);
+        let lastOffline = Math.max(...offlineAttempts);
 
         // Get needed data from the last offline attempt.
         const lastOfflineData = await this.getOfflineAttemptData(scormId, lastOffline, cmId, siteId);

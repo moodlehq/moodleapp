@@ -190,7 +190,7 @@ export class AddonModScormHelperProvider {
 
         // Get last online attempt.
         if (attempts.online.length) {
-            lastOnline = Math.max.apply(Math, attempts.online);
+            lastOnline = Math.max(...attempts.online);
         }
 
         if (!lastOnline) {

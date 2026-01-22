@@ -399,9 +399,7 @@ export class CoreRatingProvider {
         const ratingsResults = await Promise.all(promises);
 
         if (!site.isVersionGreaterEqualThan(['3.6.5', '3.7.1', '3.8'])) {
-            const ratings: CoreRatingItemRating[] = [].concat.apply([], ratingsResults);
-
-            const userIds = ratings.map((rating) => rating.userid);
+            const userIds = ratingsResults.flat().map((rating) => rating.userid);
 
             await CoreUser.prefetchProfiles(userIds, courseId, site.id);
         }

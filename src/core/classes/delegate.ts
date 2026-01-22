@@ -147,9 +147,9 @@ export class CoreDelegate<HandlerType extends CoreDelegateHandler> {
      */
     private execute<T = unknown>(handler: HandlerType, fnName: string, params?: unknown[]): T | undefined {
         if (handler && handler[fnName]) {
-            return handler[fnName].apply(handler, params);
+            return handler[fnName](...(params || []));
         } else if (this.defaultHandler && this.defaultHandler[fnName]) {
-            return this.defaultHandler[fnName].apply(this.defaultHandler, params);
+            return this.defaultHandler[fnName](...(params || []));
         }
     }
 

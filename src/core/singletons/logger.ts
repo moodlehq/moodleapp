@@ -108,7 +108,7 @@ export class CoreLogger {
         return (...args): void => {
             const now = new Date().toLocaleString();
             args[0] = `${now} ${className}: ${args[0]}`; // Prepend timestamp and className to the original message.
-            logFn.apply(null, args);
+            logFn(...args);
         };
     }
 

@@ -193,7 +193,7 @@ export class AddonModAssignPrefetchHandlerService extends CoreCourseActivityPref
 
         const filesLists = await Promise.all(promises);
 
-        return files.concat.apply(files, filesLists);
+        return files.concat(...filesLists);
     }
 
     /**

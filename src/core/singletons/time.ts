@@ -274,7 +274,7 @@ export class CoreTime {
             }
 
             called = true;
-            fn.apply(null, args);
+            fn(...args);
         };
     }
 

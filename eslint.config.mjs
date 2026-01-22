@@ -315,7 +315,6 @@ const appConfig = {
             },
         ],
         'prefer-const': 'error',
-        'prefer-spread': 'off',
         'quote-props': [
             'error',
             'consistent-as-needed',

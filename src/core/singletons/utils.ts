@@ -304,7 +304,7 @@ export class CoreUtils {
         const debounced = (...args: T): void => {
             clearTimeout(timeoutID);
 
-            timeoutID = window.setTimeout(() => fn.apply(null, args), delay);
+            timeoutID = window.setTimeout(() => fn(...args), delay);
         };
 
         return debounced;
@@ -322,7 +322,7 @@ export class CoreUtils {
 
         const throttled = (...args: T): void => {
             if (!shouldWait) {
-                fn.apply(null, args);
+                fn(...args);
 
                 shouldWait = true;
 
