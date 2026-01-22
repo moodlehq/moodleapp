@@ -22,8 +22,8 @@ import { ToastDuration } from '@services/overlays/toasts';
 import { CoreWSOverride } from '@classes/sites/unauthenticated-site';
 
 /* eslint-disable @typescript-eslint/naming-convention */
-
-export type EnvironmentConfig = {
+// It's important to keep EnvironmentConfig as an interface so it can be extended using "declare module".
+export interface EnvironmentConfig {
     app_id: string;
     appname: string;
     versioncode: number;
@@ -82,4 +82,4 @@ export type EnvironmentConfig = {
     disabledFeatures?: string; // Disabled features for the whole app, using the same format as tool_mobile_disabledfeatures.
     collapsibleItemsExpanded: boolean; // Expand or collapse the collapsible items by default.
     wsOverrides: Record<string, CoreWSOverride[]>; // Overrides to apply to WS calls.
-};
+}
