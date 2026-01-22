@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="referrer" content="strict-origin-when-cross-origin">
+    <title>Video</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html, body { width: 100%; height: 100%; background: #000; overflow: hidden; }
+        iframe { width: 100%; height: 100%; border: none; }
+    </style>
+</head>
+<body>
+    <iframe
+        id="player"
+        allowfullscreen
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+        referrerpolicy="strict-origin-when-cross-origin"
+    ></iframe>
+    <script>
+        (function() {
+            var params = new URLSearchParams(window.location.search);
+            var videoId = params.get('v');
+
+            if (!videoId) {
+                document.body.innerHTML = '<p style="color:#fff;text-align:center;padding:20px;">Video not found</p>';
+                return;
+            }
+
+            // Build YouTube embed URL with parameters
+            var embedParams = new URLSearchParams();
+
+            // Copy relevant parameters
+            if (params.get('autoplay')) embedParams.set('autoplay', params.get('autoplay'));
+            if (params.get('start')) embedParams.set('start', params.get('start'));
+            if (params.get('t')) embedParams.set('start', params.get('t'));
+            if (params.get('list')) embedParams.set('list', params.get('list'));
+            if (params.get('loop')) embedParams.set('loop', params.get('loop'));
+
+            // Enable JS API and set origin - CRITICAL for iOS WKWebView
+            embedParams.set('enablejsapi', '1');
+            embedParams.set('origin', window.location.origin);
+            embedParams.set('widget_referrer', window.location.href);
+            embedParams.set('playsinline', '1');
+            embedParams.set('rel', '0');
+            embedParams.set('modestbranding', '1');
+
+            var embedUrl = 'https://www.youtube.com/embed/' + videoId;
+            if (embedParams.toString()) {
+                embedUrl += '?' + embedParams.toString();
+            }
+
+            document.getElementById('player').src = embedUrl;
+        })();
+    </script>
+</body>
+</html>

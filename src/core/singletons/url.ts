@@ -671,12 +671,13 @@ export class CoreUrl {
             }
         }
 
-        // On iOS native, use local proxy to fix Error 153 on WKWebView
-        // The proxy sets proper referrer headers that YouTube requires
+        // On iOS native, use server-hosted proxy to fix Error 153 on WKWebView
+        // Local proxy files don't work because capacitor:// origin is rejected by YouTube
+        // Proxy must be on real HTTPS domain to send proper referrer headers
         if (CorePlatform.isIOS()) {
             params.v = videoId;
-            const proxyUrl = CoreUrl.addParamsToUrl('assets/youtube-proxy.html', params);
-            console.log('[YouTube] iOS detected - using proxy:', proxyUrl);
+            const proxyUrl = CoreUrl.addParamsToUrl('https://learn.aspireschool.org/local/aspireparent/youtube-proxy.html', params);
+            console.log('[YouTube] iOS detected - using server proxy:', proxyUrl);
             return proxyUrl;
         }
 
