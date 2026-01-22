@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<widget android-versionCode="45306" id="org.capriolegroup.aspire" ios-CFBundleVersion="4.5.5.1" version="4.5.5" versionCode="45306" xmlns="http://www.w3.org/ns/widgets" xmlns:android="http://schemas.android.com/apk/res/android" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+<widget android-versionCode="45306" id="org.capriolegroup.aspire" ios-CFBundleVersion="4.5.6.0" version="4.5.6" versionCode="45306" xmlns="http://www.w3.org/ns/widgets" xmlns:android="http://schemas.android.com/apk/res/android" xmlns:cdv="http://cordova.apache.org/ns/1.0">
     <name>Aspire School</name>
     <description>Aspire School Learning Platform</description>
     <author email="support@aspireschool.org" href="https://aspireschool.org">Aspire School</author>
@@ -29,7 +29,7 @@
     <preference name="UIWebViewBounce" value="false" />
     <preference name="DisallowOverscroll" value="true" />
     <preference name="prerendered-icon" value="true" />
-    <preference name="AppendUserAgent" value="AspireSchoolApp 4.5.5 (45306)" />
+    <preference name="AppendUserAgent" value="AspireSchoolApp 4.5.6 (45306)" />
     <preference name="BackupWebStorage" value="none" />
     <preference name="ScrollEnabled" value="false" />
     <preference name="KeyboardDisplayRequiresUserAction" value="false" />
@@ -119,7 +119,7 @@
             <true />
         </edit-config>
         <edit-config file="*-Info.plist" mode="merge" target="CFBundleShortVersionString">
-            <string>4.5.5</string>
+            <string>4.5.6</string>
         </edit-config>
         <edit-config file="*-Info.plist" mode="overwrite" target="CFBundleLocalizations">
             <array>
