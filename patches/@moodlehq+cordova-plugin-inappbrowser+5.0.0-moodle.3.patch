@@ -1,9 +1,8 @@
-diff --git a/src/ios/CDVWKInAppBrowser.m b/src/ios/CDVWKInAppBrowser.m
+diff --git a/node_modules/@moodlehq/cordova-plugin-inappbrowser/src/ios/CDVWKInAppBrowser.m b/node_modules/@moodlehq/cordova-plugin-inappbrowser/src/ios/CDVWKInAppBrowser.m
 index 1234567..abcdefg 100644
---- a/src/ios/CDVWKInAppBrowser.m
-+++ b/src/ios/CDVWKInAppBrowser.m
-@@ -358,11 +358,14 @@ static CDVWKInAppBrowser* instance = nil;
- }
+--- a/node_modules/@moodlehq/cordova-plugin-inappbrowser/src/ios/CDVWKInAppBrowser.m
++++ b/node_modules/@moodlehq/cordova-plugin-inappbrowser/src/ios/CDVWKInAppBrowser.m
+@@ -360,10 +360,13 @@
 
  - (void)openInSystem:(NSURL*)url
  {
