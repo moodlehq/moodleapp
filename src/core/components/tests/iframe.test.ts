@@ -22,6 +22,7 @@ describe('CoreIframeComponent', () => {
 
     beforeEach(() => {
         mockSingleton(CoreScreen, {
+            _orientationSignal: signal(CoreScreenOrientation.PORTRAIT), // eslint-disable-line @typescript-eslint/naming-convention
             orientationSignal: signal(CoreScreenOrientation.PORTRAIT).asReadonly(),
         });
     });
