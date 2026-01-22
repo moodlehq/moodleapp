@@ -203,8 +203,9 @@ export default class CoreMainMenuPage implements OnInit, OnDestroy {
 
             // Check if the handler is already in the tabs list. If so, use it.
             const tab = this.tabs.find((tab) => tab.page === handler.page);
-
-            tab ? tab.hide = false : null;
+            if (tab) {
+                tab.hide = false;
+            }
 
             // @todo: Ideally we shouldn't modify the original handler, but right now the badge is modified in the original
             // handler so we need to keep the reference.

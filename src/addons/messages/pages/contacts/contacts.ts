@@ -111,9 +111,11 @@ export default class AddonMessagesContactsPage implements OnInit, OnDestroy {
     async ngOnInit(): Promise<void> {
         AddonMessages.getContactRequestsCount(this.siteId); // Badge already updated by the observer.
 
-        this.selected === 'confirmed'
-            ? await this.initConfirmed()
-            : await this.initRequests();
+        if (this.selected === 'confirmed') {
+            await this.initConfirmed();
+        } else {
+            await this.initRequests();
+        }
     }
 
     /**

@@ -329,7 +329,11 @@ export class CoreIframeComponent implements OnChanges, OnDestroy {
             this.fullscreen = !this.fullscreen;
         }
 
-        this.fullscreen ? StatusBar.hide() : StatusBar.show();
+        if (this.fullscreen) {
+            StatusBar.hide();
+        } else {
+            StatusBar.show();
+        }
 
         if (this.style) {
             // Done this way because of the shadow DOM.

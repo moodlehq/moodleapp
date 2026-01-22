@@ -106,9 +106,11 @@ export class CoreViewerImageComponent implements OnInit {
         }
 
         let zoomRatio = this.swiper.zoom.scale;
-        zoomIn
-            ? zoomRatio *= 2
-            : zoomRatio /= 2;
+        if (zoomIn) {
+            zoomRatio *= 2;
+        } else {
+            zoomRatio /= 2;
+        }
 
         zoomRatio = CoreMath.clamp(zoomRatio, CoreViewerImageComponent.MIN_RATIO, CoreViewerImageComponent.MAX_RATIO);
 

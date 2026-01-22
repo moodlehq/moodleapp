@@ -51,7 +51,11 @@ export class CoreChronoComponent implements OnInit, OnDestroy {
 
     constructor() {
         effect(() => {
-            this.running() ? this.start() : this.stop();
+            if (this.running()) {
+                this.start();
+            } else {
+                this.stop();
+            }
         });
         effect(() => {
             if (this.reset()) {

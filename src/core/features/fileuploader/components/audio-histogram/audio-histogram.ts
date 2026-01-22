@@ -86,7 +86,11 @@ export class CoreFileUploaderAudioHistogramComponent implements AfterViewInit, O
         const startX = Math.floor((width - (barsWidth + barsGutter)*barsCount - barsWidth - 1)/2);
 
         this.context.beginPath();
-        this.paused ? this.drawPausedBars(startX) : this.drawActiveBars(startX);
+        if (this.paused) {
+            this.drawPausedBars(startX);
+        } else {
+            this.drawActiveBars(startX);
+        }
         this.context.stroke();
 
         // Schedule next frame.

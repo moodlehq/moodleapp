@@ -79,7 +79,12 @@ export default class CoreReportBuilderListPage implements AfterViewInit, OnDestr
      * @param reload is reoading or not.
      */
     async fetchReports(reload: boolean): Promise<void> {
-        reload ? await this.reports.reload() : await this.reports.load();
+        if (reload) {
+            await this.reports.reload();
+        } else {
+            await this.reports.load();
+        }
+
         this.updateState({ loadMoreError: false });
 
         this.logView();

@@ -637,7 +637,11 @@ export class CoreIframe {
 
             if (!mimetype || mimetype === 'text/html' || mimetype === 'text/plain') {
                 // It's probably a web page, open in browser.
-                options.site ? options.site.openInBrowserWithAutoLogin(url) : CoreOpener.openInBrowser(url);
+                if (options.site) {
+                    options.site.openInBrowserWithAutoLogin(url);
+                } else {
+                    CoreOpener.openInBrowser(url);
+                }
 
                 return;
             }

@@ -83,7 +83,12 @@ const appConfig = {
                 },
             },
         ],
-        '@typescript-eslint/no-unused-expressions': 'off',
+        '@typescript-eslint/no-unused-expressions': [ // @todo: The default (recommended) behaviour is not allowing short circuit.
+            'error',
+            {
+                allowShortCircuit: true,
+            },
+        ],
         '@typescript-eslint/explicit-member-accessibility': [
             'error',
             {

@@ -107,9 +107,11 @@ export class CoreSwipeNavigationDirective implements AfterViewInit, OnDestroy {
             return;
         }
 
-        CorePlatform.isRTL
-            ? this.manager()?.navigateToPreviousItem()
-            : this.manager()?.navigateToNextItem();
+        if (CorePlatform.isRTL) {
+            this.manager()?.navigateToPreviousItem();
+        } else {
+            this.manager()?.navigateToNextItem();
+        }
     }
 
     /**
@@ -120,9 +122,11 @@ export class CoreSwipeNavigationDirective implements AfterViewInit, OnDestroy {
             return;
         }
 
-        CorePlatform.isRTL
-            ? this.manager()?.navigateToNextItem()
-            : this.manager()?.navigateToPreviousItem();
+        if (CorePlatform.isRTL) {
+            this.manager()?.navigateToNextItem();
+        } else {
+            this.manager()?.navigateToPreviousItem();
+        }
     }
 
     /**

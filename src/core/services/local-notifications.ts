@@ -339,7 +339,11 @@ export class CoreLocalNotificationsProvider {
             // LocalNotifications.getAllScheduled is broken, use the Cordova plugin directly.
             const plugin = this.getCordovaPlugin();
 
-            plugin ? plugin.getScheduled(notifications => resolve(notifications)) : resolve([]);
+            if (plugin) {
+                plugin.getScheduled(notifications => resolve(notifications));
+            } else {
+                resolve([]);
+            }
         }));
     }
 

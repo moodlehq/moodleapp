@@ -36,12 +36,24 @@ export class AddonBlogIndexLinkHandlerService extends CoreContentLinksHandlerBas
     getActions(siteIds: string[], url: string, params: Record<string, string>): CoreContentLinksAction[] {
         const pageParams: Params = {};
 
-        params.userid ? pageParams['userId'] = parseInt(params.userid, 10) : null;
-        params.modid ? pageParams['cmId'] = parseInt(params.modid, 10) : null;
-        params.courseid ? pageParams['courseId'] = parseInt(params.courseid, 10) : null;
-        params.entryid ? pageParams['entryId'] = parseInt(params.entryid, 10) : null;
-        params.groupid ? pageParams['groupId'] = parseInt(params.groupid, 10) : null;
-        params.tagid ? pageParams['tagId'] = parseInt(params.tagid, 10) : null;
+        if (params.userid) {
+            pageParams['userId'] = parseInt(params.userid, 10);
+        }
+        if (params.modid) {
+            pageParams['cmId'] = parseInt(params.modid, 10);
+        }
+        if (params.courseid) {
+            pageParams['courseId'] = parseInt(params.courseid, 10);
+        }
+        if (params.entryid) {
+            pageParams['entryId'] = parseInt(params.entryid, 10);
+        }
+        if (params.groupid) {
+            pageParams['groupId'] = parseInt(params.groupid, 10);
+        }
+        if (params.tagid) {
+            pageParams['tagId'] = parseInt(params.tagid, 10);
+        }
 
         return [{
             action: async (siteId: string): Promise<void> => {

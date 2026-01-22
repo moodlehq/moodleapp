@@ -33,9 +33,11 @@ export class CoreOnResizeDirective implements OnInit, OnDestroy {
      * @inheritdoc
      */
     ngOnInit(): void {
-        'ResizeObserver' in window
-            ? this.watchResize()
-            : this.watchMutations();
+        if ('ResizeObserver' in window) {
+            this.watchResize();
+        } else {
+            this.watchMutations();
+        }
     }
 
     /**

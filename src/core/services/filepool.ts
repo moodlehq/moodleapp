@@ -2478,15 +2478,17 @@ export class CoreFilepoolProvider {
      * @returns Resolved on success.
      */
     async invalidateAllFiles(siteId: string, onlyUnknown: boolean = true): Promise<void> {
-        onlyUnknown
-            ? await this.filesTables[siteId].updateWhere(
+        if (onlyUnknown) {
+            await this.filesTables[siteId].updateWhere(
                 { stale: 1 },
                 {
                     sql: CoreFilepoolProvider.FILE_IS_UNKNOWN_SQL,
                     js: CoreFilepoolProvider.FILE_IS_UNKNOWN_JS,
                 },
-            )
-            : await this.filesTables[siteId].update({ stale: 1 });
+            );
+        } else {
+            await this.filesTables[siteId].update({ stale: 1 });
+        }
     }
 
     /**
