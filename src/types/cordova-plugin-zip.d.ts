@@ -21,7 +21,12 @@
 interface Window {
 
     zip: {
-        unzip(source: string, destination: string, onSuccess: Function, onProgress?: Function): void;
+        unzip(
+            source: string,
+            destination: string,
+            onSuccess: (result: number) => void,
+            onProgress?: (ev: {loaded: number; total: number}) => void,
+        ): void;
     };
 
 }

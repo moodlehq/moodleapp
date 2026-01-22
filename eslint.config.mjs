@@ -83,7 +83,6 @@ const appConfig = {
                 },
             },
         ],
-        '@typescript-eslint/no-unsafe-function-type': 'off',
         '@typescript-eslint/no-unused-expressions': 'off',
         '@typescript-eslint/explicit-member-accessibility': [
             'error',
