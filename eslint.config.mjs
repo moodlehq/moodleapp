@@ -166,7 +166,6 @@ const appConfig = {
         ],
         '@typescript-eslint/no-deprecated': 'error',
         '@typescript-eslint/no-empty-function': 'error',
-        '@typescript-eslint/no-explicit-any': 'warn',
         '@typescript-eslint/no-inferrable-types': [
             'error',
             {

@@ -83,7 +83,7 @@ describe('CoreTime singleton', () => {
         expect(CoreTime.convertPHPToJSDateFormat('%m-%d-%Y')).toEqual('MM[-]DD[-]YYYY');
         expect(CoreTime.convertPHPToJSDateFormat('%Y/%m/%d %H:%M:%S')).toEqual('YYYY[/]MM[/]DD[ ]HH[:]mm[:]ss');
         expect(CoreTime.convertPHPToJSDateFormat('%a, %I %p')).toEqual('ddd[, ]hh[ ]A');
-        expect(CoreTime.convertPHPToJSDateFormat(123 as any)).toEqual('');
+        expect(CoreTime.convertPHPToJSDateFormat(123 as any)).toEqual(''); // eslint-disable-line @typescript-eslint/no-explicit-any
     });
 
     it('should fix format for ion-datetime', () => {
