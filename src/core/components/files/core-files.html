@@ -1,23 +1,24 @@
-@if (showInline && contentText) {
-    <core-format-text [text]="contentText" [filter]="false" />
+@if (showInline() && contentText()) {
+    <core-format-text [text]="contentText()" [filter]="false" />
 }
 
-<ng-container *ngFor="let file of files; let i = index">
+<ng-container *ngFor="let file of files(); let i = index">
     @if (!file.embedType) {
         @if (!file.name) {
             <!-- Files already attached to the filearea. -->
-            <core-file [file]="file" [component]="component" [componentId]="componentId" [alwaysDownload]="alwaysDownload"
-                [canDownload]="canDownload" [showSize]="showSize" [showTime]="showTime" />
+            <core-file [file]="file" [component]="component()" [componentId]="componentId()" [alwaysDownload]="alwaysDownload()"
+                [canDownload]="canDownload()" [showSize]="showSize()" [showTime]="showTime()" />
         } @else {
             <!-- Files stored in offline to be sent later. -->
             <core-local-file [file]="file" />
         }
     }
 
-    @if (extraHtml && extraHtml[i]) {
+    @let extraHtmlValue = extraHtml();
+    @if (extraHtmlValue && extraHtmlValue[i]) {
         <ion-item class="ion-text-wrap">
             <ion-label>
-                <core-format-text [component]="component" [componentId]="componentId" [text]="extraHtml[i]" />
+                <core-format-text [component]="component()" [componentId]="componentId()" [text]="extraHtmlValue[i]" />
             </ion-label>
         </ion-item>
     }

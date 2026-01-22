@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { toBoolean } from '@/core/transforms/boolean';
-import { Component, Input, OnInit, DoCheck, inject, IterableDiffer, IterableDiffers } from '@angular/core';
+import { Component, input, computed } from '@angular/core';
 import { CoreFileEntry } from '@services/file-helper';
 
 import { CoreMimetype } from '@singletons/mimetype';
@@ -38,59 +38,28 @@ import { CoreFormatTextDirective } from '@directives/format-text';
         CoreFormatTextDirective,
     ],
 })
-export class CoreFilesComponent implements OnInit, DoCheck {
+export class CoreFilesComponent {
 
-    @Input() files: CoreFileEntry[] = []; // List of files.
-    @Input() component?: string; // Component the downloaded files will be linked to.
-    @Input() componentId?: string | number; // Component ID.
-    @Input({ transform: toBoolean }) alwaysDownload = false; // True to always display the refresh button when file is downloaded.
-    @Input({ transform: toBoolean }) canDownload = true; // Whether file can be downloaded.
-    @Input({ transform: toBoolean }) showSize = true; // Whether show filesize.
-    @Input({ transform: toBoolean }) showTime = true; // Whether show file time modified.
-    @Input({ transform: toBoolean }) showInline = false; // If true, it will reorder and try to show inline files first.
-    @Input() extraHtml?: string[]; // Extra HTML for each attachment. Each HTML should be at the same position as the attachment.
+    readonly files = input<CoreFileEntry[]>([]); // List of files.
+    readonly component = input<string>(); // Component the downloaded files will be linked to.
+    readonly componentId = input<string | number>(); // Component ID.
+    readonly alwaysDownload = input(false, { transform: toBoolean }); // True to always display refresh button when is downloaded.
+    readonly canDownload = input(true, { transform: toBoolean }); // Whether file can be downloaded.
+    readonly showSize = input(true, { transform: toBoolean }); // Whether show filesize.
+    readonly showTime = input(true, { transform: toBoolean }); // Whether show file time modified.
+    readonly showInline = input(false, { transform: toBoolean }); // If true, it will reorder and try to show inline files first.
+    readonly extraHtml = input<string[]>(); // Extra HTML for each attachment. Each HTML should be at the same position.
 
-    contentText?: string;
-
-    protected differ: IterableDiffer<CoreFileEntry>; // To detect changes in the data input.
-
-    constructor() {
-        const differs = inject(IterableDiffers);
-
-        this.differ = differs.find([]).create();
-    }
-
-    /**
-     * @inheritdoc
-     */
-    ngOnInit(): void {
-        if (this.showInline && this.files) {
-            this.renderInlineFiles();
+    readonly contentText = computed(() => {
+        if (!this.showInline()) {
+            return '';
         }
-    }
 
-    /**
-     * Detect and act upon changes that Angular can’t or won’t detect on its own (objects and arrays).
-     */
-    ngDoCheck(): void {
-        if (this.showInline && this.files) {
-            // Check if there's any change in the files array.
-            const changes = this.differ.diff(this.files);
-            if (changes) {
-                this.renderInlineFiles();
-            }
-        }
-    }
-
-    /**
-     * Calculate contentText based on fils that can be rendered inline.
-     */
-    protected renderInlineFiles(): void {
-        this.contentText = this.files.reduce((previous, file) => {
+        return this.files().reduce((previous, file) => {
             const text = CoreMimetype.getEmbeddedHtml(file);
 
             return text ? `${previous}<br>${text}` : previous;
         }, '');
-    }
+    });
 
 }
