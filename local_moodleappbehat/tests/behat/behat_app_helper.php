@@ -34,6 +34,11 @@ interface behat_app_listener {
     function on_app_load(): void;
 
     /**
+     * Called when the app is ready.
+     */
+    function on_app_ready(): void;
+
+    /**
      * Called before the app is unloaded.
      */
     function on_app_unload(): void;
@@ -43,7 +48,7 @@ interface behat_app_listener {
 /**
  * A trait containing functionality used by the behat app context.
  *
- * @package    core
+ * @package    local_moodleappbehat
  * @category   test
  * @copyright  2018 The Open University
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -234,6 +239,8 @@ class behat_app_helper extends behat_base {
             throw new DriverException('Moodle App not found in browser');
         }, false, 60);
 
+        $this->notify_ready();
+
         try {
             // Init Behat JavaScript runtime.
             $initoptions = json_encode([
@@ -348,6 +355,17 @@ class behat_app_helper extends behat_base {
     protected function notify_load(): void {
         foreach (self::$listeners as $listener) {
             $listener->on_app_load();
+        }
+    }
+
+    /**
+     * Notify to listeners that the app is ready.
+     */
+    protected function notify_ready(): void {
+        foreach (self::$listeners as $listener) {
+            if (method_exists($listener, 'on_app_ready')) {
+                $listener->on_app_ready();
+            }
         }
     }
 
