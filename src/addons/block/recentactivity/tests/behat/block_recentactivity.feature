@@ -34,6 +34,7 @@ Feature: Basic tests of recent activity block
     And I should find "Not important" in the app
     And I should not find "Discussion One" in the app
 
+  @disabled_features
   Scenario: Block is included in disabled features
     # Add another block just to ensure there is something in the block region and the drawer is displayed.
     Given the following "blocks" exist:

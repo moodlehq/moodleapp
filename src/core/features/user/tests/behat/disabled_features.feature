@@ -33,6 +33,7 @@ Feature: Test user menu disabled features
     And I should find "Data privacy" in the app
     And I should find "Switch account" in the app
 
+  @disabled_features
   Scenario: Check user menu options are not displayed when disabled
     # Use old name to allow working in all LMS versions.
     Given the following config values are set as admin:

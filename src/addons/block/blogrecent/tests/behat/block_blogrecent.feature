@@ -21,6 +21,7 @@ Feature: Basic tests of blog recent block
     Then I should find "Recent blog entries" in the app
     And I should find "No recent entries" in the app
 
+  @disabled_features
   Scenario: Block is included in disabled features
     # Add another block just to ensure there is something in the block region and the drawer is displayed.
     Given the following "blocks" exist:

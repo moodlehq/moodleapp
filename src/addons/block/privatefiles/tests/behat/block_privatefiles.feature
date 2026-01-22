@@ -18,6 +18,7 @@ Feature: View the private files block and check
     And I should find "Private files" in the app
     And I should find "There are no files to show" in the app
 
+  @disabled_features
   Scenario: Block is included in disabled features
     Given the following config values are set as admin:
       | disabledfeatures | CoreBlockDelegate_AddonBlockPrivateFiles | tool_mobile |

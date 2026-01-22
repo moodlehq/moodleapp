@@ -25,6 +25,7 @@ Feature: Basic tests of my overview block
     And I should find "Course 1" in the app
     And I should find "In progress" in the app
 
+  @disabled_features
   Scenario: Block is included in disabled features with other blocks
     # Add another block just to ensure there is something in the block region and the drawer is displayed.
     Given the following "blocks" exist:
@@ -41,6 +42,7 @@ Feature: Basic tests of my overview block
     And I should not find "Course 1" in the app
     And I should not find "In progress" in the app
 
+  @disabled_features
   Scenario: Block is included in disabled features with no other blocks
     Given the following config values are set as admin:
       | disabledfeatures | CoreBlockDelegate_AddonBlockMyOverview | tool_mobile |

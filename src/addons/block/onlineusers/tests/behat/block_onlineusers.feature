@@ -28,6 +28,7 @@ Feature: Basic tests of online users block
     Then the header should be "Student 1" in the app
     And I should find "Online" in the app
 
+  @disabled_features
   Scenario: Block is included in disabled features
     # Add another block just to ensure there is something in the block region and the drawer is displayed.
     Given the following "blocks" exist:

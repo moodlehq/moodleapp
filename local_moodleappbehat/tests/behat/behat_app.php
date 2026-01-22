@@ -52,14 +52,10 @@ class behat_app extends behat_app_helper {
     protected $scenariolaststep;
 
     /**
-     * @BeforeScenario
+     * @BeforeScenario @app
      */
     public function before_scenario(ScenarioScope $scope) {
         $feature = $scope->getFeature();
-
-        if (!$feature->hasTag('app')) {
-            return;
-        }
 
         $steps = $scope->getScenario()->getSteps();
 
