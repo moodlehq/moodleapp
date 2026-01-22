@@ -361,6 +361,9 @@ export class AddonModFeedbackIndexComponent extends CoreCourseModuleMainActivity
                     return parsed.show !== undefined ? parsed.show : false;
                 }).filter((dataItem) => dataItem); // Filter false entries.
 
+                item.templateName = AddonModFeedbackAnalysisTemplateNames.LIST;
+                break;
+
             case AddonModFeedbackQuestionType.TEXTFIELD:
             case AddonModFeedbackQuestionType.TEXTAREA:
                 item.templateName = AddonModFeedbackAnalysisTemplateNames.LIST;
