@@ -173,8 +173,6 @@ const appConfig = {
         ],
         '@typescript-eslint/no-non-null-assertion': 'warn',
         '@typescript-eslint/no-redeclare': 'error',
-        '@typescript-eslint/no-this-alias': 'error',
-        '@typescript-eslint/no-unused-vars': 'error',
         '@stylistic/quotes': [
             'error',
             'single',
