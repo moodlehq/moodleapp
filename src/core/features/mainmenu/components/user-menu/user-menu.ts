@@ -19,7 +19,8 @@ import { CoreSiteInfo } from '@classes/sites/unauthenticated-site';
 import { CoreFilter } from '@features/filter/services/filter';
 import { CoreUserAuthenticatedSupportConfig } from '@features/user/classes/support/authenticated-support-config';
 import { CoreUserSupport } from '@features/user/services/support';
-import { CoreUser, CoreUserProfile, USER_PROFILE_REFRESHED } from '@features/user/services/user';
+import { CoreUser, CoreUserProfile } from '@features/user/services/user';
+import { CORE_USER_PROFILE_REFRESHED } from '@features/user/constants';
 import {
     CoreUserProfileHandlerData,
     CoreUserDelegate,
@@ -27,7 +28,12 @@ import {
     CoreUserDelegateContext,
 } from '@features/user/services/user-delegate';
 import { CoreModals } from '@services/overlays/modals';
+import { CoreAlerts } from '@services/overlays/alerts';
 import { CoreNavigator } from '@services/navigator';
+import { CoreUtils } from '@services/utils/utils';
+import { CoreLoginHelper } from '@features/login/services/login-helper';
+import { CoreSite } from '@classes/sites/site';
+import { CoreSiteLogoComponent } from '@components/site-logo/site-logo';
 import { CoreSites } from '@services/sites';
 import { ModalController, Translate } from '@singletons';
 import { Subscription } from 'rxjs';
@@ -83,8 +89,8 @@ export class CoreMainMenuUserMenuComponent implements OnInit, OnDestroy {
 
     // App version info (auto-updated by post-commit hook)
     appVersion = CoreConstants.CONFIG.versionname;
-    buildNumber = 36;
-    buildTime = '2026-01-23 19:07';
+    buildNumber = 37;
+    buildTime = '2026-01-23 19:09';
 
     // Secret debug menu (tap build number 7 times)
     debugTapCount = 0;

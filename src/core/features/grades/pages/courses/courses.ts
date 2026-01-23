@@ -23,7 +23,7 @@ import { CoreGradesGradeOverviewWithCourseData } from '@features/grades/services
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 import { CoreSites } from '@services/sites';
 import { CoreSite } from '@classes/sites/site';
-import { CoreDomUtils } from '@services/utils/dom';
+import { CoreAlerts } from '@services/overlays/alerts';
 import { CoreUtils } from '@services/utils/utils';
 import { Translate } from '@singletons';
 import { CoreUserParent } from '@features/user/services/parent';
