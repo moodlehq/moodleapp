@@ -265,15 +265,10 @@ const appConfig = {
         ],
         'new-parens': 'error',
         'no-bitwise': 'error',
-        'no-cond-assign': 'error',
         'no-console': 'error',
-        'no-debugger': 'error',
-        'no-duplicate-case': 'error',
         'no-duplicate-imports': 'error',
-        'no-empty': 'error',
         'no-eval': 'error',
         'no-invalid-this': 'error',
-        'no-irregular-whitespace': 'error',
         'no-multiple-empty-lines': ['error', { max: 1 }],
         'no-new-wrappers': 'error',
         'no-restricted-imports': ['error', {
@@ -282,8 +277,6 @@ const appConfig = {
         }],
         'no-sequences': 'error',
         'no-trailing-spaces': 'error',
-        'no-unused-labels': 'error',
-        'no-var': 'error',
         'object-curly-spacing': ['error', 'always'],
         'one-var': ['error', 'never'],
         '@stylistic/padded-blocks': [
@@ -313,7 +306,6 @@ const appConfig = {
                 allowStandaloneDeclarations: true,
             },
         ],
-        'prefer-const': 'error',
         'quote-props': [
             'error',
             'consistent-as-needed',
@@ -327,7 +319,6 @@ const appConfig = {
                 ],
             },
         ],
-        'use-isnan': 'error',
         'yoda': 'error',
     },
 };
