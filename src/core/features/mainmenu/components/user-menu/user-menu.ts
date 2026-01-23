@@ -33,7 +33,6 @@ import { CoreNavigator } from '@services/navigator';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreLoginHelper } from '@features/login/services/login-helper';
 import { CoreSite } from '@classes/sites/site';
-import { CoreSiteLogoComponent } from '@components/site-logo/site-logo';
 import { CoreSites } from '@services/sites';
 import { ModalController, Translate } from '@singletons';
 import { Subscription } from 'rxjs';
@@ -94,8 +93,8 @@ export class CoreMainMenuUserMenuComponent implements OnInit, OnDestroy {
 
     // App version info (auto-updated by post-commit hook)
     appVersion = CoreConstants.CONFIG.versionname;
-    buildNumber = 49;
-    buildTime = '2026-01-23 19:12';
+    buildNumber = 50;
+    buildTime = '2026-01-23 19:13';
 
     // Secret debug menu (tap build number 7 times)
     debugTapCount = 0;

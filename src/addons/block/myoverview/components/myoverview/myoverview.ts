@@ -38,6 +38,14 @@ import { CoreSharedModule } from '@/core/shared.module';
 import { CoreCoursesComponentsModule } from '@features/courses/components/components.module';
 import { CoreUserParent } from '@features/user/services/parent';
 import { CoreUserProfile } from '@features/user/services/user';
+import { CoreAlerts } from '@services/overlays/alerts';
+import { Translate } from '@singletons';
+import {
+    CORE_COURSES_MY_COURSES_UPDATED_EVENT,
+    CoreCoursesMyCoursesUpdatedEventAction,
+    CORE_COURSES_STATE_FAVOURITE,
+    CORE_COURSES_STATE_HIDDEN,
+} from '@features/courses/constants';
 
 const FILTER_PRIORITY: AddonBlockMyOverviewTimeFilters[] =
     ['all', 'inprogress', 'future', 'past', 'favourite', 'allincludinghidden', 'hidden', 'custom'];
@@ -49,9 +57,10 @@ const FILTER_PRIORITY: AddonBlockMyOverviewTimeFilters[] =
     selector: 'addon-block-myoverview',
     templateUrl: 'addon-block-myoverview.html',
     styleUrl: 'myoverview.scss',
+    standalone: true,
     imports: [
         CoreSharedModule,
-        CoreCoursesCourseListItemComponent,
+        CoreCoursesComponentsModule,
     ],
 })
 export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implements OnInit, OnDestroy, OnChanges {
