@@ -30,6 +30,10 @@ import { CoreSiteHome } from '@features/sitehome/services/sitehome';
 import { CoreCourseHelper } from '@features/course/services/course-helper';
 import { CoreUserParent } from '@features/user/services/parent';
 import { CoreUserProfile } from '@features/user/services/user';
+import { CorePromiseUtils } from '@singletons/promise-utils';
+import { CoreAlerts } from '@services/overlays/alerts';
+import { CoreToasts } from '@services/overlays/toasts';
+import { CORE_BLOCKS_DASHBOARD_FALLBACK_BLOCKS } from '@features/block/constants';
 
 /**
  * Page that displays the dashboard page.
@@ -113,11 +117,11 @@ export default class CoreCoursesDashboardPage implements OnInit, OnDestroy {
                 const blocks = await CoreCoursesDashboard.getDashboardBlocks();
 
                 // Sort blocks to ensure timeline appears first for Aspire School
-                this.blocks = blocks.mainBlocks.sort((a, b) => {
+                this.blocks.set(blocks.mainBlocks.sort((a, b) => {
                     if (a.name === 'timeline') return -1;
                     if (b.name === 'timeline') return 1;
                     return 0;
-                });
+                }));
 
                 this.hasMainBlocks = CoreBlockDelegate.hasSupportedBlock(blocks.mainBlocks);
                 this.hasSideBlocks = CoreBlockDelegate.hasSupportedBlock(blocks.sideBlocks);
@@ -144,7 +148,7 @@ export default class CoreCoursesDashboardPage implements OnInit, OnDestroy {
      * Load fallback blocks to shown before 3.6 when dashboard blocks are not supported.
      */
     protected loadFallbackBlocks(): void {
-        this.blocks = [
+        this.blocks.set([
             {
                 name: 'timeline',
                 visible: true,
@@ -153,7 +157,7 @@ export default class CoreCoursesDashboardPage implements OnInit, OnDestroy {
                 name: 'myoverview',
                 visible: true,
             },
-        ];
+        ]);
 
         this.hasMainBlocks = CORE_BLOCKS_DASHBOARD_FALLBACK_BLOCKS.some((blockName) =>
             CoreBlockDelegate.isBlockSupported(blockName));
@@ -212,11 +216,11 @@ export default class CoreCoursesDashboardPage implements OnInit, OnDestroy {
                 });
             } else {
                 // Show message if no news forum exists
-                CoreDomUtils.showToast('addon.block_newsitems.pluginname', true);
+                CoreToasts.show({ message: 'addon.block_newsitems.pluginname', translateMessage: true });
             }
         } catch (error) {
             // News forum might not exist or be accessible
-            CoreDomUtils.showErrorModalDefault(error, 'core.errorloadingcontent', true);
+            CoreAlerts.showError(error, { default: Translate.instant('core.errorloadingcontent') });
         }
     }
 
@@ -277,14 +281,14 @@ export default class CoreCoursesDashboardPage implements OnInit, OnDestroy {
             // Invalidate caches to refresh data
             await CoreUtils.ignoreErrors(CoreCourses.invalidateUserCourses());
             await CoreUtils.ignoreErrors(CoreCoursesDashboard.invalidateDashboardBlocks());
-            
+
             // Show toast
-            CoreDomUtils.showToast(`Now viewing data for ${this.getFirstWordOfFirstName(mentee)}`);
-            
+            CoreToasts.show({ message: `Now viewing data for ${this.getFirstWordOfFirstName(mentee)}` });
+
             // Reload the dashboard
             await this.loadContent();
         } catch (error) {
-            CoreDomUtils.showErrorModal(error);
+            CoreAlerts.showError(error);
         }
     }
 
@@ -318,13 +322,13 @@ export default class CoreCoursesDashboardPage implements OnInit, OnDestroy {
             // Invalidate caches
             await CoreUtils.ignoreErrors(CoreCourses.invalidateUserCourses());
             await CoreUtils.ignoreErrors(CoreCoursesDashboard.invalidateDashboardBlocks());
-            
-            CoreDomUtils.showToast('Now viewing your own data');
-            
+
+            CoreToasts.show({ message: 'Now viewing your own data' });
+
             // Reload the dashboard
             await this.loadContent();
         } catch (error) {
-            CoreDomUtils.showErrorModal(error);
+            CoreAlerts.showError(error);
         }
     }
 
