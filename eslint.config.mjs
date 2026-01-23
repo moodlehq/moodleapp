@@ -121,7 +121,6 @@ const appConfig = {
                 },
             },
         ],
-        '@typescript-eslint/member-ordering': 'off',
         '@typescript-eslint/naming-convention': [
             'error',
             {
