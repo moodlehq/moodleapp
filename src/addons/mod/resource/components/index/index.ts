@@ -45,6 +45,8 @@ import { CoreSharedModule } from '@/core/shared.module';
     selector: 'addon-mod-resource-index',
     templateUrl: 'addon-mod-resource-index.html',
     styleUrls: ['index.scss'],
+    standalone: true,
+    imports: [CoreSharedModule, CoreCourseModuleNavigationComponent, CoreCourseModuleInfoComponent],
     host: {
         '[class.iframe-mode]': 'mode === "iframe"'
     }

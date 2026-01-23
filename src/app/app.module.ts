@@ -26,7 +26,6 @@ import { IonicModule, IonicRouteStrategy } from '@ionic/angular';
 import { CoreModule } from '@/core/core.module';
 import { AddonsModule } from '@addons/addons.module';
 
-import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app-routing.module';
 
 import { CoreCronDelegate } from '@services/cron';
@@ -48,7 +47,6 @@ export function createTranslateLoader(http: HttpClient): TranslateHttpLoader {
 }
 
 @NgModule({
-    declarations: [AppComponent],
     imports: [
         BrowserModule,
         BrowserAnimationsModule,
@@ -82,6 +80,5 @@ export function createTranslateLoader(http: HttpClient): TranslateHttpLoader {
             },
         },
     ],
-    bootstrap: [AppComponent],
 })
 export class AppModule {}

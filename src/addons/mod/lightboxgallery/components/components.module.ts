@@ -20,14 +20,12 @@ import { CoreSharedModule } from '@/core/shared.module';
 import { AddonModLightboxGalleryIndexComponent } from './index/index';
 
 @NgModule({
-    declarations: [
-        AddonModLightboxGalleryIndexComponent,
-    ],
     imports: [
         CommonModule,
         IonicModule,
         TranslateModule.forChild(),
         CoreSharedModule,
+        AddonModLightboxGalleryIndexComponent,
     ],
     exports: [
         AddonModLightboxGalleryIndexComponent,

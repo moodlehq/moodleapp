@@ -217,7 +217,7 @@ core-tabs-outlet {
 // Item styles
 [aria-current="page"],
 .item.item-current {
-    @include safe-area-border-start(
+    @include border-start(
         var(--selected-item-border-width),
         solid,
         var(--selected-item-color)

@@ -15,7 +15,6 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 
-import { CoreSharedModule } from '@/core/shared.module';
 import { CoreContactUsPage } from './pages/contact/contact';
 
 const routes: Routes = [
@@ -27,10 +26,7 @@ const routes: Routes = [
 
 @NgModule({
     imports: [
-        CoreSharedModule,
         RouterModule.forChild(routes),
-    ],
-    declarations: [
         CoreContactUsPage,
     ],
 })

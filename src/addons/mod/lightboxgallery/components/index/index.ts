@@ -18,6 +18,9 @@ import { CoreCourse } from '@features/course/services/course';
 import { CoreSites } from '@services/sites';
 import { CoreUserParent } from '@features/user/services/parent';
 import { ADDON_MOD_LIGHTBOXGALLERY_COMPONENT } from '../../constants';
+import { CoreSharedModule } from '@/core/shared.module';
+import { CoreCourseModuleInfoComponent } from '@features/course/components/module-info/module-info';
+import { CoreCourseModuleNavigationComponent } from '@features/course/components/module-navigation/module-navigation';
 
 interface GalleryImage {
     filename: string;
@@ -42,6 +45,8 @@ interface LightboxGalleryResponse {
     selector: 'addon-mod-lightboxgallery-index',
     templateUrl: 'addon-mod-lightboxgallery-index.html',
     styleUrls: ['index.scss'],
+    standalone: true,
+    imports: [CoreSharedModule, CoreCourseModuleInfoComponent, CoreCourseModuleNavigationComponent],
 })
 export class AddonModLightboxGalleryIndexComponent extends CoreCourseModuleMainResourceComponent implements OnInit {
 

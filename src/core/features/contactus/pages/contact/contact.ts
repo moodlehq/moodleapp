@@ -13,9 +13,11 @@
 // limitations under the License.
 
 import { Component } from '@angular/core';
-import { CoreDomUtils } from '@services/utils/dom';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreText } from '@singletons/text';
+import { CoreSharedModule } from '@/core/shared.module';
+import { CoreToasts } from '@services/overlays/toasts';
+import { CoreAlerts } from '@services/overlays/alerts';
 
 interface ContactItem {
     name: string;
@@ -38,6 +40,8 @@ interface ContactSection {
     selector: 'page-core-contactus',
     templateUrl: 'contact.html',
     styleUrls: ['contact.scss'],
+    standalone: true,
+    imports: [CoreSharedModule],
 })
 export class CoreContactUsPage {
 
@@ -120,9 +124,9 @@ export class CoreContactUsPage {
     async copyToClipboard(text: string, label: string): Promise<void> {
         try {
             await CoreText.copyToClipboard(text);
-            CoreDomUtils.showToast(`${label} copied to clipboard`, true, 2000);
+            CoreToasts.show({ message: `${label} copied to clipboard`, duration: 2000 });
         } catch (error) {
-            CoreDomUtils.showErrorModal('Failed to copy to clipboard');
+            CoreAlerts.showError('Failed to copy to clipboard');
         }
     }
 

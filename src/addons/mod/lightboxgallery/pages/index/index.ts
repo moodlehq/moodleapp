@@ -15,6 +15,7 @@
 import { Component, viewChild } from '@angular/core';
 import { CoreCourseModuleMainActivityPage } from '@features/course/classes/main-activity-page';
 import { AddonModLightboxGalleryIndexComponent } from '../../components/index/index';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Page that displays a lightbox gallery.
@@ -22,6 +23,8 @@ import { AddonModLightboxGalleryIndexComponent } from '../../components/index/in
 @Component({
     selector: 'page-addon-mod-lightboxgallery-index',
     templateUrl: 'index.html',
+    standalone: true,
+    imports: [CoreSharedModule, AddonModLightboxGalleryIndexComponent],
 })
 export class AddonModLightboxGalleryIndexPage extends CoreCourseModuleMainActivityPage<AddonModLightboxGalleryIndexComponent> {
 

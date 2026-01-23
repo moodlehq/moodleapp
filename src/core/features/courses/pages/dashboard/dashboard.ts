@@ -19,7 +19,6 @@ import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { CoreSites } from '@services/sites';
 import { CoreCoursesDashboard } from '@features/courses/services/dashboard';
 import { CoreCourseBlock } from '@features/course/services/course';
-import { CoreBlockComponent } from '@features/block/components/block/block';
 import { CoreNavigator } from '@services/navigator';
 import { CoreBlockDelegate } from '@features/block/services/block-delegate';
 import { CoreTime } from '@singletons/time';
@@ -35,6 +34,9 @@ import { CoreAlerts } from '@services/overlays/alerts';
 import { CoreToasts } from '@services/overlays/toasts';
 import { CORE_BLOCKS_DASHBOARD_FALLBACK_BLOCKS } from '@features/block/constants';
 import { CoreSharedModule } from '@/core/shared.module';
+import { RouterModule } from '@angular/router';
+import { CoreBlockComponent } from '@features/block/components/block/block';
+import { CoreBlockSideBlocksButtonComponent } from '@features/block/components/side-blocks-button/side-blocks-button';
 
 /**
  * Page that displays the dashboard page.
@@ -43,8 +45,12 @@ import { CoreSharedModule } from '@/core/shared.module';
     selector: 'page-core-courses-dashboard',
     templateUrl: 'dashboard.html',
     styleUrls: ['dashboard.scss'],
+    standalone: true,
     imports: [
         CoreSharedModule,
+        RouterModule,
+        CoreBlockComponent,
+        CoreBlockSideBlocksButtonComponent,
     ],
 })
 export default class CoreCoursesDashboardPage implements OnInit, OnDestroy {

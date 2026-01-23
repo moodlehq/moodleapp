@@ -25,8 +25,8 @@
     <!-- Compact Tab Bar -->
     <div class="tab-bar">
         <ng-container *ngFor="let tab of tabs; let i = index">
-            <button class="tab-item" [class.active]="tabsComponent?.selectedIndex === i"
-                (click)="tabsComponent?.selectByIndex(i)">
+            <button class="tab-item" [class.active]="tabsComponent()?.selectedIndex === i"
+                (click)="tabsComponent()?.selectByIndex(i)">
                 <ion-icon [name]="getTabIcon(tab)"></ion-icon>
                 <span>{{ tab.title | translate }}</span>
             </button>
