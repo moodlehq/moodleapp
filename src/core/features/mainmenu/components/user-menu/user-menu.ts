@@ -95,7 +95,7 @@ export class CoreMainMenuUserMenuComponent implements OnInit, OnDestroy {
 
     // App version info (auto-updated by post-commit hook)
     appVersion = CoreConstants.CONFIG.versionname;
-    buildNumber = 46;
+    buildNumber = 47;
     buildTime = '2026-01-23 19:12';
 
     // Secret debug menu (tap build number 7 times)
@@ -628,7 +628,7 @@ export class CoreMainMenuUserMenuComponent implements OnInit, OnDestroy {
 
         // Invalidate dashboard blocks
         const { CoreCoursesDashboard, CoreCoursesDashboardProvider } = await import('@features/courses/services/dashboard');
-        await CoreCoursesDashboard.invalidateDashboardBlocks(CoreCoursesDashboardProvider.MY_PAGE_COURSES);
+        await CoreCoursesDashboard.invalidateDashboardBlocks(CoreCoursesMyPageName.COURSES);
 
         // Force reload after view change
         console.log('[User Menu] View changed to mentee, forcing reload');
@@ -677,7 +677,7 @@ export class CoreMainMenuUserMenuComponent implements OnInit, OnDestroy {
 
         // Invalidate dashboard blocks
         const { CoreCoursesDashboard, CoreCoursesDashboardProvider } = await import('@features/courses/services/dashboard');
-        await CoreCoursesDashboard.invalidateDashboardBlocks(CoreCoursesDashboardProvider.MY_PAGE_COURSES);
+        await CoreCoursesDashboard.invalidateDashboardBlocks(CoreCoursesMyPageName.COURSES);
 
         // Force reload the home page after cache invalidation
         console.log('[User Menu] View changed back to self, forcing reload');

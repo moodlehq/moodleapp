@@ -28,11 +28,23 @@ import { AddonCalendarCalendarComponent } from '../../components/calendar/calend
 import { AddonCalendarUpcomingEventsComponent } from '../../components/upcoming-events/upcoming-events';
 import { CoreNavigator } from '@services/navigator';
 import { CoreConstants } from '@/core/constants';
-import { CoreModals } from '@services/modals';
+import { CoreModals } from '@services/overlays/modals';
+import { CoreSharedModule } from '@/core/shared.module';
+import { CoreMainMenuUserButtonComponent } from '@features/mainmenu/components/user-menu-button/user-menu-button';
 import moment from 'moment-timezone';
 import { AddonCalendarEventToDisplay } from '../../services/calendar';
 import { CoreTimeUtils } from '@services/utils/time';
 import { CoreUserParent } from '@features/user/services/parent';
+import {
+    ADDON_CALENDAR_NEW_EVENT_EVENT,
+    ADDON_CALENDAR_NEW_EVENT_DISCARDED_EVENT,
+    ADDON_CALENDAR_EDIT_EVENT_EVENT,
+    ADDON_CALENDAR_AUTO_SYNCED,
+    ADDON_CALENDAR_MANUAL_SYNCED,
+    ADDON_CALENDAR_DELETED_EVENT_EVENT,
+    ADDON_CALENDAR_UNDELETED_EVENT_EVENT,
+    ADDON_CALENDAR_FILTER_CHANGED_EVENT,
+} from '../../constants';
 
 /**
  * Page that displays the calendar events.
