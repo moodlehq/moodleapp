@@ -3,8 +3,8 @@
 ## Current Status
 
 **Phase:** Phase 2 In Progress
-**Last Action:** Completed 02-08 (Theme SCSS verification)
-**Next Action:** Execute remaining Wave 2 plans (02-02 through 02-07)
+**Last Action:** Completed 02-03 (Grades import fixes)
+**Next Action:** Execute remaining Wave 2 plans (02-02, 02-04 through 02-07)
 
 ## Project Reference
 
@@ -18,11 +18,11 @@ See: .planning/PROJECT.md (updated 2026-01-23)
 | Phase | Status | Plans | Progress |
 |-------|--------|-------|----------|
 | 1     | Done   | 1/1   | 100%     |
-| 2     | Active | 2/8   | 25%      |
+| 2     | Active | 3/8   | 37.5%    |
 | 3     | Pending| 0/1   | 0%       |
 
 ```
-Phase 2: [##------] 25%
+Phase 2: [###-----] 37.5%
 ```
 
 ## Phase 2 Plans
@@ -31,7 +31,7 @@ Phase 2: [##------] 25%
 |------|------|--------|-----------|-------|
 | 02-01 | 1 | Done | Core Services | url.ts, iframe.ts, format-text.ts, app.module.ts |
 | 02-02 | 2 | Pending | User Menu | user-menu.ts, user-menu.html, user-menu.scss |
-| 02-03 | 2 | Pending | Grades | courses.ts, course.ts, grades.ts, templates |
+| 02-03 | 2 | Done | Grades | courses.ts, course.ts, grades.ts, templates |
 | 02-04 | 2 | Pending | Dashboard & Courses | dashboard.ts, course-list-item.ts, courses.ts |
 | 02-05 | 2 | Pending | Course Components | course-section.ts, module.ts, index.ts |
 | 02-06 | 2 | Pending | Block Addons | timeline.ts, myoverview.ts |
@@ -47,6 +47,7 @@ Phase 2: [##------] 25%
 | ROADMAP.md | 3 phases, 10 plans | 2026-01-23 |
 | 02-RESEARCH.md | Phase 2 specific changes | 2026-01-23 |
 | 02-01-SUMMARY.md | Core Services verification | 2026-01-23 |
+| 02-03-SUMMARY.md | Grades import fixes | 2026-01-23 |
 | 02-08-SUMMARY.md | Theme SCSS verification | 2026-01-23 |
 
 ## Phase 1 Results
@@ -64,6 +65,15 @@ Phase 2: [##------] 25%
 - **Duration:** 2 min 15s
 - **Finding:** All core services already compliant with v5.1.0 patterns
 - **Verified:** @services/overlays/* imports, Angular 17+ signals, YouTube proxy
+
+### 02-03: Grades (Completed)
+- **Status:** Fixed import issues
+- **Duration:** 2 min 20s
+- **Changes:**
+  - courses.ts: Replaced CoreDomUtils with CoreAlerts from @services/overlays/alerts
+  - course.ts: Added CoreSharedModule and CoreAlerts imports
+  - course.ts: Replaced CoreDomUtils.showErrorModal with CoreAlerts.showError
+- **Preserved:** Parent/mentee grade viewing, category grouping, grade color coding
 
 ### 02-08: Theme SCSS (Completed)
 - **Status:** Verified (no changes needed)
@@ -84,6 +94,8 @@ Phase 2: [##------] 25%
 | Decision | Rationale | Plan |
 |----------|-----------|------|
 | Core services already compliant | Phase 1 merge preserved correct patterns | 02-01 |
+| Replace CoreDomUtils with CoreAlerts | New overlay service pattern for v5.1.0 | 02-03 |
+| Add CoreSharedModule import | Standalone component pattern requirement | 02-03 |
 | Theme SCSS already compatible | Ionic 8 patterns preserved, dark mode uses :root.dark | 02-08 |
 | ::ng-deep usage acceptable | Deprecated but functional, no immediate migration needed | 02-08 |
 
@@ -97,11 +109,12 @@ Phase 2: [##------] 25%
 - 2026-01-23: Phase 2 planned - 8 plans, 2 waves, verified
 - 2026-01-23: 02-01 completed - core services verified compliant
 - 2026-01-23: 02-08 completed - theme SCSS verified compatible
+- 2026-01-23: 02-03 completed - grades import fixes (CoreAlerts, CoreSharedModule)
 
 ## Session Continuity
 
-Last session: 2026-01-23T19:11:00Z
-Stopped at: Completed 02-08-PLAN.md
+Last session: 2026-01-23T19:11:07Z
+Stopped at: Completed 02-03-PLAN.md
 Resume file: None
 
 ---
