@@ -28,7 +28,19 @@ import { CoreFileUploaderHelper } from '@features/fileuploader/services/fileuplo
 import { CoreMimetype } from '@singletons/mimetype';
 import { Translate } from '@singletons';
 import { CoreUrl } from '@singletons/url';
-import { CoreLoadings } from '@services/loadings';
+import { CoreLoadings } from '@services/overlays/loadings';
+import { CoreModals } from '@services/overlays/modals';
+import { CoreAlerts } from '@services/overlays/alerts';
+import { CoreFile } from '@services/file';
+import { CoreFileUtils } from '@singletons/file-utils';
+import { CoreTime } from '@singletons/time';
+import { CoreSharedModule } from '@/core/shared.module';
+import { CoreUserProfileFieldComponent } from '@features/user/components/user-profile-field/user-profile-field';
+import {
+    CORE_USER_PROFILE_REFRESHED,
+    CORE_USER_PROFILE_PICTURE_UPDATED,
+    CORE_USER_PROFILE_SERVER_TIMEZONE,
+} from '../../constants';
 import { CoreUserParent } from '@features/user/services/parent';
 import { CoreCourses } from '@features/courses/services/courses';
 import { CoreGrades } from '@features/grades/services/grades';
