@@ -33,7 +33,7 @@ import {
 import { AddonCalendarHelper, AddonCalendarFilter } from '../../services/calendar-helper';
 import { AddonCalendarOffline } from '../../services/calendar-offline';
 import { CoreCategoryData, CoreCourses } from '@features/courses/services/courses';
-import { CoreConstants } from '@/core/constants';
+import { CoreTimeConstants } from '@/core/constants';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 import { CoreUrl } from '@singletons/url';
 import { CoreTime } from '@singletons/time';
@@ -290,7 +290,7 @@ export class AddonCalendarUpcomingEventsComponent implements OnInit, DoCheck, On
         }
 
         const start = CoreTime.timestamp();
-        const end = start + (CoreConstants.SECONDS_DAY * this.lookAhead);
+        const end = start + (CoreTimeConstants.SECONDS_DAY * this.lookAhead);
         let result: AddonCalendarEventToDisplay[] = this.onlineEvents;
 
         if (this.deletedEvents.length) {

@@ -233,7 +233,7 @@ export class CoreConfigProvider {
      * Load development config overrides.
      */
     protected loadDevelopmentConfig(): void {
-        if (!CoreConstants.enableDevTools() || !CoreBrowser.hasDevelopmentSetting('Config')) {
+        if (!CoreConstants.isDevOrTestingBuild() || !CoreBrowser.hasDevelopmentSetting('Config')) {
             return;
         }
 

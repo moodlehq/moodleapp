@@ -35,6 +35,7 @@ import { CorePath } from '@singletons/path';
 import { CorePlatform } from '@services/platform';
 import { CoreModals } from '@services/overlays/modals';
 import { CorePromiseUtils } from '@singletons/promise-utils';
+import { CoreBytesConstants } from '@/core/constants';
 
 /**
  * File upload options.
@@ -52,8 +53,8 @@ export type CoreFileUploaderOptions = CoreWSFileUploadOptions & {
 @Injectable({ providedIn: 'root' })
 export class CoreFileUploaderProvider {
 
-    static readonly LIMITED_SIZE_WARNING = 1048576; // 1 MB.
-    static readonly WIFI_SIZE_WARNING = 10485760; // 10 MB.
+    static readonly LIMITED_SIZE_WARNING = CoreBytesConstants.MEGABYTE;
+    static readonly WIFI_SIZE_WARNING = CoreBytesConstants.MEGABYTE * 10;
 
     protected logger: CoreLogger;
 

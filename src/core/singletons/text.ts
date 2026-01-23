@@ -17,6 +17,7 @@ import { CoreToasts } from '@services/overlays/toasts';
 import { Locutus } from './locutus';
 import { CoreError } from '@classes/errors/error';
 import { convertTextToHTMLElement } from '../utils/create-html-element';
+import { CoreBytesConstants } from '../constants';
 
 /**
  * Singleton with helper functions for text manipulation.
@@ -98,10 +99,10 @@ export class CoreText {
         const units = Translate.instant(keys);
         let pos = 0;
 
-        if (bytes >= 1024) {
-            while (bytes >= 1024) {
+        if (bytes >= CoreBytesConstants.KILOBYTE) {
+            while (bytes >= CoreBytesConstants.KILOBYTE) {
                 pos++;
-                bytes = bytes / 1024;
+                bytes = bytes / CoreBytesConstants.UNIT_MULTIPLIER;
             }
             // Round to "precision" decimals if needed.
             bytes = Number(Math.round(parseFloat(bytes + 'e+' + precision)) + 'e-' + precision);

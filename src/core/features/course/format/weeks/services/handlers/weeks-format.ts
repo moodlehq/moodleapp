@@ -19,7 +19,7 @@ import { CoreCourseFormatCurrentSectionData, CoreCourseFormatHandler } from '@fe
 import { makeSingleton, Translate } from '@singletons';
 import { CoreCourseAnyCourseData } from '@features/courses/services/courses';
 import { CoreCourseWSSection } from '@features/course/services/course';
-import { CoreConstants } from '@/core/constants';
+import { CoreTimeConstants } from '@/core/constants';
 import { CoreCourseSection } from '@features/course/services/course-helper';
 
 /**
@@ -96,10 +96,10 @@ export class CoreCourseFormatWeeksHandlerService implements CoreCourseFormatHand
         startDate = startDate + 7200;
 
         const dates = {
-            start: startDate + (CoreConstants.SECONDS_WEEK * ((section.section || 0) - 1)),
+            start: startDate + (CoreTimeConstants.SECONDS_WEEK * ((section.section || 0) - 1)),
             end: 0,
         };
-        dates.end = dates.start + CoreConstants.SECONDS_WEEK;
+        dates.end = dates.start + CoreTimeConstants.SECONDS_WEEK;
 
         return dates;
     }

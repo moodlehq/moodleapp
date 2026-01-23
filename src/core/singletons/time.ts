@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { Translate } from '@singletons';
-import { CoreConstants } from '../constants';
+import { CoreTimeConstants } from '../constants';
 import { dayjs } from '@/core/utils/dayjs';
 import { CorePlatform } from '@services/platform';
 
@@ -194,17 +194,17 @@ export class CoreTime {
             return Translate.instant('core.now');
         }
 
-        const years = Math.floor(totalSecs / CoreConstants.SECONDS_YEAR);
-        let remainder = totalSecs - (years * CoreConstants.SECONDS_YEAR);
-        const days = Math.floor(remainder / CoreConstants.SECONDS_DAY);
+        const years = Math.floor(totalSecs / CoreTimeConstants.SECONDS_YEAR);
+        let remainder = totalSecs - (years * CoreTimeConstants.SECONDS_YEAR);
+        const days = Math.floor(remainder / CoreTimeConstants.SECONDS_DAY);
 
-        remainder = remainder - (days * CoreConstants.SECONDS_DAY);
+        remainder = remainder - (days * CoreTimeConstants.SECONDS_DAY);
 
-        const hours = Math.floor(remainder / CoreConstants.SECONDS_HOUR);
-        remainder = remainder - (hours * CoreConstants.SECONDS_HOUR);
+        const hours = Math.floor(remainder / CoreTimeConstants.SECONDS_HOUR);
+        remainder = remainder - (hours * CoreTimeConstants.SECONDS_HOUR);
 
-        const mins = Math.floor(remainder / CoreConstants.SECONDS_MINUTE);
-        const secs = remainder - (mins * CoreConstants.SECONDS_MINUTE);
+        const mins = Math.floor(remainder / CoreTimeConstants.SECONDS_MINUTE);
+        const secs = remainder - (mins * CoreTimeConstants.SECONDS_MINUTE);
 
         const secondsUnit = Translate.instant(`core.${secs === 1 ? 'sec' : 'secs'}`);
         const minutesUnit = Translate.instant(`core.${mins === 1 ? 'min' : 'mins'}`);

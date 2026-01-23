@@ -29,7 +29,7 @@ import { CoreTime } from '@singletons/time';
 import { CoreUrl, CoreUrlPartNames } from '@singletons/url';
 import { CoreArray } from '@singletons/array';
 import { CoreError } from '@classes/errors/error';
-import { DownloadStatus } from '@/core/constants';
+import { CoreBytesConstants, DownloadStatus } from '@/core/constants';
 import { ApplicationInit, makeSingleton, NgZone, Translate } from '@singletons';
 import { CoreLogger } from '@singletons/logger';
 import {
@@ -399,8 +399,8 @@ export class CoreFilepoolProvider {
 
     // Constants.
     protected static readonly FOLDER = 'filepool';
-    protected static readonly WIFI_DOWNLOAD_THRESHOLD = 20971520; // 20MB.
-    protected static readonly DOWNLOAD_THRESHOLD = 2097152; // 2MB.
+    protected static readonly WIFI_DOWNLOAD_THRESHOLD = 20 * CoreBytesConstants.MEGABYTE;
+    protected static readonly DOWNLOAD_THRESHOLD = 2 * CoreBytesConstants.MEGABYTE;
 
     protected static readonly FILE_IS_UNKNOWN_SQL =
         'isexternalfile = 1 OR ((revision IS NULL OR revision = 0) AND (timemodified IS NULL OR timemodified = 0))';

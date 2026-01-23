@@ -24,7 +24,13 @@ import {
 import { CoreToasts, ToastDuration } from '@services/overlays/toasts';
 import { CoreText } from '@singletons/text';
 import { CoreUtils } from '@singletons/utils';
-import { CoreCacheUpdateFrequency, CoreConstants, MINIMUM_MOODLE_VERSION, MOODLE_RELEASES } from '@/core/constants';
+import {
+    CoreCacheUpdateFrequency,
+    CoreConstants,
+    CoreTimeConstants,
+    MINIMUM_MOODLE_VERSION,
+    MOODLE_RELEASES,
+} from '@/core/constants';
 import { CoreError } from '@classes/errors/error';
 import { CoreWSError } from '@classes/errors/wserror';
 import { CoreLogger } from '@singletons/logger';
@@ -92,10 +98,10 @@ export class CoreAuthenticatedSite extends CoreUnauthenticatedSite {
 
     // Possible cache update frequencies.
     protected static readonly UPDATE_FREQUENCIES = [
-        CoreConstants.CONFIG.cache_update_frequency_usually || 420000,
-        CoreConstants.CONFIG.cache_update_frequency_often || 1200000,
-        CoreConstants.CONFIG.cache_update_frequency_sometimes || 3600000,
-        CoreConstants.CONFIG.cache_update_frequency_rarely || 43200000,
+        CoreConstants.CONFIG.cache_update_frequency_usually || (CoreTimeConstants.MILLISECONDS_MINUTE * 7),
+        CoreConstants.CONFIG.cache_update_frequency_often || (CoreTimeConstants.MILLISECONDS_MINUTE * 20),
+        CoreConstants.CONFIG.cache_update_frequency_sometimes || CoreTimeConstants.MILLISECONDS_HOUR,
+        CoreConstants.CONFIG.cache_update_frequency_rarely || (CoreTimeConstants.MILLISECONDS_HOUR * 12),
     ];
 
     // WS that we allow to call even if the site is logged out.
@@ -1141,7 +1147,7 @@ export class CoreAuthenticatedSite extends CoreUnauthenticatedSite {
             if (preSets.updateInBackground && !CoreConstants.CONFIG.disableCallWSInBackground) {
                 // Use a extended expiration time.
                 const extendedTime = entry.expirationTime +
-                    (CoreConstants.CONFIG.callWSInBackgroundExpirationTime ?? CoreConstants.SECONDS_WEEK * 1000);
+                    (CoreConstants.CONFIG.callWSInBackgroundExpirationTime ?? CoreTimeConstants.SECONDS_WEEK * 1000);
 
                 if (now > extendedTime) {
                     this.logger.debug('Cached element found, but it is expired even for call WS in background.');

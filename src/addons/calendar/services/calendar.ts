@@ -28,7 +28,7 @@ import { CoreWSExternalWarning, CoreWSDate } from '@services/ws';
 import { dayjs } from '@/core/utils/dayjs';
 import { AddonCalendarEventDBRecord } from './database/calendar';
 import { CoreCourses, CoreCourseSummaryExporterData } from '@features/courses/services/courses';
-import { ContextLevel, CoreCacheUpdateFrequency, CoreConstants } from '@/core/constants';
+import { ContextLevel, CoreCacheUpdateFrequency, CoreTimeConstants } from '@/core/constants';
 import { CoreWSError } from '@classes/errors/wserror';
 import { ApplicationInit, makeSingleton, Translate } from '@singletons';
 import { AddonCalendarOfflineEventDBRecord } from './database/calendar-offline';
@@ -328,7 +328,7 @@ export class AddonCalendarProvider {
 
             if (dayjs(start).isSame(end, 'day')) {
                 // Event starts and ends the same day.
-                if (event.timeduration == CoreConstants.SECONDS_DAY) {
+                if (event.timeduration == CoreTimeConstants.SECONDS_DAY) {
                     time = Translate.instant('addon.calendar.allday');
                 } else {
                     time = getStartTimeHtml(CoreTime.userDate(start, format)) + ' <strong>&raquo;</strong> ' +
@@ -828,8 +828,8 @@ export class AddonCalendarProvider {
         const site = await CoreSites.getSite(siteId);
         siteId = site.getId();
 
-        const start = initialTime + (CoreConstants.SECONDS_DAY * daysToStart);
-        const end = start + (CoreConstants.SECONDS_DAY * daysInterval) - 1;
+        const start = initialTime + (CoreTimeConstants.SECONDS_DAY * daysToStart);
+        const end = start + (CoreTimeConstants.SECONDS_DAY * daysInterval) - 1;
 
         const events = {
             courseids: <number[]> [],

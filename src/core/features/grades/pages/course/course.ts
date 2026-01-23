@@ -72,19 +72,19 @@ export default class CoreGradesCoursePage implements AfterViewInit, OnDestroy {
     protected element: HTMLElement = inject(ElementRef).nativeElement;
 
     constructor() {
-        const route = inject(ActivatedRoute);
 
         this.logView = CoreTime.once(() => this.performLogView());
 
         try {
-            this.courseId = CoreNavigator.getRequiredRouteNumberParam('courseId', { route });
-            this.userId = CoreNavigator.getRouteNumberParam('userId', { route }) ?? CoreSites.getCurrentSiteUserId();
-            this.gradeId = CoreNavigator.getRouteNumberParam('gradeId', { route });
+            this.courseId = CoreNavigator.getRequiredRouteNumberParam('courseId');
+            this.userId = CoreNavigator.getRouteNumberParam('userId') ?? CoreSites.getCurrentSiteUserId();
+            this.gradeId = CoreNavigator.getRouteNumberParam('gradeId');
 
             this.expandLabel = Translate.instant('core.expand');
             this.collapseLabel = Translate.instant('core.collapse');
             this.useLegacyLayout = !CoreSites.getRequiredCurrentSite().isVersionGreaterEqualThan('4.1');
 
+            const route = inject(ActivatedRoute);
             switch (route.snapshot?.data.swipeManagerSource ?? route.snapshot?.parent?.data.swipeManagerSource) {
                 case 'courses':
                     this.swipeManager = new CoreGradesCourseCoursesSwipeManager(

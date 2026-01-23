@@ -314,10 +314,10 @@ export default class AddonMessagesGroupConversationsPage implements OnInit, OnDe
      * @inheritdoc
      */
     async ngOnInit(): Promise<void> {
-        this.route.queryParams.subscribe(async (queryParams) => {
+        this.route.queryParams.subscribe(async () => {
             // When a child page loads this callback is triggered too.
-            const conversationId = CoreNavigator.getRouteNumberParam('conversationId', { queryParams });
-            const userId = CoreNavigator.getRouteNumberParam('userId', { queryParams });
+            const conversationId = CoreNavigator.getRouteNumberParam('conversationId');
+            const userId = CoreNavigator.getRouteNumberParam('userId');
             if (conversationId || userId) {
                 // Update the selected ones.
                 this.selectedConversationId = conversationId;

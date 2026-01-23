@@ -17,7 +17,7 @@ import { CorePath } from './path';
 import { CoreText } from './text';
 
 import { CorePlatform } from '@services/platform';
-import { CoreConstants } from '../constants';
+import { CoreConstants, CoreTimeConstants } from '../constants';
 import { CoreMedia } from './media';
 import { CoreLang, CoreLangFormat } from '@services/lang';
 import { DomSanitizer } from '@singletons';
@@ -754,8 +754,8 @@ export class CoreUrl {
             // No start param, but it could have a time param.
             match = url.match(/[?&]t=(\d+h)?(\d+m)?(\d+s?)?/);
             if (match) {
-                const start = (match[1] ? parseInt(match[1], 10) * 3600 : 0) +
-                    (match[2] ? parseInt(match[2], 10) * 60 : 0) +
+                const start = (match[1] ? parseInt(match[1], 10) * CoreTimeConstants.SECONDS_HOUR : 0) +
+                    (match[2] ? parseInt(match[2], 10) * CoreTimeConstants.SECONDS_MINUTE : 0) +
                     (match[3] ? parseInt(match[3], 10) : 0);
                 params.start = start.toString();
             }

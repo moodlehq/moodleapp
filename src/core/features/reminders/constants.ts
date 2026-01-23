@@ -12,16 +12,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { CoreConstants } from '@/core/constants';
+import { CoreTimeConstants } from '@/core/constants';
 
 /**
  * Units to set a reminder.
  */
 export enum CoreRemindersUnits {
-    MINUTE = CoreConstants.SECONDS_MINUTE,
-    HOUR = CoreConstants.SECONDS_HOUR,
-    DAY = CoreConstants.SECONDS_DAY,
-    WEEK = CoreConstants.SECONDS_WEEK,
+    MINUTE = CoreTimeConstants.SECONDS_MINUTE,
+    HOUR = CoreTimeConstants.SECONDS_HOUR,
+    DAY = CoreTimeConstants.SECONDS_DAY,
+    WEEK = CoreTimeConstants.SECONDS_WEEK,
 }
 
 export const REMINDERS_UNITS_LABELS = {

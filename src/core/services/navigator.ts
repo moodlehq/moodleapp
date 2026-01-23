@@ -23,7 +23,7 @@ import {
     UrlCreationOptions,
     UrlSegment,
 } from '@angular/router';
-import { CoreConstants } from '@/core/constants';
+import { NO_SITE_ID } from '@features/login/constants';
 import { CoreMainMenu } from '@features/mainmenu/services/mainmenu';
 import { CoreObject } from '@singletons/object';
 import { CoreSites } from '@services/sites';
@@ -71,19 +71,10 @@ export type CoreNavigationOptions = AnimationOptions & {
  * Route options to get current route.
  */
 export type CoreNavigatorCurrentRouteOptions = Partial<{
-    params: Params; // Params to get the value from.
     route: ActivatedRoute; // Current Route.
     pageComponent: unknown;
     routeData: Record<string, unknown>;
 }>;
-
-/**
- * Route options to get route or params values.
- */
-export type CoreNavigatorParamRouteOptions = {
-    queryParams?: Params; // Query params to get the value from.
-    route?: ActivatedRoute; // Current Route.
-};
 
 /**
  * Service to provide some helper functions regarding navigation.
@@ -94,6 +85,7 @@ export class CoreNavigatorService {
     protected routesDepth: Record<string, number> = {};
     protected storedParams: Record<number, unknown> = {};
     protected lastParamId = 0;
+    protected static readonly STORED_PARAM_PREFIX = 'param-';
 
     /**
      * Check whether the active route is using the given path.
@@ -257,7 +249,7 @@ export class CoreNavigatorService {
         }
 
         // If the path doesn't belong to a site, call standard navigation.
-        if (siteId === CoreConstants.NO_SITE_ID) {
+        if (siteId === NO_SITE_ID) {
             return this.navigate(path, {
                 ...navigationOptions,
                 reset: true,
@@ -356,43 +348,23 @@ export class CoreNavigatorService {
 
     /**
      * Get a parameter for the current route.
-     * Please notice that objects can only be retrieved once. You must call this function only once per page and parameter,
-     * unless there's a new navigation to the page.
      *
      * @param name Name of the parameter.
-     * @param routeOptions Optional routeOptions to get the params or route value from. If missing, it will autodetect.
      * @returns Value of the parameter, undefined if not found.
      */
-    getRouteParam<T = string>(name: string, routeOptions: CoreNavigatorParamRouteOptions = {}): T | undefined {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        let value: any;
-        let origin = '';
-        let route: ActivatedRoute | undefined = undefined;
+    getRouteParam<T = string>(name: string): T | undefined {
+        const route = this.getCurrentRoute();
 
-        if (routeOptions.queryParams) {
-            value = routeOptions.queryParams[name];
-            origin = 'query';
-        } else {
-            route = this.getCurrentRoute();
-            if (!route?.snapshot && routeOptions.route) {
-                route = routeOptions.route;
+        const valueOrigin = this.getRouteSnapshotParam<T>(name, route);
+        if (valueOrigin) {
+            let value = valueOrigin.value;
+
+            if (valueOrigin.origin === 'query') {
+                value = this.getStoredParam(name, value, route) as T;
             }
 
-            const valueOrigin = this.getRouteSnapshotParam(name, route);
-            if (valueOrigin) {
-                value = valueOrigin.value;
-                origin = valueOrigin.origin;
-            }
+            return value;
         }
-
-        if (origin === 'query') {
-            value = this.getStoredParam(value, true);
-            if (route) {
-                route.queryParams[name] = value;
-            }
-        }
-
-        return <T> value;
     }
 
     /**
@@ -400,11 +372,10 @@ export class CoreNavigatorService {
      * Angular router automatically converts numbers to string, this function automatically converts it back to number.
      *
      * @param name Name of the parameter.
-     * @param routeOptions Optional routeOptions to get the params or route value from. If missing, it will autodetect.
      * @returns Value of the parameter, undefined if not found.
      */
-    getRouteNumberParam(name: string, routeOptions: CoreNavigatorParamRouteOptions = {}): number | undefined {
-        const value = this.getRouteParam<string>(name, routeOptions);
+    getRouteNumberParam(name: string): number | undefined {
+        const value = this.getRouteParam<string>(name);
 
         return value !== undefined ? Number(value) : value;
     }
@@ -414,11 +385,10 @@ export class CoreNavigatorService {
      * Angular router automatically converts booleans to string, this function automatically converts it back to boolean.
      *
      * @param name Name of the parameter.
-     * @param routeOptions Optional routeOptions to get the params or route value from. If missing, it will autodetect.
      * @returns Value of the parameter, undefined if not found.
      */
-    getRouteBooleanParam(name: string, routeOptions: CoreNavigatorParamRouteOptions = {}): boolean | undefined {
-        const value = this.getRouteParam<string>(name, routeOptions);
+    getRouteBooleanParam(name: string): boolean | undefined {
+        const value = this.getRouteParam<string>(name);
 
         if (value === undefined) {
             return value;
@@ -437,17 +407,14 @@ export class CoreNavigatorService {
 
     /**
      * Get a parameter for the current route.
-     * Please notice that objects can only be retrieved once. You must call this function only once per page and parameter,
-     * unless there's a new navigation to the page.
      *
      * This function will fail if parameter is not found.
      *
      * @param name Name of the parameter.
-     * @param routeOptions Optional routeOptions to get the params or route value from. If missing, it will autodetect.
      * @returns Value of the parameter, undefined if not found.
      */
-    getRequiredRouteParam<T = unknown>(name: string, routeOptions: CoreNavigatorParamRouteOptions = {}): T {
-        const value = this.getRouteParam<T>(name, routeOptions);
+    getRequiredRouteParam<T = unknown>(name: string): T {
+        const value = this.getRouteParam<T>(name);
 
         if (value === undefined) {
             throw new CoreError(`Required param '${name}' not found.`);
@@ -463,11 +430,10 @@ export class CoreNavigatorService {
      * This function will fail if parameter is not found.
      *
      * @param name Name of the parameter.
-     * @param routeOptions Optional routeOptions to get the params or route value from. If missing, it will autodetect.
      * @returns Value of the parameter, undefined if not found.
      */
-    getRequiredRouteNumberParam(name: string, routeOptions: CoreNavigatorParamRouteOptions = {}): number {
-        const value = this.getRouteNumberParam(name, routeOptions);
+    getRequiredRouteNumberParam(name: string): number {
+        const value = this.getRouteNumberParam(name);
 
         if (value === undefined) {
             throw new CoreError(`Required number param '${name}' not found.`);
@@ -483,11 +449,10 @@ export class CoreNavigatorService {
      * This function will fail if parameter is not found.
      *
      * @param name Name of the parameter.
-     * @param routeOptions Optional routeOptions to get the params or route value from. If missing, it will autodetect.
      * @returns Value of the parameter, undefined if not found.
      */
-    getRequiredRouteBooleanParam(name: string, routeOptions: CoreNavigatorParamRouteOptions = {}): boolean {
-        const value = this.getRouteBooleanParam(name, routeOptions);
+    getRequiredRouteBooleanParam(name: string): boolean {
+        const value = this.getRouteBooleanParam(name);
 
         if (value === undefined) {
             throw new CoreError(`Required boolean param '${name}' not found.`);
@@ -695,7 +660,7 @@ export class CoreNavigatorService {
      * @returns New param Id.
      */
     protected getNewParamId(): string {
-        return `param-${++this.lastParamId}`;
+        return `${CoreNavigatorService.STORED_PARAM_PREFIX}${++this.lastParamId}`;
     }
 
     /**
@@ -789,10 +754,7 @@ export class CoreNavigatorService {
         const params = { ...this.getRouteProperty(route, 'queryParams', {}) };
 
         Object.keys(params).forEach((name) => {
-            params[name] = this.getStoredParam(params[name], false);
-
-            // Override the param.
-            route.queryParams[name] = params[name];
+            params[name] = this.getStoredParam(name, params[name], route);
         });
 
         return params;
@@ -811,31 +773,33 @@ export class CoreNavigatorService {
      * Given a stored param name, retrieve the stored param.
      * If the param is not a stored param, it will be returned as is.
      *
-     * @param paramName Param name.
-     * @param remove Whether to remove the param from the stored params after retrieving it.
+     * @param name Param name.
+     * @param value Param value to obtain the stored param.
+     * @param route Route where to override the query param if needed.
      * @returns Param value.
      */
-    protected getStoredParam(paramName: unknown, remove = false): string | unknown {
-        if (typeof paramName !== 'string' || !paramName.startsWith('param-')) {
-            return paramName;
+    protected getStoredParam(name: string, value: unknown, route: ActivatedRouteSnapshot | ActivatedRoute): string | unknown {
+        if (typeof value !== 'string' || !value.startsWith(CoreNavigatorService.STORED_PARAM_PREFIX)) {
+            return value;
         }
 
-        let storedParam = this.storedParams[paramName];
+        let storedParam = this.storedParams[value];
 
-        if (remove) {
-            // Remove the parameter from our map if it's in there.
-            delete this.storedParams[paramName];
-        }
+        // Remove the parameter from our map if it's in there.
+        delete this.storedParams[value];
 
         if (!CorePlatform.isMobile() && !storedParam) {
             // Try to retrieve the param from local storage in browser.
-            const storageParam = localStorage.getItem(paramName);
+            const storageParam = localStorage.getItem(value);
             if (storageParam) {
                 storedParam = CoreText.parseJSON(storageParam);
             }
         }
 
-        return storedParam ?? paramName;
+        // Override the param in the route so it's not retrieved again.
+        route.queryParams[name] = storedParam ?? value;
+
+        return storedParam ?? value;
     }
 
     /**

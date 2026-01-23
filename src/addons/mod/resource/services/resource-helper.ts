@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { CoreConstants } from '@/core/constants';
+import { CoreTimeConstants } from '@/core/constants';
 import { Injectable } from '@angular/core';
 import { CoreError } from '@classes/errors/error';
 import { CoreCourse, CoreCourseAnyModuleData } from '@features/course/services/course';
@@ -263,7 +263,7 @@ export class AddonModResourceHelperProvider {
         if (options.showdate) {
             const timecreated = 'timecreated' in mainFile ? mainFile.timecreated : 0;
 
-            if ((mainFile.timemodified || 0) > timecreated + CoreConstants.SECONDS_MINUTE * 5) {
+            if ((mainFile.timemodified || 0) > timecreated + CoreTimeConstants.SECONDS_MINUTE * 5) {
                 /* Modified date may be up to several minutes later than uploaded date just because
                     teacher did not submit the form promptly. Give teacher up to 5 minutes to do it. */
                 options.filedetails.modifieddate = mainFile.timemodified || 0;

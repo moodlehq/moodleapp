@@ -35,7 +35,7 @@ import { Translate } from '@singletons';
 import { CoreNavigator } from '@services/navigator';
 import { CoreIonLoadingElement } from '@classes/ion-loading';
 import { ActivatedRoute } from '@angular/router';
-import { CoreConstants } from '@/core/constants';
+import { LOADING_ICON } from '@/core/constants';
 import { CoreDom } from '@singletons/dom';
 import { CoreKeyboard } from '@singletons/keyboard';
 import { CoreText } from '@singletons/text';
@@ -1115,7 +1115,7 @@ export default class AddonMessagesDiscussionPage implements OnInit, OnDestroy, A
             return;
         }
 
-        this.favouriteIcon = CoreConstants.ICON_LOADING;
+        this.favouriteIcon = LOADING_ICON;
 
         try {
             await AddonMessages.setFavouriteConversation(this.conversation.id, !this.conversation.isfavourite);
@@ -1148,7 +1148,7 @@ export default class AddonMessagesDiscussionPage implements OnInit, OnDestroy, A
             return;
         }
 
-        this.muteIcon = CoreConstants.ICON_LOADING;
+        this.muteIcon = LOADING_ICON;
 
         try {
             await AddonMessages.muteConversation(this.conversation.id, !this.conversation.ismuted);
@@ -1230,7 +1230,7 @@ export default class AddonMessagesDiscussionPage implements OnInit, OnDestroy, A
                 okText: Translate.instant('addon.messages.blockuser'),
             });
 
-            this.blockIcon = CoreConstants.ICON_LOADING;
+            this.blockIcon = LOADING_ICON;
 
             const modal = await CoreLoadings.show('core.sending', true);
             this.showLoadingModal = true;
@@ -1266,7 +1266,7 @@ export default class AddonMessagesDiscussionPage implements OnInit, OnDestroy, A
 
         try {
             await CoreAlerts.confirmDelete(Translate.instant(confirmMessage));
-            this.deleteIcon = CoreConstants.ICON_LOADING;
+            this.deleteIcon = LOADING_ICON;
 
             try {
                 try {
@@ -1311,7 +1311,7 @@ export default class AddonMessagesDiscussionPage implements OnInit, OnDestroy, A
                 okText: Translate.instant('addon.messages.unblockuser'),
             });
 
-            this.blockIcon = CoreConstants.ICON_LOADING;
+            this.blockIcon = LOADING_ICON;
 
             const modal = await CoreLoadings.show('core.sending', true);
             this.showLoadingModal = true;
@@ -1347,7 +1347,7 @@ export default class AddonMessagesDiscussionPage implements OnInit, OnDestroy, A
                 okText: Translate.instant('core.add'),
             });
 
-            this.addRemoveIcon = CoreConstants.ICON_LOADING;
+            this.addRemoveIcon = LOADING_ICON;
 
             const modal = await CoreLoadings.show('core.sending', true);
             this.showLoadingModal = true;
@@ -1431,7 +1431,7 @@ export default class AddonMessagesDiscussionPage implements OnInit, OnDestroy, A
                 okText: Translate.instant('core.remove'),
             });
 
-            this.addRemoveIcon = CoreConstants.ICON_LOADING;
+            this.addRemoveIcon = LOADING_ICON;
 
             const modal = await CoreLoadings.show('core.sending', true);
             this.showLoadingModal = true;

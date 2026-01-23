@@ -27,7 +27,7 @@ import { ActivatedRoute, Params } from '@angular/router';
 import { AddonCalendarCalendarComponent } from '../../components/calendar/calendar';
 import { AddonCalendarUpcomingEventsComponent } from '../../components/upcoming-events/upcoming-events';
 import { CoreNavigator } from '@services/navigator';
-import { CoreConstants } from '@/core/constants';
+import { CoreSyncIcon } from '@/core/constants';
 import { CoreModals } from '@services/overlays/modals';
 import {
     ADDON_CALENDAR_AUTO_SYNCED,
@@ -82,7 +82,7 @@ export default class AddonCalendarIndexPage implements OnInit, OnDestroy {
     loaded = false;
     hasOffline = false;
     readonly isOnline = CoreNetwork.onlineSignal;
-    syncIcon = CoreConstants.ICON_LOADING;
+    syncIcon = CoreSyncIcon.LOADING;
     showCalendar = true;
     loadUpcoming = false;
     filter: AddonCalendarFilter = {
@@ -198,7 +198,7 @@ export default class AddonCalendarIndexPage implements OnInit, OnDestroy {
      */
     async fetchData(sync?: boolean, showErrors?: boolean): Promise<void> {
 
-        this.syncIcon = CoreConstants.ICON_LOADING;
+        this.syncIcon = CoreSyncIcon.LOADING;
 
         let refreshComponent = false;
 
@@ -265,7 +265,7 @@ export default class AddonCalendarIndexPage implements OnInit, OnDestroy {
 
         this.loaded = true;
         this.initialized = true;
-        this.syncIcon = CoreConstants.ICON_SYNC;
+        this.syncIcon = CoreSyncIcon.SYNC;
     }
 
     /**
@@ -296,7 +296,7 @@ export default class AddonCalendarIndexPage implements OnInit, OnDestroy {
      * @returns Promise resolved when done.
      */
     async refreshData(sync = false, showErrors = false, afterChange = false): Promise<void> {
-        this.syncIcon = CoreConstants.ICON_LOADING;
+        this.syncIcon = CoreSyncIcon.LOADING;
 
         const promises: Promise<void>[] = [];
 
