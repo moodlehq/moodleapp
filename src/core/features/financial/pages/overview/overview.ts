@@ -20,6 +20,7 @@ import { CoreTimeUtils } from '@services/utils/time';
 import { CoreUserParent } from '@features/user/services/parent';
 import { CoreSites } from '@services/sites';
 import { AlertController } from '@ionic/angular';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Page that displays financial overview for all children.
@@ -28,6 +29,9 @@ import { AlertController } from '@ionic/angular';
     selector: 'page-core-financial-overview',
     templateUrl: 'overview.html',
     styleUrls: ['overview.scss'],
+    imports: [
+        CoreSharedModule,
+    ],
 })
 export class CoreFinancialOverviewPage implements OnInit {
 

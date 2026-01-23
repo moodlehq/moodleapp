@@ -34,6 +34,7 @@ import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreAlerts } from '@services/overlays/alerts';
 import { CoreToasts } from '@services/overlays/toasts';
 import { CORE_BLOCKS_DASHBOARD_FALLBACK_BLOCKS } from '@features/block/constants';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Page that displays the dashboard page.
@@ -42,6 +43,9 @@ import { CORE_BLOCKS_DASHBOARD_FALLBACK_BLOCKS } from '@features/block/constants
     selector: 'page-core-courses-dashboard',
     templateUrl: 'dashboard.html',
     styleUrls: ['dashboard.scss'],
+    imports: [
+        CoreSharedModule,
+    ],
 })
 export default class CoreCoursesDashboardPage implements OnInit, OnDestroy {
 
