@@ -3,8 +3,8 @@
 ## Current Status
 
 **Phase:** Phase 2 In Progress
-**Last Action:** Completed 02-04 (Dashboard & Courses import fixes)
-**Next Action:** Execute remaining Wave 2 plans (02-02, 02-05, 02-06)
+**Last Action:** Completed 02-05 (Course Components)
+**Next Action:** Execute remaining Wave 2 plans (02-02, 02-06)
 
 ## Project Reference
 
@@ -18,11 +18,11 @@ See: .planning/PROJECT.md (updated 2026-01-23)
 | Phase | Status | Plans | Progress |
 |-------|--------|-------|----------|
 | 1     | Done   | 1/1   | 100%     |
-| 2     | Active | 5/8   | 62.5%    |
+| 2     | Active | 6/8   | 75%      |
 | 3     | Pending| 0/1   | 0%       |
 
 ```
-Phase 2: [#####---] 62.5%
+Phase 2: [######--] 75%
 ```
 
 ## Phase 2 Plans
@@ -33,7 +33,7 @@ Phase 2: [#####---] 62.5%
 | 02-02 | 2 | Pending | User Menu | user-menu.ts, user-menu.html, user-menu.scss |
 | 02-03 | 2 | Done | Grades | courses.ts, course.ts, grades.ts, templates |
 | 02-04 | 2 | Done | Dashboard & Courses | dashboard.ts, course-list-item.ts, courses.ts |
-| 02-05 | 2 | Pending | Course Components | course-section.ts, module.ts, index.ts |
+| 02-05 | 2 | Done | Course Components | course-section.ts, module.ts, index.ts |
 | 02-06 | 2 | Pending | Block Addons | timeline.ts, myoverview.ts |
 | 02-07 | 2 | Done | Other Addons | discussion.ts, about.ts, calendar/index.ts |
 | 02-08 | 2 | Done | Theme | theme.base.scss, globals.variables.scss |
@@ -49,6 +49,7 @@ Phase 2: [#####---] 62.5%
 | 02-01-SUMMARY.md | Core Services verification | 2026-01-23 |
 | 02-03-SUMMARY.md | Grades import fixes | 2026-01-23 |
 | 02-04-SUMMARY.md | Dashboard & Courses fixes | 2026-01-23 |
+| 02-05-SUMMARY.md | Course Components fixes | 2026-01-23 |
 | 02-07-SUMMARY.md | Other Addons import fixes | 2026-01-23 |
 | 02-08-SUMMARY.md | Theme SCSS verification | 2026-01-23 |
 
@@ -99,6 +100,15 @@ Phase 2: [#####---] 62.5%
   - Added missing constants imports from respective constants.ts files
 - **Note:** calendar/pages/list/list.ts does not exist; resource/index.ts already compliant
 
+### 02-05: Course Components (Completed)
+- **Status:** Fixed duplicate host binding and dead code
+- **Duration:** 4 min 48s
+- **Changes:**
+  - course-section.ts: Removed redundant @HostBinding (host property already handles class binding)
+  - index.ts: Removed dead setCourseColor method (referenced undefined imports)
+  - module.ts: Verified (no changes needed, correct imports)
+- **Preserved:** Collapsible section behavior, Aspire SCSS customizations, course module styling
+
 ### 02-08: Theme SCSS (Completed)
 - **Status:** Verified (no changes needed)
 - **Duration:** 3 min
@@ -126,6 +136,8 @@ Phase 2: [#####---] 62.5%
 | resource/index.ts already compliant | Already imports from @services/overlays/alerts | 02-07 |
 | Theme SCSS already compatible | Ionic 8 patterns preserved, dark mode uses :root.dark | 02-08 |
 | ::ng-deep usage acceptable | Deprecated but functional, no immediate migration needed | 02-08 |
+| Prefer host property over @HostBinding | Equivalent functionality, cleaner code | 02-05 |
+| Remove dead code with undefined imports | Prevents TypeScript errors under strict checking | 02-05 |
 
 ## Session Log
 
@@ -140,11 +152,12 @@ Phase 2: [#####---] 62.5%
 - 2026-01-23: 02-03 completed - grades import fixes (CoreAlerts, CoreSharedModule)
 - 2026-01-23: 02-07 completed - other addons import fixes (discussion.ts, about.ts, calendar/index.ts)
 - 2026-01-23: 02-04 completed - dashboard & courses fixes (signals, overlay services, constants)
+- 2026-01-23: 02-05 completed - course components fixes (host binding, dead code removal)
 
 ## Session Continuity
 
-Last session: 2026-01-23T19:13:07Z
-Stopped at: Completed 02-04-PLAN.md
+Last session: 2026-01-23T19:13:23Z
+Stopped at: Completed 02-05-PLAN.md
 Resume file: None
 
 ---
