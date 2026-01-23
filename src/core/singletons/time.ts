@@ -422,9 +422,9 @@ export class CoreTime {
     static userDate(
         timestamp: number,
         format?: string,
-        convert: boolean = true,
-        fixDay: boolean = true,
-        fixHour: boolean = true,
+        convert = true,
+        fixDay = true,
+        fixHour = true,
     ): string {
         format = Translate.instant(format ? format : 'core.strftimedaydatetime');
 

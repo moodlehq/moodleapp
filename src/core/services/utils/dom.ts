@@ -425,7 +425,7 @@ export class CoreDomUtilsProvider {
      * @deprecated since 5.0. Use CoreAlerts.confirmDelete instead.
      */
     async showDeleteConfirm(
-        translateMessage: string = 'core.areyousure',
+        translateMessage = 'core.areyousure',
         translateArgs: Record<string, unknown> = {},
         options: AlertOptions = {},
     ): Promise<void> {
@@ -636,7 +636,7 @@ export class CoreDomUtilsProvider {
         message: string,
         translateMessage?: boolean,
         duration: ToastDuration | number = ToastDuration.SHORT,
-        cssClass: string = '',
+        cssClass = '',
     ): Promise<HTMLIonToastElement> {
         return CoreToasts.show({
             message,

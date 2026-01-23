@@ -269,7 +269,7 @@ export class CoreAuthenticatedSite extends CoreUnauthenticatedSite {
      * @param whenUndefined The value to return when the parameter is undefined.
      * @returns Whether can use advanced feature.
      */
-    canUseAdvancedFeature(featureName: string, whenUndefined: boolean = true): boolean {
+    canUseAdvancedFeature(featureName: string, whenUndefined = true): boolean {
         const info = this.getInfo();
 
         if (info?.advancedfeatures === undefined) {

@@ -768,7 +768,7 @@ export class CorePushNotificationsProvider {
      * @param addon Registered addon name. If not defined it will store the site total.
      * @returns Promise resolved with the stored badge counter for the addon or site or 0 if none.
      */
-    protected async getAddonBadge(siteId?: string, addon: string = 'site'): Promise<number> {
+    protected async getAddonBadge(siteId?: string, addon = 'site'): Promise<number> {
         try {
             const entry = await this.badgesTable.getOne({ siteid: siteId, addon });
 
@@ -808,7 +808,7 @@ export class CorePushNotificationsProvider {
      * @param addon Registered addon name. If not defined it will store the site total.
      * @returns Promise resolved with the stored badge counter for the addon or site.
      */
-    protected async saveAddonBadge(value: number, siteId?: string, addon: string = 'site'): Promise<number> {
+    protected async saveAddonBadge(value: number, siteId?: string, addon = 'site'): Promise<number> {
         siteId = siteId || CoreSites.getCurrentSiteId();
 
         await this.badgesTable.insert({

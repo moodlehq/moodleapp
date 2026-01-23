@@ -81,7 +81,7 @@ export class AddonMessagesSyncProvider extends CoreSyncBaseProvider<AddonMessage
      *                          false to sync all.
      * @returns Promise resolved if sync is successful, rejected if sync fails.
      */
-    syncAllDiscussions(siteId?: string, onlyDeviceOffline: boolean = false): Promise<void> {
+    syncAllDiscussions(siteId?: string, onlyDeviceOffline = false): Promise<void> {
         const syncFunctionLog = `all discussions${onlyDeviceOffline ? ' (Only offline)' : ''}`;
 
         return this.syncOnSites(syncFunctionLog, (siteId) => this.syncAllDiscussionsFunc(onlyDeviceOffline, siteId), siteId);

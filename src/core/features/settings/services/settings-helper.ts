@@ -475,7 +475,7 @@ export class CoreSettingsHelperProvider {
      *
      * @param enable True to enable dark mode, false to disable.
      */
-    protected toggleDarkMode(enable: boolean = false): void {
+    protected toggleDarkMode(enable = false): void {
         const isDark = this.isDarkModeEnabled();
 
         if (isDark !== enable) {

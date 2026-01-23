@@ -211,7 +211,7 @@ export class AddonModBookProvider {
         const getChapterInfo = (
             chapter: AddonModBookTocChapterParsed,
             chapterNumber: number,
-            previousNumber: string = '',
+            previousNumber = '',
         ): AddonModBookTocChapter => {
             const hidden = !!parseInt(chapter.hidden, 10);
 

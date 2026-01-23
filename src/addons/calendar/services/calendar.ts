@@ -511,7 +511,7 @@ export class AddonCalendarProvider {
      * @param useCommonWords Whether to use common words like "Today", "Yesterday", etc.
      * @returns The formatted date/time.
      */
-    getDayRepresentation(time: number, useCommonWords: boolean = true): string {
+    getDayRepresentation(time: number, useCommonWords = true): string {
 
         if (!useCommonWords) {
             // We don't want words, just a date.
@@ -818,7 +818,7 @@ export class AddonCalendarProvider {
      */
     async getEventsList(
         initialTime?: number,
-        daysToStart: number = 0,
+        daysToStart = 0,
         daysInterval: number = ADDON_CALENDAR_DAYS_INTERVAL,
         siteId?: string,
     ): Promise<AddonCalendarGetEventsEvent[]> {
@@ -1538,7 +1538,7 @@ export class AddonCalendarProvider {
      * @returns Promise resolved when done.
      */
     async submitEventOnline(
-        eventId: number = 0,
+        eventId = 0,
         formData: AddonCalendarSubmitCreateUpdateFormDataWSParams,
         siteId?: string,
     ): Promise<AddonCalendarEvent> {

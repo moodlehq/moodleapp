@@ -241,7 +241,7 @@ class CoreFilepoolQueue {
     getPromise(
         siteId: string,
         fileId: string,
-        create: boolean = true,
+        create = true,
         onProgress?: CoreFilepoolOnProgressCallback,
     ): CoreFilepoolPromisedValue | undefined {
         if (!this.deferreds[siteId]) {
@@ -792,7 +792,7 @@ export class CoreFilepoolProvider {
         component?: string,
         componentId?: string | number,
         timemodified = 0,
-        checkSize: boolean = true,
+        checkSize = true,
         downloadUnknown?: boolean,
         options: CoreFilepoolFileOptions = {},
         revision?: number,
@@ -2477,7 +2477,7 @@ export class CoreFilepoolProvider {
      *                    It is advised to set it to true to reduce the performance and data usage of the app.
      * @returns Resolved on success.
      */
-    async invalidateAllFiles(siteId: string, onlyUnknown: boolean = true): Promise<void> {
+    async invalidateAllFiles(siteId: string, onlyUnknown = true): Promise<void> {
         if (onlyUnknown) {
             await this.filesTables[siteId].updateWhere(
                 { stale: 1 },
@@ -2524,7 +2524,7 @@ export class CoreFilepoolProvider {
         siteId: string | undefined,
         component: string,
         componentId?: string | number,
-        onlyUnknown: boolean = true,
+        onlyUnknown = true,
     ): Promise<void> {
         siteId = siteId ?? CoreSites.getCurrentSiteId();
 

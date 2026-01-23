@@ -366,7 +366,7 @@ export class CoreObject {
      * @param removeEmpty Whether to remove params whose value is null/undefined.
      * @returns GET params.
      */
-    static toGetParams(object: Record<string, unknown>, removeEmpty: boolean = true): string {
+    static toGetParams(object: Record<string, unknown>, removeEmpty = true): string {
         // First of all, flatten the object so all properties are in the first level.
         const flattened = CoreObject.flatten(object);
         let result = '';
@@ -479,9 +479,9 @@ export class CoreObject {
     static basicLeftCompare(
         itemA: any, // eslint-disable-line @typescript-eslint/no-explicit-any
         itemB: any, // eslint-disable-line @typescript-eslint/no-explicit-any
-        maxLevels: number = 0,
-        level: number = 0,
-        undefinedIsNull: boolean = true,
+        maxLevels = 0,
+        level = 0,
+        undefinedIsNull = true,
     ): boolean {
         if (typeof itemA == 'function' || typeof itemB == 'function') {
             return true; // Don't compare functions.

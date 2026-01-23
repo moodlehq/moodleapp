@@ -85,7 +85,7 @@ export class CoreCommentsProvider {
         instanceId: number,
         component: string,
         itemId: number,
-        area: string = '',
+        area = '',
         siteId?: string,
     ): Promise<CoreCommentsData | false> {
         siteId = siteId || CoreSites.getCurrentSiteId();
@@ -133,7 +133,7 @@ export class CoreCommentsProvider {
         instanceId: number,
         component: string,
         itemId: number,
-        area: string = '',
+        area = '',
         siteId?: string,
     ): Promise<CoreCommentsData> {
         const comments: CoreCommentsCommentBasicData[] = [
@@ -301,7 +301,7 @@ export class CoreCommentsProvider {
         instanceId: number,
         component: string,
         itemId: number,
-        area: string = '',
+        area = '',
         siteId?: string,
     ): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -350,7 +350,7 @@ export class CoreCommentsProvider {
         instanceId: number,
         component: string,
         itemId: number,
-        area: string = '',
+        area = '',
     ): string {
         return `${this.getCommentsPrefixCacheKey(contextLevel, instanceId)}:${component}:${itemId}:${area}`;
     }
@@ -383,8 +383,8 @@ export class CoreCommentsProvider {
         instanceId: number,
         component: string,
         itemId: number,
-        area: string = '',
-        page: number = 0,
+        area = '',
+        page = 0,
         siteId?: string,
     ): Promise<CoreCommentsGetCommentsWSResponse> {
         const site = await CoreSites.getSite(siteId);
@@ -432,7 +432,7 @@ export class CoreCommentsProvider {
         instanceId: number,
         component: string,
         itemId: number,
-        area: string = '',
+        area = '',
         siteId?: string,
     ): Promise<string> {
 
@@ -496,7 +496,7 @@ export class CoreCommentsProvider {
         instanceId: number,
         component: string,
         itemId: number,
-        area: string = '',
+        area = '',
         siteId?: string,
     ): Promise<void> {
         const site = await CoreSites.getSite(siteId);

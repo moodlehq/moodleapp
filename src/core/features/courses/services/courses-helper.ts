@@ -91,7 +91,7 @@ export class CoreCoursesHelperProvider {
     protected loadCourseExtraInfo(
         course: CoreEnrolledCourseDataWithExtraInfo,
         courseByField: CoreCourseSearchedData,
-        addCategoryName: boolean = false,
+        addCategoryName = false,
     ): void {
         if (courseByField) {
             course.displayname = courseByField.displayname;
@@ -124,7 +124,7 @@ export class CoreCoursesHelperProvider {
      */
     async loadCoursesExtraInfo(
         courses: CoreEnrolledCourseDataWithExtraInfo[],
-        loadCategoryNames: boolean = false,
+        loadCategoryNames = false,
     ): Promise<CoreEnrolledCourseDataWithExtraInfo[]> {
         return await firstValueFrom(this.loadCoursesExtraInfoObservable(courses, loadCategoryNames));
     }
@@ -139,7 +139,7 @@ export class CoreCoursesHelperProvider {
      */
     loadCoursesExtraInfoObservable(
         courses: CoreEnrolledCourseDataWithExtraInfo[],
-        loadCategoryNames: boolean = false,
+        loadCategoryNames = false,
         options: CoreSitesCommonWSOptions = {},
     ): WSObservable<CoreEnrolledCourseDataWithExtraInfo[]> {
         if (!courses.length) {
@@ -239,10 +239,10 @@ export class CoreCoursesHelperProvider {
      * @returns Courses filled with options.
      */
     async getUserCoursesWithOptions(
-        sort: string = 'fullname',
-        slice: number = 0,
+        sort = 'fullname',
+        slice = 0,
         filter?: string,
-        loadCategoryNames: boolean = false,
+        loadCategoryNames = false,
         options: CoreSitesCommonWSOptions = {},
     ): Promise<CoreEnrolledCourseDataWithExtraInfoAndOptions[]> {
         return await firstValueFrom(this.getUserCoursesWithOptionsObservable({

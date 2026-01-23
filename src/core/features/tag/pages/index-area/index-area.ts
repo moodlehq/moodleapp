@@ -97,7 +97,7 @@ export default class CoreTagIndexAreaPage implements OnInit {
      * @param refresh Whether to refresh the data or fetch a new page.
      * @returns Resolved when done.
      */
-    async fetchData(refresh: boolean = false): Promise<void> {
+    async fetchData(refresh = false): Promise<void> {
         this.loadMoreError = false;
         const page = refresh ? 0 : this.nextPage;
 

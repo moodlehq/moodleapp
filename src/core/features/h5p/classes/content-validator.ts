@@ -207,7 +207,7 @@ export class CoreH5PContentValidator {
      * @returns True if all files are valid.
      */
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    validateContentFiles(contentPath: string, isLibrary: boolean = false): boolean {
+    validateContentFiles(contentPath: string, isLibrary = false): boolean {
         // Nothing to do, already checked by Moodle.
         return true;
     }
@@ -494,7 +494,7 @@ export class CoreH5PContentValidator {
      * @param flatten Whether to flatten.
      * @returns Promise resolved when done.
      */
-    async validateGroup(group: unknown, semantics: CoreH5PSemantics, flatten: boolean = true): Promise<unknown> {
+    async validateGroup(group: unknown, semantics: CoreH5PSemantics, flatten = true): Promise<unknown> {
         if (!semantics.fields) {
             return group;
         }
@@ -676,7 +676,7 @@ export class CoreH5PContentValidator {
      * @param store Whether to store m.
      * @returns string If the element isn't allowed, an empty string. Otherwise, the cleaned up version of the HTML element.
      */
-    protected filterXssSplit(tags: string[], store: boolean = false): string {
+    protected filterXssSplit(tags: string[], store = false): string {
         if (store) {
             this.allowedHtml = CoreArray.toObject(tags);
 
@@ -878,7 +878,7 @@ export class CoreH5PContentValidator {
      * @param decode Whether to decode entities in the str.
      * @returns Cleaned up and HTML-escaped version of str.
      */
-    filterXssBadProtocol(str: string, decode: boolean = true): string {
+    filterXssBadProtocol(str: string, decode = true): string {
         // Get the plain text representation of the attribute value (i.e. its meaning).
         if (decode) {
             str = CoreText.decodeHTMLEntities(str);

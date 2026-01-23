@@ -391,7 +391,7 @@ export class AddonModForumIndexComponent extends CoreCourseModuleMainActivityCom
         }
     }
 
-    private async fetchForum(sync: boolean = false, showErrors: boolean = false): Promise<void> {
+    private async fetchForum(sync = false, showErrors = false): Promise<void> {
         if (!this.courseId || !this.module) {
             return;
         }

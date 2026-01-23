@@ -99,7 +99,7 @@ export class CoreInfiniteLoadingComponent {
      *
      * @param forced Whether loading happened on scroll or was forced.
      */
-    loadMore(forced: boolean = false): void {
+    loadMore(forced = false): void {
         if (this.loadingMore()) {
             return;
         }

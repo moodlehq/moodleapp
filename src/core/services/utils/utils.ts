@@ -139,9 +139,9 @@ export class CoreUtilsProvider {
     basicLeftCompare(
         itemA: any, // eslint-disable-line @typescript-eslint/no-explicit-any
         itemB: any, // eslint-disable-line @typescript-eslint/no-explicit-any
-        maxLevels: number = 0,
-        level: number = 0,
-        undefinedIsNull: boolean = true,
+        maxLevels = 0,
+        level = 0,
+        undefinedIsNull = true,
     ): boolean {
         return CoreObject.basicLeftCompare(itemA, itemB, maxLevels, level, undefinedIsNull);
     }
@@ -194,7 +194,7 @@ export class CoreUtilsProvider {
      * @returns Cloned variable.
      * @deprecated since 5.0. Use CoreUtils.clone instead.
      */
-    clone<T>(source: T, level: number = 0): T {
+    clone<T>(source: T, level = 0): T {
         return CoreUtilsSingleton.clone(source, level);
     }
 
@@ -281,10 +281,10 @@ export class CoreUtilsProvider {
      */
     formatTree<T>(
         list: T[],
-        parentFieldName: string = 'parent',
-        idFieldName: string = 'id',
-        rootParentId: number = 0,
-        maxDepth: number = 5,
+        parentFieldName = 'parent',
+        idFieldName = 'id',
+        rootParentId = 0,
+        maxDepth = 5,
     ): TreeNode<T>[] {
         return CoreUtilsSingleton.formatTree(list, parentFieldName, idFieldName, rootParentId, maxDepth);
     }
@@ -450,7 +450,7 @@ export class CoreUtilsProvider {
     makeMenuFromList<T>(
         list: string,
         defaultLabel?: string,
-        separator: string = ',',
+        separator = ',',
         defaultValue?: T,
     ): CoreMenuItem<T>[] {
         return CoreUtilsSingleton.makeMenuFromList(list, defaultLabel, separator, defaultValue);
@@ -593,7 +593,7 @@ export class CoreUtilsProvider {
      * @returns GET params.
      * @deprecated since 5.0. Use CoreObject.toGetParams instead.
      */
-    objectToGetParams(object: Record<string, unknown>, removeEmpty: boolean = true): string {
+    objectToGetParams(object: Record<string, unknown>, removeEmpty = true): string {
         return CoreObject.toGetParams(object, removeEmpty);
     }
 

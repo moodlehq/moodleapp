@@ -78,7 +78,7 @@ export class CoreTimeUtilsProvider {
      * @returns Readable date.
      * @deprecated since 5.0. Use CoreTime.userDate instead.
      */
-    userDate(timestamp: number, format?: string, convert: boolean = true, fixDay: boolean = true, fixHour: boolean = true): string {
+    userDate(timestamp: number, format?: string, convert = true, fixDay = true, fixHour = true): string {
         return CoreTime.userDate(timestamp, format, convert, fixDay, fixHour);
     }
 

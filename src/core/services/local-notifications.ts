@@ -480,7 +480,7 @@ export class CoreLocalNotificationsProvider {
      * @param useQueue Whether to add the call to the queue.
      * @returns Promise resolved with a boolean indicating if promise is triggered (true) or not.
      */
-    async isTriggered(notification: ILocalNotification, useQueue: boolean = true): Promise<boolean> {
+    async isTriggered(notification: ILocalNotification, useQueue = true): Promise<boolean> {
         if (notification.id === undefined) {
             return false;
         }

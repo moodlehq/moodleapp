@@ -356,8 +356,8 @@ export class CoreH5PCore {
     async findLibraryDependencies(
         dependencies: {[key: string]: CoreH5PContentDepsTreeDependency},
         library: CoreH5PLibraryData | CoreH5PLibraryAddonData,
-        nextWeight: number = 1,
-        editor: boolean = false,
+        nextWeight = 1,
+        editor = false,
         siteId?: string,
     ): Promise<number> {
 
@@ -478,7 +478,7 @@ export class CoreH5PCore {
      * @param assetsFolderPath The path of the folder where the assets are.
      * @returns List of urls.
      */
-    getAssetsUrls(assets: CoreH5PDependencyAsset[], assetsFolderPath: string = ''): string[] {
+    getAssetsUrls(assets: CoreH5PDependencyAsset[], assetsFolderPath = ''): string[] {
         const urls: string[] = [];
 
         assets.forEach((asset) => {
@@ -512,7 +512,7 @@ export class CoreH5PCore {
     async getDependenciesFiles(
         dependencies: {[machineName: string]: CoreH5PContentDependencyData},
         folderName: string,
-        prefix: string = '',
+        prefix = '',
         siteId?: string,
     ): Promise<CoreH5PDependenciesFiles> {
         siteId = siteId || CoreSites.getCurrentSiteId();
@@ -605,7 +605,7 @@ export class CoreH5PCore {
         dependency: CoreH5PContentDependencyData,
         type: string,
         assets: CoreH5PDependencyAsset[],
-        prefix: string = '',
+        prefix = '',
     ): void {
 
         // Check if dependency has any files of this type

@@ -179,7 +179,7 @@ export class CoreUserProvider {
      */
     async getParticipants(
         courseId: number,
-        limitFrom: number = 0,
+        limitFrom = 0,
         limitNumber: number = CORE_USER_PARTICIPANTS_LIST_LIMIT,
         siteId?: string,
         ignoreCache?: boolean,
@@ -246,7 +246,7 @@ export class CoreUserProvider {
     async getProfile(
         userId: number,
         courseId?: number,
-        forceLocal: boolean = false,
+        forceLocal = false,
         siteId?: string,
     ): Promise<CoreUserProfile> {
         siteId = siteId || CoreSites.getCurrentSiteId();
@@ -629,8 +629,8 @@ export class CoreUserProvider {
     async searchParticipants(
         courseId: number,
         search: string,
-        searchAnywhere: boolean = true,
-        page: number = 0,
+        searchAnywhere = true,
+        page = 0,
         perPage: number = CORE_USER_PARTICIPANTS_LIST_LIMIT,
         siteId?: string,
     ): Promise<{participants: CoreUserDescriptionExporter[]; canLoadMore: boolean}> {

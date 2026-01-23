@@ -145,7 +145,7 @@ export class CoreUserToursService {
      *
      * @param acknowledge Whether to acknowledge that the user has seen this User Tour or not.
      */
-    async dismiss(acknowledge: boolean = true): Promise<void> {
+    async dismiss(acknowledge = true): Promise<void> {
         await this.getForegroundTour()?.dismiss(acknowledge);
 
         if (this.hasVisibleTour()) {

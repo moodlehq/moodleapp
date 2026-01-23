@@ -667,7 +667,7 @@ export class CoreFileProvider {
         file: Blob,
         path: string,
         onProgress?: CoreFileProgressFunction,
-        offset: number = 0,
+        offset = 0,
         append?: boolean,
     ): Promise<FileEntry> {
         offset = offset || 0;
@@ -1004,7 +1004,7 @@ export class CoreFileProvider {
         path: string,
         destFolder?: string,
         onProgress?: (progress: ProgressEvent) => void,
-        recreateDir: boolean = true,
+        recreateDir = true,
     ): Promise<void> {
         // Get the source file.
         const fileEntry = await this.getFile(path);

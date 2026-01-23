@@ -78,10 +78,10 @@ export class AddonModDataProvider {
         entryId: number,
         courseId: number,
         contents: AddonModDataEntryWSField[],
-        groupId: number = 0,
+        groupId = 0,
         fields: AddonModDataField[],
         siteId?: string,
-        forceOffline: boolean = false,
+        forceOffline = false,
     ): Promise<AddonModDataAddEntryResult> {
         siteId = siteId || CoreSites.getCurrentSiteId();
 
@@ -383,7 +383,7 @@ export class AddonModDataProvider {
         contents: AddonModDataEntryWSField[],
         fields: AddonModDataField[],
         siteId?: string,
-        forceOffline: boolean = false,
+        forceOffline = false,
     ): Promise<AddonModDataEditEntryResult> {
         siteId = siteId || CoreSites.getCurrentSiteId();
 
@@ -596,7 +596,7 @@ export class AddonModDataProvider {
      * @param groupId Group ID.
      * @returns Cache key.
      */
-    protected getDatabaseAccessInformationDataCacheKey(dataId: number, groupId: number = 0): string {
+    protected getDatabaseAccessInformationDataCacheKey(dataId: number, groupId = 0): string {
         return this.getDatabaseAccessInformationDataPrefixCacheKey(dataId) + groupId;
     }
 
@@ -682,7 +682,7 @@ export class AddonModDataProvider {
      * @param groupId Group ID.
      * @returns Cache key.
      */
-    protected getEntriesCacheKey(dataId: number, groupId: number = 0): string {
+    protected getEntriesCacheKey(dataId: number, groupId = 0): string {
         return this.getEntriesPrefixCacheKey(dataId) + groupId;
     }
 

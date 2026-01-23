@@ -145,12 +145,7 @@ const appConfig = {
         ],
         '@typescript-eslint/no-deprecated': 'error',
         '@typescript-eslint/no-empty-function': 'error',
-        '@typescript-eslint/no-inferrable-types': [
-            'error',
-            {
-                ignoreParameters: true, // @todo: Remove this exception when all failures have been fixed.
-            },
-        ],
+        '@typescript-eslint/no-inferrable-types': 'error',
         '@typescript-eslint/no-non-null-assertion': 'warn', // @todo: Set it to 'error' when all have been fixed.
         'header/header': [
             2,

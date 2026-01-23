@@ -496,7 +496,7 @@ export class AddonModScormIndexComponent extends CoreCourseModuleMainActivityCom
      * @param preview Wether open screen in preview mode or not.
      * @param scoId SCO that needs to be loaded when the SCORM is opened. If not defined, load first SCO.
      */
-    async open(event?: Event, preview: boolean = false, scoId?: number): Promise<void> {
+    async open(event?: Event, preview = false, scoId?: number): Promise<void> {
         event?.preventDefault();
         event?.stopPropagation();
 
@@ -558,7 +558,7 @@ export class AddonModScormIndexComponent extends CoreCourseModuleMainActivityCom
      *
      * @param scoId SCO ID.
      */
-    protected openScorm(scoId?: number, preview: boolean = false): void {
+    protected openScorm(scoId?: number, preview = false): void {
         const autoPlayData = this.autoPlayData;
 
         this.autoPlayData = undefined;

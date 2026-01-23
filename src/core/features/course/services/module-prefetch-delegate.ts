@@ -757,7 +757,7 @@ export class CoreCourseModulePrefetchDelegateService extends CoreDelegate<CoreCo
         sectionId?: number,
         refresh?: boolean,
         onlyToDisplay?: boolean,
-        checkUpdates: boolean = true,
+        checkUpdates = true,
     ): Promise<CoreCourseModulesStatus> {
 
         let updates: CourseUpdates | false = false;

@@ -925,7 +925,7 @@ export class CoreFormatTextDirective implements OnDestroy, AsyncDirective {
      * @param element Video or audio to treat.
      * @param isVideo Whether it's a video.
      */
-    protected treatMedia(element: HTMLElement, isVideo: boolean = false): void {
+    protected treatMedia(element: HTMLElement, isVideo = false): void {
         if (isVideo) {
             this.fixVideoSrcPlaceholder(element);
         }

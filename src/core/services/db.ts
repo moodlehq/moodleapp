@@ -55,7 +55,7 @@ export class CoreDbProvider {
      *
      * @param format Log format, with the following substitutions: :dbname, :sql, :duration, and :result.
      */
-    printHistory(format: string = ':dbname | :sql | Duration: :duration | Result: :result'): void {
+    printHistory(format = ':dbname | :sql | Duration: :duration | Result: :result'): void {
         const substituteParams = ({ sql, params, duration, error, dbName }: CoreDbQueryLog) => format
             .replace(':dbname', dbName)
             .replace(':sql', Object

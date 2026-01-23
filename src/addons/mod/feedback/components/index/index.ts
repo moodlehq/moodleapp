@@ -418,7 +418,7 @@ export class AddonModFeedbackIndexComponent extends CoreCourseModuleMainActivity
      *
      * @param preview Preview or edit the form.
      */
-    gotoAnswerQuestions(preview: boolean = false): void {
+    gotoAnswerQuestions(preview = false): void {
         CoreNavigator.navigateToSitePath(
             `${ADDON_MOD_FEEDBACK_PAGE_NAME}/${this.courseId}/${this.module.id}/form`,
             {

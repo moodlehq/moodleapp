@@ -617,7 +617,7 @@ export class CoreH5PFramework {
      * @param searchParam The library parameter (Default: 'path').
      * @returns Library parameter values separated by ', '
      */
-    libraryParameterValuesToCsv(libraryData: CoreH5PLibraryBeingSaved, key: string, searchParam: string = 'path'): string {
+    libraryParameterValuesToCsv(libraryData: CoreH5PLibraryBeingSaved, key: string, searchParam = 'path'): string {
         if (libraryData[key] !== undefined) {
             const parameterValues: string[] = [];
 

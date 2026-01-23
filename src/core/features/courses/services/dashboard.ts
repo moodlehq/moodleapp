@@ -51,7 +51,7 @@ export class CoreCoursesDashboardProvider {
      * @param userId User ID. Default, 0 means current user.
      * @returns Cache key.
      */
-    protected getDashboardBlocksCacheKey(myPage = CoreCoursesMyPageName.DEFAULT, userId: number = 0): string {
+    protected getDashboardBlocksCacheKey(myPage = CoreCoursesMyPageName.DEFAULT, userId = 0): string {
         return `${CoreCoursesDashboardProvider.ROOT_CACHE_KEY}blocks:${myPage}:${userId}`;
     }
 

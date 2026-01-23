@@ -115,7 +115,7 @@ export class AddonModWorkshopProvider {
      * @param groupId Group ID.
      * @returns Cache key.
      */
-    protected getSubmissionsDataCacheKey(workshopId: number, userId: number = 0, groupId: number = 0): string {
+    protected getSubmissionsDataCacheKey(workshopId: number, userId = 0, groupId = 0): string {
         return `${this.getWorkshopDataPrefixCacheKey(workshopId)}:submissions:${userId}:${groupId}`;
     }
 
@@ -147,7 +147,7 @@ export class AddonModWorkshopProvider {
      * @param groupId Group ID.
      * @returns Cache key.
      */
-    protected getGradesReportDataCacheKey(workshopId: number, groupId: number = 0): string {
+    protected getGradesReportDataCacheKey(workshopId: number, groupId = 0): string {
         return `${this.getWorkshopDataPrefixCacheKey(workshopId)}:report:${groupId}`;
     }
 
@@ -169,7 +169,7 @@ export class AddonModWorkshopProvider {
      * @param userId User ID or current user.
      * @returns Cache key.
      */
-    protected getReviewerAssessmentsDataCacheKey(workshopId: number, userId: number = 0): string {
+    protected getReviewerAssessmentsDataCacheKey(workshopId: number, userId = 0): string {
         return `${this.getWorkshopDataPrefixCacheKey(workshopId)}:reviewerassessments:${userId}`;
     }
 
@@ -192,7 +192,7 @@ export class AddonModWorkshopProvider {
      * @param mode Mode assessment (default) or preview.
      * @returns Cache key.
      */
-    protected getAssessmentFormDataCacheKey(workshopId: number, assessmentId: number, mode: string = 'assessment'): string {
+    protected getAssessmentFormDataCacheKey(workshopId: number, assessmentId: number, mode = 'assessment'): string {
         return `${this.getWorkshopDataPrefixCacheKey(workshopId)}:assessmentsform:${assessmentId}:${mode}`;
     }
 
@@ -427,7 +427,7 @@ export class AddonModWorkshopProvider {
      * @param groupId Group ID.
      * @param siteId Site ID. If not defined, current site.
      */
-    async invalidateSubmissionsData(workshopId: number, userId: number = 0, groupId: number = 0, siteId?: string): Promise<void> {
+    async invalidateSubmissionsData(workshopId: number, userId = 0, groupId = 0, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
 
         await site.invalidateWsCacheForKey(this.getSubmissionsDataCacheKey(workshopId, userId, groupId));
@@ -605,7 +605,7 @@ export class AddonModWorkshopProvider {
      * @param groupId Group ID.
      * @param siteId Site ID. If not defined, current site.
      */
-    async invalidateGradeReportData(workshopId: number, groupId: number = 0, siteId?: string): Promise<void> {
+    async invalidateGradeReportData(workshopId: number, groupId = 0, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
 
         await site.invalidateWsCacheForKey(this.getGradesReportDataCacheKey(workshopId, groupId));
@@ -678,7 +678,7 @@ export class AddonModWorkshopProvider {
         content: string,
         attachmentsId?: number,
         siteId?: string,
-        allowOffline: boolean = false,
+        allowOffline = false,
     ): Promise<number | false> {
         siteId = siteId || CoreSites.getCurrentSiteId();
 
@@ -778,7 +778,7 @@ export class AddonModWorkshopProvider {
         content: string,
         attachmentsId?: number | undefined,
         siteId?: string,
-        allowOffline: boolean = false,
+        allowOffline = false,
     ): Promise<number | false> {
         siteId = siteId || CoreSites.getCurrentSiteId();
 
@@ -1113,7 +1113,7 @@ export class AddonModWorkshopProvider {
     async invalidateAssessmentFormData(
         workshopId: number,
         assessmentId: number,
-        mode: string = 'assessment',
+        mode = 'assessment',
         siteId?: string,
     ):
         Promise<void> {

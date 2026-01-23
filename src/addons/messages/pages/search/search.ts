@@ -265,7 +265,7 @@ export default class AddonMessagesSearchPage implements OnDestroy {
      * @param result User or message.
      * @param onInit Whether the tser was selected on initial load.
      */
-    openConversation(result: AddonMessagesConversationMember | AddonMessagesMessageAreaContact, onInit: boolean = false): void {
+    openConversation(result: AddonMessagesConversationMember | AddonMessagesMessageAreaContact, onInit = false): void {
         if (!onInit || CoreScreen.isTablet) {
             this.selectedResult = result;
 

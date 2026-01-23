@@ -244,8 +244,8 @@ export class AddonModChatProvider {
      */
     async getSessions(
         chatId: number,
-        groupId: number = 0,
-        showAll: boolean = false,
+        groupId = 0,
+        showAll = false,
         options: CoreCourseCommonModWSOptions = {},
     ): Promise<AddonModChatSession[]> {
         const site = await CoreSites.getSite(options.siteId);
@@ -282,7 +282,7 @@ export class AddonModChatProvider {
         chatId: number,
         sessionStart: number,
         sessionEnd: number,
-        groupId: number = 0,
+        groupId = 0,
         options: CoreCourseCommonModWSOptions = {},
     ): Promise<AddonModChatWSSessionMessage[]> {
         const site = await CoreSites.getSite(options.siteId);
@@ -330,7 +330,7 @@ export class AddonModChatProvider {
      * @param showAll Whether to include incomplete sessions or not.
      * @param siteId Site ID. If not defined, current site.
      */
-    async invalidateSessions(chatId: number, groupId: number = 0, showAll: boolean = false, siteId?: string): Promise<void> {
+    async invalidateSessions(chatId: number, groupId = 0, showAll = false, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
 
         await site.invalidateWsCacheForKey(this.getSessionsCacheKey(chatId, groupId, showAll));
@@ -356,7 +356,7 @@ export class AddonModChatProvider {
      * @param groupId Group ID, 0 means that the function will determine the user group.
      * @param siteId Site ID. If not defined, current site.
      */
-    async invalidateSessionMessages(chatId: number, sessionStart: number, groupId: number = 0, siteId?: string): Promise<void> {
+    async invalidateSessionMessages(chatId: number, sessionStart: number, groupId = 0, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
 
         await site.invalidateWsCacheForKey(this.getSessionMessagesCacheKey(chatId, sessionStart, groupId));

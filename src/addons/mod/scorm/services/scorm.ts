@@ -406,7 +406,7 @@ export class AddonModScormProvider {
      * @param level The level of the TOC we're right now. 0 by default.
      * @returns SCORM's TOC (array format).
      */
-    formatTocToArray(toc: AddonModScormTOCTreeSco[], level: number = 0): AddonModScormTOCListSco[] {
+    formatTocToArray(toc: AddonModScormTOCTreeSco[], level = 0): AddonModScormTOCListSco[] {
         if (!toc || !toc.length) {
             return [];
         }

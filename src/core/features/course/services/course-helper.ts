@@ -285,7 +285,7 @@ export class CoreCourseHelperProvider {
         section: CoreCourseSection,
         courseId: number,
         refresh?: boolean,
-        checkUpdates: boolean = true,
+        checkUpdates = true,
     ): Promise<{statusData: CoreCourseModulesStatus; section: CoreCourseSectionWithStatus}> {
         if (section.id === CORE_COURSE_ALL_SECTIONS_ID) {
             throw new CoreError('Invalid section');
@@ -1276,7 +1276,7 @@ export class CoreCourseHelperProvider {
      * @param trustDownload True to show download success, false to show an outdated status when downloaded.
      * @returns Icon name.
      */
-    protected getPrefetchStatusIcon(status: DownloadStatus, trustDownload: boolean = false): CoreCourseDownloadStatusIcon {
+    protected getPrefetchStatusIcon(status: DownloadStatus, trustDownload = false): CoreCourseDownloadStatusIcon {
         if (status === DownloadStatus.DOWNLOADABLE_NOT_DOWNLOADED) {
             return CoreCourseDownloadStatusIcon.NOT_DOWNLOADED;
         }
@@ -1401,6 +1401,7 @@ export class CoreCourseHelperProvider {
      * Get the download ID of a section. It's used to interact with CoreCourseModulePrefetchDelegate.
      *
      * @param section Section.
+     * @param section.id
      * @returns Section download ID.
      */
     getSectionDownloadId(section: {id: number}): string {
@@ -1987,6 +1988,7 @@ export class CoreCourseHelperProvider {
      * Open course summary in side modal.
      *
      * @param course Course selected
+     * @param options
      */
     async openCourseSummary(course: CoreCourseWithImageAndColor & CoreCourseAnyCourseData, options: Params = {}): Promise<void> {
         const page = await this.getCourseSummaryPage();
@@ -2121,6 +2123,9 @@ export class CoreCourseHelperProvider {
      *
      * @param sections List of sections, with subsections included in the contents.
      * @param searchValue Value to search. If moduleId, returns the section that contains the module.
+     * @param searchValue.id
+     * @param searchValue.num
+     * @param searchValue.moduleId
      * @returns Section object, list of parents (if any) from top to bottom.
      */
     findSection<T extends CoreCourseWSSection>(

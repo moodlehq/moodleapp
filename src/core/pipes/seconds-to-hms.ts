@@ -40,7 +40,7 @@ export class CoreSecondsToHMSPipe implements PipeTransform {
      * @param seconds Number of seconds.
      * @returns Formatted seconds.
      */
-    transform(seconds: string | number, showHours: boolean = true): string {
+    transform(seconds: string | number, showHours = true): string {
         if (typeof seconds === 'string') {
             // Convert the value to a number.
             const numberSeconds = parseInt(seconds, 10);

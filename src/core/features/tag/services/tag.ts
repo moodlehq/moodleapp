@@ -77,13 +77,13 @@ export class CoreTagProvider {
      * @since 3.7
      */
     async getTagCloud(
-        collectionId: number = 0,
-        isStandard: boolean = false,
-        sort: string = 'name',
-        search: string = '',
-        fromContextId: number = 0,
-        contextId: number = 0,
-        recursive: boolean = true,
+        collectionId = 0,
+        isStandard = false,
+        sort = 'name',
+        search = '',
+        fromContextId = 0,
+        contextId = 0,
+        recursive = true,
         limit?: number,
         siteId?: string,
     ): Promise<CoreTagCloud> {
@@ -149,13 +149,13 @@ export class CoreTagProvider {
      */
     async getTagIndexPerArea(
         id: number,
-        name: string = '',
-        collectionId: number = 0,
-        areaId: number = 0,
-        fromContextId: number = 0,
-        contextId: number = 0,
-        recursive: boolean = true,
-        page: number = 0,
+        name = '',
+        collectionId = 0,
+        areaId = 0,
+        fromContextId = 0,
+        contextId = 0,
+        recursive = true,
+        page = 0,
         siteId?: string,
     ): Promise<CoreTagIndex[]> {
         const site = await CoreSites.getSite(siteId);
@@ -208,13 +208,13 @@ export class CoreTagProvider {
      * @param recursive Retrieve tag instances in the context and its children.
      */
     async invalidateTagCloud(
-        collectionId: number = 0,
-        isStandard: boolean = false,
-        sort: string = 'name',
-        search: string = '',
-        fromContextId: number = 0,
-        contextId: number = 0,
-        recursive: boolean = true,
+        collectionId = 0,
+        isStandard = false,
+        sort = 'name',
+        search = '',
+        fromContextId = 0,
+        contextId = 0,
+        recursive = true,
         siteId?: string,
     ): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -247,12 +247,12 @@ export class CoreTagProvider {
      */
     async invalidateTagIndexPerArea(
         id: number,
-        name: string = '',
-        collectionId: number = 0,
-        areaId: number = 0,
-        fromContextId: number = 0,
-        contextId: number = 0,
-        recursive: boolean = true,
+        name = '',
+        collectionId = 0,
+        areaId = 0,
+        fromContextId = 0,
+        contextId = 0,
+        recursive = true,
         siteId?: string,
     ): Promise<void> {
         const site = await CoreSites.getSite(siteId);

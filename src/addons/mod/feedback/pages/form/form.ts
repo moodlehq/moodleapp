@@ -262,7 +262,7 @@ export default class AddonModFeedbackFormPage implements OnInit, CanLeave {
      *
      * @param page Page to load.
      */
-    protected async fetchFeedbackPageData(page: number = 0): Promise<void> {
+    protected async fetchFeedbackPageData(page = 0): Promise<void> {
         this.items = [];
         const response = await this.fetchPageItems(page);
 

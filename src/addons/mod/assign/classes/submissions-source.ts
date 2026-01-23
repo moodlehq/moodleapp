@@ -109,7 +109,7 @@ export class AddonModAssignSubmissionsSource extends CoreRoutedItemsManagerSourc
     /**
      * Load assignment.
      */
-    async loadAssignment(sync: boolean = false): Promise<void> {
+    async loadAssignment(sync = false): Promise<void> {
         // Get assignment data.
         this.assign = await AddonModAssign.getAssignment(this.courseId, this.moduleId);
 
