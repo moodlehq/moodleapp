@@ -2,27 +2,27 @@
 
 ## Current Status
 
-**Phase:** Phase 2 In Progress
-**Last Action:** Completed 02-06 (Block Addons)
-**Next Action:** Execute 02-02 (User Menu) - final remaining plan
+**Phase:** Phase 2 Complete
+**Last Action:** Completed 02-02 (User Menu)
+**Next Action:** Execute Phase 3 (Final Build Verification)
 
 ## Project Reference
 
 See: .planning/PROJECT.md (updated 2026-01-23)
 
 **Core value:** Preserve every Aspire customization while gaining upstream improvements
-**Current focus:** Phase 2 - Adapt conflict files to new APIs
+**Current focus:** Phase 2 Complete - All conflict files adapted to new APIs
 
 ## Progress
 
 | Phase | Status | Plans | Progress |
 |-------|--------|-------|----------|
 | 1     | Done   | 1/1   | 100%     |
-| 2     | Active | 7/8   | 87.5%    |
+| 2     | Done   | 8/8   | 100%     |
 | 3     | Pending| 0/1   | 0%       |
 
 ```
-Phase 2: [#######-] 87.5%
+Phase 2: [########] 100%
 ```
 
 ## Phase 2 Plans
@@ -30,7 +30,7 @@ Phase 2: [#######-] 87.5%
 | Plan | Wave | Status | Objective | Files |
 |------|------|--------|-----------|-------|
 | 02-01 | 1 | Done | Core Services | url.ts, iframe.ts, format-text.ts, app.module.ts |
-| 02-02 | 2 | Pending | User Menu | user-menu.ts, user-menu.html, user-menu.scss |
+| 02-02 | 2 | Done | User Menu | user-menu.ts, user-menu.html, user-menu.scss |
 | 02-03 | 2 | Done | Grades | courses.ts, course.ts, grades.ts, templates |
 | 02-04 | 2 | Done | Dashboard & Courses | dashboard.ts, course-list-item.ts, courses.ts |
 | 02-05 | 2 | Done | Course Components | course-section.ts, module.ts, index.ts |
@@ -47,6 +47,7 @@ Phase 2: [#######-] 87.5%
 | ROADMAP.md | 3 phases, 10 plans | 2026-01-23 |
 | 02-RESEARCH.md | Phase 2 specific changes | 2026-01-23 |
 | 02-01-SUMMARY.md | Core Services verification | 2026-01-23 |
+| 02-02-SUMMARY.md | User Menu import fixes | 2026-01-23 |
 | 02-03-SUMMARY.md | Grades import fixes | 2026-01-23 |
 | 02-04-SUMMARY.md | Dashboard & Courses fixes | 2026-01-23 |
 | 02-05-SUMMARY.md | Course Components fixes | 2026-01-23 |
@@ -69,6 +70,17 @@ Phase 2: [#######-] 87.5%
 - **Duration:** 2 min 15s
 - **Finding:** All core services already compliant with v5.1.0 patterns
 - **Verified:** @services/overlays/* imports, Angular 17+ signals, YouTube proxy
+
+### 02-02: User Menu (Completed)
+- **Status:** Fixed imports and standalone component
+- **Duration:** 8 min
+- **Changes:**
+  - user-menu.ts: USER_PROFILE_REFRESHED -> CORE_USER_PROFILE_REFRESHED from @features/user/constants
+  - user-menu.ts: Added CoreAlerts, CoreUtils, CoreLoginHelper, CoreSite imports
+  - user-menu.ts: Added standalone: true for Angular component pattern
+  - user-menu.ts: Added siteLogo/siteLogoLoaded properties for template
+  - user-menu.ts: Migrated MY_PAGE_COURSES to CoreCoursesMyPageName.COURSES
+- **Preserved:** Parent/mentee system, debug console 7-tap easter egg, app links
 
 ### 02-03: Grades (Completed)
 - **Status:** Fixed import issues
@@ -129,18 +141,23 @@ Phase 2: [#######-] 87.5%
 - **Verified:** Dark mode (:root.dark), Aspire brand colors, parent/mentee UI styling
 - **SCSS Compilation:** theme.custom.scss compiles successfully (102KB output)
 
-## Key Changes Identified for Phase 2
+## Key Changes Applied in Phase 2
 
 - Import paths: `@services/loadings` -> `@services/overlays/loadings`
 - Constant: `USER_PROFILE_REFRESHED` -> `CORE_USER_PROFILE_REFRESHED`
-- Missing imports in user-menu.ts, dashboard.ts, timeline.ts
 - CoreDomUtils deprecated -> use CoreAlerts, CoreToasts, CoreLoadings
+- Standalone component pattern: `standalone: true` required for `imports` array
+- Signal pattern: Use signal() for reactive values, signal.set() for updates
+- MY_PAGE_COURSES constant -> CoreCoursesMyPageName.COURSES enum
 
 ## Decisions
 
 | Decision | Rationale | Plan |
 |----------|-----------|------|
 | Core services already compliant | Phase 1 merge preserved correct patterns | 02-01 |
+| Remove CoreSiteLogoComponent from user-menu | Not used in template | 02-02 |
+| Add standalone: true to user-menu | Required for components with imports array | 02-02 |
+| Use CoreCoursesMyPageName.COURSES | MY_PAGE_COURSES deprecated since v5.0 | 02-02 |
 | Replace CoreDomUtils with CoreAlerts | New overlay service pattern for v5.1.0 | 02-03 |
 | Add CoreSharedModule import | Standalone component pattern requirement | 02-03 |
 | Fix signal invocation in templates | Signals require () to get value | 02-04 |
@@ -169,11 +186,12 @@ Phase 2: [#######-] 87.5%
 - 2026-01-23: 02-04 completed - dashboard & courses fixes (signals, overlay services, constants)
 - 2026-01-23: 02-05 completed - course components fixes (host binding, dead code removal)
 - 2026-01-23: 02-06 completed - block addons fixes (timeline structure, myoverview imports, template)
+- 2026-01-23: 02-02 completed - user menu imports fixed (CORE_USER_PROFILE_REFRESHED, standalone)
 
 ## Session Continuity
 
-Last session: 2026-01-23T19:14:49Z
-Stopped at: Completed 02-06-PLAN.md
+Last session: 2026-01-23T19:16:44Z
+Stopped at: Completed 02-02-PLAN.md - Phase 2 Complete
 Resume file: None
 
 ---

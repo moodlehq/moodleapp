@@ -93,8 +93,8 @@ export class CoreMainMenuUserMenuComponent implements OnInit, OnDestroy {
 
     // App version info (auto-updated by post-commit hook)
     appVersion = CoreConstants.CONFIG.versionname;
-    buildNumber = 55;
-    buildTime = '2026-01-23 19:15';
+    buildNumber = 56;
+    buildTime = '2026-01-23 19:18';
 
     // Secret debug menu (tap build number 7 times)
     debugTapCount = 0;
