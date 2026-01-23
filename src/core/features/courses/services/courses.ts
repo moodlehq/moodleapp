@@ -27,6 +27,22 @@ import { AddonEnrolSelf } from '@addons/enrol/self/services/self';
 import { CoreEnrol, CoreEnrolEnrolmentInfo, CoreEnrolEnrolmentMethod } from '@features/enrol/services/enrol';
 import { CoreSiteWSPreSets, WSObservable } from '@classes/sites/authenticated-site';
 import { CoreUserParent } from '@features/user/services/parent';
+import { CoreCacheUpdateFrequency } from '@/core/constants';
+import { CoreTextFormat } from '@singletons/text';
+import {
+    CORE_COURSES_ENROL_INVALID_KEY,
+    CORE_COURSES_MY_COURSES_CHANGED_EVENT,
+    CORE_COURSES_MY_COURSES_UPDATED_EVENT,
+    CORE_COURSES_MY_COURSES_REFRESHED_EVENT,
+    CORE_COURSES_DASHBOARD_DOWNLOAD_ENABLED_CHANGED_EVENT,
+    CORE_COURSE_DOWNLOAD_FEATURE_NAME,
+    CORE_COURSES_DOWNLOAD_FEATURE_NAME,
+    CORE_COURSES_MYCOURSES_MENU_FEATURE_NAME,
+    CORE_COURSES_SEARCH_FEATURE_NAME,
+    CoreCoursesMyCoursesUpdatedEventAction,
+    CORE_COURSES_STATE_HIDDEN,
+    CORE_COURSES_STATE_FAVOURITE,
+} from '@features/courses/constants';
 
 declare module '@singletons/events' {
 

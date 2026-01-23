@@ -57,7 +57,6 @@ import { CoreAppLinks, AppLinkSection, AppLinkItem } from '../../services/app-li
     standalone: true,
     imports: [
         CoreSharedModule,
-        CoreSiteLogoComponent,
     ],
 })
 export class CoreMainMenuUserMenuComponent implements OnInit, OnDestroy {
@@ -95,7 +94,7 @@ export class CoreMainMenuUserMenuComponent implements OnInit, OnDestroy {
 
     // App version info (auto-updated by post-commit hook)
     appVersion = CoreConstants.CONFIG.versionname;
-    buildNumber = 48;
+    buildNumber = 49;
     buildTime = '2026-01-23 19:12';
 
     // Secret debug menu (tap build number 7 times)
