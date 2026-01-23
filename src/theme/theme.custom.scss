@@ -132,10 +132,14 @@ page-core-mainmenu-home ion-header {
     background: #ffffff;
     border-top: none;
     box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.08);
-    padding: 8px 16px calc(4px + env(safe-area-inset-bottom, 0px)) 16px; // Added horizontal padding and safe area for iPhone
+    // Compact padding - safe area handled by height
+    padding: 4px 16px;
+    padding-bottom: env(safe-area-inset-bottom, 0px);
     padding-left: calc(16px + env(safe-area-inset-left, 0px));
     padding-right: calc(16px + env(safe-area-inset-right, 0px));
-    height: calc(64px + env(safe-area-inset-bottom, 0px));
+    // Fixed height without double safe-area
+    height: auto;
+    min-height: 56px;
     position: relative;
 
     &::before {
@@ -262,6 +266,34 @@ page-core-mainmenu-home ion-header {
                 background-color: #4c96d1;
             }
         }
+    }
+
+    // Fix: Completely hide tab bar when animating out or hidden
+    &.slide-out-bottom-animation {
+        animation: aspireSlideOutBottom 300ms ease-out forwards;
+    }
+}
+
+// Fix: Ensure tab bar is completely hidden when tabshidden class is applied
+ion-tabs.tabshidden .mainmenu-tabs,
+ion-tabs.tabshidden ion-tab-bar {
+    display: none !important;
+    height: 0 !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+    visibility: hidden !important;
+}
+
+// Animation for tab bar slide out - ensures complete hide
+@keyframes aspireSlideOutBottom {
+    0% {
+        transform: translateY(0);
+        opacity: 1;
+    }
+    100% {
+        transform: translateY(100%);
+        opacity: 0;
+        visibility: hidden;
     }
 }
 
