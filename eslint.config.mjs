@@ -172,7 +172,6 @@ const appConfig = {
             },
         ],
         '@typescript-eslint/no-non-null-assertion': 'warn',
-        '@typescript-eslint/no-redeclare': 'error',
         '@stylistic/quotes': [
             'error',
             'single',
@@ -212,7 +211,6 @@ const appConfig = {
         'arrow-body-style': ['error', 'as-needed'],
         'array-bracket-spacing': ['error', 'never'],
         'comma-dangle': ['error', 'always-multiline'],
-        'constructor-super': 'error',
         'curly': 'error',
         'eol-last': 'error',
         'function-call-argument-newline': ['error', 'consistent'],
