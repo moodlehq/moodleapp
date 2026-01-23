@@ -141,6 +141,98 @@ export class CoreCoursesCourseListItemComponent implements OnInit, OnDestroy, On
         return `pastel-color-${colorIndex}`;
     }
 
+    /**
+     * Get subject-specific icon based on course name.
+     *
+     * @returns Icon name for the course subject.
+     */
+    getCourseIcon(): string {
+        const name = (this.course.displayname || this.course.fullname || '').toLowerCase();
+
+        // Mathematics / Math
+        if (name.includes('math') || name.includes('algebra') || name.includes('geometry') ||
+            name.includes('calculus') || name.includes('statistics') || name.includes('trigonometry')) {
+            return 'calculator';
+        }
+
+        // Science subjects
+        if (name.includes('science') || name.includes('biology') || name.includes('chemistry') ||
+            name.includes('physics') || name.includes('lab')) {
+            return 'flask';
+        }
+
+        // English / Language Arts
+        if (name.includes('english') || name.includes('language arts') || name.includes('literature') ||
+            name.includes('writing') || name.includes('grammar') || name.includes('reading')) {
+            return 'book';
+        }
+
+        // Arabic
+        if (name.includes('arabic') || name.includes('عربي') || name.includes('عربى')) {
+            return 'language';
+        }
+
+        // French / Foreign Languages
+        if (name.includes('french') || name.includes('spanish') || name.includes('german') ||
+            name.includes('language') || name.includes('foreign')) {
+            return 'globe';
+        }
+
+        // History / Social Studies
+        if (name.includes('history') || name.includes('social') || name.includes('civics') ||
+            name.includes('geography') || name.includes('economics')) {
+            return 'time';
+        }
+
+        // Art / Music / Creative
+        if (name.includes('art') || name.includes('music') || name.includes('drama') ||
+            name.includes('theater') || name.includes('creative') || name.includes('drawing')) {
+            return 'color-palette';
+        }
+
+        // Physical Education / Sports
+        if (name.includes('physical') || name.includes('sport') || name.includes('fitness') ||
+            name.includes('health') || name.includes('p.e.') || name.includes('pe ')) {
+            return 'fitness';
+        }
+
+        // Computer Science / Technology / ICT
+        if (name.includes('computer') || name.includes('technology') || name.includes('programming') ||
+            name.includes('coding') || name.includes('ict') || name.includes('digital')) {
+            return 'laptop';
+        }
+
+        // Religious Studies / Islamic Studies / Moral Education
+        if (name.includes('islamic') || name.includes('religion') || name.includes('moral') ||
+            name.includes('ethics') || name.includes('quran') || name.includes('دين')) {
+            return 'heart';
+        }
+
+        // Business / Economics
+        if (name.includes('business') || name.includes('accounting') || name.includes('finance') ||
+            name.includes('entrepreneur')) {
+            return 'briefcase';
+        }
+
+        // Psychology / Sociology
+        if (name.includes('psychology') || name.includes('sociology')) {
+            return 'people';
+        }
+
+        // Environmental Studies
+        if (name.includes('environment') || name.includes('ecology') || name.includes('sustainability')) {
+            return 'leaf';
+        }
+
+        // Homeroom / Advisory / General
+        if (name.includes('homeroom') || name.includes('advisory') || name.includes('tutor')) {
+            return 'home';
+        }
+
+        // Default: school icon
+        return 'school';
+    }
+
 
     /**
      * @inheritdoc
