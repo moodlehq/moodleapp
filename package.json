@@ -39,7 +39,7 @@
         "ionic:serve:before": "gulp",
         "ionic:serve": "cross-env-shell ./scripts/serve.sh",
         "ionic:build:before": "gulp",
-        "postinstall": "patch-package && cd cordova-plugin-moodleapp && npm install",
+        "postinstall": "patch-package && cd cordova-plugin-moodleapp && npm install && npm run prod",
         "lang:update-langpacks": "./scripts/update_langpacks.sh",
         "lang:detect-langpacks": "./scripts/update_langpacks.sh detect",
         "lang:create-langindex": "./scripts/create_langindex.sh"
