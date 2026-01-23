@@ -209,7 +209,6 @@ const appConfig = {
         ],
         'jsdoc/check-values': 'off',
         'jsdoc/require-param-type': 'off',
-        'jsdoc/require-param': 'off',
         'jsdoc/require-returns-type': 'off',
         'jsdoc/tag-lines': [
             'error',
