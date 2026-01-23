@@ -151,7 +151,7 @@
         "check-es-compat": "3.2.1",
         "circular-dependency-plugin": "5.2.2",
         "concurrently": "8.2.2",
-        "cordova-android": "^13.0.0",
+        "cordova-android": "^14.0.0",
         "cordova-ios": "^7.1.1",
         "cordova-plugin-ionic": "^5.5.3",
         "cordova-plugin-ionic-webview": "^5.0.1",
