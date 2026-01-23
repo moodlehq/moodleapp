@@ -631,7 +631,7 @@ export type CoreQuestionQuestionWSData = {
     settings?: string; // Question settings (JSON encoded).
 
     /** @deprecatedonmoodle since 4.2. Use questionnumber instead. */
-    number?: number; // eslint-disable-line id-blacklist
+    number?: number; // eslint-disable-line id-denylist
 };
 /**
  * Question data with parsed data.

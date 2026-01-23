@@ -22,5 +22,5 @@ export const enum CoreNativeCordovaPluginResultStatus {
     IO_EXCEPTION,
     INVALID_ACTION,
     JSON_EXCEPTION,
-    ERROR
+    ERROR,
 }

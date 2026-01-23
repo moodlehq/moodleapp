@@ -54,7 +54,7 @@ const appConfig = {
     },
     rules: {
         '@angular-eslint/component-class-suffix': ['error', { suffixes: ['Component', 'Page'] }],
-        '@angular-eslint/no-output-on-prefix': 'off',
+        '@angular-eslint/no-output-on-prefix': 'off', // @todo: The recommendation is to enable this rule.
         '@angular-eslint/prefer-signals': [
             'error',
             {
@@ -99,26 +99,6 @@ const appConfig = {
             'error',
             {
                 allowArgumentsExplicitlyTypedAsAny: true,
-            },
-        ],
-        '@stylistic/lines-between-class-members': [
-            'error',
-            'always',
-            {
-                exceptAfterSingleLine: true,
-            },
-        ],
-        '@stylistic/member-delimiter-style': [
-            'error',
-            {
-                multiline: {
-                    delimiter: 'semi',
-                    requireLast: true,
-                },
-                singleline: {
-                    delimiter: 'semi',
-                    requireLast: false,
-                },
             },
         ],
         '@typescript-eslint/naming-convention': [
@@ -168,19 +148,10 @@ const appConfig = {
         '@typescript-eslint/no-inferrable-types': [
             'error',
             {
-                ignoreParameters: true,
+                ignoreParameters: true, // @todo: Remove this exception when all failures have been fixed.
             },
         ],
-        '@typescript-eslint/no-non-null-assertion': 'warn',
-        '@stylistic/quotes': [
-            'error',
-            'single',
-        ],
-        '@stylistic/semi': [
-            'error',
-            'always',
-        ],
-        '@stylistic/type-annotation-spacing': 'error',
+        '@typescript-eslint/no-non-null-assertion': 'warn', // @todo: Set it to 'error' when all have been fixed.
         'header/header': [
             2,
             'line',
@@ -209,13 +180,8 @@ const appConfig = {
             },
         ],
         'arrow-body-style': ['error', 'as-needed'],
-        'array-bracket-spacing': ['error', 'never'],
-        'comma-dangle': ['error', 'always-multiline'],
         'curly': 'error',
-        'eol-last': 'error',
-        'function-call-argument-newline': ['error', 'consistent'],
-        'function-paren-newline': ['error', 'multiline-arguments'],
-        'id-blacklist': [
+        'id-denylist': [
             'error',
             'any',
             'Number',
@@ -253,32 +219,69 @@ const appConfig = {
                 startLines: 1,
             },
         ],
-        'linebreak-style': [
-            'error',
-            'unix',
-        ],
-        'max-len': [
-            'error',
-            {
-                code: 132,
-            },
-        ],
-        'new-parens': 'error',
         'no-bitwise': 'error',
         'no-console': 'error',
         'no-duplicate-imports': 'error',
         'no-eval': 'error',
         'no-invalid-this': 'error',
-        'no-multiple-empty-lines': ['error', { max: 1 }],
         'no-new-wrappers': 'error',
         'no-restricted-imports': ['error', {
             'name': 'dayjs',
             'message': 'Please use the dayjs wrapper from @/core/utils/dayjs instead.',
         }],
         'no-sequences': 'error',
-        'no-trailing-spaces': 'error',
-        'object-curly-spacing': ['error', 'always'],
         'one-var': ['error', 'never'],
+        'prefer-arrow/prefer-arrow-functions': [
+            'error',
+            {
+                singleReturnOnly: true,
+                allowStandaloneDeclarations: true,
+            },
+        ],
+        '@stylistic/array-bracket-spacing': ['error', 'never'],
+        '@stylistic/comma-dangle': ['error', 'always-multiline'],
+        '@stylistic/eol-last': 'error',
+        '@stylistic/function-call-argument-newline': ['error', 'consistent'],
+        '@stylistic/function-paren-newline': ['error', 'multiline-arguments'],
+        '@stylistic/linebreak-style': [
+            'error',
+            'unix',
+        ],
+        '@stylistic/lines-between-class-members': [
+            'error',
+            'always',
+            {
+                exceptAfterSingleLine: true,
+            },
+        ],
+        '@stylistic/max-len': [
+            'error',
+            {
+                code: 132,
+            },
+        ],
+        '@stylistic/member-delimiter-style': [
+            'error',
+            {
+                multiline: {
+                    delimiter: 'semi',
+                    requireLast: true,
+                },
+                singleline: {
+                    delimiter: 'semi',
+                    requireLast: false,
+                },
+            },
+        ],
+        '@stylistic/new-parens': 'error',
+        '@stylistic/no-multiple-empty-lines': ['error', { max: 1 }],
+        '@stylistic/no-trailing-spaces': 'error',
+        // @todo: Migrate to @stylistic/object-curly-spacing. It is more strict and currently throws a lot of errors.
+        'object-curly-spacing': ['error', 'always'],
+        '@stylistic/quotes': [
+            'error',
+            'single',
+        ],
         '@stylistic/padded-blocks': [
             'error',
             {
@@ -286,7 +289,7 @@ const appConfig = {
                 switches: 'never',
             },
         ],
-        'padding-line-between-statements': [
+        '@stylistic/padding-line-between-statements': [
             'error',
             {
                 blankLine: 'always',
@@ -299,18 +302,15 @@ const appConfig = {
                 next: 'function',
             },
         ],
-        'prefer-arrow/prefer-arrow-functions': [
-            'error',
-            {
-                singleReturnOnly: true,
-                allowStandaloneDeclarations: true,
-            },
-        ],
-        'quote-props': [
+        '@stylistic/quote-props': [
             'error',
             'consistent-as-needed',
         ],
-        'spaced-comment': [
+        '@stylistic/semi': [
+            'error',
+            'always',
+        ],
+        '@stylistic/spaced-comment': [
             'error',
             'always',
             {
@@ -319,6 +319,7 @@ const appConfig = {
                 ],
             },
         ],
+        '@stylistic/type-annotation-spacing': 'error',
         'yoda': 'error',
     },
 };

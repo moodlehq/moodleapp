@@ -30,8 +30,8 @@ export class CoreH5PContentValidator {
 
     protected typeMap = {
         text: 'validateText',
-        number: 'validateNumber', // eslint-disable-line id-blacklist
-        boolean: 'validateBoolean', // eslint-disable-line id-blacklist
+        number: 'validateNumber', // eslint-disable-line id-denylist
+        boolean: 'validateBoolean', // eslint-disable-line id-denylist
         list: 'validateList',
         group: 'validateGroup',
         file: 'validateFile',
@@ -164,7 +164,7 @@ export class CoreH5PContentValidator {
             // Allow styling of tables if they are allowed
             if (semantics.tags?.indexOf('table') != -1) {
                 // CKEditor outputs border as width style color
-                // eslint-disable-next-line max-len
+                // eslint-disable-next-line @stylistic/max-len
                 stylePatterns.push(/^border: *[0-9.]+(em|px|%|) *(none|solid|dotted|dashed|double|groove|ridge|inset|outset) *(#[a-f0-9]{3}[a-f0-9]{3}?|rgba?\([0-9, ]+\)|hsla?\([0-9,.% ]+\)) *;?$/i);
                 stylePatterns.push(/^border-style: *(none|solid|dotted|dashed|double|groove|ridge|inset|outset) *;?$/i);
                 stylePatterns.push(/^border-width: *[0-9.]+(em|px|%|) *;?$/i);

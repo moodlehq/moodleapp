@@ -275,7 +275,7 @@ export class CoreObject {
      */
     static toArrayOfObjects<
         A extends Record<string,unknown> = Record<string, unknown>,
-        O extends Record<string, unknown> = Record<string, unknown>
+        O extends Record<string, unknown> = Record<string, unknown>,
     >(
         obj: O,
         keyName: string,

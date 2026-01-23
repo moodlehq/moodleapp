@@ -1078,7 +1078,7 @@ export class AddonModWorkshopProvider {
             if (!isNaN(idxNumber)) {
                 if (!parsedFields[idx]) {
                     parsedFields[idx] = {
-                        number: idxNumber + 1, // eslint-disable-line id-blacklist
+                        number: idxNumber + 1, // eslint-disable-line id-denylist
                     };
                 }
 
@@ -1089,7 +1089,7 @@ export class AddonModWorkshopProvider {
 
                     if (!parsedFields[idx].fields[idy]) {
                         parsedFields[idx].fields[idy] = {
-                            number: idyNumber + 1, // eslint-disable-line id-blacklist
+                            number: idyNumber + 1, // eslint-disable-line id-denylist
                         };
                     }
                     parsedFields[idx].fields[idy][name] = field.value;
@@ -1871,11 +1871,11 @@ export type AddonModWorkshopGetAssessmentFormFieldData = {
 export type AddonModWorkshopGetAssessmentFormFieldsParsedData = (
     Record<string, string> &
     {
-        number?: number; // eslint-disable-line id-blacklist
+        number?: number; // eslint-disable-line id-denylist
         grades?: CoreGradesMenuItem[];
         grade?: number | string;
         fields?: (Record<string, string> & {
-            number: number; // eslint-disable-line id-blacklist
+            number: number; // eslint-disable-line id-denylist
         })[];
     }
 );

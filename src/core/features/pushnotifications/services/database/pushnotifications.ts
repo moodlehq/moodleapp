@@ -128,7 +128,7 @@ export const SITE_SCHEMA: CoreSiteSchema = {
 export type CorePushNotificationsBadgeDBRecord = {
     siteid: string;
     addon: string;
-    number: number; // eslint-disable-line id-blacklist
+    number: number; // eslint-disable-line id-denylist
 };
 
 export type CorePushNotificationsBadgeDBPrimaryKeys = typeof BADGE_TABLE_PRIMARY_KEYS[number];

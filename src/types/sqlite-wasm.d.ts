@@ -28,7 +28,7 @@ declare module '@sqlite.org/sqlite-wasm' {
     }
 
     export interface Sqlite3Worker1Messages {
-        close: {
+        'close': {
             args?: {
                 unlink?: boolean;
             };
@@ -43,14 +43,14 @@ declare module '@sqlite.org/sqlite-wasm' {
                 vfsList: unknown;
             };
         };
-        exec: {
+        'exec': {
             args: {
                 sql: string;
                 bind?: BindingSpec;
                 callback?(data: SqliteRowData): void | false;
             };
         };
-        open: {
+        'open': {
             args: {
                 filename: string;
                 vfs?: string;

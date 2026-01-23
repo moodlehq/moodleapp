@@ -54,12 +54,12 @@ export const enum AddonModLessonPageSubtype {
     BRANCHTABLE =  20, // Content page.
     ENDOFBRANCH =  21,
     CLUSTER =      30,
-    ENDOFCLUSTER = 31
+    ENDOFCLUSTER = 31,
 }
 
 export const ADDON_MOD_LESSON_OTHER_ANSWERS = '@#wronganswer#@';
 
 export enum AddonModLessonTab {
     ATTEMPT = 0,
-    REPORT = 1
+    REPORT = 1,
 }

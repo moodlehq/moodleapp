@@ -223,7 +223,7 @@ export class AddonModForumProvider {
             subject: subject,
             message: message,
 
-            // eslint-disable-next-line max-len
+            // eslint-disable-next-line @stylistic/max-len
             options: CoreObject.toArrayOfObjects<AddonModForumAddDiscussionWSOptionsArray[0], AddonModForumAddDiscussionWSOptionsObject>(
                 options || {},
                 'name',
@@ -786,7 +786,7 @@ export class AddonModForumProvider {
 
         let response: AddonModForumGetForumDiscussionsPaginatedWSResponse | AddonModForumGetForumDiscussionsWSResponse;
         try {
-            // eslint-disable-next-line max-len
+            // eslint-disable-next-line @stylistic/max-len
             response = await site.read<AddonModForumGetForumDiscussionsPaginatedWSResponse | AddonModForumGetForumDiscussionsWSResponse>(
                 method,
                 params,

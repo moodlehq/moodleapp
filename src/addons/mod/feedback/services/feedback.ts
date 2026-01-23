@@ -1590,7 +1590,7 @@ export type AddonModFeedbackWSAttempt = {
 export type AddonModFeedbackWSAnonAttempt = {
     id: number; // Completed id.
     courseid: number; // Course id.
-    // eslint-disable-next-line id-blacklist
+    // eslint-disable-next-line id-denylist
     number: number; // Response number.
     responses: AddonModFeedbackWSAttemptResponse[];
 };

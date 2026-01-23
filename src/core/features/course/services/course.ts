@@ -967,7 +967,7 @@ export class CoreCourseProvider {
      */
     getSectionsModules<
         Section extends CoreCourseWSSection,
-        Module = Extract<ArrayElement<Section['contents']>, CoreCourseModuleData>
+        Module = Extract<ArrayElement<Section['contents']>, CoreCourseModuleData>,
     >(
         sections: Section[],
         options: CoreCourseGetSectionsModulesOptions<Section, Module> = {},

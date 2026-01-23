@@ -97,7 +97,7 @@ export class AddonModScormSyncProvider extends CoreCourseActivitySyncBaseProvide
 
             await CorePromiseUtils.ignoreErrors(AddonModScormOffline.deleteAttempt(scormId, attempt, siteId));
 
-            // eslint-disable-next-line id-blacklist
+            // eslint-disable-next-line id-denylist
             warnings.push(Translate.instant('addon.mod_scorm.warningofflinedatadeleted', { number: attempt }));
         } else {
             // Add the attempt at the end.

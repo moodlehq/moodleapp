@@ -381,7 +381,7 @@ export class AddonModForumOfflineProvider {
      */
     protected parseRecordsOptions<
         R extends { options: string },
-        O extends Record<string, unknown> = Record<string, unknown>
+        O extends Record<string, unknown> = Record<string, unknown>,
     >(records: R[]): (Omit<R, 'options'> & { options: O })[] {
         return records.map(record => this.parseRecordOptions(record));
     }
@@ -394,7 +394,7 @@ export class AddonModForumOfflineProvider {
      */
     protected parseRecordOptions<
         R extends { options: string },
-        O extends Record<string, unknown> = Record<string, unknown>
+        O extends Record<string, unknown> = Record<string, unknown>,
     >(record: R): Omit<R, 'options'> & { options: O } {
         record.options = CoreText.parseJSON(record.options);
 
