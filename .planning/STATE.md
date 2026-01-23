@@ -3,8 +3,8 @@
 ## Current Status
 
 **Phase:** Phase 2 In Progress
-**Last Action:** Completed 02-07 (Other Addons import fixes)
-**Next Action:** Execute remaining Wave 2 plans (02-02, 02-04, 02-05, 02-06)
+**Last Action:** Completed 02-04 (Dashboard & Courses import fixes)
+**Next Action:** Execute remaining Wave 2 plans (02-02, 02-05, 02-06)
 
 ## Project Reference
 
@@ -18,11 +18,11 @@ See: .planning/PROJECT.md (updated 2026-01-23)
 | Phase | Status | Plans | Progress |
 |-------|--------|-------|----------|
 | 1     | Done   | 1/1   | 100%     |
-| 2     | Active | 4/8   | 50%      |
+| 2     | Active | 5/8   | 62.5%    |
 | 3     | Pending| 0/1   | 0%       |
 
 ```
-Phase 2: [####----] 50%
+Phase 2: [#####---] 62.5%
 ```
 
 ## Phase 2 Plans
@@ -32,7 +32,7 @@ Phase 2: [####----] 50%
 | 02-01 | 1 | Done | Core Services | url.ts, iframe.ts, format-text.ts, app.module.ts |
 | 02-02 | 2 | Pending | User Menu | user-menu.ts, user-menu.html, user-menu.scss |
 | 02-03 | 2 | Done | Grades | courses.ts, course.ts, grades.ts, templates |
-| 02-04 | 2 | Pending | Dashboard & Courses | dashboard.ts, course-list-item.ts, courses.ts |
+| 02-04 | 2 | Done | Dashboard & Courses | dashboard.ts, course-list-item.ts, courses.ts |
 | 02-05 | 2 | Pending | Course Components | course-section.ts, module.ts, index.ts |
 | 02-06 | 2 | Pending | Block Addons | timeline.ts, myoverview.ts |
 | 02-07 | 2 | Done | Other Addons | discussion.ts, about.ts, calendar/index.ts |
@@ -48,6 +48,7 @@ Phase 2: [####----] 50%
 | 02-RESEARCH.md | Phase 2 specific changes | 2026-01-23 |
 | 02-01-SUMMARY.md | Core Services verification | 2026-01-23 |
 | 02-03-SUMMARY.md | Grades import fixes | 2026-01-23 |
+| 02-04-SUMMARY.md | Dashboard & Courses fixes | 2026-01-23 |
 | 02-07-SUMMARY.md | Other Addons import fixes | 2026-01-23 |
 | 02-08-SUMMARY.md | Theme SCSS verification | 2026-01-23 |
 
@@ -75,6 +76,17 @@ Phase 2: [####----] 50%
   - course.ts: Added CoreSharedModule and CoreAlerts imports
   - course.ts: Replaced CoreDomUtils.showErrorModal with CoreAlerts.showError
 - **Preserved:** Parent/mentee grade viewing, category grouping, grade color coding
+
+### 02-04: Dashboard & Courses (Completed)
+- **Status:** Fixed import issues and signal usage
+- **Duration:** 4 min 32s
+- **Changes:**
+  - dashboard.ts: Added CorePromiseUtils, CoreAlerts, CoreToasts, CORE_BLOCKS_DASHBOARD_FALLBACK_BLOCKS imports
+  - dashboard.ts: Fixed signal.set() usage, migrated CoreDomUtils to overlay services
+  - dashboard.html: Fixed signal invocation blocks() in template
+  - course-list-item.ts: Added CoreCoursesHelper and CoreColors imports
+  - courses.ts: Added CoreCacheUpdateFrequency, CoreTextFormat, and all courses constants imports
+- **Preserved:** Parent/mentee dashboard view, timeline sorting, global search navigation
 
 ### 02-07: Other Addons (Completed)
 - **Status:** Fixed import issues
@@ -108,6 +120,8 @@ Phase 2: [####----] 50%
 | Core services already compliant | Phase 1 merge preserved correct patterns | 02-01 |
 | Replace CoreDomUtils with CoreAlerts | New overlay service pattern for v5.1.0 | 02-03 |
 | Add CoreSharedModule import | Standalone component pattern requirement | 02-03 |
+| Fix signal invocation in templates | Signals require () to get value | 02-04 |
+| Use signal.set() for updates | Direct assignment doesn't work with signals | 02-04 |
 | calendar/pages/list/list.ts does not exist | Only calendar/pages/index/index.ts needed fixing | 02-07 |
 | resource/index.ts already compliant | Already imports from @services/overlays/alerts | 02-07 |
 | Theme SCSS already compatible | Ionic 8 patterns preserved, dark mode uses :root.dark | 02-08 |
@@ -125,11 +139,12 @@ Phase 2: [####----] 50%
 - 2026-01-23: 02-08 completed - theme SCSS verified compatible
 - 2026-01-23: 02-03 completed - grades import fixes (CoreAlerts, CoreSharedModule)
 - 2026-01-23: 02-07 completed - other addons import fixes (discussion.ts, about.ts, calendar/index.ts)
+- 2026-01-23: 02-04 completed - dashboard & courses fixes (signals, overlay services, constants)
 
 ## Session Continuity
 
-Last session: 2026-01-23T19:12:54Z
-Stopped at: Completed 02-07-PLAN.md
+Last session: 2026-01-23T19:13:07Z
+Stopped at: Completed 02-04-PLAN.md
 Resume file: None
 
 ---
