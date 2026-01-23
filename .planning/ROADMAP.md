@@ -44,14 +44,14 @@ Plans:
 **Plans:** 8 plans in 2 waves
 
 Plans:
-- [ ] 02-01-PLAN.md - Core Services (url.ts, iframe.ts, format-text.ts, app.module.ts)
-- [ ] 02-02-PLAN.md - User Menu (parent/mentee system, debug console, app links)
-- [ ] 02-03-PLAN.md - Grades (courses page, course page, grades service)
-- [ ] 02-04-PLAN.md - Dashboard & Courses (dashboard page, course-list-item, courses service)
-- [ ] 02-05-PLAN.md - Course Components (course-section, module, index page)
-- [ ] 02-06-PLAN.md - Block Addons (timeline, myoverview)
-- [ ] 02-07-PLAN.md - Other Addons (calendar, messages, resource, user about)
-- [ ] 02-08-PLAN.md - Theme (base, variables, custom SCSS)
+- [x] 02-01-PLAN.md - Core Services (url.ts, iframe.ts, format-text.ts, app.module.ts)
+- [x] 02-02-PLAN.md - User Menu (parent/mentee system, debug console, app links)
+- [x] 02-03-PLAN.md - Grades (courses page, course page, grades service)
+- [x] 02-04-PLAN.md - Dashboard & Courses (dashboard page, course-list-item, courses service)
+- [x] 02-05-PLAN.md - Course Components (course-section, module, index page)
+- [x] 02-06-PLAN.md - Block Addons (timeline, myoverview)
+- [x] 02-07-PLAN.md - Other Addons (calendar, messages, resource, user about)
+- [x] 02-08-PLAN.md - Theme (base, variables, custom SCSS)
 
 **Wave Structure:**
 - **Wave 1:** Plan 2.1 (Core Services) - must complete first, fixes foundational imports
