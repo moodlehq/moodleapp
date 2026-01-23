@@ -82,7 +82,7 @@
 
         <!-- Dashboard Blocks -->
         <ion-list class="list-item-limited-width" *ngIf="hasMainBlocks">
-            <ng-container *ngFor="let block of blocks">
+            <ng-container *ngFor="let block of blocks()">
                 <core-block *ngIf="block.visible" [block]="block" contextLevel="user" [instanceId]="userId" />
             </ng-container>
         </ion-list>
