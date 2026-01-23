@@ -191,7 +191,7 @@ export class CorePolicyService {
      * @param options Options.
      * @returns Promise resolved when data is invalidated.
      */
-    async invalidateAcceptances(options: {userId?: number; siteId?: string} = {}): Promise<void> {
+    async invalidateAcceptances(options: { userId?: number; siteId?: string } = {}): Promise<void> {
         const site = await CoreSites.getSite(options.siteId);
 
         await site.invalidateWsCacheForKey(this.getUserAcceptancesCacheKey(options.userId || site.getUserId()));

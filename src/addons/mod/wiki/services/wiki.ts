@@ -45,7 +45,7 @@ export class AddonModWikiProvider {
 
     protected static readonly ROOT_CACHE_KEY = 'mmaModWiki:';
 
-    protected subwikiListsCache: {[wikiId: number]: AddonModWikiSubwikiListData} = {};
+    protected subwikiListsCache: { [wikiId: number]: AddonModWikiSubwikiListData } = {};
     protected wikiFirstViewedPage: Record<string, Record<number, string>> = {};
     protected editedPage?: AddonModWikiEditedPageData;
 

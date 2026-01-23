@@ -31,7 +31,7 @@ import { CoreAlerts } from '@services/overlays/alerts';
 @Injectable({ providedIn: 'root' })
 export class AddonModLtiHelperProvider {
 
-    protected pendingCheckCompletion: {[moduleId: string]: {courseId: number; module: CoreCourseModuleData}} = {};
+    protected pendingCheckCompletion: { [moduleId: string]: { courseId: number; module: CoreCourseModuleData } } = {};
 
     constructor() {
         // Clear pending completion on logout.

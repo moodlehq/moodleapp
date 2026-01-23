@@ -111,7 +111,7 @@ class CoreSitesDB {
     async registerSiteSchema(schema: CoreSiteSchema, site: CoreSite): Promise<void> {
         try {
             // Site has already been created, apply the schema directly.
-            const schemas: {[name: string]: CoreRegisteredSiteSchema} = {};
+            const schemas: { [name: string]: CoreRegisteredSiteSchema } = {};
             schemas[schema.name] = schema;
 
             // Apply it to the specified site only.
@@ -159,11 +159,11 @@ class CoreSitesDB {
      * @param site Site.
      * @param schemas Schemas to migrate.
      */
-    protected async applySiteSchemas(site: CoreSite, schemas: {[name: string]: CoreRegisteredSiteSchema}): Promise<void> {
+    protected async applySiteSchemas(site: CoreSite, schemas: { [name: string]: CoreRegisteredSiteSchema }): Promise<void> {
         // Fetch installed versions of the schema.
         const records = await this.getSiteSchemasTable(site).getMany();
 
-        const versions: {[name: string]: number} = {};
+        const versions: { [name: string]: number } = {};
 
         records.forEach((record) => {
             versions[record.name] = record.version;
@@ -2094,11 +2094,11 @@ export class CoreSitesProvider {
      * @returns Promise resolved with site to use and the list of sites that have
      *         the URL. Site will be undefined if it isn't the root URL of any stored site.
      */
-    async isStoredRootURL(url: string, username?: string): Promise<{site?: CoreSite; siteIds: string[]}> {
+    async isStoredRootURL(url: string, username?: string): Promise<{ site?: CoreSite; siteIds: string[] }> {
         // Check if the site is stored.
         const siteIds = await this.getSiteIdsFromUrl(url, true, username);
 
-        const result: {site?: CoreSite; siteIds: string[]} = {
+        const result: { site?: CoreSite; siteIds: string[] } = {
             siteIds,
         };
 

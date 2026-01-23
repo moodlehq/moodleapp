@@ -428,7 +428,7 @@ export class CoreTextUtilsProvider {
         siteUrl: string,
         text: string,
         files: CoreWSFile[],
-    ): { text: string; replaceMap?: {[url: string]: string} } {
+    ): { text: string; replaceMap?: { [url: string]: string } } {
         return CoreFileHelper.replaceDraftfileUrls(siteUrl, text, files);
     }
 

@@ -31,7 +31,7 @@ import { CoreHTMLClasses } from '@singletons/html-classes';
 @Injectable({ providedIn: 'root' })
 export class CoreQRScanService {
 
-    protected qrScanData?: {deferred: CorePromisedValue<string>; observable: Subscription};
+    protected qrScanData?: { deferred: CorePromisedValue<string>; observable: Subscription };
     protected initialColorSchemeContent = 'light dark';
 
     /**

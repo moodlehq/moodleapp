@@ -564,7 +564,7 @@ export class AddonModGlossaryProvider {
      * @param siteId Site ID. If not defined, current site.
      * @returns Promise resolved with the glossary ID and the "from".
      */
-    async getStoredDataForEntry(entryId: number, siteId?: string): Promise<{glossaryId: number; from: number}> {
+    async getStoredDataForEntry(entryId: number, siteId?: string): Promise<{ glossaryId: number; from: number }> {
         const site = await CoreSites.getSite(siteId);
 
         const conditions: Partial<AddonModGlossaryEntryDBRecord> = {

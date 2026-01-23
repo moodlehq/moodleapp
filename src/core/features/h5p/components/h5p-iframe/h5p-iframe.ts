@@ -56,7 +56,7 @@ export class CoreH5PIframeComponent implements OnChanges, OnDestroy {
     @Input() component?: string; // Component the file is linked to.
     @Input() componentId?: string | number; // Component ID.
     @Input() fileTimemodified?: number; // The timemodified of the file.
-    @Output() onIframeUrlSet = new EventEmitter<{src: string; online: boolean}>();
+    @Output() onIframeUrlSet = new EventEmitter<{ src: string; online: boolean }>();
     @Output() onIframeLoaded = new EventEmitter<void>();
 
     iframeSrc?: string;
@@ -93,7 +93,7 @@ export class CoreH5PIframeComponent implements OnChanges, OnDestroy {
     /**
      * @inheritdoc
      */
-    ngOnChanges(changes: {[name: string]: SimpleChange}): void {
+    ngOnChanges(changes: { [name: string]: SimpleChange }): void {
         // If it's already playing don't change it.
         if ((changes.fileUrl || changes.onlinePlayerUrl) && !this.iframeSrc) {
             this.play();

@@ -76,7 +76,7 @@ export class AddonModScormIndexComponent extends CoreCourseModuleMainActivityCom
     pluginName = 'scorm';
 
     scorm?: AddonModScormScorm; // The SCORM object.
-    currentOrganization: Partial<AddonModScormOrganization> & { identifier: string} = {
+    currentOrganization: Partial<AddonModScormOrganization> & { identifier: string } = {
         identifier: '',
     }; // Selected organization.
 

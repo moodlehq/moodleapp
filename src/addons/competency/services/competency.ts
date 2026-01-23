@@ -39,7 +39,7 @@ export class AddonCompetencyProvider {
      * @param options Site ID or site object.
      * @returns Whether competencies are enabled.
      */
-    async areCompetenciesEnabled(options?: {siteId?: string; site?: CoreSite}): Promise<boolean> {
+    async areCompetenciesEnabled(options?: { siteId?: string; site?: CoreSite }): Promise<boolean> {
         const site = options?.site ? options.site : await CoreSites.getSite(options?.siteId);
 
         if (!site) {

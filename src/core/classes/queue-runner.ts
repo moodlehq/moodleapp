@@ -67,7 +67,7 @@ export type CoreQueueRunnerAddOptions = {
  */
 export class CoreQueueRunner {
 
-    protected queue: {[id: string]: CoreQueueRunnerItem} = {};
+    protected queue: { [id: string]: CoreQueueRunnerItem } = {};
     protected orderedQueue: CoreQueueRunnerItem[] = [];
     protected numberRunning = 0;
 

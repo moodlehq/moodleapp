@@ -332,7 +332,7 @@ export default class AddonCalendarIndexPage implements OnInit, OnDestroy {
      *
      * @param data Data with the year, month and day.
      */
-    gotoDay(data: {day: number; month: number; year: number}): void {
+    gotoDay(data: { day: number; month: number; year: number }): void {
         const params: Params = {
             day: data.day,
             month: data.month,

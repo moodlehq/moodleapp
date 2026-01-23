@@ -54,8 +54,8 @@ export class CoreLocalNotificationsProvider {
 
     protected logger: CoreLogger;
     protected codes: { [s: string]: number } = {};
-    protected codeRequestsQueue: {[key: string]: CodeRequestsQueueItem} = {};
-    protected observables: {[eventName: string]: {[component: string]: Subject<unknown>}} = {};
+    protected codeRequestsQueue: { [key: string]: CodeRequestsQueueItem } = {};
+    protected observables: { [eventName: string]: { [component: string]: Subject<unknown> } } = {};
 
     protected triggerSubscription?: Subscription;
     protected clickSubscription?: Subscription;

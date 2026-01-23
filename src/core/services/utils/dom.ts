@@ -294,7 +294,7 @@ export class CoreDomUtilsProvider {
      *            the new class name. Example: {'correct': 'core-question-answer-correct'}.
      * @deprecated since 5.0. Use CoreDom.replaceClassesInElement instead.
      */
-    replaceClassesInElement(element: HTMLElement, map: {[currentValue: string]: string}): void {
+    replaceClassesInElement(element: HTMLElement, map: { [currentValue: string]: string }): void {
         CoreDom.replaceClassesInElement(element, map);
     }
 
@@ -309,7 +309,7 @@ export class CoreDomUtilsProvider {
      */
     restoreSourcesInHtml(
         html: string,
-        paths: {[url: string]: string},
+        paths: { [url: string]: string },
         anchorFn?: (anchor: HTMLElement, href: string) => void,
     ): string {
         return CoreDom.restoreSourcesInHtml(html, paths, anchorFn);

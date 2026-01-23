@@ -421,7 +421,7 @@ export class CoreFilepoolProvider {
     protected queue: CoreFilepoolQueue; // To handle file downloads using the queue.
 
     // To handle file downloads using the queue.
-    protected sizeCache: {[fileUrl: string]: number} = {}; // A "cache" to store file sizes.
+    protected sizeCache: { [fileUrl: string]: number } = {}; // A "cache" to store file sizes.
     // Variables to prevent downloading packages/files twice at the same time.
     protected packagesPromises: { [s: string]: { [s: string]: Promise<void> } } = {};
     protected filePromises: { [s: string]: { [s: string]: Promise<string> } } = {};

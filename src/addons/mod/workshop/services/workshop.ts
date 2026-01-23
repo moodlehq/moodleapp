@@ -1858,7 +1858,7 @@ type AddonModWorkshopGetAssessmentFormDefinitionWSResponse = {
 
 export type AddonModWorkshopGetAssessmentFormDefinitionData =
     Omit<AddonModWorkshopGetAssessmentFormDefinitionWSResponse, 'fields'|'options'|'current'> & {
-        options?: {[name: string]: string} ;
+        options?: { [name: string]: string } ;
         fields: AddonModWorkshopGetAssessmentFormFieldsParsedData[]; // The form fields.
         current: AddonModWorkshopGetAssessmentFormFieldsParsedData[]; // The current field values.
     };

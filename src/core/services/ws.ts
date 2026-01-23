@@ -58,9 +58,9 @@ export class CoreWSProvider {
     static readonly WS_TIMEOUT_WIFI = 30000; // Timeout when in WiFi.
 
     protected logger: CoreLogger;
-    protected mimeTypeCache: {[url: string]: string | null} = {}; // A "cache" to store file mimetypes to decrease HEAD requests.
+    protected mimeTypeCache: { [url: string]: string | null } = {}; // A "cache" to store file mimetypes to decrease HEAD requests.
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    protected ongoingCalls: {[queueItemId: string]: Promise<any>} = {};
+    protected ongoingCalls: { [queueItemId: string]: Promise<any> } = {};
     protected retryCalls: RetryCall[] = [];
     protected retryTimeout = 0;
 

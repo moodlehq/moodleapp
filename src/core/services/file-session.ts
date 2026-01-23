@@ -28,7 +28,7 @@ import { makeSingleton } from '@singletons';
 @Injectable({ providedIn: 'root' })
 export class CoreFileSessionProvider {
 
-    protected files: {[siteId: string]: {[component: string]: {[id: string]: CoreFileEntry[]}}} = {};
+    protected files: { [siteId: string]: { [component: string]: { [id: string]: CoreFileEntry[] } } } = {};
 
     /**
      * Add a file to the session.

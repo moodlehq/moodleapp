@@ -183,7 +183,7 @@ export class CoreUserProvider {
         limitNumber: number = CORE_USER_PARTICIPANTS_LIST_LIMIT,
         siteId?: string,
         ignoreCache?: boolean,
-    ): Promise<{participants: CoreUserParticipant[]; canLoadMore: boolean}> {
+    ): Promise<{ participants: CoreUserParticipant[]; canLoadMore: boolean }> {
 
         const site = await CoreSites.getSite(siteId);
 
@@ -633,7 +633,7 @@ export class CoreUserProvider {
         page = 0,
         perPage: number = CORE_USER_PARTICIPANTS_LIST_LIMIT,
         siteId?: string,
-    ): Promise<{participants: CoreUserDescriptionExporter[]; canLoadMore: boolean}> {
+    ): Promise<{ participants: CoreUserDescriptionExporter[]; canLoadMore: boolean }> {
         const site = await CoreSites.getSite(siteId);
 
         const params: CoreEnrolSearchUsersWSParams = {

@@ -325,7 +325,7 @@ export default class CoreMainMenuPage implements OnInit, OnDestroy {
      *
      * @param event Event.
      */
-    tabChanged(event: {tab: string}): void {
+    tabChanged(event: { tab: string }): void {
         this.selectedTab = event.tab;
         this.firstSelectedTab = this.firstSelectedTab ?? event.tab;
         this.selectHistory.push(event.tab);

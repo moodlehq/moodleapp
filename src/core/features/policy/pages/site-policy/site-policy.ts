@@ -70,7 +70,7 @@ export default class CorePolicySitePolicyPage implements OnInit, OnDestroy {
     agreeInOwnPage = false;
     numPolicy = 1;
     showConsentForm = false;
-    stepData?: {numpolicy: number; totalpolicies: number};
+    stepData?: { numpolicy: number; totalpolicies: number };
     policiesErrors = { required: Translate.instant('core.policy.mustagreetocontinue') };
 
     protected siteId?: string;

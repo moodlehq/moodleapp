@@ -74,7 +74,7 @@ export class CoreH5PHelper {
      */
     static async getCoreAssets(
         siteId?: string,
-    ): Promise<{settings: CoreH5PCoreSettings; cssRequires: string[]; jsRequires: string[]}> {
+    ): Promise<{ settings: CoreH5PCoreSettings; cssRequires: string[]; jsRequires: string[] }> {
 
         // Get core settings.
         const settings = await CoreH5PHelper.getCoreSettings(siteId);

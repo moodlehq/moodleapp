@@ -581,7 +581,7 @@ export class CoreUtilsProvider {
         keyName: string,
         valueName: string,
         keyPrefix?: string,
-    ): {[name: string]: T} {
+    ): { [name: string]: T } {
         return CoreObject.toKeyValueMap(objects, keyName, valueName, keyPrefix);
     }
 

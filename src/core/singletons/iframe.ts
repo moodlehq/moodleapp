@@ -464,7 +464,7 @@ export class CoreIframe {
      * @returns Promise resolved when done.
      */
     protected static async linkClicked(
-        link: CoreIframeHTMLAnchorElement | {href: string; target?: string; originalHref?: string},
+        link: CoreIframeHTMLAnchorElement | { href: string; target?: string; originalHref?: string },
         event?: Event,
     ): Promise<void> {
         if (event && event.defaultPrevented) {

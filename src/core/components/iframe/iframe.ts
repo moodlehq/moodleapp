@@ -225,7 +225,7 @@ export class CoreIframeComponent implements OnChanges, OnDestroy {
     /**
      * Detect changes on input properties.
      */
-    async ngOnChanges(changes: {[name: string]: SimpleChange }): Promise<void> {
+    async ngOnChanges(changes: { [name: string]: SimpleChange }): Promise<void> {
         if (changes.iframeWidth) {
             this.iframeWidth = (this.iframeWidth && CoreDom.formatSizeUnits(this.iframeWidth)) || '100%';
         }

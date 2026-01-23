@@ -200,8 +200,8 @@ export class CoreFilterProvider {
     getEffectiveContext(
         contextLevel: ContextLevel,
         instanceId: number,
-        options: {courseId?: number} = {},
-    ): {contextLevel: ContextLevel; instanceId: number} {
+        options: { courseId?: number } = {},
+    ): { contextLevel: ContextLevel; instanceId: number } {
         if (contextLevel === ContextLevel.BLOCK || contextLevel === ContextLevel.USER) {
             // Blocks and users cannot have specific filters, use the parent context instead.
             return options.courseId ?
@@ -460,7 +460,7 @@ export class CoreFilterProvider {
     getContextsTreeList(
         contextLevel: ContextLevel,
         instanceId: number,
-        options: {courseId?: number; categoryId?: number} = {},
+        options: { courseId?: number; categoryId?: number } = {},
     ): { contextLevel: ContextLevel; instanceId: number }[] {
         // Make sure context has been converted.
         const newContext = CoreFilter.getEffectiveContext(contextLevel, instanceId, options);

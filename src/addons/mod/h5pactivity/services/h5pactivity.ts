@@ -252,7 +252,7 @@ export class AddonModH5PActivityProvider {
     async getUsersAttempts(
         id: number,
         options?: AddonModH5PActivityGetUsersAttemptsOptions,
-    ): Promise<{users: AddonModH5PActivityUserAttempts[]; canLoadMore: boolean; totalAttempts?: number}> {
+    ): Promise<{ users: AddonModH5PActivityUserAttempts[]; canLoadMore: boolean; totalAttempts?: number }> {
         options = options || {};
         options.page = options.page || 0;
         options.perPage = options.perPage ?? ADDON_MOD_H5PACTIVITY_USERS_PER_PAGE;

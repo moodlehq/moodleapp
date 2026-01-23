@@ -393,7 +393,7 @@ export class CoreFilterHelperProvider {
         instanceId: number,
         options?: CoreFilterFormatTextOptions,
         siteId?: string,
-    ): Promise<{text: string; filters: CoreFilterFilter[]}> {
+    ): Promise<{ text: string; filters: CoreFilterFilter[] }> {
 
         const filters = await this.getFilters(contextLevel, instanceId, options, siteId);
 

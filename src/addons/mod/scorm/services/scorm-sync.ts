@@ -248,7 +248,7 @@ export class AddonModScormSyncProvider extends CoreCourseActivitySyncBaseProvide
         attempt: number,
         cmId: number,
         siteId: string,
-    ): Promise<{incomplete: boolean; timecreated?: number}> {
+    ): Promise<{ incomplete: boolean; timecreated?: number }> {
 
         // Check if last offline attempt is incomplete.
         const incomplete = await AddonModScorm.isAttemptIncomplete(scormId, attempt, {

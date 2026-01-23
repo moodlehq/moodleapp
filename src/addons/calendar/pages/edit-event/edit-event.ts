@@ -658,7 +658,7 @@ export default class AddonCalendarEditEventPage implements OnInit, OnDestroy, Ca
         const { CoreRemindersSetReminderMenuComponent } =
             await import('@features/reminders/components/set-reminder-menu/set-reminder-menu');
 
-        const reminderTime = await CorePopovers.open<{timeBefore: number}>({
+        const reminderTime = await CorePopovers.open<{ timeBefore: number }>({
             component: CoreRemindersSetReminderMenuComponent,
             componentProps: {
                 eventTime,

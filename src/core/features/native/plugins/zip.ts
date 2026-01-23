@@ -28,7 +28,7 @@ export class Zip {
      * @param onProgress Callback to be called on progress update
      * @returns 0 is success, -1 is error
      */
-    unzip(source: string, destination: string, onProgress?: (ev: {loaded: number; total: number}) => void): Promise<number> {
+    unzip(source: string, destination: string, onProgress?: (ev: { loaded: number; total: number }) => void): Promise<number> {
         return new Promise(resolve => window.zip.unzip(source, destination, (result: number) => resolve(result), onProgress));
     }
 

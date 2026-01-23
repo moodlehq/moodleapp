@@ -27,7 +27,7 @@ export class CoreIconMapService {
 
     protected static readonly ROOT_CACHE_KEY = 'CoreIconMap:';
 
-    protected iconMaps: {[siteId: string]: {[theme: string]: {[component: string]: {[pix: string]: string}}}} = {};
+    protected iconMaps: { [siteId: string]: { [theme: string]: { [component: string]: { [pix: string]: string } } } } = {};
 
     /**
      * Get the default theme name to use.

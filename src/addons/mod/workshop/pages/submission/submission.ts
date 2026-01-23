@@ -115,7 +115,7 @@ export default class AddonModWorkshopSubmissionPage implements OnInit, OnDestroy
     protected currentUserId: number;
     protected userId?: number;
     protected siteId: string;
-    protected originalEvaluation: Omit<AddonWorkshopSubmissionEvaluateData, 'grade'> & { grade: number | string} = {
+    protected originalEvaluation: Omit<AddonWorkshopSubmissionEvaluateData, 'grade'> & { grade: number | string } = {
         published: false,
         text: '',
         grade: '',

@@ -409,7 +409,7 @@ export type CoreH5PMainJSONData = {
 /**
  * All JSON data for libraries of a package.
  */
-export type CoreH5PLibrariesJsonData = {[libString: string]: CoreH5PLibraryJsonData};
+export type CoreH5PLibrariesJsonData = { [libString: string]: CoreH5PLibraryJsonData };
 
 /**
  * All JSON data for a library, including semantics and language.
@@ -473,7 +473,7 @@ export type CoreH5PLibraryAddTo = {
 /**
  * Data stored in all languages JSON file of a library.
  */
-export type CoreH5PLibraryLangsJsonData = {[code: string]: CoreH5PLibraryLangJsonData};
+export type CoreH5PLibraryLangsJsonData = { [code: string]: CoreH5PLibraryLangJsonData };
 
 /**
  * Data stored in each language JSON file of a library.

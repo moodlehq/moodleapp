@@ -592,7 +592,7 @@ export class AddonMessagesProvider {
         limitFrom = 0,
         limitNum: number = ADDON_MESSAGES_LIMIT_CONTACTS,
         siteId?: string,
-    ): Promise<{contacts: AddonMessagesConversationMember[]; canLoadMore: boolean}> {
+    ): Promise<{ contacts: AddonMessagesConversationMember[]; canLoadMore: boolean }> {
         const site = await CoreSites.getSite(siteId);
 
         const params: AddonMessagesGetUserContactsWSParams = {
@@ -636,7 +636,7 @@ export class AddonMessagesProvider {
         limitFrom = 0,
         limitNum: number = ADDON_MESSAGES_LIMIT_CONTACTS,
         siteId?: string,
-    ): Promise<{requests: AddonMessagesConversationMember[]; canLoadMore: boolean}> {
+    ): Promise<{ requests: AddonMessagesConversationMember[]; canLoadMore: boolean }> {
         const site = await CoreSites.getSite(siteId);
 
         const params: AddonMessagesGetContactRequestsWSParams = {
@@ -836,7 +836,7 @@ export class AddonMessagesProvider {
         includeContactRequests?: boolean,
         siteId?: string,
         userId?: number,
-    ): Promise<{members: AddonMessagesConversationMember[]; canLoadMore: boolean}> {
+    ): Promise<{ members: AddonMessagesConversationMember[]; canLoadMore: boolean }> {
         const site = await CoreSites.getSite(siteId);
         userId = userId || site.getUserId();
         limitTo = limitTo ?? ADDON_MESSAGES_LIMIT_MESSAGES;
@@ -968,7 +968,7 @@ export class AddonMessagesProvider {
         userId?: number,
         forceCache?: boolean,
         ignoreCache?: boolean,
-    ): Promise<{conversations: AddonMessagesConversationFormatted[]; canLoadMore: boolean}> {
+    ): Promise<{ conversations: AddonMessagesConversationFormatted[]; canLoadMore: boolean }> {
 
         const site = await CoreSites.getSite(siteId);
         userId = userId || site.getUserId();
@@ -1033,7 +1033,7 @@ export class AddonMessagesProvider {
      *         individual, group and self conversation counts.
      * @since 3.6
      */
-    async getConversationCounts(siteId?: string): Promise<{favourites: number; individual: number; group: number; self: number}> {
+    async getConversationCounts(siteId?: string): Promise<{ favourites: number; individual: number; group: number; self: number }> {
         const site = await CoreSites.getSite(siteId);
 
         const preSets: CoreSiteWSPreSets = {
@@ -1257,7 +1257,7 @@ export class AddonMessagesProvider {
      */
     async getUnreadConversationCounts(
         siteId?: string,
-    ): Promise<{favourites: number; individual: number; group: number; self: number; orMore?: boolean}> {
+    ): Promise<{ favourites: number; individual: number; group: number; self: number; orMore?: boolean }> {
         const site = await CoreSites.getSite(siteId);
 
         const preSets: CoreSiteWSPreSets = {
@@ -1707,7 +1707,7 @@ export class AddonMessagesProvider {
      */
     async refreshUnreadConversationCounts(
         siteId?: string,
-    ): Promise<{favourites: number; individual: number; group: number; orMore?: boolean}> {
+    ): Promise<{ favourites: number; individual: number; group: number; orMore?: boolean }> {
         siteId = siteId || CoreSites.getCurrentSiteId();
 
         await this.invalidateUnreadConversationCounts(siteId);
@@ -1762,7 +1762,7 @@ export class AddonMessagesProvider {
         limitFrom = 0,
         limitNum: number = ADDON_MESSAGES_LIMIT_SEARCH,
         siteId?: string,
-    ): Promise<{messages: AddonMessagesMessageAreaContact[]; canLoadMore: boolean}> {
+    ): Promise<{ messages: AddonMessagesMessageAreaContact[]; canLoadMore: boolean }> {
         const site = await CoreSites.getSite(siteId);
 
         const params: AddonMessagesDataForMessageareaSearchMessagesWSParams = {

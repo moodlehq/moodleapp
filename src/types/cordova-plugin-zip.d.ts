@@ -25,7 +25,7 @@ interface Window {
             source: string,
             destination: string,
             onSuccess: (result: number) => void,
-            onProgress?: (ev: {loaded: number; total: number}) => void,
+            onProgress?: (ev: { loaded: number; total: number }) => void,
         ): void;
     };
 

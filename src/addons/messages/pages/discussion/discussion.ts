@@ -81,7 +81,7 @@ export default class AddonMessagesDiscussionPage implements OnInit, OnDestroy, A
     protected messagesBeingSent = 0;
     protected pagesLoaded = 1;
     protected lastMessage?: { text: string; timecreated: number };
-    protected keepMessageMap: {[hash: string]: boolean} = {};
+    protected keepMessageMap: { [hash: string]: boolean } = {};
     protected syncObserver: CoreEventObserver;
     protected oldContentHeight = 0;
     protected scrollBottom = true;
@@ -108,7 +108,7 @@ export default class AddonMessagesDiscussionPage implements OnInit, OnDestroy, A
     showDelete = false;
     canDelete = false;
     isGroup = false;
-    members: {[id: number]: AddonMessagesConversationMember} = {}; // Members that wrote a message, indexed by ID.
+    members: { [id: number]: AddonMessagesConversationMember } = {}; // Members that wrote a message, indexed by ID.
     favouriteIcon = 'fas-star';
     deleteIcon = 'fas-trash';
     blockIcon = 'fas-user-lock';

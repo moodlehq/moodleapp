@@ -66,7 +66,7 @@ export class CoreDelegate<HandlerType extends CoreDelegateHandler> {
     /**
      * Set of promises to update a handler, to prevent doing the same operation twice.
      */
-    protected updatePromises: {[siteId: string]: {[name: string]: Promise<void>}} = {};
+    protected updatePromises: { [siteId: string]: { [name: string]: Promise<void> } } = {};
 
     /**
      * Subject to subscribe to handlers changes.

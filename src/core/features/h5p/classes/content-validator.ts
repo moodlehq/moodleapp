@@ -43,10 +43,10 @@ export class CoreH5PContentValidator {
     };
 
     protected nextWeight = 1;
-    protected libraries: {[libString: string]: CoreH5PLibraryData} = {};
-    protected dependencies: {[key: string]: CoreH5PContentDepsTreeDependency} = {};
+    protected libraries: { [libString: string]: CoreH5PLibraryData } = {};
+    protected dependencies: { [key: string]: CoreH5PContentDepsTreeDependency } = {};
     protected relativePathRegExp = /^((\.\.\/){1,2})(.*content\/)?(\d+|editor)\/(.+)$/;
-    protected allowedHtml: {[tag: string]: string} = {};
+    protected allowedHtml: { [tag: string]: string } = {};
     protected allowedStyles?: RegExp[];
     protected metadataSemantics?: CoreH5PSemantics[];
     protected copyrightSemantics?: CoreH5PSemantics;
@@ -77,7 +77,7 @@ export class CoreH5PContentValidator {
      *
      * @returns Dependencies.
      */
-    getDependencies(): {[key: string]: CoreH5PContentDepsTreeDependency} {
+    getDependencies(): { [key: string]: CoreH5PContentDepsTreeDependency } {
         return this.dependencies;
     }
 

@@ -727,7 +727,7 @@ export class CoreH5PFramework {
         id: number,
         type?: string,
         siteId?: string,
-    ): Promise<{[machineName: string]: CoreH5PContentDependencyData}> {
+    ): Promise<{ [machineName: string]: CoreH5PContentDependencyData }> {
 
         const db = await CoreSites.getSiteDb(siteId);
 
@@ -883,7 +883,7 @@ export class CoreH5PFramework {
      */
     async saveCachedAssets(
         hash: string,
-        dependencies: {[machineName: string]: CoreH5PContentDependencyData},
+        dependencies: { [machineName: string]: CoreH5PContentDependencyData },
         folderName: string,
         siteId?: string,
     ): Promise<void> {
@@ -1014,7 +1014,7 @@ export class CoreH5PFramework {
      */
     async saveLibraryUsage(
         id: number,
-        librariesInUse: {[key: string]: CoreH5PContentDepsTreeDependency},
+        librariesInUse: { [key: string]: CoreH5PContentDepsTreeDependency },
         siteId?: string,
     ): Promise<void> {
         const targetSiteId = siteId ?? CoreSites.getCurrentSiteId();

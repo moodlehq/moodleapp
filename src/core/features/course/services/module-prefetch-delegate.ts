@@ -619,7 +619,7 @@ export class CoreCourseModulePrefetchDelegateService extends CoreDelegate<CoreCo
         courseId: number,
         updates?: CourseUpdates | false,
         sectionId?: number,
-    ): Promise<{status: DownloadStatus; updateStatus: boolean}> {
+    ): Promise<{ status: DownloadStatus; updateStatus: boolean }> {
         // Check if the module is downloadable.
         const downloadable = await this.isModuleDownloadable(module, courseId);
         if (!downloadable) {
@@ -656,7 +656,7 @@ export class CoreCourseModulePrefetchDelegateService extends CoreDelegate<CoreCo
         courseId: number,
         updates?: CourseUpdates | false,
         sectionId?: number,
-    ): Promise<{status: DownloadedStatus | null; updateStatus: boolean}> {
+    ): Promise<{ status: DownloadedStatus | null; updateStatus: boolean }> {
         // Get the saved package status.
         const siteId = CoreSites.getCurrentSiteId();
         const currentStatus = await CoreFilepool.getPackageStatus(siteId, handler.component, module.id);

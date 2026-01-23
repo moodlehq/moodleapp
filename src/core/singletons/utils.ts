@@ -30,7 +30,7 @@ export class CoreUtils {
     protected static readonly DONT_CLONE = ['[object FileEntry]', '[object DirectoryEntry]', '[object DOMFileSystem]'];
 
     protected static logger = CoreLogger.getInstance('CoreUtils');
-    protected static uniqueIds: {[name: string]: number} = {};
+    protected static uniqueIds: { [name: string]: number } = {};
 
     /**
      * Clone a variable. It should be an object, array or primitive type.

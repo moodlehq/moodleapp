@@ -286,7 +286,7 @@ export class CoreCourseHelperProvider {
         courseId: number,
         refresh?: boolean,
         checkUpdates = true,
-    ): Promise<{statusData: CoreCourseModulesStatus; section: CoreCourseSectionWithStatus}> {
+    ): Promise<{ statusData: CoreCourseModulesStatus; section: CoreCourseSectionWithStatus }> {
         if (section.id === CORE_COURSE_ALL_SECTIONS_ID) {
             throw new CoreError('Invalid section');
         }
@@ -1404,7 +1404,7 @@ export class CoreCourseHelperProvider {
      * @param section.id
      * @returns Section download ID.
      */
-    getSectionDownloadId(section: {id: number}): string {
+    getSectionDownloadId(section: { id: number }): string {
         return `Section-${section.id}`;
     }
 
@@ -2130,8 +2130,8 @@ export class CoreCourseHelperProvider {
      */
     findSection<T extends CoreCourseWSSection>(
         sections: T[],
-        searchValue: { id?: number; num?: number; moduleId?: number},
-    ): {section: T | undefined; parents: T[]} {
+        searchValue: { id?: number; num?: number; moduleId?: number },
+    ): { section: T | undefined; parents: T[] } {
         if (searchValue.id === undefined && searchValue.num === undefined && searchValue.moduleId === undefined) {
             return { section: undefined, parents: [] };
         }

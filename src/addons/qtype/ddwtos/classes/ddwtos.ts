@@ -30,7 +30,7 @@ export class AddonQtypeDdwtosQuestion {
     protected logger: CoreLogger;
     protected nextDragItemNo = 1;
     protected selectors = new AddonQtypeDdwtosQuestionCSSSelectors(); // Result of cssSelectors.
-    protected placed: {[no: number]: number} = {}; // Map that relates drag elements numbers with drop zones numbers.
+    protected placed: { [no: number]: number } = {}; // Map that relates drag elements numbers with drop zones numbers.
     protected selected?: HTMLElement; // Selected element (being "dragged").
     protected resizeListener?: CoreEventObserver;
 

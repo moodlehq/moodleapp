@@ -929,7 +929,7 @@ export class CoreFileProvider {
      * @returns Plain object containing the file name and directory.
      * @deprecated since 5.0. Use CoreFileUtils.getFileAndDirectoryFromPath instead.
      */
-    getFileAndDirectoryFromPath(path: string): {directory: string; name: string} {
+    getFileAndDirectoryFromPath(path: string): { directory: string; name: string } {
         return CoreFileUtils.getFileAndDirectoryFromPath(path);
     }
 
@@ -1253,7 +1253,7 @@ export class CoreFileProvider {
                 return;
             }
 
-            const filesMap: {[fullPath: string]: FileEntry} = {};
+            const filesMap: { [fullPath: string]: FileEntry } = {};
             const promises: Promise<void>[] = [];
 
             // Index the received files by fullPath and ignore the invalid ones.

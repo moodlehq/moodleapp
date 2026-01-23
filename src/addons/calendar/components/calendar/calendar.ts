@@ -77,7 +77,7 @@ export class AddonCalendarCalendarComponent implements OnInit, OnDestroy {
     readonly canNavigate = input(true, { transform: toBoolean }); // Whether to include arrows to change the month
     readonly displayNavButtons = input(true, { transform: toBoolean }); // Whether to display nav buttons created by this component.
     readonly onEventClicked = output<number>();
-    readonly onDayClicked = output<{day: number; month: number; year: number}>();
+    readonly onDayClicked = output<{ day: number; month: number; year: number }>();
 
     periodName?: string;
     manager?: CoreSwipeSlidesDynamicItemsManager<PreloadedMonth, AddonCalendarMonthSlidesItemsManagerSource>;
@@ -631,7 +631,7 @@ class AddonCalendarMonthSlidesItemsManagerSource extends CoreSwipeSlidesDynamicI
      * @param currentTime Current time.
      * @returns True if it's in the past.
      */
-    isEventPast(event: { timestart: number; timeduration: number}, currentTime: number): boolean {
+    isEventPast(event: { timestart: number; timeduration: number }, currentTime: number): boolean {
         return (event.timestart + event.timeduration) < currentTime;
     }
 

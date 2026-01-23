@@ -197,7 +197,7 @@ export class AddonModScormProvider {
         newAttempt?: boolean,
         incomplete?: boolean,
         canSaveTracks = true,
-    ): {mode: AddonModScormMode; attempt: number; newAttempt: boolean} {
+    ): { mode: AddonModScormMode; attempt: number; newAttempt: boolean } {
         if (!canSaveTracks) {
             return {
                 mode: scorm.hidebrowse ? AddonModScormMode.NORMAL : mode,
@@ -1678,7 +1678,7 @@ export class AddonModScormProvider {
         scormId: number,
         attempt: number,
         tracks: AddonModScormDataEntry[],
-        options: {cmId?: number; siteId?: string},
+        options: { cmId?: number; siteId?: string },
     ): Promise<void> {
         if (!tracks || !tracks.length) {
             return;

@@ -347,7 +347,7 @@ export class CoreObject {
         keyName: string,
         valueName: string,
         keyPrefix?: string,
-    ): {[name: string]: T} {
+    ): { [name: string]: T } {
         const prefixSubstr = keyPrefix ? keyPrefix.length : 0;
         const mapped = {};
         objects.forEach((item) => {

@@ -353,7 +353,7 @@ export class AddonCalendarHelperProvider {
      * @param eventTypes Result of getAllowedEventTypes.
      * @returns Options.
      */
-    getEventTypeOptions(eventTypes: {[name: string]: boolean}): AddonCalendarEventTypeOption[] {
+    getEventTypeOptions(eventTypes: { [name: string]: boolean }): AddonCalendarEventTypeOption[] {
         const options: AddonCalendarEventTypeOption[] = [];
 
         if (eventTypes.user) {

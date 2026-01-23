@@ -81,7 +81,7 @@ export class AddonModDataPrefetchHandlerLazyService extends AddonModDataPrefetch
         courseId: number,
         omitFail: boolean,
         options: CoreCourseCommonModWSOptions = {},
-    ): Promise<{ database: AddonModDataData; groups: CoreGroup[]; entries: AddonModDataEntry[]; files: CoreWSFile[]}> {
+    ): Promise<{ database: AddonModDataData; groups: CoreGroup[]; entries: AddonModDataEntry[]; files: CoreWSFile[] }> {
         let groups: CoreGroup[] = [];
         let entries: AddonModDataEntry[] = [];
         let files: CoreWSFile[] = [];

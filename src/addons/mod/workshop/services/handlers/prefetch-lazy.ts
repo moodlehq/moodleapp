@@ -63,7 +63,7 @@ export class AddonModWorkshopPrefetchHandlerLazyService extends AddonModWorkshop
         module: CoreCourseAnyModuleData,
         courseId: number,
         options: AddonModWorkshopGetInfoOptions = {},
-    ): Promise<{ workshop?: AddonModWorkshopData; groups: CoreGroup[]; files: CoreWSFile[]}> {
+    ): Promise<{ workshop?: AddonModWorkshopData; groups: CoreGroup[]; files: CoreWSFile[] }> {
         let groups: CoreGroup[] = [];
         let files: CoreWSFile[] = [];
         let workshop: AddonModWorkshopData;

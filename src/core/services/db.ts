@@ -39,7 +39,7 @@ export class CoreDbProvider {
 
     queryLogs: CoreDbQueryLog[] = [];
 
-    protected dbInstances: {[name: string]: SQLiteDB} = {};
+    protected dbInstances: { [name: string]: SQLiteDB } = {};
 
     /**
      * Check whether database queries should be logged.

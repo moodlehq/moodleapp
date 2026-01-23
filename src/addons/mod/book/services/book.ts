@@ -377,7 +377,7 @@ type AddonModBookTocChapterParsed = {
 export type AddonModBookContentsMap = {
     [chapter: string]: {
         indexUrl?: string;
-        paths: {[path: string]: string};
+        paths: { [path: string]: string };
         timemodified?: number;
         tags?: CoreTagItem[];
     };

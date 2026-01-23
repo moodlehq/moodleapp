@@ -81,7 +81,7 @@ export class CoreRemindersSetButtonComponent {
         const { CoreRemindersSetReminderMenuComponent }
             = await import('../set-reminder-menu/set-reminder-menu');
 
-        const reminderTime = await CorePopovers.open<{timeBefore: number}>({
+        const reminderTime = await CorePopovers.open<{ timeBefore: number }>({
             component: CoreRemindersSetReminderMenuComponent,
             componentProps: {
                 initialValue: this.timebefore(),

@@ -438,7 +438,7 @@ export class AddonCalendarProvider {
      * @returns Promise resolved with an object indicating the types.
      * @since 3.7
      */
-    async getAllowedEventTypes(courseId?: number, siteId?: string): Promise<{[name: string]: boolean}> {
+    async getAllowedEventTypes(courseId?: number, siteId?: string): Promise<{ [name: string]: boolean }> {
         const site = await CoreSites.getSite(siteId);
         const params: AddonCalendarGetAllowedEventTypesWSParams = {};
         const preSets: CoreSiteWSPreSets = {
@@ -451,7 +451,7 @@ export class AddonCalendarProvider {
             await site.read('core_calendar_get_allowed_event_types', params, preSets);
 
         // Convert the array to an object.
-        const result: {[name: string]: boolean} = {};
+        const result: { [name: string]: boolean } = {};
         if (response.allowedeventtypes) {
             response.allowedeventtypes.forEach((type) => {
                 result[type] = true;
@@ -1304,7 +1304,7 @@ export class AddonCalendarProvider {
      * @returns Promise resolved when all the notifications have been scheduled.
      */
     protected async updateEventsReminders(
-        events: ({ id: number; timestart: number; name: string})[],
+        events: ({ id: number; timestart: number; name: string })[],
         siteId: string,
     ): Promise<void> {
         await Promise.all(events.map(async (event) => {
@@ -1478,7 +1478,7 @@ export class AddonCalendarProvider {
         eventId: number | undefined,
         formData: AddonCalendarSubmitCreateUpdateFormDataWSParams,
         options: AddonCalendarSubmitEventOptions = {},
-    ): Promise<{sent: boolean; event: AddonCalendarOfflineEventDBRecord | AddonCalendarEvent}> {
+    ): Promise<{ sent: boolean; event: AddonCalendarOfflineEventDBRecord | AddonCalendarEvent }> {
 
         const siteId = options.siteId || CoreSites.getCurrentSiteId();
 

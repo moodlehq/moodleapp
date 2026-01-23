@@ -154,7 +154,7 @@ export class AddonModForumPostComponent implements OnInit, OnDestroy, OnChanges 
     /**
      * @inheritdoc
      */
-    ngOnChanges(changes: {[name: string]: SimpleChange}): void {
+    ngOnChanges(changes: { [name: string]: SimpleChange }): void {
         if (changes.leavingPage && this.leavingPage) {
             // Download all courses is enabled now, initialize it.
             CoreForms.triggerFormCancelledEvent(this.formElement(), CoreSites.getCurrentSiteId());

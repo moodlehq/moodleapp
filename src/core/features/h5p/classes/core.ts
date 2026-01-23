@@ -127,7 +127,7 @@ export class CoreH5PCore {
      * @param dependencies Dependencies.
      * @returns Hash.
      */
-    static getDependenciesHash(dependencies: {[machineName: string]: CoreH5PContentDependencyData}): string {
+    static getDependenciesHash(dependencies: { [machineName: string]: CoreH5PContentDependencyData }): string {
         // Build hash of dependencies.
         const toHash: string[] = [];
 
@@ -354,7 +354,7 @@ export class CoreH5PCore {
      * @returns Promise resolved with the next weight.
      */
     async findLibraryDependencies(
-        dependencies: {[key: string]: CoreH5PContentDepsTreeDependency},
+        dependencies: { [key: string]: CoreH5PContentDepsTreeDependency },
         library: CoreH5PLibraryData | CoreH5PLibraryAddonData,
         nextWeight = 1,
         editor = false,
@@ -510,7 +510,7 @@ export class CoreH5PCore {
      * @returns Promise resolved with the files.
      */
     async getDependenciesFiles(
-        dependencies: {[machineName: string]: CoreH5PContentDependencyData},
+        dependencies: { [machineName: string]: CoreH5PContentDependencyData },
         folderName: string,
         prefix = '',
         siteId?: string,
@@ -576,7 +576,7 @@ export class CoreH5PCore {
      * @param siteId The site ID. If not defined, current site.
      * @returns Promise resolved with an object containing the path of each content dependency.
      */
-    async getDependencyRoots(id: number, siteId?: string): Promise<{[libString: string]: string}> {
+    async getDependencyRoots(id: number, siteId?: string): Promise<{ [libString: string]: string }> {
         siteId = siteId || CoreSites.getCurrentSiteId();
 
         const roots = {};
@@ -878,7 +878,7 @@ export class CoreH5PCore {
         id: number,
         type?: string,
         siteId?: string,
-    ): Promise<{[machineName: string]: CoreH5PContentDependencyData}> {
+    ): Promise<{ [machineName: string]: CoreH5PContentDependencyData }> {
         return this.h5pFramework.loadContentDependencies(id, type, siteId);
     }
 
@@ -1043,7 +1043,7 @@ export type CoreH5PContentData = {
     libraryMinorVersion: number; // Main library's minor version.
     metadata: unknown; // Content metadata.
     library: CoreH5PContentMainLibraryData; // Main library data.
-    dependencies?: {[key: string]: CoreH5PContentDepsTreeDependency}; // Dependencies. Calculated in filterParameters.
+    dependencies?: { [key: string]: CoreH5PContentDepsTreeDependency }; // Dependencies. Calculated in filterParameters.
 };
 
 /**

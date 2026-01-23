@@ -269,8 +269,7 @@ const appConfig = {
         '@stylistic/new-parens': 'error',
         '@stylistic/no-multiple-empty-lines': ['error', { max: 1 }],
         '@stylistic/no-trailing-spaces': 'error',
-        // @todo: Migrate to @stylistic/object-curly-spacing. It is more strict and currently throws a lot of errors.
-        'object-curly-spacing': ['error', 'always'],
+        '@stylistic/object-curly-spacing': ['error', 'always'],
         '@stylistic/quotes': [
             'error',
             'single',

@@ -275,7 +275,7 @@ export class AddonNotificationsProvider {
      * @param siteId Site ID. If not defined, use current site.
      * @returns Promise resolved with the message notifications count.
      */
-    async getUnreadNotificationsCount(userId?: number, siteId?: string): Promise<{ count: number; hasMore: boolean} > {
+    async getUnreadNotificationsCount(userId?: number, siteId?: string): Promise<{ count: number; hasMore: boolean } > {
         const site = await CoreSites.getSite(siteId);
 
         // @since 4.0
