@@ -238,6 +238,9 @@ export class CoreCoursesCourseListItemComponent implements OnInit, OnDestroy, On
      * @inheritdoc
      */
     async ngOnInit(): Promise<void> {
+        // Set course color immediately for card backgrounds
+        this.setCourseColor();
+
         // Assume is enroled if mode is not listwithenrol.
         this.isEnrolled = this.layout !== 'listwithenrol' || this.course.progress !== undefined;
 
