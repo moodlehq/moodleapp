@@ -193,7 +193,6 @@ const appConfig = {
             'Undefined',
             'undefined',
         ],
-        'id-match': 'error',
         'jsdoc/check-alignment': 'error',
         'jsdoc/check-param-names': [
             'error',
