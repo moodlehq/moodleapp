@@ -22,7 +22,6 @@ import {
     AddonMessages,
     AddonMessagesConversationMessageFormatted,
     AddonMessagesSendMessageResults,
-    AddonMessagesUpdateConversationAction,
     AddonMessagesSendMessagesToConversationMessage,
 } from '../../services/messages';
 import { AddonMessagesOffline } from '../../services/messages-offline';
@@ -42,9 +41,24 @@ import { CoreDom } from '@singletons/dom';
 import { CoreKeyboard } from '@singletons/keyboard';
 import { CoreText } from '@singletons/text';
 import { CoreWait } from '@singletons/wait';
-import { CoreModals } from '@services/modals';
-import { CoreLoadings } from '@services/loadings';
+import { CoreModals } from '@services/overlays/modals';
+import { CoreLoadings } from '@services/overlays/loadings';
+import { CoreAlerts, CoreAlertsConfirmOptions } from '@services/overlays/alerts';
+import { CoreSharedModule } from '@/core/shared.module';
+import { CoreSplitViewComponent } from '@components/split-view/split-view';
 import { CoreUserParent } from '@features/user/services/parent';
+import {
+    ADDON_MESSAGES_AUTO_SYNCED,
+    ADDON_MESSAGES_MEMBER_INFO_CHANGED_EVENT,
+    ADDON_MESSAGES_READ_CHANGED_EVENT,
+    ADDON_MESSAGES_NEW_MESSAGE_EVENT,
+    ADDON_MESSAGES_OPEN_CONVERSATION_EVENT,
+    ADDON_MESSAGES_UPDATE_CONVERSATION_LIST_EVENT,
+    ADDON_MESSAGES_POLL_INTERVAL,
+    ADDON_MESSAGES_LIMIT_MESSAGES,
+    AddonMessagesMessageConversationType,
+    AddonMessagesUpdateConversationAction,
+} from '../../constants';
 
 /**
  * Page that displays a message discussion page.
