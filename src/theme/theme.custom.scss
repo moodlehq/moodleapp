@@ -265,6 +265,13 @@ page-core-mainmenu-home ion-header {
     }
 }
 
+// Fix: Hide tab bar completely when in hidden state (no slither)
+ion-tabs.tabshidden ion-tab-bar.mainmenu-tabs {
+    transform: translateY(100%) !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+}
+
 // Hide extra buttons on dashboard
 page-core-courses-dashboard {
     // Hide the floating side blocks button
