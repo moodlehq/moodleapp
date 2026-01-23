@@ -3,8 +3,8 @@
 ## Current Status
 
 **Phase:** Phase 2 In Progress
-**Last Action:** Completed 02-03 (Grades import fixes)
-**Next Action:** Execute remaining Wave 2 plans (02-02, 02-04 through 02-07)
+**Last Action:** Completed 02-07 (Other Addons import fixes)
+**Next Action:** Execute remaining Wave 2 plans (02-02, 02-04, 02-05, 02-06)
 
 ## Project Reference
 
@@ -18,11 +18,11 @@ See: .planning/PROJECT.md (updated 2026-01-23)
 | Phase | Status | Plans | Progress |
 |-------|--------|-------|----------|
 | 1     | Done   | 1/1   | 100%     |
-| 2     | Active | 3/8   | 37.5%    |
+| 2     | Active | 4/8   | 50%      |
 | 3     | Pending| 0/1   | 0%       |
 
 ```
-Phase 2: [###-----] 37.5%
+Phase 2: [####----] 50%
 ```
 
 ## Phase 2 Plans
@@ -35,7 +35,7 @@ Phase 2: [###-----] 37.5%
 | 02-04 | 2 | Pending | Dashboard & Courses | dashboard.ts, course-list-item.ts, courses.ts |
 | 02-05 | 2 | Pending | Course Components | course-section.ts, module.ts, index.ts |
 | 02-06 | 2 | Pending | Block Addons | timeline.ts, myoverview.ts |
-| 02-07 | 2 | Pending | Other Addons | discussion.ts, about.ts, list.ts, index.ts |
+| 02-07 | 2 | Done | Other Addons | discussion.ts, about.ts, calendar/index.ts |
 | 02-08 | 2 | Done | Theme | theme.base.scss, globals.variables.scss |
 
 ## Key Files
@@ -48,6 +48,7 @@ Phase 2: [###-----] 37.5%
 | 02-RESEARCH.md | Phase 2 specific changes | 2026-01-23 |
 | 02-01-SUMMARY.md | Core Services verification | 2026-01-23 |
 | 02-03-SUMMARY.md | Grades import fixes | 2026-01-23 |
+| 02-07-SUMMARY.md | Other Addons import fixes | 2026-01-23 |
 | 02-08-SUMMARY.md | Theme SCSS verification | 2026-01-23 |
 
 ## Phase 1 Results
@@ -75,6 +76,17 @@ Phase 2: [###-----] 37.5%
   - course.ts: Replaced CoreDomUtils.showErrorModal with CoreAlerts.showError
 - **Preserved:** Parent/mentee grade viewing, category grouping, grade color coding
 
+### 02-07: Other Addons (Completed)
+- **Status:** Fixed import issues
+- **Duration:** 4 min 20s
+- **Changes:**
+  - discussion.ts: CoreLoadings, CoreModals, CoreAlerts from @services/overlays/*
+  - about.ts: CoreLoadings, CoreModals, CoreAlerts from @services/overlays/*
+  - calendar/index.ts: CoreModals from @services/overlays/modals
+  - Added missing standalone component imports (CoreSharedModule, CoreSplitViewComponent, etc.)
+  - Added missing constants imports from respective constants.ts files
+- **Note:** calendar/pages/list/list.ts does not exist; resource/index.ts already compliant
+
 ### 02-08: Theme SCSS (Completed)
 - **Status:** Verified (no changes needed)
 - **Duration:** 3 min
@@ -96,6 +108,8 @@ Phase 2: [###-----] 37.5%
 | Core services already compliant | Phase 1 merge preserved correct patterns | 02-01 |
 | Replace CoreDomUtils with CoreAlerts | New overlay service pattern for v5.1.0 | 02-03 |
 | Add CoreSharedModule import | Standalone component pattern requirement | 02-03 |
+| calendar/pages/list/list.ts does not exist | Only calendar/pages/index/index.ts needed fixing | 02-07 |
+| resource/index.ts already compliant | Already imports from @services/overlays/alerts | 02-07 |
 | Theme SCSS already compatible | Ionic 8 patterns preserved, dark mode uses :root.dark | 02-08 |
 | ::ng-deep usage acceptable | Deprecated but functional, no immediate migration needed | 02-08 |
 
@@ -110,11 +124,12 @@ Phase 2: [###-----] 37.5%
 - 2026-01-23: 02-01 completed - core services verified compliant
 - 2026-01-23: 02-08 completed - theme SCSS verified compatible
 - 2026-01-23: 02-03 completed - grades import fixes (CoreAlerts, CoreSharedModule)
+- 2026-01-23: 02-07 completed - other addons import fixes (discussion.ts, about.ts, calendar/index.ts)
 
 ## Session Continuity
 
-Last session: 2026-01-23T19:11:07Z
-Stopped at: Completed 02-03-PLAN.md
+Last session: 2026-01-23T19:12:54Z
+Stopped at: Completed 02-07-PLAN.md
 Resume file: None
 
 ---
