@@ -17,7 +17,7 @@ import { CoreNavigator } from '@services/navigator';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreCourseModuleData, CoreCourseHelper } from '../services/course-helper';
 import { CoreCourseModuleMainResourceComponent } from './main-resource-component';
-import { CoreModals } from '@services/modals';
+import { CoreModals } from '@services/overlays/modals';
 import { CoreCourse } from '../services/course';
 import { CoreCourseIndexSectionWithModule } from '../components/course-index/course-index';
 

@@ -29,6 +29,7 @@ import { AddonCalendarUpcomingEventsComponent } from '../../components/upcoming-
 import { CoreNavigator } from '@services/navigator';
 import { CoreConstants } from '@/core/constants';
 import { CoreModals } from '@services/overlays/modals';
+import { CoreAlerts } from '@services/overlays/alerts';
 import { CoreSharedModule } from '@/core/shared.module';
 import { CoreMainMenuUserButtonComponent } from '@features/mainmenu/components/user-menu-button/user-menu-button';
 import moment from 'moment-timezone';
@@ -554,7 +555,7 @@ export default class AddonCalendarIndexPage implements OnInit, OnDestroy {
 
         } catch (error) {
             console.error('[Calendar] Error loading week events:', error);
-            CoreDomUtils.showErrorModal(error);
+            CoreAlerts.showError(error);
         }
     }
 

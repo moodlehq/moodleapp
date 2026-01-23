@@ -19,6 +19,7 @@ import { CoreCourseModuleHelper } from '@features/course/services/course-module-
 import { CoreCourseModuleDelegate } from '@features/course/services/module-delegate';
 import { CoreEnrolledCourseDataWithOptions } from '@features/courses/services/courses-helper';
 import { CoreTime } from '@singletons/time';
+import { BehaviorSubject, Observable } from 'rxjs';
 
 /**
  * A collection of events displayed in the timeline block.
@@ -71,11 +72,17 @@ export class AddonBlockTimelineSection {
      * Load more events.
      */
     async loadMore(): Promise<void> {
-        this.loadingMore.set(true);
+        this.dataSubject$.next({
+            ...this.dataSubject$.value,
+            loadingMore: true,
+        });
 
         const result = this.course
-            ? await AddonBlockTimeline.getActionEventsByCourse(this.course.id, this.lastEventId(), this.search)
-            : await AddonBlockTimeline.getActionEventsByTimesort(this.lastEventId(), this.search);
+            ? await AddonBlockTimeline.getActionEventsByCourse(this.course.id, this.dataSubject$.value.lastEventId, this.search)
+            : await AddonBlockTimeline.getActionEventsByTimesort(this.dataSubject$.value.lastEventId, this.search);
+
+        const events = result.events;
+        const canLoadMore = result.lastEventId;
 
         this.dataSubject$.next({
             events: this.dataSubject$.value.events.concat(await this.reduceEvents(events, this.overdue, this.done, this.dateRange)),
@@ -229,4 +236,14 @@ export type AddonBlockTimelineEvent = AddonCalendarEvent & {
 export type AddonBlockTimelineDayEvents = {
     events: AddonBlockTimelineEvent[];
     dayTimestamp: number;
+};
+
+/**
+ * Section data containing events and load more state.
+ */
+export type AddonBlockTimelineSectionData = {
+    events: AddonBlockTimelineDayEvents[];
+    lastEventId?: number;
+    canLoadMore: boolean;
+    loadingMore: boolean;
 };
