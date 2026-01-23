@@ -20,7 +20,7 @@ import { CoreFilter } from '@features/filter/services/filter';
 import { CoreUserAuthenticatedSupportConfig } from '@features/user/classes/support/authenticated-support-config';
 import { CoreUserSupport } from '@features/user/services/support';
 import { CoreUser, CoreUserProfile } from '@features/user/services/user';
-import { CORE_USER_PROFILE_REFRESHED } from '@features/user/constants';
+import { CORE_CORE_USER_PROFILE_REFRESHED } from '@features/user/constants';
 import {
     CoreUserProfileHandlerData,
     CoreUserDelegate,
@@ -73,7 +73,11 @@ export class CoreMainMenuUserMenuComponent implements OnInit, OnDestroy {
     removeAccountOnLogout = false;
     courseCount = 0;
     badgeCount = 0;
-    
+
+    // Site logo properties (used by loadSiteLogo method)
+    siteLogo?: string;
+    siteLogoLoaded = false;
+
     // Parent role properties
     isParentUser = false;
     mentees: CoreUserProfile[] = [];
@@ -89,7 +93,7 @@ export class CoreMainMenuUserMenuComponent implements OnInit, OnDestroy {
 
     // App version info (auto-updated by post-commit hook)
     appVersion = CoreConstants.CONFIG.versionname;
-    buildNumber = 37;
+    buildNumber = 38;
     buildTime = '2026-01-23 19:09';
 
     // Secret debug menu (tap build number 7 times)
@@ -628,7 +632,7 @@ export class CoreMainMenuUserMenuComponent implements OnInit, OnDestroy {
         console.log('[User Menu] View changed to mentee, forcing reload');
         
         // Trigger a general refresh event
-        CoreEvents.trigger(USER_PROFILE_REFRESHED, { userId: mentee.id }, this.siteId);
+        CoreEvents.trigger(CORE_USER_PROFILE_REFRESHED, { userId: mentee.id }, this.siteId);
         
         // Close the modal and force navigation to home
         await this.close(new Event('click'));
@@ -678,7 +682,7 @@ export class CoreMainMenuUserMenuComponent implements OnInit, OnDestroy {
         
         // Trigger a general refresh event
         if (this.siteInfo) {
-            CoreEvents.trigger(USER_PROFILE_REFRESHED, { userId: this.siteInfo.userid }, this.siteId);
+            CoreEvents.trigger(CORE_USER_PROFILE_REFRESHED, { userId: this.siteInfo.userid }, this.siteId);
         }
         
         // Close the modal and force navigation to home

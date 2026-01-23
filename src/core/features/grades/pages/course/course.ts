@@ -37,6 +37,8 @@ import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 import { CoreUserParent } from '@features/user/services/parent';
 import { CoreUserProfile } from '@features/user/services/user';
 import { CoreText } from '@singletons/text';
+import { CoreSharedModule } from '@/core/shared.module';
+import { CoreAlerts } from '@services/overlays/alerts';
 
 /**
  * Page that displays a course grades.
@@ -301,7 +303,7 @@ export default class CoreGradesCoursePage implements AfterViewInit, OnDestroy {
                 // The course might belong to a different child
                 // Navigate back to courses list
                 console.warn('[Course Page] Course not accessible for current user, navigating back');
-                CoreDomUtils.showErrorModal('This course is not accessible. You may need to select a different child or navigate to the grades list.');
+                CoreAlerts.showError('This course is not accessible. You may need to select a different child or navigate to the grades list.');
                 CoreNavigator.back();
 
                 return;
