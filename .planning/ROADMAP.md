@@ -20,6 +20,11 @@
 
 **Requirements:** MRG-01, MRG-02, MRG-03
 
+**Plans:** 1 plan
+
+Plans:
+- [ ] 01-01-PLAN.md - Fetch upstream and execute merge with -X ours strategy
+
 **Success Criteria:**
 1. `git merge upstream/latest -X ours` completes
 2. Merge commit created
