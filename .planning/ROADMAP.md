@@ -23,7 +23,7 @@
 **Plans:** 1 plan
 
 Plans:
-- [ ] 01-01-PLAN.md - Fetch upstream and execute merge with -X ours strategy
+- [x] 01-01-PLAN.md - Fetch upstream and execute merge with -X ours strategy
 
 **Success Criteria:**
 1. `git merge upstream/latest -X ours` completes
@@ -40,6 +40,22 @@ Plans:
 ## Phase 2: Custom Code Adaptation
 
 **Goal:** Update 47 conflict files to work with new Angular 20 APIs while preserving all Aspire customizations
+
+**Plans:** 8 plans in 2 waves
+
+Plans:
+- [ ] 02-01-PLAN.md - Core Services (url.ts, iframe.ts, format-text.ts, app.module.ts)
+- [ ] 02-02-PLAN.md - User Menu (parent/mentee system, debug console, app links)
+- [ ] 02-03-PLAN.md - Grades (courses page, course page, grades service)
+- [ ] 02-04-PLAN.md - Dashboard & Courses (dashboard page, course-list-item, courses service)
+- [ ] 02-05-PLAN.md - Course Components (course-section, module, index page)
+- [ ] 02-06-PLAN.md - Block Addons (timeline, myoverview)
+- [ ] 02-07-PLAN.md - Other Addons (calendar, messages, resource, user about)
+- [ ] 02-08-PLAN.md - Theme (base, variables, custom SCSS)
+
+**Wave Structure:**
+- **Wave 1:** Plan 2.1 (Core Services) - must complete first, fixes foundational imports
+- **Wave 2:** Plans 2.2-2.8 (parallel) - independent file groups, all depend on 2.1
 
 ### Plan 2.1: Core Services
 **Files:** url.ts, iframe.ts, format-text.ts, app.module.ts
@@ -112,15 +128,14 @@ Plans:
 4. No TypeScript errors
 
 ### Plan 2.8: Theme
-**Files:** theme.base.scss, ion-alert.scss, ion-header.scss, theme.design-system.scss
+**Files:** theme.base.scss, globals.variables.scss, theme.custom.scss, globals.custom.scss
 **Requirements:** THM-01 through THM-04
 
 **Success Criteria:**
 1. Base theme customizations preserved
-2. Alert styling preserved
-3. Header styling preserved
-4. Design system compatible
-5. No SCSS errors
+2. Design system variables intact
+3. Custom Aspire styling preserved
+4. No SCSS errors
 
 ---
 
@@ -144,7 +159,9 @@ Plans:
 
 ## Execution Notes
 
-**Parallelization:** Plans 2.1-2.8 can run in parallel (independent file groups)
+**Parallelization:**
+- Wave 1: Plan 2.1 only (core services)
+- Wave 2: Plans 2.2-2.8 can run in parallel (independent file groups)
 
 **Risk Mitigation:**
 - Commit after each plan completes
@@ -154,8 +171,8 @@ Plans:
 **Dependencies:**
 - Phase 2 depends on Phase 1 completion
 - Phase 3 depends on Phase 2 completion
-- Within Phase 2: Plan 2.1 should complete first (fixes core imports others depend on)
+- Within Phase 2: Plan 2.1 must complete before 2.2-2.8 (fixes core imports)
 
 ---
 *Roadmap created: 2026-01-23*
-*Last updated: 2026-01-23*
+*Last updated: 2026-01-23 - Phase 2 plans created*
