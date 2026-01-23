@@ -18,6 +18,7 @@ import { CoreSites } from '@services/sites';
 import { CoreSite } from '@classes/sites/site';
 import { makeSingleton } from '@singletons';
 import { CoreLogger } from '@singletons/logger';
+import { CoreTextFormat } from '@singletons/text';
 import { CoreWSExternalWarning } from '@services/ws';
 import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
 import { CoreError } from '@classes/errors/error';

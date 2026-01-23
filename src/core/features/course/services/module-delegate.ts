@@ -26,6 +26,8 @@ import { CoreCourseModuleData } from "./course-helper";
 import { CoreNavigationOptions } from "@services/navigator";
 import { CoreIonicColorNames } from "@singletons/colors";
 import { DownloadStatus } from "@/core/constants";
+import { ModFeature } from "@addons/mod/constants";
+import { CoreCourseOverviewActivity, CoreCourseOverviewItem } from "./course-overview";
 
 /**
  * Interface that all course module handlers must implement.
@@ -342,7 +344,7 @@ export class CoreCourseModuleDelegateService extends CoreDelegate<CoreCourseModu
     protected handlerNameProperty = "modName";
 
     constructor(protected defaultHandler: CoreCourseModuleDefaultHandler) {
-        super("CoreCourseModuleDelegate");
+        super();
     }
 
     /**
@@ -523,7 +525,7 @@ export class CoreCourseModuleDelegateService extends CoreDelegate<CoreCourseModu
      */
     supportsFeature<T = unknown>(
         modname: string,
-        feature: string,
+        feature: ModFeature | string,
         defaultValue: T,
     ): T {
         const handler = this.enabledHandlers[modname];
@@ -532,7 +534,7 @@ export class CoreCourseModuleDelegateService extends CoreDelegate<CoreCourseModu
         if (handler) {
             if (handler.supportsFeature) {
                 // The handler specified a function to determine the feature, use it.
-                result = <T>handler.supportsFeature(feature);
+                result = <T>handler.supportsFeature(feature as ModFeature);
             } else if (handler.supportedFeatures) {
                 // Handler has an object to determine the feature, use it.
                 result = <T>handler.supportedFeatures[feature];
@@ -559,6 +561,30 @@ export class CoreCourseModuleDelegateService extends CoreDelegate<CoreCourseModu
         );
 
         return !!result;
+    }
+
+    /**
+     * Get the data to render a course overview item.
+     *
+     * @param modName The module type name.
+     * @param item Item to get the content for.
+     * @param activity Activity data the item belongs to.
+     * @param courseId Course ID the item belongs to.
+     * @returns Data to render the item content. If undefined it means the app doesn't know how to render the item.
+     */
+    async getOverviewItemContent(
+        modName: string,
+        item: CoreCourseOverviewItem,
+        activity: CoreCourseOverviewActivity,
+        courseId: number,
+    ): Promise<CoreCourseOverviewItemContent | undefined> {
+        const result = await this.executeFunctionOnEnabled<CoreCourseOverviewItemContent | undefined>(
+            modName,
+            "getOverviewItemContent",
+            [item, activity, courseId],
+        );
+
+        return result;
     }
 }
 

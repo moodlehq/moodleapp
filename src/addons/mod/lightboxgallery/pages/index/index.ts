@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, ViewChild } from '@angular/core';
+import { Component, viewChild } from '@angular/core';
 import { CoreCourseModuleMainActivityPage } from '@features/course/classes/main-activity-page';
 import { AddonModLightboxGalleryIndexComponent } from '../../components/index/index';
 
@@ -25,6 +25,6 @@ import { AddonModLightboxGalleryIndexComponent } from '../../components/index/in
 })
 export class AddonModLightboxGalleryIndexPage extends CoreCourseModuleMainActivityPage<AddonModLightboxGalleryIndexComponent> {
 
-    @ViewChild(AddonModLightboxGalleryIndexComponent) activityComponent?: AddonModLightboxGalleryIndexComponent;
+    readonly activityComponent = viewChild.required(AddonModLightboxGalleryIndexComponent);
 
 }

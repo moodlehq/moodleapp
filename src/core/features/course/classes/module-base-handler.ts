@@ -18,6 +18,7 @@ import { CoreCourseModuleData } from '../services/course-helper';
 import { CoreCourseModuleHandler, CoreCourseModuleHandlerData, CoreCourseOverviewItemContent } from '../services/module-delegate';
 import { CoreCourseOverviewActivity, CoreCourseOverviewItem } from '../services/course-overview';
 import { CoreCourseOverviewContentType } from '../constants';
+import { CoreCourse } from '../services/course';
 
 /**
  * Base module handler to be registered.

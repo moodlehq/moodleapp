@@ -32,7 +32,7 @@ import { AddonModResourceHelper } from '../../services/resource-helper';
 import { CorePlatform } from '@services/platform';
 import { ADDON_MOD_RESOURCE_COMPONENT_LEGACY } from '../../constants';
 import { CorePromiseUtils } from '@singletons/promise-utils';
-import { OpenFileAction } from '@singletons/opener';
+import { OpenFileAction, CoreOpener } from '@singletons/opener';
 import { CoreAlerts } from '@services/overlays/alerts';
 import { CoreCourseModuleNavigationComponent } from '@features/course/components/module-navigation/module-navigation';
 import { CoreCourseModuleInfoComponent } from '@features/course/components/module-info/module-info';
@@ -174,13 +174,13 @@ export class AddonModResourceIndexComponent extends CoreCourseModuleMainResource
 
             this.timecreated = contents[0].timecreated * 1000;
             this.isExternalFile = !!contents[0].isexternalfile;
-            this.type = CoreMimetypeUtils.getMimetypeDescription(mimetype);
-            this.isStreamedFile = CoreMimetypeUtils.isStreamedMimetype(mimetype);
+            this.type = CoreMimetype.getMimetypeDescription(mimetype);
+            this.isStreamedFile = CoreMimetype.isStreamedMimetype(mimetype);
             
             // Check if we can show the file inline (PDFs, Word docs, PowerPoints)
             const file = contents[0];
             const filename = file.filename || '';
-            const extension = CoreMimetypeUtils.getFileExtension(filename)?.toLowerCase() || '';
+            const extension = CoreMimetype.getFileExtension(filename)?.toLowerCase() || '';
             
             // For PDFs, use Google Docs viewer similar to Office docs
             if (mimetype === 'application/pdf' || extension === 'pdf') {
@@ -311,7 +311,7 @@ export class AddonModResourceIndexComponent extends CoreCourseModuleMainResource
         }
 
         // Open directly in external system browser
-        await CoreUtils.openInBrowser(this.originalFileUrl, { showBrowserWarning: false });
+        await CoreOpener.openInBrowser(this.originalFileUrl, { showBrowserWarning: false });
     }
 
     /**
@@ -319,7 +319,6 @@ export class AddonModResourceIndexComponent extends CoreCourseModuleMainResource
      */
     ngOnDestroy(): void {
         super.ngOnDestroy();
-        this.onlineObserver?.unsubscribe();
     }
 
 }

@@ -1646,7 +1646,7 @@ export class CoreCourseHelperProvider {
                         }
                         
                         // Show the content in a modal
-                        await CoreDomUtils.showAlert('Activity Details', content, undefined, 3000);
+                        await CoreAlerts.show({ message: content, header: 'Activity Details' });
                         return true;
                     } else {
                         console.log('[CourseHelper] Custom WS not available, falling back to default handler');

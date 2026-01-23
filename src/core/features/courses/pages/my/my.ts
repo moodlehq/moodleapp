@@ -21,6 +21,7 @@ import { CoreBlockComponent } from '@features/block/components/block/block';
 import { CoreBlockDelegate } from '@features/block/services/block-delegate';
 import { CoreCourseBlock } from '@features/course/services/course';
 import { CoreCoursesDashboard } from '@features/courses/services/dashboard';
+import { CoreCoursesMyPageName } from '@features/courses/constants';
 import { CoreSites } from '@services/sites';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
@@ -35,7 +36,6 @@ import { CoreSharedModule } from '@/core/shared.module';
 import { CoreSiteLogoComponent } from '../../../../components/site-logo/site-logo';
 import { CoreMainMenuUserButtonComponent } from '../../../mainmenu/components/user-menu-button/user-menu-button';
 import { CoreBlockSideBlocksButtonComponent } from '../../../block/components/side-blocks-button/side-blocks-button';
-import { CoreCoursesMyPageName } from '@features/courses/constants';
 import { ADDON_BLOCK_MYOVERVIEW_BLOCK_NAME } from '@addons/block/myoverview/constants';
 
 /**
@@ -191,7 +191,7 @@ export default class CoreCoursesMyPage implements OnInit, OnDestroy, AsyncDirect
 
         const promises: Promise<void>[] = [];
 
-        promises.push(CoreCoursesDashboard.invalidateDashboardBlocks(CoreCoursesDashboardProvider.MY_PAGE_COURSES));
+        promises.push(CoreCoursesDashboard.invalidateDashboardBlocks(CoreCoursesMyPageName.COURSES));
         
         // Invalidate all user courses caches to ensure fresh data
         promises.push(CoreCourses.invalidateAllUserCourses());

@@ -17,7 +17,7 @@ import { CoreSites, CoreSitesCommonWSOptions, CoreSitesReadingStrategy } from '@
 import { CoreSite } from '@classes/sites/site';
 import { CoreInterceptor } from '@classes/interceptor';
 import { CoreWSExternalWarning, CoreWSExternalFile, CoreWSFile } from '@services/ws';
-import { makeSingleton } from '@singletons';
+import { makeSingleton, Translate } from '@singletons';
 import { CoreCourseCommonModWSOptions, CoreCourseCommonModWSOptionsWithFilter } from '@features/course/services/course';
 import { CoreGrades } from '@features/grades/services/grades';
 import { CoreTime } from '@singletons/time';
@@ -543,7 +543,7 @@ export class AddonModAssignProvider {
         assign: AddonModAssignAssign,
         options: AddonModAssignSubmissionStatusOptions = {},
     ): Promise<AddonModAssignGetSubmissionStatusWSResponse> {
-        console.log('[AddonModAssign] getSubmissionStatus called for assignId:', assignId);
+        console.log('[AddonModAssign] getSubmissionStatus called for assignId:', assign.id);
         const site = await CoreSites.getSite(options.siteId);
 
         // Check if viewing as mentee
@@ -557,7 +557,7 @@ export class AddonModAssignProvider {
             return {
                 warnings: [{
                     item: 'assign',
-                    itemid: assignId,
+                    itemid: assign.id,
                     warningcode: 'nopermission',
                     message: 'Parents cannot view submission details'
                 }]

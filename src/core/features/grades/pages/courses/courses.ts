@@ -28,6 +28,8 @@ import { CoreUtils } from '@services/utils/utils';
 import { Translate } from '@singletons';
 import { CoreUserParent } from '@features/user/services/parent';
 import { CoreCourses, CoreCategoryData } from '@features/courses/services/courses';
+import { CoreSharedModule } from '@/core/shared.module';
+import { RouterModule } from '@angular/router';
 
 /**
  * Category node for hierarchical display
@@ -51,6 +53,10 @@ interface CategoryNode {
     selector: 'page-core-grades-courses',
     templateUrl: 'courses.html',
     styleUrls: ['courses.scss'],
+    imports: [
+        CoreSharedModule,
+        RouterModule,
+    ],
 })
 export default class CoreGradesCoursesPage implements OnDestroy, AfterViewInit {
 
@@ -131,7 +137,7 @@ export default class CoreGradesCoursesPage implements OnDestroy, AfterViewInit {
                 this.parentDataLoaded = true;
             }
 
-            this.courses.start(this.splitView);
+            this.courses.start(this.splitView());
 
             // Listen to the source for when items are loaded
             this.courses.getSource().addListener({

@@ -280,16 +280,16 @@
                 </div>
 
                 <!-- Title -->
-                <h1 class="modal-title">{{ selectedNewsItem.subject }}</h1>
+                <h1 class="modal-title">{{ selectedNewsItem?.subject }}</h1>
 
                 <!-- Full message content -->
-                <div class="modal-body" [innerHTML]="selectedNewsItem.message"></div>
+                <div class="modal-body" [innerHTML]="selectedNewsItem?.message"></div>
 
                 <!-- Footer with stats -->
-                <div class="modal-footer" *ngIf="selectedNewsItem.numreplies > 0">
+                <div class="modal-footer" *ngIf="selectedNewsItem?.numreplies && selectedNewsItem.numreplies > 0">
                     <div class="reply-info">
                         <ion-icon name="chatbubble-outline"></ion-icon>
-                        <span>{{ selectedNewsItem.numreplies }} {{ selectedNewsItem.numreplies === 1 ? 'reply' : 'replies' }}</span>
+                        <span>{{ selectedNewsItem?.numreplies }} {{ selectedNewsItem?.numreplies === 1 ? 'reply' : 'replies' }}</span>
                     </div>
                 </div>
             </div>

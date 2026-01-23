@@ -191,47 +191,7 @@ export class CoreIframeUtilsProvider {
      * @deprecated since 5.0. Use CoreIframe.frameLaunchExternal instead.
      */
     async frameLaunchExternal(url: string, options: LaunchExternalOptions = {}): Promise<void> {
-        const modal = await CoreLoadings.show();
-
-        try {
-            if (!CoreNetwork.isOnline()) {
-                // User is offline, try to open a local copy of the file if present.
-                const localUrl = options.site ?
-                    await CoreUtils.ignoreErrors(CoreFilepool.getInternalUrlByUrl(options.site.getId(), url)) :
-                    undefined;
-
-                if (localUrl) {
-                    CoreUtils.openFile(localUrl);
-                } else {
-                    CoreDomUtils.showErrorModal('core.networkerrormsg', true);
-                }
-
-                return;
-            }
-
-            const mimetype = await CoreUtils.ignoreErrors(CoreUtils.getMimeTypeFromUrl(url));
-
-            if (!mimetype || mimetype === 'text/html' || mimetype === 'text/plain') {
-                // It's probably a web page, open in browser.
-                // Convert YouTube embed URLs to watch URLs for better external app support.
-                const watchUrl = CoreUrl.getYoutubeWatchUrl(url);
-                options.site ? options.site.openInBrowserWithAutoLogin(watchUrl) : CoreUtils.openInBrowser(watchUrl);
-
-                return;
-            }
-
-            // Open the file using the online URL and try to download it in background for offline usage.
-            if (options.site) {
-                CoreFilepool.getUrlByUrl(options.site.getId(), url, options.component, options.componentId, 0, false);
-
-                url = await options.site.checkAndFixPluginfileURL(url);
-            }
-
-            CoreUtils.openOnlineFile(url);
-
-        } finally {
-            modal.dismiss();
-        }
+        return CoreIframe.frameLaunchExternal(url, options);
     }
 
 }

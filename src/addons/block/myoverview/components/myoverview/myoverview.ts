@@ -35,7 +35,7 @@ import { PageLoadWatcher } from '@classes/page-load-watcher';
 import { PageLoadsManager } from '@classes/page-loads-manager';
 import { DownloadStatus } from '@/core/constants';
 import { CoreSharedModule } from '@/core/shared.module';
-import { CoreCoursesComponentsModule } from '@features/courses/components/components.module';
+import { CoreCoursesCourseListItemComponent } from '@features/courses/components/course-list-item/course-list-item';
 import { CoreUserParent } from '@features/user/services/parent';
 import { CoreUserProfile } from '@features/user/services/user';
 import { CoreAlerts } from '@services/overlays/alerts';
@@ -60,7 +60,7 @@ const FILTER_PRIORITY: AddonBlockMyOverviewTimeFilters[] =
     standalone: true,
     imports: [
         CoreSharedModule,
-        CoreCoursesComponentsModule,
+        CoreCoursesCourseListItemComponent,
     ],
 })
 export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implements OnInit, OnDestroy, OnChanges {
@@ -745,7 +745,7 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
     async sortOptionsChanged(selected: string): Promise<void> {
         this.sort.selected = selected;
         await this.saveSort(selected);
-        this.sortCourses(selected);
+        this.sortCourses(true);
     }
     
     /**

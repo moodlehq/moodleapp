@@ -30,8 +30,6 @@ const routes = [
     imports: [
         CoreSharedModule,
         RouterModule.forChild(routes),
-    ],
-    declarations: [
         CoreGradesCoursesDebugPage,
     ],
     exports: [RouterModule],

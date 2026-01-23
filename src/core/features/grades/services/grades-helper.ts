@@ -350,7 +350,7 @@ export class CoreGradesHelperProvider {
 
         try {
             const courses = await CoreCourses.getUserCourses(undefined, undefined, CoreSitesReadingStrategy.ONLY_CACHE);
-            const coursesMap = CoreUtils.arrayToObject(courses, 'id');
+            const coursesMap = CoreArray.toObject(courses, 'id');
             
             this.logger.debug(`Found ${courses.length} courses in cache`);
             this.logger.debug('Cached course IDs:', Object.keys(coursesMap));

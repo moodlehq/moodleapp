@@ -217,7 +217,7 @@ export class CoreCourseModuleMainResourceComponent implements OnInit, OnDestroy,
                 // Re-throw the error so the component can handle it, but without showing the modal
                 throw error;
             } else {
-                CoreDomUtils.showErrorModalDefault(error, this.fetchContentDefaultError, true);
+                CoreAlerts.showError(error, { default: this.fetchContentDefaultError });
             }
         } finally {
             this.showLoading = false;

@@ -27,7 +27,7 @@ import { FormControl } from '@angular/forms';
 import { formControlValue, resolved } from '@/core/utils/rxjs';
 import { CoreLogger } from '@singletons/logger';
 import { CoreSharedModule } from '@/core/shared.module';
-import { CoreSearchComponentsModule } from '@features/search/components/components.module';
+import { CoreSearchBoxComponent } from '@features/search/components/search-box/search-box';
 import { AddonBlockTimelineEventsComponent } from '../events/events';
 import { CoreUserParent } from '@features/user/services/parent';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
@@ -44,7 +44,7 @@ import { CoreAlerts } from '@services/overlays/alerts';
     standalone: true,
     imports: [
         CoreSharedModule,
-        CoreSearchComponentsModule,
+        CoreSearchBoxComponent,
         AddonBlockTimelineEventsComponent,
     ],
 })
@@ -450,7 +450,7 @@ export class AddonBlockTimelineComponent implements OnInit, OnDestroy, ICoreBloc
                     dateRange,
                     course,
                     courseEvents[course.id]?.events || [],
-                    courseEvents[course.id]?.canLoadMore,
+                    courseEvents[course.id]?.lastEventId,
                     done,
                 );
 

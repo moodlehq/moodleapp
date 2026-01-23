@@ -18,6 +18,7 @@ import { CoreGradesHelper } from '@features/grades/services/grades-helper';
 import { CoreSites } from '@services/sites';
 import { CoreNavigator } from '@services/navigator';
 import { CoreDomUtils } from '@services/utils/dom';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Page to debug grades data.
@@ -26,6 +27,9 @@ import { CoreDomUtils } from '@services/utils/dom';
     selector: 'page-core-grades-debug',
     templateUrl: 'debug.html',
     styleUrls: ['debug.scss'],
+    imports: [
+        CoreSharedModule,
+    ],
 })
 export class CoreGradesDebugPage implements OnInit {
 

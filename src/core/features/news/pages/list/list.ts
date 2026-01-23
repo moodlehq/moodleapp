@@ -16,6 +16,7 @@ import { Component, OnInit } from '@angular/core';
 import { CoreNews, CoreNewsItem } from '../../services/news';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreCourses, CoreCategoryData } from '@features/courses/services/courses';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Category node for hierarchical display
@@ -40,6 +41,9 @@ interface CategoryNode {
     selector: 'page-core-news-list',
     templateUrl: 'list.html',
     styleUrls: ['list.scss'],
+    imports: [
+        CoreSharedModule,
+    ],
 })
 export class CoreNewsListPage implements OnInit {
 

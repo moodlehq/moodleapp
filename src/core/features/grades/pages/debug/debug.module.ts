@@ -21,8 +21,6 @@ import { CoreGradesDebugPage } from './debug.page';
 @NgModule({
     imports: [
         CoreSharedModule,
-    ],
-    declarations: [
         CoreGradesDebugPage,
     ],
 })

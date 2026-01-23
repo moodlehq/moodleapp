@@ -204,7 +204,7 @@ export class AddonModAssignIndexComponent extends CoreCourseModuleMainActivityCo
         console.log('[AssignIndex] Getting submissions for assign:', this.assign.id);
         const submissions = await AddonModAssign.getSubmissions(this.assign.id, { cmId: this.module.id });
         console.log('[AssignIndex] Submissions response:', submissions);
-        const time = CoreTimeUtils.timestamp();
+        const time = CoreTime.timestamp();
 
         this.canViewAllSubmissions = submissions.canviewsubmissions;
 
@@ -246,7 +246,7 @@ export class AddonModAssignIndexComponent extends CoreCourseModuleMainActivityCo
         try {
             // Check if the user can view their own submission.
             console.log('[AssignIndex] Getting submission status for assign:', this.assign.id);
-            const status = await AddonModAssign.getSubmissionStatus(this.assign.id, { cmId: this.module.id });
+            const status = await AddonModAssign.getSubmissionStatus(this.assign, { cmId: this.module.id });
             
             // Check if there's a nopermission warning (parent viewing mentee)
             const hasNoPermissionWarning = status.warnings?.some(warning => 

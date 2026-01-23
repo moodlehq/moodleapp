@@ -18,6 +18,7 @@ import { CoreGradesHelper } from '@features/grades/services/grades-helper';
 import { CoreSites } from '@services/sites';
 import { CoreUserParent } from '@features/user/services/parent';
 import { CoreCourses } from '@features/courses/services/courses';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Page to debug course grades overview.
@@ -26,6 +27,9 @@ import { CoreCourses } from '@features/courses/services/courses';
     selector: 'page-core-grades-courses-debug',
     templateUrl: 'courses-debug.html',
     styleUrls: ['courses-debug.scss'],
+    imports: [
+        CoreSharedModule,
+    ],
 })
 export class CoreGradesCoursesDebugPage implements OnInit {
 

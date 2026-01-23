@@ -66,7 +66,7 @@ export default class CoreCourseModulePreviewPage implements OnInit {
             console.log('[ModulePreview] Course ID:', this.courseId);
         } catch (error) {
             console.error('[ModulePreview] Error getting route params:', error);
-            CoreDomUtils.showErrorModal(error);
+            CoreAlerts.showError(error);
 
             CoreNavigator.back();
 

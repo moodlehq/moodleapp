@@ -17,7 +17,6 @@ import { CommonModule } from '@angular/common';
 import { IonicModule } from '@ionic/angular';
 import { TranslateModule } from '@ngx-translate/core';
 import { CoreSharedModule } from '@/core/shared.module';
-import { CoreCourseComponentsModule } from '@features/course/components/components.module';
 import { AddonModLightboxGalleryIndexComponent } from './index/index';
 
 @NgModule({
@@ -29,7 +28,6 @@ import { AddonModLightboxGalleryIndexComponent } from './index/index';
         IonicModule,
         TranslateModule.forChild(),
         CoreSharedModule,
-        CoreCourseComponentsModule,
     ],
     exports: [
         AddonModLightboxGalleryIndexComponent,

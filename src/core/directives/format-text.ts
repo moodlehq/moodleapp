@@ -199,8 +199,7 @@ export class CoreFormatTextDirective implements OnDestroy, AsyncDirective {
         // Auto-detect text direction for proper RTL/LTR handling (Arabic, Hebrew, etc.)
         this.element.setAttribute('dir', 'auto');
 
-        this.emptyText = this.hideIfEmpty ? '' : '&nbsp;';
-        this.element.innerHTML = this.emptyText;
+        this.element.innerHTML = CoreFormatTextDirective.EMPTY_TEXT;
 
         this.element.addEventListener('click', (event: MouseEvent) => this.elementClicked(event));
 

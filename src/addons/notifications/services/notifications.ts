@@ -25,6 +25,14 @@ import { CoreCourseModuleDelegate } from '@features/course/services/module-deleg
 import { AddonNotificationsPushNotification } from './handlers/push-click';
 import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
 import { AddonBadges } from '@addons/badges/services/badges';
+import { CoreCacheUpdateFrequency } from '@/core/constants';
+import { CORE_USER_NOREPLY_USER } from '@features/user/constants';
+import {
+    ADDONS_NOTIFICATIONS_READ_CHANGED_EVENT,
+    ADDONS_NOTIFICATIONS_READ_CRON_EVENT,
+    ADDONS_NOTIFICATIONS_PUSH_SIMULATION_COMPONENT,
+    ADDONS_NOTIFICATIONS_LIST_LIMIT,
+} from '../constants';
 
 declare module '@singletons/events' {
 

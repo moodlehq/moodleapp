@@ -87,10 +87,9 @@
                         </p>
                     </ion-label>
                 </ion-item>
-            }
+            </div>
         </ion-list>
-        @if (user && !isDeleted && isEnrolled) {
-            <ion-list>
+        <ion-list *ngIf="user && !isDeleted && isEnrolled">
                 <ion-item class="core-user-profile-maininfo ion-text-wrap" collapsible>
                     <core-user-avatar [user]="user" [userId]="user.id" [linkProfile]="false" [checkOnline]="true" slot="start" />
                     <ion-label>
@@ -183,7 +182,6 @@
 
                 </ion-item>
             </ion-list>
-        }
         @if (!user && !isDeleted && isEnrolled) {
             <core-empty-box icon="far-user" [message]=" 'core.user.detailsnotavailable' | translate" />
         }

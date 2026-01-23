@@ -19,16 +19,16 @@ import { conditionalRoutes } from '@/app/app-routing.module';
 import { CoreSharedModule } from '@/core/shared.module';
 import { CoreScreen } from '@services/screen';
 
-import { CoreSettingsIndexPage } from './pages/index';
+import CoreSettingsIndexPage from './pages/index';
 import { SHAREDFILES_PAGE_NAME } from '@features/sharedfiles/constants';
-import { CoreSettingsSynchronizationPage } from '@features/settings/pages/synchronization/synchronization';
-import { CoreSettingsGeneralPage } from '@features/settings/pages/general/general';
-import { CoreSettingsSpaceUsagePage } from '@features/settings/pages/space-usage/space-usage';
-import { CoreSettingsAboutPage } from '@features/settings/pages/about/about';
-import { CoreSettingsLicensesPage } from '@features/settings/pages/licenses/licenses';
-import { CoreSettingsDeviceInfoPage } from '@features/settings/pages/deviceinfo/deviceinfo';
-import { CoreSettingsDevPage } from '@features/settings/pages/dev/dev';
-import { CoreSettingsErrorLogPage } from '@features/settings/pages/error-log/error-log';
+import CoreSettingsSynchronizationPage from '@features/settings/pages/synchronization/synchronization';
+import CoreSettingsGeneralPage from '@features/settings/pages/general/general';
+import CoreSettingsSpaceUsagePage from '@features/settings/pages/space-usage/space-usage';
+import CoreSettingsAboutPage from '@features/settings/pages/about/about';
+import CoreSettingsLicensesPage from '@features/settings/pages/licenses/licenses';
+import CoreSettingsDeviceInfoPage from '@features/settings/pages/deviceinfo/deviceinfo';
+import CoreSettingsDevPage from '@features/settings/pages/dev/dev';
+import CoreSettingsErrorLogPage from '@features/settings/pages/error-log/error-log';
 import { CoreDebugPage } from '@features/settings/pages/debug/debug';
 
 const sectionRoutes: Routes = [
@@ -46,7 +46,7 @@ const sectionRoutes: Routes = [
     },
     {
         path: SHAREDFILES_PAGE_NAME,
-        loadChildren: () => import('@features/sharedfiles/sharedfiles-lazy.module').then(m => m.CoreSharedFilesLazyModule),
+        loadChildren: () => import('@features/sharedfiles/sharedfiles.module').then(m => m.getSharedFilesRoutes()),
     },
     {
         path: 'about',
@@ -106,8 +106,6 @@ const routes: Routes = [
     imports: [
         RouterModule.forChild(routes),
         CoreSharedModule,
-    ],
-    declarations: [
         CoreSettingsIndexPage,
         CoreSettingsSynchronizationPage,
         CoreSettingsGeneralPage,

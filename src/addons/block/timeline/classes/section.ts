@@ -78,8 +78,8 @@ export class AddonBlockTimelineSection {
         });
 
         const result = this.course
-            ? await AddonBlockTimeline.getActionEventsByCourse(this.course.id, this.dataSubject$.value.lastEventId, this.search)
-            : await AddonBlockTimeline.getActionEventsByTimesort(this.dataSubject$.value.lastEventId, this.search);
+            ? await AddonBlockTimeline.getActionEventsByCourse(this.course.id, this.dataSubject$.value.lastEventId, this.search ?? undefined)
+            : await AddonBlockTimeline.getActionEventsByTimesort(this.dataSubject$.value.lastEventId, this.search ?? undefined);
 
         const events = result.events;
         const canLoadMore = result.lastEventId;

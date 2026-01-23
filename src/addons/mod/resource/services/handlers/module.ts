@@ -113,9 +113,9 @@ export class AddonModResourceModuleHandlerService extends CoreModuleHandlerBase 
         if (module.contents && module.contents[0]) {
             const file = module.contents[0];
             const filename = file.filename || '';
-            const fileExtension = CoreMimetypeUtils.getFileExtension(filename);
+            const fileExtension = CoreMimetype.getFileExtension(filename);
             const mimetype = module.contentsinfo?.mimetypes[0] || 
-                (fileExtension ? CoreMimetypeUtils.getMimeType(fileExtension) : '') || '';
+                (fileExtension ? CoreMimetype.getMimeType(fileExtension) : '') || '';
             
             // Check if file is previewable
             const isPreviewable = this.isPreviewableFile(mimetype, filename);
@@ -198,7 +198,7 @@ export class AddonModResourceModuleHandlerService extends CoreModuleHandlerBase 
      * @returns Whether the file is previewable.
      */
     protected isPreviewableFile(mimetype: string, filename: string): boolean {
-        const extensionResult = CoreMimetypeUtils.getFileExtension(filename);
+        const extensionResult = CoreMimetype.getFileExtension(filename);
         const extension = extensionResult ? extensionResult.toLowerCase() : '';
         
         // Check for PDF
@@ -233,7 +233,7 @@ export class AddonModResourceModuleHandlerService extends CoreModuleHandlerBase 
      */
     protected async getPreviewContent(module: CoreCourseModuleData, file: any, mimetype: string): Promise<string> {
         const filename = file.filename || '';
-        const extensionResult = CoreMimetypeUtils.getFileExtension(filename);
+        const extensionResult = CoreMimetype.getFileExtension(filename);
         const extension = extensionResult ? extensionResult.toLowerCase() : '';
         
         // For PDFs, we can show an embedded preview using iframe

@@ -12,9 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit, Optional } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CoreCourseModuleMainResourceComponent } from '@features/course/classes/main-resource-component';
-import { CoreCourseContentsPage } from '@features/course/pages/contents/contents';
 import { CoreCourse } from '@features/course/services/course';
 import { CoreSites } from '@services/sites';
 import { CoreUserParent } from '@features/user/services/parent';
@@ -48,10 +47,6 @@ export class AddonModLightboxGalleryIndexComponent extends CoreCourseModuleMainR
 
     component = ADDON_MOD_LIGHTBOXGALLERY_COMPONENT;
     images: GalleryImage[] = [];
-
-    constructor(@Optional() courseContentsPage?: CoreCourseContentsPage) {
-        super('AddonModLightboxGalleryIndexComponent', courseContentsPage);
-    }
 
     /**
      * @inheritdoc
