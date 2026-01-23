@@ -1,8 +1,8 @@
 {
     "app_id": "org.capriolegroup.aspire",
     "appname": "Aspire School",
-    "versioncode": 45306,
-    "versionname": "4.5.6",
+    "versioncode": 51000,
+    "versionname": "5.1.0",
     "cache_update_frequency_usually": 420000,
     "cache_update_frequency_often": 1200000,
     "cache_update_frequency_sometimes": 3600000,
