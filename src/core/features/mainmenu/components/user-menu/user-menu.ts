@@ -20,7 +20,7 @@ import { CoreFilter } from '@features/filter/services/filter';
 import { CoreUserAuthenticatedSupportConfig } from '@features/user/classes/support/authenticated-support-config';
 import { CoreUserSupport } from '@features/user/services/support';
 import { CoreUser, CoreUserProfile } from '@features/user/services/user';
-import { CORE_CORE_USER_PROFILE_REFRESHED } from '@features/user/constants';
+import { CORE_USER_PROFILE_REFRESHED } from '@features/user/constants';
 import {
     CoreUserProfileHandlerData,
     CoreUserDelegate,
@@ -93,8 +93,8 @@ export class CoreMainMenuUserMenuComponent implements OnInit, OnDestroy {
 
     // App version info (auto-updated by post-commit hook)
     appVersion = CoreConstants.CONFIG.versionname;
-    buildNumber = 38;
-    buildTime = '2026-01-23 19:09';
+    buildNumber = 39;
+    buildTime = '2026-01-23 19:10';
 
     // Secret debug menu (tap build number 7 times)
     debugTapCount = 0;

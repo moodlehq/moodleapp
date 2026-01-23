@@ -55,11 +55,6 @@ export class CoreCourseSectionComponent implements OnInit {
 
     @Output() sectionClicked = new EventEmitter<CoreCourseSectionToDisplay>();
 
-    @HostBinding('class')
-        get collapsibleClass(): string {
-            return this.collapsible ? 'collapsible' : 'non-collapsible';
-        }
-
     completionStatusIncomplete = CoreCourseModuleCompletionStatus.COMPLETION_INCOMPLETE;
     highlightedName?: string; // Name to highlight.
     isModule = sectionContentIsModule;
