@@ -116,6 +116,7 @@
         "ionicons": "8.0.13",
         "jszip": "3.10.1",
         "mathjax": "3.2.2",
+        "moment-timezone": "^0.6.0",
         "mp3-mediarecorder": "4.0.5",
         "ngx-image-cropper": "9.1.5",
         "nl.kingsquare.cordova.background-audio": "1.0.1",
